@@ -535,10 +535,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			ScheduleInfo info = getAdminModule().getFileVersionAgingSchedule();
 			getAdminModule().setFileVersionAgingSchedule(info);
 
-			//Turn on the database log pruning job
-			ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
-			getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
-
 			// Initialize a Thread used to cleanup Oracle Outside-in
 			// temporary files.
 			if (null == m_oitTempCleanupThread) {
@@ -971,10 +967,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		ScheduleInfo info = getAdminModule().getFileVersionAgingSchedule();
 		getAdminModule().setFileVersionAgingSchedule(info);
 
-		//Turn on the database log pruning job
-		ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
-		getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
-
 		// Initialize a Thread used to cleanup Oracle Outside-in
 		// temporary files.
 		if (null == m_oitTempCleanupThread) {
@@ -1212,10 +1204,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//Turn on file version aging job
 			info = getAdminModule().getFileVersionAgingSchedule();
 			getAdminModule().setFileVersionAgingSchedule(info);
-
-			//Turn on the database log pruning job
-			ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
-			getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
 			
 			// Initialize a Thread used to cleanup Oracle Outside-in
 			// temporary files.

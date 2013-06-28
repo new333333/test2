@@ -572,7 +572,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         } else {
         	def = folder.getDefaultEntryDef();
         }
-                
+        
         FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         
         end(begin, "addEntry");
@@ -1816,7 +1816,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
     public Date getLastFullSyncCompletionTime(Long folderId) {
         Folder folder = getTopMostMirroredFolder(getFolder(folderId));
         if (folder!=null) {
-            BinderState binderState = (BinderState) getCoreDao().load(BinderState.class, folder.getId());
+            BinderState binderState = getCoreDao().loadBinderState(folder.getId());
             if (binderState!=null) {
                 return binderState.getLastFullSyncCompletionTime();
             }

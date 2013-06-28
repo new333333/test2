@@ -80,29 +80,15 @@ public final class ConfigService
 	private static final String FILR_SERVER_URL = "http://localhost:";
 	static final Pattern IPv4_ADDR = Pattern.compile("\\binet addr:\\s*([\\d\\.]+)\\b", Pattern.MULTILINE);
 
-    static final String DEFAULT_INSTALLER_XML = "/filrinstall/installer.xml";
-
-    /**
-     * Get the installation configuration  - installer.xml
-     *
-     * @return
-     */
 	public static InstallerConfig getConfiguration()
 	{
-		return getConfiguration(DEFAULT_INSTALLER_XML);
+		return getConfiguration("/filrinstall/installer.xml");
 	}
 
-    /**
-     * Get configuration - reading from the installer.xml
-     *
-     * @param installerXmlPath
-     * @return
-     */
 	public static InstallerConfig getConfiguration(String installerXmlPath)
 	{
 		InstallerConfig config = null;
 		Document document = null;
-
 		try
 		{
 			document = getDocument(installerXmlPath);
@@ -114,9 +100,6 @@ public final class ConfigService
 		if (document != null)
 			config = getInstallerConfig(document);
 
-        //We also tag a bunch of properties into installer.xml
-
-        //Setting if we are using local postfix - stored in configurationDetails.properties
 		File file = new File("/filrinstall/configurationDetails.properties");
 
 		if (file.exists())
@@ -138,15 +121,12 @@ public final class ConfigService
 			}
 		}
 
-        //Check to see if the upgrade file exists (used during upgrade)
 		File upgradeFile = new File("/vastorage/conf/vaconfig.zip");
 		config.setUpdateMode(upgradeFile.exists());
 
-        //Check to see if memcached file exists
 		File shareFile = new File("/vashare/filr/conf/memcached.properties");
 		config.setShareAvailable(shareFile.exists());
 
-        //Check to see if /vashare exists
 		File vaShareFile = new File("/vashare");
 		config.setVashareAvailable(vaShareFile.exists());
 		return config;
@@ -726,6 +706,10 @@ public final class ConfigService
 				config.setHostName(hsaElement.getAttribute("ha.service.hostname"));
 				config.setTitle(hsaElement.getAttribute("ha.service.title"));
 				config.setRmiPort(getIntegerValue(hsaElement.getAttribute("ha.service.rmi.port")));
+
+				config.setServerLogin(hsaElement.getAttribute("lucene.server.login"));
+				config.setServerPassword(hsaElement.getAttribute("lucene.server.password"));
+
 			}
 		}
 		return lucene;
@@ -1068,7 +1052,7 @@ public final class ConfigService
 		// Make a copy of the original installer.xml so that we can revert if we need to
 		try
 		{
-			File srcFile = new File(DEFAULT_INSTALLER_XML);
+			File srcFile = new File("/filrinstall/installer.xml");
 			File destFile = new File("/filrinstall/installer.xml.orig");
 
 			// If the file already exists, user has been making changes before applying the reconfigure action
@@ -1083,7 +1067,7 @@ public final class ConfigService
 		Document document = null;
 		try
 		{
-			document = getDocument(DEFAULT_INSTALLER_XML);
+			document = getDocument("/filrinstall/installer.xml");
 		}
 		catch (IOException e)
 		{
@@ -1092,15 +1076,12 @@ public final class ConfigService
 		ProductInfo productInfo = getProductInfo();
 
 		// Save each sections
-        //We only want to update the section if has been changed
-        //For example, if user is editing web services page and click save, we should not
-        //touch other sections
 		{
 			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.DATABASE))
 				saveDatabaseConfiguration(config, document);
 
-			// TODO: For lucene configuration, we need to update the changes to the lucene server
-            // TODO: Waiting for James Albright to finish up the API on the lucene applicance side
+			// TODO: For lucene configuration, we need to update the changes to
+			// the lucene server
 			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.LUCENE))
 				saveLuceneConfiguration(config, document);
 
@@ -1169,10 +1150,16 @@ public final class ConfigService
 				LSOutput lsOutput = impl.createLSOutput();
 				lsOutput.setEncoding("UTF-8");
 
-				lsOutput.setByteStream(new FileOutputStream(DEFAULT_INSTALLER_XML));
+				lsOutput.setByteStream(new FileOutputStream("/filrinstall/installer.xml"));
 				LSSerializer serializer = impl.createLSSerializer();
 
 				serializer.write(document, lsOutput);
+
+				// //TEMP - RAJESH - DELETE
+				// lsOutput.setByteStream(new FileOutputStream("/filrinstall/rajesh.xml"));
+				// serializer = impl.createLSSerializer();
+				//
+				// serializer.write(document, lsOutput);
 			}
 			catch (IOException e)
 			{
@@ -1220,9 +1207,6 @@ public final class ConfigService
 	}
 
 	@SuppressWarnings("rawtypes")
-    /**
-     * Save the properties into a file
-     */
 	public static void store(Properties props, File file) throws FileNotFoundException
 	{
 
@@ -1273,7 +1257,11 @@ public final class ConfigService
 					{
 						Element resourceElement = getElement(configElement, "Resource");
 
-						String dbType = getDbType(config.getType());
+						String dbType = "MySql";
+						if (config.getType().equals(DatabaseType.ORACLE))
+							dbType = "Oracle";
+						else if (config.getType().equals(DatabaseType.SQLSERVER))
+							dbType = "SQLServer";
 						configElement.setAttribute("type", dbType);
 
 						resourceElement.setAttribute("username", config.getResourceUserName());
@@ -1306,6 +1294,7 @@ public final class ConfigService
 					if (config.getResourcePassword() != null && !config.getResourcePassword().isEmpty())
 						resourceElement.setAttribute("password", config.getResourcePassword());
 
+					logger.debug("Adding to dbElement");
 					dbElement.appendChild(newInstallElement);
 				}
 			}
@@ -1320,8 +1309,6 @@ public final class ConfigService
 			return "Oracle";
 		else if (dbType.equals(DatabaseType.SQLSERVER))
 			return "SQLServer";
-
-        //Default is MySql
 		return "MySql";
 	}
 
@@ -1396,6 +1383,16 @@ public final class ConfigService
 				node.setAttribute("ha.service.title", searchNode.getTitle());
 				node.setAttribute("ha.service.hostname", searchNode.getHostName());
 				node.setAttribute("ha.service.rmi.port", String.valueOf(searchNode.getRmiPort()));
+
+				if (!searchNode.getServerLogin().isEmpty())
+				{
+					node.setAttribute("lucene.server.login", searchNode.getServerLogin());
+				}
+
+				if (!searchNode.getServerPassword().isEmpty())
+				{
+					node.setAttribute("lucene.server.password", searchNode.getServerPassword());
+				}
 
 				resourceElement.appendChild(node);
 			}
@@ -1527,18 +1524,16 @@ public final class ConfigService
 		}
 
 		updateMemcachedFile();
-
 		if (clustered.isEnabled())
 		{
 
 			// Update memecached file
 			updateMemcachedFile();
 
-            ApplianceService.enableAndStartMemcache(true);
-
+			executeCommand("chkconfig memcached on", true);
+			executeCommand("rcmemcached start", true);
 
 			// If memcache is enabled, enable port 11211
-            //Right now, we don't have another caching provider
 			if (config.getClustered().getCachingProvider().equals("memcached"))
 			{
 				openFireWallPort(new String[] { "11211", "4446" });
@@ -1546,8 +1541,12 @@ public final class ConfigService
 		}
 		else
 		{
-			ApplianceService.enableAndStartMemcache(false);
 
+			executeCommand("rcmemcached stop", true);
+			executeCommand("chkconfig memcached off", true);
+
+			// executeCommand("sudo SuSEfirewall2 close EXT TCP 11211", true);
+			// executeCommand("sudo SuSEfirewall2 close EXT TCP 4446", true);
 			closeFireWallPort(new String[] { "11211", "4446" });
 		}
 	}
@@ -1578,16 +1577,6 @@ public final class ConfigService
 		return closeFireWallPort(new String[] { portToClose });
 	}
 
-    /**
-     * Close Firewall ports. There is no good way to enable/disable ports in the appliance. The default
-     * commands are not working properly. There are times, we get duplicate entries and the removal of
-     * ports are not working correctly.
-     *
-     * Firewall can be enabled/disabled by directly editing the SuSEfirewall2 file
-     *
-     * @param portsToClose
-     * @return
-     */
 	private static boolean closeFireWallPort(String[] portsToClose)
 	{
 		File file = new File("/etc/sysconfig/SuSEfirewall2");
@@ -1675,13 +1664,9 @@ public final class ConfigService
 				}
 				servicesExtTcp = servicesExtTcp.substring(1, servicesExtTcp.length() - 1);
 
-                //Get the list of ports that are currently open
 				String[] portTokens = servicesExtTcp.split(" ");
-
-
 				for (String portToOpen : portsToOpen)
 				{
-                    //If the port is not already open, add it to the list
 					if (!Arrays.asList(portTokens).contains(portToOpen))
 					{
 						servicesExtTcp = servicesExtTcp + " " + portToOpen;
@@ -1689,7 +1674,6 @@ public final class ConfigService
 				}
 				logger.debug("SuseFirewall ports " + "\"" + servicesExtTcp + "\"");
 
-                //Save the properties file
 				prop.setProperty("FW_SERVICES_EXT_TCP", "\"" + servicesExtTcp + "\"");
 				prop.store(new FileOutputStream(file), null);
 			}
@@ -2033,14 +2017,6 @@ public final class ConfigService
 		return null;
 	}
 
-    /**
-     * For Filr, it is safe to look at the eth0 interface.
-     * There is no other good way to get the ip address. Java API's don't work well
-     * especially on a VM.  Trying to read from other places is not safe as they may not
-     * get updated.
-     *
-     * @return
-     */
 	private static String getLocalIpAddr()
 	{
 
@@ -2449,7 +2425,7 @@ public final class ConfigService
        reconfigure(restartServer,true);
 	}
 
-	public static void saveFilrConfigLocally()
+	private static void saveFilrConfigLocally()
 	{
 		executeCommand("sudo python /opt/novell/base_config/zipVAConfig.py", true);
 	}
@@ -2608,7 +2584,7 @@ public final class ConfigService
 
 	}
 
-	private static boolean isFilrServerRunning(int port) throws IOException
+	private static boolean isFilrServerRunning(int port) throws MalformedURLException, IOException
 	{
 		logger.debug("Check to see if Filr server is running");
 		try
@@ -2647,15 +2623,6 @@ public final class ConfigService
 		}
 	}
 
-    /**
-     * For large deployment, we can make a call to check to see if the database already exists.
-     *
-     * @param dbName
-     * @param url
-     * @param userName
-     * @param password
-     * @return
-     */
 	public static boolean checkDBExists(String dbName, String url, String userName, String password)
 	{
 
@@ -2666,15 +2633,13 @@ public final class ConfigService
 
 			Connection conn = DriverManager.getConnection(url, userName, password); // Open a connection
 
-            //Get all the catalogs
 			ResultSet resultSet = conn.getMetaData().getCatalogs();
 
 			while (resultSet.next())
 			{
 				String databaseName = resultSet.getString(1);
 				logger.debug("Database found =" + databaseName);
-
-				if (databaseName.equalsIgnoreCase(dbName))
+				if (databaseName.equals(dbName))
 				{
 					return true;
 				}
@@ -2731,24 +2696,16 @@ public final class ConfigService
 		return timeZoneMap;
 	}
 
-    /**
-     * Called during intial wizard to create additional files to know that the wizard
-     * has been run.
-     * @param configType
-     */
 	public static void markConfigurationDone(String configType)
 	{
 		// Wizard configuration is done, put a temp file there
 		File file = new File("/filrinstall/configured");
-
 		// If it exists, ignore
 		if (!System.getProperty("os.name").startsWith("Win") && !file.exists())
 		{
 			try
 			{
 				// Create configured file
-                // Existence of this file tells that the wizard has been run and we should no longer
-                //run the wizard
 				file.createNewFile();
 
 				// Also create configurationDetails.properties file to store if this is small or large deployment
@@ -2826,17 +2783,11 @@ public final class ConfigService
 		executeCommand("sudo chkconfig mysql off", true);
 	}
 
-    /**
-     * Revert configuration is simple as copying back the original file to installer.xml
-     *
-     * @throws IOException
-     */
 	public static void reverConfiguration() throws IOException
 	{
 		File srcFile = new File("/filrinstall/installer.xml.orig");
-
 		if (srcFile.exists())
-			FileUtils.copyFile(srcFile, new File(DEFAULT_INSTALLER_XML), true);
+			FileUtils.copyFile(srcFile, new File("/filrinstall/installer.xml"), true);
 
 		srcFile.delete();
 	}

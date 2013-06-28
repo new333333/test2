@@ -1,57 +1,69 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/DeferredList",["./_base/kernel","./_base/Deferred","./_base/array"],function(_1,_2,_3){
-_1.DeferredList=function(_4,_5,_6,_7,_8){
-var _9=[];
-_2.call(this);
-var _a=this;
-if(_4.length===0&&!_5){
-this.resolve([0,[]]);
+
+if(!dojo._hasResource["dojo.DeferredList"]){
+dojo._hasResource["dojo.DeferredList"]=true;
+dojo.provide("dojo.DeferredList");
+dojo.declare("dojo.DeferredList",dojo.Deferred,{constructor:function(_1,_2,_3,_4,_5){
+this.list=_1;
+this.resultList=new Array(this.list.length);
+this.chain=[];
+this.id=this._nextId();
+this.fired=-1;
+this.paused=0;
+this.results=[null,null];
+this.canceller=_5;
+this.silentlyCancelled=false;
+if(this.list.length===0&&!_2){
+this.callback(this.resultList);
 }
-var _b=0;
-_3.forEach(_4,function(_c,i){
-_c.then(function(_d){
-if(_5){
-_a.resolve([i,_d]);
+this.finishedCount=0;
+this.fireOnOneCallback=_2;
+this.fireOnOneErrback=_3;
+this.consumeErrors=_4;
+dojo.forEach(this.list,function(d,_6){
+d.addCallback(this,function(r){
+this._cbDeferred(_6,true,r);
+return r;
+});
+d.addErrback(this,function(r){
+this._cbDeferred(_6,false,r);
+return r;
+});
+},this);
+},_cbDeferred:function(_7,_8,_9){
+this.resultList[_7]=[_8,_9];
+this.finishedCount+=1;
+if(this.fired!==0){
+if(_8&&this.fireOnOneCallback){
+this.callback([_7,_9]);
 }else{
-_e(true,_d);
-}
-},function(_f){
-if(_6){
-_a.reject(_f);
+if(!_8&&this.fireOnOneErrback){
+this.errback(_9);
 }else{
-_e(false,_f);
+if(this.finishedCount==this.list.length){
+this.callback(this.resultList);
 }
-if(_7){
-return null;
 }
-throw _f;
-});
-function _e(_10,_11){
-_9[i]=[_10,_11];
-_b++;
-if(_b===_4.length){
-_a.resolve(_9);
 }
-};
+}
+if(!_8&&this.consumeErrors){
+_9=null;
+}
+return _9;
+},gatherResults:function(_a){
+var d=new dojo.DeferredList(_a,false,true,false);
+d.addCallback(function(_b){
+var _c=[];
+dojo.forEach(_b,function(_d){
+_c.push(_d[1]);
 });
-};
-_1.DeferredList.prototype=new _2();
-_1.DeferredList.prototype.gatherResults=function(_12){
-var d=new _1.DeferredList(_12,false,true,false);
-d.addCallback(function(_13){
-var ret=[];
-_3.forEach(_13,function(_14){
-ret.push(_14[1]);
-});
-return ret;
+return _c;
 });
 return d;
-};
-return _1.DeferredList;
-});
+}});
+}

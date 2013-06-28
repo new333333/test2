@@ -1,29 +1,36 @@
-//>>built
-define("dojox/layout/DragPane",["dojo/_base/declare","dijit/_Widget","dojo/_base/html","dojo/dom-style"],function(_1,_2,_3,_4){
-return _1("dojox.layout.DragPane",_2,{invert:true,postCreate:function(){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.layout.DragPane"]){
+dojo._hasResource["dojox.layout.DragPane"]=true;
+dojo.provide("dojox.layout.DragPane");
+dojo.require("dijit._Widget");
+dojo.declare("dojox.layout.DragPane",dijit._Widget,{invert:true,postCreate:function(){
+this.inherited(arguments);
 this.connect(this.domNode,"onmousedown","_down");
-this.connect(this.domNode,"onmouseleave","_up");
 this.connect(this.domNode,"onmouseup","_up");
 },_down:function(e){
 var t=this.domNode;
-e.preventDefault();
-_4.set(t,"cursor","move");
+dojo.style(t,"cursor","move");
 this._x=e.pageX;
 this._y=e.pageY;
 if((this._x<t.offsetLeft+t.clientWidth)&&(this._y<t.offsetTop+t.clientHeight)){
-_3.setSelectable(t,false);
+dojo.setSelectable(t,false);
 this._mover=this.connect(t,"onmousemove","_move");
 }
 },_up:function(e){
-_3.setSelectable(this.domNode,true);
-_4.set(this.domNode,"cursor","pointer");
-this._mover&&this.disconnect(this._mover);
-delete this._mover;
+dojo.setSelectable(this.domNode,true);
+dojo.style(this.domNode,"cursor","pointer");
+this.disconnect(this._mover);
 },_move:function(e){
-var _5=this.invert?1:-1;
-this.domNode.scrollTop+=(this._y-e.pageY)*_5;
-this.domNode.scrollLeft+=(this._x-e.pageX)*_5;
+var _1=this.invert?1:-1;
+this.domNode.scrollTop+=(this._y-e.pageY)*_1;
+this.domNode.scrollLeft+=(this._x-e.pageX)*_1;
 this._x=e.pageX;
 this._y=e.pageY;
 }});
-});
+}

@@ -407,9 +407,6 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 
 </ssf:form>
-
-<div id="ss_status_message">
-</div>
 </div>
 </div>
 </body>

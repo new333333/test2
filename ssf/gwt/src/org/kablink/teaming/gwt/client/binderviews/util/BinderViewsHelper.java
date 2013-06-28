@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.binderviews.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -59,8 +58,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFilesUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFolderUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HideSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleAdhocFolderSettingsCmd;
@@ -70,14 +67,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.ShowSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.rpc.shared.ZipDownloadUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.EntityRights;
-import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
@@ -89,7 +82,6 @@ import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
@@ -623,31 +615,6 @@ public class BinderViewsHelper {
 		enableUsersAdHocFolders(userId, null);
 	}
 
-	/**
-	 * Returns a count of the entities that can't be shared because
-	 * they're Net Folders.
-	 * 
-	 * @param entities
-	 * @param entityRightsMap
-	 * 
-	 * @return
-	 */
-	public static int getNetFolderShareFailureCount(final List<EntityId> entities, final Map<String, EntityRights> entityRightsMap) {
-		int reply = 0;
-		if (GwtClientHelper.hasItems(entities) && GwtClientHelper.hasItems(entityRightsMap)) {
-			for (EntityId eid:  entities) {
-				if (eid.isFolder()) {
-					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(eid));
-					ShareRight   sr = ((null == er) ? null : er.getShareRight());
-					if ((null != sr) && sr.cantShareNetFolder()) {
-						reply += 1;
-					}
-				}
-			}
-		}
-		return reply;
-	}
-	
 	/**
 	 * Marks the shares hidden based on a List<Long> of their entity
 	 * IDs.
@@ -1583,15 +1550,12 @@ public class BinderViewsHelper {
 	/*
 	 * Validates a List<EntityId> for containing entry references.
 	 */
-	private static boolean validateEntriesInEntityIds(List<EntityId> entityIds, boolean requiresFiles) {
+	private static boolean validateEntriesInEntityIds(List<EntityId> entityIds) {
 		// If the list contains no entries...
 		boolean hasEntries = EntityId.areEntriesInEntityIds(entityIds);
 		if (!hasEntries) {
 			// ...tell the user about the problem and return false.
-			GwtClientHelper.deferredAlert(
-				(requiresFiles                                           ?
-					m_messages.vibeEntryMenu_Warning_OnlyFolders_Files() :
-					m_messages.vibeEntryMenu_Warning_OnlyFolders_Entries()));
+			GwtClientHelper.deferredAlert(m_messages.vibeEntryMenu_Warning_OnlyFolders());
 			return false;
 		}
 
@@ -1607,11 +1571,6 @@ public class BinderViewsHelper {
 		// If we get here, the list contained entry references.  Return
 		// true.
 		return true;
-	}
-	
-	private static boolean validateEntriesInEntityIds(List<EntityId> entityIds) {
-		// Always use the initial form of the method.
-		return validateEntriesInEntityIds(entityIds, false);
 	}
 
 	/**
@@ -1711,120 +1670,5 @@ public class BinderViewsHelper {
 			// Simply show it.
 			showWhoHasAccessAsync(entityId);
 		}
-	}
-	
-	/**
-	 * Zips and downloads the selected files and folder based on a
-	 * List<EntityId> of their entity IDs.
-	 *
-	 * @param entityIds
-	 * @param recursive
-	 * @param reloadEvent
-	 */
-	public static void zipAndDownloadFiles(final FormPanel downloadForm, List<EntityId> entityIds, boolean recursive, final VibeEventBase<?> reloadEvent) {
-		// If we weren't given any entity IDs to be downloaded...
-		if (!(GwtClientHelper.hasItems(entityIds))) {
-			// ...bail.
-			return;
-		}
-		
-		// Show a busy spinner while we build the information for
-		// downloading the files.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request for the zip download URL.
-		GetZipDownloadFilesUrlCmd cmd = new GetZipDownloadFilesUrlCmd(entityIds, recursive);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_GetZipDownloadUrl());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// If we got any errors creating the URL to download
-				// the zip...
-				busy.hide();
-				ZipDownloadUrlRpcResponseData	zipDownloadInfo = ((ZipDownloadUrlRpcResponseData) response.getResponseData());
-				ErrorListRpcResponseData		errorList       = zipDownloadInfo.getErrors();
-				List<ErrorInfo>					errors          = errorList.getErrorList();
-				int count = ((null == errors) ? 0 : errors.size());
-				if (0 < count) {
-					// ...tell the user.
-					GwtClientHelper.displayMultipleErrors(m_messages.zipDownloadUrlError(), errors);
-				}
-
-				// If we get the URL to download the zip...
-				String zipDownloadUrl = zipDownloadInfo.getUrl();
-				if (GwtClientHelper.hasString(zipDownloadUrl)) {
-					// ...start it downloading...
-					downloadForm.setAction(zipDownloadUrl);
-					downloadForm.submit();
-				}
-			}
-		});
-	}
-	
-	public static void zipAndDownloadFiles(FormPanel downloadForm, List<EntityId> entityIds, boolean recursive) {
-		// Always use the initial form of the method.
-		zipAndDownloadFiles(downloadForm, entityIds, recursive, null);
-	}
-	
-	/**
-	 * Zips and downloads the files in a folder.
-	 *
-	 * @param folderId
-	 * @param recursive
-	 * @param reloadEvent
-	 */
-	public static void zipAndDownloadFolder(final FormPanel downloadForm, Long folderId, boolean recursive, final VibeEventBase<?> reloadEvent) {
-		// Show a busy spinner while we build the information for
-		// downloading the files.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request for the zip download URL.
-		GetZipDownloadFolderUrlCmd cmd = new GetZipDownloadFolderUrlCmd(folderId, recursive);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_GetZipDownloadUrl());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// If we got any errors creating the URL to download
-				// the zip...
-				busy.hide();
-				ZipDownloadUrlRpcResponseData	zipDownloadInfo = ((ZipDownloadUrlRpcResponseData) response.getResponseData());
-				ErrorListRpcResponseData		errorList       = zipDownloadInfo.getErrors();
-				List<ErrorInfo>					errors          = errorList.getErrorList();
-				int count = ((null == errors) ? 0 : errors.size());
-				if (0 < count) {
-					// ...tell the user.
-					GwtClientHelper.displayMultipleErrors(m_messages.zipDownloadUrlError(), errors);
-				}
-
-				// If we get the URL to download the zip...
-				String zipDownloadUrl = zipDownloadInfo.getUrl();
-				if (GwtClientHelper.hasString(zipDownloadUrl)) {
-					// ...start it downloading...
-					downloadForm.setAction(zipDownloadUrl);
-					downloadForm.submit();
-				}
-			}
-		});
-	}
-	
-	public static void zipAndDownloadFolder(FormPanel downloadForm, Long folderId, boolean recursive) {
-		// Always use the initial form of the method.
-		zipAndDownloadFolder(downloadForm, folderId, recursive, null);
 	}
 }

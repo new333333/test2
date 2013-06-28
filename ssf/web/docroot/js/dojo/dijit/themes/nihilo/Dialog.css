@@ -2,43 +2,46 @@
 .nihilo .dijitDialog {
 	background: #eee;
 	border: 1px solid #d3d3d3;
-	-webkit-box-shadow: 0 5px 10px #adadad;
-	padding: 0;
+	-webkit-box-shadow: 0px 5px 10px #adadad;
+	padding: 0px;
 }
 .nihilo .dijitDialog .dijitDialogTitle {
 	
 	font-size: 0.9em;
-	color: #243C5F;
+	color: #3243C5F;
 	font-weight: bold;
-	padding: 0 4px;
+	padding: 0px 4px;
 }
 .nihilo .dijitDialog .dijitDialogPaneContent {
 	background: #ffffff;
-	border-top: 1px solid #d3d3d3;
+	border:none;
+	border-top: 1px solid #d3d3d3; 
 	padding:10px;
 }
 .nihilo .dijitDialogTitleBar {
 	
 	background: #fafafa url("images/titleBar.png") repeat-x top left;
 	padding: 5px 6px 3px 6px;
+	cursor: move;
 	outline:0; 
 }
 .nihilo .dijitDialogCloseIcon {
 	
 	background-image: url("images/spriteRoundedIconsSmall.png");
 	background-repeat: no-repeat;
-	background-position: -60px 0;
+	background-position: -60px 0px;
 	position: absolute;
 	vertical-align: middle;
 	right: 6px;
 	top: 4px;
 	height: 15px;
 	width: 15px;
+	cursor: pointer;
 }
 .dj_ie6 .nihilo .dijitDialogCloseIcon {
 	background-image: url("images/spriteRoundedIconsSmall.gif");
 }
-.nihilo .dijitDialogCloseIconHover {
+.nihilo .dijitDialogCloseIcon-hover {
 	background-position: -60px -15px;
 }
 .nihilo .dijitTooltip,
@@ -62,7 +65,7 @@
 }
 .nihilo .dijitTooltipConnector {
 	
-	border:0;
+	border:0px;
 	z-index: 2;
 }
 .nihilo .dijitTooltipABRight .dijitTooltipConnector {
@@ -72,7 +75,7 @@
 }
 .nihilo .dijitTooltipBelow .dijitTooltipConnector {
 	
-	top: 0;
+	top: 0px;
 	left: 6px;
 	background:url("images/tooltipConnectorUp.png") no-repeat top left;
 	width:17px;
@@ -83,7 +86,7 @@
 }
 .nihilo .dijitTooltipAbove .dijitTooltipConnector {
 	
-	bottom: 0;
+	bottom: 0px;
 	left: 6px;
 	background:url("images/tooltipConnectorDown.png") no-repeat top left;
 	width:17px;
@@ -98,9 +101,13 @@
 .nihilo .dijitTooltipLeft {
 	padding-right: 10px;
 }
+.dj_ie6 .nihilo .dijitTooltipLeft {
+	padding-left: 11px;
+}
 .nihilo .dijitTooltipLeft .dijitTooltipConnector {
 	
-	right: 0;
+	right: 0px;
+	bottom: 3px;
 	background:url("images/tooltipConnectorRight.png") no-repeat top left;
 	width:11px;
 	height:17px;
@@ -113,7 +120,8 @@
 }
 .nihilo .dijitTooltipRight .dijitTooltipConnector {
 	
-	left: 0;
+	left: 0px;
+	bottom: 3px;
 	background:url("images/tooltipConnectorLeft.png") no-repeat top left;
 	width:11px;
 	height:17px;

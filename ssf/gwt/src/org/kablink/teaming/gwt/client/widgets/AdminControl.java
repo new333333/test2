@@ -44,7 +44,6 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeJitsZoneConfigDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
@@ -61,7 +60,6 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtConstants;
-import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -72,7 +70,6 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
@@ -91,7 +88,6 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.Config
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.JitsZoneConfigDlg.JitsZoneConfigDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ManageDatabasePruneDlg.ManageDatabasePruneDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFoldersDlgClient;
@@ -145,7 +141,6 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
 		InvokeJitsZoneConfigDlgEvent.Handler,
-		InvokeManageDatabasePruneDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
@@ -171,7 +166,6 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureMobileAppsDlg m_configureMobileAppsDlg = null;
 	private ConfigureUserMobileAppsDlg m_configureUserMobileAppsDlg = null;
 	private ConfigureUserFileSyncAppDlg m_configureUserFileSyncAppDlg = null;
-	private ManageDatabasePruneDlg m_manageDatabasePruneDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
@@ -200,7 +194,6 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
 		TeamingEvents.INVOKE_JITS_ZONE_CONFIG_DLG,
-		TeamingEvents.INVOKE_MANAGE_DATABASE_PRUNE_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
@@ -846,13 +839,7 @@ public class AdminControl extends TeamingPopupPanel
 			event = new ManageSharesSelectedEntriesEvent();
 			GwtTeaming.fireEvent( event );
 		}
-				
-		else if ( adminAction.getActionType() == AdminAction.MANAGE_DATABASE_PRUNE )
-		{
-			// Fire the event to invoke the "Manage database prune" dialog.
-			InvokeManageDatabasePruneDlgEvent.fireOne();
-		}
-
+		
 		else if ( adminAction.getActionType() == AdminAction.ADD_USER )
 		{
 			// Fire the event to invoke the "Manage users" dialog.
@@ -1307,7 +1294,6 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private void invokeEditSiteBrandingDlgImpl( GwtBrandingData brandingData, int x, int y )
 	{
-		m_editSiteBrandingDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 		m_editSiteBrandingDlg.init( brandingData );
 		m_editSiteBrandingDlg.setPopupPosition( x, y );
 		m_editSiteBrandingDlg.show();
@@ -1695,7 +1681,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureAdhocFoldersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureAdhocFoldersDlg.init( null );
 			m_configureAdhocFoldersDlg.setPopupPosition( x, y );
 			m_configureAdhocFoldersDlg.show();
@@ -1792,7 +1777,6 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				else
 				{
-					m_configureFileSyncAppDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 					m_configureFileSyncAppDlg.init( fileSyncAppConfiguration );
 					m_configureFileSyncAppDlg.setPopupPosition( x, y );
 					m_configureFileSyncAppDlg.show();
@@ -1875,7 +1859,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureMobileAppsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureMobileAppsDlg.init();
 			m_configureMobileAppsDlg.setPopupPosition( x, y );
 			m_configureMobileAppsDlg.show();
@@ -1946,7 +1929,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_editZoneShareRightsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_editZoneShareRightsDlg.init();
 			m_editZoneShareRightsDlg.setPopupPosition( x, y );
 			m_editZoneShareRightsDlg.show();
@@ -2017,7 +1999,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureUserAccessDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureUserAccessDlg.init();
 			m_configureUserAccessDlg.setPopupPosition( x, y );
 			m_configureUserAccessDlg.show();
@@ -2108,120 +2089,12 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_jitsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_jitsDlg.init();
 			m_jitsDlg.setPopupPosition( x, y );
 			m_jitsDlg.show();
 		}
 	}
 	
-	/**
-	 * Handles InvokeManageDatabasePruneDlgEvent received by this class.
-	 * 
-	 * Implements the InvokeManageDatabasePruneDlgEvent.Handler.onInvokeManageDatabasePruneDlg() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onInvokeManageDatabasePruneDlg( InvokeManageDatabasePruneDlgEvent event )
-	{
-		AsyncCallback<VibeRpcResponse> rpcReadCallback;
-		
-		// Create a callback that will be called when we get the Database Prune configuration.
-		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetDatabasePruneDlgConfiguration() );
-			}
-	
-			/**
-			 * We successfully retrieved the Database Prune configuration.  Now invoke the "Database Prune" dialog.
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				int x;
-				int y;
-				final GwtDatabasePruneConfiguration databasePruneConfiguration;
-
-
-				databasePruneConfiguration = (GwtDatabasePruneConfiguration) response.getResponseData();
-				
-				// Get the position of the content control.
-				x = m_contentControlX;
-				y = m_contentControlY;
-				
-				// Have we already created a "Manage Database Prune" dialog?
-				if ( m_manageDatabasePruneDlg == null )
-				{
-					int width;
-					int height;
-					
-					// No, create one.
-					height = m_dlgHeight;
-					width = m_dlgWidth;
-					ManageDatabasePruneDlg.createAsync(
-							true, 
-							false,
-							x, 
-							y,
-							width,
-							height,
-							new ManageDatabasePruneDlgClient()
-					{			
-						@Override
-						public void onUnavailable()
-						{
-							// Nothing to do.  Error handled in asynchronous provider.
-						}
-						
-						@Override
-						public void onSuccess( final ManageDatabasePruneDlg cfsaDlg )
-						{
-							ScheduledCommand cmd;
-							
-							cmd = new ScheduledCommand()
-							{
-								@Override
-								public void execute() 
-								{
-									m_manageDatabasePruneDlg = cfsaDlg;
-									
-									m_manageDatabasePruneDlg.init( databasePruneConfiguration );
-									m_manageDatabasePruneDlg.show();
-								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
-						}
-					} );
-				}
-				else
-				{
-					m_manageDatabasePruneDlg.init( databasePruneConfiguration );
-					m_manageDatabasePruneDlg.setPopupPosition( x, y );
-					m_manageDatabasePruneDlg.show();
-				}
-			}
-		};
-
-		// Issue an ajax request to get the Database Prune configuration.  When we get the Database Prune configuration
-		// we will invoke the "Manage database prune" dialog.
-		{
-			GetDatabasePruneConfigurationCmd cmd;
-			
-			// Issue an ajax request to get the Database Prune configuration from the db.
-			cmd = new GetDatabasePruneConfigurationCmd();
-			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
-		}
-	}
-		
 	/**
 	 * Handles InvokeManageNetFoldersDlgEvent received by this class.
 	 * 
@@ -2285,7 +2158,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_manageNetFoldersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_manageNetFoldersDlg.init();
 			m_manageNetFoldersDlg.setPopupPosition( x, y );
 			m_manageNetFoldersDlg.show();
@@ -2355,7 +2227,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_manageNetFolderRootsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_manageNetFolderRootsDlg.init();
 			m_manageNetFolderRootsDlg.setPopupPosition( x, y );
 			m_manageNetFolderRootsDlg.show();
@@ -2425,7 +2296,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_manageGroupsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_manageGroupsDlg.init();
 			m_manageGroupsDlg.setPopupPosition( x, y );
 			m_manageGroupsDlg.show();
@@ -2469,7 +2339,7 @@ public class AdminControl extends TeamingPopupPanel
 						public void execute() 
 						{
 							m_manageUsersDlg = muDlg;
-							ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
+							ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -2487,8 +2357,7 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Yes, we've already created a "Manage Users" dialog!
 			// Simply initialize and show it.
-			m_manageUsersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
+			ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y );
 		}
 	}
 	
@@ -2560,7 +2429,6 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Yes, we've already created a "Run a Report" dialog!
 			// Simply initialize and show it.
-			m_runAReportDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			RunAReportDlg.initAndShow( m_runAReportDlg, x, y );
 		}
 	}
@@ -2627,7 +2495,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureUserFileSyncAppDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureUserFileSyncAppDlg.init( userIds );
 			m_configureUserFileSyncAppDlg.setPopupPosition( x, y );
 			m_configureUserFileSyncAppDlg.show();
@@ -2696,7 +2563,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureUserMobileAppsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureUserMobileAppsDlg.init( userIds );
 			m_configureUserMobileAppsDlg.setPopupPosition( x, y );
 			m_configureUserMobileAppsDlg.show();

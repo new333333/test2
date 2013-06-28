@@ -251,16 +251,11 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue, stepTitles) {
 
 function ss_getSelectedBinders(url) {
 	var value = "";
-	var contextBinderId = "";
-	var binderIdObj = document.getElementById('contextBinderId');
-	if (binderIdObj !== undefined && binderIdObj != null) {
-		contextBinderId = binderIdObj.value;
-	}
 	var obj = document.getElementById('search_currentFolder');
 	if (obj !== undefined && obj != null && obj.checked) {
 		//get current folder
 		obj = document.getElementById('search_dashboardFolders');
-		return url += "&idChoices=" + encodeURIComponent(" searchFolders_" + obj.value) + "&contextBinderId=" + encodeURIComponent(contextBinderId);
+		return url += "&idChoices=" + encodeURIComponent(" searchFolders_" + obj.value);
 	}
 	obj = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
 	if (obj !== undefined && obj != null) value = obj.value;
@@ -274,7 +269,7 @@ function ss_getSelectedBinders(url) {
 		value = value.replace(re, "");
 		value += id;
 	}
-	return url += "&idChoices=" + encodeURIComponent(value) + "&contextBinderId=" + encodeURIComponent(contextBinderId);
+	return url += "&idChoices=" + encodeURIComponent(value);
  
 }
 function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle) {

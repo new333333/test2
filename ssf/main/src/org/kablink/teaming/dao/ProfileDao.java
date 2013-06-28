@@ -361,8 +361,4 @@ public interface ProfileDao {
  	 */
     public List<Group> loadLdapContainerGroups(Long zoneId); 
 
-    /**
-     * Update the various db tables to necessary to support a user being renamed.
-     */
-    public void renameUser( User user );
 }

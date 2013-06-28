@@ -413,42 +413,106 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      */
     @Override
 	public boolean testAddShareEntity(DefinableEntity de) {
-        return _testAddShareEntity(de, new ShareOp [] {
-                new ShareOp(WorkAreaOperation.ENABLE_SHARING_INTERNAL, FolderOperation.allowSharing, BinderOperation.allowSharing),
-                new ShareOp(WorkAreaOperation.ENABLE_SHARING_EXTERNAL, FolderOperation.allowSharingExternal, BinderOperation.allowSharingExternal),
-        });
-	}
+		boolean reply = false;
+		User user = RequestContextHolder.getRequestContext().getUser();
 
-    /**
-     * Returns true if the current user can share the given
-     * DefinableEntity with internal users and false otherwise.
-     *
-     * @param de
-     *
-     * @return
-     */
-    @Override
-	public boolean testAddShareEntityInternal(DefinableEntity de) {
-        return _testAddShareEntity(de, new ShareOp [] {
-                new ShareOp(WorkAreaOperation.ENABLE_SHARING_INTERNAL, FolderOperation.allowSharing, BinderOperation.allowSharing),
-        });
-	}
+		try {
+			// Is sharing enabled at the zone level for this type of user.
+	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
+	    	ZoneConfig				zoneConfig           = getCoreDao().loadZoneConfig(zoneId);
+			AccessControlManager	accessControlManager = getAccessControlManager();
+			if (null == accessControlManager) {
+				accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+			}
 
-    /**
-     * Returns true if the current user can share the given
-     * DefinableEntity with external users and false otherwise.
-     *
-     * @param de
-     *
-     * @return
-     */
-    @Override
-	public boolean testAddShareEntityExternal(DefinableEntity de) {
-        return _testAddShareEntity(de, new ShareOp [] {
-                new ShareOp(WorkAreaOperation.ENABLE_SHARING_EXTERNAL, FolderOperation.allowSharingExternal, BinderOperation.allowSharingExternal),
-        });
-	}
+			// Is the entity a folder entry?
+			if (de.getEntityType().equals(EntityType.folderEntry)) {
+				// Yes!  Does the user have "share internal" rights on it and is the user enabled for doing this?
+				FolderEntry fe = ((FolderEntry) de);
+				Binder parentBinderToTest = null;
+				if (fe.isAclExternallyControlled()) {
+					//This is in a net folder. we must check if the admin allows the requested operation at the root level.
+					parentBinderToTest = fe.getParentBinder();
+					//Find the root net folder
+					while (parentBinderToTest != null) {
+						if (parentBinderToTest.getParentBinder() != null &&
+								!parentBinderToTest.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+							//We have found the top folder (i.e., the net folder root)
+							break;
+						}
+						parentBinderToTest = parentBinderToTest.getParentBinder();
+					}
+				}
+				//Look for at least one type of sharing being enabled: internal, external or public
+				// Does the user have "share internal" rights and is the user enabled to do this?
+				if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) && 
+						folderModule.testAccess(fe, FolderOperation.allowSharing)) {
+					// Yes!
+					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
+					if (parentBinderToTest != null) {
+						//But first check if the entry was shared and is allowing the request
+						reply = accessControlManager.testRightGrantedBySharing(user, (WorkArea)de, WorkAreaOperation.ALLOW_SHARING_INTERNAL);
+						if (!reply) {
+							reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharing);
+						}
+					} else {
+						reply = true;
+					}
+				}
+				// Does the user have "share external" rights and is the user enabled to do this?
+				if (!reply && accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) &&
+						folderModule.testAccess( fe, FolderOperation.allowSharingExternal ) ) {
+					// Yes
+					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
+					if (parentBinderToTest != null) {
+						//But first check if the entry was shared and is allowing the request
+						reply = accessControlManager.testRightGrantedBySharing(user, (WorkArea)de, WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
+						if (!reply) {
+							reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingExternal);
+						}
+					} else {
+						reply = true;
+					}
+				}
+			}
 
+			// No, the entity isn't a folder entry!  Is it a folder or
+			// workspace (i.e., a binder)?
+			else if (de.getEntityType().equals(EntityType.folder) || de.getEntityType().equals(EntityType.workspace)) {
+				// Yes!  Does the user have "share internal" rights on it?
+				Binder binder = ((Binder) de);
+				//If this is a Filr Net Folder, check if sharing is allowed at the folder level
+				//Also check that the folder isn't a Net Folder. 
+				//Sharing Net Folders is not allowed unless it is in the user's own user workspace
+				if (!binder.isAclExternallyControlled() || 
+						SPropsUtil.getBoolean("sharing.netFolders.allowed", false) || 
+						Utils.isWorkareaInProfilesTree(binder)) {
+					if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) && 
+							binderModule.testAccess(binder, BinderOperation.allowSharing)) {
+						// Yes!
+						reply = true;
+					}
+					// Does the user have "share external" rights?
+					else if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) &&
+							binderModule.testAccess( binder, BinderOperation.allowSharingExternal ) )
+					{
+						// Yes
+						reply = true;
+					}
+				}
+			}
+		}
+		
+		catch (AccessControlException ace) {
+			// AccessControlException implies sharing isn't allowed.
+			reply = false;
+		}
+
+		// If we get here, reply contains true if the user can add a
+		// share to the given entity and false otherwise.  Return it.
+		return reply;
+	}
+	
     /**
      * Returns true if the current user can share the given
      * DefinableEntity with the public and false otherwise.
@@ -459,9 +523,78 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      */
 	@Override
 	public boolean testAddShareEntityPublic(DefinableEntity de) {
-        return _testAddShareEntity(de, new ShareOp [] {
-                new ShareOp(WorkAreaOperation.ENABLE_SHARING_PUBLIC, FolderOperation.allowSharingPublic, BinderOperation.allowSharingPublic)
-        });
+		boolean reply = false;
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		try {
+			// Is sharing enabled at the zone level for this type of user.
+	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
+	    	ZoneConfig				zoneConfig           = getCoreDao().loadZoneConfig(zoneId);
+			AccessControlManager	accessControlManager = getAccessControlManager();
+			if (null == accessControlManager) {
+				accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+			}
+			//Test if enabled at the zone level for sharing with the public. This throws an error if not.
+			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC);
+
+			// Is the entity a folder entry?
+			if (de.getEntityType().equals(EntityType.folderEntry)) {
+				// Yes!  Does the user have "share public" rights on it and is the user enabled for doing this?
+				FolderEntry fe = ((FolderEntry) de);
+				Binder parentBinderToTest = null;
+				if (fe.isAclExternallyControlled()) {
+					//This is in a net folder. we must check if the admin allows the requested operation at the root level.
+					parentBinderToTest = fe.getParentBinder();
+					//Find the root net folder
+					while (parentBinderToTest != null) {
+						if (parentBinderToTest.getParentBinder() != null &&
+								!parentBinderToTest.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+							//We have found the top folder (i.e., the net folder root)
+							break;
+						}
+						parentBinderToTest = parentBinderToTest.getParentBinder();
+					}
+				}
+				if (folderModule.testAccess(fe, FolderOperation.allowSharingPublic)) {
+					// Yes!
+					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
+					if (parentBinderToTest != null) {
+						//But first check if the entry was shared and is allowing the request
+						reply = accessControlManager.testRightGrantedBySharing(user, (WorkArea)de, WorkAreaOperation.ALLOW_SHARING_PUBLIC);
+						if (!reply) {
+							reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingPublic);
+						}
+					} else {
+						reply = true;
+					}
+				}
+			}
+
+			// No, the entity isn't a folder entry!  Is it a folder or
+			// workspace (i.e., a binder)?
+			else if (de.getEntityType().equals(EntityType.folder) || de.getEntityType().equals(EntityType.workspace)) {
+				// Yes!  Does the user have "share internal" rights on it?
+				Binder binder = ((Binder) de);
+				//If this is a Filr Net Folder, check if sharing is allowed at the folder level
+				//Also check that the folder isn't a Net Folder. Sharing Net Folders is not allowed
+				if (!binder.isAclExternallyControlled() || 
+						SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
+					if (binderModule.testAccess(binder, BinderOperation.allowSharingPublic)) {
+						// Yes!
+						reply = true;
+					}
+				}
+			}
+		}
+		
+		catch (AccessControlException ace) {
+			// AccessControlException implies sharing isn't allowed.
+			reply = false;
+		}
+
+		// If we get here, reply contains true if the user can add a
+		// share to the given entity and false otherwise.  Return it.
+		return reply;
 	}
 	
     
@@ -475,107 +608,82 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      */
 	@Override
 	public boolean testShareEntityForward(DefinableEntity de) {
-        return _testAddShareEntity(de, new ShareOp [] {
-                new ShareOp(WorkAreaOperation.ENABLE_SHARING_FORWARD,FolderOperation.allowSharingForward,BinderOperation.allowSharingForward)
-        });
+		boolean reply = false;
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		try {
+			// Is sharing enabled at the zone level for this type of user.
+	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
+	    	ZoneConfig				zoneConfig           = getCoreDao().loadZoneConfig(zoneId);
+			AccessControlManager	accessControlManager = getAccessControlManager();
+			if (null == accessControlManager) {
+				accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+			}
+			//Test if enabled at the zone level for sharing forward. This throws an error if not.
+			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD);
+
+			// Is the entity a folder entry?
+			if (de.getEntityType().equals(EntityType.folderEntry)) {
+				// Yes!  Does the user have "share forward" rights on it?
+				FolderEntry fe = ((FolderEntry) de);
+				Binder parentBinderToTest = null;
+				if (fe.isAclExternallyControlled()) {
+					//This is in a net folder. we must check if the admin allows the requested operation at the root level.
+					parentBinderToTest = fe.getParentBinder();
+					//Find the root net folder
+					while (parentBinderToTest != null) {
+						if (parentBinderToTest.getParentBinder() != null &&
+								!parentBinderToTest.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+							//We have found the top folder (i.e., the net folder root)
+							break;
+						}
+						parentBinderToTest = parentBinderToTest.getParentBinder();
+					}
+				}
+				//Test if the user is allowed to share forward for this entry
+				if (folderModule.testAccess(fe, FolderOperation.allowSharingForward)) {
+					// Yes!
+					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
+					if (parentBinderToTest != null) {
+						//But first check if the entry was shared and is allowing the request
+						reply = accessControlManager.testRightGrantedBySharing(user, (WorkArea)de, WorkAreaOperation.ALLOW_SHARING_FORWARD);
+						if (!reply) {
+							reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingForward);
+						}
+					} else {
+						reply = true;
+					}
+				}
+			}
+
+			// No, the entity isn't a folder entry!  Is it a folder or
+			// workspace (i.e., a binder)?
+			else if (de.getEntityType().equals(EntityType.folder) || de.getEntityType().equals(EntityType.workspace)) {
+				// Yes!  Does the user have "share internal" rights on it?
+				Binder binder = ((Binder) de);
+				//If this is a Filr Net Folder, check if sharing is allowed at the folder level
+				//Also check that the folder isn't a Net Folder. Sharing Net Folders is not allowed
+				if (!binder.isAclExternallyControlled() || 
+						SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
+					if (binderModule.testAccess(binder, BinderOperation.allowSharingForward)) {
+						// Yes!
+						reply = true;
+					}
+				}
+			}
+		}
+		
+		catch (AccessControlException ace) {
+			// AccessControlException implies sharing isn't allowed.
+			reply = false;
+		}
+
+		// If we get here, reply contains true if the user can add a
+		// share to the given entity and false otherwise.  Return it.
+		return reply;
 	}
-
-    /**
-     * Returns true if the current user can share the given
-     * DefinableEntity and false otherwise.
-     *
-     * @param de
-     *
-     * @return
-     */
-    private boolean _testAddShareEntity(DefinableEntity de, ShareOp [] ops) {
-        boolean reply = false;
-        User user = RequestContextHolder.getRequestContext().getUser();
-
-        try {
-            // Is sharing enabled at the zone level for this type of user.
-            Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
-            ZoneConfig				zoneConfig           = getCoreDao().loadZoneConfig(zoneId);
-            AccessControlManager	accessControlManager = getAccessControlManager();
-            if (null == accessControlManager) {
-                accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
-            }
-
-            // Is the entity a folder entry?
-            if (de.getEntityType().equals(EntityType.folderEntry)) {
-                // Yes!  Does the user have "share internal" rights on it and is the user enabled for doing this?
-                FolderEntry fe = ((FolderEntry) de);
-                Binder parentBinderToTest = null;
-                if (fe.isAclExternallyControlled()) {
-                    //This is in a net folder. we must check if the admin allows the requested operation at the root level.
-                    parentBinderToTest = fe.getParentBinder();
-                    //Find the root net folder
-                    while (parentBinderToTest != null) {
-                        if (parentBinderToTest.getParentBinder() != null &&
-                                !parentBinderToTest.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
-                            //We have found the top folder (i.e., the net folder root)
-                            break;
-                        }
-                        parentBinderToTest = parentBinderToTest.getParentBinder();
-                    }
-                }
-
-                for (ShareOp op : ops) {
-                    //Look for at least one type of sharing being enabled: internal, external or public
-                    // Does the user have "share internal" rights and is the user enabled to do this?
-                    if (accessControlManager.testOperation(zoneConfig, op.workAreaOperation) &&
-                            folderModule.testAccess(fe, op.folderOperation)) {
-                        // Yes!
-                        //In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
-                        if (parentBinderToTest != null) {
-                            //But first check if the entry was shared and is allowing the request
-                            reply = accessControlManager.testRightGrantedBySharing(user, (WorkArea)de, WorkAreaOperation.ALLOW_SHARING_INTERNAL);
-                            if (!reply) {
-                                reply = binderModule.testAccess(parentBinderToTest, op.binderOperation);
-                            }
-                        } else {
-                            reply = true;
-                        }
-                    }
-                    if (reply) {
-                        break;
-                    }
-                }
-            }
-
-            // No, the entity isn't a folder entry!  Is it a folder or
-            // workspace (i.e., a binder)?
-            else if (de.getEntityType().equals(EntityType.folder) || de.getEntityType().equals(EntityType.workspace)) {
-                // Yes!  Does the user have "share internal" rights on it?
-                Binder binder = ((Binder) de);
-                //If this is a Filr Net Folder, check if sharing is allowed at the folder level
-                //Also check that the folder isn't a Net Folder.
-                //Sharing Net Folders is not allowed unless it is in the user's own user workspace
-                if (!binder.isAclExternallyControlled() ||
-                        SPropsUtil.getBoolean("sharing.netFolders.allowed", false) ||
-                        Utils.isWorkareaInProfilesTree(binder)) {
-                    for (ShareOp op : ops) {
-                        if (accessControlManager.testOperation(zoneConfig, op.workAreaOperation) &&
-                            binderModule.testAccess(binder, op.binderOperation)) {
-                            // Yes!
-                            reply = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        catch (AccessControlException ace) {
-            // AccessControlException implies sharing isn't allowed.
-            reply = false;
-        }
-
-        // If we get here, reply contains true if the user can add a
-        // share to the given entity and false otherwise.  Return it.
-        return reply;
-    }
-
-    //Routine to validate the rights being given to guest in a share
+	
+	//Routine to validate the rights being given to guest in a share
 	public boolean validateGuestAccessRights(ShareItem shareItem) {
 		List<WorkAreaOperation> rights = shareItem.getRightSet().getRights();
 		for (WorkAreaOperation wao : rights) {
@@ -1031,15 +1139,4 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
         getProfileModule().setUserProperty(RequestContextHolder.getRequestContext().getUserId(), tagName, new Date());
     }
 
-    private static class ShareOp {
-        WorkAreaOperation workAreaOperation;
-        FolderOperation folderOperation;
-        BinderOperation binderOperation;
-
-        private ShareOp(WorkAreaOperation workAreaOperation, FolderOperation folderOperation, BinderOperation binderOperation) {
-            this.workAreaOperation = workAreaOperation;
-            this.folderOperation = folderOperation;
-            this.binderOperation = binderOperation;
-        }
-    }
 }

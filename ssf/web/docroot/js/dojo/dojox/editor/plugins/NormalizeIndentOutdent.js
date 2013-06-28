@@ -1,162 +1,172 @@
-//>>built
-define("dojox/editor/plugins/NormalizeIndentOutdent",["dojo","dijit","dojox","dijit/_editor/_Plugin","dojo/_base/declare"],function(_1,_2,_3,_4){
-var _5=_1.declare("dojox.editor.plugins.NormalizeIndentOutdent",_4,{indentBy:40,indentUnits:"px",setEditor:function(_6){
-this.editor=_6;
-_6._indentImpl=_1.hitch(this,this._indentImpl);
-_6._outdentImpl=_1.hitch(this,this._outdentImpl);
-if(!_6._indentoutdent_queryCommandEnabled){
-_6._indentoutdent_queryCommandEnabled=_6.queryCommandEnabled;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.editor.plugins.NormalizeIndentOutdent"]){
+dojo._hasResource["dojox.editor.plugins.NormalizeIndentOutdent"]=true;
+dojo.provide("dojox.editor.plugins.NormalizeIndentOutdent");
+dojo.require("dijit._editor._Plugin");
+dojo.experimental("dojox.editor.plugins.NormalizeIndentOutdent");
+dojo.declare("dojox.editor.plugins.NormalizeIndentOutdent",dijit._editor._Plugin,{indentBy:40,indentUnits:"px",setEditor:function(_1){
+this.editor=_1;
+_1._indentImpl=dojo.hitch(this,this._indentImpl);
+_1._outdentImpl=dojo.hitch(this,this._outdentImpl);
+if(!_1._indentoutdent_queryCommandEnabled){
+_1._indentoutdent_queryCommandEnabled=_1.queryCommandEnabled;
 }
-_6.queryCommandEnabled=_1.hitch(this,this._queryCommandEnabled);
-_6.customUndo=true;
-},_queryCommandEnabled:function(_7){
-var c=_7.toLowerCase();
-var ed,_8,_9,_a,_b,_c;
-var _d="marginLeft";
+_1.queryCommandEnabled=dojo.hitch(this,this._queryCommandEnabled);
+_1.customUndo=true;
+},_queryCommandEnabled:function(_2){
+var c=_2.toLowerCase();
+var ed,_3,_4,_5,_6,_7;
+var _8="marginLeft";
 if(!this._isLtr()){
-_d="marginRight";
+_8="marginRight";
 }
 if(c==="indent"){
 ed=this.editor;
-_8=_2.range.getSelection(ed.window);
-if(_8&&_8.rangeCount>0){
-_9=_8.getRangeAt(0);
-_a=_9.startContainer;
-while(_a&&_a!==ed.document&&_a!==ed.editNode){
-_b=this._getTagName(_a);
-if(_b==="li"){
-_c=_a.previousSibling;
-while(_c&&_c.nodeType!==1){
-_c=_c.previousSibling;
+_3=dijit.range.getSelection(ed.window);
+if(_3&&_3.rangeCount>0){
+_4=_3.getRangeAt(0);
+_5=_4.startContainer;
+while(_5&&_5!==ed.document&&_5!==ed.editNode){
+_6=this._getTagName(_5);
+if(_6==="li"){
+_7=_5.previousSibling;
+while(_7&&_7.nodeType!==1){
+_7=_7.previousSibling;
 }
-if(_c&&this._getTagName(_c)==="li"){
+if(_7&&this._getTagName(_7)==="li"){
 return true;
 }else{
 return false;
 }
 }else{
-if(this._isIndentableElement(_b)){
+if(this._isIndentableElement(_6)){
 return true;
 }
 }
-_a=_a.parentNode;
+_5=_5.parentNode;
 }
-if(this._isRootInline(_9.startContainer)){
+if(this._isRootInline(_4.startContainer)){
 return true;
 }
 }
 }else{
 if(c==="outdent"){
 ed=this.editor;
-_8=_2.range.getSelection(ed.window);
-if(_8&&_8.rangeCount>0){
-_9=_8.getRangeAt(0);
-_a=_9.startContainer;
-while(_a&&_a!==ed.document&&_a!==ed.editNode){
-_b=this._getTagName(_a);
-if(_b==="li"){
-return this.editor._indentoutdent_queryCommandEnabled(_7);
+_3=dijit.range.getSelection(ed.window);
+if(_3&&_3.rangeCount>0){
+_4=_3.getRangeAt(0);
+_5=_4.startContainer;
+while(_5&&_5!==ed.document&&_5!==ed.editNode){
+_6=this._getTagName(_5);
+if(_6==="li"){
+return this.editor._indentoutdent_queryCommandEnabled(_2);
 }else{
-if(this._isIndentableElement(_b)){
-var _e=_a.style?_a.style[_d]:"";
-if(_e){
-_e=this._convertIndent(_e);
-if(_e/this.indentBy>=1){
+if(this._isIndentableElement(_6)){
+var _9=_5.style?_5.style[_8]:"";
+if(_9){
+_9=this._convertIndent(_9);
+if(_9/this.indentBy>=1){
 return true;
 }
 }
 return false;
 }
 }
-_a=_a.parentNode;
+_5=_5.parentNode;
 }
-if(this._isRootInline(_9.startContainer)){
+if(this._isRootInline(_4.startContainer)){
 return false;
 }
 }
 }else{
-return this.editor._indentoutdent_queryCommandEnabled(_7);
+return this.editor._indentoutdent_queryCommandEnabled(_2);
 }
 }
 return false;
-},_indentImpl:function(_f){
+},_indentImpl:function(_a){
 var ed=this.editor;
-var sel=_2.range.getSelection(ed.window);
-if(sel&&sel.rangeCount>0){
-var _10=sel.getRangeAt(0);
-var _11=_10.startContainer;
-var tag,_12,end,div;
-if(_10.startContainer===_10.endContainer){
-if(this._isRootInline(_10.startContainer)){
-_12=_10.startContainer;
-while(_12&&_12.parentNode!==ed.editNode){
-_12=_12.parentNode;
+var _b=dijit.range.getSelection(ed.window);
+if(_b&&_b.rangeCount>0){
+var _c=_b.getRangeAt(0);
+var _d=_c.startContainer;
+var _e,_f,end,div;
+if(_c.startContainer===_c.endContainer){
+if(this._isRootInline(_c.startContainer)){
+_f=_c.startContainer;
+while(_f&&_f.parentNode!==ed.editNode){
+_f=_f.parentNode;
 }
-while(_12&&_12.previousSibling&&(this._isTextElement(_12)||(_12.nodeType===1&&this._isInlineFormat(this._getTagName(_12))))){
-_12=_12.previousSibling;
+while(_f&&_f.previousSibling&&(this._isTextElement(_f)||(_f.nodeType===1&&this._isInlineFormat(this._getTagName(_f))))){
+_f=_f.previousSibling;
 }
-if(_12&&_12.nodeType===1&&!this._isInlineFormat(this._getTagName(_12))){
-_12=_12.nextSibling;
+if(_f&&_f.nodeType===1&&!this._isInlineFormat(this._getTagName(_f))){
+_f=_f.nextSibling;
 }
-if(_12){
+if(_f){
 div=ed.document.createElement("div");
-_1.place(div,_12,"after");
-div.appendChild(_12);
+dojo.place(div,_f,"after");
+div.appendChild(_f);
 end=div.nextSibling;
 while(end&&(this._isTextElement(end)||(end.nodeType===1&&this._isInlineFormat(this._getTagName(end))))){
 div.appendChild(end);
 end=div.nextSibling;
 }
 this._indentElement(div);
-ed._sCall("selectElementChildren",[div]);
-ed._sCall("collapse",[true]);
+dojo.withGlobal(ed.window,"selectElementChildren",dijit._editor.selection,[div]);
+dojo.withGlobal(ed.window,"collapse",dijit._editor.selection,[true]);
 }
 }else{
-while(_11&&_11!==ed.document&&_11!==ed.editNode){
-tag=this._getTagName(_11);
-if(tag==="li"){
-this._indentList(_11);
+while(_d&&_d!==ed.document&&_d!==ed.editNode){
+_e=this._getTagName(_d);
+if(_e==="li"){
+this._indentList(_d);
 return;
 }else{
-if(this._isIndentableElement(tag)){
-this._indentElement(_11);
+if(this._isIndentableElement(_e)){
+this._indentElement(_d);
 return;
 }
 }
-_11=_11.parentNode;
+_d=_d.parentNode;
 }
 }
 }else{
-var _13;
-_12=_10.startContainer;
-end=_10.endContainer;
-while(_12&&this._isTextElement(_12)&&_12.parentNode!==ed.editNode){
-_12=_12.parentNode;
+var _10;
+_f=_c.startContainer;
+end=_c.endContainer;
+while(_f&&this._isTextElement(_f)&&_f.parentNode!==ed.editNode){
+_f=_f.parentNode;
 }
 while(end&&this._isTextElement(end)&&end.parentNode!==ed.editNode){
 end=end.parentNode;
 }
 if(end===ed.editNode||end===ed.document.body){
-_13=_12;
-while(_13.nextSibling&&ed._sCall("inSelection",[_13])){
-_13=_13.nextSibling;
+_10=_f;
+while(_10.nextSibling&&this._inSelection(_10,_c)){
+_10=_10.nextSibling;
 }
-end=_13;
+end=_10;
 if(end===ed.editNode||end===ed.document.body){
-tag=this._getTagName(_12);
-if(tag==="li"){
-this._indentList(_12);
+_e=this._getTagName(_f);
+if(_e==="li"){
+this._indentList(_f);
 }else{
-if(this._isIndentableElement(tag)){
-this._indentElement(_12);
+if(this._isIndentableElement(_e)){
+this._indentElement(_f);
 }else{
-if(this._isTextElement(_12)||this._isInlineFormat(tag)){
+if(this._isTextElement(_f)||this._isInlineFormat(_e)){
 div=ed.document.createElement("div");
-_1.place(div,_12,"after");
-var _14=_12;
-while(_14&&(this._isTextElement(_14)||(_14.nodeType===1&&this._isInlineFormat(this._getTagName(_14))))){
-div.appendChild(_14);
-_14=div.nextSibling;
+dojo.place(div,_f,"after");
+var _11=_f;
+while(_11&&(this._isTextElement(_11)||(_11.nodeType===1&&this._isInlineFormat(this._getTagName(_11))))){
+div.appendChild(_11);
+_11=div.nextSibling;
 }
 this._indentElement(div);
 }
@@ -166,17 +176,17 @@ return;
 }
 }
 end=end.nextSibling;
-_13=_12;
-while(_13&&_13!==end){
-if(_13.nodeType===1){
-tag=this._getTagName(_13);
-if(_1.isIE){
-if(tag==="p"&&this._isEmpty(_13)){
-_13=_13.nextSibling;
+_10=_f;
+while(_10&&_10!==end){
+if(_10.nodeType===1){
+_e=this._getTagName(_10);
+if(dojo.isIE){
+if(_e==="p"&&this._isEmpty(_10)){
+_10=_10.nextSibling;
 continue;
 }
 }
-if(tag==="li"){
+if(_e==="li"){
 if(div){
 if(this._isEmpty(div)){
 div.parentNode.removeChild(div);
@@ -185,9 +195,9 @@ this._indentElement(div);
 }
 div=null;
 }
-this._indentList(_13);
+this._indentList(_10);
 }else{
-if(!this._isInlineFormat(tag)&&this._isIndentableElement(tag)){
+if(!this._isInlineFormat(_e)&&this._isIndentableElement(_e)){
 if(div){
 if(this._isEmpty(div)){
 div.parentNode.removeChild(div);
@@ -196,35 +206,35 @@ this._indentElement(div);
 }
 div=null;
 }
-_13=this._indentElement(_13);
+_10=this._indentElement(_10);
 }else{
-if(this._isInlineFormat(tag)){
+if(this._isInlineFormat(_e)){
 if(!div){
 div=ed.document.createElement("div");
-_1.place(div,_13,"after");
-div.appendChild(_13);
-_13=div;
+dojo.place(div,_10,"after");
+div.appendChild(_10);
+_10=div;
 }else{
-div.appendChild(_13);
-_13=div;
+div.appendChild(_10);
+_10=div;
 }
 }
 }
 }
 }else{
-if(this._isTextElement(_13)){
+if(this._isTextElement(_10)){
 if(!div){
 div=ed.document.createElement("div");
-_1.place(div,_13,"after");
-div.appendChild(_13);
-_13=div;
+dojo.place(div,_10,"after");
+div.appendChild(_10);
+_10=div;
 }else{
-div.appendChild(_13);
-_13=div;
+div.appendChild(_10);
+_10=div;
 }
 }
 }
-_13=_13.nextSibling;
+_10=_10.nextSibling;
 }
 if(div){
 if(this._isEmpty(div)){
@@ -236,123 +246,123 @@ div=null;
 }
 }
 }
-},_indentElement:function(_15){
+},_indentElement:function(_12){
+var _13="marginLeft";
+if(!this._isLtr()){
+_13="marginRight";
+}
+var tag=this._getTagName(_12);
+if(tag==="ul"||tag==="ol"){
+var div=this.editor.document.createElement("div");
+dojo.place(div,_12,"after");
+div.appendChild(_12);
+_12=div;
+}
+var _14=_12.style?_12.style[_13]:"";
+if(_14){
+_14=this._convertIndent(_14);
+_14=(parseInt(_14,10)+this.indentBy)+this.indentUnits;
+}else{
+_14=this.indentBy+this.indentUnits;
+}
+dojo.style(_12,_13,_14);
+return _12;
+},_outdentElement:function(_15){
 var _16="marginLeft";
 if(!this._isLtr()){
 _16="marginRight";
 }
-var tag=this._getTagName(_15);
-if(tag==="ul"||tag==="ol"){
-var div=this.editor.document.createElement("div");
-_1.place(div,_15,"after");
-div.appendChild(_15);
-_15=div;
-}
 var _17=_15.style?_15.style[_16]:"";
 if(_17){
 _17=this._convertIndent(_17);
-_17=(parseInt(_17,10)+this.indentBy)+this.indentUnits;
+if(_17-this.indentBy>0){
+_17=(parseInt(_17,10)-this.indentBy)+this.indentUnits;
 }else{
-_17=this.indentBy+this.indentUnits;
+_17="";
 }
-_1.style(_15,_16,_17);
-return _15;
-},_outdentElement:function(_18){
-var _19="marginLeft";
-if(!this._isLtr()){
-_19="marginRight";
+dojo.style(_15,_16,_17);
 }
-var _1a=_18.style?_18.style[_19]:"";
-if(_1a){
-_1a=this._convertIndent(_1a);
-if(_1a-this.indentBy>0){
-_1a=(parseInt(_1a,10)-this.indentBy)+this.indentUnits;
-}else{
-_1a="";
-}
-_1.style(_18,_19,_1a);
-}
-},_outdentImpl:function(_1b){
+},_outdentImpl:function(_18){
 var ed=this.editor;
-var sel=_2.range.getSelection(ed.window);
+var sel=dijit.range.getSelection(ed.window);
 if(sel&&sel.rangeCount>0){
-var _1c=sel.getRangeAt(0);
-var _1d=_1c.startContainer;
+var _19=sel.getRangeAt(0);
+var _1a=_19.startContainer;
 var tag;
-if(_1c.startContainer===_1c.endContainer){
-while(_1d&&_1d!==ed.document&&_1d!==ed.editNode){
-tag=this._getTagName(_1d);
+if(_19.startContainer===_19.endContainer){
+while(_1a&&_1a!==ed.document&&_1a!==ed.editNode){
+tag=this._getTagName(_1a);
 if(tag==="li"){
-return this._outdentList(_1d);
+return this._outdentList(_1a);
 }else{
 if(this._isIndentableElement(tag)){
-return this._outdentElement(_1d);
+return this._outdentElement(_1a);
 }
 }
-_1d=_1d.parentNode;
+_1a=_1a.parentNode;
 }
-ed.document.execCommand("outdent",false,_1b);
+ed.document.execCommand("outdent",false,_18);
 }else{
-var _1e=_1c.startContainer;
-var end=_1c.endContainer;
-while(_1e&&_1e.nodeType===3){
-_1e=_1e.parentNode;
+var _1b=_19.startContainer;
+var end=_19.endContainer;
+while(_1b&&_1b.nodeType===3){
+_1b=_1b.parentNode;
 }
 while(end&&end.nodeType===3){
 end=end.parentNode;
 }
 end=end.nextSibling;
-var _1f=_1e;
-while(_1f&&_1f!==end){
-if(_1f.nodeType===1){
-tag=this._getTagName(_1f);
+var _1c=_1b;
+while(_1c&&_1c!==end){
+if(_1c.nodeType===1){
+tag=this._getTagName(_1c);
 if(tag==="li"){
-this._outdentList(_1f);
+this._outdentList(_1c);
 }else{
 if(this._isIndentableElement(tag)){
-this._outdentElement(_1f);
+this._outdentElement(_1c);
 }
 }
 }
-_1f=_1f.nextSibling;
+_1c=_1c.nextSibling;
 }
 }
 }
 return null;
-},_indentList:function(_20){
+},_indentList:function(_1d){
 var ed=this.editor;
-var _21,li;
-var _22=_20.parentNode;
-var _23=_20.previousSibling;
-while(_23&&_23.nodeType!==1){
-_23=_23.previousSibling;
+var _1e,li;
+var _1f=_1d.parentNode;
+var _20=_1d.previousSibling;
+while(_20&&_20.nodeType!==1){
+_20=_20.previousSibling;
 }
-var _24=null;
-var tg=this._getTagName(_22);
+var _21=null;
+var tg=this._getTagName(_1f);
 if(tg==="ol"){
-_24="ol";
+_21="ol";
 }else{
 if(tg==="ul"){
-_24="ul";
+_21="ul";
 }
 }
-if(_24){
-if(_23&&_23.tagName.toLowerCase()=="li"){
-var _25;
-if(_23.childNodes){
+if(_21){
+if(_20&&_20.tagName.toLowerCase()=="li"){
+var _22;
+if(_20.childNodes){
 var i;
-for(i=0;i<_23.childNodes.length;i++){
-var n=_23.childNodes[i];
+for(i=0;i<_20.childNodes.length;i++){
+var n=_20.childNodes[i];
 if(n.nodeType===3){
-if(_1.trim(n.nodeValue)){
-if(_25){
+if(dojo.trim(n.nodeValue)){
+if(_22){
 break;
 }
 }
 }else{
-if(n.nodeType===1&&!_25){
-if(_24===n.tagName.toLowerCase()){
-_25=n;
+if(n.nodeType===1&&!_22){
+if(_21===n.tagName.toLowerCase()){
+_22=n;
 }
 }else{
 break;
@@ -360,129 +370,129 @@ break;
 }
 }
 }
-if(_25){
-_25.appendChild(_20);
+if(_22){
+_22.appendChild(_1d);
 }else{
-_21=ed.document.createElement(_24);
-_1.style(_21,{paddingTop:"0px",paddingBottom:"0px"});
+_1e=ed.document.createElement(_21);
+dojo.style(_1e,{paddingTop:"0px",paddingBottom:"0px"});
 li=ed.document.createElement("li");
-_1.style(li,{listStyleImage:"none",listStyleType:"none"});
-_23.appendChild(_21);
-_21.appendChild(_20);
+dojo.style(li,{listStyleImage:"none",listStyleType:"none"});
+_20.appendChild(_1e);
+_1e.appendChild(_1d);
 }
-ed._sCall("selectElementChildren",[_20]);
-ed._sCall("collapse",[true]);
+dojo.withGlobal(ed.window,"selectElementChildren",dijit._editor.selection,[_1d]);
+dojo.withGlobal(ed.window,"collapse",dijit._editor.selection,[true]);
 }
 }
-},_outdentList:function(_26){
+},_outdentList:function(_23){
 var ed=this.editor;
-var _27=_26.parentNode;
-var _28=null;
-var tg=_27.tagName?_27.tagName.toLowerCase():"";
+var _24=_23.parentNode;
+var _25=null;
+var tg=_24.tagName?_24.tagName.toLowerCase():"";
 var li;
 if(tg==="ol"){
-_28="ol";
+_25="ol";
 }else{
 if(tg==="ul"){
-_28="ul";
+_25="ul";
 }
 }
-var _29=_27.parentNode;
-var _2a=this._getTagName(_29);
-if(_2a==="li"||_2a==="ol"||_2a==="ul"){
-if(_2a==="ol"||_2a==="ul"){
-var _2b=_27.previousSibling;
-while(_2b&&(_2b.nodeType!==1||(_2b.nodeType===1&&this._getTagName(_2b)!=="li"))){
-_2b=_2b.previousSibling;
+var _26=_24.parentNode;
+var _27=this._getTagName(_26);
+if(_27==="li"||_27==="ol"||_27==="ul"){
+if(_27==="ol"||_27==="ul"){
+var _28=_24.previousSibling;
+while(_28&&(_28.nodeType!==1||(_28.nodeType===1&&this._getTagName(_28)!=="li"))){
+_28=_28.previousSibling;
 }
-if(_2b){
-_2b.appendChild(_27);
-_29=_2b;
+if(_28){
+_28.appendChild(_24);
+_26=_28;
 }else{
-li=_26;
-var _2c=_26;
+li=_23;
+var _29=_23;
 while(li.previousSibling){
 li=li.previousSibling;
 if(li.nodeType===1&&this._getTagName(li)==="li"){
-_2c=li;
-}
-}
-if(_2c!==_26){
-_1.place(_2c,_27,"before");
-_2c.appendChild(_27);
-_29=_2c;
-}else{
-li=ed.document.createElement("li");
-_1.place(li,_27,"before");
-li.appendChild(_27);
 _29=li;
 }
-_1.style(_27,{paddingTop:"0px",paddingBottom:"0px"});
 }
-}
-var _2d=_26.previousSibling;
-while(_2d&&_2d.nodeType!==1){
-_2d=_2d.previousSibling;
-}
-var _2e=_26.nextSibling;
-while(_2e&&_2e.nodeType!==1){
-_2e=_2e.nextSibling;
-}
-if(!_2d){
-_1.place(_26,_29,"after");
-_26.appendChild(_27);
+if(_29!==_23){
+dojo.place(_29,_24,"before");
+_29.appendChild(_24);
+_26=_29;
 }else{
-if(!_2e){
-_1.place(_26,_29,"after");
+li=ed.document.createElement("li");
+dojo.place(li,_24,"before");
+li.appendChild(_24);
+_26=li;
+}
+dojo.style(_24,{paddingTop:"0px",paddingBottom:"0px"});
+}
+}
+var _2a=_23.previousSibling;
+while(_2a&&_2a.nodeType!==1){
+_2a=_2a.previousSibling;
+}
+var _2b=_23.nextSibling;
+while(_2b&&_2b.nodeType!==1){
+_2b=_2b.nextSibling;
+}
+if(!_2a){
+dojo.place(_23,_26,"after");
+_23.appendChild(_24);
 }else{
-var _2f=ed.document.createElement(_28);
-_1.style(_2f,{paddingTop:"0px",paddingBottom:"0px"});
-_26.appendChild(_2f);
-while(_26.nextSibling){
-_2f.appendChild(_26.nextSibling);
+if(!_2b){
+dojo.place(_23,_26,"after");
+}else{
+var _2c=ed.document.createElement(_25);
+dojo.style(_2c,{paddingTop:"0px",paddingBottom:"0px"});
+_23.appendChild(_2c);
+while(_23.nextSibling){
+_2c.appendChild(_23.nextSibling);
 }
-_1.place(_26,_29,"after");
+dojo.place(_23,_26,"after");
 }
 }
-if(_27&&this._isEmpty(_27)){
-_27.parentNode.removeChild(_27);
+if(_24&&this._isEmpty(_24)){
+_24.parentNode.removeChild(_24);
 }
-if(_29&&this._isEmpty(_29)){
-_29.parentNode.removeChild(_29);
+if(_26&&this._isEmpty(_26)){
+_26.parentNode.removeChild(_26);
 }
-ed._sCall("selectElementChildren",[_26]);
-ed._sCall("collapse",[true]);
+dojo.withGlobal(ed.window,"selectElementChildren",dijit._editor.selection,[_23]);
+dojo.withGlobal(ed.window,"collapse",dijit._editor.selection,[true]);
 }else{
 ed.document.execCommand("outdent",false,null);
 }
-},_isEmpty:function(_30){
-if(_30.childNodes){
-var _31=true;
+},_isEmpty:function(_2d){
+if(_2d.childNodes){
+var _2e=true;
 var i;
-for(i=0;i<_30.childNodes.length;i++){
-var n=_30.childNodes[i];
+for(i=0;i<_2d.childNodes.length;i++){
+var n=_2d.childNodes[i];
 if(n.nodeType===1){
 if(this._getTagName(n)==="p"){
-if(!_1.trim(n.innerHTML)){
+if(!dojo.trim(n.innerHTML)){
 continue;
 }
 }
-_31=false;
+_2e=false;
 break;
 }else{
 if(this._isTextElement(n)){
-var nv=_1.trim(n.nodeValue);
+var nv=dojo.trim(n.nodeValue);
 if(nv&&nv!=="&nbsp;"&&nv!==" "){
-_31=false;
+_2e=false;
 break;
 }
 }else{
-_31=false;
+_2e=false;
 break;
 }
 }
 }
-return _31;
+return _2e;
 }else{
 return true;
 }
@@ -501,26 +511,28 @@ return true;
 default:
 return false;
 }
-},_convertIndent:function(_32){
-var _33=12;
-_32=_32+"";
-_32=_32.toLowerCase();
-var _34=(_32.indexOf("px")>0)?"px":(_32.indexOf("em")>0)?"em":"px";
-_32=_32.replace(/(px;?|em;?)/gi,"");
-if(_34==="px"){
+},_convertIndent:function(_2f){
+var _30=12;
+_2f=_2f+"";
+_2f=_2f.toLowerCase();
+var _31=(_2f.indexOf("px")>0)?"px":(_2f.indexOf("em")>0)?"em":"px";
+_2f=_2f.replace(/(px;?|em;?)/gi,"");
+if(_31==="px"){
 if(this.indentUnits==="em"){
-_32=Math.ceil(_32/_33);
+_2f=Math.ceil(_2f/_30);
 }
 }else{
 if(this.indentUnits==="px"){
-_32=_32*_33;
+_2f=_2f*_30;
 }
 }
-return _32;
+return _2f;
 },_isLtr:function(){
-var _35=this.editor.document.body;
-var cs=_1.getComputedStyle(_35);
+var _32=this.editor.document.body;
+return dojo.withGlobal(this.editor.window,function(){
+var cs=dojo.getComputedStyle(_32);
 return cs?cs.direction=="ltr":true;
+});
 },_isInlineFormat:function(tag){
 switch(tag){
 case "a":
@@ -544,46 +556,85 @@ return true;
 default:
 return false;
 }
-},_getTagName:function(_36){
+},_getTagName:function(_33){
 var tag="";
-if(_36&&_36.nodeType===1){
-tag=_36.tagName?_36.tagName.toLowerCase():"";
+if(_33&&_33.nodeType===1){
+tag=_33.tagName?_33.tagName.toLowerCase():"";
 }
 return tag;
-},_isRootInline:function(_37){
+},_isRootInline:function(_34){
 var ed=this.editor;
-if(this._isTextElement(_37)&&_37.parentNode===ed.editNode){
+if(this._isTextElement(_34)&&_34.parentNode===ed.editNode){
 return true;
 }else{
-if(_37.nodeType===1&&this._isInlineFormat(_37)&&_37.parentNode===ed.editNode){
+if(_34.nodeType===1&&this._isInlineFormat(_34)&&_34.parentNode===ed.editNode){
 return true;
 }else{
-if(this._isTextElement(_37)&&this._isInlineFormat(this._getTagName(_37.parentNode))){
-_37=_37.parentNode;
-while(_37&&_37!==ed.editNode&&this._isInlineFormat(this._getTagName(_37))){
-_37=_37.parentNode;
+if(this._isTextElement(_34)&&this._isInlineFormat(this._getTagName(_34.parentNode))){
+_34=_34.parentNode;
+while(_34&&_34!==ed.editNode&&this._isInlineFormat(this._getTagName(_34))){
+_34=_34.parentNode;
 }
-if(_37===ed.editNode){
+if(_34===ed.editNode){
 return true;
 }
 }
 }
 }
 return false;
-},_isTextElement:function(_38){
-if(_38&&_38.nodeType===3||_38.nodeType===4){
+},_isTextElement:function(_35){
+if(_35&&_35.nodeType===3||_35.nodeType===4){
 return true;
+}
+return false;
+},_inSelection:function(_36,_37){
+if(_36&&_37){
+var _38;
+var doc=this.editor.document;
+if(_37.compareBoundaryPoints&&doc.createRange){
+try{
+_38=doc.createRange();
+_38.setStart(_36,0);
+if(_37.compareBoundaryPoints(_37.START_TO_END,_38)===1){
+return true;
+}
+}
+catch(e){
+}
+}else{
+if(doc.selection){
+_37=doc.selection.createRange();
+try{
+_38=_36.ownerDocument.body.createControlRange();
+if(_38){
+_38.addElement(_36);
+}
+}
+catch(e1){
+try{
+_38=_36.ownerDocument.body.createTextRange();
+_38.moveToElementText(_36);
+}
+catch(e2){
+}
+}
+if(_37&&_38){
+if(_37.compareEndPoints("EndToStart",_38)===1){
+return true;
+}
+}
+}
+}
 }
 return false;
 }});
-_1.subscribe(_2._scopeName+".Editor.getPlugin",null,function(o){
+dojo.subscribe(dijit._scopeName+".Editor.getPlugin",null,function(o){
 if(o.plugin){
 return;
 }
 var _39=o.args.name.toLowerCase();
 if(_39==="normalizeindentoutdent"){
-o.plugin=new _5({indentBy:("indentBy" in o.args)?(o.args.indentBy>0?o.args.indentBy:40):40,indentUnits:("indentUnits" in o.args)?(o.args.indentUnits.toLowerCase()=="em"?"em":"px"):"px"});
+o.plugin=new dojox.editor.plugins.NormalizeIndentOutdent({indentBy:("indentBy" in o.args)?(o.args.indentBy>0?o.args.indentBy:40):40,indentUnits:("indentUnits" in o.args)?(o.args.indentUnits.toLowerCase()=="em"?"em":"px"):"px"});
 }
 });
-return _5;
-});
+}

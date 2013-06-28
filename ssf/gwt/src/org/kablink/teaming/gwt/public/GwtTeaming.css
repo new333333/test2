@@ -1539,16 +1539,6 @@ body, table td, select
 	margin-top: 8px;
 }
 
-.loginDlgBox_Glass
-{
-	background-color: #E0E0E0;
-	filter: alpha(opacity=100);
-	opacity: 1;
-	overflow: hidden;
-	z-index: 1000;
-}
-
-
 /* Styles used in the Sign In dialog for User ID and Password labels */
 
 #userIdLabel, #pwdLabel
@@ -3629,7 +3619,8 @@ top:100px;
 .gwtTaskListing
 {
 	font-size: 1.35em; 
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 	border: 1px solid #cccccc;
 }
 .gwtTaskListing_IE
@@ -3675,10 +3666,6 @@ top:100px;
 .gwtTaskList_calculatedDate
 {
 	font-style: italic;
-}
-.gwtTaskList_parentDurationError
-{
-	border: 1px solid red !important;
 }
 .gwtTaskList_loading
 {
@@ -4083,13 +4070,11 @@ td.datePickerMonth {
 .vibe-aboutBox {z-index: 1001;}
 
 /* Start:  Add new folder dialog styles. */
-	.vibe-addNewFolderDlg_Grid       {}
-	.vibe-addNewFolderDlg_Label      {}
-	.vibe-addNewFolderDlg_NameInput  {width: 250px;}
-	.vibe-addNewFolderDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-addNewFolderDlg_Panel      {padding: 10px;}
-	.vibe-addNewFolderDlg_TypeLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-addNewFolderDlg_TypeSelect {width: 250px;}
+	.vibe-addNewFolderDlg_Label     {}
+	.vibe-addNewFolderDlg_NameInput {width: 250px;}
+	.vibe-addNewFolderDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-addNewFolderDlg_NamePanel {}
+	.vibe-addNewFolderDlg_Panel     {padding: 10px;}
 /* End:  Add new folder dialog styles. */
 
 /* Start:  Calendar settings dialog styles. */
@@ -4827,15 +4812,6 @@ td.datePickerMonth {
 	font-size: 1em;
 	margin-bottom: 0.5em;
 }
-
-.modifyNetFolderServerDlg_ProxyNameHint
-{
-	color: #4D6D8B;
-	font-size: 1em;
-	margin-bottom: 0.5em;
-	width: 80%;
-}
-
 
 
 /**

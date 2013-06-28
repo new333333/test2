@@ -57,7 +57,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	private String		  	m_binderDesc	           = "";								//
 	private String        	m_entityType               = "";								//
 	private WorkspaceType 	m_wsType                   = WorkspaceType.NOT_A_WORKSPACE;		//
-	private String			m_cloudFolderRoot;												//
 	private String        	m_parentBinderId           = "";								//
 	
 	/**
@@ -83,7 +82,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		reply.setBinderDescExpanded(      m_binderDescExpanded      );
 		reply.setBinderDescHTML(          m_binderDescHTML          );
 		reply.setParentBinderId(          m_parentBinderId          );
-		reply.setCloudFolderRoot(         m_cloudFolderRoot         );
 		reply.setNumUnread(               m_numUnread               );
 		reply.setEntityType(              m_entityType              );
 		reply.setBinderType(              m_binderType              );
@@ -115,7 +113,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	public String         getParentBinderId()          {return                            m_parentBinderId;          }
 	public String         getBinderTitle()             {return                            m_binderTitle;             }
 	public String		  getBinderDesc()              {return                            m_binderDesc;              }
-	public String         getCloudFolderRoot()         {return                            m_cloudFolderRoot;         }
 	public Long           getNumUnread()               {return                            m_numUnread;               }
 	public String         getEntityType()              {return                            m_entityType;              }
 	public WorkspaceType  getWorkspaceType()           {return                            m_wsType;                  }
@@ -203,16 +200,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		return (BinderType.WORKSPACE == m_binderType);
 	}
 
-	/**
-	 * Returns true if this BinderInfo is a Cloud Folder and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isCloudFolder() {
-		return ((null != m_cloudFolderRoot) && (0 < m_cloudFolderRoot.length()));
-	}
-	
 	/**
 	 * Returns true if the given BinderInfo is considered equal to this
 	 * one.
@@ -370,15 +357,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public void setBinderDescHTML(boolean binderDescHTML) {
 		m_binderDescHTML = binderDescHTML;
-	}
-
-	/**
-	 * Stores the name of a Cloud Folder root.
-	 * 
-	 * @param cloudFolderRoot
-	 */
-	public void setCloudFolderRoot(String cloudFolderRoot) {
-		m_cloudFolderRoot = cloudFolderRoot;
 	}
 	
 	/**

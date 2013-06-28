@@ -354,7 +354,7 @@ public class AddEntryController extends SAbstractController {
 		        				//Mark this entry as having been seen by the current user
 		        				getProfileModule().setSeen(null, fe);
 		        	    	} else {
-		        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, strDecodedFileName, myFile.getInputStream(), null, null, null, true, null, null);
+		        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, strDecodedFileName, myFile.getInputStream(), null, null, null, true, null);
 		        				//Mark this entry as having been seen by the current user
 		        				getProfileModule().setSeen(null, preExistingEntry);
 		        	    	}

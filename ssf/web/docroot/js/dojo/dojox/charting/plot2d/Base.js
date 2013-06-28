@@ -1,61 +1,90 @@
-//>>built
-define("dojox/charting/plot2d/Base",["dojo/_base/declare","dojo/_base/array","dojox/gfx","../Element","./common","../axis2d/common","dojo/has"],function(_1,_2,_3,_4,_5,ac,_6){
-var _7=_1("dojox.charting.plot2d.Base",_4,{constructor:function(_8,_9){
-if(_9&&_9.tooltipFunc){
-this.tooltipFunc=_9.tooltipFunc;
-}
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.charting.plot2d.Base"]){
+dojo._hasResource["dojox.charting.plot2d.Base"]=true;
+dojo.provide("dojox.charting.plot2d.Base");
+dojo.require("dojox.charting.scaler.primitive");
+dojo.require("dojox.charting.Element");
+dojo.require("dojox.charting.plot2d.common");
+dojo.declare("dojox.charting.plot2d.Base",dojox.charting.Element,{destroy:function(){
+this.resetEvents();
+this.inherited(arguments);
 },clear:function(){
 this.series=[];
+this._hAxis=null;
+this._vAxis=null;
 this.dirty=true;
 return this;
-},setAxis:function(_a){
-return this;
-},assignAxes:function(_b){
-_2.forEach(this.axes,function(_c){
-if(this[_c]){
-this.setAxis(_b[this[_c]]);
+},setAxis:function(_1){
+if(_1){
+this[_1.vertical?"_vAxis":"_hAxis"]=_1;
 }
-},this);
-},addSeries:function(_d){
-this.series.push(_d);
 return this;
-},getSeriesStats:function(){
-return _5.collectSimpleStats(this.series);
-},calculateAxes:function(_e){
-this.initializeScalers(_e,this.getSeriesStats());
+},addSeries:function(_2){
+this.series.push(_2);
 return this;
-},initializeScalers:function(){
+},calculateAxes:function(_3){
 return this;
-},isDataDirty:function(){
-return _2.some(this.series,function(_f){
-return _f.dirty;
-});
-},render:function(dim,_10){
+},isDirty:function(){
+return this.dirty||this._hAxis&&this._hAxis.dirty||this._vAxis&&this._vAxis.dirty;
+},render:function(_4,_5){
 return this;
-},renderLabel:function(_11,x,y,_12,_13,_14,_15){
-var _16=ac.createText[this.opt.htmlLabels&&_3.renderer!="vml"?"html":"gfx"](this.chart,_11,x,y,_15?_15:"middle",_12,_13.series.font,_13.series.fontColor);
-if(_14){
-if(this.opt.htmlLabels&&_3.renderer!="vml"){
-_16.style.pointerEvents="none";
-}else{
-if(_16.rawNode){
-_16.rawNode.style.pointerEvents="none";
-}
-}
-}
-if(this.opt.htmlLabels&&_3.renderer!="vml"){
-this.htmlElements.push(_16);
-}
-return _16;
 },getRequiredColors:function(){
 return this.series.length;
-},_getLabel:function(_17){
-return _5.getLabel(_17,this.opt.fixed,this.opt.precision);
-}});
-if(_6("dojo-bidi")){
-_7.extend({_checkOrientation:function(_18,dim,_19){
-this.chart.applyMirroring(this.group,dim,_19);
+},plotEvent:function(o){
+},connect:function(_6,_7){
+this.dirty=true;
+return dojo.connect(this,"plotEvent",_6,_7);
+},events:function(){
+var ls=this.plotEvent._listeners;
+if(!ls||!ls.length){
+return false;
+}
+for(var i in ls){
+if(!(i in Array.prototype)){
+return true;
+}
+}
+return false;
+},resetEvents:function(){
+this.plotEvent({type:"onplotreset",plot:this});
+},_calc:function(_8,_9){
+if(this._hAxis){
+if(!this._hAxis.initialized()){
+this._hAxis.calculate(_9.hmin,_9.hmax,_8.width);
+}
+this._hScaler=this._hAxis.getScaler();
+}else{
+this._hScaler=dojox.charting.scaler.primitive.buildScaler(_9.hmin,_9.hmax,_8.width);
+}
+if(this._vAxis){
+if(!this._vAxis.initialized()){
+this._vAxis.calculate(_9.vmin,_9.vmax,_8.height);
+}
+this._vScaler=this._vAxis.getScaler();
+}else{
+this._vScaler=dojox.charting.scaler.primitive.buildScaler(_9.vmin,_9.vmax,_8.height);
+}
+},_connectEvents:function(_a,o){
+_a.connect("onmouseover",this,function(e){
+o.type="onmouseover";
+o.event=e;
+this.plotEvent(o);
+});
+_a.connect("onmouseout",this,function(e){
+o.type="onmouseout";
+o.event=e;
+this.plotEvent(o);
+});
+_a.connect("onclick",this,function(e){
+o.type="onclick";
+o.event=e;
+this.plotEvent(o);
+});
 }});
 }
-return _7;
-});

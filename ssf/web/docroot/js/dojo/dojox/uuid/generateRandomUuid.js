@@ -1,5 +1,13 @@
-//>>built
-define("dojox/uuid/generateRandomUuid",["./_base"],function(){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.uuid.generateRandomUuid"]){
+dojo._hasResource["dojox.uuid.generateRandomUuid"]=true;
+dojo.provide("dojox.uuid.generateRandomUuid");
 dojox.uuid.generateRandomUuid=function(){
 var _1=16;
 function _2(){
@@ -23,5 +31,4 @@ var _8=a+_5+b+_5+c+d;
 _8=_8.toLowerCase();
 return _8;
 };
-return dojox.uuid.generateRandomUuid;
-});
+}

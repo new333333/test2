@@ -46,7 +46,6 @@ import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.util.ClientEventParameter;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -278,13 +277,6 @@ public class ContextMenuItem extends VibeMenuItem {
 				case VIEW_WHATS_NEW_IN_BINDER:
 				case VIEW_WHATS_UNSEEN_IN_BINDER:
 					EventHelper.fireSimpleEvent(m_teamingEvent);
-					break;
-					
-				case ZIP_AND_DOWNLOAD_FOLDER:
-					// Fire the appropriate event.
-					GwtTeaming.fireEvent(new ZipAndDownloadFolderEvent(
-						Long.parseLong(      ToolbarItem.getQualifierValueFromList("binderId",  m_eventQualifiers)),
-						Boolean.parseBoolean(ToolbarItem.getQualifierValueFromList("recursive", m_eventQualifiers))));
 					break;
 					
 				default:

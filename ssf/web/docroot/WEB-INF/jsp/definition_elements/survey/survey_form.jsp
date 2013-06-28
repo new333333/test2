@@ -60,7 +60,7 @@
 <div id="ss_tab_content">
 		
 	<form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-	  id="<%= formName %>" onSubmit="return ssSurvey.prepareSubmit(this);">
+	  id="<%= formName %>" action="" onSubmit="return ssSurvey.prepareSubmit(this);">
   
 		<div class="ss_surveyContainer">
 			<div id="ss_content">

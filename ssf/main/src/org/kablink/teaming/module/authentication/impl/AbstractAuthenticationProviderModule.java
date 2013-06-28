@@ -174,10 +174,9 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			AuthenticationConfig authConfig = zoneConfig.getAuthenticationConfig();
 			Long lastUpdateInDb = authConfig.getLastUpdate();
 			Long lastUpdateInMem = lastUpdates.get(zoneId);
-			// If the date in the db is different from the in memory date, rebuild the providers.
 			if((lastUpdateInDb != null) &&
 					((lastUpdateInMem == null) || 
-							(lastUpdateInDb.compareTo(lastUpdateInMem) != 0))) {
+							(lastUpdateInDb.compareTo(lastUpdateInMem) > 0))) {
 				try {
 					rebuildProvidersForZone(zoneConfig);
 				} catch(Exception e) {
@@ -413,14 +412,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				throw e;
 			}
 			catch(AuthenticationException e) {
-				String exDesc;
-				
 				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-				if ( e.getCause() != null )
-					exDesc = e.getCause().toString();
-				else
-					exDesc = e.toString();
-				logger.warn("Authentication failure for [" + authentication.getName() + "] " + exDesc );
+				logger.warn("Authentication failure for [" + authentication.getName() + "] " + e.toString());
 				throw e;
 			}
 			catch(RuntimeException e) {

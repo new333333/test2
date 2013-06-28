@@ -1,13 +1,23 @@
-//>>built
-define("dojox/math/BigInteger-ext",["dojo","dojox","dojox/math/BigInteger"],function(_1,_2){
-_1.experimental("dojox.math.BigInteger-ext");
-var _3=_2.math.BigInteger,_4=_3._nbi,_5=_3._nbv,_6=_3._nbits,_7=_3._Montgomery;
-function _8(){
-var r=_4();
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.math.BigInteger-ext"]){
+dojo._hasResource["dojox.math.BigInteger-ext"]=true;
+dojo.provide("dojox.math.BigInteger-ext");
+dojo.experimental("dojox.math.BigInteger-ext");
+dojo.require("dojox.math.BigInteger");
+(function(){
+var _1=dojox.math.BigInteger,_2=_1._nbi,_3=_1._nbv,_4=_1._nbits,_5=_1._Montgomery;
+function _6(){
+var r=_2();
 this._copyTo(r);
 return r;
 };
-function _9(){
+function _7(){
 if(this.s<0){
 if(this.t==1){
 return this[0]-this._DV;
@@ -27,16 +37,16 @@ return 0;
 }
 return ((this[1]&((1<<(32-this._DB))-1))<<this._DB)|this[0];
 };
-function _a(){
+function _8(){
 return (this.t==0)?this.s:(this[0]<<24)>>24;
 };
-function _b(){
+function _9(){
 return (this.t==0)?this.s:(this[0]<<16)>>16;
 };
-function _c(r){
+function _a(r){
 return Math.floor(Math.LN2*this._DB/Math.log(r));
 };
-function _d(){
+function _b(){
 if(this.s<0){
 return -1;
 }else{
@@ -47,7 +57,7 @@ return 1;
 }
 }
 };
-function _e(b){
+function _c(b){
 if(b==null){
 b=10;
 }
@@ -56,7 +66,7 @@ return "0";
 }
 var cs=this._chunkSize(b);
 var a=Math.pow(b,cs);
-var d=_5(a),y=_4(),z=_4(),r="";
+var d=_3(a),y=_2(),z=_2(),r="";
 this._divRemTo(d,y,z);
 while(y.signum()>0){
 r=(a+z.intValue()).toString(b).substr(1)+r;
@@ -64,7 +74,7 @@ y._divRemTo(d,y,z);
 }
 return z.intValue().toString(b)+r;
 };
-function _f(s,b){
+function _d(s,b){
 this._fromInt(0);
 if(b==null){
 b=10;
@@ -92,17 +102,17 @@ this._dMultiply(Math.pow(b,j));
 this._dAddOffset(w,0);
 }
 if(mi){
-_3.ZERO._subTo(this,this);
+_1.ZERO._subTo(this,this);
 }
 };
-function _10(a,b,c){
+function _e(a,b,c){
 if("number"==typeof b){
 if(a<2){
 this._fromInt(1);
 }else{
 this._fromNumber(a,c);
 if(!this.testBit(a-1)){
-this._bitwiseTo(_3.ONE.shiftLeft(a-1),_11,this);
+this._bitwiseTo(_1.ONE.shiftLeft(a-1),_f,this);
 }
 if(this._isEven()){
 this._dAddOffset(1,0);
@@ -110,7 +120,7 @@ this._dAddOffset(1,0);
 while(!this.isProbablePrime(b)){
 this._dAddOffset(2,0);
 if(this.bitLength()>a){
-this._subTo(_3.ONE.shiftLeft(a-1),this);
+this._subTo(_1.ONE.shiftLeft(a-1),this);
 }
 }
 }
@@ -126,7 +136,7 @@ x[0]=0;
 this._fromString(x,256);
 }
 };
-function _12(){
+function _10(){
 var i=this.t,r=[];
 r[0]=this.s;
 var p=this._DB-(i*this._DB)%8,d,k=0;
@@ -158,16 +168,16 @@ r[k++]=d;
 }
 return r;
 };
-function _13(a){
+function _11(a){
 return (this.compareTo(a)==0);
 };
-function _14(a){
+function _12(a){
 return (this.compareTo(a)<0)?this:a;
 };
-function _15(a){
+function _13(a){
 return (this.compareTo(a)>0)?this:a;
 };
-function _16(a,op,r){
+function _14(a,op,r){
 var i,f,m=Math.min(a.t,this.t);
 for(i=0;i<m;++i){
 r[i]=op(this[i],a[i]);
@@ -188,40 +198,40 @@ r.t=a.t;
 r.s=op(this.s,a.s);
 r._clamp();
 };
-function _17(x,y){
+function _15(x,y){
 return x&y;
 };
-function _18(a){
-var r=_4();
-this._bitwiseTo(a,_17,r);
+function _16(a){
+var r=_2();
+this._bitwiseTo(a,_15,r);
 return r;
 };
-function _11(x,y){
+function _f(x,y){
 return x|y;
 };
+function _17(a){
+var r=_2();
+this._bitwiseTo(a,_f,r);
+return r;
+};
+function _18(x,y){
+return x^y;
+};
 function _19(a){
-var r=_4();
-this._bitwiseTo(a,_11,r);
+var r=_2();
+this._bitwiseTo(a,_18,r);
 return r;
 };
 function _1a(x,y){
-return x^y;
+return x&~y;
 };
 function _1b(a){
-var r=_4();
+var r=_2();
 this._bitwiseTo(a,_1a,r);
 return r;
 };
-function _1c(x,y){
-return x&~y;
-};
-function _1d(a){
-var r=_4();
-this._bitwiseTo(a,_1c,r);
-return r;
-};
-function _1e(){
-var r=_4();
+function _1c(){
+var r=_2();
 for(var i=0;i<this.t;++i){
 r[i]=this._DM&~this[i];
 }
@@ -229,8 +239,8 @@ r.t=this.t;
 r.s=~this.s;
 return r;
 };
-function _1f(n){
-var r=_4();
+function _1d(n){
+var r=_2();
 if(n<0){
 this._rShiftTo(-n,r);
 }else{
@@ -238,8 +248,8 @@ this._lShiftTo(n,r);
 }
 return r;
 };
-function _20(n){
-var r=_4();
+function _1e(n){
+var r=_2();
 if(n<0){
 this._lShiftTo(-n,r);
 }else{
@@ -247,7 +257,7 @@ this._rShiftTo(n,r);
 }
 return r;
 };
-function _21(x){
+function _1f(x){
 if(x==0){
 return -1;
 }
@@ -273,10 +283,10 @@ if((x&1)==0){
 }
 return r;
 };
-function _22(){
+function _20(){
 for(var i=0;i<this.t;++i){
 if(this[i]!=0){
-return i*this._DB+_21(this[i]);
+return i*this._DB+_1f(this[i]);
 }
 }
 if(this.s<0){
@@ -284,7 +294,7 @@ return this.t*this._DB;
 }
 return -1;
 };
-function _23(x){
+function _21(x){
 var r=0;
 while(x!=0){
 x&=x-1;
@@ -292,35 +302,35 @@ x&=x-1;
 }
 return r;
 };
-function _24(){
+function _22(){
 var r=0,x=this.s&this._DM;
 for(var i=0;i<this.t;++i){
-r+=_23(this[i]^x);
+r+=_21(this[i]^x);
 }
 return r;
 };
-function _25(n){
+function _23(n){
 var j=Math.floor(n/this._DB);
 if(j>=this.t){
 return (this.s!=0);
 }
 return ((this[j]&(1<<(n%this._DB)))!=0);
 };
-function _26(n,op){
-var r=_3.ONE.shiftLeft(n);
+function _24(n,op){
+var r=_1.ONE.shiftLeft(n);
 this._bitwiseTo(r,op,r);
 return r;
 };
-function _27(n){
-return this._changeBit(n,_11);
+function _25(n){
+return this._changeBit(n,_f);
 };
-function _28(n){
-return this._changeBit(n,_1c);
-};
-function _29(n){
+function _26(n){
 return this._changeBit(n,_1a);
 };
-function _2a(a,r){
+function _27(n){
+return this._changeBit(n,_18);
+};
+function _28(a,r){
 var i=0,c=0,m=Math.min(a.t,this.t);
 while(i<m){
 c+=this[i]+a[i];
@@ -355,42 +365,42 @@ r[i++]=this._DV+c;
 r.t=i;
 r._clamp();
 };
-function _2b(a){
-var r=_4();
+function _29(a){
+var r=_2();
 this._addTo(a,r);
 return r;
 };
-function _2c(a){
-var r=_4();
+function _2a(a){
+var r=_2();
 this._subTo(a,r);
 return r;
 };
-function _2d(a){
-var r=_4();
+function _2b(a){
+var r=_2();
 this._multiplyTo(a,r);
 return r;
 };
-function _2e(a){
-var r=_4();
+function _2c(a){
+var r=_2();
 this._divRemTo(a,r,null);
 return r;
 };
-function _2f(a){
-var r=_4();
+function _2d(a){
+var r=_2();
 this._divRemTo(a,null,r);
 return r;
 };
-function _30(a){
-var q=_4(),r=_4();
+function _2e(a){
+var q=_2(),r=_2();
 this._divRemTo(a,q,r);
 return [q,r];
 };
-function _31(n){
+function _2f(n){
 this[this.t]=this.am(0,n-1,this,0,0,this.t);
 ++this.t;
 this._clamp();
 };
-function _32(n,w){
+function _30(n,w){
 while(this.t<=w){
 this[this.t++]=0;
 }
@@ -403,25 +413,25 @@ this[this.t++]=0;
 ++this[w];
 }
 };
-function _33(){
+function _31(){
 };
-function _34(x){
+function _32(x){
 return x;
 };
-function _35(x,y,r){
+function _33(x,y,r){
 x._multiplyTo(y,r);
 };
-function _36(x,r){
+function _34(x,r){
 x._squareTo(r);
 };
-_33.prototype.convert=_34;
-_33.prototype.revert=_34;
-_33.prototype.mulTo=_35;
-_33.prototype.sqrTo=_36;
-function _37(e){
-return this._exp(e,new _33());
+_31.prototype.convert=_32;
+_31.prototype.revert=_32;
+_31.prototype.mulTo=_33;
+_31.prototype.sqrTo=_34;
+function _35(e){
+return this._exp(e,new _31());
 };
-function _38(a,n,r){
+function _36(a,n,r){
 var i=Math.min(this.t+a.t,n);
 r.s=0;
 r.t=i;
@@ -437,7 +447,7 @@ this.am(0,a[i],r,i,0,n-i);
 }
 r._clamp();
 };
-function _39(a,n,r){
+function _37(a,n,r){
 --n;
 var i=r.t=this.t+a.t-n;
 r.s=0;
@@ -450,31 +460,31 @@ r[this.t+i-n]=this.am(n-i,a[i],r,0,0,this.t+i-n);
 r._clamp();
 r._drShiftTo(1,r);
 };
-function _3a(m){
-this.r2=_4();
-this.q3=_4();
-_3.ONE._dlShiftTo(2*m.t,this.r2);
+function _38(m){
+this.r2=_2();
+this.q3=_2();
+_1.ONE._dlShiftTo(2*m.t,this.r2);
 this.mu=this.r2.divide(m);
 this.m=m;
 };
-function _3b(x){
+function _39(x){
 if(x.s<0||x.t>2*this.m.t){
 return x.mod(this.m);
 }else{
 if(x.compareTo(this.m)<0){
 return x;
 }else{
-var r=_4();
+var r=_2();
 x._copyTo(r);
 this.reduce(r);
 return r;
 }
 }
 };
-function _3c(x){
+function _3a(x){
 return x;
 };
-function _3d(x){
+function _3b(x){
 x._drShiftTo(this.m.t-1,this.r2);
 if(x.t>this.m.t+1){
 x.t=this.m.t+1;
@@ -490,21 +500,21 @@ while(x.compareTo(this.m)>=0){
 x._subTo(this.m,x);
 }
 };
-function _3e(x,r){
+function _3c(x,r){
 x._squareTo(r);
 this.reduce(r);
 };
-function _3f(x,y,r){
+function _3d(x,y,r){
 x._multiplyTo(y,r);
 this.reduce(r);
 };
-_3a.prototype.convert=_3b;
-_3a.prototype.revert=_3c;
-_3a.prototype.reduce=_3d;
-_3a.prototype.mulTo=_3f;
-_3a.prototype.sqrTo=_3e;
-function _40(e,m){
-var i=e.bitLength(),k,r=_5(1),z;
+_38.prototype.convert=_39;
+_38.prototype.revert=_3a;
+_38.prototype.reduce=_3b;
+_38.prototype.mulTo=_3d;
+_38.prototype.sqrTo=_3c;
+function _3e(e,m){
+var i=e.bitLength(),k,r=_3(1),z;
 if(i<=0){
 return r;
 }else{
@@ -530,24 +540,24 @@ if(i<8){
 z=new Classic(m);
 }else{
 if(m._isEven()){
-z=new _3a(m);
+z=new _38(m);
 }else{
-z=new _7(m);
+z=new _5(m);
 }
 }
 var g=[],n=3,k1=k-1,km=(1<<k)-1;
 g[1]=z.convert(this);
 if(k>1){
-var g2=_4();
+var g2=_2();
 z.sqrTo(g[1],g2);
 while(n<=km){
-g[n]=_4();
+g[n]=_2();
 z.mulTo(g2,g[n-2],g[n]);
 n+=2;
 }
 }
-var j=e.t-1,w,is1=true,r2=_4(),t;
-i=_6(e[j])-1;
+var j=e.t-1,w,is1=true,r2=_2(),t;
+i=_4(e[j])-1;
 while(j>=0){
 if(i>=k1){
 w=(e[j]>>(i-k1))&km;
@@ -597,7 +607,7 @@ i=this._DB-1;
 }
 return z.revert(r);
 };
-function _41(a){
+function _3f(a){
 var x=(this.s<0)?this.negate():this.clone();
 var y=(a.s<0)?a.negate():a.clone();
 if(x.compareTo(y)<0){
@@ -636,7 +646,7 @@ y._lShiftTo(g,y);
 }
 return y;
 };
-function _42(n){
+function _40(n){
 if(n<=0){
 return 0;
 }
@@ -652,13 +662,13 @@ r=(d*r+this[i])%n;
 }
 return r;
 };
-function _43(m){
+function _41(m){
 var ac=m._isEven();
 if((this._isEven()&&ac)||m.signum()==0){
-return _3.ZERO;
+return _1.ZERO;
 }
 var u=m.clone(),v=this.clone();
-var a=_5(1),b=_5(0),c=_5(0),d=_5(1);
+var a=_3(1),b=_3(0),c=_3(0),d=_3(1);
 while(u.signum()!=0){
 while(u._isEven()){
 u._rShiftTo(1,u);
@@ -704,8 +714,8 @@ c._subTo(a,c);
 d._subTo(b,d);
 }
 }
-if(v.compareTo(_3.ONE)!=0){
-return _3.ZERO;
+if(v.compareTo(_1.ONE)!=0){
+return _1.ZERO;
 }
 if(d.compareTo(m)>=0){
 return d.subtract(m);
@@ -721,13 +731,13 @@ return d.add(m);
 return d;
 }
 };
-var _44=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509];
-var _45=(1<<26)/_44[_44.length-1];
-function _46(t){
+var _42=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509];
+var _43=(1<<26)/_42[_42.length-1];
+function _44(t){
 var i,x=this.abs();
-if(x.t==1&&x[0]<=_44[_44.length-1]){
-for(i=0;i<_44.length;++i){
-if(x[0]==_44[i]){
+if(x.t==1&&x[0]<=_42[_42.length-1]){
+for(i=0;i<_42.length;++i){
+if(x[0]==_42[i]){
 return true;
 }
 }
@@ -737,40 +747,40 @@ if(x._isEven()){
 return false;
 }
 i=1;
-while(i<_44.length){
-var m=_44[i],j=i+1;
-while(j<_44.length&&m<_45){
-m*=_44[j++];
+while(i<_42.length){
+var m=_42[i],j=i+1;
+while(j<_42.length&&m<_43){
+m*=_42[j++];
 }
 m=x._modInt(m);
 while(i<j){
-if(m%_44[i++]==0){
+if(m%_42[i++]==0){
 return false;
 }
 }
 }
 return x._millerRabin(t);
 };
-function _47(t){
-var n1=this.subtract(_3.ONE);
+function _45(t){
+var n1=this.subtract(_1.ONE);
 var k=n1.getLowestSetBit();
 if(k<=0){
 return false;
 }
 var r=n1.shiftRight(k);
 t=(t+1)>>1;
-if(t>_44.length){
-t=_44.length;
+if(t>_42.length){
+t=_42.length;
 }
-var a=_4();
+var a=_2();
 for(var i=0;i<t;++i){
-a._fromInt(_44[i]);
+a._fromInt(_42[i]);
 var y=a.modPow(r,this);
-if(y.compareTo(_3.ONE)!=0&&y.compareTo(n1)!=0){
+if(y.compareTo(_1.ONE)!=0&&y.compareTo(n1)!=0){
 var j=1;
 while(j++<k&&y.compareTo(n1)!=0){
 y=y.modPowInt(2,this);
-if(y.compareTo(_3.ONE)==0){
+if(y.compareTo(_1.ONE)==0){
 return false;
 }
 }
@@ -781,6 +791,6 @@ return false;
 }
 return true;
 };
-_1.extend(_3,{_chunkSize:_c,_toRadix:_e,_fromRadix:_f,_fromNumber:_10,_bitwiseTo:_16,_changeBit:_26,_addTo:_2a,_dMultiply:_31,_dAddOffset:_32,_multiplyLowerTo:_38,_multiplyUpperTo:_39,_modInt:_42,_millerRabin:_47,clone:_8,intValue:_9,byteValue:_a,shortValue:_b,signum:_d,toByteArray:_12,equals:_13,min:_14,max:_15,and:_18,or:_19,xor:_1b,andNot:_1d,not:_1e,shiftLeft:_1f,shiftRight:_20,getLowestSetBit:_22,bitCount:_24,testBit:_25,setBit:_27,clearBit:_28,flipBit:_29,add:_2b,subtract:_2c,multiply:_2d,divide:_2e,remainder:_2f,divideAndRemainder:_30,modPow:_40,modInverse:_43,pow:_37,gcd:_41,isProbablePrime:_46});
-return _2.math.BigInteger;
-});
+dojo.extend(_1,{_chunkSize:_a,_toRadix:_c,_fromRadix:_d,_fromNumber:_e,_bitwiseTo:_14,_changeBit:_24,_addTo:_28,_dMultiply:_2f,_dAddOffset:_30,_multiplyLowerTo:_36,_multiplyUpperTo:_37,_modInt:_40,_millerRabin:_45,clone:_6,intValue:_7,byteValue:_8,shortValue:_9,signum:_b,toByteArray:_10,equals:_11,min:_12,max:_13,and:_16,or:_17,xor:_19,andNot:_1b,not:_1c,shiftLeft:_1d,shiftRight:_1e,getLowestSetBit:_20,bitCount:_22,testBit:_23,setBit:_25,clearBit:_26,flipBit:_27,add:_29,subtract:_2a,multiply:_2b,divide:_2c,remainder:_2d,divideAndRemainder:_2e,modPow:_3e,modInverse:_41,pow:_35,gcd:_3f,isProbablePrime:_44});
+})();
+}

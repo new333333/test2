@@ -77,7 +77,11 @@ public class LicenseImportServlet extends HttpServlet
 					continue;
 				}
 
-                //Copy the license key
+				// Specify where on disk to write the file
+				// Write the file data to disk
+				// TODO: Place restrictions on upload data
+
+
 				if (licenseKey)
 				{
 					FileOutputStream outStream = new FileOutputStream("/filrinstall/license-key.xml");

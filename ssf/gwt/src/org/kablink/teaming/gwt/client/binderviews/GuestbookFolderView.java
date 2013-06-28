@@ -168,18 +168,6 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	}
 	
 	/**
-	 * We don't show an icon for the entry title cells in a guest book.
-	 *
-	 * Overrides the DataTableFolderViewBase.showEntryTitleIcon() method.
-	 * 
-	 * @return
-	 */
-	@Override
-	protected boolean showEntryTitleIcon() {
-		return false;
-	}
-	
-	/**
 	 * Invokes the sign the guest book UI. 
 	 * 
 	 * Overrides the DataTableFolderViewBase.signGuestbook()

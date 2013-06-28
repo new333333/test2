@@ -31,7 +31,7 @@
 		<property name="filterProcessesUrl" value="/s/portalLogout"/>
     </bean>
 
-    <security:http realm="Novell" entry-point-ref="authenticationProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager">
+    <security:http realm="Vibe" entry-point-ref="authenticationProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager">
     	<security:custom-filter position="FORM_LOGIN_FILTER" ref="authenticationProcessingFilter"/>
 		<security:custom-filter before="FORM_LOGIN_FILTER" ref="basicProcessingFilter"/>
 		<security:custom-filter position="LOGOUT_FILTER" ref="_logoutFilter"/>

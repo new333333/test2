@@ -1,33 +1,32 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/regexp",["./_base/kernel","./_base/lang"],function(_1,_2){
-var _3={};
-_2.setObject("dojo.regexp",_3);
-_3.escapeString=function(_4,_5){
-return _4.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g,function(ch){
-if(_5&&_5.indexOf(ch)!=-1){
+
+if(!dojo._hasResource["dojo.regexp"]){
+dojo._hasResource["dojo.regexp"]=true;
+dojo.provide("dojo.regexp");
+dojo.regexp.escapeString=function(_1,_2){
+return _1.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g,function(ch){
+if(_2&&_2.indexOf(ch)!=-1){
 return ch;
 }
 return "\\"+ch;
 });
 };
-_3.buildGroupRE=function(_6,re,_7){
-if(!(_6 instanceof Array)){
-return re(_6);
+dojo.regexp.buildGroupRE=function(_3,re,_4){
+if(!(_3 instanceof Array)){
+return re(_3);
 }
 var b=[];
-for(var i=0;i<_6.length;i++){
-b.push(re(_6[i]));
+for(var i=0;i<_3.length;i++){
+b.push(re(_3[i]));
 }
-return _3.group(b.join("|"),_7);
+return dojo.regexp.group(b.join("|"),_4);
 };
-_3.group=function(_8,_9){
-return "("+(_9?"?:":"")+_8+")";
+dojo.regexp.group=function(_5,_6){
+return "("+(_6?"?:":"")+_5+")";
 };
-return _3;
-});
+}

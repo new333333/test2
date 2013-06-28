@@ -84,7 +84,7 @@ import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
-import org.kablink.teaming.gwt.server.util.GwtServerProfiler;
+import org.kablink.teaming.gwt.server.util.GwtServerHelper.GwtServerProfiler;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -1818,7 +1818,10 @@ public class GwtActivityStreamHelper {
 	 * @return
 	 */
 	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt, SpecificFolderData sfData) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtActivityStreamHelper.getActivityStreamData()");
+		GwtServerProfiler profiler = GwtServerHelper.GwtServerProfiler.start(
+			m_logger,
+			"GwtActivityStreamHelper.getActivityStreamData()");
+		
 		try {
 			// Create an activity stream data object to return.
 			ActivityStreamData reply = new ActivityStreamData();
@@ -1857,7 +1860,7 @@ public class GwtActivityStreamHelper {
 		}
 		
 		finally {
-			gsp.stop();
+			profiler.end();
 		}
 	}
 
@@ -2175,7 +2178,10 @@ public class GwtActivityStreamHelper {
 	 * @return
 	 */
 	public static TreeInfo getVerticalActivityStreamsTree(HttpServletRequest request, AllModulesInjected bs, String binderIdS) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtActivityStreamHelper.getVerticalActivityStreamsTree()");
+		GwtServerProfiler profiler = GwtServerHelper.GwtServerProfiler.start(
+			m_logger,
+			"GwtActivityStreamHelper.getVerticalActivityStreamsTree()");
+			
 		try {
 			ASTreeData		td = ASTreeData.buildTreeData(request, bs, binderIdS);
 			Binder			binder;
@@ -2244,7 +2250,7 @@ public class GwtActivityStreamHelper {
 		}
 		
 		finally {
-			gsp.stop();
+			profiler.end();
 		}
 	}
 
@@ -2312,7 +2318,10 @@ public class GwtActivityStreamHelper {
 	 */
 	public static Boolean hasActivityStreamChanged(HttpServletRequest request, AllModulesInjected bs, ActivityStreamInfo asi) {
 		String asiDump = (isDebugLoggingEnabled() ? asi.getStringValue() : null);
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtActivityStreamHelper.hasActivityStreamChanged( " + asiDump + " )");
+		GwtServerProfiler profiler = GwtServerHelper.GwtServerProfiler.start(
+			m_logger,
+			"GwtActivityStreamHelper.hasActivityStreamChanged( " + asiDump + " )");
+			
 		try {
 			// Update the data that's cached about what's recently changed.
 			ActivityStreamCache.updateMaps(bs);
@@ -2353,7 +2362,7 @@ public class GwtActivityStreamHelper {
 		}
 		
 		finally {
-			gsp.stop();
+			profiler.end();
 		}
 	}
 

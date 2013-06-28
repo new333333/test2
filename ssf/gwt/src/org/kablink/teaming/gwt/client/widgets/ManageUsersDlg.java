@@ -783,12 +783,12 @@ public class ManageUsersDlg extends DlgBox
 	 * Asynchronously runs the given instance of the manage users
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ManageUsersDlg muDlg, final int x, final int y, final int width, final int height) {
+	private static void runDlgAsync(final ManageUsersDlg muDlg, final int x, final int y) {
 		GwtClientHelper.deferCommand(
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
-					muDlg.runDlgNow(x, y, width, height);
+					muDlg.runDlgNow(x, y);
 				}
 			});
 	}
@@ -797,12 +797,10 @@ public class ManageUsersDlg extends DlgBox
 	 * Synchronously runs the given instance of the manage users
 	 * dialog.
 	 */
-	private void runDlgNow(int x, int y, int width, int height) {
+	private void runDlgNow(int x, int y) {
 		// Store the parameters...
 		m_showX = x;
 		m_showY = y;
-		m_showCX = width;
-		m_showCY = height;
 		
 		// ...and start populating the dialog.
 		populateDlgAsync();
@@ -876,7 +874,7 @@ public class ManageUsersDlg extends DlgBox
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(muDlg, initX, initY, createCX, createCY);
+					runDlgAsync(muDlg, initX, initY);
 				}
 			}
 		});
@@ -905,7 +903,7 @@ public class ManageUsersDlg extends DlgBox
 	 * @param x
 	 * @param y
 	 */
-	public static void initAndShow(ManageUsersDlg muDlg, int x, int y, int width, int height) {
-		doAsyncOperation(null, false, false, (-1), (-1), width, height, muDlg, x, y);
+	public static void initAndShow(ManageUsersDlg muDlg, int x, int y) {
+		doAsyncOperation(null, false, false, (-1), (-1), (-1), (-1), muDlg, x, y);
 	}
 }

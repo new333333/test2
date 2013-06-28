@@ -80,7 +80,7 @@
     <property name="caption" value="__definition_default_folder_mirrored_file"/>  
     <property name="name" value="_mirroredFileFolder"/>  
     <property name="family" value="file"/>  
-    <property name="icon" value="/icons/folder_mirrored.png"/> 
+    <property name="icon" value="/icons/folder_blue_file_library.gif"/> 
   </properties>  
   <export-mappings/>
 </definition>

@@ -53,24 +53,24 @@
 <c:set var="ss_editableSectionTOCNumber" value="0" scope="request"/>
 </c:if>
 <c:set var="ss_editableSectionIdNumber" value="0"/>
-<script type="text/javascript">
-    function ss_showHideToc${ss_editableSectionTOCNumber}() {
-    	var tocObj = document.getElementById('ss_wiki_toc${ss_editableSectionTOCNumber}');
-    	var tocButtonObj = document.getElementById('ss_wiki_toc_toggle${ss_editableSectionTOCNumber}');
-    	if (tocObj.style.display != 'block') {
-     	tocObj.style.display = 'block';
-     	tocObj.style.visibility = 'visible';
-     	tocObj.style.opacity = '1';
-     	tocButtonObj.innerHTML = "<ssf:nlt tag="button.hide"/>"
-    	} else {
-    		ss_hideDiv('ss_wiki_toc${ss_editableSectionTOCNumber}');
-    		tocButtonObj.innerHTML = "<ssf:nlt tag="button.show"/>"
-    	}
-    }
-</script>
 <c:forEach var="part" items="${parts}"><%--
 	--%>${part['prefix']}
 	<c:if test="${ss_editableSectionIdNumber == 0}">
+	    <script type="text/javascript">
+	        function ss_showHideToc${ss_editableSectionTOCNumber}() {
+	        	var tocObj = document.getElementById('ss_wiki_toc${ss_editableSectionTOCNumber}');
+	        	var tocButtonObj = document.getElementById('ss_wiki_toc_toggle${ss_editableSectionTOCNumber}');
+	        	if (tocObj.style.display != 'block') {
+		        	tocObj.style.display = 'block';
+		        	tocObj.style.visibility = 'visible';
+		        	tocObj.style.opacity = '1';
+		        	tocButtonObj.innerHTML = "<ssf:nlt tag="button.hide"/>"
+	        	} else {
+	        		ss_hideDivFadeOut('ss_wiki_toc${ss_editableSectionTOCNumber}');
+	        		tocButtonObj.innerHTML = "<ssf:nlt tag="button.show"/>"
+	        	}
+	        }
+	    </script>
 		<table class="ss_editableSectionTOC">
 		<tr>
 		<td>

@@ -42,6 +42,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.IllegalCharacterInNameException;
@@ -95,6 +96,8 @@ import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
+import org.kablink.util.search.Constants;
+
 
 /**
  * Helper methods for the GWT UI server code that services requests dealing with
@@ -246,7 +249,7 @@ public class GwtNetFolderHelper
 		{
 			GwtTeamingException gtEx;
 			
-			gtEx = GwtLogHelper.getGwtClientException();
+			gtEx = GwtServerHelper.getGwtTeamingException();
 			
 			if ( ex instanceof TitleException )
 			{
@@ -257,7 +260,7 @@ public class GwtNetFolderHelper
 			}
 			else if ( ex instanceof IllegalCharacterInNameException )
 			{
-				gtEx = GwtLogHelper.getGwtClientException();
+				gtEx = GwtServerHelper.getGwtTeamingException();
 				gtEx.setAdditionalDetails( NLT.get( "netfolder.name.illegal.characters" ) );
 			}
 			else
@@ -265,7 +268,7 @@ public class GwtNetFolderHelper
 				gtEx.setAdditionalDetails( NLT.get( "netfolder.cant.load.parent.binder" ) );
 			}
 			
-			GwtLogHelper.error( m_logger, "Error creating net folder: " + netFolder.getName(), ex);
+			m_logger.error( "Error creating net folder: " + netFolder.getName(), ex);
 			
 			throw gtEx;				
 		}
@@ -307,7 +310,7 @@ public class GwtNetFolderHelper
 		{
 			GwtTeamingException gwtEx;
 			
-			gwtEx = GwtLogHelper.getGwtClientException( ex );
+			gwtEx = GwtServerHelper.getGwtTeamingException( ex );
 			throw gwtEx;
 		}
 
@@ -350,7 +353,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception e )
 			{
-				GwtLogHelper.error( m_logger, "Error deleting next net folder: " + nextNetFolder.getName(), e );
+				m_logger.error( "Error deleting next net folder: " + nextNetFolder.getName(), e );
 			}
 		}
 		
@@ -396,7 +399,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception ex )
 			{
-				GwtLogHelper.error( m_logger, "Error deleting next folder root: " + nextRoot.getName(), ex );
+				m_logger.error( "Error deleting next folder root: " + nextRoot.getName(), ex );
 				result.addCouldNotBeDeletedNetFolderServer( nextRoot );
 			}
 		}
@@ -409,29 +412,32 @@ public class GwtNetFolderHelper
 	 * If includeHomeDirNetFolders is true we will include "home directory" net folders in our list.
 	 * If rootName is not null, we will only return net folders associated with the given net folder root. 
 	 */
+	@SuppressWarnings({ "unchecked" })
 	public static List<NetFolder> getAllNetFolders(
 		AllModulesInjected ami,
 		boolean includeHomeDirNetFolders,
 		String rootName )
 	{
-		List<Long> listOfNetFolderIds;
+		List<Map> searchEntries;
 		ArrayList<NetFolder> listOfNetFolders;
 		
 		listOfNetFolders = new ArrayList<NetFolder>();
 		
-		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
+		searchEntries = NetFolderHelper.getAllNetFolders(
 													ami.getBinderModule(),
 													ami.getWorkspaceModule(),
 													rootName,
 													includeHomeDirNetFolders );
 
-		if ( listOfNetFolderIds != null )
+		if ( searchEntries != null )
 		{
-			for ( Long binderId:  listOfNetFolderIds )
+			for ( Map entryMap:  searchEntries )
 			{
 				NetFolder netFolder;
+				String binderId;
 				
-				netFolder = GwtNetFolderHelper.getNetFolder( ami, binderId );
+				binderId = GwtServerHelper.getStringFromEntryMap( entryMap, Constants.DOCID_FIELD );
+				netFolder = GwtNetFolderHelper.getNetFolder( ami, Long.valueOf( binderId ) );
 				
 				listOfNetFolders.add( netFolder );
 			}
@@ -833,7 +839,7 @@ public class GwtNetFolderHelper
 			if ( fnId == null )
 			{
 				// No
-				GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.getNetFolderRights(), could not find function for role: " + nextRole.getType() );
+				m_logger.error( "In GwtNetFolderHelper.getNetFolderRights(), could not find function for role: " + nextRole.getType() );
 				continue;
 			}
 
@@ -1039,19 +1045,19 @@ public class GwtNetFolderHelper
 				String[] args;
 				
 				args = new String[] { netFolder.getName() };
-				gtEx = GwtLogHelper.getGwtClientException();
+				gtEx = GwtServerHelper.getGwtTeamingException();
 				gtEx.setAdditionalDetails( NLT.get( "netfolder.duplicate.name", args ) );
 			}
 			else if ( ex instanceof IllegalCharacterInNameException )
 			{
-				gtEx = GwtLogHelper.getGwtClientException();
+				gtEx = GwtServerHelper.getGwtTeamingException();
 				gtEx.setAdditionalDetails( NLT.get( "netfolder.name.illegal.characters" ) );
 			}
 			else
 			{
-				gtEx = GwtLogHelper.getGwtClientException( ex );
+				gtEx = GwtServerHelper.getGwtTeamingException( ex );
 			}
-			GwtLogHelper.error( m_logger, "Error modifying net folder: " + netFolder.getName(), ex);
+			m_logger.error( "Error modifying net folder: " + netFolder.getName(), ex);
 			
 			throw gtEx;				
 		}
@@ -1097,8 +1103,8 @@ public class GwtNetFolderHelper
 		{
 			GwtTeamingException gtEx;
 			
-			gtEx = GwtLogHelper.getGwtClientException( ex );
-			GwtLogHelper.error( m_logger, "Error modifying net folder root: " + netFolderRoot.getName(), ex);
+			gtEx = GwtServerHelper.getGwtTeamingException( ex );
+			m_logger.error( "Error modifying net folder root: " + netFolderRoot.getName(), ex);
 			throw gtEx;				
 		}
 		
@@ -1142,7 +1148,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception ex )
 			{
-				GwtLogHelper.error( m_logger, "In saveDataSyncSettings(), call to modifyBinder() failed. " + ex.toString() );
+				m_logger.error( "In saveDataSyncSettings(), call to modifyBinder() failed. " + ex.toString() );
 			}
 		}
 	}
@@ -1160,7 +1166,7 @@ public class GwtNetFolderHelper
 
 		if ( binderId == null && roles == null )
 		{
-			GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.setNetFolderRights(), invalid parameters" );
+			m_logger.error( "In GwtNetFolderHelper.setNetFolderRights(), invalid parameters" );
 		}
 		
 		adminModule = ami.getAdminModule();
@@ -1179,7 +1185,7 @@ public class GwtNetFolderHelper
 			if ( fnId == null )
 			{
 				// No
-				GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.setNetFolderRights(), could not find function for role: " + nextRole.getType() );
+				m_logger.error( "In GwtNetFolderHelper.setNetFolderRights(), could not find function for role: " + nextRole.getType() );
 				continue;
 			}
 
@@ -1208,7 +1214,7 @@ public class GwtNetFolderHelper
 
 				statusTicketId = "sync_net_folder_" + nextNetFolder.getId();
 				statusTicket = GwtWebStatusTicket.newStatusTicket( statusTicketId, req );
-				if( ami.getFolderModule().enqueueFullSynchronize( nextNetFolder.getId() ) )
+				if( ami.getFolderModule().fullSynchronize( nextNetFolder.getId(), statusTicket ) )
 				{
 					// The binder was not deleted (typical situation).
 					nextNetFolder.setStatus( NetFolderStatus.SYNC_IN_PROGRESS );
@@ -1222,7 +1228,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception e )
 			{
-				GwtLogHelper.error( m_logger, "Error syncing next net folder: " + nextNetFolder.getName() + ", " + e.toString() );
+				m_logger.error( "Error syncing next net folder: " + nextNetFolder.getName() + ", " + e.toString() );
 			}
 		}
 		
@@ -1244,7 +1250,7 @@ public class GwtNetFolderHelper
 
 			statusTicketId = "sync_net_folder_server" + nextServer.getName();
 			statusTicket = GwtWebStatusTicket.newStatusTicket( statusTicketId, req );
-			if ( ami.getResourceDriverModule().enqueueSynchronize( nextServer.getName(), false ) )
+			if ( ami.getResourceDriverModule().synchronize( nextServer.getName(), false, statusTicket ) )
 			{
 				// The binder was not deleted (typical situation).
 				nextServer.setStatus( NetFolderRootStatus.SYNC_IN_PROGRESS );

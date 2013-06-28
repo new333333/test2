@@ -1,25 +1,35 @@
-//>>built
-define("dojox/analytics/_base",["dojo/_base/lang","dojo/_base/config","dojo/ready","dojo/_base/unload","dojo/_base/sniff","dojo/request","dojo/json","dojo/io-query","dojo/request/script"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9){
-var _a=function(){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.analytics._base"]){
+dojo._hasResource["dojox.analytics._base"]=true;
+dojo.provide("dojox.analytics._base");
+dojox.analytics=function(){
 this._data=[];
 this._id=1;
-this.sendInterval=_2["sendInterval"]||5000;
-this.inTransitRetry=_2["inTransitRetry"]||200;
-this.dataUrl=_2["analyticsUrl"]||require.toUrl("dojox/analytics/logger/dojoxAnalytics.php");
-this.sendMethod=_2["sendMethod"]||"xhrPost";
-this.maxRequestSize=_5("ie")?2000:_2["maxRequestSize"]||4000;
-_3(this,"schedulePusher");
-_4.addOnUnload(this,function(){
-this.pushData();
-});
+this.sendInterval=dojo.config["sendInterval"]||5000;
+this.inTransitRetry=dojo.config["inTransitRetry"]||200;
+this.dataUrl=dojo.config["analyticsUrl"]||dojo.moduleUrl("dojox.analytics.logger","dojoxAnalytics.php");
+this.sendMethod=dojo.config["sendMethod"]||"xhrPost";
+this.maxRequestSize=dojo.isIE?2000:dojo.config["maxRequestSize"]||4000;
+dojo.addOnLoad(this,"schedulePusher");
+dojo.addOnUnload(this,"pushData",true);
 };
-_1.extend(_a,{schedulePusher:function(_b){
-setTimeout(_1.hitch(this,"checkData"),_b||this.sendInterval);
-},addData:function(_c,_d){
+dojo.extend(dojox.analytics,{schedulePusher:function(_1){
+setTimeout(dojo.hitch(this,"checkData"),_1||this.sendInterval);
+},addData:function(_2,_3){
 if(arguments.length>2){
-_d=Array.prototype.slice.call(arguments,1);
+var c=[];
+for(var i=1;i<arguments.length;i++){
+c.push(arguments[i]);
 }
-this._data.push({plugin:_c,data:_d});
+_3=c;
+}
+this._data.push({plugin:_2,data:_3});
 },checkData:function(){
 if(this._inTransit){
 this.schedulePusher(this.inTransitRetry);
@@ -33,32 +43,32 @@ this.schedulePusher();
 if(this._data.length){
 this._inTransit=this._data;
 this._data=[];
-var _e;
+var _4;
 switch(this.sendMethod){
 case "script":
-_e=_9.get(this.getQueryPacket(),{preventCache:1,callbackParamName:"callback"});
+_4=dojo.io.script.get({url:this.getQueryPacket(),preventCache:1,callbackParamName:"callback"});
 break;
 case "xhrPost":
 default:
-_e=_6.post(this.dataUrl,{data:{id:this._id++,data:_7.stringify(this._inTransit)}});
+_4=dojo.xhrPost({url:this.dataUrl,content:{id:this._id++,data:dojo.toJson(this._inTransit)}});
 break;
 }
-_e.then(_1.hitch(this,"onPushComplete"));
-return _e;
+_4.addCallback(this,"onPushComplete");
+return _4;
 }
 return false;
 },getQueryPacket:function(){
 while(true){
-var _f={id:this._id++,data:_7.stringify(this._inTransit)};
-var _10=this.dataUrl+"?"+_8.objectToQuery(_f);
-if(_10.length>this.maxRequestSize){
+var _5={id:this._id++,data:dojo.toJson(this._inTransit)};
+var _6=this.dataUrl+"?"+dojo.objectToQuery(_5);
+if(_6.length>this.maxRequestSize){
 this._data.unshift(this._inTransit.pop());
 this._split=1;
 }else{
-return _10;
+return _6;
 }
 }
-},onPushComplete:function(_11){
+},onPushComplete:function(_7){
 if(this._inTransit){
 delete this._inTransit;
 }
@@ -68,5 +78,5 @@ this.schedulePusher(this.inTransitRetry);
 this.schedulePusher();
 }
 }});
-return _1.setObject("dojox.analytics",new _a());
-});
+dojox.analytics=new dojox.analytics();
+}

@@ -93,16 +93,6 @@ public enum CollectionType implements IsSerializable {
 	
 	/**
 	 * Returns true if this CollectionType value represents a
-	 * My Files collection and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isMyFiles() {
-		return (MY_FILES.equals(this));
-	}
-	
-	/**
-	 * Returns true if this CollectionType value represents a
 	 * Shared by Me collection and false otherwise.
 	 * 
 	 * @return

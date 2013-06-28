@@ -94,7 +94,6 @@ public interface BinderProcessor {
      */
     public void moveBinderFixup(Binder binder);
 	public ChangeLog processChangeLog(Binder binder, String operation);
-	public ChangeLog processChangeLog(Binder binder, String operation, boolean skipDbLog);
 	
     public void updateParentModTime(final Binder parentBinder, Map options);
 

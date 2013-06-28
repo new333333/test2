@@ -289,7 +289,7 @@ public class Utils {
 		}
 
 		String title = user.getTitle();
-		if(Validator.isNotNull(title) && (Validator.isNotNull(fn) || Validator.isNotNull(mn) || Validator.isNotNull(ln)))
+		if(Validator.isNotNull(title))
 		{
 			result = NLT.get("user.title", values.toArray(), title);
 			result = result.trim().replaceAll("  ", " ");

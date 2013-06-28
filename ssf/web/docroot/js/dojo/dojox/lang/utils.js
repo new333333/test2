@@ -1,86 +1,59 @@
-//>>built
-define("dojox/lang/utils",["..","dojo/_base/lang"],function(_1,_2){
-var du=_2.getObject("lang.utils",true,_1);
-var _3={},_4=Object.prototype.toString;
-var _5=function(o){
-if(o){
-switch(_4.call(o)){
-case "[object Array]":
-return o.slice(0);
-case "[object Object]":
-return _2.delegate(o);
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.lang.utils"]){
+dojo._hasResource["dojox.lang.utils"]=true;
+dojo.provide("dojox.lang.utils");
+(function(){
+var _1={},du=dojox.lang.utils;
+var _2=function(o){
+if(dojo.isArray(o)){
+return dojo._toArray(o);
 }
-}
+if(!dojo.isObject(o)||dojo.isFunction(o)){
 return o;
+}
+return dojo.delegate(o);
 };
-_2.mixin(du,{coerceType:function(_6,_7){
-switch(typeof _6){
+dojo.mixin(du,{coerceType:function(_3,_4){
+switch(typeof _3){
 case "number":
-return Number(eval("("+_7+")"));
+return Number(eval("("+_4+")"));
 case "string":
-return String(_7);
+return String(_4);
 case "boolean":
-return Boolean(eval("("+_7+")"));
+return Boolean(eval("("+_4+")"));
 }
-return eval("("+_7+")");
-},updateWithObject:function(_8,_9,_a){
-if(!_9){
-return _8;
+return eval("("+_4+")");
+},updateWithObject:function(_5,_6,_7){
+if(!_6){
+return _5;
 }
-for(var x in _8){
-if(x in _9&&!(x in _3)){
-var t=_8[x];
+for(var x in _5){
+if(x in _6&&!(x in _1)){
+var t=_5[x];
 if(t&&typeof t=="object"){
-du.updateWithObject(t,_9[x],_a);
+du.updateWithObject(t,_6[x],_7);
 }else{
-_8[x]=_a?du.coerceType(t,_9[x]):_5(_9[x]);
+_5[x]=_7?du.coerceType(t,_6[x]):_2(_6[x]);
 }
+}
+}
+return _5;
+},updateWithPattern:function(_8,_9,_a,_b){
+if(!_9||!_a){
+return _8;
+}
+for(var x in _a){
+if(x in _9&&!(x in _1)){
+_8[x]=_b?du.coerceType(_a[x],_9[x]):_2(_9[x]);
 }
 }
 return _8;
-},updateWithPattern:function(_b,_c,_d,_e){
-if(!_c||!_d){
-return _b;
-}
-for(var x in _d){
-if(x in _c&&!(x in _3)){
-_b[x]=_e?du.coerceType(_d[x],_c[x]):_5(_c[x]);
-}
-}
-return _b;
-},merge:function(_f,_10){
-if(_10){
-var _11=_4.call(_f),_12=_4.call(_10),t,i,l,m;
-switch(_12){
-case "[object Array]":
-if(_12==_11){
-t=new Array(Math.max(_f.length,_10.length));
-for(i=0,l=t.length;i<l;++i){
-t[i]=du.merge(_f[i],_10[i]);
-}
-return t;
-}
-return _10.slice(0);
-case "[object Object]":
-if(_12==_11&&_f){
-t=_2.delegate(_f);
-for(i in _10){
-if(i in _f){
-l=_f[i];
-m=_10[i];
-if(m!==l){
-t[i]=du.merge(l,m);
-}
-}else{
-t[i]=_2.clone(_10[i]);
-}
-}
-return t;
-}
-return _2.clone(_10);
-}
-}
-return _10;
 }});
-return du;
-});
+})();
+}

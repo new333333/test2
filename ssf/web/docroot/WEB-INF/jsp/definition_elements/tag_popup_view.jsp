@@ -90,7 +90,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 
 <div class="ss_sub_sidebarMenu" style="padding:5px 0px 5px 10px; ">
   <form class="ss_style ss_form ss_tag_pane_color" 
-  	method="post"
+  	method="post" action=""
   	id="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" 
   	name="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}">
 

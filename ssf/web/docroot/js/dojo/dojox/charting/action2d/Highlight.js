@@ -1,77 +1,76 @@
-//>>built
-define("dojox/charting/action2d/Highlight",["dojo/_base/lang","dojo/_base/declare","dojo/_base/Color","dojo/_base/connect","dojox/color/_base","./PlotAction","dojo/fx/easing","dojox/gfx/fx"],function(_1,_2,_3,_4,c,_5,_6,_7){
-var _8=100,_9=75,_a=50,cc=function(_b){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.charting.action2d.Highlight"]){
+dojo._hasResource["dojox.charting.action2d.Highlight"]=true;
+dojo.provide("dojox.charting.action2d.Highlight");
+dojo.require("dojox.charting.action2d.Base");
+dojo.require("dojox.color");
+(function(){
+var _1=100,_2=75,_3=50,c=dojox.color,cc=function(_4){
 return function(){
-return _b;
+return _4;
 };
-},hl=function(_c){
-var a=new c.Color(_c),x=a.toHsl();
+},hl=function(_5){
+var a=new c.Color(_5),x=a.toHsl();
 if(x.s==0){
 x.l=x.l<50?100:0;
 }else{
-x.s=_8;
-if(x.l<_a){
-x.l=_9;
+x.s=_1;
+if(x.l<_3){
+x.l=_2;
 }else{
-if(x.l>_9){
-x.l=_a;
+if(x.l>_2){
+x.l=_3;
 }else{
-x.l=x.l-_a>_9-x.l?_a:_9;
+x.l=x.l-_3>_2-x.l?_3:_2;
 }
 }
 }
-var _d=c.fromHsl(x);
-_d.a=a.a;
-return _d;
-},_e=function(_f){
-var r=hl(_f);
-r.a=0.7;
-return r;
+return c.fromHsl(x);
 };
-return _2("dojox.charting.action2d.Highlight",_5,{defaultParams:{duration:400,easing:_6.backOut},optionalParams:{highlight:"red"},constructor:function(_10,_11,_12){
-var a=_12&&_12.highlight;
-this.colorFunc=a?(_1.isFunction(a)?a:cc(a)):hl;
+dojo.declare("dojox.charting.action2d.Highlight",dojox.charting.action2d.Base,{defaultParams:{duration:400,easing:dojo.fx.easing.backOut},optionalParams:{highlight:"red"},constructor:function(_6,_7,_8){
+var a=_8&&_8.highlight;
+this.colorFun=a?(dojo.isFunction(a)?a:cc(a)):hl;
 this.connect();
 },process:function(o){
 if(!o.shape||!(o.type in this.overOutEvents)){
 return;
 }
-if(o.element=="spider_circle"||o.element=="spider_plot"){
-return;
+var _9=o.run.name,_a=o.index,_b,_c,_d;
+if(_9 in this.anim){
+_b=this.anim[_9][_a];
 }else{
-if(o.element=="spider_poly"&&this.colorFunc==hl){
-this.colorFunc=_e;
+this.anim[_9]={};
 }
-}
-var _13=o.run.name,_14=o.index,_15;
-if(_13 in this.anim){
-_15=this.anim[_13][_14];
+if(_b){
+_b.action.stop(true);
 }else{
-this.anim[_13]={};
-}
-if(_15){
-_15.action.stop(true);
-}else{
-var _16=o.shape.getFill();
-if(!_16||!(_16 instanceof _3)){
+var _e=o.shape.getFill();
+if(!_e||!(_e instanceof dojo.Color)){
 return;
 }
-this.anim[_13][_14]=_15={start:_16,end:this.colorFunc(_16)};
+this.anim[_9][_a]=_b={start:_e,end:this.colorFun(_e)};
 }
-var _17=_15.start,end=_15.end;
+var _f=_b.start,end=_b.end;
 if(o.type=="onmouseout"){
-var t=_17;
-_17=end;
+var t=_f;
+_f=end;
 end=t;
 }
-_15.action=_7.animateFill({shape:o.shape,duration:this.duration,easing:this.easing,color:{start:_17,end:end}});
+_b.action=dojox.gfx.fx.animateFill({shape:o.shape,duration:this.duration,easing:this.easing,color:{start:_f,end:end}});
 if(o.type=="onmouseout"){
-_4.connect(_15.action,"onEnd",this,function(){
-if(this.anim[_13]){
-delete this.anim[_13][_14];
+dojo.connect(_b.action,"onEnd",this,function(){
+if(this.anim[_9]){
+delete this.anim[_9][_a];
 }
 });
 }
-_15.action.play();
+_b.action.play();
 }});
-});
+})();
+}

@@ -1,12 +1,17 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/dnd/Manager",["../_base/array","../_base/declare","../_base/lang","../_base/window","../dom-class","../Evented","../has","../keys","../on","../topic","../touch","./common","./autoscroll","./Avatar"],function(_1,_2,_3,_4,_5,_6,_7,_8,on,_9,_a,_b,_c,_d){
-var _e=_2("dojo.dnd.Manager",[_6],{constructor:function(){
+
+if(!dojo._hasResource["dojo.dnd.Manager"]){
+dojo._hasResource["dojo.dnd.Manager"]=true;
+dojo.provide("dojo.dnd.Manager");
+dojo.require("dojo.dnd.common");
+dojo.require("dojo.dnd.autoscroll");
+dojo.require("dojo.dnd.Avatar");
+dojo.declare("dojo.dnd.Manager",null,{constructor:function(){
 this.avatar=null;
 this.source=null;
 this.nodes=[];
@@ -14,119 +19,110 @@ this.copy=true;
 this.target=null;
 this.canDropFlag=false;
 this.events=[];
-},OFFSET_X:_7("touch")?0:16,OFFSET_Y:_7("touch")?-64:16,overSource:function(_f){
+},OFFSET_X:16,OFFSET_Y:16,overSource:function(_1){
 if(this.avatar){
-this.target=(_f&&_f.targetState!="Disabled")?_f:null;
+this.target=(_1&&_1.targetState!="Disabled")?_1:null;
 this.canDropFlag=Boolean(this.target);
 this.avatar.update();
 }
-_9.publish("/dnd/source/over",_f);
-},outSource:function(_10){
+dojo.publish("/dnd/source/over",[_1]);
+},outSource:function(_2){
 if(this.avatar){
-if(this.target==_10){
+if(this.target==_2){
 this.target=null;
 this.canDropFlag=false;
 this.avatar.update();
-_9.publish("/dnd/source/over",null);
+dojo.publish("/dnd/source/over",[null]);
 }
 }else{
-_9.publish("/dnd/source/over",null);
+dojo.publish("/dnd/source/over",[null]);
 }
-},startDrag:function(_11,_12,_13){
-_c.autoScrollStart(_4.doc);
-this.source=_11;
-this.nodes=_12;
-this.copy=Boolean(_13);
+},startDrag:function(_3,_4,_5){
+this.source=_3;
+this.nodes=_4;
+this.copy=Boolean(_5);
 this.avatar=this.makeAvatar();
-_4.body().appendChild(this.avatar.node);
-_9.publish("/dnd/start",_11,_12,this.copy);
-function _14(e){
-e.preventDefault();
-e.stopPropagation();
-};
-this.events=[on(_4.doc,_a.move,_3.hitch(this,"onMouseMove")),on(_4.doc,_a.release,_3.hitch(this,"onMouseUp")),on(_4.doc,"keydown",_3.hitch(this,"onKeyDown")),on(_4.doc,"keyup",_3.hitch(this,"onKeyUp")),on(_4.doc,"dragstart",_14),on(_4.body(),"selectstart",_14)];
-var c="dojoDnd"+(_13?"Copy":"Move");
-_5.add(_4.body(),c);
-},canDrop:function(_15){
-var _16=Boolean(this.target&&_15);
-if(this.canDropFlag!=_16){
-this.canDropFlag=_16;
+dojo.body().appendChild(this.avatar.node);
+dojo.publish("/dnd/start",[_3,_4,this.copy]);
+this.events=[dojo.connect(dojo.doc,"onmousemove",this,"onMouseMove"),dojo.connect(dojo.doc,"onmouseup",this,"onMouseUp"),dojo.connect(dojo.doc,"onkeydown",this,"onKeyDown"),dojo.connect(dojo.doc,"onkeyup",this,"onKeyUp"),dojo.connect(dojo.doc,"ondragstart",dojo.stopEvent),dojo.connect(dojo.body(),"onselectstart",dojo.stopEvent)];
+var c="dojoDnd"+(_5?"Copy":"Move");
+dojo.addClass(dojo.body(),c);
+},canDrop:function(_6){
+var _7=Boolean(this.target&&_6);
+if(this.canDropFlag!=_7){
+this.canDropFlag=_7;
 this.avatar.update();
 }
 },stopDrag:function(){
-_5.remove(_4.body(),["dojoDndCopy","dojoDndMove"]);
-_1.forEach(this.events,function(_17){
-_17.remove();
-});
+dojo.removeClass(dojo.body(),"dojoDndCopy");
+dojo.removeClass(dojo.body(),"dojoDndMove");
+dojo.forEach(this.events,dojo.disconnect);
 this.events=[];
 this.avatar.destroy();
 this.avatar=null;
 this.source=this.target=null;
 this.nodes=[];
 },makeAvatar:function(){
-return new _d(this);
+return new dojo.dnd.Avatar(this);
 },updateAvatar:function(){
 this.avatar.update();
 },onMouseMove:function(e){
 var a=this.avatar;
 if(a){
-_c.autoScrollNodes(e);
+dojo.dnd.autoScrollNodes(e);
 var s=a.node.style;
 s.left=(e.pageX+this.OFFSET_X)+"px";
 s.top=(e.pageY+this.OFFSET_Y)+"px";
-var _18=Boolean(this.source.copyState(_b.getCopyKeyState(e)));
-if(this.copy!=_18){
-this._setCopyStatus(_18);
+var _8=Boolean(this.source.copyState(dojo.isCopyKey(e)));
+if(this.copy!=_8){
+this._setCopyStatus(_8);
 }
-}
-if(_7("touch")){
-e.preventDefault();
 }
 },onMouseUp:function(e){
 if(this.avatar){
 if(this.target&&this.canDropFlag){
-var _19=Boolean(this.source.copyState(_b.getCopyKeyState(e)));
-_9.publish("/dnd/drop/before",this.source,this.nodes,_19,this.target,e);
-_9.publish("/dnd/drop",this.source,this.nodes,_19,this.target,e);
+var _9=Boolean(this.source.copyState(dojo.isCopyKey(e))),_a=[this.source,this.nodes,_9,this.target];
+dojo.publish("/dnd/drop/before",_a);
+dojo.publish("/dnd/drop",_a);
 }else{
-_9.publish("/dnd/cancel");
+dojo.publish("/dnd/cancel");
 }
 this.stopDrag();
 }
 },onKeyDown:function(e){
 if(this.avatar){
 switch(e.keyCode){
-case _8.CTRL:
-var _1a=Boolean(this.source.copyState(true));
-if(this.copy!=_1a){
-this._setCopyStatus(_1a);
+case dojo.keys.CTRL:
+var _b=Boolean(this.source.copyState(true));
+if(this.copy!=_b){
+this._setCopyStatus(_b);
 }
 break;
-case _8.ESCAPE:
-_9.publish("/dnd/cancel");
+case dojo.keys.ESCAPE:
+dojo.publish("/dnd/cancel");
 this.stopDrag();
 break;
 }
 }
 },onKeyUp:function(e){
-if(this.avatar&&e.keyCode==_8.CTRL){
-var _1b=Boolean(this.source.copyState(false));
-if(this.copy!=_1b){
-this._setCopyStatus(_1b);
+if(this.avatar&&e.keyCode==dojo.keys.CTRL){
+var _c=Boolean(this.source.copyState(false));
+if(this.copy!=_c){
+this._setCopyStatus(_c);
 }
 }
-},_setCopyStatus:function(_1c){
-this.copy=_1c;
+},_setCopyStatus:function(_d){
+this.copy=_d;
 this.source._markDndStatus(this.copy);
 this.updateAvatar();
-_5.replace(_4.body(),"dojoDnd"+(this.copy?"Copy":"Move"),"dojoDnd"+(this.copy?"Move":"Copy"));
+dojo.removeClass(dojo.body(),"dojoDnd"+(this.copy?"Move":"Copy"));
+dojo.addClass(dojo.body(),"dojoDnd"+(this.copy?"Copy":"Move"));
 }});
-_b._manager=null;
-_e.manager=_b.manager=function(){
-if(!_b._manager){
-_b._manager=new _e();
+dojo.dnd._manager=null;
+dojo.dnd.manager=function(){
+if(!dojo.dnd._manager){
+dojo.dnd._manager=new dojo.dnd.Manager();
 }
-return _b._manager;
+return dojo.dnd._manager;
 };
-return _e;
-});
+}

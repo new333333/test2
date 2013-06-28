@@ -66,7 +66,6 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
-import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.util.LanguageTaster;
@@ -380,18 +379,6 @@ public class SearchUtils {
     		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText((String) options.get(ObjectKeys.SEARCH_ANCESTRY));
     	}
-    	if (options.containsKey(ObjectKeys.SEARCH_HIDDEN)) {
-    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, org.kablink.util.search.Constants.HIDDEN_FROM_SEARCH_FIELD);
-    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    		child.setText((String) options.get(ObjectKeys.SEARCH_HIDDEN));
-    	}
-    	if (options.containsKey(ObjectKeys.SEARCH_FIND_USER_HIDDEN)) {
-    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, org.kablink.util.search.Constants.HIDDEN_FROM_FIND_USER_FIELD);
-    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    		child.setText((String) options.get(ObjectKeys.SEARCH_FIND_USER_HIDDEN));
-    	}
 
     	//See if there are event days (modification is also an event)
     	if (options.containsKey(ObjectKeys.SEARCH_EVENT_DAYS)) {
@@ -628,7 +615,7 @@ public class SearchUtils {
 			int offset, 
 			int size, 
 			Binder parentBinder)
-					throws LuceneException, AuthException {
+					throws LuceneException {
 		
 		try {
 			if(parentBinder.isMirrored() && parentBinder instanceof Folder) {			
@@ -648,12 +635,7 @@ public class SearchUtils {
 				}
 			}	
 		}
-		catch(AuthException e) {
-			throw e; // Propagate this up
-		}
-		catch(Exception ignore) {
-			// Ignore all other exceptions
-		}
+		catch(Exception ignore) {}
 		
 		return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
 	}

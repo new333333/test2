@@ -120,6 +120,8 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
@@ -622,7 +624,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				&& (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || options
 						.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
 			checkAccess(parentBinder, BinderOperation.changeEntryTimestamps);
-
 		if (def.getType() == Definition.FOLDER_VIEW) {
 			checkAccess(parentBinder, BinderOperation.addFolder);
 			binder = loadBinderProcessor(parentBinder).addBinder(
@@ -1073,14 +1074,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeleted(null);
 		        	ws.setPreDeletedWhen(null);
 		        	ws.setPreDeletedBy(null);
-		        	
-		        	if (BinderHelper.isBinderUserWorkspace(binder)) {
-		        		// Note:  Won't work for guest, but guest will
-		        		// never get here because of the
-		        		// isBinderSystemUserWS() check at the top of
-		        		// the method.
-		        		getProfileModule().setUserWorkspacePreDeleted(ws.getOwnerId(), false);
-		        	}
 		        }
 
 		        // ...log the restoration...
@@ -1362,14 +1355,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeleted(Boolean.TRUE);
 		        	ws.setPreDeletedWhen(System.currentTimeMillis());
 		        	ws.setPreDeletedBy(userId);
-		        	
-		        	if (BinderHelper.isBinderUserWorkspace(binder)) {
-		        		// Note:  Won't work for guest, but guest will
-		        		// never get here because of the
-		        		// isBinderSystemUserWS() check at the top of
-		        		// the method.
-		        		getProfileModule().setUserWorkspacePreDeleted(ws.getOwnerId(), true);
-		        	}
 		        }
 
 		        Binder parentBinder = binder.getParentBinder();
@@ -3298,7 +3283,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				public String toString() {
 					return "folderModule.cleanupFolders()";
 				}
-			}, RunAsyncManager.TaskType.MISC);
+			}, RunAsyncManager.TaskType.OTHER);
 		}
 	}
 

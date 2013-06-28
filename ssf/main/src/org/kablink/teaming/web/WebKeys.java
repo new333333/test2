@@ -105,7 +105,6 @@ public class WebKeys {
     public static final String IS_FORM_LOGIN_ALLOWED = "isFormLoginAllowed";
     public static final String JSP_NAME = "jspName";
     public static final String CONFIG_STRING = "configStr";
-    public static final String CLOUD_FOLDERS_ENABLED = "cloudFoldersEnabled";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
@@ -135,7 +134,6 @@ public class WebKeys {
     public static final String URL_BINDER_PARENT_ID="binderParentId";
     public static final String URL_BINDER_IDS="binderIds";
     public static final String URL_FOLDER_ID = "folderId";
-    public static final String URL_RECURSIVE = "recursive";
     public static final String URL_IS_LIBRARY_BINDER="isLibraryBinder";
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
     public static final String URL_BINDER_CONFIG_ID="binderConfigId";
@@ -232,9 +230,6 @@ public class WebKeys {
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
     public static final String URL_OPERATION3="operation3";
-    public static final String URL_FOLDER_ENTRY="folderEntry";
-    public static final String URL_FOLDER_ENTRY_LIST="folderEntryList";
-    public static final String URL_FOLDER_LIST="folderList";
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
     public static final String URL_SEARCH_SCOPE="scope";
@@ -664,8 +659,6 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_FILE = "view_file";
 	public static final String OPERATION_VIEW_UPLOAD_FILE = "view_upload_file";
 	public static final String OPERATION_LIST_SAVED_QUERIES="list_saved_queries";
-	public static final String OPERATION_READ_FILE_LIST="read_file_list";
-	public static final String OPERATION_READ_FOLDER="read_folder";
 	
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
 	public static final String OPERATION_REMOVE_SEARCH_QUERY = "remove_search_query";
@@ -707,7 +700,6 @@ public class WebKeys {
 	public static final String MRS_OPERATION_DISABLE_FILE_SYNC_STATS = "disable_file_sync_stats";
 	public static final String MRS_OPERATION_SEARCH = "search";
 	public static final String MRS_OPERATION_CLEAR = "clear";
-	public static final String MRS_OPERATION_STOP_FILE_SYNC = "stop_file_sync";
 
 	public static final String AUTO_NOTIFY_TAIL			= "_notify";
 	public static final String AUTO_NOTIFY_GROUPS_TAIL	= "_groups";

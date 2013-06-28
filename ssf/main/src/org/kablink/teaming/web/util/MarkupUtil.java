@@ -1225,11 +1225,6 @@ public class MarkupUtil {
 				    		titleLink.append("//ss_createSpannedAreaObj(\"ss_videoDiv"+id.toString()+"\");\n");
 				    		titleLink.append("</script>\n");
 			    		}
-			    	} else if (s_url.startsWith("http://youtu.be/")) {
-			    		//Make this into an embed URL
-			    		s_url = s_url.replaceFirst("http://youtu.be/", "http://www.youtube.com/embed/");
-			    		titleLink.append("<iframe width=\"" + s_width + "\" height=\"" + s_height + "\" ");
-			        	titleLink.append("src=\"" + s_url + "\" frameborder=\"0\" allowfullscreen</iframe>");
 			    	} else {
 			        	titleLink.append("<a target=\"_blank\" src=\"");
 			        	titleLink.append(s_url);

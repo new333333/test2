@@ -1,55 +1,62 @@
-//>>built
-define("dojox/xmpp/util",["dijit","dojo","dojox","dojo/require!dojox/string/Builder,dojox/encoding/base64"],function(_1,_2,_3){
-_2.provide("dojox.xmpp.util");
-_2.require("dojox.string.Builder");
-_2.require("dojox.encoding.base64");
-_3.xmpp.util.xmlEncode=function(_4){
-if(_4){
-_4=_4.replace("&","&amp;").replace(">","&gt;").replace("<","&lt;").replace("'","&apos;").replace("\"","&quot;");
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.xmpp.util"]){
+dojo._hasResource["dojox.xmpp.util"]=true;
+dojo.provide("dojox.xmpp.util");
+dojo.require("dojox.string.Builder");
+dojo.require("dojox.encoding.base64");
+dojox.xmpp.util.xmlEncode=function(_1){
+if(_1){
+_1=_1.replace("&","&amp;").replace(">","&gt;").replace("<","&lt;").replace("'","&apos;").replace("\"","&quot;");
 }
-return _4;
+return _1;
 };
-_3.xmpp.util.encodeJid=function(_5){
-var _6=new _3.string.Builder();
-for(var i=0;i<_5.length;i++){
-var ch=_5.charAt(i);
-var _7=ch;
+dojox.xmpp.util.encodeJid=function(_2){
+var _3=new dojox.string.Builder();
+for(var i=0;i<_2.length;i++){
+var ch=_2.charAt(i);
+var _4=ch;
 switch(ch){
 case " ":
-_7="\\20";
+_4="\\20";
 break;
 case "\"":
-_7="\\22";
+_4="\\22";
 break;
 case "#":
-_7="\\23";
+_4="\\23";
 break;
 case "&":
-_7="\\26";
+_4="\\26";
 break;
 case "'":
-_7="\\27";
+_4="\\27";
 break;
 case "/":
-_7="\\2f";
+_4="\\2f";
 break;
 case ":":
-_7="\\3a";
+_4="\\3a";
 break;
 case "<":
-_7="\\3c";
+_4="\\3c";
 break;
 case ">":
-_7="\\3e";
+_4="\\3e";
 break;
 }
-_6.append(_7);
+_3.append(_4);
 }
-return _6.toString();
+return _3.toString();
 };
-_3.xmpp.util.decodeJid=function(_8){
-_8=_8.replace(/\\([23][02367acef])/g,function(_9){
-switch(_9){
+dojox.xmpp.util.decodeJid=function(_5){
+_5=_5.replace(/\\([23][02367acef])/g,function(_6){
+switch(_6){
 case "\\20":
 return " ";
 case "\\22":
@@ -71,42 +78,42 @@ return ">";
 }
 return "ARG";
 });
-return _8;
+return _5;
 };
-_3.xmpp.util.createElement=function(_a,_b,_c){
-var _d=new _3.string.Builder("<");
-_d.append(_a+" ");
-for(var _e in _b){
-_d.append(_e+"=\"");
-_d.append(_b[_e]);
-_d.append("\" ");
+dojox.xmpp.util.createElement=function(_7,_8,_9){
+var _a=new dojox.string.Builder("<");
+_a.append(_7+" ");
+for(var _b in _8){
+_a.append(_b+"=\"");
+_a.append(_8[_b]);
+_a.append("\" ");
 }
-if(_c){
-_d.append("/>");
+if(_9){
+_a.append("/>");
 }else{
-_d.append(">");
+_a.append(">");
 }
-return _d.toString();
+return _a.toString();
 };
-_3.xmpp.util.stripHtml=function(_f){
+dojox.xmpp.util.stripHtml=function(_c){
 var re=/<[^>]*?>/gi;
 for(var i=0;i<arguments.length;i++){
 }
-return _f.replace(re,"");
+return _c.replace(re,"");
 };
-_3.xmpp.util.decodeHtmlEntities=function(str){
-var ta=_2.doc.createElement("textarea");
-ta.innerHTML=str.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+dojox.xmpp.util.decodeHtmlEntities=function(_d){
+var ta=dojo.doc.createElement("textarea");
+ta.innerHTML=_d.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 return ta.value;
 };
-_3.xmpp.util.htmlToPlain=function(str){
-str=_3.xmpp.util.decodeHtmlEntities(str);
-str=str.replace(/<br\s*[i\/]{0,1}>/gi,"\n");
-str=_3.xmpp.util.stripHtml(str);
-return str;
+dojox.xmpp.util.htmlToPlain=function(_e){
+_e=dojox.xmpp.util.decodeHtmlEntities(_e);
+_e=_e.replace(/<br\s*[i\/]{0,1}>/gi,"\n");
+_e=dojox.xmpp.util.stripHtml(_e);
+return _e;
 };
-_3.xmpp.util.Base64={};
-_3.xmpp.util.Base64.encode=function(_10){
+dojox.xmpp.util.Base64={};
+dojox.xmpp.util.Base64.encode=function(_f){
 var s2b=function(s){
 var b=[];
 for(var i=0;i<s.length;++i){
@@ -114,16 +121,16 @@ b.push(s.charCodeAt(i));
 }
 return b;
 };
-return _3.encoding.base64.encode(s2b(_10));
+return dojox.encoding.base64.encode(s2b(_f));
 };
-_3.xmpp.util.Base64.decode=function(_11){
+dojox.xmpp.util.Base64.decode=function(_10){
 var b2s=function(b){
 var s=[];
-_2.forEach(b,function(c){
+dojo.forEach(b,function(c){
 s.push(String.fromCharCode(c));
 });
 return s.join("");
 };
-return b2s(_3.encoding.base64.decode(_11));
+return b2s(dojox.encoding.base64.decode(_10));
 };
-});
+}

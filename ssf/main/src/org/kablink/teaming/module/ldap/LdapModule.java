@@ -64,7 +64,7 @@ public interface LdapModule {
 	
 	public void setLdapSchedule(LdapSchedule schedule);
 
-	public HomeDirInfo readHomeDirInfoFromDirectory( String teamingUserName, String ldapUserName, boolean logErrors ) throws NamingException;
+	public HomeDirInfo readHomeDirInfoFromDirectory( String teamingUserName, String ldapUserName ) throws NamingException;
 	
     public String readLdapGuidFromDirectory( String userName, Long zoneId );
 

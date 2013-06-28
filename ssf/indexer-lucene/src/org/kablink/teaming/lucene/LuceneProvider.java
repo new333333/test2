@@ -1094,9 +1094,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					", size=" + size);
 		}
 		else if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 					
-					", offset=" + offset +
-					", size=" + size);
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength);
 		}
 	}
 	

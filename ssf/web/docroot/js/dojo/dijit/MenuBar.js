@@ -1,34 +1,39 @@
-//>>built
-define("dijit/MenuBar",["dojo/_base/declare","dojo/keys","./_MenuBase","dojo/text!./templates/MenuBar.html"],function(_1,_2,_3,_4){
-return _1("dijit.MenuBar",_3,{templateString:_4,baseClass:"dijitMenuBar",popupDelay:0,_isMenuBar:true,_orient:["below"],_moveToPopup:function(_5){
-if(this.focusedChild&&this.focusedChild.popup&&!this.focusedChild.disabled){
-this.onItemClick(this.focusedChild,_5);
-}
-},focusChild:function(_6){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dijit.MenuBar"]){
+dojo._hasResource["dijit.MenuBar"]=true;
+dojo.provide("dijit.MenuBar");
+dojo.require("dijit.Menu");
+dojo.declare("dijit.MenuBar",dijit._MenuBase,{templateString:dojo.cache("dijit","templates/MenuBar.html","<div class=\"dijitMenuBar dijitMenuPassive\" dojoAttachPoint=\"containerNode\"  waiRole=\"menubar\" tabIndex=\"${tabIndex}\" dojoAttachEvent=\"onkeypress: _onKeyPress\"></div>\n"),_isMenuBar:true,constructor:function(){
+this._orient=this.isLeftToRight()?{BL:"TL"}:{BR:"TR"};
+},postCreate:function(){
+var k=dojo.keys,l=this.isLeftToRight();
+this.connectKeyNavHandlers(l?[k.LEFT_ARROW]:[k.RIGHT_ARROW],l?[k.RIGHT_ARROW]:[k.LEFT_ARROW]);
+},focusChild:function(_1){
+var _2=this.focusedChild,_3=_2&&_2.popup&&_2.popup.isShowingNow;
 this.inherited(arguments);
-if(this.activated&&_6.popup&&!_6.disabled){
-this._openItemPopup(_6,true);
+if(_3&&_1.popup&&!_1.disabled){
+this._openPopup();
 }
-},_onChildDeselect:function(_7){
-if(this.currentPopupItem==_7){
-this.currentPopupItem=null;
-_7._closePopup();
+},_onKeyPress:function(_4){
+if(_4.ctrlKey||_4.altKey){
+return;
 }
-this.inherited(arguments);
-},_onLeftArrow:function(){
-this.focusPrev();
-},_onRightArrow:function(){
-this.focusNext();
-},_onDownArrow:function(_8){
-this._moveToPopup(_8);
-},_onUpArrow:function(){
-},onItemClick:function(_9,_a){
-if(_9.popup&&_9.popup.isShowingNow&&(!/^key/.test(_a.type)||_a.keyCode!==_2.DOWN_ARROW)){
-_9.focusNode.focus();
-this._cleanUp(true);
+switch(_4.charOrCode){
+case dojo.keys.DOWN_ARROW:
+this._moveToPopup(_4);
+dojo.stopEvent(_4);
+}
+},onItemClick:function(_5,_6){
+if(_5.popup&&_5.popup.isShowingNow){
+_5.popup.onCancel();
 }else{
 this.inherited(arguments);
 }
 }});
-});
-require({cache:{"url:dijit/templates/MenuBar.html":"<div class=\"dijitMenuBar dijitMenuPassive\" data-dojo-attach-point=\"containerNode\" role=\"menubar\" tabIndex=\"${tabIndex}\"\n\t ></div>\n"}});
+}

@@ -98,7 +98,7 @@
 <ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" tableStyle="${slidingTableTableStyle}"
  height="<%= ssFolderTableHeight %>" folderId="${ssBinder.id}">
 
-<ssf:slidingTableRow headerRow="true" style="ss_tableheader_style" >
+<ssf:slidingTableRow headerRow="true" style="${slidingTableRowStyle}" >
   <ssf:slidingTableColumn width="30%"><ssf:nlt tag="profile.element.title"/></ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="50%"><ssf:nlt tag="profile.element.emailAddress"/></ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="20%"><ssf:nlt tag="profile.element.name"/></ssf:slidingTableColumn>

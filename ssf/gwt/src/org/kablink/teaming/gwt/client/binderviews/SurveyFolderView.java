@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.List;
@@ -185,18 +186,5 @@ public class SurveyFolderView extends DataTableFolderViewBase {
 	@Override
 	public void resizeView() {
 		// Nothing to do.
-	}
-	
-	/**
-	 * We don't show an icon for the entry title cells in a survey
-	 * folder.
-	 *
-	 * Overrides the DataTableFolderViewBase.showEntryTitleIcon() method.
-	 * 
-	 * @return
-	 */
-	@Override
-	protected boolean showEntryTitleIcon() {
-		return false;
 	}
 }

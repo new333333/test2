@@ -143,7 +143,7 @@
 								  <c:if test="${ss_searchScope == 'current'}"> checked="checked" </c:if>
 								  style="width:20px;"
 								>
-								<input type="hidden" name="contextBinderId" id="contextBinderId" value="${ss_searchContextBinderId}" />
+								<input type="hidden" name="contextBinderId" value="${ss_searchContextBinderId}" />
 							  </td>
 							  <td>
 								<ssf:nlt tag="search.scope.current"/>&nbsp;

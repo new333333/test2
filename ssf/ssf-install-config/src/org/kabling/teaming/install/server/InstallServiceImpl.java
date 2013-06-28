@@ -310,7 +310,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	public void updateDbUrlAndstartFilrServer()
 	{
 		ConfigService.startFilrServer();
-		ConfigService.saveFilrConfigLocally();
+		
 		ConfigService.updateFsaUpdateUrl();
 	}
 	

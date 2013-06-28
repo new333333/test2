@@ -130,24 +130,9 @@ public interface ResourceDriverModule {
     public void setSynchronizationSchedule( ScheduleInfo config, Long driverId );
 
 	/**
-	 * Synchronize all of the net folders associated with the given net folder server
-	 * as soon as system resources become available.
-	 * This submits the work and returns immediately without waiting for the work to finish,
-	 * hence working asynchronously. 
-	 * 
-	 * @param netFolderServerId this should be a ResourceDriverConfig
-	 * @throws AccessControlException
-	 * @throws FIException
-	 * @throws UncheckedIOException
-	 */
-	public boolean enqueueSynchronize( String netFolderServerName, boolean excludeFoldersWithSchedule )
-		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
-
-	/**
-	 * Synchronize all of the net folders associated with the given net folder server
-	 * as soon as system resources become available. 
-	 * This submits the work and returns immediately without waiting for the work to finish,
-	 * hence working asynchronously. 
+	 * Synchronize all of the net folders associated with the give net folder server. 
+	 * This initiates the work and returns immediately without waiting for
+	 * the work to finish, hence working asynchronously. 
 	 * 
 	 * @param netFolderServerId this should be a ResourceDriverConfig
 	 * @param statusTicket
@@ -155,6 +140,20 @@ public interface ResourceDriverModule {
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public boolean enqueueSynchronize( Long netFolderServerId, boolean excludeFoldersWithSchedule )
+	public boolean synchronize( String netFolderServerName, boolean excludeFoldersWithSchedule, StatusTicket statusTicket )
+		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
+
+	/**
+	 * Synchronize all of the net folders associated with the give net folder server. 
+	 * This initiates the work and returns immediately without waiting for
+	 * the work to finish, hence working asynchronously. 
+	 * 
+	 * @param netFolderServerId this should be a ResourceDriverConfig
+	 * @param statusTicket
+	 * @throws AccessControlException
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
+	public boolean synchronize( Long netFolderServerId, boolean excludeFoldersWithSchedule, StatusTicket statusTicket )
 		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 }

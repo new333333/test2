@@ -1,43 +1,49 @@
-//>>built
-define("dojox/widget/AutoRotator",["dojo/_base/declare","dojo/_base/array","dojo/_base/lang","dojo/on","dojo/mouse","dojox/widget/Rotator"],function(_1,_2,_3,on,_4,_5){
-return _1("dojox.widget.AutoRotator",_5,{suspendOnHover:false,duration:4000,autoStart:true,pauseOnManualChange:false,cycles:-1,random:false,reverse:false,constructor:function(){
-var _6=this;
-if(_6.cycles-0==_6.cycles&&_6.cycles>0){
-_6.cycles++;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.widget.AutoRotator"]){
+dojo._hasResource["dojox.widget.AutoRotator"]=true;
+dojo.provide("dojox.widget.AutoRotator");
+dojo.require("dojox.widget.Rotator");
+(function(d){
+d.declare("dojox.widget.AutoRotator",dojox.widget.Rotator,{suspendOnHover:false,duration:4000,autoStart:true,pauseOnManualChange:false,cycles:-1,random:false,reverse:false,constructor:function(){
+var _1=this;
+if(_1.cycles-0==_1.cycles&&_1.cycles>0){
+_1.cycles++;
 }else{
-_6.cycles=_6.cycles?-1:0;
+_1.cycles=_1.cycles?-1:0;
 }
-_6._signals=[on(_6._domNode,_4.enter,function(){
-if(_6.suspendOnHover&&!_6.anim&&!_6.wfe){
-var t=_6._endTime,n=_6._now();
-_6._suspended=true;
-_6._resetTimer();
-_6._resumeDuration=t>n?t-n:0.01;
+_1._connects=[d.connect(_1._domNode,"onmouseover",function(){
+if(_1.suspendOnHover&&!_1.anim&&!_1.wfe){
+var t=_1._endTime,n=_1._now();
+_1._suspended=true;
+_1._resetTimer();
+_1._resumeDuration=t>n?t-n:0.01;
 }
-}),on(_6._domNode,_4.leave,function(){
-if(_6.suspendOnHover&&!_6.anim){
-_6._suspended=false;
-if(_6.playing&&!_6.wfe){
-_6.play(true);
+}),d.connect(_1._domNode,"onmouseout",function(){
+if(_1.suspendOnHover&&!_1.anim){
+_1._suspended=false;
+if(_1.playing&&!_1.wfe){
+_1.play(true);
 }
 }
 })];
-if(_6.autoStart&&_6.panes.length>1){
-_6.play();
+if(_1.autoStart&&_1.panes.length>1){
+_1.play();
 }else{
-_6.pause();
+_1.pause();
 }
 },destroy:function(){
-_2.forEach(this._signals,function(_7){
-_7.remove();
-});
-delete this._signals;
-dojo.forEach(this._connects,dojo.disconnect);
+d.forEach(this._connects,d.disconnect);
 this.inherited(arguments);
-},play:function(_8,_9){
+},play:function(_2,_3){
 this.playing=true;
 this._resetTimer();
-if(_8!==true&&this.cycles>0){
+if(_2!==true&&this.cycles>0){
 this.cycles--;
 }
 if(this.cycles==0){
@@ -45,13 +51,13 @@ this.pause();
 }else{
 if(!this._suspended){
 this.onUpdate("play");
-if(_9){
+if(_3){
 this._cycle();
 }else{
 var r=(this._resumeDuration||0)-0,u=(r>0?r:(this.panes[this.idx].duration||this.duration))-0;
 this._resumeDuration=0;
 this._endTime=this._now()+u;
-this._timer=setTimeout(_3.hitch(this,"_cycle",false),u);
+this._timer=setTimeout(d.hitch(this,"_cycle",false),u);
 }
 }
 }
@@ -64,27 +70,27 @@ this.onUpdate("pause");
 return (new Date()).getTime();
 },_resetTimer:function(){
 clearTimeout(this._timer);
-},_cycle:function(_a){
-var _b=this,i=_b.idx,j;
-if(_b.random){
+},_cycle:function(_4){
+var _5=this,i=_5.idx,j;
+if(_5.random){
 do{
-j=Math.floor(Math.random()*_b.panes.length+1);
+j=Math.floor(Math.random()*_5.panes.length+1);
 }while(j==i);
 }else{
-j=i+(_b.reverse?-1:1);
+j=i+(_5.reverse?-1:1);
 }
-var _c=_b.go(j);
-if(_c){
-_c.addCallback(function(_d){
-_b.onUpdate("cycle");
-if(_b.playing){
-_b.play(false,_d);
+var _6=_5.go(j);
+if(_6){
+_6.addCallback(function(_7){
+_5.onUpdate("cycle");
+if(_5.playing){
+_5.play(false,_7);
 }
 });
 }
-},onManualChange:function(_e){
+},onManualChange:function(_8){
 this.cycles=-1;
-if(_e!="play"){
+if(_8!="play"){
 this._resetTimer();
 if(this.pauseOnManualChange){
 this.pause();
@@ -94,4 +100,5 @@ if(this.playing){
 this.play();
 }
 }});
-});
+})(dojo);
+}

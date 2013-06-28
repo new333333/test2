@@ -79,10 +79,6 @@ public class LicenseChecker {
 		return getInstance().getLicenseManager().isAuthorizedByLicense(featureName);
 	}
 	
-	public static boolean isAuthorizedByLicense(String featureName, boolean ignoreExpiration) {
-		return getInstance().getLicenseManager().isAuthorizedByLicense(featureName, ignoreExpiration);
-	}
-	
 	public static String getLicenseType() {
 		return getInstance().getLicenseManager().getLicenseType();
 	}

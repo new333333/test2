@@ -1,2 +1,1 @@
-//>>built
-define("dojox/widget/nls/th/ColorPicker",({redLabel:"r",greenLabel:"ก.",blueLabel:"b",hueLabel:"ชม.",saturationLabel:"วิ.",valueLabel:"v",degLabel:"°",hexLabel:"hex",huePickerTitle:"ตัวเลือกสี",saturationPickerTitle:"ตัวเลือกความอิ่มของสี"}));
+({"redLabel":"อาร์","valueLabel":"วี","hexLabel":"เลขฐานสิบหก","hueLabel":"เอช","saturationLabel":"เอส","greenLabel":"จี","blueLabel":"บี","degLabel":"°"})

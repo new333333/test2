@@ -74,7 +74,6 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
-import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
@@ -164,8 +163,6 @@ import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
-import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
-import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
@@ -212,7 +209,6 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
-import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.util.search.Constants;
@@ -245,7 +241,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case ABORT_FILE_UPLOAD:
 		{
 			AbortFileUploadCmd afuCmd = ((AbortFileUploadCmd) cmd);
-			BooleanRpcResponseData result = GwtHtml5Helper.abortFileUpload( this, getRequest( ri ), afuCmd.getFolderInfo(), afuCmd.getFileBlob() );
+			BooleanRpcResponseData result = GwtViewHelper.abortFileUpload( this, getRequest( ri ), afuCmd.getFolderInfo() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -266,13 +262,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case ADD_NEW_FOLDER:
 		{
 			AddNewFolderCmd afCmd = ((AddNewFolderCmd) cmd);
-			CreateFolderRpcResponseData responseData = GwtViewHelper.addNewFolder(
-				this,
-				getRequest( ri ),
-				afCmd.getBinderId(),
-				afCmd.getFolderTemplateId(),
-				afCmd.getFolderName(),
-				afCmd.getCloudFolderType() ); 
+			CreateFolderRpcResponseData responseData = GwtViewHelper.addNewFolder( this, getRequest( ri ), afCmd.getBinderId(), afCmd.getFolderTemplateId(), afCmd.getFolderName() ); 
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -649,7 +639,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			{
 				GwtTeamingException gtEx;
 				
-				gtEx = GwtLogHelper.getGwtClientException( ex );
+				gtEx = GwtServerHelper.getGwtTeamingException( ex );
 				throw gtEx;				
 			}
 			
@@ -1192,14 +1182,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_ENTITY_RIGHTS:
-		{
-			GetEntityRightsCmd gerCmd = ((GetEntityRightsCmd) cmd);
-			EntityRightsRpcResponseData responseData = GwtViewHelper.getEntityRights( this, getRequest( ri ), gerCmd.getEntityIds() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
 		case GET_ENTRY:
 		{
 			GetEntryCmd geCmd;
@@ -1314,15 +1296,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
-		case GET_DATABASE_PRUNE_CONFIGURATION:
-		{
-			GwtDatabasePruneConfiguration databasePruneConfiguration; 
-
-			databasePruneConfiguration = GwtServerHelper.getDatabasePruneConfiguration( this );
-			response = new VibeRpcResponse( databasePruneConfiguration );
-			return response;
-		}
-		
 
 		case GET_FILE_SYNC_APP_CONFIGURATION:
 		{
@@ -1408,8 +1381,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				gfrCmd.getFolderColumns(),
 				gfrCmd.getStart(),
 				gfrCmd.getLength(),
-				gfrCmd.getQuickFilter(),
-				gfrCmd.getauthenticationGuid() );
+				gfrCmd.getQuickFilter() );
 			return new VibeRpcResponse( responseData );
 		}
 		
@@ -1530,15 +1502,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = getHorizontalTree( ri, ghtCmd.getBinderId(), ghtCmd.getTreeMode() );
 			responseData = new GetHorizontalTreeRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_HTML5_SPECS:
-		{
-			@SuppressWarnings( "unused" )
-			GetHtml5SpecsCmd gcwCmd = ((GetHtml5SpecsCmd) cmd);
-			Html5SpecsRpcResponseData result = GwtHtml5Helper.getHtml5UploadSpecs( this, getRequest( ri ) );
-			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -1921,22 +1884,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			url = getSendToFriendUrl( ri, gstfuCmd.getEntryId() );
 			responseData = new StringRpcResponseData( url );
 			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_ZIP_DOWNLOAD_FILES_URL:
-		{
-			GetZipDownloadFilesUrlCmd gzdfuCmd = ((GetZipDownloadFilesUrlCmd) cmd);
-			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, getRequest( ri ), gzdfuCmd.getEntityIds(), gzdfuCmd.isRecursive() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
-		case GET_ZIP_DOWNLOAD_FOLDER_URL:
-		{
-			GetZipDownloadFolderUrlCmd gzdfuCmd = ((GetZipDownloadFolderUrlCmd) cmd);
-			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, getRequest( ri ), gzdfuCmd.getFolderId(), gzdfuCmd.isRecursive() );
-			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -2533,7 +2480,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			{
 				GwtTeamingException gtEx;
 				
-				gtEx = GwtLogHelper.getGwtClientException( ex );
+				gtEx = GwtServerHelper.getGwtTeamingException( ex );
 				throw gtEx;				
 			}
 
@@ -2779,17 +2726,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			sjzcCmd = ((SaveJitsZoneConfigCmd) cmd);
 			result = GwtServerHelper.saveJitsZoneConfig( this, sjzcCmd.getJitsZoneConfig() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
-			return response;
-		}
-		
-		case SAVE_DATABASE_PRUNE_CONFIGURATION:
-		{
-			SaveDatabasePruneConfigurationCmd sdpcCmd;
-			Boolean result;
-			
-			sdpcCmd = ((SaveDatabasePruneConfigurationCmd) cmd);
-			result = GwtServerHelper.executeDatabasePruneCommand( this, sdpcCmd.getDatabasePruneConfiguration() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -3279,7 +3215,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case UPLOAD_FILE_BLOB:
 		{
 			UploadFileBlobCmd ufbCmd = ((UploadFileBlobCmd) cmd);
-			StringRpcResponseData result = GwtHtml5Helper.uploadFileBlob( this, getRequest( ri ), ufbCmd.getFolderInfo(), ufbCmd.getFileBlob(), ufbCmd.isLastBlob() );
+			StringRpcResponseData result = GwtViewHelper.uploadFileBlob( this, getRequest( ri ), ufbCmd.getFolderInfo(), ufbCmd.getFileBlob(), ufbCmd.isLastBlob() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3345,7 +3281,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case VALIDATE_UPLOADS:
 		{
 			ValidateUploadsCmd veaCmd  = ((ValidateUploadsCmd) cmd);
-			ValidateUploadsRpcResponseData responseData = GwtHtml5Helper.validateUploads( this, getRequest( ri ), veaCmd.getFolderInfo(), veaCmd.getUploads() );
+			ValidateUploadsRpcResponseData responseData = GwtViewHelper.validateUploads( this, getRequest( ri ), veaCmd.getFolderInfo(), veaCmd.getUploads() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3353,7 +3289,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 		String details = ("Unknown command: " + cmdEnum.name() + " (" +cmd.getClass().getName() + ")");
-		GwtLogHelper.warn( m_logger, "In GwtRpcServiceImpl.executeCommand():  " + details );
+		m_logger.warn( "In GwtRpcServiceImpl.executeCommand():  " + details);
 		throw new GwtTeamingException(ExceptionType.NO_RPC_HANDLER, details);
 	}
 	
@@ -3618,7 +3554,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		return baseUrl;
@@ -3886,7 +3822,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		
@@ -3969,7 +3905,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 
         return fileNames;
@@ -4060,7 +3996,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		return entries;
@@ -4242,7 +4178,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch ( Exception ex )
 		{
-			throw GwtLogHelper.getGwtClientException( ex );
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		}		
 
 
@@ -4277,7 +4213,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		GwtTeamingException ex;
 		
-		ex = GwtLogHelper.getGwtClientException();
+		ex = GwtServerHelper.getGwtTeamingException();
 		ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
 		throw ex;
 	}// end getSiteAdministrationUrl()
@@ -4291,46 +4227,27 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	private GwtBrandingData getSiteBrandingData( final HttpRequestInfo ri ) throws GwtTeamingException
+	private GwtBrandingData getSiteBrandingData( HttpRequestInfo ri ) throws GwtTeamingException
 	{
 		GwtBrandingData brandingData;
-		final AbstractAllModulesInjected allModules;
-		RunasCallback callback;
 		
-		allModules = this;
-		
-		// We need to read the site branding as admin.
-		callback = new RunasCallback()
+		try
 		{
-			@Override
-			public Object doAs()
-			{
-				Binder topWorkspace;
-				GwtBrandingData siteBrandingData;
-
-				try
-				{
-					String binderId;
-					
-					// Get the top workspace.
-					topWorkspace = getWorkspaceModule().getTopWorkspace();				
-				
-					// Get the branding data from the top workspace.
-					binderId = topWorkspace.getId().toString();
-					siteBrandingData = GwtServerHelper.getBinderBrandingData( allModules, binderId, getRequest( ri ) );
-				}
-				catch (Exception e)
-				{
-					siteBrandingData = new GwtBrandingData();
-				}
-
-				return siteBrandingData;
-			}
-		};
-		brandingData = (GwtBrandingData) RunasTemplate.runasAdmin(
-																callback,
-																WebHelper.getRequiredZoneName( getRequest( ri ) ) ); 
+			Long topWorkspaceId;
+			String binderId;
+			
+			// Get the top workspace.
+			topWorkspaceId = getWorkspaceModule().getTopWorkspaceId();				
 		
+			// Get the branding data from the top workspace.
+			binderId = topWorkspaceId.toString();
+			brandingData = GwtServerHelper.getBinderBrandingData( this, binderId, getRequest( ri ) );
+		}
+		catch (Exception e)
+		{
+			brandingData = new GwtBrandingData();
+		}
+
 		brandingData.setIsSiteBranding( true );
 
 		return brandingData;
@@ -5167,7 +5084,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			catch (Exception e)
 			{
-				throw GwtLogHelper.getGwtClientException( e );
+				throw GwtServerHelper.getGwtTeamingException( e );
 			}
 		}
 		
@@ -5328,7 +5245,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			else
 			{
-				GwtLogHelper.warn( m_logger, "In GwtRpcServiceImpl.getAdminActions(), binderIdL is null" );
+				m_logger.warn( "In GwtRpcServiceImpl.getAdminActions(), binderIdL is null" );
 				adminActions = new ArrayList<GwtAdminCategory>();
 			}
 			
@@ -5336,7 +5253,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 	}// end getAdminActions()
@@ -5477,12 +5394,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 			GwtTeamingException ex;
 			
-			ex = GwtLogHelper.getGwtClientException();
+			ex = GwtServerHelper.getGwtTeamingException();
 			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
 			throw ex;
 			
 		} catch (Exception ex) {
-			throw GwtLogHelper.getGwtClientException( ex );
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		} 
 		
 	}// end getSiteAdministrationUrl()
@@ -5539,12 +5456,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			GwtTeamingException ex;
 
-			ex = GwtLogHelper.getGwtClientException();
+			ex = GwtServerHelper.getGwtTeamingException();
 			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
 			throw ex;
 			
 		} catch (Exception ex) {
-			throw GwtLogHelper.getGwtClientException( ex );
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		} 
 	}// end getImUrl
 
@@ -5639,7 +5556,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 			return gwtPresence;
 		} catch (Exception e) {
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	}// end getPresenceInfo
 
@@ -5847,7 +5764,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch ( Exception ex )
 		{
-			throw GwtLogHelper.getGwtClientException( ex );
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		}
 		
 		return asEntry;
@@ -5911,7 +5828,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		return Boolean.TRUE;
@@ -5962,6 +5879,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					}
 				}
 				
+				// Save the "show tutorial panel" preference
+				{
+					@SuppressWarnings("unused")
+					String tutorialPanelState;
+					
+					if ( personalPrefs.getShowTutorialPanel() )
+						tutorialPanelState = "2";
+					else
+						tutorialPanelState = "1";
+					
+					// We don't have a tutorial panel any more (as of Durango).
+					// profileModule.setUserProperty( null, ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE, tutorialPanelState );
+				}
+				
 				// Save the "number of entries per page" preference
 				{
 					profileModule.setUserProperty(
@@ -5969,26 +5900,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 												ObjectKeys.PAGE_ENTRIES_PER_PAGE,
 												String.valueOf( personalPrefs.getNumEntriesPerPage() ) );
 				}
-				
-				// Save the "file link action" preference
-				{
-					profileModule.setUserProperty(
-												user.getId(),
-												ObjectKeys.FILE_LINK_ACTION,
-												String.valueOf( personalPrefs.getFileLinkAction().ordinal() ) );
-				}
 			}
 			else
 			{
-				GwtLogHelper.warn( m_logger, "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
+				m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
 			}
 		}
 		catch (Exception e)
 		{
 			if (e instanceof AccessControlException)
-				 GwtLogHelper.warn( m_logger, "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
-			else GwtLogHelper.warn( m_logger, "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
-			throw GwtLogHelper.getGwtClientException( e );
+				 m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
+			else m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		return Boolean.TRUE;
@@ -6014,7 +5937,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	}
 	
@@ -6041,7 +5964,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		} 
 		catch (Exception e)
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	}
 
@@ -6086,7 +6009,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			return GwtServerHelper.getGroups( getRequest( ri ), this, userId );
 		} catch (Exception ex) {
-			throw GwtLogHelper.getGwtClientException( ex );
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		} 
 		
 	}
@@ -6117,7 +6040,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			return GwtServerHelper.getTeams( getRequest( ri ), this, userId );
 		} catch (Exception ex) {
-			throw GwtLogHelper.getGwtClientException( ex );
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		} 
 		
 	}// end getMyTeams()
@@ -6141,7 +6064,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	}
 
@@ -6221,7 +6144,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			catch ( Exception e )
 			{
-				throw GwtLogHelper.getGwtClientException( e );
+				throw GwtServerHelper.getGwtTeamingException( e );
 			}
 		}
 		return new UserWorkspaceInfoRpcResponseData( canAccessUserWorkspace, userId );
@@ -6250,7 +6173,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( ( e instanceof AccessControlException ) ||
 				 ( e instanceof NoUserByTheIdException ) )
 			{
-				throw GwtLogHelper.getGwtClientException( e );
+				throw GwtServerHelper.getGwtTeamingException( e );
 			}
 			
 			//Log other errors
@@ -6297,7 +6220,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		} 
 		catch (Exception e)
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	}
 	
@@ -6346,7 +6269,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		catch ( Exception ex )
 		{
-			throw GwtLogHelper.getGwtClientException( ex );
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		}
 	}//end isSeen()
 	

@@ -132,7 +132,6 @@ public class LoginDlg extends DlgBox
 	private FlowPanel m_selfRegPanel;
 	private Button m_registerBtn;
 	private Button m_pwdResetBtn;
-	private FlowPanel m_externalUserSelfRegOpenIdPanel;
 	private ForgottenPwdDlg m_forgottenPwdDlg = null;
 
 	private String m_loginUrl = null;
@@ -296,7 +295,6 @@ public class LoginDlg extends DlgBox
 				int y = ( ( Window.getClientHeight() - offsetHeight ) / 3 );
 				
 				setPopupPosition( x, y );
-				setGlassStyleName( "loginDlgBox_Glass" );
 			}
 		} );
 	}
@@ -666,57 +664,30 @@ public class LoginDlg extends DlgBox
 	/**
 	 * Hide/show controls on the dialog based on the given login info
 	 */
-	private void danceDlg( GwtLoginInfo loginInfo, LoginStatus loginStatus )
+	private void danceDlg( GwtLoginInfo loginInfo )
 	{
 		debugAlert( "in danceDlg" );
 		m_selfRegInfo = loginInfo.getSelfRegistrationInfo();
 		
-		switch ( loginStatus )
-		{
-		case AuthenticationFailed:
-		case PromptForLogin:
-		case PwdResetVerified:
-			// Hide or show the self registration controls.
-			updateSelfRegistrationControls( m_selfRegInfo );
+		// Hide or show the self registration controls.
+		updateSelfRegistrationControls( m_selfRegInfo );
 
-			// Turn auto complete on/off.
-			if ( loginInfo.getAllowAutoComplete() == true )
-				DOM.removeElementAttribute( m_formPanel.getElement(), "autocomplete" );
-			else
-				DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
-			
-			// Is OpenID authentication available?
-			if ( loginInfo.getAllowOpenIdAuthentication() )
-			{
-				debugAlert( "openid auth is allowed" );
-				// Yes
-				// Create the controls needed for openid authentication.
-				createOpenIdControls( loginInfo.getOpenIDAuthenticationProviders() );
-				
-				// Show/hide the openid controls
-				danceOpenIdControls();
-			}
-		    break;
-			
-		case RegistrationRequired:
-			danceExternalUserRegistrationControls( loginInfo.getAllowOpenIdAuthentication() );
-			break;
-
-		case PromptForPwdReset:
-		default:
-			break;
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	private void danceExternalUserRegistrationControls( boolean openIdAuthAllowed )
-	{
-		if ( m_externalUserSelfRegOpenIdPanel != null )
+		// Turn auto complete on/off.
+		if ( loginInfo.getAllowAutoComplete() == true )
+			DOM.removeElementAttribute( m_formPanel.getElement(), "autocomplete" );
+		else
+			DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
+		
+		// Is OpenID authentication available?
+		if ( loginInfo.getAllowOpenIdAuthentication() )
 		{
-			// Show/hide the openID panel in the external user self registration ui
-			m_externalUserSelfRegOpenIdPanel.setVisible( openIdAuthAllowed );
+			debugAlert( "openid auth is allowed" );
+			// Yes
+			// Create the controls needed for openid authentication.
+			createOpenIdControls( loginInfo.getOpenIDAuthenticationProviders() );
+			
+			// Show/hide the openid controls
+			danceOpenIdControls();
 		}
 	}
 	
@@ -806,7 +777,7 @@ public class LoginDlg extends DlgBox
 	/**
 	 * Issue an ajax request to get login info from the server.
 	 */
-	private void getLoginInfoFromServer( final LoginStatus loginStatus )
+	private void getLoginInfoFromServer()
 	{
 		GetLoginInfoCmd cmd;
 		
@@ -849,7 +820,7 @@ public class LoginDlg extends DlgBox
 						debugAlert( "response data is not null" );
 						loginInfo = (GwtLoginInfo) response.getResponseData();
 						
-						danceDlg( loginInfo, loginStatus );
+						danceDlg( loginInfo );
 					}
 				}// end onSuccess()
 			};
@@ -1252,7 +1223,11 @@ public class LoginDlg extends DlgBox
 		createHeaderNow();
 
 		// Issue an ajax request to get self registration info and a list of open id providers
-		getLoginInfoFromServer( loginStatus );
+		if ( loginStatus != LoginStatus.RegistrationRequired &&
+			 loginStatus != LoginStatus.PromptForPwdReset )
+		{
+			getLoginInfoFromServer();
+		}
 	}
 	
 	/**
@@ -1458,6 +1433,7 @@ public class LoginDlg extends DlgBox
 		if ( openIdProviderName != null && openIdProviderName.length() > 0 &&
 			 m_openIdProviderUrl != null && m_openIdProviderUrl.length() > 0 )
 		{
+			FlowPanel openIdPanel;
 			FlexTable table;
 			FlexCellFormatter cellFormatter;
 			Label label;
@@ -1465,16 +1441,13 @@ public class LoginDlg extends DlgBox
 
 			// Yes
 
-			m_externalUserSelfRegOpenIdPanel = new FlowPanel();
-			m_externalUserSelfRegOpenIdPanel.setVisible( false );
-			
 			// Add the word "Or"
 			{
 				Label orLabel;
 				
 				orLabel = new Label( messages.loginDlg_OrLabel() );
 				orLabel.addStyleName( "loginDlg_OrText" );
-				m_externalUserSelfRegOpenIdPanel.add( orLabel );
+				panel.add( orLabel );
 			}
 			
 			// Create an image for the openId provider
@@ -1511,12 +1484,12 @@ public class LoginDlg extends DlgBox
 					}
 				} );
 			}
-
-			// Add some space
-			m_externalUserSelfRegOpenIdPanel.add( new FlowPanel() );
+			
+			openIdPanel = new FlowPanel();
+			panel.add( openIdPanel );
 			
 			table = new FlexTable();
-			m_externalUserSelfRegOpenIdPanel.add( table );
+			panel.add( table );
 			
 			label = new Label( messages.loginDlg_AuthenticateUsingOpenID( openIdProviderName ) );
 			label.getElement().getStyle().setWidth( 290, Unit.PX );
@@ -1525,8 +1498,6 @@ public class LoginDlg extends DlgBox
 			table.setWidget( 0, 1, providerImg );
 			cellFormatter = table.getFlexCellFormatter();
 			cellFormatter.setVerticalAlignment( 0, 1, HasVerticalAlignment.ALIGN_TOP );
-			
-			panel.add( m_externalUserSelfRegOpenIdPanel );
 		}
 		
 		// Hide the user name and password controls that are used for regular authentication

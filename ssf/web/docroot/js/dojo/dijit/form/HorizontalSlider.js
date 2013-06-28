@@ -1,139 +1,134 @@
-//>>built
-define("dijit/form/HorizontalSlider",["dojo/_base/array","dojo/_base/declare","dojo/dnd/move","dojo/_base/fx","dojo/dom-geometry","dojo/dom-style","dojo/keys","dojo/_base/lang","dojo/sniff","dojo/dnd/Moveable","dojo/dnd/Mover","dojo/query","dojo/mouse","dojo/on","../_base/manager","../focus","../typematic","./Button","./_FormValueWidget","../_Container","dojo/text!./templates/HorizontalSlider.html"],function(_1,_2,_3,fx,_4,_5,_6,_7,_8,_9,_a,_b,_c,on,_d,_e,_f,_10,_11,_12,_13){
-var _14=_2("dijit.form._SliderMover",_a,{onMouseMove:function(e){
-var _15=this.widget;
-var _16=_15._abspos;
-if(!_16){
-_16=_15._abspos=_4.position(_15.sliderBarContainer,true);
-_15._setPixelValue_=_7.hitch(_15,"_setPixelValue");
-_15._isReversed_=_15._isReversed();
-}
-var _17=e[_15._mousePixelCoord]-_16[_15._startingPixelCoord];
-_15._setPixelValue_(_15._isReversed_?(_16[_15._pixelCount]-_17):_17,_16[_15._pixelCount],false);
-},destroy:function(e){
-_a.prototype.destroy.apply(this,arguments);
-var _18=this.widget;
-_18._abspos=null;
-_18._setValueAttr(_18.value,true);
-}});
-var _19=_2("dijit.form.HorizontalSlider",[_11,_12],{templateString:_13,value:0,showButtons:true,minimum:0,maximum:100,discreteValues:Infinity,pageIncrement:2,clickSelect:true,slideDuration:_d.defaultDuration,_setIdAttr:"",_setNameAttr:"valueNode",baseClass:"dijitSlider",cssStateNodes:{incrementButton:"dijitSliderIncrementButton",decrementButton:"dijitSliderDecrementButton",focusNode:"dijitSliderThumb"},_mousePixelCoord:"pageX",_pixelCount:"w",_startingPixelCoord:"x",_handleOffsetCoord:"left",_progressPixelSize:"width",_onKeyUp:function(e){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dijit.form.HorizontalSlider"]){
+dojo._hasResource["dijit.form.HorizontalSlider"]=true;
+dojo.provide("dijit.form.HorizontalSlider");
+dojo.require("dijit.form._FormWidget");
+dojo.require("dijit._Container");
+dojo.require("dojo.dnd.move");
+dojo.require("dijit.form.Button");
+dojo.require("dojo.number");
+dojo.require("dojo._base.fx");
+dojo.declare("dijit.form.HorizontalSlider",[dijit.form._FormValueWidget,dijit._Container],{templateString:dojo.cache("dijit.form","templates/HorizontalSlider.html","<table class=\"dijit dijitReset dijitSlider\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" rules=\"none\" dojoAttachEvent=\"onkeypress:_onKeyPress,onkeyup:_onKeyUp\"\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t\t><td dojoAttachPoint=\"topDecoration\" class=\"dijitReset\" style=\"text-align:center;width:100%;\"></td\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t></tr\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset dijitSliderButtonContainer dijitSliderButtonContainerH\"\n\t\t\t><div class=\"dijitSliderDecrementIconH\" tabIndex=\"-1\" style=\"display:none\" dojoAttachPoint=\"decrementButton\"><span class=\"dijitSliderButtonInner\">-</span></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><div class=\"dijitSliderBar dijitSliderBumper dijitSliderBumperH dijitSliderLeftBumper dijitSliderLeftBumper\" dojoAttachEvent=\"onmousedown:_onClkDecBumper\"></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><input dojoAttachPoint=\"valueNode\" type=\"hidden\" ${nameAttrSetting}\n\t\t\t/><div class=\"dijitReset dijitSliderBarContainerH\" waiRole=\"presentation\" dojoAttachPoint=\"sliderBarContainer\"\n\t\t\t\t><div waiRole=\"presentation\" dojoAttachPoint=\"progressBar\" class=\"dijitSliderBar dijitSliderBarH dijitSliderProgressBar dijitSliderProgressBarH\" dojoAttachEvent=\"onmousedown:_onBarClick\"\n\t\t\t\t\t><div class=\"dijitSliderMoveable dijitSliderMoveableH\"\n\t\t\t\t\t\t><div dojoAttachPoint=\"sliderHandle,focusNode\" class=\"dijitSliderImageHandle dijitSliderImageHandleH\" dojoAttachEvent=\"onmousedown:_onHandleClick\" waiRole=\"slider\" valuemin=\"${minimum}\" valuemax=\"${maximum}\"></div\n\t\t\t\t\t></div\n\t\t\t\t></div\n\t\t\t\t><div waiRole=\"presentation\" dojoAttachPoint=\"remainingBar\" class=\"dijitSliderBar dijitSliderBarH dijitSliderRemainingBar dijitSliderRemainingBarH\" dojoAttachEvent=\"onmousedown:_onBarClick\"></div\n\t\t\t></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><div class=\"dijitSliderBar dijitSliderBumper dijitSliderBumperH dijitSliderRightBumper dijitSliderRightBumper\" dojoAttachEvent=\"onmousedown:_onClkIncBumper\"></div\n\t\t></td\n\t\t><td class=\"dijitReset dijitSliderButtonContainer dijitSliderButtonContainerH\" style=\"right:0px;\"\n\t\t\t><div class=\"dijitSliderIncrementIconH\" tabIndex=\"-1\" style=\"display:none\" dojoAttachPoint=\"incrementButton\"><span class=\"dijitSliderButtonInner\">+</span></div\n\t\t></td\n\t></tr\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t\t><td dojoAttachPoint=\"containerNode,bottomDecoration\" class=\"dijitReset\" style=\"text-align:center;\"></td\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t></tr\n></table>\n"),value:0,showButtons:true,minimum:0,maximum:100,discreteValues:Infinity,pageIncrement:2,clickSelect:true,slideDuration:dijit.defaultDuration,widgetsInTemplate:true,attributeMap:dojo.delegate(dijit.form._FormWidget.prototype.attributeMap,{id:""}),baseClass:"dijitSlider",_mousePixelCoord:"pageX",_pixelCount:"w",_startingPixelCoord:"x",_startingPixelCount:"l",_handleOffsetCoord:"left",_progressPixelSize:"width",_onKeyUp:function(e){
 if(this.disabled||this.readOnly||e.altKey||e.ctrlKey||e.metaKey){
 return;
 }
 this._setValueAttr(this.value,true);
-},_onKeyDown:function(e){
+},_onKeyPress:function(e){
 if(this.disabled||this.readOnly||e.altKey||e.ctrlKey||e.metaKey){
 return;
 }
-switch(e.keyCode){
-case _6.HOME:
+switch(e.charOrCode){
+case dojo.keys.HOME:
 this._setValueAttr(this.minimum,false);
 break;
-case _6.END:
+case dojo.keys.END:
 this._setValueAttr(this.maximum,false);
 break;
-case ((this._descending||this.isLeftToRight())?_6.RIGHT_ARROW:_6.LEFT_ARROW):
-case (this._descending===false?_6.DOWN_ARROW:_6.UP_ARROW):
-case (this._descending===false?_6.PAGE_DOWN:_6.PAGE_UP):
+case ((this._descending||this.isLeftToRight())?dojo.keys.RIGHT_ARROW:dojo.keys.LEFT_ARROW):
+case (this._descending===false?dojo.keys.DOWN_ARROW:dojo.keys.UP_ARROW):
+case (this._descending===false?dojo.keys.PAGE_DOWN:dojo.keys.PAGE_UP):
 this.increment(e);
 break;
-case ((this._descending||this.isLeftToRight())?_6.LEFT_ARROW:_6.RIGHT_ARROW):
-case (this._descending===false?_6.UP_ARROW:_6.DOWN_ARROW):
-case (this._descending===false?_6.PAGE_UP:_6.PAGE_DOWN):
+case ((this._descending||this.isLeftToRight())?dojo.keys.LEFT_ARROW:dojo.keys.RIGHT_ARROW):
+case (this._descending===false?dojo.keys.UP_ARROW:dojo.keys.DOWN_ARROW):
+case (this._descending===false?dojo.keys.PAGE_UP:dojo.keys.PAGE_DOWN):
 this.decrement(e);
 break;
 default:
 return;
 }
-e.stopPropagation();
-e.preventDefault();
+dojo.stopEvent(e);
 },_onHandleClick:function(e){
 if(this.disabled||this.readOnly){
 return;
 }
-if(!_8("ie")){
-_e.focus(this.sliderHandle);
+if(!dojo.isIE){
+dijit.focus(this.sliderHandle);
 }
-e.stopPropagation();
-e.preventDefault();
+dojo.stopEvent(e);
 },_isReversed:function(){
 return !this.isLeftToRight();
 },_onBarClick:function(e){
 if(this.disabled||this.readOnly||!this.clickSelect){
 return;
 }
-_e.focus(this.sliderHandle);
-e.stopPropagation();
-e.preventDefault();
-var _1a=_4.position(this.sliderBarContainer,true);
-var _1b=e[this._mousePixelCoord]-_1a[this._startingPixelCoord];
-this._setPixelValue(this._isReversed()?(_1a[this._pixelCount]-_1b):_1b,_1a[this._pixelCount],true);
+dijit.focus(this.sliderHandle);
+dojo.stopEvent(e);
+var _1=dojo.position(this.sliderBarContainer,true);
+var _2=e[this._mousePixelCoord]-_1[this._startingPixelCoord];
+this._setPixelValue(this._isReversed()?(_1[this._pixelCount]-_2):_2,_1[this._pixelCount],true);
 this._movable.onMouseDown(e);
-},_setPixelValue:function(_1c,_1d,_1e){
+},_setPixelValue:function(_3,_4,_5){
 if(this.disabled||this.readOnly){
 return;
 }
-var _1f=this.discreteValues;
-if(_1f<=1||_1f==Infinity){
-_1f=_1d;
+_3=_3<0?0:_4<_3?_4:_3;
+var _6=this.discreteValues;
+if(_6<=1||_6==Infinity){
+_6=_4;
 }
-_1f--;
-var _20=_1d/_1f;
-var _21=Math.round(_1c/_20);
-this._setValueAttr(Math.max(Math.min((this.maximum-this.minimum)*_21/_1f+this.minimum,this.maximum),this.minimum),_1e);
-},_setValueAttr:function(_22,_23){
-this._set("value",_22);
-this.valueNode.value=_22;
-this.focusNode.setAttribute("aria-valuenow",_22);
+_6--;
+var _7=_4/_6;
+var _8=Math.round(_3/_7);
+this._setValueAttr((this.maximum-this.minimum)*_8/_6+this.minimum,_5);
+},_setValueAttr:function(_9,_a){
+this.valueNode.value=this.value=_9;
+dijit.setWaiState(this.focusNode,"valuenow",_9);
 this.inherited(arguments);
-var _24=(_22-this.minimum)/(this.maximum-this.minimum);
-var _25=(this._descending===false)?this.remainingBar:this.progressBar;
-var _26=(this._descending===false)?this.progressBar:this.remainingBar;
+var _b=(_9-this.minimum)/(this.maximum-this.minimum);
+var _c=(this._descending===false)?this.remainingBar:this.progressBar;
+var _d=(this._descending===false)?this.progressBar:this.remainingBar;
 if(this._inProgressAnim&&this._inProgressAnim.status!="stopped"){
 this._inProgressAnim.stop(true);
 }
-if(_23&&this.slideDuration>0&&_25.style[this._progressPixelSize]){
-var _27=this;
-var _28={};
-var _29=parseFloat(_25.style[this._progressPixelSize]);
-var _2a=this.slideDuration*(_24-_29/100);
-if(_2a==0){
+if(_a&&this.slideDuration>0&&_c.style[this._progressPixelSize]){
+var _e=this;
+var _f={};
+var _10=parseFloat(_c.style[this._progressPixelSize]);
+var _11=this.slideDuration*(_b-_10/100);
+if(_11==0){
 return;
 }
-if(_2a<0){
-_2a=0-_2a;
+if(_11<0){
+_11=0-_11;
 }
-_28[this._progressPixelSize]={start:_29,end:_24*100,units:"%"};
-this._inProgressAnim=fx.animateProperty({node:_25,duration:_2a,onAnimate:function(v){
-_26.style[_27._progressPixelSize]=(100-parseFloat(v[_27._progressPixelSize]))+"%";
+_f[this._progressPixelSize]={start:_10,end:_b*100,units:"%"};
+this._inProgressAnim=dojo.animateProperty({node:_c,duration:_11,onAnimate:function(v){
+_d.style[_e._progressPixelSize]=(100-parseFloat(v[_e._progressPixelSize]))+"%";
 },onEnd:function(){
-delete _27._inProgressAnim;
-},properties:_28});
+delete _e._inProgressAnim;
+},properties:_f});
 this._inProgressAnim.play();
 }else{
-_25.style[this._progressPixelSize]=(_24*100)+"%";
-_26.style[this._progressPixelSize]=((1-_24)*100)+"%";
+_c.style[this._progressPixelSize]=(_b*100)+"%";
+_d.style[this._progressPixelSize]=((1-_b)*100)+"%";
 }
-},_bumpValue:function(_2b,_2c){
+},_bumpValue:function(_12,_13){
 if(this.disabled||this.readOnly){
 return;
 }
-var s=_5.getComputedStyle(this.sliderBarContainer);
-var c=_4.getContentBox(this.sliderBarContainer,s);
-var _2d=this.discreteValues;
-if(_2d<=1||_2d==Infinity){
-_2d=c[this._pixelCount];
+var s=dojo.getComputedStyle(this.sliderBarContainer);
+var c=dojo._getContentBox(this.sliderBarContainer,s);
+var _14=this.discreteValues;
+if(_14<=1||_14==Infinity){
+_14=c[this._pixelCount];
 }
-_2d--;
-var _2e=(this.value-this.minimum)*_2d/(this.maximum-this.minimum)+_2b;
-if(_2e<0){
-_2e=0;
+_14--;
+var _15=(this.value-this.minimum)*_14/(this.maximum-this.minimum)+_12;
+if(_15<0){
+_15=0;
 }
-if(_2e>_2d){
-_2e=_2d;
+if(_15>_14){
+_15=_14;
 }
-_2e=_2e*(this.maximum-this.minimum)/_2d+this.minimum;
-this._setValueAttr(_2e,_2c);
+_15=_15*(this.maximum-this.minimum)/_14+this.minimum;
+this._setValueAttr(_15,_13);
 },_onClkBumper:function(val){
 if(this.disabled||this.readOnly||!this.clickSelect){
 return;
@@ -144,61 +139,67 @@ this._onClkBumper(this._descending===false?this.minimum:this.maximum);
 },_onClkDecBumper:function(){
 this._onClkBumper(this._descending===false?this.maximum:this.minimum);
 },decrement:function(e){
-this._bumpValue(e.keyCode==_6.PAGE_DOWN?-this.pageIncrement:-1);
+this._bumpValue(e.charOrCode==dojo.keys.PAGE_DOWN?-this.pageIncrement:-1);
 },increment:function(e){
-this._bumpValue(e.keyCode==_6.PAGE_UP?this.pageIncrement:1);
+this._bumpValue(e.charOrCode==dojo.keys.PAGE_UP?this.pageIncrement:1);
 },_mouseWheeled:function(evt){
-evt.stopPropagation();
-evt.preventDefault();
-this._bumpValue(evt.wheelDelta<0?-1:1,true);
+dojo.stopEvent(evt);
+var _16=!dojo.isMozilla;
+var _17=evt[(_16?"wheelDelta":"detail")]*(_16?1:-1);
+this._bumpValue(_17<0?-1:1,true);
 },startup:function(){
-if(this._started){
-return;
-}
-_1.forEach(this.getChildren(),function(_2f){
-if(this[_2f.container]!=this.containerNode){
-this[_2f.container].appendChild(_2f.domNode);
+dojo.forEach(this.getChildren(),function(_18){
+if(this[_18.container]!=this.containerNode){
+this[_18.container].appendChild(_18.domNode);
 }
 },this);
-this.inherited(arguments);
-},_typematicCallback:function(_30,_31,e){
-if(_30==-1){
+},_typematicCallback:function(_19,_1a,e){
+if(_19==-1){
 this._setValueAttr(this.value,true);
 }else{
-this[(_31==(this._descending?this.incrementButton:this.decrementButton))?"decrement":"increment"](e);
+this[(_1a==(this._descending?this.incrementButton:this.decrementButton))?"decrement":"increment"](e);
 }
-},buildRendering:function(){
-this.inherited(arguments);
+},postCreate:function(){
 if(this.showButtons){
 this.incrementButton.style.display="";
 this.decrementButton.style.display="";
+this._connects.push(dijit.typematic.addMouseListener(this.decrementButton,this,"_typematicCallback",25,500));
+this._connects.push(dijit.typematic.addMouseListener(this.incrementButton,this,"_typematicCallback",25,500));
 }
-var _32=_b("label[for=\""+this.id+"\"]");
-if(_32.length){
-if(!_32[0].id){
-_32[0].id=this.id+"_label";
+this.connect(this.domNode,!dojo.isMozilla?"onmousewheel":"DOMMouseScroll","_mouseWheeled");
+var _1b=dojo.declare(dijit.form._SliderMover,{widget:this});
+this._movable=new dojo.dnd.Moveable(this.sliderHandle,{mover:_1b});
+var _1c=dojo.query("label[for=\""+this.id+"\"]");
+if(_1c.length){
+_1c[0].id=(this.id+"_label");
+dijit.setWaiState(this.focusNode,"labelledby",_1c[0].id);
 }
-this.focusNode.setAttribute("aria-labelledby",_32[0].id);
-}
-this.focusNode.setAttribute("aria-valuemin",this.minimum);
-this.focusNode.setAttribute("aria-valuemax",this.maximum);
-},postCreate:function(){
+dijit.setWaiState(this.focusNode,"valuemin",this.minimum);
+dijit.setWaiState(this.focusNode,"valuemax",this.maximum);
 this.inherited(arguments);
-if(this.showButtons){
-this.own(_f.addMouseListener(this.decrementButton,this,"_typematicCallback",25,500),_f.addMouseListener(this.incrementButton,this,"_typematicCallback",25,500));
-}
-this.own(on(this.domNode,_c.wheel,_7.hitch(this,"_mouseWheeled")));
-var _33=_2(_14,{widget:this});
-this._movable=new _9(this.sliderHandle,{mover:_33});
 this._layoutHackIE7();
 },destroy:function(){
 this._movable.destroy();
 if(this._inProgressAnim&&this._inProgressAnim.status!="stopped"){
 this._inProgressAnim.stop(true);
 }
+this._supportingWidgets=dijit.findWidgets(this.domNode);
 this.inherited(arguments);
 }});
-_19._Mover=_14;
-return _19;
-});
-require({cache:{"url:dijit/form/templates/HorizontalSlider.html":"<table class=\"dijit dijitReset dijitSlider dijitSliderH\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" rules=\"none\" data-dojo-attach-event=\"onkeydown:_onKeyDown, onkeyup:_onKeyUp\"\n\trole=\"presentation\"\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t\t><td data-dojo-attach-point=\"topDecoration\" class=\"dijitReset dijitSliderDecoration dijitSliderDecorationT dijitSliderDecorationH\"></td\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t></tr\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset dijitSliderButtonContainer dijitSliderButtonContainerH\"\n\t\t\t><div class=\"dijitSliderDecrementIconH\" style=\"display:none\" data-dojo-attach-point=\"decrementButton\"><span class=\"dijitSliderButtonInner\">-</span></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><div class=\"dijitSliderBar dijitSliderBumper dijitSliderBumperH dijitSliderLeftBumper\" data-dojo-attach-event=\"press:_onClkDecBumper\"></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><input data-dojo-attach-point=\"valueNode\" type=\"hidden\" ${!nameAttrSetting}\n\t\t\t/><div class=\"dijitReset dijitSliderBarContainerH\" role=\"presentation\" data-dojo-attach-point=\"sliderBarContainer\"\n\t\t\t\t><div role=\"presentation\" data-dojo-attach-point=\"progressBar\" class=\"dijitSliderBar dijitSliderBarH dijitSliderProgressBar dijitSliderProgressBarH\" data-dojo-attach-event=\"press:_onBarClick\"\n\t\t\t\t\t><div class=\"dijitSliderMoveable dijitSliderMoveableH\"\n\t\t\t\t\t\t><div data-dojo-attach-point=\"sliderHandle,focusNode\" class=\"dijitSliderImageHandle dijitSliderImageHandleH\" data-dojo-attach-event=\"press:_onHandleClick\" role=\"slider\"></div\n\t\t\t\t\t></div\n\t\t\t\t></div\n\t\t\t\t><div role=\"presentation\" data-dojo-attach-point=\"remainingBar\" class=\"dijitSliderBar dijitSliderBarH dijitSliderRemainingBar dijitSliderRemainingBarH\" data-dojo-attach-event=\"press:_onBarClick\"></div\n\t\t\t></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><div class=\"dijitSliderBar dijitSliderBumper dijitSliderBumperH dijitSliderRightBumper\" data-dojo-attach-event=\"press:_onClkIncBumper\"></div\n\t\t></td\n\t\t><td class=\"dijitReset dijitSliderButtonContainer dijitSliderButtonContainerH\"\n\t\t\t><div class=\"dijitSliderIncrementIconH\" style=\"display:none\" data-dojo-attach-point=\"incrementButton\"><span class=\"dijitSliderButtonInner\">+</span></div\n\t\t></td\n\t></tr\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t\t><td data-dojo-attach-point=\"containerNode,bottomDecoration\" class=\"dijitReset dijitSliderDecoration dijitSliderDecorationB dijitSliderDecorationH\"></td\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t></tr\n></table>\n"}});
+dojo.declare("dijit.form._SliderMover",dojo.dnd.Mover,{onMouseMove:function(e){
+var _1d=this.widget;
+var _1e=_1d._abspos;
+if(!_1e){
+_1e=_1d._abspos=dojo.position(_1d.sliderBarContainer,true);
+_1d._setPixelValue_=dojo.hitch(_1d,"_setPixelValue");
+_1d._isReversed_=_1d._isReversed();
+}
+var _1f=e[_1d._mousePixelCoord]-_1e[_1d._startingPixelCoord];
+_1d._setPixelValue_(_1d._isReversed_?(_1e[_1d._pixelCount]-_1f):_1f,_1e[_1d._pixelCount],false);
+},destroy:function(e){
+dojo.dnd.Mover.prototype.destroy.apply(this,arguments);
+var _20=this.widget;
+_20._abspos=null;
+_20._setValueAttr(_20.value,true);
+}});
+}

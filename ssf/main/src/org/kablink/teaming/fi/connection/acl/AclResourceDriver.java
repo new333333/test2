@@ -33,7 +33,6 @@
 package org.kablink.teaming.fi.connection.acl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.fi.FIException;
@@ -145,15 +144,16 @@ public interface AclResourceDriver extends ResourceDriver {
 	public AclResourceSession openSessionProxyMode(String proxyUsername, String proxyPassword) throws FIException, UncheckedIOException;
 
 	/**
+	 * Opens a session in user mode.
 	 * 
-	 * @param userId
-	 * @param password
-	 * @return
+	 * @param aclItemPrincipalId ID of the storage system principal
+	 * @param aclItemPrincipalPassword password of the storage system principal
+	 * @return ACL resource session
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public AclResourceSession openSessionUserMode(Map<String,String> userId, String password) throws FIException, UncheckedIOException;
-	
+	public AclResourceSession openSessionUserMode(String aclItemPrincipalId, String aclItemPrincipalPassword) throws FIException, UncheckedIOException;
+
 	/**
 	 * Tests a connection.
 	 * 

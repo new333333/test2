@@ -1,153 +1,160 @@
-//>>built
-define("dojox/storage/AirFileStorageProvider",["dijit","dojo","dojox","dojo/require!dojox/storage/manager,dojox/storage/Provider"],function(_1,_2,_3){
-_2.provide("dojox.storage.AirFileStorageProvider");
-_2.require("dojox.storage.manager");
-_2.require("dojox.storage.Provider");
-if(_2.isAIR){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.storage.AirFileStorageProvider"]){
+dojo._hasResource["dojox.storage.AirFileStorageProvider"]=true;
+dojo.provide("dojox.storage.AirFileStorageProvider");
+dojo.require("dojox.storage.manager");
+dojo.require("dojox.storage.Provider");
+if(dojo.isAIR){
 (function(){
-if(!_4){
-var _4={};
+if(!_1){
+var _1={};
 }
-_4.File=window.runtime.flash.filesystem.File;
-_4.FileStream=window.runtime.flash.filesystem.FileStream;
-_4.FileMode=window.runtime.flash.filesystem.FileMode;
-_2.declare("dojox.storage.AirFileStorageProvider",[_3.storage.Provider],{initialized:false,_storagePath:"__DOJO_STORAGE/",initialize:function(){
+_1.File=window.runtime.flash.filesystem.File;
+_1.FileStream=window.runtime.flash.filesystem.FileStream;
+_1.FileMode=window.runtime.flash.filesystem.FileMode;
+dojo.declare("dojox.storage.AirFileStorageProvider",[dojox.storage.Provider],{initialized:false,_storagePath:"__DOJO_STORAGE/",initialize:function(){
 this.initialized=false;
 try{
-var _5=_4.File.applicationStorageDirectory.resolvePath(this._storagePath);
-if(!_5.exists){
-_5.createDirectory();
+var _2=_1.File.applicationStorageDirectory.resolvePath(this._storagePath);
+if(!_2.exists){
+_2.createDirectory();
 }
 this.initialized=true;
 }
 catch(e){
 }
-_3.storage.manager.loaded();
+dojox.storage.manager.loaded();
 },isAvailable:function(){
 return true;
-},put:function(_6,_7,_8,_9){
-if(this.isValidKey(_6)==false){
-throw new Error("Invalid key given: "+_6);
+},put:function(_3,_4,_5,_6){
+if(this.isValidKey(_3)==false){
+throw new Error("Invalid key given: "+_3);
 }
-_9=_9||this.DEFAULT_NAMESPACE;
-if(this.isValidKey(_9)==false){
-throw new Error("Invalid namespace given: "+_9);
+_6=_6||this.DEFAULT_NAMESPACE;
+if(this.isValidKey(_6)==false){
+throw new Error("Invalid namespace given: "+_6);
 }
 try{
-this.remove(_6,_9);
-var _a=_4.File.applicationStorageDirectory.resolvePath(this._storagePath+_9);
-if(!_a.exists){
-_a.createDirectory();
+this.remove(_3,_6);
+var _7=_1.File.applicationStorageDirectory.resolvePath(this._storagePath+_6);
+if(!_7.exists){
+_7.createDirectory();
 }
-var _b=_a.resolvePath(_6);
-var _c=new _4.FileStream();
-_c.open(_b,_4.FileMode.WRITE);
-_c.writeObject(_7);
-_c.close();
+var _8=_7.resolvePath(_3);
+var _9=new _1.FileStream();
+_9.open(_8,_1.FileMode.WRITE);
+_9.writeObject(_4);
+_9.close();
 }
 catch(e){
-_8(this.FAILED,_6,e.toString(),_9);
+_5(this.FAILED,_3,e.toString(),_6);
 return;
 }
-if(_8){
-_8(this.SUCCESS,_6,null,_9);
+if(_5){
+_5(this.SUCCESS,_3,null,_6);
 }
-},get:function(_d,_e){
-if(this.isValidKey(_d)==false){
-throw new Error("Invalid key given: "+_d);
+},get:function(_a,_b){
+if(this.isValidKey(_a)==false){
+throw new Error("Invalid key given: "+_a);
 }
-_e=_e||this.DEFAULT_NAMESPACE;
-var _f=null;
-var _10=_4.File.applicationStorageDirectory.resolvePath(this._storagePath+_e+"/"+_d);
-if(_10.exists&&!_10.isDirectory){
-var _11=new _4.FileStream();
-_11.open(_10,_4.FileMode.READ);
-_f=_11.readObject();
-_11.close();
+_b=_b||this.DEFAULT_NAMESPACE;
+var _c=null;
+var _d=_1.File.applicationStorageDirectory.resolvePath(this._storagePath+_b+"/"+_a);
+if(_d.exists&&!_d.isDirectory){
+var _e=new _1.FileStream();
+_e.open(_d,_1.FileMode.READ);
+_c=_e.readObject();
+_e.close();
+}
+return _c;
+},getNamespaces:function(){
+var _f=[this.DEFAULT_NAMESPACE];
+var dir=_1.File.applicationStorageDirectory.resolvePath(this._storagePath);
+var _10=dir.getDirectoryListing(),i;
+for(i=0;i<_10.length;i++){
+if(_10[i].isDirectory&&_10[i].name!=this.DEFAULT_NAMESPACE){
+_f.push(_10[i].name);
+}
 }
 return _f;
-},getNamespaces:function(){
-var _12=[this.DEFAULT_NAMESPACE];
-var dir=_4.File.applicationStorageDirectory.resolvePath(this._storagePath);
+},getKeys:function(_11){
+_11=_11||this.DEFAULT_NAMESPACE;
+if(this.isValidKey(_11)==false){
+throw new Error("Invalid namespace given: "+_11);
+}
+var _12=[];
+var dir=_1.File.applicationStorageDirectory.resolvePath(this._storagePath+_11);
+if(dir.exists&&dir.isDirectory){
 var _13=dir.getDirectoryListing(),i;
 for(i=0;i<_13.length;i++){
-if(_13[i].isDirectory&&_13[i].name!=this.DEFAULT_NAMESPACE){
 _12.push(_13[i].name);
 }
 }
 return _12;
-},getKeys:function(_14){
-_14=_14||this.DEFAULT_NAMESPACE;
+},clear:function(_14){
 if(this.isValidKey(_14)==false){
 throw new Error("Invalid namespace given: "+_14);
 }
-var _15=[];
-var dir=_4.File.applicationStorageDirectory.resolvePath(this._storagePath+_14);
-if(dir.exists&&dir.isDirectory){
-var _16=dir.getDirectoryListing(),i;
-for(i=0;i<_16.length;i++){
-_15.push(_16[i].name);
-}
-}
-return _15;
-},clear:function(_17){
-if(this.isValidKey(_17)==false){
-throw new Error("Invalid namespace given: "+_17);
-}
-var dir=_4.File.applicationStorageDirectory.resolvePath(this._storagePath+_17);
+var dir=_1.File.applicationStorageDirectory.resolvePath(this._storagePath+_14);
 if(dir.exists&&dir.isDirectory){
 dir.deleteDirectory(true);
 }
-},remove:function(key,_18){
-_18=_18||this.DEFAULT_NAMESPACE;
-var _19=_4.File.applicationStorageDirectory.resolvePath(this._storagePath+_18+"/"+key);
-if(_19.exists&&!_19.isDirectory){
-_19.deleteFile();
+},remove:function(key,_15){
+_15=_15||this.DEFAULT_NAMESPACE;
+var _16=_1.File.applicationStorageDirectory.resolvePath(this._storagePath+_15+"/"+key);
+if(_16.exists&&!_16.isDirectory){
+_16.deleteFile();
 }
-},putMultiple:function(_1a,_1b,_1c,_1d){
-if(this.isValidKeyArray(_1a)===false||!_1b instanceof Array||_1a.length!=_1b.length){
-throw new Error("Invalid arguments: keys = ["+_1a+"], values = ["+_1b+"]");
+},putMultiple:function(_17,_18,_19,_1a){
+if(this.isValidKeyArray(_17)===false||!_18 instanceof Array||_17.length!=_18.length){
+throw new Error("Invalid arguments: keys = ["+_17+"], values = ["+_18+"]");
 }
-if(_1d==null||typeof _1d=="undefined"){
-_1d=this.DEFAULT_NAMESPACE;
+if(_1a==null||typeof _1a=="undefined"){
+_1a=this.DEFAULT_NAMESPACE;
 }
-if(this.isValidKey(_1d)==false){
-throw new Error("Invalid namespace given: "+_1d);
+if(this.isValidKey(_1a)==false){
+throw new Error("Invalid namespace given: "+_1a);
 }
-this._statusHandler=_1c;
+this._statusHandler=_19;
 try{
-for(var i=0;i<_1a.length;i++){
-this.put(_1a[i],_1b[i],null,_1d);
+for(var i=0;i<_17.length;i++){
+this.put(_17[i],_18[i],null,_1a);
 }
 }
 catch(e){
-if(_1c){
-_1c(this.FAILED,_1a,e.toString(),_1d);
+if(_19){
+_19(this.FAILED,_17,e.toString(),_1a);
 }
 return;
 }
-if(_1c){
-_1c(this.SUCCESS,_1a,null,_1d);
+if(_19){
+_19(this.SUCCESS,_17,null,_1a);
 }
-},getMultiple:function(_1e,_1f){
-if(this.isValidKeyArray(_1e)===false){
-throw new Error("Invalid key array given: "+_1e);
+},getMultiple:function(_1b,_1c){
+if(this.isValidKeyArray(_1b)===false){
+throw new Error("Invalid key array given: "+_1b);
 }
-if(_1f==null||typeof _1f=="undefined"){
-_1f=this.DEFAULT_NAMESPACE;
+if(_1c==null||typeof _1c=="undefined"){
+_1c=this.DEFAULT_NAMESPACE;
 }
-if(this.isValidKey(_1f)==false){
-throw new Error("Invalid namespace given: "+_1f);
+if(this.isValidKey(_1c)==false){
+throw new Error("Invalid namespace given: "+_1c);
 }
-var _20=[];
+var _1d=[];
+for(var i=0;i<_1b.length;i++){
+_1d[i]=this.get(_1b[i],_1c);
+}
+return _1d;
+},removeMultiple:function(_1e,_1f){
+_1f=_1f||this.DEFAULT_NAMESPACE;
 for(var i=0;i<_1e.length;i++){
-_20[i]=this.get(_1e[i],_1f);
-}
-return _20;
-},removeMultiple:function(_21,_22){
-_22=_22||this.DEFAULT_NAMESPACE;
-for(var i=0;i<_21.length;i++){
-this.remove(_21[i],_22);
+this.remove(_1e[i],_1f);
 }
 },isPermanent:function(){
 return true;
@@ -160,8 +167,8 @@ throw new Error(this.declaredClass+" does not support a storage settings user-in
 },hideSettingsUI:function(){
 throw new Error(this.declaredClass+" does not support a storage settings user-interface");
 }});
-_3.storage.manager.register("dojox.storage.AirFileStorageProvider",new _3.storage.AirFileStorageProvider());
-_3.storage.manager.initialize();
+dojox.storage.manager.register("dojox.storage.AirFileStorageProvider",new dojox.storage.AirFileStorageProvider());
+dojox.storage.manager.initialize();
 })();
 }
-});
+}
