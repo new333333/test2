@@ -1706,10 +1706,72 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }// end syncGuidAttributeForAllUsersAndGroups()
     
     
+    /**
+     * Read the domain name from AD and convert it to aaa.bbb.ccc.com format
+     */
+    private String getDomainName( LdapConnectionConfig ldapConfig )
+    {
+    	String mixedCaseDomainName;
+    	String domainName = null;
+    	
+    	// Read the domain name from AD.  The value returned will be in the format, dc=aaa,dc=bbb,dc=com
+    	mixedCaseDomainName = readDomainNameFromAD( ldapConfig );
+    	
+    	// Convert the domain name from dc=aaa,dc=bbb,dc=com to aaa.bbb.com format
+    	if ( mixedCaseDomainName != null )
+    	{
+    		StringBuffer strBuff;
+    		String lowerCaseDomainName;
+    		boolean finished;
+    		boolean first;
+    		int fromIndex;
+    		
+    		strBuff = new StringBuffer();
+    		
+    		lowerCaseDomainName = mixedCaseDomainName.toLowerCase();
+    		
+    		first = true;
+    		fromIndex = 0;
+    		finished = false;
+    		while ( finished == false )
+    		{
+    			int dcIndex;
+    			
+    			dcIndex = lowerCaseDomainName.indexOf( "dc=", fromIndex );
+    			if ( dcIndex >= 0 )
+    			{
+    				int commaIndex;
+    				
+    				if ( first == false )
+    					strBuff.append( '.' );
+    				
+    				commaIndex = mixedCaseDomainName.indexOf( ',', dcIndex );
+    				if ( commaIndex > 0 )
+    					strBuff.append( mixedCaseDomainName.substring( dcIndex+3, commaIndex ) );
+    				else
+    				{
+    					strBuff.append( mixedCaseDomainName.substring( dcIndex+3 ) );
+    					finished = true;
+    				}
+    				
+    				fromIndex = commaIndex;
+    				first = false;
+    			}
+    			else
+    				finished = true;
+    		}
+    		
+    		domainName = strBuff.toString();
+    	}
+    	
+    	return domainName;
+    }
+    
 	/**
 	 * Read the "defaultNamingContext" attribute from the rootDSE object in AD.
+	 * The value of the attribute will be in the format, dc=aaa,dc=bbb,dc=ccc,dc=com
 	 */
-	private String readDomainName( LdapConnectionConfig config )
+	private String readDomainNameFromAD( LdapConnectionConfig config )
 	{
         String domainName = null;
 		LdapContext ctx = null;
@@ -1744,7 +1806,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		catch ( Exception ex )
 		{
-			logger.error( "readDomainName() caught exception: " + ex.toString() );
+			logger.error( "readDomainNameFromAD() caught exception: " + ex.toString() );
 		}
 		finally
 		{
@@ -2265,7 +2327,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(sample));
 			String domainName;
 
-			domainName = readDomainName( config );
+			domainName = getDomainName( config );
 			
 			for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) 
 			{
@@ -3870,7 +3932,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		if ( getLdapDirType( ldapGuidAttribute ) == LdapDirType.AD )
 		{
 			// Yes
-			domainName = readDomainName( config );
+			domainName = getDomainName( config );
 		}
 		
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
@@ -5087,7 +5149,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			sch.setReturningAttributes( attributesToRead );
 
 			search = "(objectClass=domain)";
-			baseDN = readDomainName( ldapConfig );
+			baseDN = readDomainNameFromAD( ldapConfig );
 			
 			// Get the Domain Root Object
 			ctxSearch = ldapCtx.search( baseDN, search, sch );
