@@ -100,7 +100,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.GetParentBinderPermalinkCmd;
 import org.kablink.teaming.jobs.LdapSynchronization;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
