@@ -418,26 +418,24 @@ public class GwtNetFolderHelper
 		boolean includeHomeDirNetFolders,
 		String rootName )
 	{
-		List<Map> searchEntries;
+		List<Long> listOfNetFolderIds;
 		ArrayList<NetFolder> listOfNetFolders;
 		
 		listOfNetFolders = new ArrayList<NetFolder>();
 		
-		searchEntries = NetFolderHelper.getAllNetFolders(
+		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
 													ami.getBinderModule(),
 													ami.getWorkspaceModule(),
 													rootName,
 													includeHomeDirNetFolders );
 
-		if ( searchEntries != null )
+		if ( listOfNetFolderIds != null )
 		{
-			for ( Map entryMap:  searchEntries )
+			for ( Long binderId:  listOfNetFolderIds )
 			{
 				NetFolder netFolder;
-				String binderId;
 				
-				binderId = GwtServerHelper.getStringFromEntryMap( entryMap, Constants.DOCID_FIELD );
-				netFolder = GwtNetFolderHelper.getNetFolder( ami, Long.valueOf( binderId ) );
+				netFolder = GwtNetFolderHelper.getNetFolder( ami, binderId );
 				
 				listOfNetFolders.add( netFolder );
 			}
