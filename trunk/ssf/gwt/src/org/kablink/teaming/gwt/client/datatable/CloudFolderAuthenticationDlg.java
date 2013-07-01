@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingCloudFoldersImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.CloudFolderAuthentication;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -47,8 +48,10 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -62,6 +65,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class CloudFolderAuthenticationDlg extends DlgBox {
 	private CloudFolderAuthentication			m_cfAuthentication;			// Information about the Cloud Folder authentication.
 	private CloudFolderAuthenticationCallback	m_authenticationCallback;	// Callback to tell the callee when the dialog is ready.
+	private GwtTeamingCloudFoldersImageBundle	m_cfImages;					// Access to the Cloud Folder images.
 	private GwtTeamingMessages					m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private VibeFlowPanel						m_fp;						// The panel that holds the dialog's contents.
@@ -97,6 +101,7 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 		
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
+		m_cfImages = GwtTeaming.getCloudFoldersImageBundle();
 	
 		// ...and create the dialog's content.
 		addStyleName("vibe-cloudFolderAuthenticationDlgBox");
@@ -244,9 +249,26 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 		// Clear the current contents of the dialog...
 		m_fp.clear();
 		
-		// ...add a label telling the user what's going on...
-		Label l = new Label(m_messages.cloudFolderAuthenticationDlgMessage());
-		l.addStyleName("vibe-cloudFolderAuthenticationDlg_Message");
+		// ...add labels and an image telling the user what's going
+		// ...on...
+		Label l = new Label(m_messages.cloudFolderAuthenticationDlgMessageAboveLogo());
+		l.addStyleName("vibe-cloudFolderAuthenticationDlg_Message vibe-cloudFolderAuthenticationDlg_MessageAbove");
+		m_fp.add(l);
+
+		ImageResource cfImageRes;
+		switch (m_cfAuthentication.getCloudFolderType()) {
+		default:           cfImageRes = m_cfImages.genericService(); break;
+		case BOXDOTNET:    cfImageRes = m_cfImages.boxDotNet();      break;
+		case DROPBOX:      cfImageRes = m_cfImages.dropBox();        break;
+		case GOOGLEDRIVE:  cfImageRes = m_cfImages.googleDrive();    break;
+		case SKYDRIVE:     cfImageRes = m_cfImages.skyDrive();       break;
+		}
+		Image cfImage = GwtClientHelper.buildImage(cfImageRes);
+		cfImage.addStyleName("vibe-cloudFolderAuthenticationDlg_Logo");
+		m_fp.add(cfImage);
+		
+		l = new Label(m_messages.cloudFolderAuthenticationDlgMessageBelowLogo());
+		l.addStyleName("vibe-cloudFolderAuthenticationDlg_Message vibe-cloudFolderAuthenticationDlg_MessageBelow");
 		m_fp.add(l);
 
 		// ...initiate the authentication...
