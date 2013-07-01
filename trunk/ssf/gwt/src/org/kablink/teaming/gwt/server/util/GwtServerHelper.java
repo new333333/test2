@@ -5941,6 +5941,8 @@ public class GwtServerHelper {
 		gwtDatabasePruneConfig = new GwtDatabasePruneConfiguration();
 		gwtDatabasePruneConfig.setAuditTrailPruneAgeDays(zoneConfig.getAuditTrailKeepDays());
 		gwtDatabasePruneConfig.setChangeLogPruneAgeDays(zoneConfig.getChangeLogsKeepDays());
+		gwtDatabasePruneConfig.setAuditTrailEnabled(zoneConfig.isAuditTrailEnabled());
+		gwtDatabasePruneConfig.setChangeLogEnabled(zoneConfig.isChangeLogEnabled());
 		
 		return gwtDatabasePruneConfig;
 	}
@@ -10138,6 +10140,8 @@ public class GwtServerHelper {
 		AllModulesInjected allModules,
 		GwtDatabasePruneConfiguration gwtDatabasePruneConfig ) throws GwtTeamingException
 	{
+		allModules.getAdminModule().setAuditTrailEnabled(gwtDatabasePruneConfig.getAuditTrailEnabled());
+		allModules.getAdminModule().setChangeLogEnabled(gwtDatabasePruneConfig.getChangeLogEnabled());
 		allModules.getAdminModule().setLogTableKeepDays(gwtDatabasePruneConfig.getAuditTrailPruneAgeDays(),
 				gwtDatabasePruneConfig.getChangeLogPruneAgeDays());
 		allModules.getAdminModule().purgeLogTablesImmediate();

@@ -46,6 +46,8 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -74,6 +76,8 @@ public class ManageDatabasePruneDlg extends DlgBox
 	private CheckBox m_enableFileSyncAccessCB;
 	private CheckBox m_enableDeployCB;
 	private CheckBox m_allowPwdCacheCB;
+	private CheckBox m_auditTrailEnabledCB;
+	private CheckBox m_changeLogEnabledCB;
 	private TextBox m_auditTrailPruneAgeTextBox;
 	private TextBox m_changeLogPruneAgeTextBox;
 	private TextBox m_autoUpdateUrlTextBox;
@@ -119,6 +123,7 @@ public class ManageDatabasePruneDlg extends DlgBox
 		FlowPanel mainPanel = null;
 		FlowPanel tmpPanel;
 		FlowPanel ckboxPanel;
+		ClickHandler clickHandler;
 		Label label;
 
 		messages = GwtTeaming.getMessages();
@@ -128,6 +133,33 @@ public class ManageDatabasePruneDlg extends DlgBox
 
 		label = new Label( messages.databasePruneDlgHeader2() );
 		mainPanel.add( label );
+
+		ckboxPanel = new FlowPanel();
+		ckboxPanel.addStyleName( "marginbottom2" );
+
+		clickHandler = new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+			}
+		};
+
+		// Create the "Enable Audit Trail" and "Enable Change Log"
+		m_auditTrailEnabledCB = new CheckBox( messages.databasePruneDlgEnableAuditTrail() );
+		m_auditTrailEnabledCB.addClickHandler( clickHandler );
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_auditTrailEnabledCB );
+		ckboxPanel.add( tmpPanel );
+
+		// Create the "Enable Audit Trail" and "Enable Change Log"
+		m_changeLogEnabledCB = new CheckBox( messages.databasePruneDlgEnableChangeLog() );
+		m_changeLogEnabledCB.addClickHandler( clickHandler );
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_changeLogEnabledCB );
+		ckboxPanel.add( tmpPanel );
+		mainPanel.add( ckboxPanel );
+
 		
 		// Create the controls for AuditTrail prune age
 		{
@@ -288,9 +320,11 @@ public class ManageDatabasePruneDlg extends DlgBox
 
 		// Get the auditTrail prune age from the dialog.
 		databasePruneConfig.setAuditTrailPruneAge( getAuditTrailPruneAge() );
+		databasePruneConfig.setAuditTrailEnabled(getAuditTrailEnabled());
 		
 		// Get the changeLog prune age from the dialog.
 		databasePruneConfig.setChangeLogPruneAge( getChangeLogPruneAge() );
+		databasePruneConfig.setChangeLogEnabled(getChangeLogEnabled());
 		
 		return databasePruneConfig;
 	}
@@ -321,6 +355,17 @@ public class ManageDatabasePruneDlg extends DlgBox
 	}
 
 	/**
+	 * Return if the audit trail is enabled.
+	 */
+	private boolean getAuditTrailEnabled()
+	{
+		if ( m_auditTrailEnabledCB.getValue() == Boolean.TRUE )
+			return true;
+
+		return false;
+	}
+	
+	/**
 	 * Return the audit trail prune age entered by the user.
 	 */
 	private int getAuditTrailPruneAge()
@@ -333,6 +378,17 @@ public class ManageDatabasePruneDlg extends DlgBox
 			interval = Integer.parseInt( pruneAgeStr );
 		
 		return interval;
+	}
+	
+	/**
+	 * Return if the change log is enabled.
+	 */
+	private boolean getChangeLogEnabled()
+	{
+		if ( m_changeLogEnabledCB.getValue() == Boolean.TRUE )
+			return true;
+
+		return false;
 	}
 	
 	/**

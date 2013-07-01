@@ -185,5 +185,16 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="9">
+        <addColumn tableName="SS_ZONECONFIG">
+			<column name="AUDITTRAILENABLED" type="NUMBER(1,0)">
+			    <constraints nullable="true" />
+			</column>
+			<column name="CHANGELOGENABLED" type="NUMBER(1,0)">
+			    <constraints nullable="true" />
+			</column>
+		</addColumn>
+    </changeSet>
     
 </databaseChangeLog>

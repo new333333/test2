@@ -188,6 +188,10 @@ public interface AdminModule {
     public void setAdHocFoldersEnabled( boolean enabled );
     public int getAuditTrailKeepDays();
     public int getChangeLogsKeepDays();
+    public boolean isAuditTrailEnabled();
+    public boolean isChangeLogEnabled();
+    public void setAuditTrailEnabled(boolean auditTrailEnabled);
+    public void setChangeLogEnabled(boolean changeLogEnabled);
     public void setLogTableKeepDays(int auditTrailKeepDays, int changeLogsKeepDays);
     
 

@@ -62,7 +62,7 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
   		Date now = new Date();
   		
-  		//This has been turned off until Filr V1.1
+  		//See if the audit trail and change log tables need to be pruned
   		if (zoneConfig.getAuditTrailKeepDays() > 0) {
   			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24);
   			List entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);

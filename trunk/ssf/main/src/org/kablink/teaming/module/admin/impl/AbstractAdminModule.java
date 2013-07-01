@@ -3049,15 +3049,37 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		return (justThisScope && ObjectKeys.ROLE_TYPE_FILR.equals(scope));
 	}
 	
+	@Override
+	public void setAuditTrailEnabled(boolean auditTrailEnabled) {
+		checkAccess(AdminOperation.manageLogTablePurge);
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setAuditTrailEnabled(auditTrailEnabled);
+	}
   	@Override
 	public int getAuditTrailKeepDays() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getAuditTrailKeepDays(); 		
   	}
   	@Override
+	public boolean isAuditTrailEnabled() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.isAuditTrailEnabled(); 		
+  	}
+	@Override
+	public void setChangeLogEnabled(boolean changeLogEnabled) {
+		checkAccess(AdminOperation.manageLogTablePurge);
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setChangeLogEnabled(changeLogEnabled);
+	}
+  	@Override
 	public int getChangeLogsKeepDays() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getChangeLogsKeepDays(); 		
+  	}
+  	@Override
+	public boolean isChangeLogEnabled() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.isChangeLogEnabled(); 		
   	}
   	@Override
 	public void setLogTableKeepDays(int auditTrailKeepDays, int changeLogsKeepDays) {
@@ -3095,9 +3117,15 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   		
   		if (zoneConfig.getAuditTrailKeepDays() > 0) {
   			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24);
-  			List<AuditTrail> entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
-  			if (writeAuditTrailLogFile(entriesToBeDeleted)) {
-  				//The entries to be purged were safely logged to disk, so we can delete them from the database
+  			if (SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.auditTrail", false)) {
+	  			List<AuditTrail> entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
+	  			if (writeAuditTrailLogFile(entriesToBeDeleted)) {
+	  				//The entries to be purged were safely logged to disk, so we can delete them from the database
+			  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
+			  		logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
+	  			}
+  			} else {
+  				//Entries are not being captured to disk first, so just delete the older entries
 		  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
 		  		logger.debug("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
   			}
@@ -3105,9 +3133,15 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   		
   		if (zoneConfig.getChangeLogsKeepDays() > 0) {
   			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getChangeLogsKeepDays()*1000*60*60*24);
-  			List<ChangeLog> entriesToBeDeleted = getCoreDao().getChangeLogEntries(zoneId, purgeBeforeDate);
-  			if (writeChangeLogLogFile(entriesToBeDeleted)) {
-  				//The entries to be purged were safely logged to disk, so we can delete them from the database
+  			if (SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.changeLog", false)) {
+	  			List<ChangeLog> entriesToBeDeleted = getCoreDao().getChangeLogEntries(zoneId, purgeBeforeDate);
+	  			if (writeChangeLogLogFile(entriesToBeDeleted)) {
+	  				//The entries to be purged were safely logged to disk, so we can delete them from the database
+			  		int changeLogPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
+			  		logger.info("Purged " + changeLogPurgeCount + " records from the SS_ChangeLog table");
+	  			}
+  			} else {
+  				//Entries are not being captured to disk first, so just delete the older entries
 		  		int changeLogPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
 		  		logger.debug("Purged " + changeLogPurgeCount + " records from the SS_ChangeLog table");
   			}

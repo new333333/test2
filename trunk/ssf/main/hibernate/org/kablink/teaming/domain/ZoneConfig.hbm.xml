@@ -28,7 +28,9 @@
 	<property name="localeCountry" access="field" length="16"/>
 	<property name="adHocFoldersEnabled" access="field"/>
 	<property name="auditTrailKeepDays" access="field"/>
+	<property name="auditTrailEnabled" access="field"/>
 	<property name="changeLogsKeepDays" access="field"/>
+	<property name="changeLogEnabled" access="field"/>
 	<property name="jitsEnabled" access="field"/>
 	<property name="jitsWaitTimeout" access="field"/>
     <component name="mailConfig" class="org.kablink.teaming.domain.MailConfig">

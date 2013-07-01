@@ -518,8 +518,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 					new String[] {binder.getPathName()});
 		}		
 		
-		if(binder.isMirrored()) { // The newly created binder is a mirrored one.
+		if (binder.isMirrored() || parent.isMirrored()) { 
+			// The newly created binder is a mirrored one or its parent is one.
 			// Make sure that the resource path we store is normalized.
+			if (!binder.isMirrored()) {
+				//If the binder is not mirrored, force it to be mirrored since only mirrored folders are allowed in a mirrored folder.
+				binder.setMirrored(true);
+			}
 	    	normalizeResourcePathIfInInput(binder, inputData);
 	    	binder.setResourceDriverName(parent.getResourceDriverName());
 						

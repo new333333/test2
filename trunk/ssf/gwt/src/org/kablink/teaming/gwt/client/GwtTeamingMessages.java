@@ -1631,6 +1631,8 @@ public interface GwtTeamingMessages extends Messages
 	String databasePruneDlgRemoveAuditTrailEntries();
 	String databasePruneDlgRemoveChangeLogEntries();
 	String databasePruneDlgAgeUnits();
+	String databasePruneDlgEnableAuditTrail();
+	String databasePruneDlgEnableChangeLog();
 	String databasePruneDlgCautionAuditTrail();
 	String databasePruneDlgCautionChangeLog();
 	String databasePruneDlgCautionIrrevocable();
