@@ -1846,7 +1846,8 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the CloudFolderAuthenticationDlg.
 	String cloudFolderAuthenticationDlgHeader();
-	String cloudFolderAuthenticationDlgMessage();
+	String cloudFolderAuthenticationDlgMessageAboveLogo();
+	String cloudFolderAuthenticationDlgMessageBelowLogo();
 	
 	// Strings used in the CopyMoveEntriesDlg in copy mode.
 	String copyEntriesDlgCaption1_Entries();

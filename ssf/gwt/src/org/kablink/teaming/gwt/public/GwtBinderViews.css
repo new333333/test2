@@ -393,7 +393,10 @@
 
 /* Start:  Cloud Folder authentication dialog styles. */
 	.vibe-cloudFolderAuthenticationDlgBox .popupContent {background-color: white !important;}
-	.vibe-cloudFolderAuthenticationDlg_Message          {padding: 10px; white-space: normal;}
+	.vibe-cloudFolderAuthenticationDlg_Logo             {margin-left: 10px;}
+	.vibe-cloudFolderAuthenticationDlg_Message          {padding: 10px; white-space: normal; display: block !important;}
+	.vibe-cloudFolderAuthenticationDlg_MessageAbove     {margin-bottom: 10px;}
+	.vibe-cloudFolderAuthenticationDlg_MessageBelow     {margin-top: 10px;}
 	.vibe-cloudFolderAuthenticationDlg_Panel            {width: 500px; height: 280px;}
 /* End:  Cloud Folder authentication dialog styles. */
 
