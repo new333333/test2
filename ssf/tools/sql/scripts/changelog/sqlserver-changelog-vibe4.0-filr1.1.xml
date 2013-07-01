@@ -185,5 +185,17 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="9">
+        <comment>Is audit trail logging enabled and change log enabled</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="auditTrailEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="changeLogEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>

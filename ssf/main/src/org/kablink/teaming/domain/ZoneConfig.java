@@ -73,6 +73,8 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Boolean adHocFoldersEnabled;
 	private Integer auditTrailKeepDays;
 	private Integer changeLogsKeepDays;
+	private Boolean auditTrailEnabled;
+	private Boolean changeLogEnabled;
 	private MobileAppsConfig mobileAppsConfig;
 	// If this is false, JITS is turned off on all binders regardless of their individual settings.
 	private Boolean jitsEnabled = Boolean.TRUE;
@@ -425,6 +427,15 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 		this.auditTrailKeepDays = auditTrailKeepDays;
 	}
 	
+	public boolean isAuditTrailEnabled() {
+		if(auditTrailEnabled == null)
+			return true;
+		return auditTrailEnabled;
+	}
+	public void setAuditTrailEnabled(boolean auditTrailEnabled) {
+		this.auditTrailEnabled = auditTrailEnabled;
+	}
+	
 	public int getChangeLogsKeepDays() {
 		if(changeLogsKeepDays == null)
 			return SPropsUtil.getInt("default.table.purge.keep.days.changelogs", 183);
@@ -434,6 +445,15 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 		this.changeLogsKeepDays = changeLogsKeepDays;
 	}
 
+	public boolean isChangeLogEnabled() {
+		if(changeLogEnabled == null)
+			return true;
+		return changeLogEnabled;
+	}
+	public void setChangeLogEnabled(boolean changeLogEnabled) {
+		this.changeLogEnabled = changeLogEnabled;
+	}
+	
 	
 	/**
 	 * 

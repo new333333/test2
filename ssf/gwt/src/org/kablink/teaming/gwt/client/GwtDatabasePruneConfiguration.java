@@ -46,6 +46,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtDatabasePruneConfiguration
 	implements IsSerializable, VibeRpcResponseData
 {
+	private boolean m_auditTrailEnabled = true;
+	private boolean m_changeLogEnabled = true;
 	private int m_auditTrailPruneAgeDays = 0;
 	private int m_changeLogPruneAgeDays = 0;
 	
@@ -67,6 +69,9 @@ public class GwtDatabasePruneConfiguration
 	{
 		return m_auditTrailPruneAgeDays;
 	}
+	public boolean getAuditTrailEnabled() {
+		return m_auditTrailEnabled;
+	}
 	
 	/**
 	 * The changeLog prune age is in minutes.
@@ -78,6 +83,9 @@ public class GwtDatabasePruneConfiguration
 	public int getChangeLogPruneAgeDays()
 	{
 		return m_changeLogPruneAgeDays;
+	}
+	public boolean getChangeLogEnabled() {
+		return m_changeLogEnabled;
 	}
 	
 	/**
@@ -91,6 +99,9 @@ public class GwtDatabasePruneConfiguration
 	{
 		m_auditTrailPruneAgeDays = intervalInDays;
 	}
+	public void setAuditTrailEnabled(boolean auditTrailEnabled) {
+		m_auditTrailEnabled = auditTrailEnabled;
+	}
 	
 	/**
 	 * 
@@ -102,5 +113,8 @@ public class GwtDatabasePruneConfiguration
 	public void setChangeLogPruneAgeDays( int intervalInDays )
 	{
 		m_changeLogPruneAgeDays = intervalInDays;
+	}
+	public void setChangeLogEnabled(boolean changeLogEnabled) {
+		m_changeLogEnabled = changeLogEnabled;
 	}
 }
