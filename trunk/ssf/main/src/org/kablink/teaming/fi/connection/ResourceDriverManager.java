@@ -111,6 +111,6 @@ public interface ResourceDriverManager {
 	 */
 	public ResourceDriver createResourceDriver(ResourceDriverConfig config);
 
-	public AclResourceSession openSessionWithAuth(AclResourceDriver authSupportingAclResourceDriver);
+	public AclResourceSession openSessionWithAuth(AclResourceDriver authSupportingAclResourceDriver, Long netFolderOwnerDbId);
 
 }

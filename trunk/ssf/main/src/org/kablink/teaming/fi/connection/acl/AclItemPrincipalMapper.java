@@ -34,6 +34,7 @@ package org.kablink.teaming.fi.connection.acl;
 
 import java.util.Map;
 
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 
 /**
