@@ -323,7 +323,7 @@ public class CloudFolderHelper {
 		}
 		
 		// Get a list of the currently defined Net Folder Roots
-		List<ResourceDriverConfig> drivers = bs.getResourceDriverModule().getAllResourceDriverConfigs();
+		List<ResourceDriverConfig> drivers = bs.getResourceDriverModule().getAllCloudFolderResourceDriverConfigs();
 		if (MiscUtil.hasItems(drivers)) {
 			for (ResourceDriverConfig driver:  drivers) {
 				if (id.equals(driver.getId())) {
@@ -351,7 +351,7 @@ public class CloudFolderHelper {
 		}
 		
 		// Get a list of the currently defined Net Folder Roots
-		List<ResourceDriverConfig> drivers = bs.getResourceDriverModule().getAllResourceDriverConfigs();
+		List<ResourceDriverConfig> drivers = bs.getResourceDriverModule().getAllCloudFolderResourceDriverConfigs();
 		if (MiscUtil.hasItems(drivers)) {
 			for (ResourceDriverConfig driver:  drivers) {
 				if (serverUNC.equalsIgnoreCase(driver.getRootPath())) {
@@ -379,7 +379,7 @@ public class CloudFolderHelper {
 		}
 		
 		// Get a list of the currently defined Net Folder Roots
-		List<ResourceDriverConfig> drivers = bs.getResourceDriverModule().getAllResourceDriverConfigs();
+		List<ResourceDriverConfig> drivers = bs.getResourceDriverModule().getAllCloudFolderResourceDriverConfigs();
 		if (MiscUtil.hasItems(drivers)) {
 			for (ResourceDriverConfig driver:  drivers) {
 				if (name.equalsIgnoreCase(driver.getName())) {

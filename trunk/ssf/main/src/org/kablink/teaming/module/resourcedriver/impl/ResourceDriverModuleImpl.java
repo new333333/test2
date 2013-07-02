@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -51,7 +51,6 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
-import org.kablink.teaming.jobs.DefaultNetFolderServerSynchronization;
 import org.kablink.teaming.jobs.NetFolderServerSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -67,18 +66,19 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.servlet.listener.ContextListenerPostSpring;
 import org.kablink.teaming.web.util.NetFolderHelper;
-import org.kablink.util.search.Constants;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	
 	private Log logger = LogFactory.getLog(getClass());
@@ -231,10 +231,22 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		}
 	}
 	
+	@Override
 	public List<ResourceDriverConfig> getAllResourceDriverConfigs() {
 		return getResourceDriverManager().getAllResourceDriverConfigs();
 	}
 	
+	@Override
+	public List<ResourceDriverConfig> getAllNetFolderResourceDriverConfigs() {
+		return getResourceDriverManager().getAllNetFolderResourceDriverConfigs();
+	}
+	
+	@Override
+	public List<ResourceDriverConfig> getAllCloudFolderResourceDriverConfigs() {
+		return getResourceDriverManager().getAllCloudFolderResourceDriverConfigs();
+	}
+	
+	@Override
 	public ResourceDriverConfig addResourceDriver(final String name, final DriverType type, final String rootPath,
 			final Set<Long> memberIds, final Map options) 
  			throws AccessControlException, RDException {
@@ -242,6 +254,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		checkAccess(ResourceDriverOperation.manageResourceDrivers);
 		
 		//Look to see if there is a driver by this name already
+		@SuppressWarnings("unused")
 		ResourceDriver d = null;
 		try {
 			d = getResourceDriverManager().getDriver(name);
@@ -330,6 +343,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		return rdc;
 	}
 	
+	@Override
 	public ResourceDriverConfig modifyResourceDriver(final String name, final DriverType type, final String rootPath,
 			final Set<Long> memberIds, final Map options) 
  			throws AccessControlException, RDException {
@@ -443,6 +457,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		return rdc;
 	}
 	
+	@Override
 	public void deleteResourceDriver(final String name) 
 			throws AccessControlException, RDException {
 		//Check that the user has the right to do this operation
@@ -498,7 +513,6 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 * Synchronize all of the net folders associated with the given net folder server.
 	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
 	 */
-	@SuppressWarnings("rawtypes")
 	private boolean doEnqueueSynchronize(
 		ResourceDriverConfig rdConfig,
 		boolean excludeFoldersWithSchedule

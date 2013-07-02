@@ -456,7 +456,7 @@ public class GwtNetFolderHelper
 			List<ResourceDriverConfig> drivers;
 
 			//Get a list of the currently defined Net Folder Roots
-			drivers = ami.getResourceDriverModule().getAllResourceDriverConfigs();
+			drivers = ami.getResourceDriverModule().getAllNetFolderResourceDriverConfigs();
 			for ( ResourceDriverConfig driver : drivers )
 			{
 				NetFolderRoot nfRoot;
@@ -1203,6 +1203,7 @@ public class GwtNetFolderHelper
 		{
 			try
 			{
+				@SuppressWarnings("unused")
 				StatusTicket statusTicket = null;
 				String statusTicketId;
 
@@ -1239,6 +1240,7 @@ public class GwtNetFolderHelper
 	{
 		for ( NetFolderRoot nextServer : netFolderServers )
 		{
+			@SuppressWarnings("unused")
 			StatusTicket statusTicket = null;
 			String statusTicketId;
 
