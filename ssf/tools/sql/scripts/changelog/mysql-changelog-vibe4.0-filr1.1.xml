@@ -188,7 +188,7 @@
 
     <changeSet author="peter" context="schema" failOnError="true" id="9">
         <addColumn tableName="SS_ZoneConfig">
-			<column name="auditTrainEnabled" type="BIT">
+			<column name="auditTrailEnabled" type="BIT">
 			    <constraints nullable="true" />
 			</column>
 			<column name="changeLogEnabled" type="BIT">
