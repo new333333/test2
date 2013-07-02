@@ -266,7 +266,7 @@ public class CloudFolderHelper {
 			reply.setResourceDriverConfig(
 				bs.getResourceDriverModule().addResourceDriver(
 					name,
-					DriverType.common_services, 
+					DriverType.cloud_folders, 
 					uncPath,
 					memberIds,
 					options));
@@ -526,7 +526,7 @@ public class CloudFolderHelper {
 		ResourceDriverConfig rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig(rootName);
 		rdConfig = bs.getResourceDriverModule().modifyResourceDriver(
 			rootName,
-			DriverType.common_services, 
+			DriverType.cloud_folders, 
 			uncPath,
 			memberIds,
 			options);
