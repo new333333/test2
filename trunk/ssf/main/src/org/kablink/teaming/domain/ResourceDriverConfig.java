@@ -69,7 +69,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		ncp_netware (3),
 		ncp_oes (4),
 		famt (5),
-		common_services (6);
+		cloud_folders (6);
 		int dtValue;
 		DriverType(int dtValue) {
 			this.dtValue = dtValue;
@@ -83,7 +83,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 			case 3: return DriverType.ncp_netware;
 			case 4: return DriverType.ncp_oes;
 			case 5: return DriverType.famt;
-			case 6: return DriverType.common_services;
+			case 6: return DriverType.cloud_folders;
 			default: return DriverType.filesystem;
 			}
 		}
