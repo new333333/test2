@@ -691,6 +691,8 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_RESOURCE_PATH = "resourcePath"; 
 	public static final String FIELD_BINDER_IS_HOME_DIR = "homeDir";
 	public static final String FIELD_WS_SEARCHTITLE="searchTitle";
+	
+	public static final String FIELD_RESOURCE_DRIVER_TYPE = "type";
 
     public static final String FIELD_USER_FIRSTNAME="firstName";
     public static final String FIELD_USER_MIDDLENAME="middleName";
