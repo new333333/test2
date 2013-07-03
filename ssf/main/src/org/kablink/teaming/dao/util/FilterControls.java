@@ -87,6 +87,17 @@ public class FilterControls implements Cloneable {
 	}
 
 	/**
+	 * Add a "like" criteria
+	 */
+	public void addIsLike( String name, String value )
+	{
+		Criterion crit;
+		
+		crit = Restrictions.isLike( name, value );
+		add( crit );
+	}
+	
+	/**
 	 * 
 	 * @param name
 	 */

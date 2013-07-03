@@ -4460,6 +4460,24 @@ td.datePickerMonth {
 	background: white;
 }
 
+.manageGroups_QuickFilterPanel
+{
+	background-color: #fff;
+	border: 1px solid #b8b8b8;
+	border-left: none;
+	border-radius: 15px;
+	height: 19px;
+	margin-top: 1px;
+	padding: 0 0 0 5px;
+	position: absolute;
+	right: 10px;
+	top: 2px;
+	vertical-align: top;
+	white-space: nowrap;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;	
+}
+
 /* End of styles used with the group management dialogs */
 
 

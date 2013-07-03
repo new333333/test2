@@ -3482,80 +3482,109 @@ public class GwtServerHelper {
 	/**
 	 * Return a list of all the groups in Vibe
 	 */
-	public static List<GroupInfo> getAllGroups( AllModulesInjected ami ) throws GwtTeamingException
+	public static List<GroupInfo> getAllGroups( AllModulesInjected ami, String filter ) throws GwtTeamingException
 	{
-		ArrayList<GroupInfo> reply;
+		ArrayList<GroupInfo> reply = null;
 		
 		reply = new ArrayList<GroupInfo>();
-		
-		try
+
+		if ( ami != null )
 		{
-			Map options;
-			Map searchResults;
-			List groups;
+			List<Group> listOfGroups;
 			
-			options = new HashMap();
-			options.put( ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD );
-			options.put( ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE );
-			options.put( ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1 );
+			listOfGroups = ami.getProfileModule().getGroups( filter, true, true );
 			
-			// Exclude allUsers and allExtUsers from the search
+			if ( listOfGroups != null )
 			{
-		    	options.put( ObjectKeys.SEARCH_FILTER_AND, SearchUtils.buildExcludeUniversalAndContainerGroupFilter(true) );
-			}
-	
-			// Get the list of all the groups.
-			searchResults = ami.getProfileModule().getGroups( options );
-	
-			groups = (List) searchResults.get( ObjectKeys.SEARCH_ENTRIES );
-			
-			if ( groups != null )
-			{
-				int i;
-				
-				for (i = 0; i < groups.size(); ++i)
+				for ( Group nextGroup : listOfGroups )
 				{
-					HashMap nextMap;
-					GroupInfo grpInfo;
-					Long id;
+					GroupInfo groupInfo;
 					
-					if ( groups.get( i ) instanceof HashMap )
-					{
-						Object value;
-						
-						nextMap = (HashMap) groups.get( i );
+					groupInfo = new GroupInfo();
 					
-						grpInfo = new GroupInfo();
-						id = Long.valueOf( (String) nextMap.get( "_docId" ) );
-						grpInfo.setId( id );
-						grpInfo.setTitle( (String) nextMap.get( "title" ) );
-						grpInfo.setName( (String) nextMap.get( "_groupName" ) );
-						
-						value = nextMap.get( "_desc" );
-						if ( value != null && value instanceof String )
-							grpInfo.setDesc( (String) value );
+					groupInfo.setId( nextGroup.getId() );
+					groupInfo.setTitle( nextGroup.getTitle() );
+					groupInfo.setName( nextGroup.getName() );
+					groupInfo.setDesc( nextGroup.getDescription().getText() );
+					groupInfo.setIsFromLdap( nextGroup.getIdentityInfo().isFromLdap() );
 					
-						value = nextMap.get( "_isGroupFromLdap" );
-						if ( value != null && value instanceof String )
-						{
-							String tmp;
-							
-							tmp = (String) value;
-							if ( tmp.equalsIgnoreCase( "true" ) )
-								grpInfo.setIsFromLdap( true );
-							else
-								grpInfo.setIsFromLdap( false );
-						}
-						
-						reply.add( grpInfo );
-					}
+					reply.add( groupInfo );
 				}
 			}
 		}
-		catch ( Exception ex )
+		else
 		{
-			throw GwtLogHelper.getGwtClientException(m_logger, ex );
-		} 
+			try
+			{
+				Map options;
+				Map searchResults;
+				List groups;
+				
+				options = new HashMap();
+				options.put( ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD );
+				options.put( ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE );
+				options.put( ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1 );
+				
+				// Exclude allUsers and allExtUsers from the search
+		    	options.put(
+		    			ObjectKeys.SEARCH_SEARCH_FILTER,
+		    			SearchUtils.buildExcludeUniversalAndContainerGroupFilter( true ) );
+				
+				addQuickFilterToSearch( options, filter );
+		
+				// Get the list of all the groups.
+				searchResults = ami.getProfileModule().getGroups( options );
+		
+				groups = (List) searchResults.get( ObjectKeys.SEARCH_ENTRIES );
+				
+				if ( groups != null )
+				{
+					int i;
+					
+					for (i = 0; i < groups.size(); ++i)
+					{
+						HashMap nextMap;
+						GroupInfo grpInfo;
+						Long id;
+						
+						if ( groups.get( i ) instanceof HashMap )
+						{
+							Object value;
+							
+							nextMap = (HashMap) groups.get( i );
+						
+							grpInfo = new GroupInfo();
+							id = Long.valueOf( (String) nextMap.get( "_docId" ) );
+							grpInfo.setId( id );
+							grpInfo.setTitle( (String) nextMap.get( "title" ) );
+							grpInfo.setName( (String) nextMap.get( "_groupName" ) );
+							
+							value = nextMap.get( "_desc" );
+							if ( value != null && value instanceof String )
+								grpInfo.setDesc( (String) value );
+						
+							value = nextMap.get( "_isGroupFromLdap" );
+							if ( value != null && value instanceof String )
+							{
+								String tmp;
+								
+								tmp = (String) value;
+								if ( tmp.equalsIgnoreCase( "true" ) )
+									grpInfo.setIsFromLdap( true );
+								else
+									grpInfo.setIsFromLdap( false );
+							}
+							
+							reply.add( grpInfo );
+						}
+					}
+				}
+			}
+			catch ( Exception ex )
+			{
+				throw GwtLogHelper.getGwtClientException(m_logger, ex );
+			}
+		}
 		
 		return reply;
 	}

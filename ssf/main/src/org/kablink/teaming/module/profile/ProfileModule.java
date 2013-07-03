@@ -293,6 +293,11 @@ public interface ProfileModule {
 		throws AccessControlException;
 	
 	/**
+	 * Return a list of groups that meet the given filter
+	 */
+	public List<Group> getGroups( String filter, boolean excludeAllUsersGroup, boolean excludeAllExternalUsersGroup );
+	
+	/**
 	 * Return List of Binders owned by users in the list
 	 * @param ids
 	 * @return
