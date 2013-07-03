@@ -39,6 +39,7 @@ import java.util.Set;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.binderviews.QuickFilter;
 import org.kablink.teaming.gwt.client.datatable.GroupTitleCell;
 import org.kablink.teaming.gwt.client.datatable.GroupTypeCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
@@ -49,6 +50,7 @@ import org.kablink.teaming.gwt.client.event.GroupCreationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationFailedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
+import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteGroupsCmd;
@@ -92,27 +94,39 @@ import com.google.gwt.view.client.MultiSelectionModel;
  * @author jwootton
  */
 public class ManageGroupsDlg extends DlgBox implements
-		GroupCreatedEvent.Handler, GroupCreationFailedEvent.Handler,
+		GroupCreatedEvent.Handler,
+		GroupCreationFailedEvent.Handler,
 		GroupCreationStartedEvent.Handler,
 		GroupModificationFailedEvent.Handler,
-		GroupModificationStartedEvent.Handler, GroupModifiedEvent.Handler {
+		GroupModificationStartedEvent.Handler,
+		GroupModifiedEvent.Handler,
+		QuickFilterEvent.Handler
+{
 	private CellTable<GroupInfoPlus> m_groupsTable;
 	private MultiSelectionModel<GroupInfoPlus> m_selectionModel;
 	private ListDataProvider<GroupInfoPlus> m_dataProvider;
 	private VibeSimplePager m_pager;
 	private List<GroupInfoPlus> m_listOfGroups;
 	private ModifyGroupDlg m_modifyGroupDlg;
+	private QuickFilter m_quickFilter;
 	private int m_width;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class. See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-			TeamingEvents.GROUP_CREATED, TeamingEvents.GROUP_CREATION_FAILED,
-			TeamingEvents.GROUP_CREATION_STARTED,
-			TeamingEvents.GROUP_MODIFICATION_FAILED,
-			TeamingEvents.GROUP_MODIFICATION_STARTED,
-			TeamingEvents.GROUP_MODIFIED };
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
+	{
+		TeamingEvents.GROUP_CREATED,
+		TeamingEvents.GROUP_CREATION_FAILED,
+		TeamingEvents.GROUP_CREATION_STARTED,
+		TeamingEvents.GROUP_MODIFICATION_FAILED,
+		TeamingEvents.GROUP_MODIFICATION_STARTED,
+		TeamingEvents.GROUP_MODIFIED,
+		TeamingEvents.QUICK_FILTER
+	};
+	
+	// MANAGE_GROUPS_ID is used to tell the QuickFilter widget who it is dealing with.
+	private static final long MANAGE_GROUPS_ID = -101;
 
 	/**
 	 * Callback interface to interact with the "manage groups" dialog
@@ -283,11 +297,23 @@ public class ManageGroupsDlg extends DlgBox implements
 				}
 			});
 			menuPanel.add(label);
+			
+			// Add a quick filter
+			{
+				FlowPanel qfPanel;
+				
+				qfPanel = new FlowPanel();
+				qfPanel.addStyleName( "manageGroups_QuickFilterPanel" );
+				
+				m_quickFilter = new QuickFilter( MANAGE_GROUPS_ID );
+				qfPanel.add( m_quickFilter );
+				
+				menuPanel.add( qfPanel );
+			}
 		}
 
 		// Create the CellTable that will display the list of groups.
-		cellTableResources = GWT
-				.create(VibeCellTable.VibeCellTableResources.class);
+		cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
 		m_groupsTable = new CellTable<GroupInfoPlus>(20, cellTableResources);
 		m_groupsTable.setWidth(String.valueOf(m_width - 20) + "px");
 
@@ -307,9 +333,9 @@ public class ManageGroupsDlg extends DlgBox implements
 
 		// Add a selection model so we can select groups.
 		m_selectionModel = new MultiSelectionModel<GroupInfoPlus>();
-		m_groupsTable.setSelectionModel(m_selectionModel,
-				DefaultSelectionEventManager
-						.<GroupInfoPlus> createCheckboxManager());
+		m_groupsTable.setSelectionModel(
+									m_selectionModel,
+									DefaultSelectionEventManager.<GroupInfoPlus> createCheckboxManager() );
 
 		// Add a checkbox in the first column
 		{
@@ -324,8 +350,9 @@ public class ManageGroupsDlg extends DlgBox implements
 					return m_selectionModel.isSelected(groupInfoPlus);
 				}
 			};
-			m_groupsTable.addColumn(ckboxColumn,
-					SafeHtmlUtils.fromSafeConstant("<br/>"));
+			m_groupsTable.addColumn(
+								ckboxColumn,
+								SafeHtmlUtils.fromSafeConstant("<br/>"));
 			m_groupsTable.setColumnWidth(ckboxColumn, 20, Unit.PX);
 		}
 
@@ -376,8 +403,9 @@ public class ManageGroupsDlg extends DlgBox implements
 					}
 				}
 			});
-			m_groupsTable.addColumn(titleCol,
-					messages.manageGroupsDlgTitleCol());
+			m_groupsTable.addColumn(
+								titleCol,
+								messages.manageGroupsDlgTitleCol());
 		}
 
 		// Add the "Name" column
@@ -633,7 +661,8 @@ public class ManageGroupsDlg extends DlgBox implements
 	/**
 	 * Issue an ajax request to get a list of all the groups.
 	 */
-	private void getAllGroupsFromServer() {
+	private void getAllGroupsFromServer( String filter )
+	{
 		GetAllGroupsCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
 
@@ -679,6 +708,7 @@ public class ManageGroupsDlg extends DlgBox implements
 
 		// Issue an ajax request to get a list of all the groups.
 		cmd = new GetAllGroupsCmd();
+		cmd.setFilter( filter );
 		GwtClientHelper.executeCommand(cmd, rpcCallback);
 	}
 
@@ -725,9 +755,10 @@ public class ManageGroupsDlg extends DlgBox implements
 	/**
 	 * 
 	 */
-	public void init() {
+	public void init()
+	{
 		// Issue an ajax request to get a list of all the groups
-		getAllGroupsFromServer();
+		getAllGroupsFromServer( null );
 	}
 
 	/**
@@ -983,6 +1014,37 @@ public class ManageGroupsDlg extends DlgBox implements
 				// modified.
 				m_dataProvider.refresh();
 			}
+		}
+	}
+
+	/**
+	 * Handles QuickFilterEvent's received by this class.
+	 * 
+	 * Implements the QuickFilterEvent.Handler.onQuickFilter() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onQuickFilter( QuickFilterEvent event )
+	{
+		// Is this event meant for us?
+		if ( event.getFolderId().equals( MANAGE_GROUPS_ID ) )
+		{
+			final String filter;
+			Scheduler.ScheduledCommand cmd;
+			
+			// Yes.  Search for groups using the filter entered by the user.
+			filter = event.getQuickFilter();
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					getAllGroupsFromServer( filter );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 

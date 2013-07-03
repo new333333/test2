@@ -840,10 +840,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_ALL_GROUPS:
 		{
+			GetAllGroupsCmd gagCmd;
 			List<GroupInfo> result;
 			GetGroupsRpcResponseData responseData;
 			
-			result = GwtServerHelper.getAllGroups( this );
+			gagCmd = (GetAllGroupsCmd) cmd;
+			result = GwtServerHelper.getAllGroups( this, gagCmd.getFilter() );
 			responseData = new GetGroupsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;

@@ -67,6 +67,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Attachment;
@@ -1021,6 +1022,47 @@ public Map getGroups() {
 	   return getGroups(options);
    }
 
+   /**
+	 * Return a list of groups that meet the given filter
+	*/
+   //RO transaction
+   @Override
+   public List<Group> getGroups( String filter, boolean excludeAllUsersGroup, boolean excludeAllExternalUsersGroup )
+   {
+	   List<Group> listOfGroups;
+	   FilterControls filterCtrls;
+	   
+	   filterCtrls = new FilterControls();
+	   
+	   // We only want groups
+	   filterCtrls.add( ObjectKeys.FIELD_PRINCIPAL_TYPE, "group" );
+	   
+	   // We only want groups that have not been deleted
+	   filterCtrls.add( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE );
+	   
+	   // Should we exclude the "all users" group?
+	   if ( excludeAllUsersGroup )
+		   filterCtrls.addNotEQ( ObjectKeys.FIELD_PRINCIPAL_NAME, "allusers" );
+
+	   // Should we exclude the "all external users" group?
+	   if ( excludeAllExternalUsersGroup )
+		   filterCtrls.addNotEQ( ObjectKeys.FIELD_PRINCIPAL_NAME, "allextusers" );
+	   
+	   // Don't include "ldap container" groups.
+	   filterCtrls.addIsNull( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER );
+	   
+	   // Do we have a filter?
+	   if ( filter != null && filter.length() > 0 )
+		   filterCtrls.addIsLike( ObjectKeys.FIELD_ENTITY_TITLE, filter );
+
+	   listOfGroups = getCoreDao().loadObjects(
+			   								Group.class,
+			   								filterCtrls,
+			   								RequestContextHolder.getRequestContext().getZoneId() );
+	   
+	   return listOfGroups;
+   }
+   
    //RO transaction
    @Override
    public List<Group> getLdapContainerGroups() {
