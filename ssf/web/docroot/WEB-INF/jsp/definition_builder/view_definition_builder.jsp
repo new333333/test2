@@ -781,7 +781,7 @@ function ss_saveUserGroupResults(s) {
 	<param name="xmlGetUrl" value="<ssf:url 
     		webPath="viewDefinitionXml" >
 			<ssf:param name="id" value="<%= selectedItem %>" />
-    		</ssf:url>"/>
+    		</ssf:url>&ss_random=<%= String.valueOf(new java.util.Date().getTime()) %>"/>"/>
 	<param name="xmlPostUrl" value="<ssf:url 
 		    adapter="true" 
 		    portletName="ss_administration" 

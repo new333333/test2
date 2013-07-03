@@ -62,7 +62,7 @@
 	<param name="xmlGetUrl" value="<ssf:url 
     		webPath="viewDefinitionXml" >
 			<ssf:param name="id" value="${ssWorkflowDefinitionId}" />
-    		</ssf:url>"/>
+    		</ssf:url>&ss_random=<%= String.valueOf(new java.util.Date().getTime()) %>"/>"/>
 	<param name="xmlPostUrl" value=""/>
 	<param name="nltSaveLayout" value=""/>
 <c:if test="${ieBrowser == 'false'}">
