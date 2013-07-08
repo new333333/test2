@@ -48,6 +48,7 @@ import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
@@ -376,10 +377,15 @@ public class GwtNetFolderHelper
 		{
 			try
 			{
+				NetFolderSelectSpec selectSpec;
 				List<NetFolder> listOfNetFolders;
 				
 				// Get a list of net folders that are referencing this net folder server.
-				listOfNetFolders = getAllNetFolders( ami, true, nextRoot.getName() );
+				selectSpec = new NetFolderSelectSpec();
+				selectSpec.setIncludeHomeDirNetFolders( true );
+				selectSpec.setRootName( nextRoot.getName() );
+				selectSpec.setFilter( null );
+				listOfNetFolders = getAllNetFolders( ami, selectSpec );
 				
 				// Is this net folder server being referenced by a net folder?
 				if ( listOfNetFolders == null || listOfNetFolders.size() == 0 )
@@ -411,8 +417,7 @@ public class GwtNetFolderHelper
 	 */
 	public static List<NetFolder> getAllNetFolders(
 		AllModulesInjected ami,
-		boolean includeHomeDirNetFolders,
-		String rootName )
+		NetFolderSelectSpec selectSpec )
 	{
 		List<Long> listOfNetFolderIds;
 		ArrayList<NetFolder> listOfNetFolders;
@@ -422,8 +427,7 @@ public class GwtNetFolderHelper
 		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
 													ami.getBinderModule(),
 													ami.getWorkspaceModule(),
-													rootName,
-													includeHomeDirNetFolders );
+													selectSpec );
 
 		if ( listOfNetFolderIds != null )
 		{

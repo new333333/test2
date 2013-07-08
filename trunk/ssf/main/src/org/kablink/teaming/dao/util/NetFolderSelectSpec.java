@@ -34,41 +34,25 @@ package org.kablink.teaming.dao.util;
 
 
 /**
- * This class encapsulates select specifications used to retrieve only those groups
+ * This class encapsulates select specifications used to retrieve only those net folders
  * that fulfill specified criteria.
  * 
  * @author jwootton
  *
  */
-public class GroupSelectSpec {
+public class NetFolderSelectSpec {
 	private String m_filter;
-	private boolean m_excludeAllUsersGroup;
-	private boolean m_excludeAllExternalUsersGroup;
+	private String m_rootName;
+	private boolean m_includeHomeDirNetFolders;
 	
 	/**
 	 * 
 	 */
-	public GroupSelectSpec()
+	public NetFolderSelectSpec()
 	{
 		m_filter = null;
-		m_excludeAllExternalUsersGroup = false;
-		m_excludeAllUsersGroup = false;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setExcludeAllExternalUsersGroup( boolean exclude )
-	{
-		m_excludeAllExternalUsersGroup = exclude;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setExcludeAllUsersGroup( boolean exclude )
-	{
-		m_excludeAllUsersGroup = exclude;
+		m_rootName = null;
+		m_includeHomeDirNetFolders = false;
 	}
 	
 	/**
@@ -78,28 +62,44 @@ public class GroupSelectSpec {
 	{
 		m_filter = filter;
 	}
+	
+	/**
+	 * 
+	 */
+	public void setIncludeHomeDirNetFolders( boolean include )
+	{
+		m_includeHomeDirNetFolders = include;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setRootName( String rootName )
+	{
+		m_rootName = rootName;
+	}
 
-	/**
-	 * 
-	 */
-	public boolean getExcludeAllExternalUsersGroup()
-	{
-		return m_excludeAllExternalUsersGroup;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getExcludeAllUsersGroup()
-	{
-		return m_excludeAllUsersGroup;
-	}
-	
 	/**
 	 * 
 	 */
 	public String getFilter()
 	{
 		return m_filter;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getIncludeHomeDirNetFolders()
+	{
+		return m_includeHomeDirNetFolders;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getRootName()
+	{
+		return m_rootName;
 	}
 }

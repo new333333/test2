@@ -45,6 +45,7 @@ public class GetNetFoldersCmd extends VibeRpcCmd
 {
 	private boolean m_includeHomeDirNetFolders;
 	private String m_rootName;
+	private String m_filter;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -54,6 +55,7 @@ public class GetNetFoldersCmd extends VibeRpcCmd
 		super();
 		m_includeHomeDirNetFolders = false;
 		m_rootName = null;
+		m_filter = null;
 	}
 	
 	/**
@@ -72,6 +74,14 @@ public class GetNetFoldersCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
+	public String getFilter()
+	{
+		return m_filter;
+	}
+	
+	/**
+	 * 
+	 */
 	public boolean getIncludeHomeDirNetFolders()
 	{
 		return m_includeHomeDirNetFolders;
@@ -83,6 +93,14 @@ public class GetNetFoldersCmd extends VibeRpcCmd
 	public String getRootName()
 	{
 		return m_rootName;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setFilter( String filter )
+	{
+		m_filter = filter;
 	}
 	
 	/**

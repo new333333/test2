@@ -51,6 +51,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -816,12 +817,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			List<NetFolder> result;
 			GetNetFoldersRpcResponseData responseData;
 			GetNetFoldersCmd gnfCmd;
+			NetFolderSelectSpec selectSpec;
 			
 			gnfCmd = (GetNetFoldersCmd) cmd;
-			result = GwtNetFolderHelper.getAllNetFolders(
-													this,
-													gnfCmd.getIncludeHomeDirNetFolders(),
-													gnfCmd.getRootName() );
+			selectSpec = new NetFolderSelectSpec();
+			selectSpec.setFilter( gnfCmd.getFilter() );
+			selectSpec.setIncludeHomeDirNetFolders( gnfCmd.getIncludeHomeDirNetFolders() );
+			selectSpec.setRootName( gnfCmd.getRootName() );
+			result = GwtNetFolderHelper.getAllNetFolders( this, selectSpec );
 			responseData = new GetNetFoldersRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;

@@ -43,8 +43,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.FolderDao;
+import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -665,9 +665,9 @@ public class NetFolderHelper
 	/**
 	 * 
 	 */
-	private static CoreDao getCoreDao()
+	private static FolderDao getFolderDao()
 	{
-		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
+		return (FolderDao) SpringContextUtil.getBean( "folderDao" );
 	}
 	
 	/**
@@ -689,62 +689,24 @@ public class NetFolderHelper
 	/**
 	 * Return all the net folders that are associated with the given net folder server
 	 */
-	@SuppressWarnings({ "unchecked" })
 	public static List<Long> getAllNetFolders(
 		BinderModule binderModule,
 		WorkspaceModule workspaceModule,
-		String rootName,
-		boolean includeHomeDirNetFolders )
+		NetFolderSelectSpec selectSpec )
 	{
 		List<Folder> results;
 		List<Long> listOfNetFolderIds;
 		Workspace zone;
 		Long zoneId;
-		FilterControls filterCtrls;
 		
 		zone = RequestContextHolder.getRequestContext().getZone();
 		zoneId = zone.getId();
 		
-		// Add the criteria for finding all top-level net folders.
-		{
-			filterCtrls = new FilterControls();
-
-			filterCtrls.add( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE );
-			
-			filterCtrls.addIsNull( "topFolder" );
-			
-			// Are we looking for a net folder that is associated with a specific net folder root?
-			if ( rootName != null && rootName.length() > 0 )
-			{
-				// Yes
-				filterCtrls.add( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName );
-			}
-	
-			// Are we including "home directory" net folders?
-			if ( includeHomeDirNetFolders == false )
-			{
-				Binder parentBinder;
-				
-				// No
-				filterCtrls.add( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, false );
-				
-				// Get the binder where all non home dir net folders live.
-				parentBinder = getCoreDao().loadReservedBinder(
-														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-														zoneId );
-				if ( parentBinder != null )
-				{
-					filterCtrls.add(
-								ObjectKeys.FIELD_ENTITY_PARENTBINDER,
-								parentBinder );
-				}
-			}
-		}
-
 		listOfNetFolderIds = new ArrayList<Long>();
 		
 		// Get the list of net folders for the given criteria.
-		results = getCoreDao().loadObjects( Folder.class, filterCtrls, zoneId );
+		results = getFolderDao().findNetFolders( selectSpec, zoneId );
+		
 		if ( results != null )
 		{
 			// We only want to return top-level net folders.
@@ -954,13 +916,17 @@ public class NetFolderHelper
 		if ( reIndexNeeded )
 		{
 			List<Long> listOfNetFolderIds;
+			NetFolderSelectSpec selectSpec;
 
 			// Find all of the net folders that reference this net folder server.
+			selectSpec = new NetFolderSelectSpec();
+			selectSpec.setRootName( rdConfig.getName() );
+			selectSpec.setIncludeHomeDirNetFolders( true );
+			selectSpec.setFilter( null );
 			listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
 														binderModule,
 														workspaceModule,
-														rdConfig.getName(),
-														true );
+														selectSpec );
 
 			if ( listOfNetFolderIds != null )
 			{

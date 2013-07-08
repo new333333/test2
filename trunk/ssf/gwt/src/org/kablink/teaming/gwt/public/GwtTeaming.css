@@ -4460,7 +4460,7 @@ td.datePickerMonth {
 	background: white;
 }
 
-.manageGroups_QuickFilterPanel
+.manageGroups_QuickFilterPanel, .manageNetFoldersDlg_QuickFilterPanel
 {
 	background-color: #fff;
 	border: 1px solid #b8b8b8;

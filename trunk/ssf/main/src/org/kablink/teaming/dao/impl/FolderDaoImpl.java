@@ -46,6 +46,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
@@ -56,6 +57,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
@@ -71,8 +73,6 @@ import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.util.Constants;
-import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.util.dao.hibernate.DynamicDialect;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -980,5 +980,89 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     		end(begin, "findFolderIdsFromWorkflowState(String,String)");
     	}	        
 	}	
-	
+
+    /**
+     * 
+     */
+ 	@Override
+	public List<Folder> findNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId )
+	{
+        List result = null;
+
+        long begin = System.nanoTime();
+		try
+		{
+			HibernateCallback callback;
+			
+			callback = new HibernateCallback() 
+            {
+                @Override
+				public Object doInHibernate( Session session ) throws HibernateException
+				{
+                	Criteria crit;
+                	String filter;
+                	String rootName;
+
+                	crit = session.createCriteria( Folder.class );
+                	
+                	// We only want net folders that have not been deleted
+                	crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE ) );
+                	
+                	// We only want mirrored folders
+                	crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE ) );
+                	
+                	// We only want top-level folders
+                	crit.add( Restrictions.isNull( "topFolder" ) );
+                	
+                	// Are we looking for a net folder that is associated with a specific net folder root?
+                	rootName = selectSpec.getRootName();
+                	if ( rootName != null && rootName.length() > 0 )
+                	{
+                		// Yes
+                		crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName ) );
+                	}
+                	
+        			// Are we including "home directory" net folders?
+        			if ( selectSpec.getIncludeHomeDirNetFolders() == false )
+        			{
+        				Binder parentBinder;
+        				
+        				// No
+        				crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.FALSE ) );
+        				
+        				// Get the binder where all non home dir net folders live.
+        				parentBinder = getCoreDao().loadReservedBinder(
+        														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+        														zoneId );
+        				if ( parentBinder != null )
+        				{
+        					crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder ) );
+        				}
+        			}
+                	
+                	// Do we have a filter?
+                	filter = selectSpec.getFilter();
+                	if ( filter != null && filter.length() > 0 )
+                	{
+                		// Yes
+                		crit.add( Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE ) );
+                	}
+
+                	return crit.list();
+                }
+            };
+ 
+            result = (List)getHibernateTemplate().execute( callback );
+    	}
+		catch ( Exception ex )
+		{
+			logger.error( "findNetFolders() caught an exception: " + ex.toString() );
+		}
+    	finally 
+    	{
+    		end( begin, "findNetFolders(NetFolderSelectSpec)");
+    	}	              	
+
+      	return result;   	
+	}
 }
