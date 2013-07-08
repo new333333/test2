@@ -45,6 +45,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -518,6 +519,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		boolean excludeFoldersWithSchedule
 		)
 	{
+		NetFolderSelectSpec selectSpec;
 		FolderModule folderModule;
 		List<Long> listOfNetFolderIds;
 		
@@ -527,11 +529,14 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		folderModule = getFolderModule();
 
 		// Find all of the net folders that reference this net folder server.
+		selectSpec = new NetFolderSelectSpec();
+		selectSpec.setFilter( null );
+		selectSpec.setIncludeHomeDirNetFolders( true );
+		selectSpec.setRootName( rdConfig.getName() );
 		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
 													getBinderModule(),
 													getWorkspaceModule(),
-													rdConfig.getName(),
-													true );
+													selectSpec );
 
 		if ( listOfNetFolderIds != null )
 		{

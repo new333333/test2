@@ -41,11 +41,13 @@ import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
+import org.kablink.teaming.gwt.client.binderviews.QuickFilter;
 import org.kablink.teaming.gwt.client.datatable.NetFolderNameCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderModifiedEvent;
+import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFoldersStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFoldersStatusRpcResponseData;
@@ -96,12 +98,14 @@ import com.google.gwt.view.client.MultiSelectionModel;
 public class ManageNetFoldersDlg extends DlgBox
 	implements
 		NetFolderCreatedEvent.Handler,
-		NetFolderModifiedEvent.Handler
+		NetFolderModifiedEvent.Handler,
+		QuickFilterEvent.Handler
 {
 	private CellTable<NetFolder> m_netFoldersTable;
     private MultiSelectionModel<NetFolder> m_selectionModel;
 	private ListDataProvider<NetFolder> m_dataProvider;
 	private VibeSimplePager m_pager;
+	private QuickFilter m_quickFilter;
 	private List<NetFolder> m_listOfNetFolders;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg;
     private int m_width;
@@ -112,9 +116,13 @@ public class ManageNetFoldersDlg extends DlgBox
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] 
 	{
 		TeamingEvents.NET_FOLDER_CREATED,
-		TeamingEvents.NET_FOLDER_MODIFIED
+		TeamingEvents.NET_FOLDER_MODIFIED,
+		TeamingEvents.QUICK_FILTER
 	};
 	
+	// MANAGE_NET_FOLDER_ID is used to tell the QuickFilter widget who it is dealing with.
+	private static final long MANAGE_NET_FOLDERS_ID = -201;
+
 
 	/**
 	 * Callback interface to interact with the "manage net folders" dialog
@@ -347,6 +355,19 @@ public class ManageNetFoldersDlg extends DlgBox
 				}
 			} );
 			menuPanel.add( label );
+
+			// Add a quick filter
+			{
+				FlowPanel qfPanel;
+				
+				qfPanel = new FlowPanel();
+				qfPanel.addStyleName( "manageNetFoldersDlg_QuickFilterPanel" );
+				
+				m_quickFilter = new QuickFilter( MANAGE_NET_FOLDERS_ID );
+				qfPanel.add( m_quickFilter );
+				
+				menuPanel.add( qfPanel );
+			}
 		}
 		
 		// Create the CellTable that will display the list of Net Folders.
@@ -618,7 +639,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	/**
 	 * Issue an ajax request to get a list of all the net folders.
 	 */
-	private void getAllNetFoldersFromServer()
+	private void getAllNetFoldersFromServer( String filter )
 	{
 		GetNetFoldersCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
@@ -665,6 +686,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		// Issue an ajax request to get a list of all the net folders.
 		cmd = new GetNetFoldersCmd();
 		cmd.setIncludeHomeDirNetFolders( false );
+		cmd.setFilter( filter );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
@@ -717,7 +739,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	public void init()
 	{
 		// Issue an ajax request to get a list of all the net folders
-		getAllNetFoldersFromServer();
+		getAllNetFoldersFromServer( null );
 	}
 	
 	/**
@@ -917,6 +939,37 @@ public class ManageNetFoldersDlg extends DlgBox
 				// Update the table to reflect the fact that this net folder has been modified.
 				m_dataProvider.refresh();
 			} 
+		}
+	}
+
+	/**
+	 * Handles QuickFilterEvent's received by this class.
+	 * 
+	 * Implements the QuickFilterEvent.Handler.onQuickFilter() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onQuickFilter( QuickFilterEvent event )
+	{
+		// Is this event meant for us?
+		if ( event.getFolderId().equals( MANAGE_NET_FOLDERS_ID ) )
+		{
+			final String filter;
+			Scheduler.ScheduledCommand cmd;
+			
+			// Yes.  Search for net folders using the filter entered by the user.
+			filter = event.getQuickFilter();
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					getAllNetFoldersFromServer( filter );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 

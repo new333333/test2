@@ -37,9 +37,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -139,4 +139,13 @@ public interface FolderDao {
      * @return List of folder entry ids
      */
 	public Set<Long> findFolderUnEncryptedEntries(final List<Long> binderIds);
+	
+	/**
+	 * Used to find all net folders that meet the specifications
+	 * @param selectSpec
+	 * @param zoneId
+	 * @return
+	 */
+	public List<Folder> findNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId );
+
 }
