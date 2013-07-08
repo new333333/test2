@@ -5883,7 +5883,7 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Return a GwtDatabasePruneConfig object that holds the jits zone config data.
+	 * Return a GwtDatabasePruneConfig object that holds the pruning config data.
 	 * 
 	 * @return
 	 */

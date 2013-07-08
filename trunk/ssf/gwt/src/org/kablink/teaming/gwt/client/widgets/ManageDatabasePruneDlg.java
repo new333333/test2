@@ -134,41 +134,34 @@ public class ManageDatabasePruneDlg extends DlgBox
 		label = new Label( messages.databasePruneDlgHeader2() );
 		mainPanel.add( label );
 
-		ckboxPanel = new FlowPanel();
-		ckboxPanel.addStyleName( "marginbottom2" );
-
-		clickHandler = new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-			}
-		};
-
-		// Create the "Enable Audit Trail" and "Enable Change Log"
-		m_auditTrailEnabledCB = new CheckBox( messages.databasePruneDlgEnableAuditTrail() );
-		m_auditTrailEnabledCB.addClickHandler( clickHandler );
-		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_auditTrailEnabledCB );
-		ckboxPanel.add( tmpPanel );
-
-		// Create the "Enable Audit Trail" and "Enable Change Log"
-		m_changeLogEnabledCB = new CheckBox( messages.databasePruneDlgEnableChangeLog() );
-		m_changeLogEnabledCB.addClickHandler( clickHandler );
-		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_changeLogEnabledCB );
-		ckboxPanel.add( tmpPanel );
-		mainPanel.add( ckboxPanel );
-
-		
 		// Create the controls for AuditTrail prune age
 		{
+			ckboxPanel = new FlowPanel();
+			ckboxPanel.addStyleName( "margintop3" );
+
+			clickHandler = new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+				}
+			};
+
+			// Create the "Enable Audit Trail" and "Enable Change Log"
+			m_auditTrailEnabledCB = new CheckBox( messages.databasePruneDlgEnableAuditTrail() );
+			m_auditTrailEnabledCB.addClickHandler( clickHandler );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_auditTrailEnabledCB );
+			ckboxPanel.add( tmpPanel );
+			mainPanel.add( ckboxPanel );
+
 			HorizontalPanel hPanel;
 			Label intervalLabel;
 			
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 6 );
+			hPanel.addStyleName("marginleft2");
 			
 			intervalLabel = new Label( messages.databasePruneDlgRemoveAuditTrailEntries() );
 			hPanel.add( intervalLabel );
@@ -186,12 +179,32 @@ public class ManageDatabasePruneDlg extends DlgBox
 		
 		// Create the controls for ChangeLog prune age
 		{
+			ckboxPanel = new FlowPanel();
+			ckboxPanel.addStyleName( "margintop2" );
+
+			clickHandler = new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+				}
+			};
+
+			// Create the "Enable Change Log" checkbox
+			m_changeLogEnabledCB = new CheckBox( messages.databasePruneDlgEnableChangeLog() );
+			m_changeLogEnabledCB.addClickHandler( clickHandler );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_changeLogEnabledCB );
+			ckboxPanel.add( tmpPanel );
+			mainPanel.add( ckboxPanel );
+
 			HorizontalPanel hPanel;
 			Label intervalLabel;
 			
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 6 );
+			hPanel.addStyleName("marginleft2");
 			
 			intervalLabel = new Label( messages.databasePruneDlgRemoveChangeLogEntries() );
 			hPanel.add( intervalLabel );
@@ -215,6 +228,7 @@ public class ManageDatabasePruneDlg extends DlgBox
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 6 );
+			hPanel.addStyleName("margintop3");
 			warningLabel = new Label( messages.databasePruneDlgCautionIrrevocable() );
 			hPanel.add( warningLabel );
 			mainPanel.add( hPanel );
@@ -415,13 +429,15 @@ public class ManageDatabasePruneDlg extends DlgBox
 		int size;
 		String value;
 		
-		// Initialize the audit trail prune age textbox
+		// Initialize the audit trail prune age textbox and enabled checkbox
+		m_auditTrailEnabledCB.setValue(databasePruneConfiguration.getAuditTrailEnabled());
 		value = "";
 		interval = databasePruneConfiguration.getAuditTrailPruneAge();
 		if (interval > 0) value = String.valueOf( interval );
 		m_auditTrailPruneAgeTextBox.setText( value );
 		
-		// Initialize the change log prune age textbox
+		// Initialize the change log prune age textbox and enabled checkbox
+		m_changeLogEnabledCB.setValue(databasePruneConfiguration.getChangeLogEnabled());
 		value = "";
 		interval = databasePruneConfiguration.getChangeLogPruneAge();
 		if (interval > 0) value = String.valueOf( interval );
