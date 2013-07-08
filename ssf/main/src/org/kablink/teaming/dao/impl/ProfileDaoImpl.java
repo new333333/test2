@@ -63,6 +63,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
@@ -542,6 +543,61 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 
     }
+
+    /**
+     * 
+     */
+ 	@Override
+	public List<Group> findGroups( final GroupSelectSpec groupSelectSpec )
+	{
+		long begin = System.nanoTime();
+		try
+		{
+			HibernateCallback callback;
+			
+			callback = new HibernateCallback() 
+            {
+                @Override
+				public Object doInHibernate( Session session ) throws HibernateException
+				{
+                	Criteria crit;
+                	String filter;
+
+                	crit = session.createCriteria( Group.class );
+                	
+                	// We only want groups that have not been deleted
+                	crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE  ) );
+                	
+                	// Should we exclude the "all users" group?
+                	if ( groupSelectSpec.getExcludeAllUsersGroup() )
+                		crit.add( Restrictions.ne( ObjectKeys.FIELD_PRINCIPAL_NAME, "allusers" ) );
+                	
+                	// Should we exclude the "all external users group?
+                	if ( groupSelectSpec.getExcludeAllExternalUsersGroup() )
+                		crit.add( Restrictions.ne( ObjectKeys.FIELD_PRINCIPAL_NAME, "allextusers" ) );
+                	
+                	// Don't include "ldap container" groups.
+                	crit.add( Restrictions.isNull( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER ) );
+                	
+                	// Do we have a filter?
+                	filter = groupSelectSpec.getFilter();
+                	if ( filter != null && filter.length() > 0 )
+                		crit.add( Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE ) );
+
+                	return crit.list();
+                }
+            };
+ 
+	      	List result = (List)getHibernateTemplate().execute( callback );
+	      	
+	      	return result;   	
+    	}
+    	finally 
+    	{
+    		end( begin, "findGroups(ShareItemSelectSpec)");
+    	}	              	
+ 	}
+
     //used for login
     @Override
 	public User findUserByName(final String userName, String zoneName) {

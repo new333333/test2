@@ -100,6 +100,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CommaSeparatedValue;
@@ -3484,105 +3485,33 @@ public class GwtServerHelper {
 	 */
 	public static List<GroupInfo> getAllGroups( AllModulesInjected ami, String filter ) throws GwtTeamingException
 	{
+		GroupSelectSpec groupSelectSpec;
+		List<Group> listOfGroups;
 		ArrayList<GroupInfo> reply = null;
 		
 		reply = new ArrayList<GroupInfo>();
 
-		if ( ami != null )
-		{
-			List<Group> listOfGroups;
-			
-			listOfGroups = ami.getProfileModule().getGroups( filter, true, true );
-			
-			if ( listOfGroups != null )
-			{
-				for ( Group nextGroup : listOfGroups )
-				{
-					GroupInfo groupInfo;
-					
-					groupInfo = new GroupInfo();
-					
-					groupInfo.setId( nextGroup.getId() );
-					groupInfo.setTitle( nextGroup.getTitle() );
-					groupInfo.setName( nextGroup.getName() );
-					groupInfo.setDesc( nextGroup.getDescription().getText() );
-					groupInfo.setIsFromLdap( nextGroup.getIdentityInfo().isFromLdap() );
-					
-					reply.add( groupInfo );
-				}
-			}
-		}
-		else
-		{
-			try
-			{
-				Map options;
-				Map searchResults;
-				List groups;
-				
-				options = new HashMap();
-				options.put( ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD );
-				options.put( ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE );
-				options.put( ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1 );
-				
-				// Exclude allUsers and allExtUsers from the search
-		    	options.put(
-		    			ObjectKeys.SEARCH_SEARCH_FILTER,
-		    			SearchUtils.buildExcludeUniversalAndContainerGroupFilter( true ) );
-				
-				addQuickFilterToSearch( options, filter );
+		groupSelectSpec = new GroupSelectSpec();
+		groupSelectSpec.setFilter( filter );
+		groupSelectSpec.setExcludeAllExternalUsersGroup( true );
+		groupSelectSpec.setExcludeAllUsersGroup( true );
+		listOfGroups = ami.getProfileModule().getGroups( groupSelectSpec );
 		
-				// Get the list of all the groups.
-				searchResults = ami.getProfileModule().getGroups( options );
-		
-				groups = (List) searchResults.get( ObjectKeys.SEARCH_ENTRIES );
-				
-				if ( groups != null )
-				{
-					int i;
-					
-					for (i = 0; i < groups.size(); ++i)
-					{
-						HashMap nextMap;
-						GroupInfo grpInfo;
-						Long id;
-						
-						if ( groups.get( i ) instanceof HashMap )
-						{
-							Object value;
-							
-							nextMap = (HashMap) groups.get( i );
-						
-							grpInfo = new GroupInfo();
-							id = Long.valueOf( (String) nextMap.get( "_docId" ) );
-							grpInfo.setId( id );
-							grpInfo.setTitle( (String) nextMap.get( "title" ) );
-							grpInfo.setName( (String) nextMap.get( "_groupName" ) );
-							
-							value = nextMap.get( "_desc" );
-							if ( value != null && value instanceof String )
-								grpInfo.setDesc( (String) value );
-						
-							value = nextMap.get( "_isGroupFromLdap" );
-							if ( value != null && value instanceof String )
-							{
-								String tmp;
-								
-								tmp = (String) value;
-								if ( tmp.equalsIgnoreCase( "true" ) )
-									grpInfo.setIsFromLdap( true );
-								else
-									grpInfo.setIsFromLdap( false );
-							}
-							
-							reply.add( grpInfo );
-						}
-					}
-				}
-			}
-			catch ( Exception ex )
+		if ( listOfGroups != null )
+		{
+			for ( Group nextGroup : listOfGroups )
 			{
-				throw GwtLogHelper.getGwtClientException(m_logger, ex );
+				GroupInfo groupInfo;
+				
+				groupInfo = new GroupInfo();
+				
+				groupInfo.setId( nextGroup.getId() );
+				groupInfo.setTitle( nextGroup.getTitle() );
+				groupInfo.setName( nextGroup.getName() );
+				groupInfo.setDesc( nextGroup.getDescription().getText() );
+				groupInfo.setIsFromLdap( nextGroup.getIdentityInfo().isFromLdap() );
+				
+				reply.add( groupInfo );
 			}
 		}
 		

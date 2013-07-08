@@ -119,29 +119,6 @@ public class Restrictions {
 		}
 	}
 	
-	/**
-	 * 
-	 */
-	static class IsLikeCriterion extends SingleValueCriterion
-	{
-		public IsLikeCriterion( String name, String value )
-		{
-			super( name, value );
-		}
-		
-		@Override
-		protected String getComparator()
-		{
-			return " like ";
-		}
-		
-		@Override
-		public String toSQLString( String alias )
-		{
-			return getFieldName( alias ) + getComparator() + "\"%?%\"";
-		}
-	}
-	
 	static class IsNullCriterion extends SingleFieldCriterion
 	{
 		public IsNullCriterion(String name)
@@ -169,14 +146,6 @@ public class Restrictions {
 	{
 		return new NotNullCriterion(name);
 	}
-
-	/**
-	 * 
-	 */
-	public static Criterion isLike( String name, String value )
-	{
-		return new IsLikeCriterion( name, value );
-	}	
 
 	public static Criterion isNull(String name)
 	{
