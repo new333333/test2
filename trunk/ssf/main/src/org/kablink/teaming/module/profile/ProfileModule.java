@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
+import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Binder;
@@ -295,7 +296,7 @@ public interface ProfileModule {
 	/**
 	 * Return a list of groups that meet the given filter
 	 */
-	public List<Group> getGroups( String filter, boolean excludeAllUsersGroup, boolean excludeAllExternalUsersGroup );
+	public List<Group> getGroups( GroupSelectSpec groupSelectSpec );
 	
 	/**
 	 * Return List of Binders owned by users in the list

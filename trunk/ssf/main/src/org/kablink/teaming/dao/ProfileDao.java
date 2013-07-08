@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
@@ -317,6 +318,13 @@ public interface ProfileDao {
  	 */
  	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightsToSharedEntities(Collection<EntityIdentifier> sharedEntityIdentifiers, String[] rightNames);
  	
+ 	/** 
+ 	 * Find a list of <code>Group</code> meeting the specified selection criteria.
+ 	 * 
+ 	 * @return
+ 	 */
+ 	public List<Group> findGroups( GroupSelectSpec groupSelectSpec );
+
  	/** 
  	 * Find a list of <code>ShareItem</code> meeting the specified selection criteria.
  	 * 
