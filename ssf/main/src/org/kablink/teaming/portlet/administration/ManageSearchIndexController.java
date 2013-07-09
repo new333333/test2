@@ -106,15 +106,12 @@ public class ManageSearchIndexController extends  SAbstractController {
 				// Create a new status ticket
 				StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
 				IndexErrors errors = new IndexErrors();
-				Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeNames, errors);
-				//if people selected and not yet index; index content only, not the whole ws tree
 				String idChoices = TreeHelper.getSelectedIdsAsString(formData);
-				if (idChoices.contains(usersAndGroups)) {
-					ProfileBinder pf = getProfileModule().getProfileBinder();
-					if (!idsIndexed.contains(pf.getId())) {
-						errors.add(getBinderModule().indexBinder(pf.getId(), true)); 
-					}
-				}
+				boolean includeUsersAndGroups = false;
+				if (idChoices.contains(usersAndGroups))
+					includeUsersAndGroups = true;
+				getAdminModule().reindexDestructive(ids, statusTicket, nodeNames, errors, includeUsersAndGroups);
+				
 	    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
 				//SimpleProfiler.done(logger);
 				response.setRenderParameters(formData);
