@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.ConditionalClause;
@@ -66,6 +67,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 
 /**
@@ -461,4 +463,6 @@ public interface AdminModule {
     public void setMobileAppsConfig( MobileAppsConfig mobileAppsConfig );
     
     public void setJitsConfig( boolean enabled, long maxWait );
+    
+    public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException;
  }
