@@ -1,0 +1,34 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
+	    
+    <!-- ============================== Preemptive authentication using HTTP BASIC authorization header  ============================ -->
+
+	<bean id="basicProcessingFilter" class="org.springframework.security.ui.basicauth.BasicProcessingFilter">
+		<security:custom-filter before="AUTHENTICATION_PROCESSING_FILTER"/>
+		<property name="authenticationManager" ref="_authenticationManager"/>
+		<property name="ignoreFailure"><value>true</value></property>
+	</bean>
+
+    <!-- ============================== Form-based authentication ============================ -->
+    
+    <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
+		<security:custom-filter position="LOGOUT_FILTER"/>
+		<constructor-arg value="/redirect/vibe?user.logout=true"/>
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.ui.logout.SecurityContextLogoutHandler"/>
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/s/portalLogout"/>
+    </bean>
+
+    <import resource="security-auth-form-common.xml"/>
+        
+</beans>

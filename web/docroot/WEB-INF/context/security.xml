@@ -1,0 +1,45 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
+
+    <!-- ========== Defines base beans that are common between different authentication mechanisms ========== -->
+
+	<!-- Portal Login Support -->
+	<bean id="portalLoginBean" class="org.kablink.teaming.portal.StandaloneLogin"/>
+	
+	<!--<bean id="zoneGrabbingFilter" class="org.kablink.teaming.spring.security.ZoneGrabbingFilter">
+		<security:custom-filter position="FIRST"/>
+	</bean>-->
+	
+	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
+		<property name="providerBeanNames">
+			<list>
+				<value>authenticationModule</value>
+			</list>
+		</property>
+		<property name="authenticator"><value>web</value></property>
+	</bean>
+	    
+	<bean id="_anonymousProcessingFilter"
+	      class="org.kablink.teaming.spring.security.ZoneAwareAnonymousProcessingFilter">
+		<property name="key" value="thisIsIgnored"/>
+		<property name="userAttribute" value="guest,ROLE_ANONYMOUS"/>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="authenticationModule"><ref bean="authenticationModule"/></property>
+	</bean>
+
+	<bean id="authenticationModule" parent="baseTransactionProxy" depends-on="sPropsUtil">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.authentication.impl.AuthenticationModuleImpl">
+				<property name="zoneModule"><ref bean="zoneModule"/></property>
+			</bean>
+		</property>
+	</bean>
+
+</beans>
