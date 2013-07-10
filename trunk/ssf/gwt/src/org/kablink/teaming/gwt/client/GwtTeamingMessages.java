@@ -807,6 +807,8 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlgSelectAuthProviderLabel();
 	String loginDlgUseOpenId();
 	String loginDlgUserId();
+	String loginDlgDownloadingFile1();
+	String loginDlgDownloadingFile2();
 	
 	// Strings used in the personal preferences dialog.
 	String accessibleMode();

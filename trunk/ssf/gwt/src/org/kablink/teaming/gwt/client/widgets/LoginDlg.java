@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -98,11 +98,10 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 
-
 /**
+ * ?
  * 
- * @author jwootton
- *
+ * @author jwootton@novell.com
  */
 @SuppressWarnings("unused")
 public class LoginDlg extends DlgBox
@@ -136,7 +135,8 @@ public class LoginDlg extends DlgBox
 	private ForgottenPwdDlg m_forgottenPwdDlg = null;
 
 	private String m_loginUrl = null;
-	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
+	private String m_springSecurityRedirect = null;	// This values tells Teaming what URL to go to after the user authenticates.
+	private boolean m_redirectIsReadFile = false;	// Set true if m_springSecurityRedirect is set to a readFile URL.
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private boolean m_requestedLoginInfo = false;
 	private LoginStatus m_loginStatus;
@@ -144,7 +144,7 @@ public class LoginDlg extends DlgBox
 	private boolean m_useOpenIdAuth = false;
 	private boolean m_initialized = false;
 	private int m_numAttempts = 0;
-
+	
 	/**
 	 * 
 	 */
@@ -261,6 +261,10 @@ public class LoginDlg extends DlgBox
 
 		m_loginUrl = loginUrl;
 		m_springSecurityRedirect = springSecurityRedirect;
+		if ( GwtClientHelper.hasString( m_springSecurityRedirect ) )
+		{
+			m_redirectIsReadFile = m_springSecurityRedirect.contains( "/readFile/" );
+		}
 		
 		// Create the header, content and footer of this dialog box.
 		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
@@ -372,6 +376,35 @@ public class LoginDlg extends DlgBox
 					// Yes
 					m_formPanel.setAction( "/ssf/j_spring_openid_security_check" );		
 					m_formPanel.getElement().setAttribute( "name", "oidf" );
+				}
+
+				// If we're redirecting the login to a readFile URL...
+				if ( m_redirectIsReadFile )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							// ...clear the content of the login
+							// ...dialog...
+							m_mainPanel.clear();
+							
+							// ...and display a message about the file
+							// ...download.
+							FlowPanel dlMsgPanel = new FlowPanel();
+							dlMsgPanel.addStyleName( "loginDlg_downloadingFileMsgPanel" );
+							m_mainPanel.add( dlMsgPanel );
+							
+							Label readingLabel = new Label( GwtTeaming.getMessages().loginDlgDownloadingFile1() );
+							readingLabel.addStyleName( "loginDlg_downloadingFileMsg1" );
+							dlMsgPanel.add( readingLabel );
+							readingLabel = new Label( GwtTeaming.getMessages().loginDlgDownloadingFile2() );
+							readingLabel.addStyleName( "loginDlg_downloadingFileMsg2" );
+							dlMsgPanel.add( readingLabel );
+							
+						}
+					} );
 				}
 			}
 		});

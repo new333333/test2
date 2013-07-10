@@ -1528,6 +1528,10 @@ body, table td, select
 	margin: 10px 10px 20px 10px;
 }
 
+.loginDlg_downloadingFileMsgPanel {padding: 10px; white-space: normal; width: 350px;}
+.loginDlg_downloadingFileMsg1     {}
+.loginDlg_downloadingFileMsg2     {padding-top:10px;}
+
 .loginDlg_openIdProviderImg:hover
 {
 	cursor: pointer;
