@@ -616,9 +616,12 @@ public class GwtProfileHelper {
 					String linkText = DefinitionHelper.getItemProperty(attrEle, "linkText");
 					if ("".equals(linkText)) linkText = value;
 					String target = DefinitionHelper.getItemProperty(attrEle, "target");
-					String link = "<a href=\""+value+"\" ";
-					if (!target.equals(target)) link = link + "target=\""+target+"\"";
-					link = link + ">" + linkText + "</a>";
+					String link   = ("<a href=\"" + value + "\" ");
+					if (target.equalsIgnoreCase("true"))
+					     target = "_blank";	// Opens in a   new  window.
+					else target = "_top";	// Opens in the same window.
+					link += ("target=\"" + target + "\"");
+					link += (">" + linkText + "</a>");
 					pAttr.setValue(link);
 				}
 			}
