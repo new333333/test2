@@ -46,6 +46,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtDatabasePruneConfiguration
 	implements IsSerializable, VibeRpcResponseData
 {
+	private boolean m_fileArchivingEnabled = true;
 	private boolean m_auditTrailEnabled = true;
 	private boolean m_changeLogEnabled = true;
 	private int m_auditTrailPruneAgeDays = 0;
@@ -57,7 +58,15 @@ public class GwtDatabasePruneConfiguration
 	public GwtDatabasePruneConfiguration()
 	{
 	}
+
+	public boolean getFileArchivingEnabled() {
+		return m_fileArchivingEnabled;
+	}
+	public void setFileArchivingEnabled(boolean fileArchivingEnabled) {
+		m_fileArchivingEnabled = fileArchivingEnabled;
+	}
 	
+
 	/**
 	 * The auditTrail prune age is in months.
 	 */

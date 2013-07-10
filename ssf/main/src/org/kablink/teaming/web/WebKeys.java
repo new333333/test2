@@ -197,6 +197,7 @@ public class WebKeys {
     public static final String URL_ENTRY_TYPE="entryType";
     public static final String URL_ENTRY_UGT="entryUGT";
     public static final String URL_ENTRY_UPLOAD="upload";
+    public static final String URL_ENTRY_SOURCE_BINDER_ID="entrySourceBinderId";
     public static final String URL_ENTRY_VIEW_IGNORE="ignoreEntryView";
     public static final String URL_ENTRY_VIEW_STYLE="entryViewStyle";
     public static final String URL_ENTRY_VIEW_STYLE2="entryViewStyle2";

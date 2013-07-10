@@ -71,6 +71,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private String localeLanguage;
 	private String localeCountry;
 	private Boolean adHocFoldersEnabled;
+	private Boolean fileArchivingEnabled;
 	private Integer auditTrailKeepDays;
 	private Integer changeLogsKeepDays;
 	private Boolean auditTrailEnabled;
@@ -425,6 +426,15 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	}
 	public void setAuditTrailKeepDays(int auditTrailKeepDays) {
 		this.auditTrailKeepDays = auditTrailKeepDays;
+	}
+	
+	public boolean isFileArchivingEnabled() {
+		if(fileArchivingEnabled == null)
+			return true;
+		return fileArchivingEnabled;
+	}
+	public void setFileArchivingEnabled(boolean fileArchivingEnabled) {
+		this.fileArchivingEnabled = fileArchivingEnabled;
 	}
 	
 	public boolean isAuditTrailEnabled() {

@@ -99,6 +99,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
 			Long parentBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
+			Long entrySourceBinderId = new Long(PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_SOURCE_BINDER_ID));	
 			Binder parentBinder = null;
 			if (parentBinderId != null) {
 				//Make sure there is access to the parent binder
@@ -309,6 +310,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		model.put(WebKeys.ERROR_LIST,  request.getParameterValues(WebKeys.ERROR_LIST));
 		Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long parentBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
+		Long entrySourceBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_SOURCE_BINDER_ID);	
 		Binder parentBinder = null;
 		if (parentBinderId != null) {
 			//Make sure there is access to the parent binder
