@@ -53,6 +53,7 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -76,6 +77,7 @@ public class ManageDatabasePruneDlg extends DlgBox
 	private CheckBox m_enableFileSyncAccessCB;
 	private CheckBox m_enableDeployCB;
 	private CheckBox m_allowPwdCacheCB;
+	private CheckBox m_fileArchivingEnabledCB;
 	private CheckBox m_auditTrailEnabledCB;
 	private CheckBox m_changeLogEnabledCB;
 	private TextBox m_auditTrailPruneAgeTextBox;
@@ -121,8 +123,10 @@ public class ManageDatabasePruneDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel = null;
+		FlowPanel captionFlowPanel;
 		FlowPanel tmpPanel;
 		FlowPanel ckboxPanel;
+		CaptionPanel captionPanel;
 		ClickHandler clickHandler;
 		Label label;
 
@@ -130,9 +134,14 @@ public class ManageDatabasePruneDlg extends DlgBox
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
+		
+		captionPanel = new CaptionPanel( messages.databasePruneDlgHeader1() );
+		captionFlowPanel = new FlowPanel();
+		captionPanel.add(captionFlowPanel);
+		mainPanel.add(captionPanel);
 
 		label = new Label( messages.databasePruneDlgHeader2() );
-		mainPanel.add( label );
+		captionFlowPanel.add( label );
 
 		// Create the controls for AuditTrail prune age
 		{
@@ -147,13 +156,13 @@ public class ManageDatabasePruneDlg extends DlgBox
 				}
 			};
 
-			// Create the "Enable Audit Trail" and "Enable Change Log"
+			// Create the "Enable Audit Trail" check box
 			m_auditTrailEnabledCB = new CheckBox( messages.databasePruneDlgEnableAuditTrail() );
 			m_auditTrailEnabledCB.addClickHandler( clickHandler );
 			tmpPanel = new FlowPanel();
 			tmpPanel.add( m_auditTrailEnabledCB );
 			ckboxPanel.add( tmpPanel );
-			mainPanel.add( ckboxPanel );
+			captionFlowPanel.add( ckboxPanel );
 
 			HorizontalPanel hPanel;
 			Label intervalLabel;
@@ -174,7 +183,7 @@ public class ManageDatabasePruneDlg extends DlgBox
 			intervalLabel = new Label( messages.databasePruneDlgAgeUnits() );
 			hPanel.add( intervalLabel );
 
-			mainPanel.add( hPanel );
+			captionFlowPanel.add( hPanel );
 		}
 		
 		// Create the controls for ChangeLog prune age
@@ -196,7 +205,7 @@ public class ManageDatabasePruneDlg extends DlgBox
 			tmpPanel = new FlowPanel();
 			tmpPanel.add( m_changeLogEnabledCB );
 			ckboxPanel.add( tmpPanel );
-			mainPanel.add( ckboxPanel );
+			captionFlowPanel.add( ckboxPanel );
 
 			HorizontalPanel hPanel;
 			Label intervalLabel;
@@ -217,7 +226,7 @@ public class ManageDatabasePruneDlg extends DlgBox
 			intervalLabel = new Label( messages.databasePruneDlgAgeUnits() );
 			hPanel.add( intervalLabel );
 
-			mainPanel.add( hPanel );
+			captionFlowPanel.add( hPanel );
 		}
 		
 		// Create the warning messages
@@ -231,21 +240,61 @@ public class ManageDatabasePruneDlg extends DlgBox
 			hPanel.addStyleName("margintop3");
 			warningLabel = new Label( messages.databasePruneDlgCautionIrrevocable() );
 			hPanel.add( warningLabel );
-			mainPanel.add( hPanel );
+			captionFlowPanel.add( hPanel );
 			
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 6 );
 			warningLabel = new Label( messages.databasePruneDlgCautionAuditTrail() );
 			hPanel.add( warningLabel );
-			mainPanel.add( hPanel );
+			captionFlowPanel.add( hPanel );
 			
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 6 );
+			hPanel.addStyleName("marginbottom3");
 			warningLabel = new Label( messages.databasePruneDlgCautionChangeLog() );
 			hPanel.add( warningLabel );
-			mainPanel.add( hPanel );
+			captionFlowPanel.add( hPanel );
+		}
+
+		// Create the controls for enabling file archiving
+		{
+			captionPanel = new CaptionPanel( messages.databasePruneDlgHeader3() );
+			captionFlowPanel = new FlowPanel();
+			captionPanel.add(captionFlowPanel);
+			mainPanel.add(captionPanel);
+			
+			ckboxPanel = new FlowPanel();
+			ckboxPanel.addStyleName( "margintop3" );
+
+			clickHandler = new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+				}
+			};
+
+			// Create the "Enable File Archiving" check box
+			m_fileArchivingEnabledCB = new CheckBox( messages.databasePruneDlgEnableFileArchiving() );
+			m_fileArchivingEnabledCB.addClickHandler( clickHandler );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_fileArchivingEnabledCB );
+			ckboxPanel.add( tmpPanel );
+			captionFlowPanel.add( ckboxPanel );
+
+			// Create the warning messages
+			HorizontalPanel hPanel;
+			Label warningLabel;
+			
+			hPanel = new HorizontalPanel();
+			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+			hPanel.setSpacing( 6 );
+			hPanel.addStyleName("margintop1");
+			warningLabel = new Label( messages.databasePruneDlgCautionFileArchiving() );
+			hPanel.add( warningLabel );
+			captionFlowPanel.add( hPanel );
 		}
 		
 		return mainPanel;
@@ -340,6 +389,9 @@ public class ManageDatabasePruneDlg extends DlgBox
 		databasePruneConfig.setChangeLogPruneAge( getChangeLogPruneAge() );
 		databasePruneConfig.setChangeLogEnabled(getChangeLogEnabled());
 		
+		// Get the file archiving setting
+		databasePruneConfig.setFileArchivingEnabled(getFileArchivingEnabled());
+		
 		return databasePruneConfig;
 	}
 	
@@ -368,6 +420,17 @@ public class ManageDatabasePruneDlg extends DlgBox
 		return helpData;
 	}
 
+	/**
+	 * Return if the file archiving is enabled.
+	 */
+	private boolean getFileArchivingEnabled()
+	{
+		if ( m_fileArchivingEnabledCB.getValue() == Boolean.TRUE )
+			return true;
+
+		return false;
+	}
+	
 	/**
 	 * Return if the audit trail is enabled.
 	 */
@@ -429,20 +492,23 @@ public class ManageDatabasePruneDlg extends DlgBox
 		int size;
 		String value;
 		
-		// Initialize the audit trail prune age textbox and enabled checkbox
+		// Initialize the audit trail prune age text box and enabled check box
 		m_auditTrailEnabledCB.setValue(databasePruneConfiguration.getAuditTrailEnabled());
 		value = "";
 		interval = databasePruneConfiguration.getAuditTrailPruneAge();
 		if (interval > 0) value = String.valueOf( interval );
 		m_auditTrailPruneAgeTextBox.setText( value );
 		
-		// Initialize the change log prune age textbox and enabled checkbox
+		// Initialize the change log prune age text box and enabled check box
 		m_changeLogEnabledCB.setValue(databasePruneConfiguration.getChangeLogEnabled());
 		value = "";
 		interval = databasePruneConfiguration.getChangeLogPruneAge();
 		if (interval > 0) value = String.valueOf( interval );
 		m_changeLogPruneAgeTextBox.setText( value );
-		
+
+		// Initialize the file archiving enabled check box
+		m_fileArchivingEnabledCB.setValue(databasePruneConfiguration.getFileArchivingEnabled());
+
 		hideErrorPanel();
 	}
 	

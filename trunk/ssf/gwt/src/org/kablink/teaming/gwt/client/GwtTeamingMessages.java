@@ -1629,16 +1629,20 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the Manage Database Logs dialog
 	String databasePruneDlgHeader();
+	String databasePruneDlgHeader1();
 	String databasePruneDlgHeader2();
+	String databasePruneDlgHeader3();
 	String databasePruneDlgRemoveAuditTrailEntries();
 	String databasePruneDlgRemoveChangeLogEntries();
 	String databasePruneDlgAgeUnits();
 	String databasePruneDlgEnableAuditTrail();
 	String databasePruneDlgEnableChangeLog();
+	String databasePruneDlgEnableFileArchiving();
 	String databasePruneDlgCautionAuditTrail();
 	String databasePruneDlgCautionChangeLog();
 	String databasePruneDlgCautionIrrevocable();
 	String databasePruneDlg_OnSaveUnknownException( String desc );
+	String databasePruneDlgCautionFileArchiving();
 	
 	// Strings used in the Configure User File Sync App dialog
 	String configureUserFileSyncAppDlgErrorHeader();

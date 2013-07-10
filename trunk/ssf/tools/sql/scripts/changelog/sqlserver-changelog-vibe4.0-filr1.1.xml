@@ -198,4 +198,22 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="peter" context="schema" failOnError="true" id="10">
+        <comment>Is audit trail logging enabled and change log enabled</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="fileArchivingEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="peter" context="schema" failOnError="true" id="11">
+        <comment>The binder containing entries to be copied when folder created</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="templateEntrySourceBinderId" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

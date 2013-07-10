@@ -3050,6 +3050,18 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	}
 	
 	@Override
+	public void setFileArchivingEnabled(boolean fileArchivingEnabled) {
+		checkAccess(AdminOperation.manageLogTablePurge);
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setFileArchivingEnabled(fileArchivingEnabled);
+	}
+  	@Override
+	public boolean isFileArchivingEnabled() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.isFileArchivingEnabled(); 		
+  	}
+	
+	@Override
 	public void setAuditTrailEnabled(boolean auditTrailEnabled) {
 		checkAccess(AdminOperation.manageLogTablePurge);
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());

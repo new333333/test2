@@ -37,6 +37,7 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_cfg.add") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 <ssf:form titleTag="administration.configure_cfg.add">
@@ -78,6 +79,12 @@ function ss_checkForm(obj, binderId) {
 	return false;
 
 }
+
+function ss_saveEntrySourceBinderId(id) {
+	var formObj = document.getElementById("form1");
+	formObj.entrySourceBinderId.value = id;
+}
+
 </script>
 <c:if test="${ssOperation == 'modify_template'}">
 <c:if test="${ssBinder.root}">
@@ -85,7 +92,7 @@ function ss_checkForm(obj, binderId) {
 ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </script>
 </c:if>
-<form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
+<form name="form1" id="form1" method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
 		name="operation" value="modify_template"/><ssf:param 
 		name="binderId" value="${ssBinderConfig.id}"/><ssf:param 
 		name="binderParentId" value="${binderParentId}"/></ssf:url>" 
@@ -129,6 +136,24 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
   	</ssf:htmleditor>
   	</div>
 </td></tr>
+
+<c:if test="${ssBinderConfig.entityType == 'folder'}">
+  <tr><td>
+    <div style="padding:10px 0px 4px 0px;">
+        <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.workspaceTemplate.entrySource"/></span>
+    </div>
+	<ssf:find formName="form1" 
+	    formElement="entrySourceBinder" 
+	    type="places"
+	    foldersOnly="true"
+	    width="180px" 
+	    singleItem="true"
+	    clickRoutine="ss_saveEntrySourceBinderId"
+	    /> 
+	<input type="hidden" name="entrySourceBinderId" />
+  </td></tr>
+</c:if>
+
 </table>
 <div class="ss_formBreak"/>
 
@@ -153,7 +178,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <div class="ss_style ss_portlet">
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<form class="ss_style ss_form" name="${renderResponse.namespace}fm" 
+<form name="form1" id="form1" class="ss_style ss_form" name="${renderResponse.namespace}fm" 
     id="${renderResponse.namespace}fm" method="post" 
     action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
 		name="operation" value="add"/><ssf:param 
@@ -174,6 +199,24 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 			</div>
 		</td>
 	</tr>
+	
+	<c:if test="${ssBinderConfig.entityType == 'folder'}">
+	  <tr><td>
+	    <div style="padding:10px 0px 4px 0px;">
+	        <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.workspaceTemplate.entrySource"/></span>
+	    </div>
+		<ssf:find formName="form1" 
+		    formElement="entrySourceBinder" 
+		    type="places"
+		    foldersOnly="true"
+		    width="180px" 
+		    singleItem="true"
+		    clickRoutine="ss_saveEntrySourceBinderId"
+		    /> 
+		<input type="hidden" name="entrySourceBinderId" />
+	  </td></tr>
+	</c:if>
+	
 	</table>
 	<br/>
 <div class="ss_buttonBarLeft">
@@ -190,7 +233,7 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </script>
 
 
-<form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
+<form name="form1" id="form1" method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
 		name="operation" value="add"/><ssf:param 
 		name="binderParentId" value="${binderParentId}"/></ssf:url>" 
 		onSubmit="return ss_checkForm(this);">
