@@ -1,0 +1,47 @@
+<module rename-to="gwtteaming">
+	<!-- Inherit the core Web Toolkit stuff. -->
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name='com.google.gwt.xml.XML' />
+	<inherits name='com.google.gwt.i18n.I18N' />
+	
+	<!-- Inherit the default GWT style sheet.  You can change       -->
+	<!-- the theme of your GWT application by uncommenting          -->
+	<!-- any one of the following lines.                            -->
+	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
+	<!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
+
+ 	<!-- Other generic module inherits go here. -->
+
+	<!-- Specify the app entry point class. -->
+	<entry-point class='org.kablink.teaming.gwt.client.GwtTeaming'/>
+
+	<!-- Specify the initial split point that needs to be loaded. -->
+	<!--	
+		<extend-configuration-property
+			name="compiler.splitpoint.initial.sequence"
+			value="org.kablink.teaming.gwt.client.GwtMainPage"/>
+	-->
+    
+    <!-- Specify the application specific style sheet.              -->
+    <!-- Note:  DRF - 20100913                                      -->
+    <!--    Our CSS style sheets are also brought in via link tags  -->
+    <!--    in initializeGWT.jsp.  This change was made so that     -->
+    <!--    their inclusion honors our 'must-revalidate' browser    -->
+    <!--    caching.  When they were included here alone, they only -->
+    <!--    got brought in by gwtteaming.nocache.js which bypassed  -->
+    <!--    the cache re-validation handling.                       -->
+	<stylesheet src='GwtTeaming.css?v3' />
+    <stylesheet src='GwtProfile.css?v3' />		
+	
+	<!-- Limit support of which browsers we compile for.  Speeds up -->
+	<!-- compilation during development.                            -->
+	<set-property name="user.agent" value="gecko1_8,ie6,ie8,ie9,opera,safari"/>
+	<!-- Possible user.agent values:                                -->
+	<!--    gecko1_8:  Firefox 2.x and 3.x.                         -->
+	<!--    ie6:       IE6 and IE7.                                 -->
+	<!--    ie8:       IE8.                                         -->
+	<!--    ie9:       IE9.                                         -->
+	<!--    opera:     Opera, all versions.                         -->
+	<!--    safari:    Safari and Chrome (webkit), all versions.    -->
+</module>

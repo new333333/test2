@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_UserProperties" name="org.kablink.teaming.domain.UserProperties">
+    <!--<cache usage="read-write"/>-->
+    <composite-id name="id" class="org.kablink.teaming.domain.UserPropertiesPK">
+      <key-property name="principalId"/>
+      <key-property name="binderId"/>
+    </composite-id>
+    <property name="zoneId" access="field"/>
+<!-- use length to force medium blog in mysql -->
+    <property name="properties" not-null="true" length="2000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
+  </class>
+</hibernate-mapping>

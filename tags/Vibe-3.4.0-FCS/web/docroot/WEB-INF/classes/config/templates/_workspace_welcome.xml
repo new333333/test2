@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="8" internalId="402883b90d0de1f3010d0df5582b0016">
+  <attribute name="templateTitle" type="string">__template_workspace_welcome</attribute>
+  <attribute name="templateDescription" type="description">__template_workspace_welcome_description</attribute>
+  <attribute name="title" type="string">__template_workspace_welcome</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">/icons/workspace.png</attribute>
+  <attribute name="name" type="string">_workspace_welcome</attribute>
+  <property name="library">false</property>
+  <property name="mirrored">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <attribute name="mashup__hideFooter" type="boolean">false</attribute>
+  <attribute name="mashup__hideMasthead" type="boolean">false</attribute>
+  <attribute name="mashup__showBranding" type="boolean">false</attribute>
+  <attribute name="mashup__hideSidebar" type="boolean">false</attribute>
+  <attribute name="mashup__hideToolbar" type="boolean">false</attribute>
+  <attribute name="mashup__style" type="string">mashup_dark.css</attribute>
+  <definition name="_welcomeWorkspace" internalId="402883b51cbdbdc2011cbdfe2857000b" databaseId="402883b51cbdbdc2011cbdfe2857000b"/>
+</template>
