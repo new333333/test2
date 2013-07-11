@@ -53,8 +53,7 @@ public class NetFolder
 	private String m_name;
 	private String m_relativePath;
 	private String m_netFolderRootName;
-	private NetFolderStatus m_status;
-	private String m_statusTicketId;
+	private NetFolderSyncStatus m_status;
 	private GwtSchedule m_syncSchedule;
 	private ArrayList<GwtRole> m_roles;
 	private boolean m_isHomeDir;
@@ -65,11 +64,14 @@ public class NetFolder
 	/**
 	 * The different statuses of a net Folder
 	 */
-	public enum NetFolderStatus implements IsSerializable
+	public enum NetFolderSyncStatus implements IsSerializable
 	{
-		DELETED_BY_SYNC_PROCESS,
+		WAITING_TO_BE_SYNCD,
 		SYNC_IN_PROGRESS,
-		READY
+		SYNC_STOPPED,
+		SYNC_COMPLETED,
+		SYNC_NEVER_RUN,
+		UNKNOWN
 	}
 	
 	/**
@@ -93,7 +95,6 @@ public class NetFolder
 		m_name = netFolder.getName();
 		m_relativePath = netFolder.getRelativePath();
 		m_netFolderRootName = netFolder.getNetFolderRootName();
-		m_statusTicketId = netFolder.getStatusTicketId();
 		m_syncSchedule = netFolder.getSyncSchedule();
 		m_isHomeDir = netFolder.getIsHomeDir();
 		m_indexContent = netFolder.getIndexContent();
@@ -192,17 +193,9 @@ public class NetFolder
 	/**
 	 * 
 	 */
-	public NetFolderStatus getStatus()
+	public NetFolderSyncStatus getStatus()
 	{
 		return m_status;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getStatusTicketId()
-	{
-		return m_statusTicketId;
 	}
 	
 	/**
@@ -293,16 +286,8 @@ public class NetFolder
 	/**
 	 * 
 	 */
-	public void setStatus( NetFolderStatus status )
+	public void setStatus( NetFolderSyncStatus status )
 	{
 		m_status = status;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setStatusTicketId( String id )
-	{
-		m_statusTicketId = id;
 	}
 }

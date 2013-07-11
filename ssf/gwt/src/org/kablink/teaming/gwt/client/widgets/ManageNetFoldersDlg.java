@@ -40,9 +40,10 @@ import java.util.Set;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
+import org.kablink.teaming.gwt.client.NetFolder.NetFolderSyncStatus;
 import org.kablink.teaming.gwt.client.binderviews.QuickFilter;
 import org.kablink.teaming.gwt.client.datatable.NetFolderNameCell;
+import org.kablink.teaming.gwt.client.datatable.NetFolderSyncStatusCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
@@ -62,7 +63,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -200,8 +200,8 @@ public class ManageNetFoldersDlg extends DlgBox
 		{
 			for ( NetFolder nextFolder : m_listOfNetFolders )
 			{
-				if ( nextFolder.getStatus() == NetFolderStatus.SYNC_IN_PROGRESS &&
-					 nextFolder.getStatusTicketId() != null )
+				if ( nextFolder.getStatus() == NetFolderSyncStatus.SYNC_IN_PROGRESS ||
+					 nextFolder.getStatus() == NetFolderSyncStatus.WAITING_TO_BE_SYNCD )
 				{
 					listOfNetFoldersToCheck.add( nextFolder );
 				}
@@ -268,7 +268,6 @@ public class ManageNetFoldersDlg extends DlgBox
 	{
 		final GwtTeamingMessages messages;
 		VerticalPanel mainPanel = null;
-		NetFolderNameCell cell;
 		Column<NetFolder,NetFolder> nameCol;
 		TextColumn<NetFolder> rootCol;
 		TextColumn<NetFolder> relativePathCol;
@@ -355,6 +354,29 @@ public class ManageNetFoldersDlg extends DlgBox
 				}
 			} );
 			menuPanel.add( label );
+			
+			// Add a "Stop sync" button
+			label = new InlineLabel( messages.manageNetFoldersDlg_StopSyncLabel() );
+			label.addStyleName( "manageNetFoldersDlg_Btn" );
+			label.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							stopSyncSelectedNetFolders();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			menuPanel.add( label );
 
 			// Add a quick filter
 			{
@@ -416,6 +438,8 @@ public class ManageNetFoldersDlg extends DlgBox
 		// Add the "Name" column.  The user can click on the text in this column
 		// to edit the Net Folder.
 		{
+			NetFolderNameCell cell;
+
 			cell = new NetFolderNameCell();
 			nameCol = new Column<NetFolder, NetFolder>( cell )
 			{
@@ -435,6 +459,33 @@ public class ManageNetFoldersDlg extends DlgBox
 				}
 			} );
 			m_netFoldersTable.addColumn( nameCol, messages.manageNetFoldersDlg_NameCol() );
+		}
+		  
+		// Add the "Sync status" column.  The user can click on the image in this column
+		// to invoke the "sync details" dialog.
+		{
+			NetFolderSyncStatusCell cell;
+			Column<NetFolder,NetFolder> statusCol;
+
+			cell = new NetFolderSyncStatusCell();
+			statusCol = new Column<NetFolder, NetFolder>( cell )
+			{
+				@Override
+				public NetFolder getValue( NetFolder netFolder )
+				{
+					return netFolder;
+				}
+			};
+		
+			statusCol.setFieldUpdater( new FieldUpdater<NetFolder, NetFolder>()
+			{
+				@Override
+				public void update( int index, NetFolder netFolder, NetFolder value )
+				{
+					invokeModifyNetFolderDlgById( netFolder.getId() );
+				}
+			} );
+			m_netFoldersTable.addColumn( statusCol, messages.manageNetFoldersDlg_SyncStatusCol() );
 		}
 		  
 		// Add the "Net Folder Root" column
@@ -986,6 +1037,34 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 	
 	/**
+	 * Stop the sync the selected net folders.
+	 */
+	private void stopSyncSelectedNetFolders()
+	{
+		Set<NetFolder> selectedFolders;
+		
+		selectedFolders = getSelectedNetFolders();
+
+		// Are there any selected net folders?
+		if ( selectedFolders == null || selectedFolders.size() == 0 )
+		{
+			// No
+			Window.alert( GwtTeaming.getMessages().manageNetFoldersDlg_SelectFoldersToStopSync() );
+			return;
+		}
+		
+		stopSyncNetFolders( selectedFolders );
+	}
+	
+	/**
+	 * Stop the synchronization of the given net folders
+	 */
+	private void stopSyncNetFolders( final Set<NetFolder> selectedFolders )
+	{
+		Window.alert( "stopSyncNetFolders() not implemented yet" );
+	}
+	
+	/**
 	 * Sync the given net folders
 	 */
 	private void syncNetFolders( final Set<NetFolder> selectedFolders )
@@ -999,7 +1078,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		// Mark each of the selected net folders as "sync in progress"
 		for ( NetFolder nextNetFolder : selectedFolders )
 		{
-			nextNetFolder.setStatus( NetFolderStatus.SYNC_IN_PROGRESS );
+			nextNetFolder.setStatus( NetFolderSyncStatus.SYNC_IN_PROGRESS );
 		}
 
 		// Create the callback that will be used when we issue an ajax call
@@ -1103,23 +1182,12 @@ public class ManageNetFoldersDlg extends DlgBox
 				
 				if ( ourNetFolder != null )
 				{
-					NetFolderStatus status;
-					String statusTicketId;
+					NetFolderSyncStatus status;
 
 					status = nextNetFolder.getStatus();
 					ourNetFolder.setStatus( status );
 					
-					statusTicketId = nextNetFolder.getStatusTicketId();
-					ourNetFolder.setStatusTicketId( statusTicketId );
-					
-					// Was this net folder deleted as a result of the sync process?
-					if ( status == NetFolderStatus.DELETED_BY_SYNC_PROCESS )
-					{
-						// Yes
-						// Find this net folder in our list and remove it.
-						m_listOfNetFolders.remove( ourNetFolder );
-					}
-					else if ( status != NetFolderStatus.READY )
+					if ( status == NetFolderSyncStatus.SYNC_IN_PROGRESS || status == NetFolderSyncStatus.WAITING_TO_BE_SYNCD )
 					{
 						checkAgain = true;
 					}

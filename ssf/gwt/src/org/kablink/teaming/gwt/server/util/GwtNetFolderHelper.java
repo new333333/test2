@@ -50,6 +50,9 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderState;
+import org.kablink.teaming.domain.BinderState.FullSyncStats;
+import org.kablink.teaming.domain.BinderState.FullSyncStatus;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -71,9 +74,9 @@ import org.kablink.teaming.gwt.client.GwtSchedule.TimeFrequency;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
+import org.kablink.teaming.gwt.client.NetFolder.NetFolderSyncStatus;
 import org.kablink.teaming.gwt.client.NetFolderDataSyncSettings;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
-import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
 import org.kablink.teaming.gwt.client.NetFolderRoot.NetFolderRootStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderServersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
@@ -118,24 +121,7 @@ public class GwtNetFolderHelper
 	{
 		for ( NetFolder nextNetFolder : netFolders )
 		{
-			String statusTicketId;
-
-			statusTicketId = nextNetFolder.getStatusTicketId();
-			if ( statusTicketId != null )
-			{
-				StatusTicket statusTicket;
-				
-				statusTicket = GwtWebStatusTicket.findStatusTicket( statusTicketId, req );
-				if ( statusTicket != null )
-				{
-					if ( statusTicket.isDone() )
-						nextNetFolder.setStatus( NetFolderStatus.READY );
-				}
-				else
-				{
-					nextNetFolder.setStatus( NetFolderStatus.READY );
-				}
-			}
+			nextNetFolder.setStatus( getNetFolderSyncStatus( nextNetFolder.getId() ) );
 		}
 		
 		return netFolders;
@@ -237,7 +223,7 @@ public class GwtNetFolderHelper
 			newNetFolder.setNetFolderRootName( netFolder.getNetFolderRootName() );
 			newNetFolder.setRelativePath( netFolder.getRelativePath() );
 			newNetFolder.setId( binder.getId() );
-			newNetFolder.setStatus( NetFolderStatus.READY );
+			newNetFolder.setStatus( getNetFolderSyncStatus( newNetFolder.getId() ) );
 			newNetFolder.setSyncSchedule( netFolder.getSyncSchedule() );
 			newNetFolder.setRoles( netFolder.getRoles() );
 			newNetFolder.setDataSyncSettings( netFolder.getDataSyncSettings() );
@@ -769,7 +755,7 @@ public class GwtNetFolderHelper
 		netFolder.setName( binder.getTitle() );
 		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
 		netFolder.setRelativePath( binder.getResourcePath() );
-		netFolder.setStatus( NetFolderStatus.READY );
+		netFolder.setStatus( getNetFolderSyncStatus( netFolder.getId() ) );
 		netFolder.setIsHomeDir( binder.isHomeDir() );
 		netFolder.setIndexContent( binder.getIndexContent() );
 
@@ -907,6 +893,57 @@ public class GwtNetFolderHelper
 		}// end for
 
 		return listOfRoles;
+	}
+	
+	
+	/**
+	 * Convert the FullSyncStatus into a NetFolderSyncStatus
+	 */
+	public static NetFolderSyncStatus getNetFolderSyncStatus( Long binderId )
+	{
+		NetFolderSyncStatus status = NetFolderSyncStatus.SYNC_NEVER_RUN;
+		
+		if ( binderId != null )
+		{
+			BinderState binderState;
+
+            binderState = (BinderState) getCoreDao().load( BinderState.class, binderId );
+            if ( binderState != null )
+            {
+    			FullSyncStats syncStats;
+            	
+    			syncStats = binderState.getFullSyncStats();
+    			if ( syncStats != null )
+    			{
+    				FullSyncStatus syncStatus;
+    				
+    				syncStatus = syncStats.getStatus();
+    				if ( syncStatus != null )
+    				{
+    					switch ( syncStatus )
+    					{
+    					case finished:
+    						status = NetFolderSyncStatus.SYNC_COMPLETED;
+    						break;
+    						
+    					case ready:
+    						status = NetFolderSyncStatus.WAITING_TO_BE_SYNCD;
+    						break;
+    						
+    					case started:
+    						status = NetFolderSyncStatus.SYNC_IN_PROGRESS;
+    						break;
+    						
+    					case stopped:
+    						status = NetFolderSyncStatus.SYNC_STOPPED;
+    						break;
+    					}
+    				}
+    			}
+            }
+		}
+		
+		return status;
 	}
 	
 	/**
@@ -1207,22 +1244,9 @@ public class GwtNetFolderHelper
 		{
 			try
 			{
-				@SuppressWarnings("unused")
-				StatusTicket statusTicket = null;
-				String statusTicketId;
-
-				statusTicketId = "sync_net_folder_" + nextNetFolder.getId();
-				statusTicket = GwtWebStatusTicket.newStatusTicket( statusTicketId, req );
 				if( ami.getFolderModule().enqueueFullSynchronize( nextNetFolder.getId() ) )
 				{
-					// The binder was not deleted (typical situation).
-					nextNetFolder.setStatus( NetFolderStatus.SYNC_IN_PROGRESS );
-					nextNetFolder.setStatusTicketId( statusTicketId );
-				}
-				else 
-				{
-					// The binder was indeed deleted.
-					nextNetFolder.setStatus( NetFolderStatus.DELETED_BY_SYNC_PROCESS );
+					nextNetFolder.setStatus( getNetFolderSyncStatus( nextNetFolder.getId() ) );
 				}
 			}
 			catch ( Exception e )
