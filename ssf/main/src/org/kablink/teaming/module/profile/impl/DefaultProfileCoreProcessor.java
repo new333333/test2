@@ -559,6 +559,12 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
     		entryData.put( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME ).toLowerCase() );
     	} 
 
+       	// Handle the domainName attribute
+   		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME ) )
+   		{
+    		entryData.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME ) );
+    	} 
+
    		String name = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_NAME);
        	if (Validator.isNotNull(name)) {
        		//remove blanks
