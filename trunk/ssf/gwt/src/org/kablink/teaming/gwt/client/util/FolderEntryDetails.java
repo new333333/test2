@@ -55,8 +55,9 @@ public class FolderEntryDetails implements IsSerializable {
 	private boolean						m_top;					// true -> The entry is a top level entry.  false -> It's a comment.
 	private CommentsInfo				m_comments;				// Information about the comments on the entry.
 	private EntityId					m_entityId;				// The folder entry to view.
-	private int							m_contentImageHeight;	// If m_contentIsImage is true, the height of the images.
-	private int							m_contentImageWidth;	// If m_contentIsImage is true, the width  of the images.
+	private int							m_contentImageHeight;	// If m_contentIsImage is true, the height   of the images.
+	private int							m_contentImageRotation;	// If m_contentIsImage is true, the rotation of the images.
+	private int							m_contentImageWidth;	// If m_contentIsImage is true, the width    of the images.
 	private List<ToolbarItem>			m_toolbarItems;			// List<ToolbarItem> of the toolbar items for entry entry view's menu.
 	private List<ViewFolderEntryInfo>	m_commentBreadCrumbs;	// List<ViewFolderEntryInfo> of the break crumb links for a comment entry.
 	private String						m_desc;					// The entry description.
@@ -149,32 +150,33 @@ public class FolderEntryDetails implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean                   isContentImage()         {return m_contentIsImage;      }
-	public boolean                   isDescHtml()             {return m_descIsHtml;          }
-	public boolean                   isLocked()               {return (null != m_locker);    }
-	public boolean                   isLockedByLoggedInUser() {return m_lockedByLoggedInUser;}
-	public boolean                   isModifierCreator()      {return m_modifierIsCreator;   }
-	public boolean                   isSeen()                 {return m_seen;                }
-	public boolean                   isSeenPrevious()         {return m_seenPrevious;        }
-	public boolean                   isTop()                  {return m_top;                 }
-	public boolean                   isHtmlViewable()         {return (null != m_htmlView);  }
-	public CommentsInfo              getComments()            {return m_comments;            }
-	public EntityId                  getEntityId()            {return m_entityId;            }
-	public int                       getContentImageHeight()  {return m_contentImageHeight;  }
-	public int                       getContentImageWidth()   {return m_contentImageWidth;   }
-	public List<ToolbarItem>         getToolbarItems()        {return m_toolbarItems;        }
-	public List<ViewFolderEntryInfo> getCommentBreadCrumbs()  {return m_commentBreadCrumbs;  }
-	public String                    getDesc()                {return m_desc;                }
-	public String                    getDescTxt()             {return m_descTxt;             }
-	public String                    getFamily()              {return m_family;              }
-	public String                    getDownloadUrl()         {return m_downloadUrl;         }
-	public String                    getPath()                {return m_path;                }
-	public String                    getTitle()               {return m_title;               }
-	public String[]                  getContributors()        {return m_contributors;        }
-	public UserInfo                  getCreator()             {return m_creator;             }
-	public UserInfo                  getLocker()              {return m_locker;              }
-	public UserInfo                  getModifier()            {return m_modifier;            }
-	public ViewFileInfo              getHtmlView()            {return m_htmlView;            }                            
+	public boolean                   isContentImage()          {return m_contentIsImage;      }
+	public boolean                   isDescHtml()              {return m_descIsHtml;          }
+	public boolean                   isLocked()                {return (null != m_locker);    }
+	public boolean                   isLockedByLoggedInUser()  {return m_lockedByLoggedInUser;}
+	public boolean                   isModifierCreator()       {return m_modifierIsCreator;   }
+	public boolean                   isSeen()                  {return m_seen;                }
+	public boolean                   isSeenPrevious()          {return m_seenPrevious;        }
+	public boolean                   isTop()                   {return m_top;                 }
+	public boolean                   isHtmlViewable()          {return (null != m_htmlView);  }
+	public CommentsInfo              getComments()             {return m_comments;            }
+	public EntityId                  getEntityId()             {return m_entityId;            }
+	public int                       getContentImageHeight()   {return m_contentImageHeight;  }
+	public int                       getContentImageRotation() {return m_contentImageRotation;}
+	public int                       getContentImageWidth()    {return m_contentImageWidth;   }
+	public List<ToolbarItem>         getToolbarItems()         {return m_toolbarItems;        }
+	public List<ViewFolderEntryInfo> getCommentBreadCrumbs()   {return m_commentBreadCrumbs;  }
+	public String                    getDesc()                 {return m_desc;                }
+	public String                    getDescTxt()              {return m_descTxt;             }
+	public String                    getFamily()               {return m_family;              }
+	public String                    getDownloadUrl()          {return m_downloadUrl;         }
+	public String                    getPath()                 {return m_path;                }
+	public String                    getTitle()                {return m_title;               }
+	public String[]                  getContributors()         {return m_contributors;        }
+	public UserInfo                  getCreator()              {return m_creator;             }
+	public UserInfo                  getLocker()               {return m_locker;              }
+	public UserInfo                  getModifier()             {return m_modifier;            }
+	public ViewFileInfo              getHtmlView()             {return m_htmlView;            }                            
 	
 	/**
 	 * Set'er methods.
@@ -191,6 +193,7 @@ public class FolderEntryDetails implements IsSerializable {
 	public void setComments(            CommentsInfo              comments)               {m_comments             = comments;              }
 	public void setEntityId(            EntityId                  entityId)               {m_entityId             = entityId;              }
 	public void setContentImageHeight(  int                       contentImageHeight)     {m_contentImageHeight   = contentImageHeight;    }
+	public void setContentImageRotation(int                       contentImageRotation)   {m_contentImageRotation = contentImageRotation;  }
 	public void setContentImageWidth(   int                       contentImageWidth)      {m_contentImageWidth    = contentImageWidth;     }
 	public void setToolbarItems(        List<ToolbarItem>         toolbarItems)           {m_toolbarItems         = toolbarItems;          }
 	public void setCommentBreadCrumbs(  List<ViewFolderEntryInfo> commentBreadCrumbItems) {m_commentBreadCrumbs   = commentBreadCrumbItems;}

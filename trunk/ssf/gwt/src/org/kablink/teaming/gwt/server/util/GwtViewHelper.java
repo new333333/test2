@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -62,7 +61,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.swing.ImageIcon;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -261,7 +259,6 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
-import org.springframework.util.FileCopyUtils;
 
 import static org.kablink.util.search.Restrictions.like;
 
@@ -3666,7 +3663,7 @@ public class GwtViewHelper {
 				// ...file if it supports it...
 				ViewFileInfo vfi = buildViewFileInfo(request, fe, fa);
 				if (null == vfi)
-				     setImageContentDetails(bs, request, reply, fe, fa);
+				     GwtImageHelper.setImageContentDetails(bs, request, reply, fe, fa);
 				else reply.setHtmlView(vfi);
 				
 				reply.setDownloadUrl(
@@ -7745,35 +7742,6 @@ public class GwtViewHelper {
 					m_logger,
 					e,
 					"GwtViewHelper.renameEntity( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	/*
-	 * If the file's data can be viewed as an image, returns a URL to
-	 * reference in an <IMG> tag.  Otherwise, returns null.
-	 */
-	private static void setImageContentDetails(AllModulesInjected bs, HttpServletRequest request, FolderEntryDetails fed, FolderEntry fe, FileAttachment fa) {
-		try {
-			// Can we convert the file's data to an image?
-			InputStream	inputStream = bs.getFileModule().readFile(fe.getParentBinder(), fe, fa);
-			byte[]		inputData   = FileCopyUtils.copyToByteArray(inputStream);
-			ImageIcon	imageIcon   = new ImageIcon(inputData);
-			
-			boolean contentIsImage =
-				((null != imageIcon)                 &&
-				 (0     < imageIcon.getIconHeight()) &&
-				 (0     < imageIcon.getIconWidth()));
-			fed.setContentIsImage(contentIsImage);
-			if (contentIsImage) {
-				fed.setContentImageHeight(imageIcon.getIconHeight());
-				fed.setContentImageWidth( imageIcon.getIconWidth() );
-			}
-		}
-		
-		catch (Exception ex) {
-			// Any exception we handle as though the file can't be
-			// displayed as an image. 
-			fed.setContentIsImage(false);
 		}
 	}
 	
