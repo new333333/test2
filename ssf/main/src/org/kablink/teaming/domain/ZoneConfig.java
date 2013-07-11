@@ -39,6 +39,7 @@ import java.util.HashSet;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 
 @SuppressWarnings("unchecked")
 public class ZoneConfig extends ZonedObject implements WorkArea {
@@ -438,8 +439,17 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	}
 	
 	public boolean isAuditTrailEnabled() {
-		if(auditTrailEnabled == null)
-			return true;
+		if(auditTrailEnabled == null) {
+			//This has never bee set by the admin. So the default is different depending on the product
+			if (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe()) {
+				//Vibe installations do archiving by default
+				return true;
+			} else {
+				//Filr and iPrint systems don't do archiving by default.
+				return false;
+			}
+		}
+		//Once this value has been set by the administrator, use that value from then on
 		return auditTrailEnabled;
 	}
 	public void setAuditTrailEnabled(boolean auditTrailEnabled) {
