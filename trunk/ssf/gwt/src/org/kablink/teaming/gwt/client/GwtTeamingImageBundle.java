@@ -399,6 +399,26 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/my_workspace1.png")
 	public ImageResource myWorkspace1();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_completed.png")
+	public ImageResource netFolderSyncStatusCompleted();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_in_progress.gif")
+	public ImageResource netFolderSyncStatusInProgress();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_never_run.png")
+	public ImageResource netFolderSyncStatusNeverRun();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_stopped.png")
+	public ImageResource netFolderSyncStatusStopped();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/NetFolders/waiting_to_be_syncd.png")
+	public ImageResource netFolderSyncStatusWaitingToBeSyncd();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/my_workspace2.png")

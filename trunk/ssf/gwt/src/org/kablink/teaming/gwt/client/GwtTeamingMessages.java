@@ -2209,10 +2209,20 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFoldersDlg_RelativePathCol();
 	String manageNetFoldersDlg_ServerCol();
 	String manageNetFoldersDlg_SelectFoldersToDelete();
+	String manageNetFoldersDlg_SelectFoldersToStopSync();
 	String manageNetFoldersDlg_SelectFoldersToSync();
+	String manageNetFoldersDlg_StopSyncLabel();
 	String manageNetFoldersDlg_SyncLabel();
 	String manageNetFoldersDlg_Syncing();
+	String manageNetFoldersDlg_SyncStatusCol();
 	String manageNetFoldersDlg_UnknownStatus();
+	
+	// Net Folder sync status
+	String netFolderSyncStatusCompleted();
+	String netFolderSyncStatusInProgress();
+	String netFolderSyncStatusNeverRun();
+	String netFolderSyncStatusStopped();
+	String netFolderSyncStatusWaitingToBeSyncd();
 
 	// Strings used in the Modify Net Folder dialog
 	String modifyNetFolderDlg_AddHeader();

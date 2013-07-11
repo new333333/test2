@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.NetFolder;
+import org.kablink.teaming.gwt.client.NetFolder.NetFolderSyncStatus;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -42,35 +43,82 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Image;
 
 
 /**
- * A cell used to render a Net Folder name
+ * A cell used to render a Net Folder sync status
  */
-public class NetFolderNameCell extends AbstractCell<NetFolder>
+public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 {
-	private static String m_imgHtml;
+	private static String m_waitingForSyncImgHtml = null;
+	private static String m_syncInProgressImgHtml = null;
+	private static String m_syncStoppedImgHtml = null;
+	private static String m_syncCompletedImgHtml = null;
+	private static String m_syncNeverRunImgHtml = null;
 
 	/**
 	 * 
 	 */
-	public NetFolderNameCell()
+	public NetFolderSyncStatusCell()
 	{
 		// We care about click and keydown action
 		super( "click", "keydown" );
 
-		if ( m_imgHtml == null )
+		if ( m_waitingForSyncImgHtml == null )
 		{
 			ImageResource imgResource;
 			Image img;
 			
-			imgResource = GwtTeaming.getImageBundle().spinner16();
+			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusWaitingToBeSyncd();
 			img = GwtClientHelper.buildImage( imgResource );
-			m_imgHtml = img.toString();
+			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusWaitingToBeSyncd() );
+			m_waitingForSyncImgHtml = img.toString();
+		}
+
+		if ( m_syncInProgressImgHtml == null )
+		{
+			ImageResource imgResource;
+			Image img;
+			
+			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusInProgress();
+			img = GwtClientHelper.buildImage( imgResource );
+			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusInProgress() );
+			m_syncInProgressImgHtml = img.toString();
+		}
+
+		if ( m_syncStoppedImgHtml == null )
+		{
+			ImageResource imgResource;
+			Image img;
+			
+			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusStopped();
+			img = GwtClientHelper.buildImage( imgResource );
+			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusStopped() );
+			m_syncStoppedImgHtml = img.toString();
+		}
+
+		if ( m_syncCompletedImgHtml == null )
+		{
+			ImageResource imgResource;
+			Image img;
+			
+			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusCompleted();
+			img = GwtClientHelper.buildImage( imgResource );
+			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusCompleted() );
+			m_syncCompletedImgHtml = img.toString();
+		}
+
+		if ( m_syncNeverRunImgHtml == null )
+		{
+			ImageResource imgResource;
+			Image img;
+			
+			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusNeverRun();
+			img = GwtClientHelper.buildImage( imgResource );
+			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusNeverRun() );
+			m_syncNeverRunImgHtml = img.toString();
 		}
 	}
 
@@ -115,16 +163,37 @@ public class NetFolderNameCell extends AbstractCell<NetFolder>
 		}
 		
 		{
-			SafeHtml safeValue;
+			NetFolderSyncStatus status;
 
 			// Wrap everything in a <div>
-			sb.appendHtmlConstant( "<div class=\"netFolder_NamePanel\">" );
+			sb.appendHtmlConstant( "<div class=\"netFolder_SyncStatusPanel\">" );
 			
-			// Add the group's title
-			sb.appendHtmlConstant( "<span class=\"netFolder_Name\">" );
-			safeValue = SafeHtmlUtils.fromString( value.getName() );
-			sb.append( safeValue );
-			sb.appendHtmlConstant( "</span>" );
+			status = value.getStatus();
+			switch ( status )
+			{
+			case SYNC_COMPLETED:
+				sb.appendHtmlConstant( m_syncCompletedImgHtml );
+				break;
+			
+			case SYNC_IN_PROGRESS:
+				sb.appendHtmlConstant( m_syncInProgressImgHtml );
+				break;
+				
+			case SYNC_NEVER_RUN:
+				sb.appendHtmlConstant( m_syncNeverRunImgHtml );
+				break;
+				
+			case SYNC_STOPPED:
+				sb.appendHtmlConstant( m_syncStoppedImgHtml );
+				break;
+				
+			case WAITING_TO_BE_SYNCD:
+				sb.appendHtmlConstant( m_waitingForSyncImgHtml );
+				break;
+				
+			default:
+				sb.appendHtmlConstant( "Unknown sync status" );
+			}
 			
 			// Close the <div>
 			sb.appendHtmlConstant( "</div>" );
