@@ -145,6 +145,7 @@ public interface AclResourceDriver extends ResourceDriver {
 	public AclResourceSession openSessionProxyMode(String proxyUsername, String proxyPassword) throws FIException, UncheckedIOException;
 
 	/**
+	 * Opens a session in user mode.
 	 * 
 	 * @param userId
 	 * @param password
