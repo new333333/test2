@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Frame;
@@ -135,6 +136,28 @@ public class FolderEntryDocument extends VibeFlowPanel {
 			// Add the appropriate image. 
 			m_contentImage = GwtClientHelper.buildImage(imgUrl);
 			m_contentImage.addStyleName(imgStyle);
+			int rotation = m_fed.getContentImageRotation();
+			if (0 != rotation) {
+				Style  styles = m_contentImage.getElement().getStyle();
+				String genericRotateStyleValue = ("rotate(" + rotation + "deg)");
+				styles.setProperty("transform", genericRotateStyleValue);
+				if (GwtClientHelper.jsIsIE()) {
+					switch (rotation) {
+					default:   rotation = 0; break;
+					case  90:  rotation = 1; break;
+					case 180:  rotation = 2; break;
+					case 270:  rotation = 3; break;
+					}
+					if (0 != rotation) {
+						String ieRotateStyleValue = ("progid:DXImageTransform.Microsoft.BasicImage(rotation=" + rotation + ")");
+						styles.setProperty("filter", ieRotateStyleValue);
+					}
+				}
+				else {
+					styles.setProperty("webkitTransform", genericRotateStyleValue);
+					styles.setProperty("mozTransform",    genericRotateStyleValue);
+				}
+			}
 			add(m_contentImage);
 			
 		}
