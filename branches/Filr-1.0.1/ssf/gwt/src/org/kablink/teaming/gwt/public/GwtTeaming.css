@@ -1528,6 +1528,10 @@ body, table td, select
 	margin: 10px 10px 20px 10px;
 }
 
+.loginDlg_downloadingFileMsgPanel {padding: 10px; white-space: normal; width: 350px;}
+.loginDlg_downloadingFileMsg1     {}
+.loginDlg_downloadingFileMsg2     {padding-top:10px;}
+
 .loginDlg_openIdProviderImg:hover
 {
 	cursor: pointer;
@@ -1538,6 +1542,16 @@ body, table td, select
 	margin-left: 10px;
 	margin-top: 8px;
 }
+
+.loginDlgBox_Glass
+{
+	background-color: #E0E0E0;
+	filter: alpha(opacity=100);
+	opacity: 1;
+	overflow: hidden;
+	z-index: 1000;
+}
+
 
 /* Styles used in the Sign In dialog for User ID and Password labels */
 

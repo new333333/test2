@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,6 +52,7 @@ import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -63,6 +64,7 @@ import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -289,7 +291,11 @@ public class LoginFilter  implements Filter {
 	}
 
 	protected void handleGuestAccess(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-		if(isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
+		Boolean readFileWithGuestAccessFlag = getReadFileWithGuestAccessFlag(req);
+		boolean isReadFile                  = (null != readFileWithGuestAccessFlag);
+		boolean isReadFileWithGuestAccess   = (isReadFile && readFileWithGuestAccessFlag);
+		
+		if (isReadFileWithGuestAccess || isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
 			chain.doFilter(req, res);										
 		}
 		else {				
@@ -311,13 +317,15 @@ public class LoginFilter  implements Filter {
 			else {
 				// The guest is requesting a non-mobile page that isn't the login form.
 				// We need to check whether we should allow this or not.
-				if(guestAccessAllowed()) { 
+				if ((!isReadFile) && guestAccessAllowed()) { 
 					// Guest access allowed. Let it proceed as normal.
 					req.setAttribute(WebKeys.REFERER_URL, currentURL);
 					chain.doFilter(req, res);											
 				}
 				else {
-					// Guest access not allowed. Redirect the guest to the login page.
+					// It's a readFile URL to an entry that the Guest
+					// can't access or Guest access not allowed.
+					// Redirect the Guest to the login page.
 					res.sendRedirect(getLoginURL(req, currentURL));
 				}
 			}
@@ -513,11 +521,80 @@ public class LoginFilter  implements Filter {
 			return false;
 	}
 	
+	/*
+	 * Returns an indicator of whether the request URL is a readFile
+	 * URL and if it is, whether Guest has access to the entry.
+	 * 
+	 * Assumption:  Called as Guest.
+	 * 
+	 * Returns:
+	 *    null          -> The request isn't a readFile URL.
+	 *    Boolean.FALSE -> The request is    a readFile URL but Guest can't access it.
+	 *    Boolean.TRUE  -> The request is    a readFile URL and Guest can   access it.
+	 */
+	protected Boolean getReadFileWithGuestAccessFlag(HttpServletRequest req) {
+		// If we don't have a path...
+		String path = req.getPathInfo();
+		if (null == path) {
+			// ...it can't be a readFile URL.
+			return null;
+		}
+		
+		// Are we looking at a readFile URL?
+		Boolean reply;
+		if (path.startsWith("/" + WebKeys.SERVLET_READ_FILE + "/")) {
+			// Yes!  Can we find the folderEntry marker within it?
+			String feIdMarker = (WebKeys.URL_FOLDER_ENTRY + "/");
+			int    feIdPos    = path.indexOf(feIdMarker);
+			if (0 < feIdPos) {
+				FolderEntry fe;
+				try {
+					// Yes!  Try to access the entry as Guest.
+					final String fePart = path.substring(feIdPos + feIdMarker.length());
+					final Long   feId   = Long.parseLong(fePart.substring(0, fePart.indexOf('/')));
+						fe = ((FolderEntry) RunasTemplate.runas(
+							new RunasCallback() {
+								@Override
+								public Object doAs() {
+									return getFolderModule().getEntry(null, feId);
+								}
+							},
+							WebHelper.getRequiredZoneName(req),
+							WebHelper.getRequiredUserId(  req)));
+				}
+				catch (Exception ex) {
+					// Failure possibilities:  AccessControlException,
+					// NumericFormatException, ...
+					fe = null;
+				}
+					
+				// Return true if Guest can access the entry and false
+				// otherwise.
+				reply = new Boolean(null != fe);
+			}
+			
+			else {
+				// No, we found readFile but couldn't find the
+				// folderEntry marker.
+				reply = Boolean.FALSE;
+			}
+		}
+		
+		else {
+			// No, this isn't a readFile URL.
+			reply = null;
+		}
+
+		// If we get here, reply refers to the appropriate Boolean
+		// value for the request's readFile URL analysis.  Return it.
+		return reply;
+	}
+	
 	protected boolean isPathPermittedUnauthenticated(String path) {
 		return (path != null && 
 				(path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || 
 						path.equals("/"+WebKeys.SERVLET_PORTAL_LOGOUT) || 
-						path.startsWith("/"+WebKeys.SERVLET_READ_FILE+"/") || 
+//						path.startsWith("/"+WebKeys.SERVLET_READ_FILE+"/") ||	// readFile is now checked via call to getReadFileWithGuestAccessFlag(). 
 						path.startsWith("/"+WebKeys.SERVLET_VIEW_CSS+"/") ||
 						path.equals("/"+WebKeys.SERVLET_VIEW_CSS)));
 	}
@@ -548,6 +625,10 @@ public class LoginFilter  implements Filter {
 
 	private BinderModule getBinderModule() {
 		return (BinderModule) SpringContextUtil.getBean("binderModule");
+	}	
+
+	private FolderModule getFolderModule() {
+		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}	
 
 	private ZoneModule getZoneModule() {
@@ -599,3 +680,4 @@ public class LoginFilter  implements Filter {
 		return false;
 	}
 }
+
