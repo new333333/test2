@@ -230,6 +230,7 @@ public class WebKeys {
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
     public static final String URL_OPERATION3="operation3";
+    public static final String URL_FOLDER_ENTRY="folderEntry";
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
     public static final String URL_SEARCH_SCOPE="scope";
