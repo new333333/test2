@@ -2202,36 +2202,36 @@ public class GwtViewHelper {
 		// collections.
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-			if      (colName.equals("author"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD);    }
-			else if (colName.equals("comments"))         {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                               }
-			else if (colName.equals("date"))             {fc.setColumnSearchKey(Constants.MODIFICATION_DATE_FIELD);                                                             }
-			else if (colName.equals("description"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                          }
-			else if (colName.equals("descriptionHtml"))  {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                          }
-			else if (colName.equals("download"))         {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                      }
-			else if (colName.equals("dueDate"))          {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                      }
-			else if (colName.equals("emailAddress"))     {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                         }
-			else if (colName.equals("family"))           {fc.setColumnSearchKey(Constants.FAMILY_FIELD);                 fc.setColumnSortable(false);                           }
-			else if (colName.equals("fullName"))         {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);       }
-			else if (colName.equals("guest"))            {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD);    }
-			else if (colName.equals("html"))             {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                       }
-			else if (colName.equals("location"))         {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                   }
-			else if (colName.equals("loginId"))          {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                     }
-			else if (colName.equals("netfolder_access")) {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);   fc.setColumnSortable(false);                           }
-			else if (colName.equals("number"))           {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);       }
-			else if (colName.equals("rating"))           {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                        }
-			else if (colName.equals("responsible"))      {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                   }
-			else if (colName.equals("size"))             {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                     }
-			else if (colName.equals("share_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_ACCESS);                                                              }
-			else if (colName.equals("share_date"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_DATE);                                                                }
-			else if (colName.equals("share_expiration")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_EXPIRATION);                                                          }
-			else if (colName.equals("share_message"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_MESSAGE);                                                             }
-			else if (colName.equals("share_sharedBy"))   {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_BY);                                                           }
-			else if (colName.equals("share_sharedWith")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_WITH);                                                         }
-			else if (colName.equals("state"))            {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);   }
-			else if (colName.equals("status"))           {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                        }
-			else if (colName.equals("tasks"))            {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                         }
-			else if (colName.equals("title"))            {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);       }
-			else if (colName.equals("userType"))         {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);      fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD);}
+			if      (colName.equals("author"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);}
+			else if (colName.equals("comments"))         {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                }
+			else if (colName.equals("date"))             {fc.setColumnSearchKey(Constants.MODIFICATION_DATE_FIELD);                                                              }
+			else if (colName.equals("description"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
+			else if (colName.equals("descriptionHtml"))  {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
+			else if (colName.equals("download"))         {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                       }
+			else if (colName.equals("dueDate"))          {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                       }
+			else if (colName.equals("emailAddress"))     {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                          }
+			else if (colName.equals("family"))           {fc.setColumnSearchKey(Constants.FAMILY_FIELD);                 fc.setColumnSortable(false);                            }
+			else if (colName.equals("fullName"))         {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);        }
+			else if (colName.equals("guest"))            {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);}
+			else if (colName.equals("html"))             {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                        }
+			else if (colName.equals("location"))         {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                    }
+			else if (colName.equals("loginId"))          {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                      }
+			else if (colName.equals("netfolder_access")) {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);   fc.setColumnSortable(false);                            }
+			else if (colName.equals("number"))           {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);        }
+			else if (colName.equals("rating"))           {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                         }
+			else if (colName.equals("responsible"))      {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                    }
+			else if (colName.equals("size"))             {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                      }
+			else if (colName.equals("share_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_ACCESS);                                                               }
+			else if (colName.equals("share_date"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_DATE);                                                                 }
+			else if (colName.equals("share_expiration")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_EXPIRATION);                                                           }
+			else if (colName.equals("share_message"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_MESSAGE);                                                              }
+			else if (colName.equals("share_sharedBy"))   {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_BY);                                                            }
+			else if (colName.equals("share_sharedWith")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_WITH);                                                          }
+			else if (colName.equals("state"))            {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);    }
+			else if (colName.equals("status"))           {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                         }
+			else if (colName.equals("tasks"))            {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                          }
+			else if (colName.equals("title"))            {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);        }
+			else if (colName.equals("userType"))         {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);      fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD); }
 			else {
 				// Does the column name contain multiple parts wrapped
 				// in a single value?
@@ -3488,7 +3488,7 @@ public class GwtViewHelper {
 					case MINIBLOG:
 					case SURVEY:     sortBy = Constants.SORT_TITLE_FIELD;                     break;
 					case TASK:       sortBy = Constants.SORT_ORDER_FIELD;                     break;
-					case GUESTBOOK:  sortBy = Constants.CREATOR_TITLE_FIELD;                  break;
+					case GUESTBOOK:  sortBy = Constants.SORT_CREATOR_TITLE_FIELD;             break;
 					default:         sortBy = Constants.SORTNUMBER_FIELD; sortDescend = true; break;
 					}
 				}
