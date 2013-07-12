@@ -49,6 +49,7 @@ import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.cn.ChineseAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -256,16 +257,25 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return writer;
 	}
 	
+	private void purgeOldDocument(Fieldable uidField) throws IOException {
+		Term purgeTerm = new Term(Constants.UID_FIELD, uidField.stringValue());
+		getIndexingResource().getIndexWriter().deleteDocuments(purgeTerm);
+		if(logger.isTraceEnabled())
+			logTrace("Called purgeOldDocument on writer with term [" + purgeTerm.toString() + "]");
+	}
+	
 	public void addDocuments(ArrayList docs) throws LuceneException {
 		long startTime = System.nanoTime();
 
 		try {
 			for (Iterator iter = docs.iterator(); iter.hasNext();) {
 				Document doc = (Document) iter.next();
-				if (doc.getFieldable(Constants.UID_FIELD) == null)
+				Fieldable uidField = doc.getFieldable(Constants.UID_FIELD);
+				if (uidField == null)
 					throw new IllegalArgumentException(
 							"Document must contain a UID with field name "
 									+ Constants.UID_FIELD);
+				purgeOldDocument(uidField);
 				String tastingText = getTastingText(doc);
 				getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
 				if(logger.isTraceEnabled())
@@ -312,12 +322,14 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		for(Object obj : docsToAddOrDelete) {
 			if(obj instanceof Document) {
 				Document doc = (Document) obj;
-				if (doc.getFieldable(Constants.UID_FIELD) == null)
+				Fieldable uidField = doc.getFieldable(Constants.UID_FIELD);
+				if (uidField == null)
 					throw new IllegalArgumentException(
 							"Document must contain a UID with field name "
 									+ Constants.UID_FIELD);
-				String tastingText = getTastingText(doc);
 				try {
+					purgeOldDocument(uidField);
+					String tastingText = getTastingText(doc);
 					getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
 				} catch (IOException e) {
 					throw newLuceneException("Could not add document to the index", e);					
@@ -1094,7 +1106,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					", size=" + size);
 		}
 		else if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength);
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 					
+					", offset=" + offset +
+					", size=" + size);
 		}
 	}
 	
