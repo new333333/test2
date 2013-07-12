@@ -2644,7 +2644,7 @@ public class GwtServerHelper {
 					  binderModule.testAccess( top, BinderOperation.indexBinder ) )
 				{
 					// Yes
-					if ( adminModule.retrieveIndexNodes() != null )
+					if ( adminModule.retrieveIndexNodesHA() != null )
 					{
 						GwtAdminCategory manageSearchIndexCategory;
 						

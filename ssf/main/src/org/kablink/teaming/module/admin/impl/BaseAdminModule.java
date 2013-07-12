@@ -32,28 +32,33 @@
  */
 package org.kablink.teaming.module.admin.impl;
 
+import java.util.Date;
 import java.util.List;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MobileAppsConfig;
 import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.OpenIDProvider;
+import org.kablink.teaming.module.admin.ManageIndexException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 public class BaseAdminModule extends AbstractAdminModule {
 
-	public List<IndexNode> retrieveIndexNodes() {
+	public List<IndexNode> retrieveIndexNodesHA() {
 		return null; // No support for nodes
 	}
 	
-	public void updateIndexNode(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords) {
+	public void updateIndexNodeHA(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords) {
 		// Noop
 	}
 	
-	public void applyDeferredUpdateLogRecords(IndexNode indexNode) {
+	public void applyDeferredUpdateLogRecordsHA(IndexNode indexNode) {
 		// Noop
 	}
 
-	public void discardDeferredUpdateLogRecords(IndexNode indexNode) {
+	public void discardDeferredUpdateLogRecordsHA(IndexNode indexNode) {
 		// Noop	
 	}
 	
@@ -123,4 +128,5 @@ public class BaseAdminModule extends AbstractAdminModule {
 	{
 		// Noop
 	}
+	
 }

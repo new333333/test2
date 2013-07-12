@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 
 import org.kablink.util.StringUtil;
@@ -61,6 +62,8 @@ public class IndexNode extends ZonedObject {
 	
 	private String accessMode = updateAccessMode(USER_MODE_ACCESS_WRITE_ONLY, true);; // (internal use only) contains userModeAccess followed by space followed by 1 or 0
 
+	private Date reindexingStartDate, reindexingEndDate;
+	
 	// The following two fields are here for convenience only, and not persistent.
 	private String title;
 	private Map<String,String> displayProperties;
@@ -69,6 +72,11 @@ public class IndexNode extends ZonedObject {
 	
 	public IndexNode(String nodeName, String indexName) {
 		this.name = new Name(nodeName, indexName);
+	}
+	
+	public IndexNode(String nodeName, String indexName, String accessMode) {
+		this(nodeName, indexName);
+		this.accessMode = accessMode;
 	}
 	
 	public String getId() {
@@ -156,6 +164,35 @@ public class IndexNode extends ZonedObject {
 			enableDeferredUpdateLog = false;
 	}
 
+	public Date getReindexingStartDate() {
+		return reindexingStartDate;
+	}
+
+	public void setReindexingStartDate(Date reindexingStartDate) {
+		this.reindexingStartDate = reindexingStartDate;
+	}
+
+	public Date getReindexingEndDate() {
+		return reindexingEndDate;
+	}
+
+	public void setReindexingEndDate(Date reindexingEndDate) {
+		this.reindexingEndDate = reindexingEndDate;
+	}
+
+	// Convenience method
+	public boolean isReindexingInProgress() {
+		if(reindexingStartDate == null) {
+			return false;
+		}
+		else {
+			if(reindexingEndDate == null)
+				return true;
+			else
+				return false;
+		}
+	}
+	
 	public static class Name implements Serializable {
 		private String nodeName;
 		private String indexName;

@@ -217,7 +217,7 @@ public interface CoreDao {
      * @return
      */
     public IndexNode findIndexNode(String nodeName, String indexName);
-    
+	
     /**
      * Purge all index nodes matching the specified index name. 
      * Used when deleting a zone.

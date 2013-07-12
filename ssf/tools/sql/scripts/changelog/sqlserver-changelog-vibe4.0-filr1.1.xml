@@ -207,4 +207,22 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <comment>Reindexing start date</comment>
+        <addColumn tableName="SS_IndexNode">
+            <column name="reindexingStartDate" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <comment>Reindexing end date</comment>
+        <addColumn tableName="SS_IndexNode">
+            <column name="reindexingEndDate" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

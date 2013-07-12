@@ -209,7 +209,7 @@ public class ManageSearchIndexController extends  SAbstractController {
  		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
 		
-		List<IndexNode> nodes = getAdminModule().retrieveIndexNodes();
+		List<IndexNode> nodes = getAdminModule().retrieveIndexNodesHA();
 		
 		if(nodes != null) {
 			model.put(WebKeys.SEARCH_NODES, nodes);
