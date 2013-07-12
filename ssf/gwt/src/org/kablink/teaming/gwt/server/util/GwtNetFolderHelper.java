@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -78,6 +79,7 @@ import org.kablink.teaming.gwt.client.NetFolder.NetFolderSyncStatus;
 import org.kablink.teaming.gwt.client.NetFolderDataSyncSettings;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.NetFolderRoot.NetFolderRootStatus;
+import org.kablink.teaming.gwt.client.NetFolderSyncStatistics;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderServersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse.GwtConnectionTestStatusCode;
@@ -897,7 +899,75 @@ public class GwtNetFolderHelper
 	
 	
 	/**
-	 * Convert the FullSyncStatus into a NetFolderSyncStatus
+	 * Get the sync statistics for the given net folder.
+	 */
+	public static NetFolderSyncStatistics getNetFolderSyncStatistics( Long binderId )
+	{
+		NetFolderSyncStatistics syncStatistics;
+		
+		syncStatistics = new NetFolderSyncStatistics();
+
+		if ( binderId != null )
+		{
+			BinderState binderState;
+
+            binderState = (BinderState) getCoreDao().load( BinderState.class, binderId );
+            if ( binderState != null )
+            {
+    			FullSyncStats syncStats;
+            	
+    			syncStats = binderState.getFullSyncStats();
+    			if ( syncStats != null )
+    			{
+    				Date date;
+    				Long value;
+    				
+    				syncStatistics.setCountEntryExpunge( syncStats.getCountEntryExpunge() );
+    				syncStatistics.setCountFailure( syncStats.getCountFailure() );
+    				syncStatistics.setCountFileAdd( syncStats.getCountFileAdd() );
+    				syncStatistics.setCountFileExpunge( syncStats.getCountFileExpunge() );
+    				syncStatistics.setCountFileModify( syncStats.getCountFileModify() );
+    				syncStatistics.setCountFiles( syncStats.getCountFiles() );
+    				syncStatistics.setCountFileSetAcl( syncStats.getCountFileSetAcl() );
+    				syncStatistics.setCountFileSetOwnership( syncStats.getCountFileSetOwnership() );
+    				syncStatistics.setCountFolderAdd( syncStats.getCountFolderAdd() );
+    				syncStatistics.setCountFolderExpunge( syncStats.getCountFolderExpunge() );
+    				syncStatistics.setCountFolderMaxQueue( syncStats.getCountFolderMaxQueue() );
+    				syncStatistics.setCountFolderProcessed( syncStats.getCountFolderProcessed() );
+    				syncStatistics.setCountFolders( syncStats.getCountFolders() );
+    				syncStatistics.setCountFolderSetAcl( syncStats.getCountFolderSetAcl() );
+    				syncStatistics.setCountFolderSetOwnership( syncStats.getCountFolderSetOwnership() );
+    				syncStatistics.setDirOnly( syncStats.getDirOnly() );
+    				syncStatistics.setEnumerationFailed( syncStats.getEnumerationFailed() );
+    				syncStatistics.setStatusIpv4Address( syncStats.getStatusIpv4Address() );
+    				
+    				value = null;
+    				date = syncStats.getEndDate();
+    				if ( date != null )
+    					value = new Long( date.getTime() );
+    				syncStatistics.setEndDate( value );
+    				
+    				value = null;
+    				date = syncStats.getStartDate();
+    				if ( date != null )
+    					value = new Long( date.getTime() );
+    				syncStatistics.setStartDate( value );
+    				
+    				value = null;
+    				date = syncStats.getStatusDate();
+    				if ( date != null )
+    					value = new Long( date.getTime() );
+    				syncStatistics.setStatusDate( value );
+    			}
+            }
+		}
+		
+		return syncStatistics;
+	}
+	
+	/**
+	 * Get the sync status of the given net folder by converting a FullSyncStatus object
+	 * into a NetFolderSyncStatus object.
 	 */
 	public static NetFolderSyncStatus getNetFolderSyncStatus( Long binderId )
 	{

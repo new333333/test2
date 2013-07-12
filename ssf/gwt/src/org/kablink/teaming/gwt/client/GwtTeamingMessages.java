@@ -424,6 +424,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetMyTeams();
 	String rpcFailure_NumberOfMembers();
 	String rpcFailure_GetNetFolder();
+	String rpcFailure_GetNetFolderSyncStatistics();
 	String rpcFailure_GetNextPreviousFolderEntryInfo();
 	String rpcFailure_GetParentBinderPermalink();
 	String rpcFailure_GetPersonalPreferences();
@@ -665,6 +666,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MultiErrorAlertDlg();
 	String codeSplitFailure_NetFolderSelectPrincipalsWidget();
 	String codeSplitFailure_NetFoldersWSView();
+	String codeSplitFailure_NetFolderSyncStatisticsDlg();
 	String codeSplitFailure_PersonalWorkspacesView();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfileEntryDlg();
@@ -2713,5 +2715,30 @@ public interface GwtTeamingMessages extends Messages
 	String jitsZoneConfigDlg_OnSaveUnknownException( String errMsg );
 	String jitsZoneConfigDlg_SavingConfig();
 	String jitsZoneConfigDlg_SecondsLabel();
+
+	// Strings used in the Net Folder Sync Statistics dialog
+	String netFolderSyncStatisticsDlg_CountFailure();
+	String netFolderSyncStatisticsDlg_DirEnum();
+	String netFolderSyncStatisticsDlg_DirOnly();
+	String netFolderSyncStatisticsDlg_EndDate();
+	String netFolderSyncStatisticsDlg_EntriesExpunged();
+	String netFolderSyncStatisticsDlg_FileCount();
+	String netFolderSyncStatisticsDlg_FilesAdded();
+	String netFolderSyncStatisticsDlg_FilesExpunged();
+	String netFolderSyncStatisticsDlg_FilesHeading();
+	String netFolderSyncStatisticsDlg_FilesModified();
+	String netFolderSyncStatisticsDlg_FilesSetAcl();
+	String netFolderSyncStatisticsDlg_FilesSetOwnership();
+	String netFolderSyncStatisticsDlg_FolderCount();
+	String netFolderSyncStatisticsDlg_FoldersAdded();
+	String netFolderSyncStatisticsDlg_FoldersExpunged();
+	String netFolderSyncStatisticsDlg_FoldersHeading();
+	String netFolderSyncStatisticsDlg_FoldersProcessed();
+	String netFolderSyncStatisticsDlg_FoldersSetAcl();
+	String netFolderSyncStatisticsDlg_FoldersSetOwnership();
+	String netFolderSyncStatisticsDlg_Header();
+	String netFolderSyncStatisticsDlg_MiscHeading();
+	String netFolderSyncStatisticsDlg_NoValue();
+	String netFolderSyncStatisticsDlg_StartDate();
 	
 }// end GwtTeamingMessages

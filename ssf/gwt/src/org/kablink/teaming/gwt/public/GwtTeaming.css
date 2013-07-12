@@ -5552,4 +5552,30 @@ td.datePickerMonth {
 	overflow: auto;
 }
 
+/**
+ * Styles used in the Manage Net Folders dialog
+ */
+.netFolder_syncStatusImg:hover
+{
+	cursor: pointer;
+}
+
+/**
+ * Styles used in the Net Folder Synchronization Statistics dialog
+ */
+ .netFolderSyncStatisticsDlg_StatisticsHeading
+ {
+ 	font-weight: bold;
+ }
+ 
+ .netFolderSyncStatisticsDlg_MiscStatisticsLabel, .netFolderSyncStatisticsDlg_FileStatisticsLabel, .netFolderSyncStatisticsDlg_FolderStatisticsLabel
+ {
+ 	margin-left: 16px;
+ }
+ 
+ .netFolderSyncStatisticsDlg_StatisticsValue
+ {
+ 	margin-right: 12px;
+ }
+ 
 /* End */

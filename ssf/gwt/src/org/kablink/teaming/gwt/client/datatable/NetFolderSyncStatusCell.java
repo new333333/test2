@@ -74,6 +74,7 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusWaitingToBeSyncd();
 			img = GwtClientHelper.buildImage( imgResource );
 			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusWaitingToBeSyncd() );
+			img.addStyleName( "netFolder_syncStatusImg" );
 			m_waitingForSyncImgHtml = img.toString();
 		}
 
@@ -85,6 +86,7 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusInProgress();
 			img = GwtClientHelper.buildImage( imgResource );
 			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusInProgress() );
+			img.addStyleName( "netFolder_syncStatusImg" );
 			m_syncInProgressImgHtml = img.toString();
 		}
 
@@ -96,6 +98,7 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusStopped();
 			img = GwtClientHelper.buildImage( imgResource );
 			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusStopped() );
+			img.addStyleName( "netFolder_syncStatusImg" );
 			m_syncStoppedImgHtml = img.toString();
 		}
 
@@ -107,6 +110,7 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusCompleted();
 			img = GwtClientHelper.buildImage( imgResource );
 			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusCompleted() );
+			img.addStyleName( "netFolder_syncStatusImg" );
 			m_syncCompletedImgHtml = img.toString();
 		}
 
@@ -118,6 +122,7 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusNeverRun();
 			img = GwtClientHelper.buildImage( imgResource );
 			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusNeverRun() );
+			img.addStyleName( "netFolder_syncStatusImg" );
 			m_syncNeverRunImgHtml = img.toString();
 		}
 	}
@@ -141,7 +146,7 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 		{
 			EventTarget eventTarget;
 			
-			// Only want to handle clicks on the Net Folder's name
+			// Only want to handle clicks on the status image
 			eventTarget = event.getEventTarget();
 			if ( parent.getFirstChildElement().isOrHasChild( Element.as( eventTarget ) ) )
 			{

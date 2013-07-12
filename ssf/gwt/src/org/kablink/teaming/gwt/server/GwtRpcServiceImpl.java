@@ -78,6 +78,7 @@ import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
+import org.kablink.teaming.gwt.client.NetFolderSyncStatistics;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
@@ -1758,6 +1759,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gnfCmd = (GetNetFolderCmd) cmd;
 			netFolder = GwtNetFolderHelper.getNetFolder( this, gnfCmd.getId() );
 			response = new VibeRpcResponse( netFolder );
+			return response;
+		}
+		
+		case GET_NET_FOLDER_SYNC_STATISTICS:
+		{
+			GetNetFolderSyncStatisticsCmd gnfssCmd;
+			NetFolderSyncStatistics syncStatistics;
+			
+			gnfssCmd = (GetNetFolderSyncStatisticsCmd) cmd; 
+			syncStatistics = GwtNetFolderHelper.getNetFolderSyncStatistics( gnfssCmd.getNetFolderId() );
+			response = new VibeRpcResponse( syncStatistics );
 			return response;
 		}
 		

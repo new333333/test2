@@ -63,6 +63,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
+import org.kablink.teaming.gwt.client.widgets.NetFolderSyncStatisticsDlg.NetFolderSyncStatisticsDlgClient;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -108,7 +109,8 @@ public class ManageNetFoldersDlg extends DlgBox
 	private QuickFilter m_quickFilter;
 	private List<NetFolder> m_listOfNetFolders;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg;
-    private int m_width;
+	private NetFolderSyncStatisticsDlg m_netFolderSyncStatisticsDlg;
+	private int m_width;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -196,6 +198,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		
 		listOfNetFoldersToCheck = new HashSet<NetFolder>();
 		
+		// Get a list of all net folders whose status is "in progress" or "waiting to be syn'd"
 		if ( m_listOfNetFolders != null )
 		{
 			for ( NetFolder nextFolder : m_listOfNetFolders )
@@ -482,7 +485,7 @@ public class ManageNetFoldersDlg extends DlgBox
 				@Override
 				public void update( int index, NetFolder netFolder, NetFolder value )
 				{
-					invokeModifyNetFolderDlgById( netFolder.getId() );
+					invokeNetFolderSyncStatisticsDlg( netFolder.getId() );
 				}
 			} );
 			m_netFoldersTable.addColumn( statusCol, messages.manageNetFoldersDlg_SyncStatusCol() );
@@ -912,6 +915,64 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 
 	/**
+	 * Invoke the dialog that display all of the sync statistics for the given net folder 
+	 */
+	private void invokeNetFolderSyncStatisticsDlg( final Long netFolderId )
+	{
+		int x;
+		int y;
+		
+		// Get the position of this dialog.
+		x = getAbsoluteLeft() + 50;
+		y = getAbsoluteTop() + 50;
+		
+		if ( m_netFolderSyncStatisticsDlg == null )
+		{
+			NetFolderSyncStatisticsDlgClient nfssClient;
+			
+			nfssClient = new NetFolderSyncStatisticsDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final NetFolderSyncStatisticsDlg nfssDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_netFolderSyncStatisticsDlg = nfssDlg;
+							
+							m_netFolderSyncStatisticsDlg.init( netFolderId );
+							m_netFolderSyncStatisticsDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			NetFolderSyncStatisticsDlg.createAsync(
+											true, 
+											false,
+											x, 
+											y,
+											nfssClient );
+		}
+		else
+		{
+			m_netFolderSyncStatisticsDlg.init( netFolderId );
+			m_netFolderSyncStatisticsDlg.setPopupPosition( x, y );
+			m_netFolderSyncStatisticsDlg.show();
+		}
+	}
+
+	/**
 	 * Handles the NetFolderCreatedEvent received by this class
 	 */
 	@Override
@@ -1204,6 +1265,7 @@ public class ManageNetFoldersDlg extends DlgBox
 			{
 				Timer timer;
 				
+				// Check the sync status every minute
 				timer = new Timer()
 				{
 					@Override
@@ -1212,7 +1274,7 @@ public class ManageNetFoldersDlg extends DlgBox
 						checkSyncStatus();
 					}
 				};
-				timer.schedule( 5000 );
+				timer.schedule( 60000 );
 			}
 		}
 	}
