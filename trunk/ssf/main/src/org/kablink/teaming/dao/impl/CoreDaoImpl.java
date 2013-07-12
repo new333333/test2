@@ -2735,7 +2735,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "findIndexNode(String,String)");
     	}	        
 	}
-	
+		
 	@Override
 	public void purgeIndexNodeByIndexName(final String indexName) {
 		long begin = System.nanoTime();

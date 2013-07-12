@@ -205,4 +205,22 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <comment>Reindexing start date</comment>
+        <addColumn tableName="SS_INDEXNODE">
+            <column name="REINDEXINGSTARTDATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <comment>Reindexing end date</comment>
+        <addColumn tableName="SS_INDEXNODE">
+            <column name="REINDEXINGENDDATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

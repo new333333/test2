@@ -358,7 +358,7 @@ public interface AdminModule {
 	 * of the corresponding Lucene node in the context of current zone.
 	 * @return
 	 */
-	public List<IndexNode> retrieveIndexNodes();
+	public List<IndexNode> retrieveIndexNodesHA();
 	
 	/**
 	 * Update the index node with the state information.
@@ -367,21 +367,21 @@ public interface AdminModule {
 	 * @param accessMode
 	 * @param noDeferredUpdateLogRecords
 	 */
-	public void updateIndexNode(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords);
+	public void updateIndexNodeHA(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords);
 
 	/**
 	 * Apply the deferred update log records to the index node and remove them.
 	 * 
 	 * @param indexNode
 	 */
-	public void applyDeferredUpdateLogRecords(IndexNode indexNode);
+	public void applyDeferredUpdateLogRecordsHA(IndexNode indexNode);
 	
 	/**
 	 * Discard and remove the deferred update log records without applying them.
 	 *  
 	 * @param indexNode
 	 */
-	public void discardDeferredUpdateLogRecords(IndexNode indexNode);
+	public void discardDeferredUpdateLogRecordsHA(IndexNode indexNode);
 	
 	/**
 	 * Obtain an application-scoped token on behalf of the specified user.
@@ -477,4 +477,6 @@ public interface AdminModule {
     public void setJitsConfig( boolean enabled, long maxWait );
     
     public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException;
+    
+    public void clearReindexState(String[] nodeNames);
  }

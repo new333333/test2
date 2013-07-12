@@ -86,6 +86,7 @@ import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.HomePageConfig;
+import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
@@ -134,6 +135,7 @@ import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.LuceneWriteSession;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.function.Condition;
@@ -3325,10 +3327,13 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	return true;
     }
     
+    @Override
     public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException {
-    	logger.info("Reindexing started on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
+    	setStateReindexStart(nodeNames);
     	
     	try {
+        	logger.info("Reindexing started on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
+        	
 	    	Collection<Long> idsIndexed = getBinderModule().indexTree(binderIds, statusTicket, nodeNames, errors);
 			//if people selected and not yet index; index content only, not the whole ws tree
 	    	if(includeUsersAndGroups) {				
@@ -3342,11 +3347,100 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     		logger.error("Error reindexing binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""), e);
     	}
     	finally {
+    		setStateReindexEnd(nodeNames);
         	logger.info("Reindexing completed on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
     	}
+    }
+    
+    @Override
+    public void clearReindexState(String[] nodeNames) {
+		final IndexNode indexNode = loadSingletonIndexNode();
+		if(indexNode == null) {
+			if(logger.isDebugEnabled())
+				logger.debug("No reindexing state to clear because no-name index node is not found");
+		}
+		else {
+			getTransactionTemplate().execute(new TransactionCallback<Object>() {
+				public Object doInTransaction(TransactionStatus status) {
+					indexNode.setReindexingStartDate(null);
+					indexNode.setReindexingEndDate(null);
+					return null;
+				}
+			});
+			if(logger.isDebugEnabled())
+				logger.debug("Cleared reindexing state on the no-name index node");
+		}
+
+    }
+
+    protected void setStateReindexStart(String[] nodeNames) {
+		IndexNode indexNode = loadSingletonIndexNode();
+		if(indexNode == null) {
+			final IndexNode indexNodeRef = new IndexNode(null, SearchUtils.getIndexName(), IndexNode.USER_MODE_ACCESS_READ_WRITE);
+			Date now = new Date();
+			indexNodeRef.setReindexingStartDate(now);
+			indexNodeRef.setReindexingEndDate(null);
+			getTransactionTemplate().execute(new TransactionCallback<Object>() {
+				public Object doInTransaction(TransactionStatus status) {
+					getCoreDao().save(indexNodeRef);
+					return null;
+				}
+			});
+			if(logger.isDebugEnabled())
+				logger.debug("Saved new no-name index node with reindexing start date of " + now);
+		}
+		else {
+			if(indexNode.isReindexingInProgress()) {
+				if(logger.isDebugEnabled())
+					logger.debug("Can not start another reindexing because one already started at " + indexNode.getReindexingStartDate());
+				throw new ManageIndexException("errorcode.reindexing.in.progress.cannot.start");
+			}
+			else {
+				final IndexNode indexNodeRef = indexNode;
+				final Date now = new Date();
+				getTransactionTemplate().execute(new TransactionCallback<Object>() {
+					public Object doInTransaction(TransactionStatus status) {
+						indexNodeRef.setReindexingStartDate(now);
+						indexNodeRef.setReindexingEndDate(null);
+						return null;
+					}
+				});
+				if(logger.isDebugEnabled())
+					logger.debug("Updated no-name index node with reindexing start date of " + now);
+			}
+		}
+    }
+    
+    protected void setStateReindexEnd(String[] nodeNames) {
+		final IndexNode indexNode = loadSingletonIndexNode();
+		if(indexNode == null) {
+			logger.error("Can not mark reindexing end because no-name index node is not found");
+		}
+		else {
+			final Date now = new Date();
+			getTransactionTemplate().execute(new TransactionCallback<Object>() {
+				public Object doInTransaction(TransactionStatus status) {
+					indexNode.setReindexingEndDate(now);
+					return null;
+				}
+			});
+			if(logger.isDebugEnabled())
+				logger.debug("Updated no-name index node with reindexing end date of " + now);
+		}
+    }
+
+    protected IndexNode loadSingletonIndexNode() {
+    	FilterControls filter = new FilterControls();
+    	filter.addIsNull("name.nodeName");
+    	List<IndexNode> nodes = getCoreDao().loadObjects(IndexNode.class, filter, RequestContextHolder.getRequestContext().getZoneId());
+    	if(nodes.size() > 0)
+    		return nodes.get(0);
+    	else
+    		return null;
     }
     
     protected ProfileModule getProfileModule() {
     	return (ProfileModule) SpringContextUtil.getBean("profileModule");
     }
+
 }
