@@ -49,6 +49,7 @@ import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.cn.ChineseAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -256,16 +257,33 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return writer;
 	}
 	
+	private void purgeOldDocument(Fieldable uidField, Document doc) throws IOException {
+		// Enforce purge only for binders. If we do that for entries, it will have very bad side effect
+		// because, unfortunately, replies and attachments all share the same uid as their parent entry.
+		String uidValue = uidField.stringValue();
+		if(uidValue != null && uidValue.startsWith("org.kablink.teaming.domain.Folder_")) {
+			Fieldable docTypeField = doc.getFieldable(Constants.DOC_TYPE_FIELD);
+			if(docTypeField != null && Constants.DOC_TYPE_BINDER.equals(docTypeField.stringValue())) {
+				Term purgeTerm = new Term(Constants.UID_FIELD, uidValue);
+				getIndexingResource().getIndexWriter().deleteDocuments(purgeTerm);
+				if(logger.isTraceEnabled())
+					logTrace("Called purgeOldDocument on writer with term [" + purgeTerm.toString() + "]");
+			}
+		}
+	}
+	
 	public void addDocuments(ArrayList docs) throws LuceneException {
 		long startTime = System.nanoTime();
 
 		try {
 			for (Iterator iter = docs.iterator(); iter.hasNext();) {
 				Document doc = (Document) iter.next();
-				if (doc.getFieldable(Constants.UID_FIELD) == null)
+				Fieldable uidField = doc.getFieldable(Constants.UID_FIELD);
+				if (uidField == null)
 					throw new IllegalArgumentException(
 							"Document must contain a UID with field name "
 									+ Constants.UID_FIELD);
+				purgeOldDocument(uidField, doc);
 				String tastingText = getTastingText(doc);
 				getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
 				if(logger.isTraceEnabled())
@@ -312,12 +330,14 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		for(Object obj : docsToAddOrDelete) {
 			if(obj instanceof Document) {
 				Document doc = (Document) obj;
-				if (doc.getFieldable(Constants.UID_FIELD) == null)
+				Fieldable uidField = doc.getFieldable(Constants.UID_FIELD);
+				if (uidField == null)
 					throw new IllegalArgumentException(
 							"Document must contain a UID with field name "
 									+ Constants.UID_FIELD);
-				String tastingText = getTastingText(doc);
 				try {
+					purgeOldDocument(uidField, doc);
+					String tastingText = getTastingText(doc);
 					getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
 				} catch (IOException e) {
 					throw newLuceneException("Could not add document to the index", e);					
