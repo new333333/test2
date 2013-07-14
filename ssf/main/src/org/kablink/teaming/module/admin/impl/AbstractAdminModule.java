@@ -3443,4 +3443,10 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	return (ProfileModule) SpringContextUtil.getBean("profileModule");
     }
 
+    public boolean isUnsafeReindexinginProgress() {
+		final IndexNode indexNode = loadSingletonIndexNode();
+		if(indexNode == null)
+			return false;
+		return indexNode.isReindexingInProgress();
+    }
 }

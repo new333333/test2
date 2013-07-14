@@ -479,4 +479,6 @@ public interface AdminModule {
     public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException;
     
     public void clearReindexState(String[] nodeNames);
+    
+    public boolean isUnsafeReindexinginProgress();
  }
