@@ -99,7 +99,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
 			Long parentBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
-			Long entrySourceBinderId = new Long(PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_SOURCE_BINDER_ID));	
+			Long entrySourceBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_SOURCE_BINDER_ID);	
 			Binder parentBinder = null;
 			if (parentBinderId != null) {
 				//Make sure there is access to the parent binder
@@ -141,6 +141,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(Html.stripHtml(sVal)));
 					sVal = PortletRequestUtils.getStringParameter(request, "templateName", null);
 					if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, sVal);
+					updates.put(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID, entrySourceBinderId);
 					Long configId = getTemplateModule().addTemplate(parentBinder, type, updates).getId();
 					TemplateBinder config = getTemplateModule().getTemplate(configId);
 					if (config == null) {
@@ -220,7 +221,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(Html.stripHtml(sVal)));
 				sVal = PortletRequestUtils.getStringParameter(request, "templateName", null);
 				if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, Html.stripHtml(sVal)); //should only be present for root templates
-			
+				updates.put(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID, entrySourceBinderId);
+
 				getTemplateModule().modifyTemplate(configId, updates);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 			} else if (WebKeys.OPERATION_ADD_FOLDER.equals(operation) ||
@@ -341,6 +343,14 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			model.put(WebKeys.BINDER_CONFIG, config);
 			model.put(WebKeys.BINDER, config);
 			model.put(WebKeys.FOLDER, config); //some jsps still look for folder
+			Long templateEntrySourceBinderId = config.getTemplateEntrySourceBinderId();
+			if (templateEntrySourceBinderId != null) {
+				model.put(WebKeys.BINDER_CONFIG_ENTRY_SOURCE_BINDER_ID, templateEntrySourceBinderId);
+				try {
+					Binder esb = getBinderModule().getBinder(templateEntrySourceBinderId);
+					model.put(WebKeys.BINDER_CONFIG_ENTRY_SOURCE_BINDER, esb);
+				} catch(Exception e) {}
+			}
 			if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
 				List<TemplateBinder> configs = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
 				if (parentBinder != null) {
