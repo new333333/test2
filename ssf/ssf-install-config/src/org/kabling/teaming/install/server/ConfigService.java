@@ -2820,10 +2820,15 @@ public final class ConfigService
 				+ " /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf.disabled", true);
 
 		executeCommand("sudo rcmysql stop", true);
-
-		executeCommand("sudo rcnovell-gmetad restart", true);
-		executeCommand("sudo rcnovell-gmond restart", true);
 		executeCommand("sudo chkconfig mysql off", true);
+
+		executeCommand("sudo rcnovell-gmetad stop", true);
+		executeCommand("sudo rcnovell-gmond stop", true);
+        	//Remove the ganglia database becasue it has Mysql entries that we do not want.
+		executeCommand("sudo rm -rf /vastorage/ganglia/rrds/*", true);
+                executeCommand("sudo rcnovell-gmetad start", true);
+		executeCommand("sudo rcnovell-gmond start", true);
+		
 	}
 
     /**
