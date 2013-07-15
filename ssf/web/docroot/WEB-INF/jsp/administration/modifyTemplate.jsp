@@ -142,6 +142,9 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
     <div style="padding:10px 0px 4px 0px;">
         <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.workspaceTemplate.entrySource"/></span>
     </div>
+    <div>
+      xxx ${ssBinderConfigEntrySourceBinderId} ${ssBinderConfigEntrySourceBinder.pathName} xxx
+    </div>
 	<ssf:find formName="form1" 
 	    formElement="entrySourceBinder" 
 	    type="places"
