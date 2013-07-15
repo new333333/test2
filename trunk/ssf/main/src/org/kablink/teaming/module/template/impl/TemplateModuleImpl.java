@@ -325,6 +325,11 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				 throw new IllegalArgumentException(NLT.get("general.required.name"));
 			 }
 		}
+		Long entrySourceBinderId = null;
+		if (updates.containsKey(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID)) {
+			entrySourceBinderId = (Long)updates.get(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID);
+		}
+		template.setTemplateEntrySourceBinderId(entrySourceBinderId);
 		if (localBinderParent != null) {
 			//This is a local template. Store the parent binder id
 			template.setTemplateOwningBinderId(localBinderParent.getId());
@@ -633,6 +638,11 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		}
 		if (updates.containsKey(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION)) {
 			config.setTemplateDescription((Description)updates.get(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION));
+		}
+		if (updates.containsKey(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID)) {
+			config.setTemplateEntrySourceBinderId((Long)updates.get(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID));
+		} else {
+			config.setTemplateEntrySourceBinderId(null);
 		}
 
 		ObjectBuilder.updateObject(config, updates);

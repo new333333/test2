@@ -735,6 +735,7 @@ public interface ObjectKeys {
     public static final String TASK_FIELD_EVENT="start_end#LogicalEndDate";
     public static final String FIELD_TEMPLATE_TITLE="templateTitle";
     public static final String FIELD_TEMPLATE_DESCRIPTION="templateDescription";
+    public static final String FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID="templateEntrySourceBinderId";
 
     // families of entries
     public static final String FAMILY_TASK = "task";

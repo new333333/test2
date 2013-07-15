@@ -776,6 +776,8 @@ public class WebKeys {
 	public static final String BINDER_IS_LIBRARY="ssBinderIsLibrary";
     public static final String BINDER_ID_LIST = "ssBinderIdList";
 	public static final String BINDER_CONFIG="ssBinderConfig";
+	public static final String BINDER_CONFIG_ENTRY_SOURCE_BINDER_ID="ssBinderConfigEntrySourceBinderId";
+	public static final String BINDER_CONFIG_ENTRY_SOURCE_BINDER="ssBinderConfigEntrySourceBinder";
 	public static final String BINDER_CONFIG_TEAM="ssBinderConfigTeam";
 	public static final String BINDER_CONFIGS="ssBinderConfigs";
 	public static final String BINDER_DEFINITION_ID="ssBinderDefinitionId";
