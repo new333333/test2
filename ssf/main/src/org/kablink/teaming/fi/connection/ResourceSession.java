@@ -118,11 +118,12 @@ public interface ResourceSession {
 	 * 
 	 * @param in input stream
 	 * @param size content size in byte
+	 * @param lastModTime last modification time or <code>null</code>
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 * @throws IllegalStateException
 	 */
-	public void writeFile(InputStream in, long size) throws FIException, UncheckedIOException, IllegalStateException;
+	public void writeFile(InputStream in, long size, Long lastModTime) throws FIException, UncheckedIOException, IllegalStateException;
 	
 	/**
 	 * Create a directory. 
