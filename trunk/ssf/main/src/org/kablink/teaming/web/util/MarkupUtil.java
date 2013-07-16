@@ -1226,10 +1226,20 @@ public class MarkupUtil {
 				    		titleLink.append("</script>\n");
 			    		}
 			    	} else if (s_url.startsWith("http://youtu.be/")) {
+			    		Integer id = ++youtubeDivId;
 			    		//Make this into an embed URL
 			    		s_url = s_url.replaceFirst("http://youtu.be/", "http://www.youtube.com/embed/");
-			    		titleLink.append("<iframe width=\"" + s_width + "\" height=\"" + s_height + "\" ");
-			        	titleLink.append("src=\"" + s_url + "\" frameborder=\"0\" allowfullscreen</iframe>");
+			    		titleLink.append("<div id=\"youTubeIFrame" + id.toString() + "\"></div>");
+			        	//We have to set the iframe src after the page loads to avoid youtube wiping out following content
+			        	titleLink.append("\n<script type=\"text/javascript\">\n");
+			        	titleLink.append("ss_createOnLoadObj(\"youTubeFixup" + id.toString() + "\", function() {\n");
+			        	titleLink.append("var divObj = document.getElementById(\"youTubeIFrame" + id.toString() + "\");\n");
+			        	titleLink.append("divObj.innerHTML = '");
+			    		titleLink.append("<iframe src=\"" + s_url + "\" width=\"" + s_width + "\" height=\"" + s_height + "\" ");
+			        	titleLink.append(" frameborder=\"0\" allowfullscreen</iframe>");
+			        	titleLink.append("';\n");
+			        	titleLink.append("});\n");
+			        	titleLink.append("</script>\n");
 			    	} else {
 			        	titleLink.append("<a target=\"_blank\" src=\"");
 			        	titleLink.append(s_url);
