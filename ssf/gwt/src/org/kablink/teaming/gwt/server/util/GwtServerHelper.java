@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -329,6 +330,8 @@ import org.kablink.util.servlet.StringServletResponse;
 @SuppressWarnings("unchecked")
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
+	
+	private static boolean ENABLE_DEPLOY_LOCAL_DESKTOP_APPS	= false;	// DRF (20130716):  Leave false on checkin until feature is complete/
 
 	// The following are used to classify various binders based on
 	// their default view definition.  See getFolderType() and
@@ -4507,6 +4510,9 @@ public class GwtServerHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static DesktopAppDownloadInfoRpcResponseData getDesktopAppDownloadInformation(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
+//!		...this needs to be implemented...
+		// Add support for deploying local desktop applications.
+		
 		try {
 			// Construct the DesktopAppDownloadInfoRpcResponseData
 			// object we'll fill in and return.
@@ -4931,6 +4937,12 @@ public class GwtServerHelper {
 		
 		fileSyncAppConfiguration = new GwtFileSyncAppConfiguration();
 		
+		// Get whether desktop applications can be deployed locally or
+		// not.
+		File appsDirectory = new File(SpringContextUtil.getServletContext().getRealPath("/../desktopapp"));
+		boolean localAppsExist = ENABLE_DEPLOY_LOCAL_DESKTOP_APPS && appsDirectory.exists();
+		fileSyncAppConfiguration.setLocalAppsExist( localAppsExist );
+		
 		// Get the whether the File Sync App is enabled.
 		fileSyncAppConfiguration.setIsFileSyncAppEnabled( zoneConfig.getFsaEnabled() );
 		
@@ -4948,6 +4960,11 @@ public class GwtServerHelper {
 		
 		// Get whether deployment of the file sync app is enabled.
 		fileSyncAppConfiguration.setIsDeploymentEnabled( zoneConfig.getFsaDeployEnabled() );
+		
+		// Get whether deployment is done from local or remote applications.
+		boolean deployLocalApps = (localAppsExist && zoneConfig.getFsaDeployLocalApps());
+		fileSyncAppConfiguration.setUseLocalApps(     deployLocalApps  );
+		fileSyncAppConfiguration.setUseRemoteApps( ( !deployLocalApps ));
 		
 		return fileSyncAppConfiguration;
 	}
@@ -9948,6 +9965,7 @@ public class GwtServerHelper {
 		Boolean enabled;
 		Boolean deployEnabled;
 		Boolean allowCachePwd;
+		Boolean useRemoteApps;
 		Integer interval;
 		Integer maxFileSize;
 		String autoUpdateUrl;
@@ -9959,9 +9977,10 @@ public class GwtServerHelper {
 		allowCachePwd = new Boolean( fsaConfiguration.getAllowCachePwd() );
 		maxFileSize = new Integer( fsaConfiguration.getMaxFileSize() );
 		
-		// Did the user enter an auto update url?
+		// Does the user entered auto update url need to be validated?
+		useRemoteApps = fsaConfiguration.getUseRemoteApps();
 		autoUpdateUrl = fsaConfiguration.getAutoUpdateUrl();
-		if ( autoUpdateUrl != null && autoUpdateUrl.length() > 0 )
+		if ( useRemoteApps && autoUpdateUrl != null && autoUpdateUrl.length() > 0 )
 		{
 			// Yes, is it valid?
 			if ( validateDesktopAppDownloadUrl( autoUpdateUrl ) == false )
@@ -9980,6 +9999,7 @@ public class GwtServerHelper {
 										interval,
 										autoUpdateUrl,
 										deployEnabled,
+										fsaConfiguration.getUseLocalApps(),
 										allowCachePwd,
 										maxFileSize );
 

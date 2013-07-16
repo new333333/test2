@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,23 +59,29 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 
-
 /**
+ * ?
  * 
- * @author jwootton
- *
+ * @author jwootton@novell.com
  */
 public class ConfigureFileSyncAppDlg extends DlgBox
 	implements KeyPressHandler, EditSuccessfulHandler
 {
-	private CheckBox m_enableFileSyncAccessCB;
-	private CheckBox m_enableDeployCB;
-	private CheckBox m_allowPwdCacheCB;
-	private TextBox m_syncIntervalTextBox;
-	private TextBox m_autoUpdateUrlTextBox;
-	private TextBox m_maxFileSizeTextBox;
+	private CheckBox	m_enableFileSyncAccessCB;
+	private CheckBox	m_enableDeployCB;
+	private CheckBox	m_allowPwdCacheCB;
+	private FlexTable	m_autoUpdateChoiceTable;
+	private FlexTable	m_autoUpdateUrlOnlyTable;
+	private RadioButton m_useLocalApps;
+	private RadioButton m_useRemoteApps;
+	private TextBox		m_syncIntervalTextBox;
+	private TextBox		m_autoUpdateUrlTextBox_Choice;
+	private TextBox		m_autoUpdateUrlTextBox_UrlOnly;
+	private TextBox		m_autoUpdateUrlTextBox;
+	private TextBox		m_maxFileSizeTextBox;
 	
 	/**
 	 * Callback interface to interact with the "configure file sync app" dialog
@@ -183,20 +189,49 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		
 		// Create the controls for auto-update url.
 		{
-			FlexTable tmpTable;
-			
-			tmpTable = new FlexTable();
-			tmpTable.setCellSpacing( 4 );
-			
-			label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel() );
-			tmpTable.setWidget( 0, 0, label );
-			
-			// Create a textbox for the user to enter the auto-update url.
-			m_autoUpdateUrlTextBox = new TextBox();
-			m_autoUpdateUrlTextBox.setVisibleLength( 40 );
-			tmpTable.setWidget( 0, 1, m_autoUpdateUrlTextBox );
+			m_autoUpdateChoiceTable = new FlexTable();
+			m_autoUpdateChoiceTable.addStyleName( "padding2L" );
+			m_autoUpdateChoiceTable.setCellSpacing( 0 );
+			m_autoUpdateChoiceTable.setCellPadding( 0 );
 
-			mainPanel.add( tmpTable );
+			{
+				m_useLocalApps = new RadioButton( "fileSyncAppLocation" );
+				m_useLocalApps.addStyleName( "filrSyncAppDlg_Radio" );
+				m_useLocalApps.setValue( true );
+				m_autoUpdateChoiceTable.setWidget( 0, 0, m_useLocalApps );
+				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel_UseLocal() );
+				m_autoUpdateChoiceTable.setWidget( 0, 1, label );
+
+				m_useRemoteApps = new RadioButton( "fileSyncAppLocation" );
+				m_useRemoteApps.addStyleName( "filrSyncAppDlg_Radio" );
+				m_useRemoteApps.setValue( false );
+				m_autoUpdateChoiceTable.setWidget( 1, 0, m_useRemoteApps );
+				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel_UseRemote() );
+				m_autoUpdateChoiceTable.setWidget( 1, 1, label );
+				
+				// Create a textbox for the user to enter the auto-update url.
+				m_autoUpdateUrlTextBox_Choice = new TextBox();
+				m_autoUpdateUrlTextBox_Choice.setVisibleLength( 40 );
+				m_autoUpdateChoiceTable.setWidget( 2, 1, m_autoUpdateUrlTextBox_Choice );
+				
+				mainPanel.add( m_autoUpdateChoiceTable );
+			}
+			
+			{
+				m_autoUpdateUrlOnlyTable = new FlexTable();
+				m_autoUpdateUrlOnlyTable.setCellSpacing( 4 );
+				
+				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel() );
+				m_autoUpdateUrlOnlyTable.setWidget( 0, 0, label );
+				
+				// Create a textbox for the user to enter the auto-update url.
+				m_autoUpdateUrlTextBox_UrlOnly = new TextBox();
+				m_autoUpdateUrlTextBox_UrlOnly.setVisibleLength( 40 );
+				m_autoUpdateUrlOnlyTable.setWidget( 0, 1, m_autoUpdateUrlTextBox_UrlOnly );
+				
+				mainPanel.add( m_autoUpdateUrlOnlyTable );
+			}
+
 		}
 		
 		// Create the controls for the max file size
@@ -315,6 +350,24 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	}
 	
 	/**
+	 * Returns whether to use the desktop applications that are local
+	 * to the system.
+	 */
+	private boolean getUseLocalApps()
+	{
+		return ( m_autoUpdateChoiceTable.isVisible() ? m_useLocalApps.getValue() : false );
+	}
+	
+	/**
+	 * Returns whether to use desktop applications from a remote
+	 * location.
+	 */
+	private boolean getUseRemoteApps()
+	{
+		return ( m_autoUpdateChoiceTable.isVisible() ? m_useRemoteApps.getValue() : true );
+	}
+	
+	/**
 	 * Get the data from the controls in the dialog box and store the data in a GwtFileSyncAppConfiguration object.
 	 */
 	@Override
@@ -323,9 +376,13 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		GwtFileSyncAppConfiguration fileSyncAppConfig;
 		String autoUpdateUrl;
 		boolean deployEnabled;
+		boolean useLocalApps;
+		boolean useRemoteApps;
 		
 		fileSyncAppConfig = new GwtFileSyncAppConfiguration();
 
+		useLocalApps  = getUseLocalApps();
+		useRemoteApps = getUseRemoteApps();
 		autoUpdateUrl = getAutoUpdateUrl();
 		deployEnabled = getIsFileSyncAppDeployEnabled();
 
@@ -338,6 +395,10 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		// Get the auto-update url from the dialog.
 		fileSyncAppConfig.setAutoUpdateUrl( autoUpdateUrl );
 		
+		// Get the location of the desktop applications from the dialog.
+		fileSyncAppConfig.setUseLocalApps(  useLocalApps  );
+		fileSyncAppConfig.setUseRemoteApps( useRemoteApps );
+		
 		// Get whether the file sync app can be deployed
 		fileSyncAppConfig.setIsDeploymentEnabled( deployEnabled );
 		
@@ -348,7 +409,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		fileSyncAppConfig.setMaxFileSize( getMaxFileSize() );
 
 		// If the "allow deployment..." checkbox is checked the user must have an auto-update url
-		if ( deployEnabled && (autoUpdateUrl == null || autoUpdateUrl.length() == 0) )
+		if ( deployEnabled && getUseRemoteApps() && ( ! ( GwtClientHelper.hasString( autoUpdateUrl ) ) ) )
 		{
 			Window.alert( GwtTeaming.getMessages().fileSyncAppAutoUpdateUrlRequiredPrompt() );
 			m_autoUpdateUrlTextBox.setFocus( true );
@@ -443,6 +504,27 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		int interval;
 		int size;
 		String value;
+		
+		// If local desktop applications are available for download...
+		if ( fileSyncAppConfiguration.getLocalAppsExist() )
+		{
+			// ...we give the user the choice to use them...
+			m_autoUpdateChoiceTable.setVisible(  true  );
+			m_autoUpdateUrlOnlyTable.setVisible( false );
+			m_autoUpdateUrlTextBox = m_autoUpdateUrlTextBox_Choice;
+			m_useLocalApps.setValue(  fileSyncAppConfiguration.getUseLocalApps()  );
+			m_useRemoteApps.setValue( fileSyncAppConfiguration.getUseRemoteApps() );
+		}
+		
+		else
+		{
+			// ...otherwise, we only allow a URL to be specified.
+			m_autoUpdateChoiceTable.setVisible(  false );
+			m_autoUpdateUrlOnlyTable.setVisible( true  );
+			m_autoUpdateUrlTextBox = m_autoUpdateUrlTextBox_UrlOnly;
+			m_useLocalApps.setValue(  false );
+			m_useRemoteApps.setValue( true  );
+		}
 		
 		// Initialize the on/off radio buttons.
 		m_enableFileSyncAccessCB.setValue( fileSyncAppConfiguration.getIsFileSyncAppEnabled() );

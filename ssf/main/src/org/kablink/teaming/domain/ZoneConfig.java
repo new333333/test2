@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,9 +41,13 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 @SuppressWarnings("unchecked")
 public class ZoneConfig extends ZonedObject implements WorkArea {
-	
 	public static final String WORKAREA_TYPE = "zone";
 	
 	public static Integer ZONE_LATEST_VERSION=15;  //This is used to introduce changes and fix things up between releases.
@@ -63,6 +67,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private MailConfig mailConfig;
 	private Boolean fsaEnabled;
 	private Boolean fsaDeployEnabled;
+	private Boolean fsaDeployLocalApps;
 	private Boolean fsaAllowCachePwd;
 	private Integer fsaSynchInterval;
 	private String fsaAutoUpdateUrl;
@@ -229,60 +234,78 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     	this.mailConfig = mailConfig;
     }
     //simulate a workarea to support the zone wide rights and provide a workarea for the security code
-    public Long getWorkAreaId() {
+    @Override
+	public Long getWorkAreaId() {
     	return getZoneId();
     }
-    public String getWorkAreaType() {
+    @Override
+	public String getWorkAreaType() {
     	return WORKAREA_TYPE;
     }
-    public WorkArea getParentWorkArea() {
+    @Override
+	public WorkArea getParentWorkArea() {
     	return null;
     }
-    public boolean isFunctionMembershipInheritanceSupported() {
+    @Override
+	public boolean isFunctionMembershipInheritanceSupported() {
     	return false;
     }
-    public boolean isFunctionMembershipInherited() {
+    @Override
+	public boolean isFunctionMembershipInherited() {
    	return false;
    }
   
-   public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
+   @Override
+public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
    	
    }
-   public boolean isExtFunctionMembershipInherited() {
+   @Override
+public boolean isExtFunctionMembershipInherited() {
   	return false;
   }
  
-  public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
+  @Override
+public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
   	
   }
-    public Long getOwnerId() {
+    @Override
+	public Long getOwnerId() {
     	return null;
     }
-    public Principal getOwner() {
+    @Override
+	public Principal getOwner() {
     	return null;
     }
-    public void setOwner(Principal owner) {
+    @Override
+	public void setOwner(Principal owner) {
     	
     }
-     public boolean isTeamMembershipInherited() {
+     @Override
+	public boolean isTeamMembershipInherited() {
     	return false;
     }
+	@Override
 	public Set<Long> getTeamMemberIds() {
     	return new HashSet();
     }
-    public void setTeamMemberIds(Set<Long> memberIds) {
+    @Override
+	public void setTeamMemberIds(Set<Long> memberIds) {
     	
     }
-    public Set<Long> getChildWorkAreas() {
+    @Override
+	public Set<Long> getChildWorkAreas() {
     	return new HashSet();
     }
-    public boolean isAclExternallyControlled() {
+    @Override
+	public boolean isAclExternallyControlled() {
     	return Boolean.FALSE;
     }
-    public List<WorkAreaOperation> getExternallyControlledRights() {
+    @Override
+	public List<WorkAreaOperation> getExternallyControlledRights() {
     	return new ArrayList<WorkAreaOperation>();
     }
-    public String getRegisteredRoleType() {
+    @Override
+	public String getRegisteredRoleType() {
     	return "";
     }
     
@@ -364,6 +387,25 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public void setFsaDeployEnabled( boolean enabled )
 	{
 		fsaDeployEnabled = Boolean.valueOf( enabled );
+	}
+
+	/**
+	 * 
+	 */
+	public boolean getFsaDeployLocalApps()
+	{
+		if ( fsaDeployLocalApps == null )
+			return SPropsUtil.getBoolean( "fsa.deploy.local.apps.default", false );
+		else
+			return fsaDeployLocalApps.booleanValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setFsaDeployLocalApps( boolean deployLocalApps )
+	{
+		fsaDeployLocalApps = Boolean.valueOf( deployLocalApps );
 	}
 
 /**
@@ -512,5 +554,4 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public void setJitsWaitTimeout(long jitsWaitTimeout) {
 		this.jitsWaitTimeout = Long.valueOf(jitsWaitTimeout);
 	}
-	
 }

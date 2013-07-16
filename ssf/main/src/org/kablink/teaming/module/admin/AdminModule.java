@@ -441,7 +441,7 @@ public interface AdminModule {
 	
 	public void disableFileSyncStats();
 	
-	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean allowCachePwd, Integer maxFileSize );
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean deployLocalApps, Boolean allowCachePwd, Integer maxFileSize );
 	
 	public void addOpenIDProvider(OpenIDProvider openIDProvider);
 	
