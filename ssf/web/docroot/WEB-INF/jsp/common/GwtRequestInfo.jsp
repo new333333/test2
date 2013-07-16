@@ -68,6 +68,7 @@
 		deleteUserUrl:						'${ss_deleteEntryAdapter}',
 		errMsg:								'<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
 		guestId:							'${guestId}',
+		hasRootDirAccess:					'${hasRootDirAccess}',
 		helpUrl:							'<ssf:escapeJavaScript>${ss_helpUrl}</ssf:escapeJavaScript>',
 		imagesPath:							'<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 		isBinderAdmin:						'${ss_isBinderAdmin}',

@@ -106,6 +106,7 @@ public class WebKeys {
     public static final String JSP_NAME = "jspName";
     public static final String CONFIG_STRING = "configStr";
     public static final String CLOUD_FOLDERS_ENABLED = "cloudFoldersEnabled";
+    public static final String HAS_ROOT_DIR_ACCESS = "hasRootDirAccess";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
