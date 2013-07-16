@@ -140,20 +140,33 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 <c:if test="${ssBinderConfig.entityType == 'folder'}">
   <tr><td>
     <div style="padding:10px 0px 4px 0px;">
-        <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.workspaceTemplate.entrySource"/></span>
+        <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.entrySource"/></span>
     </div>
     <div>
-      xxx ${ssBinderConfigEntrySourceBinderId} ${ssBinderConfigEntrySourceBinder.pathName} xxx
+      ${ssBinderConfigEntrySourceBinder.pathName}
     </div>
-	<ssf:find formName="form1" 
-	    formElement="entrySourceBinder" 
-	    type="places"
-	    foldersOnly="true"
-	    width="180px" 
-	    singleItem="true"
-	    clickRoutine="ss_saveEntrySourceBinderId"
-	    /> 
-	<input type="hidden" name="entrySourceBinderId" />
+    <div style="padding-left:16px;">
+    	<c:if test="${!empty ssBinderConfigEntrySourceBinderId}">
+	    	<div style="padding:0px 0px 6px 0px;">
+		    	<input type="checkbox" name="clearEntrySourceBinderId"/>
+		    	<span><ssf:nlt tag="administration.configure_cfg.clearEntrySource"/></span>
+		    	<input type="hidden" name="originalEntrySourceBinderId" value="${ssBinderConfigEntrySourceBinderId}">
+		    </div>
+		</c:if>
+		<div>
+			<span><ssf:nlt tag="administration.configure_cfg.addEntrySource"/></span>
+			<br/>
+			<ssf:find formName="form1" 
+			    formElement="entrySourceBinder" 
+			    type="places"
+			    foldersOnly="true"
+			    width="180px" 
+			    singleItem="true"
+			    clickRoutine="ss_saveEntrySourceBinderId"
+			    /> 
+		</div>
+		<input type="hidden" name="entrySourceBinderId"/>
+	</div>
   </td></tr>
 </c:if>
 
@@ -202,23 +215,39 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 			</div>
 		</td>
 	</tr>
-	
-	<c:if test="${ssBinderConfig.entityType == 'folder'}">
-	  <tr><td>
-	    <div style="padding:10px 0px 4px 0px;">
-	        <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.workspaceTemplate.entrySource"/></span>
-	    </div>
-		<ssf:find formName="form1" 
-		    formElement="entrySourceBinder" 
-		    type="places"
-		    foldersOnly="true"
-		    width="180px" 
-		    singleItem="true"
-		    clickRoutine="ss_saveEntrySourceBinderId"
-		    /> 
-		<input type="hidden" name="entrySourceBinderId" />
-	  </td></tr>
-	</c:if>
+
+<c:if test="${ssBinderConfig.entityType == 'folder'}">
+  <tr><td>
+    <div style="padding:10px 0px 4px 0px;">
+        <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.entrySource"/></span>
+    </div>
+    <div>
+      ${ssBinderConfigEntrySourceBinder.pathName}
+    </div>
+    <div style="padding-left:16px;">
+    	<c:if test="${!empty ssBinderConfigEntrySourceBinderId}">
+	    	<div style="padding:0px 0px 6px 0px;">
+		    	<input type="checkbox" name="clearEntrySourceBinderId"/>
+		    	<span><ssf:nlt tag="administration.configure_cfg.clearEntrySource"/></span>
+		    	<input type="hidden" name="originalEntrySourceBinderId" value="${ssBinderConfigEntrySourceBinderId}">
+		    </div>
+		</c:if>
+		<div>
+			<span><ssf:nlt tag="administration.configure_cfg.addEntrySource"/></span>
+			<br/>
+			<ssf:find formName="form1" 
+			    formElement="entrySourceBinder" 
+			    type="places"
+			    foldersOnly="true"
+			    width="180px" 
+			    singleItem="true"
+			    clickRoutine="ss_saveEntrySourceBinderId"
+			    /> 
+		</div>
+		<input type="hidden" name="entrySourceBinderId"/>
+	</div>
+  </td></tr>
+</c:if>
 	
 	</table>
 	<br/>
@@ -268,6 +297,39 @@ onchange="ss_ajaxValidate(ss_buildAdapterUrl(ss_AjaxBaseUrl,{operation:'check_te
     <ssf:htmleditor name="description" />
   	</div>
 </td></tr>
+
+<c:if test="${definitionType == 5}">
+  <tr><td>
+    <div style="padding:10px 0px 4px 0px;">
+        <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.entrySource"/></span>
+    </div>
+    <div>
+      ${ssBinderConfigEntrySourceBinder.pathName}
+    </div>
+    <div style="padding-left:16px;">
+    	<c:if test="${!empty ssBinderConfigEntrySourceBinderId}">
+	    	<div style="padding:0px 0px 6px 0px;">
+		    	<input type="checkbox" name="clearEntrySourceBinderId"/>
+		    	<span><ssf:nlt tag="administration.configure_cfg.clearEntrySource"/></span>
+		    	<input type="hidden" name="originalEntrySourceBinderId" value="${ssBinderConfigEntrySourceBinderId}">
+		    </div>
+		</c:if>
+		<div>
+			<span><ssf:nlt tag="administration.configure_cfg.addEntrySource"/></span>
+			<br/>
+			<ssf:find formName="form1" 
+			    formElement="entrySourceBinder" 
+			    type="places"
+			    foldersOnly="true"
+			    width="180px" 
+			    singleItem="true"
+			    clickRoutine="ss_saveEntrySourceBinderId"
+			    /> 
+		</div>
+		<input type="hidden" name="entrySourceBinderId"/>
+	</div>
+  </td></tr>
+</c:if>
 
 </table>
 <div class="ss_formBreak"/>

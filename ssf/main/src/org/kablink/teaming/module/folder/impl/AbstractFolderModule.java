@@ -135,6 +135,7 @@ import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
@@ -1154,6 +1155,42 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		//Now check to see if the file size is above the limit
 		if (fileSizeLimit != null && fileSize > fileSizeLimit * ObjectKeys.MEGABYTES) {
 			throw new FileSizeLimitException(fileName);
+		}
+	}
+
+	// no transaction
+	@Override
+	public void copyFolderEntries(Long sourceId, Long destinationId) throws NotSupportedException {
+        Folder source =  loadFolder(sourceId);
+        Folder destination =  loadFolder(destinationId);
+		//See if there is enough quota to do this
+		if (loadProcessor(source).checkMoveBinderQuota(source, destination)) {
+    		//We must guard against invalid copy attempts (such as complex entries copied to mirrored folder)
+			//This type of request could have invalid entries, so check each one
+			Map getEntriesOptions = new HashMap();
+			//Specify if this request is to copy children binders, too.
+      		Map folderEntries = getEntries(source.getId(), getEntriesOptions);
+	      	List<Map> searchEntries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+
+			for (Map se : searchEntries) {
+				String entryIdStr = (String)se.get(Constants.DOCID_FIELD);
+				if (entryIdStr != null && !entryIdStr.equals("")) {
+    				Long entryId = Long.valueOf(entryIdStr);
+    				Entry entry = getEntry(null, entryId);
+					try {
+			    		if (!source.isAclExternallyControlled() && destination.isAclExternallyControlled()) {
+			    			//Make sure this copy is compatible
+			    			BinderHelper.copyEntryCheckMirrored(source, entry, destination);
+			    		}
+		    			copyEntry(source.getId(), entryId, destination.getId(), null, null);
+					} catch(Exception e) {
+						//This entry cannot be copied, so don't copy this binder
+						throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destination.isAclExternallyControlled() ? "net" : "mirrored"));
+					}
+				}
+    		}
+		} else {
+			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
 		}
 	}
 

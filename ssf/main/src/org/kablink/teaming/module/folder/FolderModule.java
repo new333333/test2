@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
@@ -229,6 +230,8 @@ public interface FolderModule {
      */
     public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options)
     	throws AccessControlException;
+    public void copyFolderEntries(Long sourceId, Long destinationId) throws NotSupportedException;
+    
     /**
      * Restores a <code>FolderEntry</code> and all of its replies.  Deleted mirrored resources also.
      * @param parentFolderId
