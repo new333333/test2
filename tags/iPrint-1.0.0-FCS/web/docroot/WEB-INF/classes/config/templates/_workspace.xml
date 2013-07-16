@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="8" internalId="402883b90d0de1f3010d0df5582b0002">
+  <attribute name="templateTitle" type="string"><![CDATA[__template_workspace]]></attribute>
+  <attribute name="templateDescription" type="description"><![CDATA[__template_workspace_description]]></attribute>
+  <attribute name="title" type="string"><![CDATA[__template_workspace]]></attribute>
+  <attribute name="description" type="description"><![CDATA[]]></attribute>
+  <attribute name="iconName" type="string">/icons/workspace.png</attribute>
+  <attribute name="name" type="string">_workspace</attribute>
+  <property name="library">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_workspace" internalId="402883b90cc53079010cc539bf260005" databaseId="402883b90cc53079010cc539bf260005"/>
+  <dashboard>
+    <property name="nextComponentId">2</property>
+    <property name="showComponents">true</property>
+    <property name="version">1</property>
+    <property name="title"/>
+    <property name="includeBinderTitle">false</property>
+  </dashboard>
+</template>

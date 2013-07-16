@@ -1,0 +1,776 @@
+ /* ------------------------------------------------------------------------ */
+/* general styles, used most everywhere */
+
+/*
+ * But first... some hacks for Liferay...(Do we still need this? rs)
+ *
+ * These two changes are inter-related.  The first fixes a
+ * layout problem with IE when the box model is changed.
+ * The second fixes a layout problem in IE caused by the first
+ * fix.  (Apparently the height: auto makes IE more sensitive
+ * to positioning).
+ */
+ 
+@media print
+{
+	body
+	{
+		white-space: normal;
+	}
+}
+
+
+.xportlet-minimum-height {
+	height: auto;
+	}
+div.xportlet-box {
+    position: relative;
+	}
+.ss_normal {
+  	font-weight: normal !important;
+  	} 
+.ss_bold {
+  	font-weight: bold !important;
+  	}  
+.ss_unseen {
+  	font-weight: bold !important;
+  	text-decoration: none!important;
+  	padding: 0px !important;
+  	} 
+.ss_italic {
+  	font-style: italic !important;
+  	} 
+.ss_underline {
+  	text-decoration:underline;
+  	padding:0px;
+  	} 
+.ss_underlinePlus {
+  	text-decoration:underline;
+  	margin:0 0 0 16px;
+  	padding:0px;
+  	}  
+.ss_noUnderlinePlus {
+  	text-decoration:none;
+  	margin:0 0 0 16px;
+  	padding:0px; 
+  	}  
+.ss_selected {
+  	background-color:#949494;
+	padding: 2px 6px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;	
+	-webkit-border-radius: 3px;	
+  	}   
+.ss_indent_small {
+  	margin: 2px 2px 2px 2px;
+  	} 
+.ss_indent_medium {
+  	margin: 2px 2px 2px 5px;
+  	}
+.ss_indent_large {
+  	margin: 2px 2px 2px 8px;
+  	}
+.ss_compact {
+  	margin:0px;
+  	padding:0px;
+  	} 
+.ss_nowrap {
+  	white-space: nowrap;
+  	}
+    
+table.ss_compact20 {
+  margin:0px;
+  padding:0px;
+  }
+td.ss_compact20 {
+  margin:0px 0px 0px 0px;
+  padding:0px 20px 0px 0px;
+  }
+  
+/* ss_gray is specified in view_css so its colors can be set up
+.ss_gray {}
+*/
+
+/****** Form styles ******/
+/* ss_form (et al) is specified in view_css so its colors can be set up
+.ss_form {}
+.ss_form table.ss_style {}
+.ss_form.ss_gray {}
+.ss_form select {}
+.ss_form textarea {}
+.ss_form input.ss_text {}
+.ss_form input.ss_submit {}
+.ss_form input.ss_submit:hover {}
+*/
+
+
+/****** Miscellaneous styles ******/
+span.ss_right {
+  display: inline;
+  text-align: right;
+  float: right;
+  color: #999999;
+  }
+
+/* lists */
+ul.ss_nobullet {
+  margin-left: 0em;
+  padding-left: 0em;
+  margin-top: 0px;
+  margin-bottom: 2px;
+  }
+
+ul.ss_nobullet li {
+  list-style-type: none !important;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  }
+
+ul.ss_square li {
+  list-style-type: square;
+} 
+
+ul.ss_horizontal {
+	vertical-align: baseline;
+    }
+ul.ss_horizontal li {
+	float:left;
+	vertical-align: baseline;
+    }
+
+/* ------------------------------------------------------------------------ */
+ 
+/* spacer between form/view elements */
+div.ss_divider {
+  border-bottom: thin solid #cccccc;
+  }  
+
+div.ss_formBreak {
+  margin-top: 8px;
+  }
+
+
+  
+/* toolbar */
+/* toolbar positioning */
+span.ss_toolRight {
+  font-weight: bold;
+  text-decoration: none;
+  text-align: right;
+  float: right;
+  display:inline;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+  
+span.ss_toolLeft {
+  font-weight: bold;
+  text-align: left;
+  float: left;
+  display: inline;
+  margin: 2px;
+  text-decoration: none;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+  
+/* div.ss_toolbar is dynamically defined in view_css.jsp to specify the background color */
+/* Link text on the toolbar */
+a.ss_toolbar_item {
+  text-align: left;
+  font-weight: bold;
+  text-decoration: none;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+
+a.ss_toolbar_item:hover {
+  font-weight: bold;
+  text-align: left;
+  text-decoration: underline;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+
+/* drop-down menu */
+/* span.ss_toolbar_item specifies the font and positioning of tools on the Forum toolbar */
+/* for tool menu popup (icon is hot, not text) and toolbar delimiters (not hot) */
+.ss_toolbar_item {
+  display: inline;
+  text-align: left;
+  font-weight: bold;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+  
+/* moved to view_css.jsp to specify the colors
+div.ss_toolbar_menu {
+  }
+*/
+
+/* These are for the Next/Prev History and Next/Prev Entries buttons. */
+/* Useful if the goal is to put a button on the far left and a button on the far right. */
+span.ss_buttonBarLeft {
+  display: inline;
+  text-align: left;
+  float: left;
+  font-weight: bold;
+  padding: 5px;
+  }
+  
+span.ss_buttonBarRight {
+  display: inline;
+  text-align: right;
+  float: right;
+  font-weight: bold;
+  padding: 5px;
+  }
+
+  
+/* action buttons */
+/* mostly forms but elsewhere too */
+/* left-aligned buttons (usually at the bottom of the form) */
+div.ss_buttonBarLeft {
+  margin: 0px 5px 0px 5px;
+  text-align: left;
+  display: inline;
+}
+
+/* right-aligned buttons (usually at the top of the form) */
+div.ss_buttonBarRight {
+  margin: 0px 5px 0px 5px;
+  text-align: right;
+  }
+
+
+/* ------------------------------------------------------------------------ */
+/* navigation */
+
+/* box for small widgets (to avoid using tables to format. */
+/* use for date, time, event pickers, etc. */
+div.ss_widgetContent { 
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 2px;
+  }
+
+/* ------------------------------------------------------------------------ */
+/* folder styles */
+/* folders use ss_entryTitle */
+.ss_folder {
+  width: 100%;
+  }
+
+/* Widgets */
+/* box for small widgets (to avoid using tables to format. */
+/* use for date, time, event pickers, etc. */
+div.ss_widgetContent { 
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 2px;
+  }
+  
+.ss_definitionBuilder {
+  padding-right: 2px;
+  padding-left: 2px;
+  font-size: small;
+  visibility: hidden;
+  display: none;
+  padding-bottom: 2px;
+  margin: 2px;
+  padding-top: 2px;
+  font-family: Arial;
+  }
+
+.ss_helpPopUp {
+  position: absolute;
+  visibility: hidden;
+  display: none;
+  background-color: #FFFFFF; 
+  text-decoration: none;
+  text-align: left;
+  border: 1px #3366cc solid;
+  padding: 10px;
+  width: 300px;
+  }
+
+.ss_treeWidget img {
+  border:none;
+  margin:0px;
+  padding:0px;
+  vertical-align:middle;
+  }
+.ss_treeWidget a {
+  text-decoration: none;
+  border:none;
+  }
+.ss_treeWidget a:hover {
+  border:none;
+  }
+.ss_expandable_area_title {
+  width: 100%;
+  }
+.ss_expandable_area_toggle_indent20 {
+  padding-left: 20px;
+  }
+.ss_expandable_area_content {
+  display: none;
+  visibility: hidden;
+  margin: 0px;
+  }
+
+.ss_portlet {
+  text-align: left;
+  }
+
+.ss_dragable, .ss_dragableLink {
+  position: relative;
+  }
+.ss_dragable li {
+  position: relative;
+  cursor: move;
+  text-align: left;
+  }
+.ss_dragableLink li {
+  position: relative;
+  cursor: pointer;
+  text-align: left;
+  }
+
+.ss_sortable, .ss_sortableLink {
+  list-style-type: none;
+  padding: 0px 0px;
+  margin: 0px;
+  }
+.ss_sortableHighlighted {
+  }
+.ss_sortable li {
+  cursor: move;
+  text-align: left;
+  }
+.ss_sortableLink li {
+  cursor: pointer;
+  text-align: left;
+  }
+table.ss_sortable {
+  display: block;
+  margin: 0px;
+  padding: 0px;
+  }
+
+.ss_sortableLink li {
+  position: relative;
+  cursor: pointer;
+  text-align: left;
+  }
+.ss_sortableList, .ss_sortableListCircle {
+  list-style-position: inside;
+  margin-left: 0px;
+  padding-left: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  text-align: left;
+  }
+  
+table.ss_sortableList {
+  display: block;
+  margin: 0px;
+  padding: 0px;
+  }
+
+.ss_sortableList li {
+  margin-left: 0px;
+  padding-left: 5px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  }
+
+.ss_sortableListCircle li {
+  list-style-type: circle;
+  margin-left: 0px;
+  padding-left: 5px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  }
+
+
+/* ------------------------------------------------------------------------ */
+/* table styles */
+
+/* rules around the table and under the headers (ss_headerRow), but not between rows */
+/* used for folder listings of entries, usually with alternating shaded rows  */
+
+.discussionView .descriptionRegionBut {
+	display: none;
+	}
+
+.discussionView table.ss_borderTable {
+  border-left: .01em solid #CCCCCC; 
+  border-right: .01em solid #CCCCCC; 
+  border-bottom: .01em solid #CCCCCC;
+  margin-top: 3px;
+  width: 100%;
+  }
+
+.discussionView table.ss_borderTable tr td {
+  padding-top: 4px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 2px;
+  border: .01em solid #CCCCCC;
+  border-collapse: collapse;
+} 
+.ss_headerRow{
+	font-family: Arial, Helvetica, "sans serif";
+	font-weight: bold;
+	font-size: 9px !important;
+	color: #E37F13!important;
+    }
+.discussionView table.ss_borderTable tr.ss_headerRow td {
+  padding-top: 4px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 2px;
+  border: .01em solid #CCCCCC;
+  background-color: #f7f7f7;
+  }
+.discussionView table.ss_borderTable tr.ss_headerRow th {
+  padding-top: 4px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 2px;
+  border: .01em solid #CCCCCC;
+  background-color: #E9F1F1;
+  }
+/* rules around the table and between rows for Folder View */
+table.ss_borderFolderTable {
+  border-left: .01em solid #CCCCCC; 
+  border-right: .01em solid #CCCCCC; 
+  border-bottom: .01em solid #CCCCCC;
+  margin-top: 3px;
+  }
+
+table.ss_borderFolderTable tr.ss_headerRow td {
+  padding-top: 4px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 2px;
+  border: .01em solid #CCCCCC;
+  background-color: #f7f7f7;
+  text-align:center;
+}
+
+table.ss_borderFolderTable tr.ss_headerRow th {
+  padding-top: 4px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 2px;
+  border: .01em solid #CCCCCC;
+  background-color: #E9F1F1;
+  text-align:center;
+}
+/* rules around the table and between rows */
+/* used for event (calendar) views */
+table.ss_ruledTable {
+  border-top: 1px #666666 solid;
+  margin: 0px;
+}
+
+table.ss_ruledTable td {
+  border-bottom: 1px #666666 solid;
+  border-right: 1px #666666 solid;
+  margin: 0px;
+}
+
+table.ss_ruledTable th {
+  margin: 0px;
+  font-weight: bold;
+  text-align: center;
+}
+
+table.ss_ruledTable td table {
+  border-bottom: 0px #ffffff solid;
+  border-right: 0px #ffffff solid;
+  margin: 0px;
+}
+
+table.ss_ruledTable td table.monthgrid {
+  border-bottom: 1px #666666 solid;
+  border-right: 1px #666666 solid;
+}
+
+table.ss_ruledTable td table td {
+  border-bottom: 0px #ffffff solid;
+  border-right: 0px #ffffff solid;
+  margin: 0px;
+}
+
+/* ------------------------------------------------------------------------ */
+/* color styles */
+.ss_bgblue, td.bgblue, table.bgblue, tr.bgblue { background-color: #ceddf2 !important; }
+.ss_bgdarkblue { background-color: #3366cc !important; }
+.ss_bgwhite { background-color: #ffffff !important; }
+.ss_bglightgray { background-color: #f7f7f7 !important; }
+.ss_bgmedgray { background-color: #cccccc !important; }
+.ss_bgdarkgray { background-color: #666666 !important; }
+.ss_bgdarkergray { background-color: #333333 !important; }
+.ss_bgblack { background-color: #000000 !important; }
+.ss_bgmanila { background-color: #ffffe8 !important; }
+.ss_bglightpink { background-color: #ffccff !important; }
+.ss_bgpink { background-color: #ff00ff !important; }
+.ss_bgworkflow { background-color: #e4e4e4 !important; }
+
+a.ss_graymenu:link, a.graymenu:visited {
+  font-size: 11px; 
+  text-decoration: none; 
+}
+
+a.ss_graymenu:focus, a.graymenu:hover {
+  font-size: 11px; 
+  text-decoration: underline; 
+}
+
+/* highlight an entire table row/cell (such as today's date in calendar views */
+table.ss_highlightManila {
+  background-color: #ffffe8;
+  }
+table tr.ss_highlightManila td.ss_highlightManila {
+  background-color: #ffffe8;
+  } 
+
+td.ss_highlightManila {
+  background-color: #ffffe8;
+  }
+
+tr.ss_highlightManila {
+  background-color: #ffffe8;
+  }
+
+table.ss_highlightGray {
+  background-color: #f7f7f7;
+}
+table tr.ss_highlightGray td.ss_highlightGray {
+  background-color: #f7f7f7;
+  } 
+
+td.ss_highlightGray {
+  background-color: #f7f7f7;
+  }
+
+tr.ss_highlightGray {
+  background-color: #f7f7f7;
+  }
+
+.ss_labelAboveError {  
+  margin: 5px 5px 5px 5px;
+  border-color: #a01e00; 
+  border-style: solid; 
+  border-width: 1px; 
+  padding: 2px;
+  font-size: small;
+  font-weight: bold;
+  color: #a01e00;
+  background-color: #f7f7f7;
+  }
+  
+.ss_labelLeftError {
+  border-color: #a01e00; 
+  border-style: solid; 
+  border-width: 1px; 
+  padding: 2px;
+  font-size: small;
+  font-weight: bold;
+  color: #a01e00;
+  display: inline;
+  background-color: #f7f7f7;
+  }
+
+.ss_labelRightError {
+  border-color: #a01e00; 
+  border-style: solid; 
+  border-width: 1px;
+  text-align: right; 
+  padding: 2px;
+  font-size: small;
+  font-weight: bold;
+  color: #a01e00;
+  display: inline;
+  background-color: #f7f7f7;
+  }
+
+/* red required-field indicator, usually an asterisk */
+span.ss_required {
+  background-color: transparent;
+  color: #a01e00;
+  display:inline;
+  padding: 2px;
+  font-size: larger;
+  font-weight: bold;
+  }
+  
+/* ------------------------------------------------------------------------ */
+
+/* Calendar popup styles (used in the datepicker) */
+
+div.ss_calPopupDiv {
+  position:absolute; 
+  visibility:hidden; 
+  background: url(../images/pics/trans30_black.png) repeat; 
+  padding: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  }
+div.ss_calPopupDiv .ss_cpBorder {
+	background-color: #fff;	
+	border: 1px solid #949494;
+	padding: 5px;
+	}
+
+.ss_cpYearNavigation,
+.ss_cpMonthNavigation {
+	text-align:center;
+	vertical-align:middle;
+	text-decoration:none;
+	color:#666666;
+	font-weight:bold;
+	}
+.ss_cpDayColumnHeader,
+.ss_cpYearNavigation,
+.ss_cpMonthNavigation,
+.ss_cpCurrentMonthDate,
+.ss_cpCurrentMonthDateDisabled,
+.ss_cpOtherMonthDate,
+.ss_cpOtherMonthDateDisabled,
+.ss_cpCurrentDate,
+.ss_cpCurrentDateDisabled,
+.ss_cpTodayText,
+.ss_cpTodayTextDisabled,
+.ss_cpText
+	{
+	font-family:arial;
+	font-size:8pt;
+	color: #666666;
+	}
+TD.ss_cpDayColumnHeader
+	{
+	text-align:right;
+	border:solid thin #cecece;
+	border-width:0px 0px 1px 0px;
+	}
+.ss_cpCurrentMonthDate,
+.ss_cpOtherMonthDate,
+.ss_cpCurrentDate
+	{
+	text-align:right;
+	text-decoration:none;
+	}
+.ss_cpCurrentMonthDateDisabled,
+.ss_cpOtherMonthDateDisabled,
+.ss_cpCurrentDateDisabled
+	{
+	color:#D0D0D0;
+	text-align:right;
+	text-decoration:line-through;
+	}
+.ss_cpCurrentMonthDate
+	{
+	color:#666666;
+	font-weight:bold;
+	}
+.ss_cpCurrentDate
+	{
+	color: #666666;
+	font-weight:bold;
+	}
+.ss_cpOtherMonthDate
+	{
+	color:#808080;
+	}
+TD.ss_cpCurrentDate
+	{
+	color:#000;
+	background-color: #EBF5F5;
+	border:1px solid #abced1;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	-webkit-border-radius: 2px;
+	}
+TD.ss_cpCurrentDateDisabled
+	{
+	border-width:1px;
+	border:solid thin #FFAAAA;
+	}
+TD.ss_cpTodayText,
+TD.ss_cpTodayTextDisabled
+	{
+	border:solid thin #CCCCCC;
+	border-width:1px 0px 0px 0px;
+	}
+A.ss_cpTodayText,
+SPAN.ss_cpTodayTextDisabled
+	{
+	height:20px;
+	}
+A.ss_cpTodayText
+	{
+	color:#666666;
+	font-weight:bold;
+	}
+SPAN.ss_cpTodayTextDisabled
+	{
+	color:#D0D0D0;
+	}
+.ss_cpBorder
+	{
+	border:solid thin #808080;
+	}
+
+
+/******************************************************************************/
+/* Validation Styles
+/******************************************************************************/
+
+#ss_validation_errors_div {
+    background-color: white;
+    border: 1px solid gray;
+    border-bottom: 3px solid black;
+    border-right: 3px solid black;
+	margin: 5px 0 5px 0;
+	padding: 5px;
+}
+
+.ss_formError {
+	color: red;
+}
+
+.ss_errorLabel {
+	color: red;
+}
+
+.ss_text_button {
+	border: 1px solid black;
+}
+
+
