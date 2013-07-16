@@ -222,5 +222,14 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="54">
+        <comment>Is deployment of the Desktop application done from local files</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="FSADEPLOYLOCALAPPS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

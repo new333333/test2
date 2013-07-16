@@ -1616,6 +1616,8 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppAllowAccess( String productName );
 	String fileSyncAppAllowCachePwd();
 	String fileSyncAppAutoUpdateUrlLabel();
+	String fileSyncAppAutoUpdateUrlLabel_UseLocal();
+	String fileSyncAppAutoUpdateUrlLabel_UseRemote();
 	String fileSyncAppAutoUpdateUrlRequiredPrompt();
 	String fileSyncAppDlgHeader();
 	String fileSyncAppEnableDeployLabel();

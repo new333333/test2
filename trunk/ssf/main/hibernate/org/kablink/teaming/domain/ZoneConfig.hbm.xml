@@ -21,6 +21,7 @@
 	<property name="fsaSynchInterval" access="field"/>
 	<property name="fsaAutoUpdateUrl" access="field" length="255"/>
 	<property name="fsaDeployEnabled" access="field"/>
+	<property name="fsaDeployLocalApps" access="field"/>
 	<property name="fsaAllowCachePwd" access="field"/>
 	<property name="fsaMaxFileSize" access="field"/>
 	<property name="externalUserEnabled" access="field"/>

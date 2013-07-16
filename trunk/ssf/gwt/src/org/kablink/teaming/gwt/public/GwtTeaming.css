@@ -26,6 +26,7 @@
 .padding5b  {padding:        5px !important;}
 .padding5R  {padding-right:  5px;           }
 .padding15R {padding-right: 15px;           }
+.padding2L  {padding-left:   2px;           }
 
 .vibe-fullScroll       {overflow:   auto;}
 .vibe-horizontalScroll {overflow-x: auto; overflow-y: hidden;}
@@ -5578,5 +5579,16 @@ td.datePickerMonth {
  {
  	margin-right: 12px;
  }
+ 
+/* End */
+
+
+/**
+ * Styles used in ConfigureFileSyncAppDlg.java
+ */
+.filrSyncAppDlg_Radio
+{
+}
+}
  
 /* End */

@@ -225,4 +225,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="14">
+        <comment>Is deployment of the Desktop application done from local files</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="fsaDeployLocalApps" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
