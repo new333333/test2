@@ -293,7 +293,7 @@ public class AccessUtils  {
 	  
 	    WorkArea workArea = (WorkArea) entity;
 	    if(externallyControlledRight) {
-			while (workArea.isExtFunctionMembershipInherited() && workArea.getParentWorkArea().isAclExternallyControlled()) {
+			while (workArea.isExtFunctionMembershipInherited() && workArea.getParentWorkArea() != null && workArea.getParentWorkArea().isAclExternallyControlled()) {
 				workArea = workArea.getParentWorkArea();
 		    	if (workArea == null) {
 		    		//Not found, just use the original (which will return an empty ACL)

@@ -866,6 +866,12 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		   copyBinderAttributes(cfg, binder);
 		   //first flush updates, addBinder might do a refresh which overwrites changes
 		   getCoreDao().flush();
+		   
+		   //Now see if there is content to be added to this new binder
+		   if (cfg.getTemplateEntrySourceBinderId() != null) {
+			   folderModule.copyFolderEntries(cfg.getTemplateEntrySourceBinderId(), binder.getId());
+			   getCoreDao().flush();
+		   }
 		   List<TemplateBinder> children = cfg.getBinders();   
 		   Map ctx = new HashMap();
 		   ctx.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE); //don't bother indexing, until copyBinderAttributes done
