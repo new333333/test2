@@ -5494,6 +5494,7 @@ td.datePickerMonth {
 		background-color: #f6f6f6;
 		margin: 0px;
 		padding-right: 5px;
+		min-height: 348px;
 		border-top: 1px solid #808384;
 		-moz-border-radius-bottomleft: 3px;
 		-moz-border-radius-bottomright: 3px;

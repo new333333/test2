@@ -131,6 +131,17 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return true if the current user has access to the root workspace
+	 * and false otherwise. 
+	 * 
+	 * @return
+	 */
+	public final native boolean hasRootDirAccess()
+	/*-{
+		return this.getBFromS( this.hasRootDirAccess );
+	}-*/;
+	
+	/**
 	 * Return true if Cloud Folders are enabled and false otherwise. 
 	 * 
 	 * @return

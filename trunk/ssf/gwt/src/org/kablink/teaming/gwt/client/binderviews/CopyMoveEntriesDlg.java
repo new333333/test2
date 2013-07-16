@@ -778,6 +778,9 @@ public class CopyMoveEntriesDlg extends DlgBox
 		m_browseButton.addStyleName("vibe-cmeDlg_BrowseButton");
 		hp.add(m_browseButton);
 		hp.setCellVerticalAlignment(m_browseButton, HasVerticalAlignment.ALIGN_MIDDLE);
+		if (!(GwtClientHelper.getRequestInfo().hasRootDirAccess())) {
+			m_browseButton.setVisible(false);
+		}
 
 		// ...add a progress bar...
 		m_progressBar = new ProgressBar(0, m_entityIds.size());

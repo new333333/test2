@@ -1006,6 +1006,17 @@ public class GwtUIHelper {
 		}
 		return reply;
 	}
+
+	/*
+	 * Returns true if the current user has access to the root
+	 * workspace and false otherwise.
+	 */
+	private static boolean hasRootDirAccess(AllModulesInjected bs) {
+		Workspace topWS;
+		try                  {topWS = bs.getWorkspaceModule().getTopWorkspace();}
+		catch (Exception ex) {topWS = null;                                     }
+		return (null != topWS);
+	}
 	
 	/**
 	 * Returns true if we're supposed to start with an activity stream
@@ -1475,6 +1486,10 @@ public class GwtUIHelper {
 		model.put(
 			WebKeys.CLOUD_FOLDERS_ENABLED,
 			(Utils.checkIfFilr() && CloudFolderHelper.CLOUD_FOLDERS_ENABLED));
+		
+		// Put out a flag indicating whether the current user has
+		// access to the root workspace.
+		model.put(WebKeys.HAS_ROOT_DIR_ACCESS, hasRootDirAccess(bs));
 
 		// Is the request to activate an activity stream? 
 		String	showWhatsNewS        = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
