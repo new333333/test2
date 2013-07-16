@@ -347,6 +347,14 @@ public class FileUploadItem {
 			return null;
 	}
 
+	public Long getModTime() {
+		Date date = getModDate();
+		if(date != null)
+			return date.getTime();
+		else
+			return null;
+	}
+	
 	public String getModifierName() {
 		if(mf instanceof FileExtendedSupport)
 			return ((FileExtendedSupport) mf).getModifierName();

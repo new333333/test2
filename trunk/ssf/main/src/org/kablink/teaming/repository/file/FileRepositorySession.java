@@ -123,7 +123,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 	
 	public String createVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in, long size) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in, long size, Long lastModTime) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
 		try {
@@ -133,6 +133,9 @@ public class FileRepositorySession implements RepositorySession {
 
     		copyData(in, tempFile);
     
+    		if(lastModTime != null)
+    			tempFile.setLastModified(lastModTime);
+    		
         	return createVersionFileFromTemporaryFile(binder, entry, relativeFilePath, tempFile);
 		}
 		catch(IOException e) {
@@ -141,7 +144,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 
 	public void createUnversioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in, long size) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in, long size, Long lastModTime) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
 		try {
@@ -161,6 +164,9 @@ public class FileRepositorySession implements RepositorySession {
 					logger.warn(e); // Log and eat up.
 				}
 			}
+			
+			if(lastModTime != null)
+				unversionedFile.setLastModified(lastModTime);
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
@@ -168,7 +174,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 
 	public void update(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in, long size) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in, long size, Long lastModTime) throws RepositoryServiceException, UncheckedIOException {
 		
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
@@ -182,11 +188,17 @@ public class FileRepositorySession implements RepositorySession {
 							": It must be checked out first"); 
 	
 				copyData(in, workingFile);
+				
+				if(lastModTime != null)
+					workingFile.setLastModified(lastModTime);
 			}
 			else if(fileInfo == UNVERSIONED_FILE) {
 				File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
 				
 				copyData(in, unversionedFile);
+				
+				if(lastModTime != null)
+					unversionedFile.setLastModified(lastModTime);
 			}
 			else {
 				throw new RepositoryServiceException("Cannot update file " + relativeFilePath + 

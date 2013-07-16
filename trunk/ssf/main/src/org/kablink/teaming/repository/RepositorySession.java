@@ -96,7 +96,7 @@ public interface RepositorySession {
 	 * @throws RepositoryServiceException
 	 */
 	public String createVersioned(Binder binder, 
-			DefinableEntity entity, String relativeFilePath, InputStream in, long size) 
+			DefinableEntity entity, String relativeFilePath, InputStream in, long size, Long lastModTime) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
@@ -113,7 +113,7 @@ public interface RepositorySession {
 	 * @throws RepositoryServiceException
 	 */
 	public void createUnversioned(Binder binder, 
-			DefinableEntity entity, String relativeFilePath, InputStream in, long size) 
+			DefinableEntity entity, String relativeFilePath, InputStream in, long size, Long lastModTime) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
@@ -136,7 +136,7 @@ public interface RepositorySession {
 	 * @throws RepositoryServiceException
 	 */
 	public void update(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, InputStream in, long size) 
+			String relativeFilePath, InputStream in, long size, Long lastModTime) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
