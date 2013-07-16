@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.util.Date;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
@@ -260,6 +261,13 @@ public class PermaLinkUtil {
 		adapterUrl.setParameter(WebKeys.URL_FILE_NAME, WebUrlUtil.urlEncodeFilename(fileName));
 		return adapterUrl.toString();
 	}
+
+    public static String getFileDownloadPermalink(String fileId, String fileName, Date modDate, Long owningEntityId, EntityIdentifier.EntityType owningEntityType) {
+        return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL((HttpServletRequest)null, null), WebKeys.ACTION_READ_FILE, owningEntityId.toString(), owningEntityType.name(),
+                fileId, String.valueOf(modDate.getTime()), null,
+                fileName, true);
+    }
+
 	public static String getTitlePermalink(Long binderId, String normalizedTitle) {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);

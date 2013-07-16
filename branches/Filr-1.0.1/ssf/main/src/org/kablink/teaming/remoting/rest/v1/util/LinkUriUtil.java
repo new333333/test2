@@ -36,10 +36,13 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -243,6 +246,8 @@ public class LinkUriUtil {
                 owningEntityType== EntityIdentifier.EntityType.workspace) {
             fp.addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(owningEntityId, owningEntityType, null));
             fp.addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(owningEntityId, owningEntityType, null));
+            fp.addAdditionalPermaLink("content", PermaLinkUtil.getFileDownloadPermalink(fp.getId(), fp.getName(), fp.getModificationDate(),
+                    owningEntityId, owningEntityType));
         }
     }
 
