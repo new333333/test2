@@ -66,8 +66,10 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.NoContentMultipartFile;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -355,5 +357,16 @@ public class FileUtils {
 	
 	private static AccessControlManager getAccessControlManager() {
 		return (AccessControlManager) SpringContextUtil.getBean("accessControlManager");
+	}
+	
+	//Routine to get the contentType for a file being downloaded to a browser
+	public static String validateDownloadContentType(String contentType) {
+		//Protect against XSS attacks if this is an HTML file
+		if (contentType.toLowerCase().contains("text/html")) {
+			if (SPropsUtil.getBoolean("xss.forceDownloadedHtmlFilesToBeSavedToDisk", true)) {
+				contentType = "application/octet-stream";
+			}
+		}
+		return contentType;
 	}
 }

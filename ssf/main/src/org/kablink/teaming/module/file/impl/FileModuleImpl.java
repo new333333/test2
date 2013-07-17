@@ -631,9 +631,28 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	}
     	}
 	}
+
+    protected void executeContentFilters(Binder binder, DefinableEntity entity, FileAttachment fa)
+    		throws IOException, FilterException, UncheckedIOException {
+    	InputStream is;
+    	for(int i = 0; i < contentFilters.length; i++) {
+    		is = readFile(binder, entity, fa);
+    		long begin = System.nanoTime();
+    		try {
+    			contentFilters[i].filter(binder, entity, fa.getFileItem().getName(), is);
+    		}
+    		finally {
+    			endFiltering(begin, fa.getFileItem().getName(), contentFilters[i]);
+    			try {
+    				is.close();
+    			}
+    			catch(IOException ignore) {}
+    		}
+    	}
+    }
     
     protected void executeContentFilters(Binder binder, DefinableEntity entity, String fileName, FileUploadItem fui)
-    throws IOException, FilterException, UncheckedIOException {
+    		throws IOException, FilterException, UncheckedIOException {
     	InputStream is;
     	for(int i = 0; i < contentFilters.length; i++) {
     		is = fui.getInputStream();
@@ -712,6 +731,31 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
         return errors;
     }
+
+	public FilesErrors filterFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
+			throws FilterException {
+		if(contentFilters == null)
+			return new FilesErrors(); // Nothing to filter with. Return empty error.
+	
+		FilesErrors errors = new FilesErrors();
+		
+		try {
+			SimpleProfiler.start("filterFile_executeContentFilters");
+			executeContentFilters(binder, entity, fa);
+			SimpleProfiler.stop("filterFile_executeContentFilters");
+		}
+		catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}
+		catch(FilterException e) {
+			errors.addProblem(new FilesErrors.Problem
+					(fa.getRepositoryName(),  fa.getFileItem().getName(),
+							FilesErrors.Problem.PROBLEM_FILTERING, e));
+		}
+	
+		return errors;
+	}
+
 
 	public FilesErrors filterFiles(Binder binder, DefinableEntity entity, List fileUploadItems) 
 		throws FilterException {
