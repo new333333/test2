@@ -243,6 +243,8 @@ public class LinkUriUtil {
                 owningEntityType== EntityIdentifier.EntityType.workspace) {
             fp.addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(owningEntityId, owningEntityType, null));
             fp.addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(owningEntityId, owningEntityType, null));
+            fp.addAdditionalPermaLink("content", PermaLinkUtil.getFileDownloadPermalink(fp.getId(), fp.getName(), fp.getModificationDate(),
+                    owningEntityId, owningEntityType));
         }
     }
 
