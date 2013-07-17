@@ -712,8 +712,41 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				}
 			}
 			
+			/// BEGIN: Debug
+			int hitsThreshold = PropsUtil.getInt("lucene.hits.threshold", 100000);
+	    	int length = topDocs.totalHits;
+	        if (size > 0)
+	          length = Math.min(length - offset, size);
+	        Long hitsTransferBegin = null;
+	        if(length > hitsThreshold) {
+	        	hitsTransferBegin = System.nanoTime();
+	        	String log = "TOO LARGE HITS: transferred hits=" + length +
+	        			", hits threshold=" + hitsThreshold +
+	        			", total hits=" + topDocs.totalHits +
+	        			", contextUserId=" + contextUserId + 
+						", aclQueryStr=[" + ((aclQueryStr==null)? "" : aclQueryStr) + 
+						"], mode=" + mode + 
+						", query=[" + ((query==null)? "" : query.toString()) + 
+						"], sort=[" + ((sort==null)? "" : sort.toString()) + 
+						"], offset=" + offset +
+						", size=" + size +
+						", alternateAclFilter=[" + ((alternateAclFilter==null)? "" : alternateAclFilter.toString()) +
+						"]";
+	        	logger.warn(log);
+	        	if(PropsUtil.getBoolean("lucene.hits.threshold.exceeded.is.error", false)) {
+	        		throw new LuceneException(log);
+	        	}
+	        }
+	        /// END: Debug
+			
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
 					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size);
+			
+			/// BEGIN: Debug
+			if(hitsTransferBegin != null) {
+				logger.warn("TOO LARGE HITS: took " + (elapsedTimeInMs(hitsTransferBegin) / 1000.0) + " seconds");
+			}
+			/// END: Debug
 
 			end(startTime, "searchInternal", contextUserId, aclQueryStr, mode, query, sort, offset, size, tempHits.length());
 			
