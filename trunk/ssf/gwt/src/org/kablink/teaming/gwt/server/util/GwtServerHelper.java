@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -331,8 +332,6 @@ import org.kablink.util.servlet.StringServletResponse;
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
 	
-	private static boolean ENABLE_DEPLOY_LOCAL_DESKTOP_APPS	= false;	// DRF (20130716):  Leave false on checkin until feature is complete/
-
 	// The following are used to classify various binders based on
 	// their default view definition.  See getFolderType() and
 	// getWorkspaceType().
@@ -358,6 +357,11 @@ public class GwtServerHelper {
 	private static final String WIN32_TAIL_VIBE	= "novellvibedesktop/windows/x86/";
 	private static final String WIN64_TAIL_FILR	= "novellfilr/windows/x64/";
 	private static final String WIN64_TAIL_VIBE	= "novellvibedesktop/windows/x64/";
+	
+	// Relative path within the local file system where the desktop
+	// applications can be found for downloading.
+	private static final String LOCAL_DESKTOP_APPS_NODE = "desktopapp";
+	private static final String LOCAL_DESKTOP_APPS_BASE = ("/../" + LOCAL_DESKTOP_APPS_NODE);
 	
 	// Keys used to store user management state in the session cache.
 	private static final String CACHED_MANAGE_USERS_SHOW_EXTERNAL	= "manageUsersShowExternal";
@@ -1102,11 +1106,11 @@ public class GwtServerHelper {
 	}
 
 	/*
-	 * Constructs a desktop application FileDownloadInfo object.
+	 * Constructs a desktop application FileDownloadInfo object from a
+	 * JSON object.
 	 */
-	private static FileDownloadInfo buildDesktopAppInfo(String baseUrl, String platformTail) {
-		String jsonData = doHTTPGet((baseUrl + platformTail + JSON_TAIL));
-		String fName    = getSFromJSO(jsonData, "filename");
+	private static FileDownloadInfo buildDesktopAppInfo_Common(String jsonData, String baseUrl, String platformTail) {
+		String fName = getSFromJSO(jsonData, "filename");
 		String url;
 		if (MiscUtil.hasString(fName))
 		     url = (baseUrl + platformTail + fName);
@@ -1118,6 +1122,24 @@ public class GwtServerHelper {
 		     reply = new FileDownloadInfo(fName, url, md5);
 		else reply = null;
 		return reply;
+	}
+	
+	/*
+	 * Constructs a desktop application FileDownloadInfo object from
+	 * local files.
+	 */
+	private static FileDownloadInfo buildDesktopAppInfo_Local(String baseFilePath, String baseUrl, String platformTail) {
+		String jsonData = doFileGet(baseFilePath + "/" + platformTail + JSON_TAIL);
+		return buildDesktopAppInfo_Common(jsonData, baseUrl, platformTail);
+	}
+	
+	/*
+	 * Constructs a desktop application FileDownloadInfo object from a
+	 * remote URL.
+	 */
+	private static FileDownloadInfo buildDesktopAppInfo_Remote(String baseUrl, String platformTail) {
+		String jsonData = doHTTPGet((baseUrl + platformTail + JSON_TAIL));
+		return buildDesktopAppInfo_Common(jsonData, baseUrl, platformTail);
 	}
 	
 	/*
@@ -2084,6 +2106,55 @@ public class GwtServerHelper {
 	}
 
 	/*
+	 * Returns the contents of a file.
+	 */
+	private static String doFileGet(String filePath) {
+		BufferedReader  reader = null;
+		FileInputStream fis    = null;
+		String          reply  = null;
+		
+		try {
+			File file = new File(filePath);
+			fis       = new FileInputStream(file);
+			reader    = new BufferedReader(new InputStreamReader(fis));
+			String       line;
+			StringBuffer jsonDataBuf = new StringBuffer();
+			while (null != (line = reader.readLine())) {
+			    jsonDataBuf.append(line);
+			}
+			reply = jsonDataBuf.toString();
+		}
+		
+		catch (Exception ex) {
+			GwtLogHelper.error(m_logger, "GwtServerHelper.doFilrGet( '" + filePath + "' )", ex);
+			reply = null;
+		}
+		
+		finally {
+			// If we have a reader...
+			if (null != reader) {
+				// ...make sure it gets closed...
+				try {reader.close();}
+				catch (Exception e) {}
+				reader = null;
+			}
+
+			// If we have a file input stream...
+			if (null != fis) {
+				// ...make sure it gets closed...
+				try {fis.close();}
+				catch (Exception e) {}
+				fis = null;
+			}
+			
+		}
+		
+		// If we get here, reply is null or refers to the content of
+		// the file.  Return it.
+		return reply;
+	}
+	
+	/*
 	 * Does an HTTP get on the given URL and returns what's read.
 	 */
 	private static String doHTTPGet(String httpUrl) {
@@ -2116,12 +2187,14 @@ public class GwtServerHelper {
 				// ...make sure it gets closed...
 				try {reader.close();}
 				catch (Exception e) {}
+				reader = null;
 			}
 
 			// ...and if we have an HTTP connection...
 			if (null != urlConnection) {
 				// ...make sure it gets disconnected.
 				urlConnection.disconnect();
+				urlConnection = null;
 			}
 		}
 
@@ -4510,32 +4583,71 @@ public class GwtServerHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static DesktopAppDownloadInfoRpcResponseData getDesktopAppDownloadInformation(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
-//!		...this needs to be implemented...
-		// Add support for deploying local desktop applications.
-		
 		try {
 			// Construct the DesktopAppDownloadInfoRpcResponseData
-			// object we'll fill in and return.
+			// object we'll fill in and return...
 			DesktopAppDownloadInfoRpcResponseData reply = new DesktopAppDownloadInfoRpcResponseData();
 
-			// Extract the base desktop application update URL and
-			// validate it for any redirects, ...
-			ZoneConfig	zc      = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-			String		baseUrl = getFinalHttpUrl(zc.getFsaAutoUpdateUrl(), "From getDesktopAppDownloadInformation()");
-			if (MiscUtil.hasString(baseUrl)) {
-				// ...and construct and store the desktop
-				// ...application information.
-				boolean isFilr = Utils.checkIfFilr();
-				reply.setMac(  buildDesktopAppInfo(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
-				reply.setWin32(buildDesktopAppInfo(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
-				reply.setWin64(buildDesktopAppInfo(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE)));
-			}
+			// ...and complete it from the local information or remote
+			// ...URL as appropriate.
+			ZoneConfig	zc = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+			if (zc.getFsaDeployLocalApps())
+				 getDesktopAppDownloadInformation_Local( bs, request, zc, reply);
+			else getDesktopAppDownloadInformation_Remote(bs, request, zc, reply);
 			
 			// If we get here, reply refers to the
 			// DesktopAppDownloadInfoRpcResponseData object
 			// containing the information about downloading the desktop
 			// application.  Return it.
 			return reply;
+		}
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}		
+	}
+
+	/*
+	 * Completes a DesktopAppDownloadInfoRpcResponseData object
+	 * containing the information for downloading the desktop
+	 * applications from the local server.
+	 */
+	private static void getDesktopAppDownloadInformation_Local(AllModulesInjected bs, HttpServletRequest request, ZoneConfig zc, DesktopAppDownloadInfoRpcResponseData appDownloadInfo) throws GwtTeamingException {
+		try {
+			// Get the base file path and URL for downloading the files
+			// from the local file system...
+			String baseFilePath = SpringContextUtil.getServletContext().getRealPath(LOCAL_DESKTOP_APPS_BASE      );
+			String baseUrl      = (WebUrlUtil.getSimpleURLContextBaseURL(request) + LOCAL_DESKTOP_APPS_NODE + "/");
+			
+			// ...and construct and store the desktop
+			// ...application information.
+			boolean isFilr = Utils.checkIfFilr();
+			appDownloadInfo.setMac(  buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
+			appDownloadInfo.setWin32(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
+			appDownloadInfo.setWin64(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE)));
+		}
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}		
+	}
+
+	/*
+	 * Completes a DesktopAppDownloadInfoRpcResponseData object
+	 * containing the information for downloading the desktop
+	 * applications from a remote URL.
+	 */
+	private static void getDesktopAppDownloadInformation_Remote(AllModulesInjected bs, HttpServletRequest request, ZoneConfig zc, DesktopAppDownloadInfoRpcResponseData appDownloadInfo) throws GwtTeamingException {
+		try {
+			// Extract the base desktop application update URL and
+			// validate it for any redirects, ...
+			String baseUrl = getFinalHttpUrl(zc.getFsaAutoUpdateUrl(), "From getDesktopAppDownloadInformation()");
+			if (MiscUtil.hasString(baseUrl)) {
+				// ...and construct and store the desktop
+				// ...application information.
+				boolean isFilr = Utils.checkIfFilr();
+				appDownloadInfo.setMac(  buildDesktopAppInfo_Remote(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
+				appDownloadInfo.setWin32(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
+				appDownloadInfo.setWin64(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE)));
+			}
 		}
 		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
@@ -4939,8 +5051,8 @@ public class GwtServerHelper {
 		
 		// Get whether desktop applications can be deployed locally or
 		// not.
-		File appsDirectory = new File(SpringContextUtil.getServletContext().getRealPath("/../desktopapp"));
-		boolean localAppsExist = ENABLE_DEPLOY_LOCAL_DESKTOP_APPS && appsDirectory.exists();
+		File appsDirectory = new File(SpringContextUtil.getServletContext().getRealPath(LOCAL_DESKTOP_APPS_BASE));
+		boolean localAppsExist = appsDirectory.exists();
 		fileSyncAppConfiguration.setLocalAppsExist( localAppsExist );
 		
 		// Get the whether the File Sync App is enabled.

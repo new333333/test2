@@ -164,6 +164,56 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		tmpPanel.add( m_enableDeployCB );
 		ckboxPanel.add( tmpPanel );
 		
+		// Create the controls for auto-update url.
+		{
+			m_autoUpdateChoiceTable = new FlexTable();
+			m_autoUpdateChoiceTable.addStyleName( "marginleft1 marginbottom4px" );
+			m_autoUpdateChoiceTable.setCellSpacing( 0 );
+			m_autoUpdateChoiceTable.setCellPadding( 0 );
+
+			{
+				m_useLocalApps = new RadioButton( "fileSyncAppLocation" );
+				m_useLocalApps.addStyleName( "filrSyncAppDlg_Radio" );
+				m_useLocalApps.setValue( true );
+				m_autoUpdateChoiceTable.setWidget( 0, 0, m_useLocalApps );
+				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel_UseLocal() );
+				label.addStyleName("gwtUI_nowrap");
+				m_autoUpdateChoiceTable.setWidget( 0, 1, label );
+
+				m_useRemoteApps = new RadioButton( "fileSyncAppLocation" );
+				m_useRemoteApps.addStyleName( "filrSyncAppDlg_Radio" );
+				m_useRemoteApps.setValue( false );
+				m_autoUpdateChoiceTable.setWidget( 1, 0, m_useRemoteApps );
+				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel_UseRemote() );
+				label.addStyleName("gwtUI_nowrap");
+				m_autoUpdateChoiceTable.setWidget( 1, 1, label );
+				
+				// Create a textbox for the user to enter the auto-update url.
+				m_autoUpdateUrlTextBox_Choice = new TextBox();
+				m_autoUpdateUrlTextBox_Choice.setVisibleLength( 40 );
+				m_autoUpdateChoiceTable.setWidget( 2, 1, m_autoUpdateUrlTextBox_Choice );
+				
+				mainPanel.add( m_autoUpdateChoiceTable );
+			}
+			
+			{
+				m_autoUpdateUrlOnlyTable = new FlexTable();
+				m_autoUpdateUrlOnlyTable.setCellSpacing( 4 );
+				
+				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel() );
+				label.addStyleName("gwtUI_nowrap");
+				m_autoUpdateUrlOnlyTable.setWidget( 0, 0, label );
+				
+				// Create a textbox for the user to enter the auto-update url.
+				m_autoUpdateUrlTextBox_UrlOnly = new TextBox();
+				m_autoUpdateUrlTextBox_UrlOnly.setVisibleLength( 40 );
+				m_autoUpdateUrlOnlyTable.setWidget( 0, 1, m_autoUpdateUrlTextBox_UrlOnly );
+				
+				mainPanel.add( m_autoUpdateUrlOnlyTable );
+			}
+
+		}
+		
 		// Create the controls for File Sync interval
 		{
 			HorizontalPanel hPanel;
@@ -185,53 +235,6 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			hPanel.add( intervalLabel );
 
 			mainPanel.add( hPanel );
-		}
-		
-		// Create the controls for auto-update url.
-		{
-			m_autoUpdateChoiceTable = new FlexTable();
-			m_autoUpdateChoiceTable.addStyleName( "padding2L" );
-			m_autoUpdateChoiceTable.setCellSpacing( 0 );
-			m_autoUpdateChoiceTable.setCellPadding( 0 );
-
-			{
-				m_useLocalApps = new RadioButton( "fileSyncAppLocation" );
-				m_useLocalApps.addStyleName( "filrSyncAppDlg_Radio" );
-				m_useLocalApps.setValue( true );
-				m_autoUpdateChoiceTable.setWidget( 0, 0, m_useLocalApps );
-				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel_UseLocal() );
-				m_autoUpdateChoiceTable.setWidget( 0, 1, label );
-
-				m_useRemoteApps = new RadioButton( "fileSyncAppLocation" );
-				m_useRemoteApps.addStyleName( "filrSyncAppDlg_Radio" );
-				m_useRemoteApps.setValue( false );
-				m_autoUpdateChoiceTable.setWidget( 1, 0, m_useRemoteApps );
-				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel_UseRemote() );
-				m_autoUpdateChoiceTable.setWidget( 1, 1, label );
-				
-				// Create a textbox for the user to enter the auto-update url.
-				m_autoUpdateUrlTextBox_Choice = new TextBox();
-				m_autoUpdateUrlTextBox_Choice.setVisibleLength( 40 );
-				m_autoUpdateChoiceTable.setWidget( 2, 1, m_autoUpdateUrlTextBox_Choice );
-				
-				mainPanel.add( m_autoUpdateChoiceTable );
-			}
-			
-			{
-				m_autoUpdateUrlOnlyTable = new FlexTable();
-				m_autoUpdateUrlOnlyTable.setCellSpacing( 4 );
-				
-				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel() );
-				m_autoUpdateUrlOnlyTable.setWidget( 0, 0, label );
-				
-				// Create a textbox for the user to enter the auto-update url.
-				m_autoUpdateUrlTextBox_UrlOnly = new TextBox();
-				m_autoUpdateUrlTextBox_UrlOnly.setVisibleLength( 40 );
-				m_autoUpdateUrlOnlyTable.setWidget( 0, 1, m_autoUpdateUrlTextBox_UrlOnly );
-				
-				mainPanel.add( m_autoUpdateUrlOnlyTable );
-			}
-
 		}
 		
 		// Create the controls for the max file size

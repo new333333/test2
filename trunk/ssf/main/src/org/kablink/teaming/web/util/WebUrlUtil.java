@@ -185,6 +185,14 @@ public class WebUrlUtil {
 		return sb.toString();
 	}
 	
+	public static String getSimpleURLContextBaseURL(HttpServletRequest req) {
+		StringBuffer sb = getHostAndPort(WebApp.SIMPLE_URL, req, req.isSecure(), getSimpleURLWebProtocol(), UrlType.simpleurl, false);
+		
+		sb.append("/");
+		
+		return sb.toString();
+	}
+	
 	public static StringBuffer getMobileURLContextRootURL(HttpServletRequest req) {
 		StringBuffer sb = getHostAndPort(WebApp.MOBILE, req, req.isSecure(), getSimpleURLWebProtocol(), UrlType.simpleurl, false);
 
