@@ -41,17 +41,24 @@ import org.kablink.teaming.util.Constants;
 public class ResourceItem {
 
 	/* The following set of properties come from the file system and are used to convey metadata to Filr side */
+	
 	private String parentPath;
 	private String name;
+	// This field is relevant only for files. The value is 0 for folders.
 	private long lastModified;
 	private boolean directory;
+	// This field is relevant only for files. The value is 0 for folders.
 	private long contentLength;
 	
-	private boolean aclInherited = false;
+	// This field is relevant only for folders. The value is true for files.
+	private boolean aclInherited = true;
+	
+	// These fields are optional, and should be filled only when the client explicitly asks for it.
 	private String ownerId;
 	private String ownerIdType;
 	
 	/* The following set of properties are computed or managed on the Filr side and used solely to help with sync process without having to resort to another data structure */
+	
 	private Long creatorFilrId;
 	private Long ownerFilrId;
 	
