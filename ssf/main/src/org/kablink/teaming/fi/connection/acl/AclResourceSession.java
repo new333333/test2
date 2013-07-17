@@ -88,19 +88,41 @@ public interface AclResourceSession extends ResourceSession {
 	
 	/**
 	 * Returns the children of the directory as a list of <code>ResourceItem</code> objects.
-	 * This differs from <code>listNames</code> method in that all core metadata associated
+	 * This differs from <code>listNames</code> method in that all requested core meta data associated
 	 * with each child is returned in a single invocation of the method for improved efficiency.
-	 * The file content and the actual ACL of individual child must be retrieved separately if needed.
+	 * The file content and the actual ACL of individual child must be retrieved separately only 
+	 * when it is actually needed.
+	 * <p>
+	 * The method returns the following set of information for each child.<br>
+	 * 		parent path (required, for both file and folder)<br>
+	 * 		name of the child (required, for both file and folder)<br>
+	 * 		last modified time (required for file only, irrelevant for folder)<br>
+	 * 		whether the child is file or folder (required)<br>
+	 * 		content length (required for file only, irrelevant for folder)<br>
+	 * 		ACL inherited/equivalence flag (optional for folder only, irrelevant for file) - This should be filled in only when asked explicitly by the caller<br>
+	 * 		owner ID and type (optional for file and folder) - This should be filled in only when asked explicitly by the caller<br>
 	 * <p>
 	 * Returns an empty list if the directory is empty.
-	 * Returns null if the path does not denote a directory, or an I/O error occurs. 
+	 *
+	 * @param directoryOnly 
+	 * If <code>true</code>, only returns information about folders but not files.
+	 * If <code>false</code> returns information about all children including folders and files.
+	 * This should help save bandwidth when the parent directory contains large number of files but few
+	 * sub-folders and the caller doesn't need information about files.
 	 * 
-	 * @param directoryOnly If <code>true</code>, only returns information about the sub-directories.
-	 * If <code>false</code> returns information about all children including sub-directories and files.
+	 * @param includeAccessInfo 
+	 * If <code>true</code>, the result should include relevant access information about each child.<br>
+	 * Specifically, it will include the following:<br>
+	 * 		For each folder, include (a) ACL inherited/equivalence flag, AND (b) owner ID and type information<br>
+	 * 		For each file, include owner ID and type information ONLY. The ACL information MUST NOT be obtained.<br>
+	 * If <code>false</code>, NEITHER ACL information NOR owner information must be obtained for each child.
+	 * It is important to avoid the processing cost associated with obtaining such information, unless the caller
+	 * explicitly asked for it.
+	 * 
 	 * @return
 	 * @throws FIException
 	 * @throws IllegalStateException If the path is not set, etc.
 	 */
-	public List<ResourceItem> getChildren(boolean directoryOnly) throws FIException, IllegalStateException;
+	public List<ResourceItem> getChildren(boolean directoryOnly, boolean includeAccessInfo) throws FIException, IllegalStateException;
 	
 }
