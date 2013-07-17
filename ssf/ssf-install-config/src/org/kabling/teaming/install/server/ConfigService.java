@@ -2393,17 +2393,7 @@ public final class ConfigService
                 throw new ConfigurationSaveException();
             }
 
-            // Replace Novell Vibe with Novell Filr on ssf-ext.properties
-            info = executeCommand(
-                    "sudo sed -i \"s/Novell Vibe/Novell Filr/g\" /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties",
-                    true);
-            if (info.getExitValue() != 0)
-            {
-                logger.debug("Error setting up Novell Filr string on ssf-ext.properties" + info.getExitValue());
-                throw new ConfigurationSaveException();
-            }
-
-            
+	   
         }
 
         // Delete the backup copy
