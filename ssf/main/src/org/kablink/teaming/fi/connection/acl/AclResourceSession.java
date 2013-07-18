@@ -110,19 +110,27 @@ public interface AclResourceSession extends ResourceSession {
 	 * This should help save bandwidth when the parent directory contains large number of files but few
 	 * sub-folders and the caller doesn't need information about files.
 	 * 
-	 * @param includeAccessInfo 
-	 * If <code>true</code>, the result should include relevant access information about each child.<br>
-	 * Specifically, it will include the following:<br>
-	 * 		For each folder, include (a) ACL inherited/equivalence flag, AND (b) owner ID and type information<br>
-	 * 		For each file, include owner ID and type information ONLY. The ACL information MUST NOT be obtained.<br>
-	 * If <code>false</code>, NEITHER ACL information NOR owner information must be obtained for each child.
-	 * It is important to avoid the processing cost associated with obtaining such information, unless the caller
-	 * explicitly asked for it.
+	 * @param includeAclInfoForFolder 
+	 * If <code>true</code>, the result should include ACL inheritance/equivalence flag for each folder.
+	 * If <code>false</code>, ACL information must not be obtained for any folder. It is important to
+	 * avoid the processing cost associated with obtaining such information, unless the caller explicitly
+	 * requests for it.
+	 * 
+	 * @param includeAclInfoForFile
+	 * If <code>true</code>, the result should include ACL inheritance/equivalence flag for each file.
+	 * If <code>false</code>, ACL information must not be obtained for any file. It is important to
+	 * avoid the processing cost associated with obtaining such information, unless the caller explicitly
+	 * requests for it.
+	 * 
+	 * @param includeOwnerInfo
+	 * If<code>true</code>, the result should include owner ID and type information for each child.
+	 * This applies to both folders and files.
+	 * If<code>false</code>, owner information must not be obtained for any child.
 	 * 
 	 * @return
 	 * @throws FIException
 	 * @throws IllegalStateException If the path is not set, etc.
 	 */
-	public List<ResourceItem> getChildren(boolean directoryOnly, boolean includeAccessInfo) throws FIException, IllegalStateException;
+	public List<ResourceItem> getChildren(boolean directoryOnly, boolean includeAclInfoForFolder, boolean includeAclInfoForFile, boolean includeOwnerInfo) throws FIException, IllegalStateException;
 	
 }
