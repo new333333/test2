@@ -330,7 +330,7 @@ public class ViewFileController extends SAbstractController {
 						getReportModule().addFileInfo(AuditType.download, fa);
 					}
 					catch(Exception e) {
-						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
+						response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getLocalizedMessage());
 					}
 				}
 
@@ -417,7 +417,7 @@ public class ViewFileController extends SAbstractController {
 			in = null;
 			
 		} catch(Exception e) {
-			response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getLocalizedMessage());
 		} finally {
 			if (in != null) {
 				try {
