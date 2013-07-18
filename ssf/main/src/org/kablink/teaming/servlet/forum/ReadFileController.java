@@ -175,7 +175,7 @@ public class ReadFileController extends AbstractReadFileController {
 				return null;
 			} catch(Exception e) {
 				//Bad format of url; just return null
-				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
 			}
 			return null;
 		
@@ -252,7 +252,7 @@ public class ReadFileController extends AbstractReadFileController {
 				return null;
 			} catch(Exception e) {
 				//Bad format of url; just return null
-				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
 			}
 			return null;
 			
@@ -341,7 +341,7 @@ public class ReadFileController extends AbstractReadFileController {
 			catch(Exception e) {
 				// Bad format of url; just return null.
 				logger.error("ReadFileController.handleRequestAfterValidation( ZipList Downlaod ):  EXCEPTION:  ", e);
-				response.getOutputStream().print(NLT.get("file.error.unknownFileList"));
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFileList"));
 			}
 			
 			return null;
@@ -379,7 +379,7 @@ public class ReadFileController extends AbstractReadFileController {
 			catch(Exception e) {
 				// Bad format of url; just return null.
 				logger.error("ReadFileController.handleRequestAfterValidation( ZipFolder Downlaod ):  EXCEPTION:  ", e);
-				response.getOutputStream().print(NLT.get("file.error.unknownFolder"));
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFolder"));
 			}
 			
 			return null;
@@ -450,10 +450,10 @@ public class ReadFileController extends AbstractReadFileController {
 						}
 					}
 					catch(Exception e) {
-						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
+						response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
 					}
 				} else {
-					response.getOutputStream().print(NLT.get("file.error.unknownFile"));
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
 				}
 				try {
 					response.getOutputStream().flush();
@@ -461,8 +461,8 @@ public class ReadFileController extends AbstractReadFileController {
 				catch(Exception ignore) {}
 	
 			} catch(Exception e) {
-				//Bad format of url; just return null
-				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
+				//Bad format of url; Tell user that
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
 			}
 		}
 		
