@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews.util;
 
 import java.util.ArrayList;
@@ -41,12 +40,14 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.DeletePurgeFolderEntriesCmdBase;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteSelectionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
@@ -118,36 +119,20 @@ public class DeletePurgeEntriesHelper {
 	 * Asynchronously deletes the selected entries.
 	 * 
 	 * @param sourceEntityIds
+	 * @param dsMode
 	 * @param dpeCallback
 	 */
+	public static void deleteSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeleteSelectionsMode dsMode, final DeletePurgeEntriesCallback dpeCallback) {
+		switch (dsMode) {
+		case TRASH_ALL:                 trashSelectedEntriesAsync(                sourceEntityIds,       dpeCallback); break;
+		case TRASH_ADHOC_PURGE_OTHERS:  trashAdHocPurgeRemoteSelectedEntriesAsync(sourceEntityIds,       dpeCallback); break;
+		case PURGE_ALL:                 purgeSelectedEntriesAsync(                sourceEntityIds, true, dpeCallback); break;
+		}
+	}
+	
 	public static void deleteSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
-		ProgressDlg.createAsync(new ProgressDlgClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(final ProgressDlg pDlg) {
-				// Load the strings...
-				Map<StringIds, String> strMap = new HashMap<StringIds, String>();
-				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().deleteFolderEntriesError()              );
-				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_DeleteFolderEntries()        );
-				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteFolderEntriesCaption() );
-				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteFolderEntriesProgress());
-
-				// ...create the helper...
-				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
-					sourceEntityIds,
-					strMap,
-					new DeleteFolderEntriesCmd(sourceEntityIds),
-					dpeCallback);
-				
-				// ...and perform the delete.
-				dpeHelper.runOpNow(pDlg);
-			}
-		});
+		// Always use the initial form of the method.
+		deleteSelectedEntriesAsync(sourceEntityIds, DeleteSelectionsMode.TRASH_ALL, dpeCallback);
 	}
 	
 	/**
@@ -473,5 +458,71 @@ public class DeletePurgeEntriesHelper {
 			// ...without chunking.
 			dpeOpAsync(null);
 		}
+	}
+	
+	/*
+	 * Asynchronously deletes the selected entries.
+	 */
+	private static void trashAdHocPurgeRemoteSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
+		ProgressDlg.createAsync(new ProgressDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(final ProgressDlg pDlg) {
+				// Load the strings...
+				Map<StringIds, String> strMap = new HashMap<StringIds, String>();
+				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().deleteFolderEntriesError()           );
+				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_DeleteSelections()        );
+				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteSelectionsCaption() );
+				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteSelectionsProgress());
+
+				// ...create the helper...
+				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
+					sourceEntityIds,
+					strMap,
+					new DeleteSelectionsCmd(sourceEntityIds, DeleteSelectionsMode.TRASH_ADHOC_PURGE_OTHERS),
+					dpeCallback);
+				
+				// ...and perform the delete.
+				dpeHelper.runOpNow(pDlg);
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously deletes the selected entries.
+	 */
+	private static void trashSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
+		ProgressDlg.createAsync(new ProgressDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(final ProgressDlg pDlg) {
+				// Load the strings...
+				Map<StringIds, String> strMap = new HashMap<StringIds, String>();
+				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().deleteFolderEntriesError()              );
+				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_DeleteFolderEntries()        );
+				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteFolderEntriesCaption() );
+				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteFolderEntriesProgress());
+
+				// ...create the helper...
+				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
+					sourceEntityIds,
+					strMap,
+					new DeleteFolderEntriesCmd(sourceEntityIds),
+					dpeCallback);
+				
+				// ...and perform the delete.
+				dpeHelper.runOpNow(pDlg);
+			}
+		});
 	}
 }

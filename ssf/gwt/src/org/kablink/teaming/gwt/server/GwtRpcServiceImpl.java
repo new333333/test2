@@ -139,6 +139,7 @@ import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
+import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
@@ -533,6 +534,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			DeleteFolderEntriesCmd dfeCmd = ((DeleteFolderEntriesCmd) cmd);
 			ErrorListRpcResponseData responseData = GwtServerHelper.deleteFolderEntries( this, getRequest( ri ), dfeCmd.getEntityIds() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case DELETE_SELECTIONS:
+		{
+			DeleteSelectionsCmd dfeCmd = ((DeleteSelectionsCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtServerHelper.deleteSelections( this, getRequest( ri ), dfeCmd.getEntityIds(), dfeCmd.getDeleteSelectionsMode() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1928,6 +1937,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case GET_SELECTION_DETAILS:
+		{
+			GetSelectionDetailsCmd gzdfuCmd = ((GetSelectionDetailsCmd) cmd);
+			SelectionDetails result = GwtViewHelper.getSelectionDetails( this, getRequest( ri ), gzdfuCmd.getEntityIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_SEND_TO_FRIEND_URL:
 		{
 			GetSendToFriendUrlCmd gstfuCmd;

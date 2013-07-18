@@ -218,6 +218,7 @@ import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
+import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FileLinkAction;
@@ -2103,6 +2104,44 @@ public class GwtServerHelper {
 		}
 		
 		return Boolean.TRUE;
+	}
+
+	/**
+	 * Deletes the specified folder entries.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param entityIds
+	 * @param dsMode
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData deleteSelections(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, DeleteSelectionsMode dsMode) throws GwtTeamingException {
+		try {
+			switch (dsMode) {
+			case TRASH_ALL:  return deleteFolderEntries(bs, request, entityIds      );
+			case PURGE_ALL:  return purgeFolderEntries( bs, request, entityIds, true);
+			
+			case TRASH_ADHOC_PURGE_OTHERS:
+				break;
+			}
+
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+			
+//!			...this needs to be implemented...
+			
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}
 	}
 
 	/*
@@ -9422,6 +9461,7 @@ public class GwtServerHelper {
 		case DELETE_NET_FOLDER_ROOTS:
 		case DELETE_FOLDER_ENTRIES:
 		case DELETE_GROUPS:
+		case DELETE_SELECTIONS:
 		case DELETE_TASKS:
 		case DELETE_USER_WORKSPACES:
 		case DISABLE_USERS:
@@ -9540,6 +9580,7 @@ public class GwtServerHelper {
 		case GET_REPORTS_INFO:
 		case GET_ROOT_WORKSPACE_ID:
 		case GET_SAVED_SEARCHES:
+		case GET_SELECTION_DETAILS:
 		case GET_SEND_TO_FRIEND_URL:
 		case GET_ZIP_DOWNLOAD_FILES_URL:
 		case GET_ZIP_DOWNLOAD_FOLDER_URL:
