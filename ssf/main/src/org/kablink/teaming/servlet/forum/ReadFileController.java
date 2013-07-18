@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
+import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
@@ -265,6 +266,10 @@ public class ReadFileController extends AbstractReadFileController {
 				if (fa != null) {
 					String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
 					String contentType = getFileTypeMap().getContentType(shortFileName);
+					
+					//Protect against XSS attacks if this is an HTML file
+					contentType = FileUtils.validateDownloadContentType(contentType);
+
 					if (!(contentType.toLowerCase().contains("charset"))) {
 						String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
 						if (MiscUtil.hasString(encoding)) {
