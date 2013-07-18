@@ -324,8 +324,9 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_DeleteNetFolderServers();
 	String rpcFailure_DeleteFolderEntries();
 	String rpcFailure_DeleteGroups();
-	String rpcFailure_DeleteUserWorkspaces();
+	String rpcFailure_DeleteSelections();
 	String rpcFailure_DeleteTasks();
+	String rpcFailure_DeleteUserWorkspaces();
 	String rpcFailure_DisableUsers();
 	String rpcFailure_DisableUsersAdHocFolders();
 	String rpcFailure_EnableUsers();
@@ -438,6 +439,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetReportsInfo();
 	String rpcFailure_GetRootWorkspaceId();
 	String rpcFailure_GetSavedSearches();
+	String rpcFailure_GetSelectionDetails();
 	String rpcFailure_GetSelfRegInfo();
 	String rpcFailure_GetSendToFriendUrl();
 	String rpcFailure_GetShareBinderPageUrl();
@@ -609,6 +611,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_CreateBlogPageDlg();
 	String codeSplitFailure_CopyMoveEntriesDlg();
+	String codeSplitFailure_DeleteSelectionsDlg();
 	String codeSplitFailure_DescriptionPanel();
 	String codeSplitFailure_DesktopAppDownloadControl();
 	String codeSplitFailure_DesktopAppDownloadDlg();
@@ -1997,6 +2000,8 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsConfirmPurgeUserWS();
 	String binderViewsDeleteFolderEntriesCaption();
 	String binderViewsDeleteFolderEntriesProgress();
+	String binderViewsDeleteSelectionsCaption();
+	String binderViewsDeleteSelectionsProgress();
 	String binderViewsDeleteTasksCaption();
 	String binderViewsDeleteTasksProgress();
 	String binderViewsDeleteUserWorkspacesCaption();
@@ -2743,4 +2748,12 @@ public interface GwtTeamingMessages extends Messages
 	String netFolderSyncStatisticsDlg_NoValue();
 	String netFolderSyncStatisticsDlg_StartDate();
 	
+	// Strings used in the Delete Selections dialog.
+	String deleteSelectionsDlgHeader();
+	String deleteSelectionsDlgLabel_Trash();
+	String deleteSelectionsDlgLabel_TrashAdHoc();
+	String deleteSelectionsDlgLabel_Purge();
+	String deleteSelectionsDlgLabel_PurgeAll();
+	String deleteSelectionsDlgLabel_PurgeOnly();
+	String deleteSelectionsDlgWarning_CantUndo();
 }// end GwtTeamingMessages

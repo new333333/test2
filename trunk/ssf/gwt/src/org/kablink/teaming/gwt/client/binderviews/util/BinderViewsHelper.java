@@ -77,10 +77,11 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
+import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg.DeleteSelectionsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
@@ -102,6 +103,7 @@ public class BinderViewsHelper {
 	private static AddFilesHtml5Popup	m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
 	private static ChangeEntryTypesDlg	m_cetDlg;								// An instance of a change entry types dialog. 
 	private static CopyMoveEntriesDlg	m_cmeDlg;								// An instance of a copy/move entries dialog.
+	private static DeleteSelectionsDlg	m_dsDlg;								// An instance of a delete selections dialog.
 	private static EmailNotificationDlg	m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
 	private static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
 	private static ShareThisDlg			m_shareDlg;								// An instance of a share this dialog.
@@ -310,6 +312,38 @@ public class BinderViewsHelper {
 		// If we weren't given any entity IDs to be deleted...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
+			return;
+		}
+
+		// Are we using the new delete dialog?
+		if (DeleteSelectionsDlg.USE_NEW_DELETE_DIALOG) {
+			// Yes!  Have we created an instance of it yet?
+			if (null == m_dsDlg) {
+				// No!  Create one now...
+				DeleteSelectionsDlg.createAsync(new DeleteSelectionsDlgClient() {
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(DeleteSelectionsDlg dsDlg) {
+						// ...and run it.
+						m_dsDlg = dsDlg;
+						DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
+					}
+				});
+				
+			}
+			
+			else {
+				// Yes, we already have instance of one!  Simply run
+				// it.
+				DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
+			}
+			
+			// We're done.  Bail. 
 			return;
 		}
 		

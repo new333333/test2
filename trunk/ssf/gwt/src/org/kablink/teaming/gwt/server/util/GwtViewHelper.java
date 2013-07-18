@@ -162,6 +162,7 @@ import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FileLinkAction;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
+import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.UserType;
@@ -1682,6 +1683,38 @@ public class GwtViewHelper {
 					e,
 					"GwtViewHelper.disableUsers( SOURCE EXCEPTION ):  ");
 		}
+	}
+	
+	/*
+	 * Dumps the contents of a SelectionDetails object.
+	 */
+	private static void dumpSelectionDetails(SelectionDetails sd) {
+		// If debug tracing isn't enabled...
+		if (!(GwtLogHelper.isDebugEnabled(m_logger))) {
+			// ...bail.
+			return;
+		}
+
+		// If we weren't given a SelectionDetails to dump...
+		if (null == sd) {
+			// ...trace that fact and bail.
+			GwtLogHelper.debug(m_logger, "...dumpSelectionDetails( null ):  No SelectionDetails to dump.");
+			return;
+		}
+
+		// Dump the contents of the SelectionDetails.
+		GwtLogHelper.debug(m_logger, "...dumpSelectionDetails():");
+		GwtLogHelper.debug(m_logger, "......Has AdHoc Folders:     " + sd.hasAdHocFolders()   );
+		GwtLogHelper.debug(m_logger, "......Has Cloud Folders:     " + sd.hasCloudFolders()   );
+		GwtLogHelper.debug(m_logger, "......Has Mirrored Folders:  " + sd.hasMirroredFolders());
+		GwtLogHelper.debug(m_logger, "......Has Net Folders:       " + sd.hasNetFolders()     );
+		GwtLogHelper.debug(m_logger, "......Has Remote Entries:    " + sd.hasRemoteEntries()  );
+		GwtLogHelper.debug(m_logger, "......Has Entries:           " + sd.hasEntries()        );
+		GwtLogHelper.debug(m_logger, "......Has Folders:           " + sd.hasFolders()        );
+		GwtLogHelper.debug(m_logger, "......Has Unclassified:      " + sd.hasUnclassified()   );
+		GwtLogHelper.debug(m_logger, "......Entry  Count:          " + sd.getEntryCount()     );
+		GwtLogHelper.debug(m_logger, "......Folder Count:          " + sd.getFolderCount()    );
+		GwtLogHelper.debug(m_logger, "......Total  Count:          " + sd.getTotalCount()     );
 	}
 	
 	/*
@@ -5450,6 +5483,109 @@ public class GwtViewHelper {
 			}
 		}
 		return user;
+	}
+
+	/**
+	 * Returns a SelectionDetails object containing information about
+	 * the selections in a List<EntityId>.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static SelectionDetails getSelectionDetails(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getSelectionDetails()");
+		try {
+			// Allocate a SelectionDetails we can return.
+			SelectionDetails reply = new SelectionDetails();
+
+			// Are there any EntityId's to check?
+			int totalCount = ((null == entityIds) ? 0 : entityIds.size());
+			if (0 < totalCount) {
+				// Yes!  Store the total count and scan them.
+				reply.setTotalCount(totalCount);
+				FolderModule fm = bs.getFolderModule();
+				for (EntityId eid:  entityIds) {
+					try {
+						// Is this entry?
+						if (eid.isEntry()) {
+							// Yes!  Can we access it?
+							FolderEntry fe = fm.getEntry(eid.getBinderId(), eid.getEntityId());
+							if (null != fe) {
+								// Yes!  Is it in personal storage?
+								Folder pf = fe.getParentFolder();
+								if (pf.isMirrored() || pf.isAclExternallyControlled()) {
+									// No!  Set the reply's has remote
+									// entries flag.
+									reply.setHasRemoteEntries(true);
+								}
+								else {
+									reply.setHasAdHocEntries(true);
+								}
+								
+								// Increment the count of entries.
+								reply.incrEntryCount();
+							}
+						}
+						
+						// No, it isn't an entry!  Is it a folder?
+						else if (eid.isFolder()) {
+							// Yes!  Can we access it?
+							Folder f = fm.getFolder(eid.getEntityId());
+							if (null != f) {
+								// Yes!  Process whether it's from
+								// personal storage or not.
+								if (f.isAclExternallyControlled()) {
+									if (CloudFolderHelper.isCloudFolder(f))
+									     reply.setHasCloudFolders(true);
+									else reply.setHasNetFolders(  true);
+								}
+								else if (f.isMirrored()) {
+									reply.setHasMirroredFolders(true);
+								}
+								else {
+									reply.setHasAdHocFolders(true);
+								}
+								
+								// Increment the count of folders.
+								reply.incrFolderCount();
+							}
+						}
+					}
+					
+					catch (Exception e) {
+						// Log the exception, but otherwise ignore.
+						GwtLogHelper.debug(m_logger, "GwtViewHelper.getSelectionDetails( PER ENTITY EXCEPTION ):  ", e);
+					}
+				}
+			}
+
+			// If we get here, reply refers to a SelectionDetails
+			// containing the information about what's in the
+			// List<EntityId>.  Return it.
+			if (GwtLogHelper.isDebugEnabled(m_logger)) {
+				dumpSelectionDetails(reply);
+			}
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getSelectionDetails( SOURCE EXCEPTION ):  ");
+		}
+		
+		finally {
+			gsp.stop();
+		}
 	}
 
 	/*

@@ -613,3 +613,13 @@
 	.vibe-emptyWidget-info      {font-size: 16px; color: #505354; margin-top: 10px; line-height: 24px;}	
 	.vibe-emptyWidget-rootPanel {position:relative; background-color: #fafafa; margin: 20px 40px; border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 450px; font-size: 1.15em;}
 /* End:  Empty widget styles. */
+
+/* Start:  Delete selections dialog styles. */
+	.vibe-deleteSelectionsDlg-purgeNote         {}
+	.vibe-deleteSelectionsDlg-radio             {} 
+	.vibe-deleteSelectionsDlg-radioLabel        {} 
+	.vibe-deleteSelectionsDlg-rootPanel         {}
+	.vibe-deleteSelectionsDlg-warningSituation1 {}
+	.vibe-deleteSelectionsDlg-warningSituation2 {}
+	.vibe-deleteSelectionsDlg-warningSituation3 {}
+/* End:  Delete selections dialog styles. */
