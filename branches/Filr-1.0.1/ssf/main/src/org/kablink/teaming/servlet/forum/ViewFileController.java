@@ -51,12 +51,15 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
@@ -258,7 +261,18 @@ public class ViewFileController extends SAbstractController {
 			else
 			if (fa != null) {
 				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-				response.setContentType(mimeTypes.getContentType(shortFileName));
+				String contentType = getFileTypeMap().getContentType(shortFileName);
+				
+				//Protect against XSS attacks if this is an HTML file
+				contentType = FileUtils.validateDownloadContentType(contentType);
+
+				if (!(contentType.toLowerCase().contains("charset"))) {
+					String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+					if (MiscUtil.hasString(encoding)) {
+						contentType += ("; charset=" + encoding);
+					}
+				}
+				response.setContentType(contentType);
 				response.setHeader("Cache-Control", "private");
 				if (fileTime.equals("")) {
 					response.setHeader("Cache-Control", "private");
