@@ -6561,13 +6561,14 @@ public class GwtServerHelper {
 			// ...get the URL to the current user's avatar...
 			String userAvatarUrl = getUserAvatarUrl(bs, request, getCurrentUser());
 
-			// ...if the zone configuration has an auto update URL...
+			// ...if the zone configuration has an auto update URL or
+			// ...it can be deployed from the local server...
 			boolean desktopAppEnabled        = false;
 			boolean showDesktopAppDownloader = false;
 			ZoneConfig zc = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 			String baseUrl = zc.getFsaAutoUpdateUrl();
 			baseUrl = ((null == baseUrl) ? "" : baseUrl.trim());
-			if (0 < baseUrl.length()) {
+			if ((0 < baseUrl.length()) || zc.getFsaDeployLocalApps()) {
 				// ...get what we know about desktop application
 				// ...deployment...
 				GwtFileSyncAppConfiguration fsaConfig = getFileSyncAppConfiguration(bs);
