@@ -68,9 +68,10 @@ public class NetFolder
 	{
 		WAITING_TO_BE_SYNCD,
 		SYNC_IN_PROGRESS,
-		SYNC_STOPPED,
+		SYNC_STOPPED,		// The sync of a net folder was running and then stopped by the admin
 		SYNC_COMPLETED,
 		SYNC_NEVER_RUN,
+		SYNC_CANCELED,		// The net folder was waiting to be sync'd and the admin canceled the sync.
 		UNKNOWN
 	}
 	
