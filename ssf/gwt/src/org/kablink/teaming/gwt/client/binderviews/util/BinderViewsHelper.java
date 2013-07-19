@@ -77,6 +77,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
@@ -316,7 +317,7 @@ public class BinderViewsHelper {
 		}
 
 		// Are we using the new delete dialog?
-		if (DeleteSelectionsDlg.USE_NEW_DELETE_DIALOG) {
+		if (SelectionDetails.USE_NEW_DELETE_DIALOG) {
 			// Yes!  Have we created an instance of it yet?
 			if (null == m_dsDlg) {
 				// No!  Create one now...

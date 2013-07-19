@@ -2019,10 +2019,14 @@ public class GwtServerHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static ErrorListRpcResponseData deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
-		try {
-			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		deleteFolderEntriesImpl(bs, request, entityIds, reply);
+		return reply;
+	}
 
+	private static void deleteFolderEntriesImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, ErrorListRpcResponseData reply) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.deleteFolderEntriesImpl()");
+		try {
 			// Scan the entry IDs...
 			BinderModule bm = bs.getBinderModule();
 			for (EntityId entityId:  entityIds) {
@@ -2054,18 +2058,17 @@ public class GwtServerHelper {
 					else                                     messageKey = "deleteEntryError.OtherException";
 					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
 					
-					GwtLogHelper.error(m_logger, "GwtServerHelper.deleteFolderEntries( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
+					GwtLogHelper.error(m_logger, "GwtServerHelper.deleteFolderEntriesImpl( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
 				}
 			}
-
-			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing any errors we
-			// encountered.  Return it.
-			return reply;
 		}
 		
 		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}
+		
+		finally {
+			gsp.stop();
 		}
 	}
 
@@ -2107,7 +2110,7 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Deletes the specified folder entries.
+	 * Deletes the specified entities.
 	 *
 	 * @param bs
 	 * @param request
@@ -2119,28 +2122,50 @@ public class GwtServerHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static ErrorListRpcResponseData deleteSelections(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, DeleteSelectionsMode dsMode) throws GwtTeamingException {
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		deleteSelectionsImpl(bs, request, entityIds, dsMode, reply);
+		return reply;
+	}
+	
+	private static void deleteSelectionsImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, DeleteSelectionsMode dsMode, ErrorListRpcResponseData reply) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.deleteSelectionsImpl()");
 		try {
+			// Decide what's to be trashed and what's to be purged.
+			List<EntityId> trashIds;
+			List<EntityId> purgeIds;
 			switch (dsMode) {
-			case TRASH_ALL:  return deleteFolderEntries(bs, request, entityIds      );
-			case PURGE_ALL:  return purgeFolderEntries( bs, request, entityIds, true);
+			default:
+				reply.addError(NLT.get("deleteSelections.InternalError.BogusDeleteMode", new String[]{dsMode.name()}));
+				return;
+				
+			case PURGE_ALL:  trashIds = null;      purgeIds = entityIds; break;
+			case TRASH_ALL:  trashIds = entityIds; purgeIds = null;      break;
 			
 			case TRASH_ADHOC_PURGE_OTHERS:
+				trashIds = new ArrayList<EntityId>();
+				purgeIds = new ArrayList<EntityId>();
+				for (EntityId eid:  entityIds) {
+					if (isEntityRemote(bs, eid))
+					     purgeIds.add(eid);
+					else trashIds.add(eid);
+				}
+				if (trashIds.isEmpty()) trashIds = null;
+				if (purgeIds.isEmpty()) purgeIds = null;
+				
 				break;
 			}
 
-			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-			
-//!			...this needs to be implemented...
-			
-			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing any errors we
-			// encountered.  Return it.
-			return reply;
+			// Delete the trash items and purge the purge items.
+			if (null != trashIds) deleteFolderEntriesImpl(bs, request, trashIds,       reply);
+			if (null != purgeIds) purgeFolderEntriesImpl( bs, request, purgeIds, true, reply);
 		}
 		
 		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}
+		
+		finally {
+			gsp.stop();
 		}
 	}
 
@@ -8770,6 +8795,56 @@ public class GwtServerHelper {
 		else                                  reply = false;
 		return reply;
 	}
+
+	/*
+	 * Returns true if the given entity is remote (i.e., located in
+	 * other than personal/adHoc storage) and false otherwise.
+	 */
+	public static boolean isEntityRemote(AllModulesInjected bs, EntityId eid) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.isEntityRemote()");
+		try {
+			// Is this an entry?
+			FolderModule fm    = bs.getFolderModule();
+			boolean      reply = true;
+			if (eid.isEntry()) {
+				// Yes!  Can we access it?
+				FolderEntry fe = fm.getEntry(eid.getBinderId(), eid.getEntityId());
+				if (null != fe) {
+					// Yes!  Is it in remote storage?
+					Folder f = fe.getParentFolder();
+					reply = (f.isMirrored() || f.isAclExternallyControlled());
+				}
+			}
+			
+			// No, it isn't an entry!  Is it a folder?
+			else if (eid.isFolder()) {
+				// Yes!  Can we access it?
+				Folder f = fm.getFolder(eid.getEntityId());
+				if (null != f) {
+					// Yes!  Is it in remote storage?
+					return (f.isMirrored() || f.isAclExternallyControlled());
+				}
+			}
+			
+			else {
+				// No, it isn't a folder either!  Everything else is in
+				// personal storage.
+				reply = false;
+			}
+
+			// If we get here, reply is true if the entity is in remote
+			// storage and false otherwise.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
 	
 	/**
 	 * Return true if the given group can have external users/groups as members of the group
@@ -9826,10 +9901,14 @@ public class GwtServerHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static ErrorListRpcResponseData purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, boolean deleteMirroredSource) throws GwtTeamingException {
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		purgeFolderEntriesImpl(bs, request, entityIds, deleteMirroredSource, reply);
+		return reply;
+	}
+	
+	private static void purgeFolderEntriesImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, boolean deleteMirroredSource, ErrorListRpcResponseData reply) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.purgeFolderEntriesImpl()");
 		try {
-			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-
 			// Scan the entry IDs...
 			BinderModule bm = bs.getBinderModule();
 			FolderModule fm = bs.getFolderModule();
@@ -9866,18 +9945,17 @@ public class GwtServerHelper {
 					else                                     messageKey = "purgeEntryError.OtherException";
 					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
 					
-					GwtLogHelper.error(m_logger, "GwtServerHelper.purgeFolderEntries( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
+					GwtLogHelper.error(m_logger, "GwtServerHelper.purgeFolderEntriesImpl( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
 				}
 			}
-			
-			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing any errors we
-			// encountered.  Return it.
-			return reply;
 		}
 		
 		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}
+		
+		finally {
+			gsp.stop();
 		}
 	}
 	

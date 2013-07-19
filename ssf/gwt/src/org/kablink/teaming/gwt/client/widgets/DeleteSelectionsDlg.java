@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
@@ -50,12 +51,19 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Implements the delete selections dialog.
@@ -63,14 +71,15 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
  * @author drfoster@novell.com
  */
 public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler {
-	public final static boolean USE_NEW_DELETE_DIALOG	= false;	//! DRF (20130718):  Leave false on checkin until it's all working.
-	
 	private boolean						m_isFilr;			// true -> We're in Filr mode.  false -> We're not.
 	private DialogMode					m_dialogMode;		// The mode the dialog is running in.  Defines what's displayed on the dialog.
 	private DeletePurgeEntriesCallback	m_dpeCallback;		//
 	private FlexCellFormatter			m_cellFormatter;	// The formatter to control how m_grid is laid out.
 	private FlexTable					m_grid;				// The table holding the dialog's content.
+	private GwtTeamingImageBundle		m_images;			// Access to the base images.
 	private GwtTeamingMessages			m_messages;			// Access to our localized strings.
+	private Image						m_warningImg;		//
+	private InlineLabel					m_warningTxt;		//
 	private List<EntityId>				m_entityIds;		// The entities to be deleted.
 	private RadioButton					m_purgeRB;			// The 'Delete from system' radio button.
 	private RadioButton					m_trashRB;			// The 'Move to trash'      radio button.
@@ -101,6 +110,7 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 
 		// ...initialize everything else...
 		m_isFilr   = GwtClientHelper.isLicenseFilr();
+		m_images   = GwtTeaming.getImageBundle();
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.
@@ -111,6 +121,25 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 			null);									// Create callback data.  Unused. 
 	}
 
+	/*
+	 * Returns a Widget contain what we display for purge warnings.
+	 */
+	private Widget buildWarningWidget(String text) {
+		HorizontalPanel hp = new VibeHorizontalPanel(null, null);
+		hp.addStyleName("vibe-deleteSelectionsDlg-warningPanel");
+		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		
+		m_warningImg = GwtClientHelper.buildImage(m_images.warningIcon16());
+		m_warningImg.addStyleName("vibe-deleteSelectionsDlg-warningImg");
+		hp.add(m_warningImg);
+		
+		m_warningTxt = new InlineLabel(text);
+		m_warningTxt.addStyleName("vibe-deleteSelectionsDlg-warningTxt");
+		hp.add(m_warningTxt);
+		
+		return hp;
+	}
+	
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -125,7 +154,8 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		// Create and return a table to hold the dialog's content.
 		m_grid = new VibeFlexTable();
 		m_grid.addStyleName("vibe-deleteSelectionsDlg-rootPanel");
-		m_grid.setCellSpacing(4);
+		m_grid.setCellPadding(0);
+		m_grid.setCellSpacing(0);
 		m_cellFormatter = m_grid.getFlexCellFormatter();
 		return m_grid;
 	}
@@ -290,28 +320,41 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 *      be undone.)
 	 */
 	private void populateSituation1() {
+		// Create a ValueChangeHandler we can use to tweak the dialog
+		// when the user changes the selected radio button.
+		ValueChangeHandler<Boolean> rbChangedHandler = new ValueChangeHandler<Boolean>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				setPurgeWarningActive(m_purgeRB.getValue());
+			}
+		};
+		
 		// Add the 'Move to trash' radio button...
 		m_trashRB = new RadioButton("deleteMode");
 		m_trashRB.addStyleName("vibe-deleteSelectionsDlg-radio");
+		m_trashRB.addValueChangeHandler(rbChangedHandler);
 		m_trashRB.setValue(true);
-		m_grid.setWidget(0, 0, m_trashRB);
+		m_grid.setWidget(            0, 0, m_trashRB);
+		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectionsDlg-trashRadio");
 		
 		m_grid.setText(              0, 1, m_messages.deleteSelectionsDlgLabel_Trash());
-		m_cellFormatter.addStyleName(0, 1, "vibe-deleteSelectionsDlg-radioLabel");
+		m_cellFormatter.addStyleName(0, 1, "vibe-deleteSelectionsDlg-trashRadioLabel");
 		m_cellFormatter.setWordWrap( 0, 1, false);
 		
 		// ...add the 'Delete from system' radio button...
 		m_purgeRB = new RadioButton("deleteMode");
 		m_purgeRB.addStyleName("vibe-deleteSelectionsDlg-radio");
-		m_grid.setWidget(1, 0, m_purgeRB);
+		m_purgeRB.addValueChangeHandler(rbChangedHandler);
+		m_grid.setWidget(            1, 0, m_purgeRB);
+		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectionsDlg-purgeRadio");
 		
 		m_grid.setText(              1, 1, m_messages.deleteSelectionsDlgLabel_Purge());
-		m_cellFormatter.addStyleName(1, 1, "vibe-deleteSelectionsDlg-radioLabel");
+		m_cellFormatter.addStyleName(1, 1, "vibe-deleteSelectionsDlg-purgeRadioLabel");
 		m_cellFormatter.setWordWrap( 1, 1, false);
 		
 		// ...and add the warning about the delete.
-		m_grid.setText(              2, 1, m_messages.deleteSelectionsDlgWarning_CantUndo());
-		m_cellFormatter.addStyleName(2, 1, "vibe-deleteSelectionsDlg-warningSituation1");
+		m_grid.setWidget(            2, 1, buildWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo()));
+		m_cellFormatter.addStyleName(2, 1, "vibe-deleteSelectionsDlg-warning vibe-deleteSelectionsDlg-warningSituation1");
 	}
 	
 	/*
@@ -324,8 +367,9 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectionsDlg-purgeNote");
 		
 		// ...and add a warning about the delete.
-		m_grid.setText(              1, 0, m_messages.deleteSelectionsDlgWarning_CantUndo());
-		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectionsDlg-warningSituation2");
+		m_grid.setWidget(            1, 0, buildWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo()));
+		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectionsDlg-warning vibe-deleteSelectionsDlg-warningSituation2");
+		setPurgeWarningActive(true);
 	}
 	
 	/*
@@ -343,25 +387,28 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		m_trashRB = new RadioButton("deleteMode");
 		m_trashRB.addStyleName("vibe-deleteSelectionsDlg-radio");
 		m_trashRB.setValue(true);
-		m_grid.setWidget(0, 0, m_trashRB);
+		m_grid.setWidget(            0, 0, m_trashRB);
+		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectionsDlg-trashRadio");
 		
 		m_grid.setText(              0, 1, m_messages.deleteSelectionsDlgLabel_TrashAdHoc());
-		m_cellFormatter.addStyleName(0, 1, "vibe-deleteSelectionsDlg-radioLabel");
+		m_cellFormatter.addStyleName(0, 1, "vibe-deleteSelectionsDlg-trashRadioLabel");
 		m_cellFormatter.setWordWrap( 0, 1, false);
 		
 		// ...add the 'Delete everything from system' radio button...
 		m_purgeRB = new RadioButton("deleteMode");
 		m_purgeRB.addStyleName("vibe-deleteSelectionsDlg-radio");
-		m_grid.setWidget(1, 0, m_purgeRB);
+		m_grid.setWidget(            1, 0, m_purgeRB);
+		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectionsDlg-purgeRadio");
 		
 		m_grid.setText(              1, 1, m_messages.deleteSelectionsDlgLabel_PurgeAll());
-		m_cellFormatter.addStyleName(1, 1, "vibe-deleteSelectionsDlg-radioLabel");
+		m_cellFormatter.addStyleName(1, 1, "vibe-deleteSelectionsDlg-purgeRadioLabel");
 		m_cellFormatter.setWordWrap( 1, 1, false);
 		
 		// ...and add the warning about the deletes.
-		m_grid.setText(              2, 0, m_messages.deleteSelectionsDlgWarning_CantUndo());
-		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectionsDlg-warningSituation3");
+		m_grid.setWidget(            2, 0, buildWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo()));
+		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectionsDlg-warning vibe-deleteSelectionsDlg-warningSituation3");
 		m_cellFormatter.setColSpan(  2, 0, 2);
+		setPurgeWarningActive(true);
 	}
 	
 	/*
@@ -391,25 +438,51 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	/*
 	 * Maps the information in the dialog's SelectionDetails to a
 	 * DialogMode.
+	 *
+	 * Situation1 -> Selections contain only items from personal storage.
+	 * Situation2 -> Selections contain only remote (i.e., Cloud Folder, Net Folder or Vibe Mirrored Folder) items.
+	 * Situation3 -> Selections contain a mixture of personal storage and remote items.
 	 * 
 	 * See the following for where the definitions of these come from:
 	 *     https://teaming.innerweb.novell.com/ssf/a/c/p_name/ss_forum/p_action/1/action/view_permalink/entityType/folderEntry/entryId/422728/vibeonprem_url/1
 	 */
 	private void setDialogMode() {
-		if (!(m_selectionDetails.hasRemoteSelections())) {
-			m_dialogMode = DialogMode.Situation1;
-		}
-		
-		else {
-			if ((!(m_selectionDetails.hasAdHocEntries())) && (!(m_selectionDetails.hasAdHocFolders()))) {
-				m_dialogMode = DialogMode.Situation2;
-			}
-			
-			else {
-				if (m_isFilr || (!(m_selectionDetails.hasFolders())))
+		// Is anything remote selected?
+		if (m_selectionDetails.hasRemoteSelections()) {
+			// Yes!  Are there any selections from personal storage?
+			if (m_selectionDetails.hasAdHocSelections()) {
+				// Yes!  In in Filr mode or there are no binders
+				// selected, this is situation 3.  Otherwise, it's
+				// situation 2.
+				if (m_isFilr || (!(m_selectionDetails.hasBinders())))
 				     m_dialogMode = DialogMode.Situation3;
 				else m_dialogMode = DialogMode.Situation2;
 			}
+			
+			else {
+				// No, none of the selections from personal storage!
+				// This is always situation 2.
+				m_dialogMode = DialogMode.Situation2;
+			}
+		}
+		
+		else {
+			// No, nothing remote is selected!  This is situation 1.
+			m_dialogMode = DialogMode.Situation1;
+		}
+	}
+
+	/*
+	 * Sets the purge warning as being active or inactive.
+	 */
+	private void setPurgeWarningActive(boolean active) {
+		if (active) {
+			if (null != m_warningImg) m_warningImg.addStyleName("vibe-deleteSelectionsDlg-warningImgActive");
+			if (null != m_warningTxt) m_warningTxt.addStyleName("vibe-deleteSelectionsDlg-warningTxtActive");
+		}
+		else {
+			if (null != m_warningImg) m_warningImg.removeStyleName("vibe-deleteSelectionsDlg-warningImgActive");
+			if (null != m_warningTxt) m_warningTxt.removeStyleName("vibe-deleteSelectionsDlg-warningTxtActive");
 		}
 	}
 	

@@ -203,6 +203,7 @@ import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.sharing.SharingModule;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
@@ -1704,17 +1705,24 @@ public class GwtViewHelper {
 
 		// Dump the contents of the SelectionDetails.
 		GwtLogHelper.debug(m_logger, "...dumpSelectionDetails():");
+		GwtLogHelper.debug(m_logger, "......Has AdHoc Binders:     " + sd.hasAdHocBinders()   );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc Entries:     " + sd.hasAdHocEntries()   );
 		GwtLogHelper.debug(m_logger, "......Has AdHoc Folders:     " + sd.hasAdHocFolders()   );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc Workspace:   " + sd.hasAdHocWorkspaces());
 		GwtLogHelper.debug(m_logger, "......Has Cloud Folders:     " + sd.hasCloudFolders()   );
 		GwtLogHelper.debug(m_logger, "......Has Mirrored Folders:  " + sd.hasMirroredFolders());
 		GwtLogHelper.debug(m_logger, "......Has Net Folders:       " + sd.hasNetFolders()     );
 		GwtLogHelper.debug(m_logger, "......Has Remote Entries:    " + sd.hasRemoteEntries()  );
+		GwtLogHelper.debug(m_logger, "......Has Binders:           " + sd.hasBinders()        );
 		GwtLogHelper.debug(m_logger, "......Has Entries:           " + sd.hasEntries()        );
 		GwtLogHelper.debug(m_logger, "......Has Folders:           " + sd.hasFolders()        );
 		GwtLogHelper.debug(m_logger, "......Has Unclassified:      " + sd.hasUnclassified()   );
-		GwtLogHelper.debug(m_logger, "......Entry  Count:          " + sd.getEntryCount()     );
-		GwtLogHelper.debug(m_logger, "......Folder Count:          " + sd.getFolderCount()    );
-		GwtLogHelper.debug(m_logger, "......Total  Count:          " + sd.getTotalCount()     );
+		GwtLogHelper.debug(m_logger, "......Has Workspaces:        " + sd.hasWorkspaces()     );
+		GwtLogHelper.debug(m_logger, "......Binder    Count:       " + sd.getBinderCount()    );
+		GwtLogHelper.debug(m_logger, "......Entry     Count:       " + sd.getEntryCount()     );
+		GwtLogHelper.debug(m_logger, "......Folder    Count:       " + sd.getFolderCount()    );
+		GwtLogHelper.debug(m_logger, "......Workspace Count:       " + sd.getWorkspaceCount() );
+		GwtLogHelper.debug(m_logger, "......Total     Count:       " + sd.getTotalCount()     );
 	}
 	
 	/*
@@ -5508,7 +5516,8 @@ public class GwtViewHelper {
 			if (0 < totalCount) {
 				// Yes!  Store the total count and scan them.
 				reply.setTotalCount(totalCount);
-				FolderModule fm = bs.getFolderModule();
+				FolderModule    fm = bs.getFolderModule();
+				WorkspaceModule wm = bs.getWorkspaceModule();
 				for (EntityId eid:  entityIds) {
 					try {
 						// Is this entry?
@@ -5553,6 +5562,19 @@ public class GwtViewHelper {
 								
 								// Increment the count of folders.
 								reply.incrFolderCount();
+							}
+						}
+						
+						// No, it isn't a folder either!  Is it a
+						// workspace?
+						else if (eid.isWorkspace()) {
+							// Yes!  Can we access it.?
+							Workspace ws = wm.getWorkspace(eid.getEntityId());
+							if (null != ws) {
+								// Yes!  Track that we found one and
+								// increment the count of workspaces.
+								reply.setHasAdHocWorkspaces(true);
+								reply.incrWorkspaceCount();
 							}
 						}
 					}
