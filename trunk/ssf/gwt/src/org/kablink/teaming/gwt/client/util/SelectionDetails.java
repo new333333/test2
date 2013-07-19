@@ -43,16 +43,20 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class SelectionDetails implements IsSerializable, VibeRpcResponseData {
+	public final static boolean USE_NEW_DELETE_DIALOG	= false;	//! DRF (20130718):  Leave false on checkin until it's all working.
+	
 	private boolean m_hasAdHocEntries;		// true -> Selections include entries from personal storage folders.
 	private boolean m_hasAdHocFolders;		// true -> Selections include AdHoc Folders.
+	private boolean m_hasAdHocWorkspaces;	// true -> Selections include AdHoc Workspaces.
 	private boolean m_hasCloudFolders;		// true -> Selections include Cloud Folders.
 	private boolean m_hasMirroredFolders;	// true -> Selections include Vibe Mirrored Folders.
 	private boolean m_hasNetFolders;		// true -> Selections include Net Folders.
 	private boolean m_hasRemoteEntries;		// true -> Selections include entries from either Net Folders or Vibe Mirrored folders.
 	
-	private int		m_entryCount;	//
-	private int		m_folderCount;	//
-	private int		m_totalCount;	//
+	private int		m_entryCount;			// Count of entries selected.
+	private int		m_folderCount;			// Count of folders selected.
+	private int		m_totalCount;			// Total count of everything being tracked.
+	private int		m_workspaceCount;		// Count of workspaces selected.
 	
 	/**
 	 * Constructor method.
@@ -70,20 +74,28 @@ public class SelectionDetails implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
+	public boolean hasAdHocBinders()      {return (m_hasAdHocFolders || m_hasAdHocWorkspaces);                                        }
 	public boolean hasAdHocEntries()      {return m_hasAdHocEntries;                                                                  }
 	public boolean hasAdHocFolders()      {return m_hasAdHocFolders;                                                                  }
+	public boolean hasAdHocSelections()   {return (m_hasAdHocEntries || hasAdHocBinders());                                           }
+	public boolean hasAdHocWorkspaces()   {return m_hasAdHocWorkspaces;                                                               }
 	public boolean hasCloudFolders()      {return m_hasCloudFolders;                                                                  }
+	public boolean hasBinders()           {return (0 < getBinderCount());                                                             }
 	public boolean hasEntries()           {return (0 < m_entryCount);                                                                 }
 	public boolean hasFolders()           {return (0 < m_folderCount);                                                                }
 	public boolean hasMirroredFolders()   {return m_hasMirroredFolders;                                                               }
 	public boolean hasNetFolders()        {return m_hasNetFolders;                                                                    }
 	public boolean hasRemoteEntries()     {return m_hasRemoteEntries;                                                                 }
-	public boolean hasRemoteSelections()  {return (m_hasRemoteEntries || m_hasCloudFolders || m_hasMirroredFolders | m_hasNetFolders);}
+	public boolean hasRemoteFolders()     {return (m_hasCloudFolders || m_hasMirroredFolders | m_hasNetFolders);                      }
+	public boolean hasRemoteSelections()  {return (m_hasRemoteEntries || hasRemoteFolders());                                         }
 	public boolean hasUnclassified()      {return (0 < getUnclassifiedCount());                                                       }
+	public boolean hasWorkspaces()        {return (0 < m_workspaceCount);                                                             }
 	public int     getEntryCount()        {return m_entryCount;                                                                       }
+	public int     getBinderCount()       {return (m_folderCount + m_workspaceCount);                                                 }
 	public int     getFolderCount()       {return m_folderCount;                                                                      }
 	public int     getTotalCount()        {return m_totalCount;                                                                       }
-	public int     getUnclassifiedCount() {return (m_totalCount - (m_entryCount + m_folderCount));                                    }
+	public int     getUnclassifiedCount() {return (m_totalCount - (m_entryCount + getBinderCount()));                                 }
+	public int     getWorkspaceCount()    {return m_workspaceCount;                                                                   }
 	
 	/**
 	 * Set'er methods.
@@ -92,13 +104,16 @@ public class SelectionDetails implements IsSerializable, VibeRpcResponseData {
 	 */
 	public void incrEntryCount()                                  {m_entryCount        += 1;                 }
 	public void incrFolderCount()                                 {m_folderCount       += 1;                 }
+	public void incrWorkspaceCount()                              {m_workspaceCount    += 1;                 }
 	public void setEntryCount(        int     entryCount)         {m_entryCount         = entryCount;        }
 	public void setFolderCount(       int     folderCount)        {m_folderCount        = folderCount;       }
 	public void setHasAdHocEntries(   boolean hasAdHocEntries)    {m_hasAdHocEntries    = hasAdHocEntries;   }
 	public void setHasAdHocFolders(   boolean hasAdHocFolders)    {m_hasAdHocFolders    = hasAdHocFolders;   }
+	public void setHasAdHocWorkspaces(boolean hasAdHocWorkspaces) {m_hasAdHocWorkspaces = hasAdHocWorkspaces;}
 	public void setHasCloudFolders(   boolean hasCloudFolders)    {m_hasCloudFolders    = hasCloudFolders;   }
 	public void setHasMirroredFolders(boolean hasMirroredFolders) {m_hasMirroredFolders = hasMirroredFolders;}
 	public void setHasNetFolders(     boolean hasNetFolders)      {m_hasNetFolders      = hasNetFolders;     }
 	public void setHasRemoteEntries(  boolean hasRemoteEntries)   {m_hasRemoteEntries   = hasRemoteEntries;  }
 	public void setTotalCount(        int     totalCount)         {m_totalCount         = totalCount;        }
+	public void setWorkspaceCount(    int     workspaceCount)     {m_workspaceCount     = workspaceCount;    }
 }
