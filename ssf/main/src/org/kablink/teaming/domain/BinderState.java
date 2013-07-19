@@ -50,13 +50,17 @@ public class BinderState extends ZonedObject {
 		 */
 		started,
 		/**
-		 * Full synchronization has stopped due to explicit request to stop it.
+		 * Full synchronization that was in started state has stopped due to explicit request to stop it.
 		 */
 		stopped,
 		/**
-		 * Full synchronization has run its course and finished. This doesn't tell how successfull the sync was though.
+		 * Full synchronization has run its course and finished. This doesn't tell how successful the sync was though.
 		 */
-		finished
+		finished,
+		/**
+		 * Full synchronization that was in ready state has been canceled due to explicit request to cancel it.
+		 */
+		canceled
 	}
 	
 	/*
