@@ -1100,6 +1100,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_DATE_TIME_STR:
+		{
+			GetDateTimeStrCmd gdtCmd;
+			String result = "";
+			
+			gdtCmd = (GetDateTimeStrCmd) cmd;
+			if ( gdtCmd.getDateTime() != null )
+			{
+				Date date;
+				
+				date = new Date( gdtCmd.getDateTime() );
+				result = GwtServerHelper.getDateTimeString( date, gdtCmd.getDateFormat(), gdtCmd.getTimeFormat() );
+			}
+			
+			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
+			return response;
+		}
+		
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		{
 			GetDefaultActivityStreamCmd gdasCmd = ((GetDefaultActivityStreamCmd) cmd);
@@ -3127,6 +3145,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ShowSharesCmd ssCmd = ((ShowSharesCmd) cmd);
 			Boolean result = GwtViewHelper.showShares( this, getRequest( ri ), ssCmd.getCollectionType(), ssCmd.getEntityIds() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case STOP_SYNC_NET_FOLDERS:
+		{
+			StopSyncNetFoldersCmd ssnfCmd;
+			Set<NetFolder> listOfNetFolders;
+			
+			ssnfCmd = (StopSyncNetFoldersCmd) cmd;
+			listOfNetFolders = GwtNetFolderHelper.stopSyncNetFolders( this, req, ssnfCmd.getListOfNetFoldersToStopSync() );
+			response = new VibeRpcResponse( new StopSyncNetFoldersRpcResponseData( listOfNetFolders ) );
 			return response;
 		}
 		

@@ -1303,6 +1303,30 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
+	 * Stop the sync of the given list of net folders
+	 */
+	public static Set<NetFolder> stopSyncNetFolders(
+		AllModulesInjected ami,
+		HttpServletRequest req,
+		Set<NetFolder> netFolders )
+	{
+		for ( NetFolder nextNetFolder : netFolders )
+		{
+			try
+			{
+				ami.getFolderModule().requestNetFolderFullSyncStop( nextNetFolder.getId() );
+				nextNetFolder.setStatus( getNetFolderSyncStatus( nextNetFolder.getId() ) );
+			}
+			catch ( Exception e )
+			{
+				GwtLogHelper.error( m_logger, "Error trying to stop the syncing of the net folder: " + nextNetFolder.getName() + ", " + e.toString() );
+			}
+		}
+		
+		return netFolders;
+	}
+	
+	/**
 	 * Sync the given list of net folders
 	 */
 	public static Set<NetFolder> syncNetFolders(
@@ -1321,7 +1345,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception e )
 			{
-				GwtLogHelper.error( m_logger, "Error syncing next net folder: " + nextNetFolder.getName() + ", " + e.toString() );
+				GwtLogHelper.error( m_logger, "Error trying to sync the net folder: " + nextNetFolder.getName() + ", " + e.toString() );
 			}
 		}
 		

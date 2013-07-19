@@ -36,8 +36,9 @@ import java.text.DateFormat;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderSyncStatistics;
-import org.kablink.teaming.gwt.client.rpc.shared.GetDateStrCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDateTimeStrCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderSyncStatisticsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -47,6 +48,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -84,6 +86,7 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 	private int m_foldersProcessedRow;
 	private int m_startRow;
 	private int m_endRow;
+	private Timer m_timer;
 	
 	/**
 	 * Callback interface to interact with the "Net Folder Sync Statistics" dialog
@@ -109,7 +112,7 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos, DlgButtonMode.Close );
 
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().netFolderSyncStatisticsDlg_Header(), null, null, null ); 
+		createAllDlgContent( "", null, null, null ); 
 	}
 	
 
@@ -410,21 +413,14 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 	{
 		return null;
 	}
-
+	
 	/**
 	 * 
 	 */
-	public void init( Long netFolderId )
+	private void getSyncStatistics( final Long netFolderId )
 	{
 		AsyncCallback<VibeRpcResponse> rpcReadCallback;
 		
-		clearErrorPanel();
-		hideErrorPanel();
-		hideStatusMsg();
-		
-		// Clear all values currently displayed in the dialog.
-		clearAllValues();
-
 		// Create a callback that will be called when we receive the net folder sync statistics.
 		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -473,6 +469,35 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 			cmd.setNetFolderId( netFolderId );
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
+	}
+
+	/**
+	 * 
+	 */
+	public void init( final NetFolder netFolder )
+	{
+		clearErrorPanel();
+		hideErrorPanel();
+		hideStatusMsg();
+		
+		// Clear all values currently displayed in the dialog.
+		clearAllValues();
+		
+		getSyncStatistics( netFolder.getId() );
+		
+		// Update the dialog's header to say "Edit Net Folder"
+		setCaption( GwtTeaming.getMessages().netFolderSyncStatisticsDlg_Header( netFolder.getName() ) );
+
+		// Get the sync statistics every 7 seconds.
+		m_timer = new Timer()
+		{
+			@Override
+			public void run()
+			{
+				getSyncStatistics( netFolder.getId() );
+			}
+		};
+		m_timer.scheduleRepeating( 7000 );
 	}
 	
 	/**
@@ -548,6 +573,25 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 	}
 	
 	/**
+	 * Called when the dialog is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach
+		super.onDetach();
+		
+		// Kill the timer.
+		if ( m_timer != null )
+		{
+			m_timer.cancel();
+			m_timer = null;
+		}
+	}
+
+	/**
 	 * Update the given date value in the dialog
 	 */
 	private void updateDateValue( final int row, Long value )
@@ -557,7 +601,7 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 		
 		if ( value != null )
 		{
-			GetDateStrCmd cmd;
+			GetDateTimeStrCmd cmd;
 			AsyncCallback<VibeRpcResponse> getDateStrCallback = null;
 			
 			getDateStrCallback = new AsyncCallback<VibeRpcResponse>()
@@ -607,7 +651,7 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 			};
 			
 			// Issue an rpc request to get the date/time string.
-			cmd = new GetDateStrCmd( value, DateFormat.LONG );
+			cmd = new GetDateTimeStrCmd( value, DateFormat.LONG, DateFormat.LONG );
 			GwtClientHelper.executeCommand( cmd, getDateStrCallback );
 		}
 	}

@@ -56,6 +56,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.StopSyncNetFoldersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StopSyncNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -111,6 +113,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	private ModifyNetFolderDlg m_modifyNetFolderDlg;
 	private NetFolderSyncStatisticsDlg m_netFolderSyncStatisticsDlg;
 	private int m_width;
+	private Timer m_timer;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -190,28 +193,11 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 
 	/**
-	 * Check the sync status of each net folder that has a sync in progress.
+	 * 
 	 */
-	private void checkSyncStatus()
+	private void checkSyncStatus( HashSet<NetFolder> listOfNetFoldersToCheck )
 	{
-		HashSet<NetFolder> listOfNetFoldersToCheck;
-		
-		listOfNetFoldersToCheck = new HashSet<NetFolder>();
-		
-		// Get a list of all net folders whose status is "in progress" or "waiting to be syn'd"
-		if ( m_listOfNetFolders != null )
-		{
-			for ( NetFolder nextFolder : m_listOfNetFolders )
-			{
-				if ( nextFolder.getStatus() == NetFolderSyncStatus.SYNC_IN_PROGRESS ||
-					 nextFolder.getStatus() == NetFolderSyncStatus.WAITING_TO_BE_SYNCD )
-				{
-					listOfNetFoldersToCheck.add( nextFolder );
-				}
-			}
-		}
-		
-		if ( listOfNetFoldersToCheck.size() > 0 )
+		if ( listOfNetFoldersToCheck != null && listOfNetFoldersToCheck.size() > 0 )
 		{
 			CheckNetFoldersStatusCmd cmd;
 			AsyncCallback<VibeRpcResponse> rpcCallback = null;
@@ -261,6 +247,27 @@ public class ManageNetFoldersDlg extends DlgBox
 			cmd = new CheckNetFoldersStatusCmd( listOfNetFoldersToCheck );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
+	}
+	
+	/**
+	 * Check the sync status of each net folder
+	 */
+	private void checkSyncStatus()
+	{
+		HashSet<NetFolder> listOfNetFoldersToCheck;
+		
+		listOfNetFoldersToCheck = new HashSet<NetFolder>();
+		
+		if ( m_listOfNetFolders != null )
+		{
+			for ( NetFolder nextFolder : m_listOfNetFolders )
+			{
+				listOfNetFoldersToCheck.add( nextFolder );
+			}
+		}
+		
+		if ( listOfNetFoldersToCheck.size() > 0 )
+			checkSyncStatus( listOfNetFoldersToCheck );
 	}
 	
 	/**
@@ -485,7 +492,18 @@ public class ManageNetFoldersDlg extends DlgBox
 				@Override
 				public void update( int index, NetFolder netFolder, NetFolder value )
 				{
-					invokeNetFolderSyncStatisticsDlg( netFolder.getId() );
+					invokeNetFolderSyncStatisticsDlg( netFolder );
+
+					// Update the sync status of this net folder
+					{
+						HashSet<NetFolder> listOfNetFoldersToCheck;
+						
+						listOfNetFoldersToCheck = new HashSet<NetFolder>();
+						
+						listOfNetFoldersToCheck.add( netFolder );
+						
+						checkSyncStatus( listOfNetFoldersToCheck );
+					}
 				}
 			} );
 			m_netFoldersTable.addColumn( statusCol, messages.manageNetFoldersDlg_SyncStatusCol() );
@@ -794,6 +812,17 @@ public class ManageNetFoldersDlg extends DlgBox
 	{
 		// Issue an ajax request to get a list of all the net folders
 		getAllNetFoldersFromServer( null );
+
+		// Check in the sync status every minute.
+		m_timer = new Timer()
+		{
+			@Override
+			public void run()
+			{
+				checkSyncStatus();
+			}
+		};
+		m_timer.scheduleRepeating( 60000 );
 	}
 	
 	/**
@@ -917,7 +946,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	/**
 	 * Invoke the dialog that display all of the sync statistics for the given net folder 
 	 */
-	private void invokeNetFolderSyncStatisticsDlg( final Long netFolderId )
+	private void invokeNetFolderSyncStatisticsDlg( final NetFolder netFolder)
 	{
 		int x;
 		int y;
@@ -950,7 +979,7 @@ public class ManageNetFoldersDlg extends DlgBox
 						{
 							m_netFolderSyncStatisticsDlg = nfssDlg;
 							
-							m_netFolderSyncStatisticsDlg.init( netFolderId );
+							m_netFolderSyncStatisticsDlg.init( netFolder );
 							m_netFolderSyncStatisticsDlg.show();
 						}
 					};
@@ -966,9 +995,28 @@ public class ManageNetFoldersDlg extends DlgBox
 		}
 		else
 		{
-			m_netFolderSyncStatisticsDlg.init( netFolderId );
+			m_netFolderSyncStatisticsDlg.init( netFolder );
 			m_netFolderSyncStatisticsDlg.setPopupPosition( x, y );
 			m_netFolderSyncStatisticsDlg.show();
+		}
+	}
+
+	/**
+	 * Called when the dialog is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach
+		super.onDetach();
+		
+		// Kill the timer.
+		if ( m_timer != null )
+		{
+			m_timer.cancel();
+			m_timer = null;
 		}
 	}
 
@@ -1122,7 +1170,67 @@ public class ManageNetFoldersDlg extends DlgBox
 	 */
 	private void stopSyncNetFolders( final Set<NetFolder> selectedFolders )
 	{
-		Window.alert( "stopSyncNetFolders() not implemented yet" );
+		StopSyncNetFoldersCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback = null;
+
+		if ( selectedFolders == null || selectedFolders.size() == 0 )
+			return;
+		
+		// Create the callback that will be used when we issue an ajax call
+		// to stop the sync of the net folders.
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( final Throwable t )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_StopSyncNetFolders() );
+
+						m_dataProvider.refresh();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+	
+			@Override
+			public void onSuccess( final VibeRpcResponse response )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						StopSyncNetFoldersRpcResponseData responseData;
+						
+						responseData = (StopSyncNetFoldersRpcResponseData) response.getResponseData();
+						
+						if ( responseData != null )
+						{
+							Set<NetFolder> listOfNetFolders;
+							
+							listOfNetFolders = responseData.getListOfNetFolders();
+							
+							updateFolderStatus( listOfNetFolders );
+						}
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		};
+
+		// Issue an ajax request to stop the sync of the list of net folders.
+		cmd = new StopSyncNetFoldersCmd( selectedFolders );
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
 	/**
@@ -1136,10 +1244,10 @@ public class ManageNetFoldersDlg extends DlgBox
 		if ( selectedFolders == null || selectedFolders.size() == 0 )
 			return;
 		
-		// Mark each of the selected net folders as "sync in progress"
+		// Mark each of the selected net folders as "waiting to be sync'd"
 		for ( NetFolder nextNetFolder : selectedFolders )
 		{
-			nextNetFolder.setStatus( NetFolderSyncStatus.SYNC_IN_PROGRESS );
+			nextNetFolder.setStatus( NetFolderSyncStatus.WAITING_TO_BE_SYNCD );
 		}
 
 		// Create the callback that will be used when we issue an ajax call
@@ -1231,10 +1339,6 @@ public class ManageNetFoldersDlg extends DlgBox
 	{
 		if ( listOfNetFolders != null )
 		{
-			boolean checkAgain;
-			
-			checkAgain = false;
-			
 			for ( NetFolder nextNetFolder : listOfNetFolders )
 			{
 				NetFolder ourNetFolder;
@@ -1247,11 +1351,6 @@ public class ManageNetFoldersDlg extends DlgBox
 
 					status = nextNetFolder.getStatus();
 					ourNetFolder.setStatus( status );
-					
-					if ( status == NetFolderSyncStatus.SYNC_IN_PROGRESS || status == NetFolderSyncStatus.WAITING_TO_BE_SYNCD )
-					{
-						checkAgain = true;
-					}
 				}
 			}
 			
@@ -1260,22 +1359,6 @@ public class ManageNetFoldersDlg extends DlgBox
 
 			// Tell the table how many net folders we have.
 			m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
-			
-			if ( checkAgain )
-			{
-				Timer timer;
-				
-				// Check the sync status every minute
-				timer = new Timer()
-				{
-					@Override
-					public void run()
-					{
-						checkSyncStatus();
-					}
-				};
-				timer.schedule( 60000 );
-			}
 		}
 	}
 	
