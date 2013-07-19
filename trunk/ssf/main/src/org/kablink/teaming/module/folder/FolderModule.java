@@ -752,6 +752,17 @@ public interface FolderModule {
      * <code>false</code> otherwise.
      */
     public boolean enqueueFullSynchronize(Long netFolderId);
+    
+    /**
+     * If the net folder is currently waiting for necessary system resources to start executing a full
+     * synchronization, then cancel the pending execution.
+     * If the net folder is in any other state including started state, this method has no affect.
+     * 
+     * @param netFolderId
+     * @return <code>true</code> if the net folder was in ready state and has successfully
+     * been dequeued, <code>false</code> otherwise.
+     */
+    public boolean dequeueFullSynchronize(Long netFolderId);
 
 	/**
 	 * Create a cloud folder from the given data.

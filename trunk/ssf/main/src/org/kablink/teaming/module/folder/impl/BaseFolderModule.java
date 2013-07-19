@@ -157,4 +157,9 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 		// Open source stub.  See PlusFolderModule for full
 		// implementation.
 	}
+
+	@Override
+	public boolean dequeueFullSynchronize(Long netFolderId) {
+		return false;
+	}
 }
