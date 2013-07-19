@@ -80,6 +80,9 @@ import org.kablink.teaming.gwt.client.NetFolderDataSyncSettings;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.NetFolderRoot.NetFolderRootStatus;
 import org.kablink.teaming.gwt.client.NetFolderSyncStatistics;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderResult;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderResult.DeleteNetFolderStatus;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderServersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse.GwtConnectionTestStatusCode;
@@ -324,31 +327,41 @@ public class GwtNetFolderHelper
 	/**
 	 * Delete the given list of net folders
 	 */
-	public static Boolean deleteNetFolders(
+	public static DeleteNetFolderRpcResponseData deleteNetFolders(
 		AllModulesInjected ami,
 		Set<NetFolder> netFolders )
 	{
-		Boolean result;
+		DeleteNetFolderRpcResponseData results;
 		
-		result = Boolean.TRUE;
+		results = new DeleteNetFolderRpcResponseData();
 		
 		for ( NetFolder nextNetFolder : netFolders )
 		{
+			DeleteNetFolderResult result;
+
+			result = new DeleteNetFolderResult();
+
 			try
 			{
 				NetFolderHelper.deleteNetFolder( ami.getFolderModule(), nextNetFolder.getId(), false );
+				result.setStatus( DeleteNetFolderStatus.SUCCESS, null );
 			}
 			catch ( CannotDeleteSyncingNetFolderException nfEx )
 			{
-				
+				result.setStatus(
+							DeleteNetFolderStatus.DELETE_FAILED_SYNC_IN_PROGRESS,
+							NLT.get( "netfolder.cant.delete.sync.in.progress" ) );
 			}
 			catch ( Exception e )
 			{
 				GwtLogHelper.error( m_logger, "Error deleting next net folder: " + nextNetFolder.getName(), e );
+				result.setStatus( DeleteNetFolderStatus.DELETE_FAILED, e.toString() );
 			}
+			
+			results.addResult( nextNetFolder, result );
 		}
 		
-		return result;
+		return results;
 	}
 
 	/**

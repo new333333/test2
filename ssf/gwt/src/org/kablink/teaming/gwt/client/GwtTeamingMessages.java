@@ -2212,6 +2212,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFoldersDlg_AddNetFolderLabel();
 	String manageNetFoldersDlg_CancelSyncRequested();
 	String manageNetFoldersDlg_ConfirmDelete( String netFolderName );
+	String manageNetFoldersDlg_DeleteNetFolderErrorMsg( String netFolderName, String errorMsg );
 	String manageNetFoldersDlg_DeleteNetFolderLabel();
 	String manageNetFoldersDlg_Header();
 	String manageNetFoldersDlg_NameCol();

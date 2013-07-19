@@ -1273,6 +1273,26 @@ body, table td, select
 	-webkit-border-radius: 5px;
 }
 
+.dlgErrorPanelWrapper
+{
+	position: relative;
+}
+
+.dlgBox_closeErrorPanel
+{
+	color: #FFFFFF;
+	font-size: 0.8em;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	z-index: 1001;
+}
+
+.dlgBox_closeErrorPanel:hover
+{
+	cursor: pointer;
+}
+
 .dlgErrorLabel
 {
 	font-size: 12px;

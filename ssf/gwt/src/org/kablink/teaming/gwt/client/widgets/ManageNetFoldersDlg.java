@@ -32,9 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.kablink.teaming.gwt.client.NetFolder;
@@ -52,6 +54,8 @@ import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFoldersStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFoldersStatusRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderResult;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersCmd;
@@ -87,6 +91,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -611,7 +616,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void deleteNetFoldersFromServer( final Set<NetFolder> listOfNetFoldersToDelete )
+	private void deleteNetFoldersFromServer( Set<NetFolder> listOfNetFoldersToDelete )
 	{
 		if ( listOfNetFoldersToDelete != null && listOfNetFoldersToDelete.size() > 0 )
 		{
@@ -656,15 +661,63 @@ public class ManageNetFoldersDlg extends DlgBox
 						@Override
 						public void execute()
 						{
-							// Spin through the list of net folders we just deleted and remove
-							// them from the table.
-							for (NetFolder nextFolder : listOfNetFoldersToDelete)
+							if ( response != null &&
+								 response.getResponseData() instanceof DeleteNetFolderRpcResponseData )
 							{
-								NetFolder netFolder;
+								DeleteNetFolderRpcResponseData responseData;
+								HashMap<NetFolder,DeleteNetFolderResult> results;
 								
-								netFolder = findNetFolderById( nextFolder.getId() );
-								if ( netFolder != null )
-									m_listOfNetFolders.remove( netFolder );
+								responseData = (DeleteNetFolderRpcResponseData) response.getResponseData();
+								results = responseData.getResults();
+								if ( results != null )
+								{
+									Set<Entry<NetFolder,DeleteNetFolderResult>> entrySet;
+									
+									entrySet = results.entrySet();
+									if ( entrySet != null )
+									{
+										FlowPanel errorPanel;
+										Label label;
+										boolean showErrorPanel = false;
+										
+										// Get the panel that holds the errors.
+										errorPanel = getErrorPanel();
+										errorPanel.clear();
+										
+										for ( Entry<NetFolder,DeleteNetFolderResult> nextEntry : entrySet )
+										{
+											NetFolder nextNetFolder;
+											DeleteNetFolderResult result;
+											
+											nextNetFolder = nextEntry.getKey();
+											result = nextEntry.getValue();
+											
+											switch ( result.getStatus() )
+											{
+											case DELETE_FAILED:
+											case DELETE_FAILED_SYNC_IN_PROGRESS:
+												showErrorPanel = true;
+												label = new Label( GwtTeaming.getMessages().manageNetFoldersDlg_DeleteNetFolderErrorMsg( nextNetFolder.getName(), result.getErrorMsg() ) );
+												label.addStyleName( "dlgErrorLabel" );
+												errorPanel.add( label );
+												break;
+											
+											case SUCCESS:
+												NetFolder netFolder;
+												
+												netFolder = findNetFolderById( nextNetFolder.getId() );
+												if ( netFolder != null )
+													m_listOfNetFolders.remove( netFolder );
+												
+												break;
+											}
+										}
+										
+										// Show the error panel if we encountered errors deleting the net folders.
+										if ( showErrorPanel )
+											showErrorPanel();
+									}
+								}
 							}
 							
 							// Clear all selections.
@@ -810,6 +863,8 @@ public class ManageNetFoldersDlg extends DlgBox
 	 */
 	public void init()
 	{
+		hideErrorPanel();
+		
 		// Issue an ajax request to get a list of all the net folders
 		getAllNetFoldersFromServer( null );
 

@@ -499,12 +499,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case DELETE_NET_FOLDERS:
 		{
-			Boolean result;
+			DeleteNetFolderRpcResponseData result;
 			DeleteNetFoldersCmd dnfCmd;
 			
 			dnfCmd = (DeleteNetFoldersCmd) cmd;
 			result = GwtNetFolderHelper.deleteNetFolders( this, dnfCmd.getListOfNetFoldersToDelete() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
