@@ -550,6 +550,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SetUnseen();
 	String rpcFailure_ShareEntry();
 	String rpcFailure_ShowShares();
+	String rpcFailure_StopSyncNetFolders();
 	String rpcFailure_SyncNetFolders();
 	String rpcFailure_SyncNetFolderServer();
 	String rpcFailure_SyncNetFolderRoots();
@@ -2743,7 +2744,7 @@ public interface GwtTeamingMessages extends Messages
 	String netFolderSyncStatisticsDlg_FoldersProcessed();
 	String netFolderSyncStatisticsDlg_FoldersSetAcl();
 	String netFolderSyncStatisticsDlg_FoldersSetOwnership();
-	String netFolderSyncStatisticsDlg_Header();
+	String netFolderSyncStatisticsDlg_Header( String netFolderName );
 	String netFolderSyncStatisticsDlg_MiscHeading();
 	String netFolderSyncStatisticsDlg_NoValue();
 	String netFolderSyncStatisticsDlg_StartDate();
