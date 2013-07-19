@@ -36,6 +36,7 @@ package org.kablink.teaming.fi.connection.acl;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceSession;
 
@@ -133,4 +134,40 @@ public interface AclResourceSession extends ResourceSession {
 	 */
 	public List<ResourceItem> getChildren(boolean directoryOnly, boolean includeAclInfoForFolder, boolean includeAclInfoForFile, boolean includeOwnerInfo) throws FIException, IllegalStateException;
 	
+	/**
+	 * Return whether or not the context owner of this session has the specified permission on the 
+	 * resource that this session currently points to by path.
+	 * <p>
+	 * The permission name is specific to the resource driver implementation and is defined by the
+	 * accompanying driver helper class implementing <code>AclItemPermissionMapper</code> interface. 
+	 * 
+	 * @param permissionName
+	 * @return <code>true</code> if the user has access to the resource at the specified permission
+	 * level, <code>false</code> otherwise.
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
+	public boolean testAccess(String permissionName) throws FIException, UncheckedIOException;
+	
+	/**
+	 * Return whether or not the context owner of this session has the specified permission on 
+	 * each of the resources represented by the specified paths. The resource that this session
+	 * currently points to, if any, should be ignored and not be evaluated.
+	 * <p>
+	 * The number of resources that pass the test should not exceed the <code>maxAccessible</code>
+	 * value specified. Once it reaches the maximum value, it should stop testing access on the
+	 * remaining resources and return the partial result that it has accumulated up to that point.
+	 * This is important to avoid doing any more work than is necessary.
+	 * <p>
+	 * The permission name is specific to the resource driver implementation and is defined by the
+	 * accompanying driver helper class implementing <code>AclItemPermissionMapper</code> interface. 
+	 * 
+	 * @param permissionName
+	 * @param resourcePath
+	 * @param maxAccessible
+	 * @return
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
+	public boolean[] testAccess(String permissionName, String[] resourcePath, int maxAccessible) throws FIException, UncheckedIOException;
 }
