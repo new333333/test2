@@ -2210,6 +2210,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the Manage Net Folders dialog
 	String manageNetFoldersDlg_AddNetFolderLabel();
+	String manageNetFoldersDlg_CancelSyncRequested();
 	String manageNetFoldersDlg_ConfirmDelete( String netFolderName );
 	String manageNetFoldersDlg_DeleteNetFolderLabel();
 	String manageNetFoldersDlg_Header();
@@ -2228,6 +2229,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFoldersDlg_UnknownStatus();
 	
 	// Net Folder sync status
+	String netFolderSyncStatusCanceled();
 	String netFolderSyncStatusCompleted();
 	String netFolderSyncStatusInProgress();
 	String netFolderSyncStatusNeverRun();

@@ -88,6 +88,7 @@ import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
+import org.kablink.teaming.module.folder.CannotDeleteSyncingNetFolderException;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -336,6 +337,10 @@ public class GwtNetFolderHelper
 			try
 			{
 				NetFolderHelper.deleteNetFolder( ami.getFolderModule(), nextNetFolder.getId(), false );
+			}
+			catch ( CannotDeleteSyncingNetFolderException nfEx )
+			{
+				
 			}
 			catch ( Exception e )
 			{
@@ -992,6 +997,10 @@ public class GwtNetFolderHelper
     				{
     					switch ( syncStatus )
     					{
+    					case canceled:
+    						status = NetFolderSyncStatus.SYNC_CANCELED;
+    						break;
+    						
     					case finished:
     						status = NetFolderSyncStatus.SYNC_COMPLETED;
     						break;
@@ -1314,7 +1323,13 @@ public class GwtNetFolderHelper
 		{
 			try
 			{
-				ami.getFolderModule().requestNetFolderFullSyncStop( nextNetFolder.getId() );
+				if ( ami.getFolderModule().requestNetFolderFullSyncStop( nextNetFolder.getId() ) == false )
+				{
+					// The net folder was not in the "started" state.
+					// Make a request to remove the net folder from the "waiting to be sync'd" state.
+					ami.getFolderModule().dequeueFullSynchronize( nextNetFolder.getId() );
+				}
+				
 				nextNetFolder.setStatus( getNetFolderSyncStatus( nextNetFolder.getId() ) );
 			}
 			catch ( Exception e )

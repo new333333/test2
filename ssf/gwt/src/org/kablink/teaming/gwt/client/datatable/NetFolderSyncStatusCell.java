@@ -54,6 +54,7 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 {
 	private static String m_waitingForSyncImgHtml = null;
 	private static String m_syncInProgressImgHtml = null;
+	private static String m_syncCanceledImgHtml = null;
 	private static String m_syncStoppedImgHtml = null;
 	private static String m_syncCompletedImgHtml = null;
 	private static String m_syncNeverRunImgHtml = null;
@@ -100,6 +101,18 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusStopped() );
 			img.addStyleName( "netFolder_syncStatusImg" );
 			m_syncStoppedImgHtml = img.toString();
+		}
+
+		if ( m_syncCanceledImgHtml == null )
+		{
+			ImageResource imgResource;
+			Image img;
+			
+			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusCanceled();
+			img = GwtClientHelper.buildImage( imgResource );
+			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusCanceled() );
+			img.addStyleName( "netFolder_syncStatusImg" );
+			m_syncCanceledImgHtml = img.toString();
 		}
 
 		if ( m_syncCompletedImgHtml == null )
@@ -176,6 +189,10 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 			status = value.getStatus();
 			switch ( status )
 			{
+			case SYNC_CANCELED:
+				sb.appendHtmlConstant( m_syncCanceledImgHtml );
+				break;
+			
 			case SYNC_COMPLETED:
 				sb.appendHtmlConstant( m_syncCompletedImgHtml );
 				break;

@@ -1221,6 +1221,8 @@ public class ManageNetFoldersDlg extends DlgBox
 							listOfNetFolders = responseData.getListOfNetFolders();
 							
 							updateFolderStatus( listOfNetFolders );
+							
+							Window.alert( GwtTeaming.getMessages().manageNetFoldersDlg_CancelSyncRequested() );
 						}
 					}
 				};
