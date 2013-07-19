@@ -307,9 +307,19 @@ public class GwtMenuHelper {
 	 */
 	private static boolean canPurgeEntity(AllModulesInjected bs, DefinableEntity de) {
 		boolean reply;
-		if      (de instanceof FolderEntry) reply = bs.getFolderModule().testAccess(((FolderEntry) de), FolderOperation.deleteEntry );
-		else if (de instanceof Binder)      reply = bs.getBinderModule().testAccess(((Binder)      de), BinderOperation.deleteBinder);
-		else                                reply = false;
+		if (de instanceof FolderEntry) {
+			reply = bs.getFolderModule().testAccess(((FolderEntry) de), FolderOperation.deleteEntry );
+		}
+		else if (de instanceof Binder) {
+			Binder binder = ((Binder) de);
+			reply = bs.getBinderModule().testAccess(binder, BinderOperation.deleteBinder);
+			if (reply) {
+				reply = (!(BinderHelper.isBinderDeleteProtected(binder)));
+			}
+		}
+		else {
+			reply = false;
+		}
 		return reply;
 	}
 	
@@ -319,12 +329,20 @@ public class GwtMenuHelper {
 	 */
 	private static boolean canTrashEntity(AllModulesInjected bs, DefinableEntity de) {
 		boolean reply;
-		if      (de instanceof FolderEntry) reply = bs.getFolderModule().testAccess(((FolderEntry) de), FolderOperation.preDeleteEntry );
-		else if (de instanceof Binder)      reply = bs.getBinderModule().testAccess(((Binder)      de), BinderOperation.preDeleteBinder);
-		else                                reply = false;
+		if (de instanceof FolderEntry) {
+			reply = bs.getFolderModule().testAccess(((FolderEntry) de), FolderOperation.preDeleteEntry );
+		}
+		else if (de instanceof Binder) {
+			reply = bs.getBinderModule().testAccess(((Binder) de), BinderOperation.preDeleteBinder);
+		}
+		else {
+			reply = false;
+		}
+		
 		if ((!reply) && SelectionDetails.USE_NEW_DELETE_DIALOG) {
 			reply = canPurgeEntity(bs, de);
 		}
+		
 		return reply;
 	}
 	
@@ -1825,11 +1843,9 @@ public class GwtMenuHelper {
 		
 		// Is this a binder we can possibly delete or purge?
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved)) {
-			// Yes!  Is the binder other than a system user's or the
-			// current user's workspace or a Home folder?
-			if ((!(BinderHelper.isBinderSystemUserWS(  binder))) &&
-				(!(BinderHelper.isBinderCurrentUsersWS(binder))) &&
-				(!(BinderHelper.isBinderHomeFolder(    binder)))) {
+			// Yes!  Is the binder one the user can't delete, even if
+			// they have rights?
+			if (!(BinderHelper.isBinderDeleteProtected( binder))) {
 				// Yes!  Is this a binder the user can move to the
 				// trash?
 				if (canTrashEntity(bs, binder) && isBinderTrashEnabled(binder)) {
@@ -2797,7 +2813,8 @@ public class GwtMenuHelper {
 					boolean isCollectionNetFolders   = (CollectionType.NET_FOLDERS    == ct);
 					boolean isCollectionSharedByMe   = (CollectionType.SHARED_BY_ME   == ct);
 					boolean isCollectionSharedWithMe = (CollectionType.SHARED_WITH_ME == ct);
-					if ((!(Utils.checkIfFilr())) && (isCollectionSharedByMe || isCollectionSharedWithMe)) {
+					boolean isCollectionShared       = (isCollectionSharedByMe || isCollectionSharedWithMe);
+					if ((!(Utils.checkIfFilr())) && isCollectionShared) {
 						constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                                                  );
 					}
 					boolean useHomeAsMyFiles = GwtServerHelper.useHomeAsMyFiles(bs);
@@ -2811,8 +2828,8 @@ public class GwtMenuHelper {
 					if ((isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) && GwtShareHelper.isSharingEnabled(bs)) {
 					    constructEntryShareItem(           entryToolbar, bs, request                                                                                  );
 					}
-					if ((isCollectionMyFiles && (((!useHomeAsMyFiles)) && (!isCollectionNetFolders)) || SelectionDetails.USE_NEW_DELETE_DIALOG)) {
-						constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), (isCollectionMyFiles || SelectionDetails.USE_NEW_DELETE_DIALOG));
+					if (((isCollectionMyFiles && ((!useHomeAsMyFiles)) && (!isCollectionNetFolders))) || (isCollectionShared && SelectionDetails.USE_NEW_DELETE_DIALOG)){
+						constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
 					}
 					if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs)) && isAddEntryAllowed()) {
 						constructEntryDropBoxItem(         entryToolbar                                                                                               );
@@ -3604,19 +3621,14 @@ public class GwtMenuHelper {
 			Folder folder = ((Folder) binder);
 			reply = ((!(folder.isMirrored())) || SelectionDetails.USE_NEW_DELETE_DIALOG);
 		}
-		
 		else if (binder instanceof Workspace) {
-			Workspace ws = ((Workspace) binder);
-			if (ws.isReserved()) {
-				if (ws.getInternalId().equals(ObjectKeys.PROFILE_ROOT_INTERNALID) ||
-				    ws.getInternalId().equals(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID)) {
-					reply = false;
-				}
-			}
+			reply =
+				((!(BinderHelper.isBinderProfilesRootWS(  binder))) &&
+				 (!(BinderHelper.isBinderNetFoldersRootWS(binder))));
 		}
 		return reply;
 	}
-	
+
 	/*
 	 * Returns true if a folder is writable mirrored folder and false
 	 * otherwise.

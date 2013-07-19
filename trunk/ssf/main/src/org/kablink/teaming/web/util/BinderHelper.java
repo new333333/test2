@@ -5161,6 +5161,24 @@ public class BinderHelper {
 	}
 	
 	/**
+	 * Returns true if the given binder is one of the many binders a
+	 * user can't delete, even if they have rights to do so.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static boolean isBinderDeleteProtected(Binder binder) {
+		return
+			(isBinderSystemUserWS(    binder) ||	// Any system user (e.g., Email posting agent, ...)
+			 isBinderCurrentUsersWS(  binder) ||	// The currently logged in user's workspace.
+			 isBinderProfilesRootWS(  binder) ||	// The root workspace that contains all other workspaces.
+			 isBinderNetFoldersRootWS(binder) ||	// The root workspace that contains all Net Folders.
+			 isBinderHomeFolder(      binder) ||	// Any user's Home folder.
+			 isBinderTopNetFolder(    binder));		// Any top level Net Folder.
+	}
+	
+	/**
 	 * Returns true if a binder is a Home folder and false otherwise.
 	 * 
 	 * @param binder
@@ -5192,7 +5210,69 @@ public class BinderHelper {
     	Boolean isMyFilesDir = ((Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_MYFILES_DIR));
     	return ((null != isMyFilesDir) && isMyFilesDir);
 	}
+
+	/**
+	 * Returns true if a binder is the root profiles workspace and
+	 * false otherwise.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static boolean isBinderProfilesRootWS(Binder binder) {
+		boolean reply = false;
+		if (binder instanceof Workspace) {
+			Workspace ws = ((Workspace) binder);
+			if (ws.isReserved()) {
+				reply = ws.getInternalId().equals(ObjectKeys.PROFILE_ROOT_INTERNALID);
+			}
+		}
+		return reply;
+	}
+
+	/**
+	 * Returns true if a binder is the root Net Folders workspace and
+	 * false otherwise.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static boolean isBinderNetFoldersRootWS(Binder binder) {
+		boolean reply = false;
+		if (binder instanceof Workspace) {
+			Workspace ws = ((Workspace) binder);
+			if (ws.isReserved()) {
+				reply = ws.getInternalId().equals(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID);
+			}
+		}
+		return reply;
+	}
 	
+	/**
+	 * Returns true if a binder is a top level Net Folder and false
+	 * otherwise.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static boolean isBinderTopNetFolder(Binder binder) {
+		// Is the binder a folder?
+		boolean reply = false;
+		if (binder.getEntityType().name().equals(EntityType.folder.name())) {
+			// Yes!  Is it a Net Folder?
+			if (binder.isAclExternallyControlled()) {
+				// Yes!  Is it a top level Net Folder?
+				reply = ((Folder) binder).isTop();
+			}
+		}
+		
+		// If we get here, reply is true if binder is a top level Net
+		// Folder and false otherwise.  Return it.
+		return reply;
+	}
+
 	/**
 	 * Returns true if the specified binder is the user's currently
 	 * active My Files Storage folder and false otherwise.
