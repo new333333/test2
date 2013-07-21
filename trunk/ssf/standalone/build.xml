@@ -184,6 +184,12 @@
 		</copy>
 	</target>
 		
+	<target name="deploy-log4j">
+		<copy todir="${tomcat.conf}" >
+			<fileset dir="${project.dir}/conf" includes="*.*" />
+		</copy>
+	</target>
+		
 	<target name="deploy-standalone-jboss-tomcat" depends="init-standalone, clean-app-server">		
 		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
 		
