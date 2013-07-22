@@ -223,10 +223,19 @@
         </addColumn>
     </changeSet>
     
-    <changeSet author="dennis" context="schema" failOnError="true" id="54">
+    <changeSet author="dennis" context="schema" failOnError="true" id="14">
         <comment>Is deployment of the Desktop application done from local files</comment>
         <addColumn tableName="SS_ZONECONFIG">
             <column name="FSADEPLOYLOCALAPPS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+        <comment>IPv4 address of the node on which reindexing started</comment>
+        <addColumn tableName="SS_INDEXNODE">
+            <column name="REINDEXINGIPV4ADDRESS" type="VARCHAR2(16 CHAR)">
                 <constraints nullable="true" />
             </column>
         </addColumn>

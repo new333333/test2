@@ -149,6 +149,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.NetworkUtil;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.RuntimeStatistics;
 import org.kablink.teaming.util.SPropsUtil;
@@ -3378,7 +3379,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		if(indexNode == null) {
 			final IndexNode indexNodeRef = new IndexNode(null, SearchUtils.getIndexName(), IndexNode.USER_MODE_ACCESS_READ_WRITE);
 			Date now = new Date();
-			indexNodeRef.setReindexingStartDate(now);
+			indexNodeRef.setReindexingStartDateAndAddress(now);
 			indexNodeRef.setReindexingEndDate(null);
 			getTransactionTemplate().execute(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
@@ -3400,7 +3401,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 				final Date now = new Date();
 				getTransactionTemplate().execute(new TransactionCallback<Object>() {
 					public Object doInTransaction(TransactionStatus status) {
-						indexNodeRef.setReindexingStartDate(now);
+						indexNodeRef.setReindexingStartDateAndAddress(now);
 						indexNodeRef.setReindexingEndDate(null);
 						return null;
 					}
