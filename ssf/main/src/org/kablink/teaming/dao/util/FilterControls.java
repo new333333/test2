@@ -98,6 +98,11 @@ public class FilterControls implements Cloneable {
 		add( crit );
 	}
 	
+	public void addNotNull(String name) {
+		Criterion crit = Restrictions.notNull(name);
+		add(crit);
+	}
+	
 	public void appendFilter(String alias, StringBuffer filter) {
 	 	int count = criteria.size();
 	 	if (count > 0) {
