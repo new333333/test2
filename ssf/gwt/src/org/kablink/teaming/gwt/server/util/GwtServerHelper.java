@@ -230,6 +230,7 @@ import org.kablink.teaming.gwt.client.util.MilestoneStats;
 import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
+import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
@@ -2145,7 +2146,7 @@ public class GwtServerHelper {
 				trashIds = new ArrayList<EntityId>();
 				purgeIds = new ArrayList<EntityId>();
 				for (EntityId eid:  entityIds) {
-					if (isEntityRemote(bs, eid))
+					if (isEntityRemote(bs, eid, reply))
 					     purgeIds.add(eid);
 					else trashIds.add(eid);
 				}
@@ -5092,8 +5093,8 @@ public class GwtServerHelper {
 	public static String getEntityTitle(AllModulesInjected bs, EntityId entityId) {
 		String reply;
 		if (entityId.isBinder())
-		     reply = getBinderTitle(bs,                        entityId.getEntityId());
-		else reply = getEntryTitle(bs, entityId.getBinderId(), entityId.getEntityId());;
+		     reply = getBinderTitle(bs,                         entityId.getEntityId());
+		else reply = getEntryTitle( bs, entityId.getBinderId(), entityId.getEntityId());;
 		return reply;
 	}
 
@@ -8801,7 +8802,7 @@ public class GwtServerHelper {
 	 * Returns true if the given entity is remote (i.e., located in
 	 * other than personal/adHoc storage) and false otherwise.
 	 */
-	public static boolean isEntityRemote(AllModulesInjected bs, EntityId eid) throws GwtTeamingException {
+	public static boolean isEntityRemote(AllModulesInjected bs, EntityId eid, ErrorListRpcResponseData errList) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.isEntityRemote()");
 		try {
 			// Is this an entry?
@@ -8823,7 +8824,14 @@ public class GwtServerHelper {
 				Folder f = fm.getFolder(eid.getEntityId());
 				if (null != f) {
 					// Yes!  Is it in remote storage?
-					return (f.isMirrored() || f.isAclExternallyControlled());
+					reply = (f.isMirrored() || f.isAclExternallyControlled());
+					if (!reply) {
+						// Does it contain nested folders that are in
+						// remote storage?
+						reply = SearchUtils.folderHasNestedRemoteFolders(
+							bs,
+							eid.getEntityId());
+					}
 				}
 			}
 			
@@ -9911,8 +9919,9 @@ public class GwtServerHelper {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.purgeFolderEntriesImpl()");
 		try {
 			// Scan the entry IDs...
-			BinderModule bm = bs.getBinderModule();
-			FolderModule fm = bs.getFolderModule();
+			BinderModule bm         = bs.getBinderModule();
+			FolderModule fm         = bs.getFolderModule();
+			String       msgKeyTail = (SelectionDetails.USE_NEW_DELETE_DIALOG ? ".delete" : "");
 			for (EntityId entityId:  entityIds) {
 				try {
 					// ...purging each entity...
@@ -9923,7 +9932,7 @@ public class GwtServerHelper {
 							// ...except Home folders which cannot...
 							// ...be purged...
 							String entryTitle = getEntityTitle(bs, entityId);
-							reply.addError(NLT.get("purgeEntryError.AccssControlException", new String[]{entryTitle}));
+							reply.addError(NLT.get(("purgeEntryError.AccssControlException" + msgKeyTail), new String[]{entryTitle}));
 						}
 						else if (CloudFolderHelper.isCloudFolder(binder)) {
 							CloudFolderHelper.deleteCloudFolder(bs, ((Folder) binder), deleteMirroredSource);
@@ -9941,10 +9950,10 @@ public class GwtServerHelper {
 				catch (Exception e) {
 					// ...tracking any that we couldn't purge.
 					String entryTitle = getEntityTitle(bs, entityId);
-					String messageKey;
-					if (e instanceof AccessControlException) messageKey = "purgeEntryError.AccssControlException";
-					else                                     messageKey = "purgeEntryError.OtherException";
-					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+					String msgKey;
+					if (e instanceof AccessControlException) msgKey = ("purgeEntryError.AccssControlException" + msgKeyTail);
+					else                                     msgKey = ("purgeEntryError.OtherException"        + msgKeyTail);
+					reply.addError(NLT.get(msgKey, new String[]{entryTitle}));
 					
 					GwtLogHelper.error(m_logger, "GwtServerHelper.purgeFolderEntriesImpl( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
 				}

@@ -5526,14 +5526,24 @@ public class GwtViewHelper {
 							FolderEntry fe = fm.getEntry(eid.getBinderId(), eid.getEntityId());
 							if (null != fe) {
 								// Yes!  Is it in personal storage?
+								boolean addPurgeConfirmation;
 								Folder pf = fe.getParentFolder();
 								if (pf.isMirrored() || pf.isAclExternallyControlled()) {
 									// No!  Set the reply's has remote
 									// entries flag.
+									addPurgeConfirmation = true;
 									reply.setHasRemoteEntries(true);
 								}
 								else {
+									addPurgeConfirmation = false;
 									reply.setHasAdHocEntries(true);
+								}
+								if (addPurgeConfirmation) {
+									String key;
+									if (Utils.checkIfFilr())
+									     key = "purgeConfirmation.entry.filr";
+									else key = "purgeConfirmation.entry.vibe";
+									reply.addPurgeConfirmation(NLT.get(key, new String[]{fe.getTitle()}));
 								}
 								
 								// Increment the count of entries.
@@ -5548,16 +5558,27 @@ public class GwtViewHelper {
 							if (null != f) {
 								// Yes!  Process whether it's from
 								// personal storage or not.
+								String purgeConfirmationKey;
 								if (f.isAclExternallyControlled()) {
+									purgeConfirmationKey = "purgeConfirmation.folder";
 									if (CloudFolderHelper.isCloudFolder(f))
 									     reply.setHasCloudFolders(true);
 									else reply.setHasNetFolders(  true);
 								}
 								else if (f.isMirrored()) {
+									purgeConfirmationKey = "purgeConfirmation.folder";
 									reply.setHasMirroredFolders(true);
 								}
+								else if (SearchUtils.folderHasNestedRemoteFolders(bs, eid.getEntityId())) {
+									purgeConfirmationKey = "purgeConfirmation.folder.nested";
+									reply.setHasAdHocNestedRemoteFolders(true);
+								}
 								else {
+									purgeConfirmationKey = null;
 									reply.setHasAdHocFolders(true);
+								}
+								if (null != purgeConfirmationKey) {
+									reply.addPurgeConfirmation(NLT.get(purgeConfirmationKey, new String[]{f.getTitle()}));
 								}
 								
 								// Increment the count of folders.

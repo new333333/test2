@@ -615,19 +615,20 @@
 /* End:  Empty widget styles. */
 
 /* Start:  Delete selections dialog styles. */
+	.vibe-deleteSelectionsDlg                   {min-width: 220px;}
 	.vibe-deleteSelectionsDlg-purgeNote         {}
 	.vibe-deleteSelectionsDlg-purgeRadio        {} 
+	.vibe-deleteSelectionsDlg-purgeRadioLabel   {font-size: 14px;} 
 	.vibe-deleteSelectionsDlg-radio             {} 
-	.vibe-deleteSelectionsDlg-purgeRadioLabel   {} 
 	.vibe-deleteSelectionsDlg-trashRadio        {} 
-	.vibe-deleteSelectionsDlg-trashRadioLabel   {} 
+	.vibe-deleteSelectionsDlg-trashRadioLabel   {font-size: 14px;} 
 	.vibe-deleteSelectionsDlg-rootPanel         {padding: 8px;}
 	.vibe-deleteSelectionsDlg-warning           {}
 	.vibe-deleteSelectionsDlg-warningImg        {margin-right: 3px; display: none; visibility: hidden;}
 	.vibe-deleteSelectionsDlg-warningImgActive  {display: inline !important; visibility: visible !important;}
 	.vibe-deleteSelectionsDlg-warningPanel      {padding-top: 5px;}
-	.vibe-deleteSelectionsDlg-warningTxt        {}
-	.vibe-deleteSelectionsDlg-warningTxtActive  {font-size: 1.1em; font-weight: bold;}
+	.vibe-deleteSelectionsDlg-warningTxt        {font-size: 14px; font-weight: bold; display: none; visibility: hidden;}
+	.vibe-deleteSelectionsDlg-warningTxtActive  {display: inline !important; visibility: visible !important;}
 	.vibe-deleteSelectionsDlg-warningSituation1 {}
 	.vibe-deleteSelectionsDlg-warningSituation2 {padding-top: 5px;}
 	.vibe-deleteSelectionsDlg-warningSituation3 {padding-top: 5px; padding-left: 3px;}

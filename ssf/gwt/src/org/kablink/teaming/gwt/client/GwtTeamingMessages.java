@@ -1946,7 +1946,8 @@ public interface GwtTeamingMessages extends Messages
 	String confirmDlgHeader();
 	
 	// Strings used by the MultiErrorAlertDlg.
-	String multiErrorAlertDlgHeader();
+	String multiErrorAlertDlgHeaderConfirm();
+	String multiErrorAlertDlgHeaderError();
 	
 	// Strings used in the Project Information widget
 	String dueDateLabel();
@@ -2753,6 +2754,7 @@ public interface GwtTeamingMessages extends Messages
 	String netFolderSyncStatisticsDlg_StartDate();
 	
 	// Strings used in the Delete Selections dialog.
+	String deleteSelectionsDlgConfirm();
 	String deleteSelectionsDlgHeader();
 	String deleteSelectionsDlgLabel_Trash();
 	String deleteSelectionsDlgLabel_TrashAdHoc();
