@@ -289,8 +289,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		final List<IndexNode> nodes = getCoreDao().loadObjects(IndexNode.class, filter, null);
 		if(nodes.size() > 0) {
 			for(IndexNode node:nodes) {
-				logger.info("Clearing reindexing status on index node '" + node.getId() + "' from node '"  + node.getReindexingIpv4Address() + "' at startup");
+				logger.info("Clearing reindexing status on index node with id '" + node.getId() + "' from node '"  + node.getReindexingIpv4Address() + "' at startup");
 				node.setReindexingStartDate(null);
+				node.setReindexingIpv4Address(null);
 				node.setReindexingEndDate(null);
     			getCoreDao().updateNewSessionWithoutUpdate(node);
 			}

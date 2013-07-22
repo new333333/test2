@@ -210,7 +210,7 @@ public class IndexNode extends ZonedObject {
 		return reindexingIpv4Address;
 	}
 
-	private void setReindexingIpv4Address(String reindexingIpv4Address) {
+	public void setReindexingIpv4Address(String reindexingIpv4Address) {
 		this.reindexingIpv4Address = reindexingIpv4Address;
 	}
 
