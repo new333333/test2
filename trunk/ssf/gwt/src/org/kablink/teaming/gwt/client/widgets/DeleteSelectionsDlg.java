@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -47,6 +48,7 @@ import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetailsHelper;
 import org.kablink.teaming.gwt.client.util.SelectionDetailsHelper.SelectionDetailsCallback;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgButtonMode;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -71,6 +73,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler {
+	@SuppressWarnings("unused")
 	private boolean						m_isFilr;			// true -> We're in Filr mode.  false -> We're not.
 	private DialogMode					m_dialogMode;		// The mode the dialog is running in.  Defines what's displayed on the dialog.
 	private DeletePurgeEntriesCallback	m_dpeCallback;		//
@@ -109,6 +112,7 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		super(false, true, DlgButtonMode.OkCancel);
 
 		// ...initialize everything else...
+		addStyleName("vibe-deleteSelectionsDlg");
 		m_isFilr   = GwtClientHelper.isLicenseFilr();
 		m_images   = GwtTeaming.getImageBundle();
 		m_messages = GwtTeaming.getMessages();
@@ -212,11 +216,62 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 */
 	@Override
 	public boolean editSuccessful(Object callbackData) {
-		// Start deleting the selections and return false to keep the
-		// dialog open.  It will be closed once the deletions have
-		// completed.
-		doDeletesAsync();
-		return true;
+		// Asynchronously handle the ok...
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				editSuccessfulNow();
+			}
+		});
+
+		// ...and return false to keep the dialog open.  We'll close it
+		// ...when we actually perform the delete.
+		return false;
+	}
+	
+	/*
+	 * Called is the user selects the dialog's Ok button.
+	 */
+	private void editSuccessfulNow() {
+		// Are we performing a mixed mode delete that needs a user
+		// confirmation?
+		if (m_dialogMode.equals(DialogMode.Situation3) && m_trashRB.getValue()) {
+			// Yes!  Does the user accept what's going to be purged?
+			ErrorListRpcResponseData purgeConfirmations = m_selectionDetails.getPurgeConfirmations();
+			GwtClientHelper.displayMultipleErrors(
+					m_messages.deleteSelectionsDlgConfirm(),
+					purgeConfirmations.getErrorList(),
+					new ConfirmCallback() {
+				@Override
+				public void dialogReady() {
+					// Ignored.  We don't care when the dialog is
+					// ready.
+				}
+
+				@Override
+				public void accepted() {
+					// Yes, the user said do it!  Start deleting the
+					// selections and hide the dialog.
+					doDeletesAsync();
+					hide();
+				}
+
+				@Override
+				public void rejected() {
+					// No, the user said don't do it!  Simply leave the
+					// dialog open.
+				}
+			},
+			DlgButtonMode.OkCancel);
+		}
+		
+		else {
+			// No, we're not performing a mixed mode delete that needs
+			// an additional confirmation!  Start deleting the
+			// selections and hide the dialog.
+			doDeletesAsync();
+			hide();
+		}
 	}
 	
 	/**
@@ -451,17 +506,13 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		if (m_selectionDetails.hasRemoteSelections()) {
 			// Yes!  Are there any selections from personal storage?
 			if (m_selectionDetails.hasAdHocSelections()) {
-				// Yes!  In in Filr mode or there are no binders
-				// selected, this is situation 3.  Otherwise, it's
-				// situation 2.
-				if (m_isFilr || (!(m_selectionDetails.hasBinders())))
-				     m_dialogMode = DialogMode.Situation3;
-				else m_dialogMode = DialogMode.Situation2;
+				// Yes!  We have a mixture.  This is situation 3.
+			    m_dialogMode = DialogMode.Situation3;
 			}
 			
 			else {
-				// No, none of the selections from personal storage!
-				// This is always situation 2.
+				// No, we only have remote selections!  This is
+				// situation 2.
 				m_dialogMode = DialogMode.Situation2;
 			}
 		}

@@ -50,7 +50,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorI
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
+import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.MultiErrorAlertDlg;
+import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgButtonMode;
 import org.kablink.teaming.gwt.client.widgets.MultiErrorAlertDlg.MultiErrorAlertDlgClient;
 import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
@@ -377,8 +379,9 @@ public class GwtClientHelper {
 	 * @param baseError
 	 * @param multiErrors
 	 * @param delay
+	 * @param confirmCallback
 	 */
-	public static void displayMultipleErrors(final String baseError, final List<ErrorInfo> multiErrors, final int delay) {
+	public static void displayMultipleErrors(final String baseError, final List<ErrorInfo> multiErrors, final int delay, final ConfirmCallback confirmCallback, final DlgButtonMode confirmButtons) {
 		if (null == m_meaDlg) {
 			MultiErrorAlertDlg.createAsync(new MultiErrorAlertDlgClient() {
 				@Override
@@ -390,26 +393,36 @@ public class GwtClientHelper {
 				@Override
 				public void onSuccess(MultiErrorAlertDlg meaDlg) {
 					m_meaDlg = meaDlg;
-					displayMultipleErrorsAsync(baseError, multiErrors, delay);
+					displayMultipleErrorsAsync(baseError, multiErrors, delay, confirmCallback, confirmButtons);
 				}
 			});
 		}
 		
 		else {
-			displayMultipleErrorsAsync(baseError, multiErrors, delay);
+			displayMultipleErrorsAsync(baseError, multiErrors, delay, confirmCallback, confirmButtons);
 		}
 			
 	}
 	
+	public static void displayMultipleErrors(final String baseError, final List<ErrorInfo> multiErrors, final int delay) {
+		// Always use the initial form of the method.
+		displayMultipleErrors(baseError, multiErrors, delay, null, null);
+	}
+	
+	public static void displayMultipleErrors(String baseError, List<ErrorInfo> multiErrors, ConfirmCallback confirmCallback, DlgButtonMode confirmButtons) {
+		// Always use the initial form of the method.
+		displayMultipleErrors(baseError, multiErrors, 0, confirmCallback, confirmButtons);
+	}
+
 	public static void displayMultipleErrors(String baseError, List<ErrorInfo> multiErrors) {
 		// Always use the initial form of the method.
-		displayMultipleErrors(baseError, multiErrors, 0);
+		displayMultipleErrors(baseError, multiErrors, 0, null, null);
 	}
 
 	/*
 	 * Asynchronously displays the list of multiple error messages.
 	 */
-	private static void displayMultipleErrorsAsync(final String baseError, final List<ErrorInfo> multiErrors, final int delay) {
+	private static void displayMultipleErrorsAsync(final String baseError, final List<ErrorInfo> multiErrors, final int delay, final ConfirmCallback confirmCallback, final DlgButtonMode confirmButtons) {
 		// Do we have anything to display?
 		if (hasString(baseError) && hasItems(multiErrors)) {
 			// Yes!  If we don't have a specific amount of time to
@@ -418,7 +431,7 @@ public class GwtClientHelper {
 				new ScheduledCommand() {
 					@Override
 					public void execute() {
-						displayMultipleErrorsNow(baseError, multiErrors);
+						displayMultipleErrorsNow(baseError, multiErrors, confirmCallback, confirmButtons);
 					}
 				},
 				delay);
@@ -428,8 +441,8 @@ public class GwtClientHelper {
 	/*
 	 * Synchronously displays the list of multiple error messages.
 	 */
-	private static void displayMultipleErrorsNow(String baseError, List<ErrorInfo> multiErrors) {
-		MultiErrorAlertDlg.initAndShow(m_meaDlg, baseError, multiErrors);
+	private static void displayMultipleErrorsNow(String baseError, List<ErrorInfo> multiErrors, ConfirmCallback confirmCallback, DlgButtonMode confirmButtons) {
+		MultiErrorAlertDlg.initAndShow(m_meaDlg, baseError, multiErrors, confirmCallback, confirmButtons);
 	}
 
 	/**

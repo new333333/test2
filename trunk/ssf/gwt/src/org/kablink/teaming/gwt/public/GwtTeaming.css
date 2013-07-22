@@ -4362,12 +4362,13 @@ td.datePickerMonth {
 /* End:  Progress bar styles. */
 
 /* Start:  Multi-error alert dialog styles. */
-	.vibe-multiErrorAlertDlg-baseError {padding-bottom: 10px; font-size: 1.2em;}
-	.vibe-multiErrorAlertDlg-eachError {font-size: 1.1em; font-weight: bold;}
-	.vibe-multiErrorAlertDlg-grid      {}
-	.vibe-multiErrorAlertDlg-rootPanel {padding: 8px;}
-	.vibe-multiErrorAlertDlg-spacer    {}
-	.vibe-multiErrorAlertDlg-warnImg   {padding-bottom:  10px;}
+	.vibe-multiErrorAlertDlg-baseError     {font-size: 1.1em;}
+	.vibe-multiErrorAlertDlg-baseErrorCell {padding-bottom: 10px;}
+	.vibe-multiErrorAlertDlg-eachError     {font-size: 1.1em; font-weight: bold;}
+	.vibe-multiErrorAlertDlg-grid          {}
+	.vibe-multiErrorAlertDlg-rootPanel     {padding: 8px;}
+	.vibe-multiErrorAlertDlg-spacer        {}
+	.vibe-multiErrorAlertDlg-warnImg       {padding-bottom:  10px;}
 /* End:  Multi-error alert dialog styles. */
 
 /* Start:  Conformation dialog styles. */
