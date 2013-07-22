@@ -166,6 +166,7 @@ import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailSendException;
@@ -179,7 +180,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author Janet McCann
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule {
+public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule, InitializingBean {
 	
 	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
 	protected static String FILE_VERSION_AGING_JOB = "file.version.aging.job"; // properties in xml file need a unique name
@@ -275,6 +276,27 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		this.extensionManager = extensionManager;
 	}
 
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		cleanupReindexingStatus();
+	}
+	
+	private void cleanupReindexingStatus() {
+		FilterControls filter = new FilterControls();
+		filter.addNotNull("reindexingStartDate");
+		filter.add("reindexingIpv4Address", NetworkUtil.getLocalHostIPv4Address());
+		filter.setZoneCheck(false);
+		final List<IndexNode> nodes = getCoreDao().loadObjects(IndexNode.class, filter, null);
+		if(nodes.size() > 0) {
+			for(IndexNode node:nodes) {
+				logger.info("Clearing reindexing status on index node '" + node.getId() + "' from node '"  + node.getReindexingIpv4Address() + "' at startup");
+				node.setReindexingStartDate(null);
+				node.setReindexingEndDate(null);
+    			getCoreDao().updateNewSessionWithoutUpdate(node);
+			}
+		}
+	}
+	
 	@Override
 	public void deleteExtension(String id){
 		checkAccess(AdminOperation.manageExtensions);
@@ -3137,7 +3159,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	  			if (writeAuditTrailLogFile(entriesToBeDeleted)) {
 	  				//The entries to be purged were safely logged to disk, so we can delete them from the database
 			  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
-			  		logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
+			  		logger.debug("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
 	  			}
   			} else {
   				//Entries are not being captured to disk first, so just delete the older entries
@@ -3153,7 +3175,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	  			if (writeChangeLogLogFile(entriesToBeDeleted)) {
 	  				//The entries to be purged were safely logged to disk, so we can delete them from the database
 			  		int changeLogPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
-			  		logger.info("Purged " + changeLogPurgeCount + " records from the SS_ChangeLog table");
+			  		logger.debug("Purged " + changeLogPurgeCount + " records from the SS_ChangeLog table");
 	  			}
   			} else {
   				//Entries are not being captured to disk first, so just delete the older entries
