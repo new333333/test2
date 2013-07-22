@@ -232,4 +232,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+        <comment>IPv4 address of the node on which reindexing started</comment>
+        <addColumn tableName="SS_IndexNode">
+            <column name="reindexingIpv4Address" type="VARCHAR(16)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

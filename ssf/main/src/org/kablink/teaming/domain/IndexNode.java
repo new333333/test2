@@ -36,6 +36,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
+import org.kablink.teaming.util.NetworkUtil;
 import org.kablink.util.StringUtil;
 
 public class IndexNode extends ZonedObject {
@@ -62,7 +63,14 @@ public class IndexNode extends ZonedObject {
 	
 	private String accessMode = updateAccessMode(USER_MODE_ACCESS_WRITE_ONLY, true);; // (internal use only) contains userModeAccess followed by space followed by 1 or 0
 
-	private Date reindexingStartDate, reindexingEndDate;
+	// Date reindexing started
+	private Date reindexingStartDate;
+	
+	// Date reindexing ended
+	private Date reindexingEndDate;
+	
+	// Network address of the node on which reindexing started
+	private String reindexingIpv4Address;
 	
 	// The following two fields are here for convenience only, and not persistent.
 	private String title;
@@ -168,6 +176,11 @@ public class IndexNode extends ZonedObject {
 		return reindexingStartDate;
 	}
 
+	public void setReindexingStartDateAndAddress(Date reindexingStartDate) {
+		this.setReindexingStartDate(reindexingStartDate);
+		this.setReindexingIpv4Address(NetworkUtil.getLocalHostIPv4Address());
+	}
+	
 	public void setReindexingStartDate(Date reindexingStartDate) {
 		this.reindexingStartDate = reindexingStartDate;
 	}
@@ -193,6 +206,14 @@ public class IndexNode extends ZonedObject {
 		}
 	}
 	
+	public String getReindexingIpv4Address() {
+		return reindexingIpv4Address;
+	}
+
+	private void setReindexingIpv4Address(String reindexingIpv4Address) {
+		this.reindexingIpv4Address = reindexingIpv4Address;
+	}
+
 	public static class Name implements Serializable {
 		private String nodeName;
 		private String indexName;
