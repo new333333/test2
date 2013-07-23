@@ -3378,7 +3378,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     
     @Override
     public void clearReindexState(String[] nodeNames) {
-		final IndexNode indexNode = loadSingletonIndexNode();
+		final IndexNode indexNode = loadNonHAIndexNode();
 		if(indexNode == null) {
 			if(logger.isDebugEnabled())
 				logger.debug("No reindexing state to clear because no-name index node is not found");
@@ -3398,7 +3398,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     }
 
     protected void setStateReindexStart(String[] nodeNames) {
-		IndexNode indexNode = loadSingletonIndexNode();
+		IndexNode indexNode = loadNonHAIndexNode();
 		if(indexNode == null) {
 			final IndexNode indexNodeRef = new IndexNode(null, SearchUtils.getIndexName(), IndexNode.USER_MODE_ACCESS_READ_WRITE);
 			Date now = new Date();
@@ -3436,7 +3436,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     }
     
     protected void setStateReindexEnd(String[] nodeNames) {
-		final IndexNode indexNode = loadSingletonIndexNode();
+		final IndexNode indexNode = loadNonHAIndexNode();
 		if(indexNode == null) {
 			logger.error("Can not mark reindexing end because no-name index node is not found");
 		}
@@ -3453,7 +3453,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		}
     }
 
-    protected IndexNode loadSingletonIndexNode() {
+    public IndexNode loadNonHAIndexNode() {
     	FilterControls filter = new FilterControls();
     	filter.addIsNull("name.nodeName");
     	List<IndexNode> nodes = getCoreDao().loadObjects(IndexNode.class, filter, RequestContextHolder.getRequestContext().getZoneId());
@@ -3468,7 +3468,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     }
 
     public boolean isUnsafeReindexinginProgress() {
-		final IndexNode indexNode = loadSingletonIndexNode();
+		final IndexNode indexNode = loadNonHAIndexNode();
 		if(indexNode == null)
 			return false;
 		return indexNode.isReindexingInProgress();
