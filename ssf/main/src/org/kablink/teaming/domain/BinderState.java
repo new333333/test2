@@ -316,7 +316,7 @@ public class BinderState extends ZonedObject {
 		}
 
 		public void setStatus(FullSyncStatus status, String statusIpv4Address) {
-			setStatus(status);
+			setStatus(status); 
 			setStatusDate(new Date());
 			setStatusIpv4Address(statusIpv4Address);
 		}
