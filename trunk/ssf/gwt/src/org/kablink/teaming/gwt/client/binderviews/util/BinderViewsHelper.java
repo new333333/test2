@@ -77,7 +77,6 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
@@ -316,87 +315,32 @@ public class BinderViewsHelper {
 			return;
 		}
 
-		// Are we using the new delete dialog?
-		if (SelectionDetails.USE_NEW_DELETE_DIALOG) {
-			// Yes!  Have we created an instance of it yet?
-			if (null == m_dsDlg) {
-				// No!  Create one now...
-				DeleteSelectionsDlg.createAsync(new DeleteSelectionsDlgClient() {
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(DeleteSelectionsDlg dsDlg) {
-						// ...and run it.
-						m_dsDlg = dsDlg;
-						DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
-					}
-				});
+		// Have we created an instance of the delete selections dialog
+		// yet?
+		if (null == m_dsDlg) {
+			// No!  Create one now...
+			DeleteSelectionsDlg.createAsync(new DeleteSelectionsDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
 				
-			}
+				@Override
+				public void onSuccess(DeleteSelectionsDlg dsDlg) {
+					// ...and run it.
+					m_dsDlg = dsDlg;
+					DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
+				}
+			});
 			
-			else {
-				// Yes, we already have instance of one!  Simply run
-				// it.
-				DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
-			}
-			
-			// We're done.  Bail. 
-			return;
 		}
 		
-		// Is the user sure they want to delete the folder entries?
-		ConfirmDlg.createAsync(new ConfirmDlgClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess(ConfirmDlg cDlg) {
-				String confirmationMsg;
-				switch (entityIds.size()) {
-				case 1:
-					EntityId	eid     = entityIds.get(0);
-					String		eidType = eid.getEntityType();
-					if      (eidType.equals(EntityId.FOLDER))    confirmationMsg = m_messages.binderViewsConfirmDeleteFolder();
-					else if (eidType.equals(EntityId.WORKSPACE)) confirmationMsg = m_messages.binderViewsConfirmDeleteWorkspace();
-					else                                         confirmationMsg = m_messages.binderViewsConfirmDeleteEntry();
-					break;
-					
-				default:
-					confirmationMsg = m_messages.binderViewsConfirmDeleteEntries();
-					break;
-				}
-				ConfirmDlg.initAndShow(
-					cDlg,
-					new ConfirmCallback() {
-						@Override
-						public void dialogReady() {
-							// Ignored.  We don't really care when the
-							// dialog is ready.
-						}
-
-						@Override
-						public void accepted() {
-							// Yes, they're sure!  Perform the delete.
-							DeletePurgeEntriesHelper.deleteSelectedEntriesAsync(
-								entityIds,
-								dpeCallback);
-						}
-
-						@Override
-						public void rejected() {
-							// No, they're not sure!
-						}
-					},
-					confirmationMsg);
-			}
-		});
+		else {
+			// Yes, we already have instance of one!  Simply run
+			// it.
+			DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
+		}
 	}
 	
 	/**

@@ -616,7 +616,7 @@
 
 /* Start:  Delete selections dialog styles. */
 	.vibe-deleteSelectionsDlg                   {min-width: 220px;}
-	.vibe-deleteSelectionsDlg-purgeNote         {}
+	.vibe-deleteSelectionsDlg-purgeNote         {font-size: 14px;}
 	.vibe-deleteSelectionsDlg-purgeRadio        {} 
 	.vibe-deleteSelectionsDlg-purgeRadioLabel   {font-size: 14px;} 
 	.vibe-deleteSelectionsDlg-radio             {} 

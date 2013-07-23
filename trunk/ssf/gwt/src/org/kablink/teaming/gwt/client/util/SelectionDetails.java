@@ -32,8 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -44,21 +47,20 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class SelectionDetails implements IsSerializable, VibeRpcResponseData {
-	public final static boolean USE_NEW_DELETE_DIALOG	= false;	//! DRF (20130718):  Leave false on checkin until it's all working.
-	
-	private boolean 					m_hasAdHocEntries;				// true -> Selections include entries from personal storage folders.
-	private boolean 					m_hasAdHocFolders;				// true -> Selections include AdHoc Folders.
-	private boolean 					m_hasAdHocNestedRemoteFolders;	// true -> Selections include AdHoc Folders that contain nested remote (i.e., Mirrored, Net or Cloud) folders.
-	private boolean 					m_hasAdHocWorkspaces;			// true -> Selections include AdHoc Workspaces.
-	private boolean 					m_hasCloudFolders;				// true -> Selections include Cloud Folders.
-	private boolean 					m_hasMirroredFolders;			// true -> Selections include Vibe Mirrored Folders.
-	private boolean 					m_hasNetFolders;				// true -> Selections include Net Folders.
-	private boolean 					m_hasRemoteEntries;				// true -> Selections include entries from either Net Folders or Vibe Mirrored folders.
-	private ErrorListRpcResponseData	m_purgeConfirmations;			// Set containing information about the items that will be purged.
-	private int							m_entryCount;					// Count of entries selected.
-	private int							m_folderCount;					// Count of folders selected.
-	private int							m_totalCount;					// Total count of everything being tracked.
-	private int							m_workspaceCount;				// Count of workspaces selected.
+	private boolean 					m_hasAdHocEntries;						// true -> Selections include entries from personal storage folders.
+	private boolean 					m_hasAdHocFolders;						// true -> Selections include AdHoc Folders.
+	private boolean 					m_hasAdHocFoldersWithNestedRemote;		// true -> Selections include AdHoc Folders that contain nested remote (i.e., Mirrored, Net or Cloud) folders.
+	private boolean 					m_hasAdHocWorkspaces;					// true -> Selections include AdHoc Workspaces.
+	private boolean 					m_hasAdHocWorkspacesWithNestedRemote;	// true -> Selections include AdHoc Workspaces that contain nested remote (i.e., Mirrored, Net or Cloud) folders.
+	private boolean 					m_hasCloudFolders;						// true -> Selections include Cloud Folders.
+	private boolean 					m_hasMirroredFolders;					// true -> Selections include Vibe Mirrored Folders.
+	private boolean 					m_hasNetFolders;						// true -> Selections include Net Folders.
+	private boolean 					m_hasRemoteEntries;						// true -> Selections include entries from either Net Folders or Vibe Mirrored folders.
+	private ErrorListRpcResponseData	m_purgeConfirmations;					// Set containing information about the items that will be purged.
+	private int							m_entryCount;							// Count of entries selected.
+	private int							m_folderCount;							// Count of folders selected.
+	private int							m_totalCount;							// Total count of everything being tracked.
+	private int							m_workspaceCount;						// Count of workspaces selected.
 	
 	/**
 	 * Constructor method.
@@ -70,7 +72,8 @@ public class SelectionDetails implements IsSerializable, VibeRpcResponseData {
 		// Initialize the super class...
 		super();
 		
-		// ...and initialize everything else.
+		// ...and initialize anything else that requires
+		// ...initialization.
 		m_purgeConfirmations = new ErrorListRpcResponseData();
 	}
 	
@@ -79,50 +82,54 @@ public class SelectionDetails implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public boolean                  hasAdHocBinders()             {return (m_hasAdHocFolders || m_hasAdHocWorkspaces);                                                   }
-	public boolean                  hasAdHocEntries()             {return m_hasAdHocEntries;                                                                             }
-	public boolean                  hasAdHocFolders()             {return m_hasAdHocFolders;                                                                             }
-	public boolean                  hasAdHocNestedRemoteFolders() {return m_hasAdHocNestedRemoteFolders;                                                                 }
-	public boolean                  hasAdHocSelections()          {return (m_hasAdHocEntries || hasAdHocBinders());                                                      }
-	public boolean                  hasAdHocWorkspaces()          {return m_hasAdHocWorkspaces;                                                                          }
-	public boolean                  hasCloudFolders()             {return m_hasCloudFolders;                                                                             }
-	public boolean                  hasBinders()                  {return (0 < getBinderCount());                                                                        }
-	public boolean                  hasEntries()                  {return (0 < m_entryCount);                                                                            }
-	public boolean                  hasFolders()                  {return (0 < m_folderCount);                                                                           }
-	public boolean                  hasMirroredFolders()          {return m_hasMirroredFolders;                                                                          }
-	public boolean                  hasNetFolders()               {return m_hasNetFolders;                                                                               }
-	public boolean                  hasRemoteEntries()            {return m_hasRemoteEntries;                                                                            }
-	public boolean                  hasRemoteFolders()            {return (m_hasCloudFolders || m_hasMirroredFolders | m_hasNetFolders || m_hasAdHocNestedRemoteFolders);}
-	public boolean                  hasRemoteSelections()         {return (hasRemoteEntries() || hasRemoteFolders());                                                    }
-	public boolean                  hasUnclassified()             {return (0 < getUnclassifiedCount());                                                                  }
-	public boolean                  hasWorkspaces()               {return (0 < m_workspaceCount);                                                                        }
-	public ErrorListRpcResponseData getPurgeConfirmations()       {return m_purgeConfirmations;                                                                          }
-	public int                      getEntryCount()               {return m_entryCount;                                                                                  }
-	public int                      getBinderCount()              {return (m_folderCount + m_workspaceCount);                                                            }
-	public int                      getFolderCount()              {return m_folderCount;                                                                                 }
-	public int                      getTotalCount()               {return m_totalCount;                                                                                  }
-	public int                      getUnclassifiedCount()        {return (m_totalCount - (m_entryCount + getBinderCount()));                                            }
-	public int                      getWorkspaceCount()           {return m_workspaceCount;                                                                              }
+	public boolean         hasAdHocBinders()                    {return (m_hasAdHocFolders || m_hasAdHocWorkspaces);                                                       }
+	public boolean         hasAdHocEntries()                    {return m_hasAdHocEntries;                                                                                 }
+	public boolean         hasAdHocFolders()                    {return m_hasAdHocFolders;                                                                                 }
+	public boolean         hasAdHocFoldersWithNestedRemote()    {return m_hasAdHocFoldersWithNestedRemote;                                                                 }
+	public boolean         hasAdHocSelections()                 {return (m_hasAdHocEntries || hasAdHocBinders());                                                          }
+	public boolean         hasAdHocWorkspaces()                 {return m_hasAdHocWorkspaces;                                                                              }
+	public boolean         hasAdHocWorkspacesWithNestedRemote() {return m_hasAdHocWorkspacesWithNestedRemote;                                                              }
+	public boolean         hasCloudFolders()                    {return m_hasCloudFolders;                                                                                 }
+	public boolean         hasBinders()                         {return (0 < getBinderCount());                                                                            }
+	public boolean         hasEntries()                         {return (0 < m_entryCount);                                                                                }
+	public boolean         hasFolders()                         {return (0 < m_folderCount);                                                                               }
+	public boolean         hasMirroredFolders()                 {return m_hasMirroredFolders;                                                                              }
+	public boolean         hasNetFolders()                      {return m_hasNetFolders;                                                                                   }
+	public boolean         hasPurgeConfirmations()              {return m_purgeConfirmations.hasErrors();                                                                  }
+	public boolean         hasRemoteEntries()                   {return m_hasRemoteEntries;                                                                                }
+	public boolean         hasRemoteFolders()                   {return (m_hasCloudFolders || m_hasMirroredFolders | m_hasNetFolders || m_hasAdHocFoldersWithNestedRemote);}
+	public boolean         hasRemoteSelections()                {return (hasRemoteEntries() || hasRemoteFolders() || hasRemoteWorkspaces());                               }
+	public boolean         hasRemoteWorkspaces()                {return m_hasAdHocWorkspacesWithNestedRemote;                                                              }
+	public boolean         hasUnclassified()                    {return (0 < getUnclassifiedCount());                                                                      }
+	public boolean         hasWorkspaces()                      {return (0 < m_workspaceCount);                                                                            }
+	public int             getEntryCount()                      {return m_entryCount;                                                                                      }
+	public int             getBinderCount()                     {return (m_folderCount + m_workspaceCount);                                                                }
+	public int             getFolderCount()                     {return m_folderCount;                                                                                     }
+	public int             getTotalCount()                      {return m_totalCount;                                                                                      }
+	public int             getUnclassifiedCount()               {return (m_totalCount - (m_entryCount + getBinderCount()));                                                }
+	public int             getWorkspaceCount()                  {return m_workspaceCount;                                                                                  }
+	public List<ErrorInfo> getPurgeConfirmations()              {return m_purgeConfirmations.getErrorList();                                                               }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void addPurgeConfirmation(          String  confirmation)                {m_purgeConfirmations.addWarning(confirmation);              }
-	public void incrEntryCount()                                                    {m_entryCount                 += 1;                          }
-	public void incrFolderCount()                                                   {m_folderCount                += 1;                          }
-	public void incrWorkspaceCount()                                                {m_workspaceCount             += 1;                          }
-	public void setEntryCount(                 int     entryCount)                  {m_entryCount                  = entryCount;                 }
-	public void setFolderCount(                int     folderCount)                 {m_folderCount                 = folderCount;                }
-	public void setHasAdHocEntries(            boolean hasAdHocEntries)             {m_hasAdHocEntries             = hasAdHocEntries;            }
-	public void setHasAdHocFolders(            boolean hasAdHocFolders)             {m_hasAdHocFolders             = hasAdHocFolders;            }
-	public void setHasAdHocNestedRemoteFolders(boolean hasAdHocNestedRemoteFolders) {m_hasAdHocNestedRemoteFolders = hasAdHocNestedRemoteFolders;}
-	public void setHasAdHocWorkspaces(         boolean hasAdHocWorkspaces)          {m_hasAdHocWorkspaces          = hasAdHocWorkspaces;         }
-	public void setHasCloudFolders(            boolean hasCloudFolders)             {m_hasCloudFolders             = hasCloudFolders;            }
-	public void setHasMirroredFolders(         boolean hasMirroredFolders)          {m_hasMirroredFolders          = hasMirroredFolders;         }
-	public void setHasNetFolders(              boolean hasNetFolders)               {m_hasNetFolders               = hasNetFolders;              }
-	public void setHasRemoteEntries(           boolean hasRemoteEntries)            {m_hasRemoteEntries            = hasRemoteEntries;           }
-	public void setTotalCount(                 int     totalCount)                  {m_totalCount                  = totalCount;                 }
-	public void setWorkspaceCount(             int     workspaceCount)              {m_workspaceCount              = workspaceCount;             }
+	public void addPurgeConfirmation(                 String  confirmation)                       {m_purgeConfirmations.addWarning(confirmation);                            }
+	public void incrEntryCount()                                                                  {m_entryCount                        += 1;                                 }
+	public void incrFolderCount()                                                                 {m_folderCount                       += 1;                                 }
+	public void incrWorkspaceCount()                                                              {m_workspaceCount                    += 1;                                 }
+	public void setEntryCount(                        int     entryCount)                         {m_entryCount                         = entryCount;                        }
+	public void setFolderCount(                       int     folderCount)                        {m_folderCount                        = folderCount;                       }
+	public void setHasAdHocEntries(                   boolean hasAdHocEntries)                    {m_hasAdHocEntries                    = hasAdHocEntries;                   }
+	public void setHasAdHocFolders(                   boolean hasAdHocFolders)                    {m_hasAdHocFolders                    = hasAdHocFolders;                   }
+	public void setHasAdHocFoldersWithNestedRemote(   boolean hasAdHocFoldersWithNestedRemote)    {m_hasAdHocFoldersWithNestedRemote    = hasAdHocFoldersWithNestedRemote;   }
+	public void setHasAdHocWorkspaces(                boolean hasAdHocWorkspaces)                 {m_hasAdHocWorkspaces                 = hasAdHocWorkspaces;                }
+	public void setHasAdHocWorkspacesWithNestedRemote(boolean hasAdHocWorkspacesWithNestedRemote) {m_hasAdHocWorkspacesWithNestedRemote = hasAdHocWorkspacesWithNestedRemote;}
+	public void setHasCloudFolders(                   boolean hasCloudFolders)                    {m_hasCloudFolders                    = hasCloudFolders;                   }
+	public void setHasMirroredFolders(                boolean hasMirroredFolders)                 {m_hasMirroredFolders                 = hasMirroredFolders;                }
+	public void setHasNetFolders(                     boolean hasNetFolders)                      {m_hasNetFolders                      = hasNetFolders;                     }
+	public void setHasRemoteEntries(                  boolean hasRemoteEntries)                   {m_hasRemoteEntries                   = hasRemoteEntries;                  }
+	public void setTotalCount(                        int     totalCount)                         {m_totalCount                         = totalCount;                        }
+	public void setWorkspaceCount(                    int     workspaceCount)                     {m_workspaceCount                     = workspaceCount;                    }
 }

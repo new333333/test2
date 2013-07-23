@@ -90,6 +90,52 @@ import static org.kablink.util.search.Restrictions.*;
  */
 @SuppressWarnings("unchecked")
 public class SearchUtils {	
+	/**
+	 * Returns true the binder contains nested remote (i.e., Mirrored,
+	 * Net or Cloud) folders and false otherwise.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static boolean binderHasNestedRemoteFolders(AllModulesInjected bs, Long binderId) {
+		return bindersHaveNestedRemoteFolders(bs, new String[]{String.valueOf(binderId)});
+	}
+	
+	/**
+	 * Returns true if any of the binders in a list of binder IDs
+	 * contain nested remote (i.e., Mirrored, Net or Cloud) folders and false otherwise.
+	 * 
+	 * @param bs
+	 * @param binderIds
+	 * 
+	 * @return
+	 */
+	public static boolean bindersHaveNestedRemoteFolders(AllModulesInjected bs, String[] binderIds) {
+		Criteria crit = new Criteria();
+		crit.add(eq(Constants.DOC_TYPE_FIELD,    Constants.DOC_TYPE_BINDER));
+		crit.add(eq(Constants.IS_MIRRORED_FIELD, Constants.TRUE));
+		crit.add(in(Constants.ENTRY_ANCESTRY,    binderIds));
+		Map searchResults = bs.getBinderModule().executeSearchQuery(
+			crit,
+			Constants.SEARCH_MODE_NORMAL,
+			0,	// Starting index.
+			1);	// Hits requested.
+		int totalRecords = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		return (0 < totalRecords);
+	}
+	
+	public static boolean bindersHaveNestedRemoteFolders(AllModulesInjected bs, List<Long> binderIds) {
+		// Always use the initial form of the method.
+		int c = binderIds.size();
+		String[] fIds = new String[c];
+		for (int i = 0; i < c; i += 1) {
+			fIds[i] = String.valueOf(binderIds.get(i));
+		}
+		return bindersHaveNestedRemoteFolders(bs, fIds);
+	}
+	
 	protected static CoreDao getCoreDao() {
 		return (CoreDao)SpringContextUtil.getBean("coreDao");
 	};
@@ -361,52 +407,6 @@ public class SearchUtils {
 		return entriesForTrackedPeopleImpl(bs, getTrackedPeopleIds(bs, userId));
 	}
 
-	/**
-	 * Returns true the folder contains nested remote (i.e., Mirrored,
-	 * Net or Cloud) folders and false otherwise.
-	 * 
-	 * @param bs
-	 * @param folderId
-	 * 
-	 * @return
-	 */
-	public static boolean folderHasNestedRemoteFolders(AllModulesInjected bs, Long folderId) {
-		return foldersHaveNestedRemoteFolders(bs, new String[]{String.valueOf(folderId)});
-	}
-	
-	/**
-	 * Returns true if any of the folders in a list of folder IDs
-	 * contain nested remote (i.e., Mirrored, Net or Cloud) folders and false otherwise.
-	 * 
-	 * @param bs
-	 * @param folderIds
-	 * 
-	 * @return
-	 */
-	public static boolean foldersHaveNestedRemoteFolders(AllModulesInjected bs, String[] folderIds) {
-		Criteria crit = new Criteria();
-		crit.add(eq(Constants.DOC_TYPE_FIELD,    Constants.DOC_TYPE_BINDER));
-		crit.add(eq(Constants.IS_MIRRORED_FIELD, Constants.TRUE));
-		crit.add(in(Constants.ENTRY_ANCESTRY,    folderIds));
-		Map searchResults = bs.getBinderModule().executeSearchQuery(
-			crit,
-			Constants.SEARCH_MODE_NORMAL,
-			0,	// Starting index.
-			1);	// Hits requested.
-		int totalRecords = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		return (0 < totalRecords);
-	}
-	
-	public static boolean foldersHaveNestedRemoteFolders(AllModulesInjected bs, List<Long> folderIds) {
-		// Always use the initial form of the method.
-		int c = folderIds.size();
-		String[] fIds = new String[c];
-		for (int i = 0; i < c; i += 1) {
-			fIds[i] = String.valueOf(folderIds.get(i));
-		}
-		return foldersHaveNestedRemoteFolders(bs, fIds);
-	}
-	
 	/**
 	 * Returns a List<String> containing the IDs of the places that that
 	 * the owner of the given binder is tracking.
