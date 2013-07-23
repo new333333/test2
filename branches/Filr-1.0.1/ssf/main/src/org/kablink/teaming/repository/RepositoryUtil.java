@@ -97,7 +97,7 @@ public class RepositoryUtil {
 			try {
 				long size = fui.makeReentrant().getSize();
 				return session.createVersioned(binder, entry, fui
-					.getOriginalFilename(), is, size);
+					.getOriginalFilename(), is, size, fui.getModTime());
 			}
 			finally {
 				try {
@@ -114,14 +114,14 @@ public class RepositoryUtil {
 	}
 
 	public static void createUnversionedFile(String repositoryName,
-			Binder binder, DefinableEntity entry, String relativeFilePath, InputStream in, long size) 
+			Binder binder, DefinableEntity entry, String relativeFilePath, InputStream in, long size, Long lastModTime) 
 		throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, binder);
 
 		try {
 			// TODO For now we ignore file path relative to the owning entry.
 			// We simply treat that the file path is identical to the file name.
-			session.createUnversioned(binder, entry, relativeFilePath, in, size);
+			session.createUnversioned(binder, entry, relativeFilePath, in, size, lastModTime);
 		} finally {
 			session.close();
 		}
@@ -139,7 +139,7 @@ public class RepositoryUtil {
 			try {
 				long size = fui.makeReentrant().getSize();
 				
-				session.update(binder, entry, fui.getOriginalFilename(), is, size);
+				session.update(binder, entry, fui.getOriginalFilename(), is, size, fui.getModTime());
 			}
 			finally {
 				try {
