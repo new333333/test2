@@ -1103,7 +1103,7 @@ public class GwtMenuHelper {
 		}
 		
 		// If the user can delete binders from the workspace...
-		boolean	canTrash = canTrashEntity(bs, ws);
+		boolean	canTrash = canManageProfiles;	// Should we be checking something else?
 		boolean needSep2 = false;
 		if (canTrash) {
 			// ...if needed add a separator item...
@@ -1119,7 +1119,7 @@ public class GwtMenuHelper {
 		}
 			
 		// If the user can purge binders from the workspace...
-		if (canPurgeEntity(bs, ws)) {
+		if (canManageProfiles) {	// Should we be checking something else?
 			// ...if needed add a separator item...
 			needSeparator = addNestedSeparatorIfNeeded(moreTBI, needSeparator);
 			
