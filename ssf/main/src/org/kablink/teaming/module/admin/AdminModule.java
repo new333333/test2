@@ -476,9 +476,39 @@ public interface AdminModule {
     
     public void setJitsConfig( boolean enabled, long maxWait );
     
+    /**
+     * Perform reindexing. This starts by first deleting from the search index the entire 
+     * documents corresponding to the binder and everything in it (as opposed to replacing
+     * one item at a time), hence destructive.
+     * 
+     * @param binderIds
+     * @param statusTicket
+     * @param nodeNames
+     * @param errors
+     * @param includeUsersAndGroups
+     * @throws AccessControlException
+     */
     public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException;
     
+    /**
+     * Clear/reset reindexing states associated with the nodes (H/A if specified, non-H/A if unspecified).
+     * 
+     * @param nodeNames
+     */
     public void clearReindexState(String[] nodeNames);
     
+    /**
+     * Return if "unsafe" reindexing is currently in progress. Used specifically by Desktop client.
+     * 
+     * @return
+     */
     public boolean isUnsafeReindexinginProgress();
+    
+    /**
+     * Load the index node associated with the system configured with non-H/A Lucene service. 
+     * If the system is set up with H/A Lucene service, this method will return null.
+     * 
+     * @return
+     */
+    public IndexNode loadNonHAIndexNode();
  }
