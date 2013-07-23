@@ -135,17 +135,17 @@ public interface AclResourceSession extends ResourceSession {
 	public List<ResourceItem> getChildren(boolean directoryOnly, boolean includeAclInfoForFolder, boolean includeAclInfoForFile, boolean includeOwnerInfo) throws FIException, IllegalStateException;
 		
 	/**
-	 * Return the name of the permission that the context owner of this session has on the file or
-	 * folder pointed to by the current path. If the user has no permission on that file or folder, 
+	 * Return the name of the highest permission that the context owner of this session has on the file
+	 * or folder pointed to by the current path. If the user has no permission on that file or folder, 
 	 * it should return <code>null</code>.
 	 * <p>
 	 * The permission name is specific to the resource driver implementing this interface and is defined
 	 * by the accompanying driver helper class implementing <code>AclItemPermissionMapper</code> interface. 
 	 * 
-	 * @return permission name or <code>null</code>
+	 * @return highest permission name or <code>null</code>
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public String checkPermission () throws FIException, UncheckedIOException;
-	
+	public String getPermissionName() throws FIException, UncheckedIOException;
+
 }
