@@ -88,7 +88,6 @@ import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
-import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -172,7 +171,6 @@ public class GwtMenuHelper {
 	private final static String MORE					= "more";
 	private final static String MOVE					= "move";
 	private final static String PERMALINK				= "permalink";
-	private final static String PURGE					= "purge";
 	private final static String REPORTS					= "reports";
 	private final static String RENAME					= "rename";
 	private final static String SCHEDULE_SYNC			= "scheduleSync";
@@ -339,7 +337,7 @@ public class GwtMenuHelper {
 			reply = false;
 		}
 		
-		if ((!reply) && SelectionDetails.USE_NEW_DELETE_DIALOG) {
+		if (!reply) {
 			reply = canPurgeEntity(bs, de);
 		}
 		
@@ -736,7 +734,7 @@ public class GwtMenuHelper {
 	private static void constructEntryDeleteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
 		// For the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
-			if (folderSupportsDeleteAndPurge(folder, viewType) && ((!(folder.isMirrored())) || SelectionDetails.USE_NEW_DELETE_DIALOG)) {
+			if (folderSupportsDeleteAndPurge(folder, viewType)) {
 				// ...and for which the user has rights to do it...
 				if (canTrashEntity(bs, folder)) {
 					// ...add a Delete item.
@@ -925,26 +923,6 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(tbi);
 		}
 		
-		if (isFolder) {
-			// ...for the view types that support it...
-			if (MiscUtil.hasString(viewType)) {
-				if (folderSupportsDeleteAndPurge(folder, viewType)) {
-					// ...and for which the user has rights to do it...
-					if (canPurgeEntity(bs, folder)) {
-						// ...add the Purge item...
-						constructEntryMorePurgeItem(moreTBI);
-					}
-				}
-			}
-		}
-		else {
-			// ...and for which the user has rights to do it...
-			if ((null == ws) || isEntryContainer || canPurgeEntity(bs, ws)) {
-				// ...add the Purge item...
-				constructEntryMorePurgeItem(moreTBI);
-			}
-		}
-
 		// ...for views that can contain entries...
 		if (isEntryContainer) {
 			// ...if we're not in Filr mode...
@@ -1019,18 +997,6 @@ public class GwtMenuHelper {
 		}
 	}
 
-	/*
-	 * Creates a 'purge' item in the 'more' toolbar.
-	 */
-	private static void constructEntryMorePurgeItem(ToolbarItem moreTBI) {
-		if (!SelectionDetails.USE_NEW_DELETE_DIALOG) {
-			ToolbarItem tbi = new ToolbarItem("1_purgeSelected");
-			markTBITitle(tbi, "toolbar.purge");
-			markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_ENTRIES);
-			moreTBI.addNestedItem(tbi);
-		}
-	}
-	
 	/*
 	 * Constructs a ToolbarItem for viewing pinned vs. non-pinned
 	 * entries.
@@ -1859,22 +1825,6 @@ public class GwtMenuHelper {
 					markTBISelectedBinder(actionTBI, binder                                                                     );
 					
 					configTBI.addNestedItem(actionTBI);
-				}
-
-				if (!SelectionDetails.USE_NEW_DELETE_DIALOG) {
-					// Is this a binder the user can purge?
-					if (canPurgeEntity(bs, binder)) {
-						// Yes!  Add the ToolbarItem for it.
-						adminMenuCreated  =
-						configMenuCreated = true;
-			
-						actionTBI = new ToolbarItem(PURGE);
-						markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.purge_folder" : "toolbar.menu.purge_workspace"));
-						markTBIEvent(         actionTBI, TeamingEvents.PURGE_SELECTED_ENTRIES                                     );
-						markTBISelectedBinder(actionTBI, binder                                                                   );
-						
-						configTBI.addNestedItem(actionTBI);
-					}
 				}
 			}
 		}
@@ -2828,7 +2778,7 @@ public class GwtMenuHelper {
 					if ((isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) && GwtShareHelper.isSharingEnabled(bs)) {
 					    constructEntryShareItem(           entryToolbar, bs, request                                                                                  );
 					}
-					if (((isCollectionMyFiles && ((!useHomeAsMyFiles)) && (!isCollectionNetFolders))) || (isCollectionShared && SelectionDetails.USE_NEW_DELETE_DIALOG)){
+					if (((isCollectionMyFiles && ((!useHomeAsMyFiles)) && (!isCollectionNetFolders))) || isCollectionShared) {
 						constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
 					}
 					if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs)) && isAddEntryAllowed()) {
@@ -3322,7 +3272,7 @@ public class GwtMenuHelper {
 			}
 
 			// Can the user move this entry to the trash?
-			if (canTrashEntity(bs, fe) && ((!(folder.isMirrored())) || SelectionDetails.USE_NEW_DELETE_DIALOG)) {
+			if (canTrashEntity(bs, fe)) {
 				// Yes!  Add a delete toolbar item for it.
 				actionTBI = new ToolbarItem(DELETE);
 				markTBITitle(   actionTBI, "toolbar.delete"                     );
@@ -3369,18 +3319,6 @@ public class GwtMenuHelper {
 				markTBIEvent(   actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
 				markTBIEntryIds(actionTBI, fe                                           );
 				dropdownTBI.addNestedItem(actionTBI);
-			}
-			
-			if (!SelectionDetails.USE_NEW_DELETE_DIALOG) {
-				// Can the user purge this entry?
-				if (canPurgeEntity(bs, fe)) {
-					// Yes!  Add a purge toolbar item for it.
-					actionTBI = new ToolbarItem(PURGE);
-					markTBITitle(   actionTBI, "toolbar.purge"                     );
-					markTBIEvent(   actionTBI, TeamingEvents.PURGE_SELECTED_ENTRIES);
-					markTBIEntryIds(actionTBI, fe                                  );
-					dropdownTBI.addNestedItem(actionTBI);
-				}
 			}
 			
 			// Are we in Filr mode?
@@ -3618,8 +3556,7 @@ public class GwtMenuHelper {
 	private static boolean isBinderTrashEnabled(Binder binder) {
 		boolean reply = true;
 		if (binder instanceof Folder) {
-			Folder folder = ((Folder) binder);
-			reply = ((!(folder.isMirrored())) || SelectionDetails.USE_NEW_DELETE_DIALOG);
+			reply = true;
 		}
 		else if (binder instanceof Workspace) {
 			reply =

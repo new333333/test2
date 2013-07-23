@@ -5526,24 +5526,27 @@ public class GwtViewHelper {
 							FolderEntry fe = fm.getEntry(eid.getBinderId(), eid.getEntityId());
 							if (null != fe) {
 								// Yes!  Is it in personal storage?
-								boolean addPurgeConfirmation;
 								Folder pf = fe.getParentFolder();
 								if (pf.isMirrored() || pf.isAclExternallyControlled()) {
 									// No!  Set the reply's has remote
-									// entries flag.
-									addPurgeConfirmation = true;
+									// entries flag...
 									reply.setHasRemoteEntries(true);
-								}
-								else {
-									addPurgeConfirmation = false;
-									reply.setHasAdHocEntries(true);
-								}
-								if (addPurgeConfirmation) {
+									
+									// ...and add a purge confirmation
+									// ...about it.
 									String key;
 									if (Utils.checkIfFilr())
 									     key = "purgeConfirmation.entry.filr";
 									else key = "purgeConfirmation.entry.vibe";
-									reply.addPurgeConfirmation(NLT.get(key, new String[]{fe.getTitle()}));
+									reply.addPurgeConfirmation(
+										NLT.get(
+											key,
+											new String[] {
+												fe.getTitle()
+											}));
+								}
+								else {
+									reply.setHasAdHocEntries(true);
 								}
 								
 								// Increment the count of entries.
@@ -5569,16 +5572,21 @@ public class GwtViewHelper {
 									purgeConfirmationKey = "purgeConfirmation.folder";
 									reply.setHasMirroredFolders(true);
 								}
-								else if (SearchUtils.folderHasNestedRemoteFolders(bs, eid.getEntityId())) {
+								else if (SearchUtils.binderHasNestedRemoteFolders(bs, eid.getEntityId())) {
 									purgeConfirmationKey = "purgeConfirmation.folder.nested";
-									reply.setHasAdHocNestedRemoteFolders(true);
+									reply.setHasAdHocFoldersWithNestedRemote(true);
 								}
 								else {
 									purgeConfirmationKey = null;
 									reply.setHasAdHocFolders(true);
 								}
 								if (null != purgeConfirmationKey) {
-									reply.addPurgeConfirmation(NLT.get(purgeConfirmationKey, new String[]{f.getTitle()}));
+									reply.addPurgeConfirmation(
+										NLT.get(
+											purgeConfirmationKey,
+											new String[] {
+												f.getTitle()
+											}));
 								}
 								
 								// Increment the count of folders.
@@ -5592,9 +5600,22 @@ public class GwtViewHelper {
 							// Yes!  Can we access it.?
 							Workspace ws = wm.getWorkspace(eid.getEntityId());
 							if (null != ws) {
-								// Yes!  Track that we found one and
-								// increment the count of workspaces.
-								reply.setHasAdHocWorkspaces(true);
+								// Yes!  Process whether it's from
+								// personal storage or not.
+								if (SearchUtils.binderHasNestedRemoteFolders(bs, eid.getEntityId())) {
+									reply.setHasAdHocWorkspacesWithNestedRemote(true);
+									reply.addPurgeConfirmation(
+										NLT.get(
+											"purgeConfirmation.workspace.nested",
+											new String[] {
+												ws.getTitle()
+											}));
+								}
+								else {
+									reply.setHasAdHocWorkspaces(true);
+								}
+								
+								// Increment the count of workspaces.
 								reply.incrWorkspaceCount();
 							}
 						}

@@ -230,7 +230,6 @@ import org.kablink.teaming.gwt.client.util.MilestoneStats;
 import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
-import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
@@ -8828,7 +8827,7 @@ public class GwtServerHelper {
 					if (!reply) {
 						// Does it contain nested folders that are in
 						// remote storage?
-						reply = SearchUtils.folderHasNestedRemoteFolders(
+						reply = SearchUtils.binderHasNestedRemoteFolders(
 							bs,
 							eid.getEntityId());
 					}
@@ -9921,7 +9920,6 @@ public class GwtServerHelper {
 			// Scan the entry IDs...
 			BinderModule bm         = bs.getBinderModule();
 			FolderModule fm         = bs.getFolderModule();
-			String       msgKeyTail = (SelectionDetails.USE_NEW_DELETE_DIALOG ? ".delete" : "");
 			for (EntityId entityId:  entityIds) {
 				try {
 					// ...purging each entity...
@@ -9932,7 +9930,7 @@ public class GwtServerHelper {
 							// ...except Home folders which cannot...
 							// ...be purged...
 							String entryTitle = getEntityTitle(bs, entityId);
-							reply.addError(NLT.get(("purgeEntryError.AccssControlException" + msgKeyTail), new String[]{entryTitle}));
+							reply.addError(NLT.get("purgeEntryError.AccssControlException", new String[]{entryTitle}));
 						}
 						else if (CloudFolderHelper.isCloudFolder(binder)) {
 							CloudFolderHelper.deleteCloudFolder(bs, ((Folder) binder), deleteMirroredSource);
@@ -9951,8 +9949,8 @@ public class GwtServerHelper {
 					// ...tracking any that we couldn't purge.
 					String entryTitle = getEntityTitle(bs, entityId);
 					String msgKey;
-					if (e instanceof AccessControlException) msgKey = ("purgeEntryError.AccssControlException" + msgKeyTail);
-					else                                     msgKey = ("purgeEntryError.OtherException"        + msgKeyTail);
+					if (e instanceof AccessControlException) msgKey = "purgeEntryError.AccssControlException";
+					else                                     msgKey = "purgeEntryError.OtherException";
 					reply.addError(NLT.get(msgKey, new String[]{entryTitle}));
 					
 					GwtLogHelper.error(m_logger, "GwtServerHelper.purgeFolderEntriesImpl( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);

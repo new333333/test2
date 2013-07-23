@@ -236,7 +236,7 @@ public class ContextMenuItem extends VibeMenuItem {
 					Long				binderId       = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",       m_eventQualifiers));
 					Long				binderParentId = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderParentId", m_eventQualifiers));
 					String				binderType     =                ToolbarItem.getQualifierValueFromList("binderType",     m_eventQualifiers );
-					EntityId			eid            = new EntityId(binderParentId, binderId, EntityId.FOLDER);
+					EntityId			eid            = new EntityId(binderParentId, binderId, binderType);
 					VibeEventBase<?>	selEvent = null;
 					switch (m_teamingEvent) {
 					case COPY_SELECTED_ENTRIES:    selEvent = new CopySelectedEntriesEvent(  binderId, eid); break;

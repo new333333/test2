@@ -48,7 +48,6 @@ import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetailsHelper;
 import org.kablink.teaming.gwt.client.util.SelectionDetailsHelper.SelectionDetailsCallback;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgButtonMode;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -73,20 +72,21 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler {
-	@SuppressWarnings("unused")
-	private boolean						m_isFilr;			// true -> We're in Filr mode.  false -> We're not.
 	private DialogMode					m_dialogMode;		// The mode the dialog is running in.  Defines what's displayed on the dialog.
-	private DeletePurgeEntriesCallback	m_dpeCallback;		//
+	private DeletePurgeEntriesCallback	m_dpeCallback;		// Callback used to interact with who called the dialog.
 	private FlexCellFormatter			m_cellFormatter;	// The formatter to control how m_grid is laid out.
 	private FlexTable					m_grid;				// The table holding the dialog's content.
 	private GwtTeamingImageBundle		m_images;			// Access to the base images.
 	private GwtTeamingMessages			m_messages;			// Access to our localized strings.
-	private Image						m_warningImg;		//
-	private InlineLabel					m_warningTxt;		//
+	private Image						m_warningImg;		// The <IMG>  on the 'can't be undone' warning. 
+	private InlineLabel					m_warningTxt;		// The <SPAN> on the 'can't be undone' warning.
 	private List<EntityId>				m_entityIds;		// The entities to be deleted.
 	private RadioButton					m_purgeRB;			// The 'Delete from system' radio button.
 	private RadioButton					m_trashRB;			// The 'Move to trash'      radio button.
-	private SelectionDetails			m_selectionDetails;	// Populated via a GWT RPC call during the population of the dialog's contents.  Contains an analysis of what m_entityIds refers to.
+	private SelectionDetails			m_selectionDetails;	// Populated via a GWT RPC call while constructing the dialog's contents.  Contains an analysis of what m_entityIds refers to.
+	
+	// The buttons displayed on this dialog.
+	private final static DlgButtonMode	DLG_BUTTONS = DlgButtonMode.OkCancel; 
 
 	/*
 	 * Enumeration type used to define how the dialog prompts the user.
@@ -109,11 +109,10 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 */
 	private DeleteSelectionsDlg() {
 		// Initialize the superclass...
-		super(false, true, DlgButtonMode.OkCancel);
+		super(false, true, DLG_BUTTONS);
 
 		// ...initialize everything else...
 		addStyleName("vibe-deleteSelectionsDlg");
-		m_isFilr   = GwtClientHelper.isLicenseFilr();
 		m_images   = GwtTeaming.getImageBundle();
 		m_messages = GwtTeaming.getMessages();
 	
@@ -126,7 +125,7 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	}
 
 	/*
-	 * Returns a Widget contain what we display for purge warnings.
+	 * Returns a Widget containing what's displayed for purge warnings.
 	 */
 	private Widget buildWarningWidget(String text) {
 		HorizontalPanel hp = new VibeHorizontalPanel(null, null);
@@ -216,7 +215,7 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 */
 	@Override
 	public boolean editSuccessful(Object callbackData) {
-		// Asynchronously handle the ok...
+		// Asynchronously handle the Ok...
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -230,47 +229,56 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	}
 	
 	/*
-	 * Called is the user selects the dialog's Ok button.
+	 * Called if the user selects the dialog's Ok button.
 	 */
 	private void editSuccessfulNow() {
-		// Are we performing a mixed mode delete that needs a user
-		// confirmation?
-		if (m_dialogMode.equals(DialogMode.Situation3) && m_trashRB.getValue()) {
+		// Hide the dialog.
+		hide();
+		
+		// Are we performing delete that needs a user confirmation?
+		//
+		// We need to confirm if:
+		// 1) we have some purge confirmations; and
+		// 2) We're in a mixed selection mode (situation 3) and the
+		//    user has chosen to move some things to the trash and
+		//    purge others.
+		boolean needsConfirmaiton =
+			(m_selectionDetails.hasPurgeConfirmations() &&
+			(m_dialogMode.equals(DialogMode.Situation3) && m_trashRB.getValue()));
+		
+		if (needsConfirmaiton) {
 			// Yes!  Does the user accept what's going to be purged?
-			ErrorListRpcResponseData purgeConfirmations = m_selectionDetails.getPurgeConfirmations();
 			GwtClientHelper.displayMultipleErrors(
-					m_messages.deleteSelectionsDlgConfirm(),
-					purgeConfirmations.getErrorList(),
-					new ConfirmCallback() {
-				@Override
-				public void dialogReady() {
-					// Ignored.  We don't care when the dialog is
-					// ready.
-				}
-
-				@Override
-				public void accepted() {
-					// Yes, the user said do it!  Start deleting the
-					// selections and hide the dialog.
-					doDeletesAsync();
-					hide();
-				}
-
-				@Override
-				public void rejected() {
-					// No, the user said don't do it!  Simply leave the
-					// dialog open.
-				}
-			},
-			DlgButtonMode.OkCancel);
+						m_messages.deleteSelectionsDlgConfirm(),
+						m_selectionDetails.getPurgeConfirmations(),
+						new ConfirmCallback() {
+					@Override
+					public void dialogReady() {
+						// Ignored.  We don't care when the dialog is
+						// ready.
+					}
+	
+					@Override
+					public void accepted() {
+						// Yes, the user said do it!  Start deleting the
+						// selections.
+						doDeletesAsync();
+					}
+	
+					@Override
+					public void rejected() {
+						// No, the user said don't do it!  Reopen the
+						// dialog.
+						show();
+					}
+				},
+				DLG_BUTTONS);
 		}
 		
 		else {
-			// No, we're not performing a mixed mode delete that needs
-			// an additional confirmation!  Start deleting the
-			// selections and hide the dialog.
+			// No, we're not performing a delete that needs a user
+			// confirmation!  Start deleting the selections.
 			doDeletesAsync();
-			hide();
 		}
 	}
 	
@@ -415,9 +423,12 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	/*
 	 * Dialog has no options.
 	 * 
-	 * Contains only a warning that the operation cannot be undone.
+	 * Contains a note that everything will be deleted from the system
+	 * and a warning that the operation cannot be undone.
 	 */
 	private void populateSituation2() {
+		// Add a note that everything will be deleted from the
+		// system...
 		m_grid.setText(              0, 0, m_messages.deleteSelectionsDlgLabel_PurgeOnly());
 		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectionsDlg-purgeNote");
 		
@@ -429,8 +440,8 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	
 	/*
 	 * Dialog has two radio buttons:
-	 *    - Move items in personal storage to trash and delete
-	 *      everything else from system (default); and
+	 *    - Move personal storage items to trash and delete others from
+	 *      system (default); and
 	 *    - Delete everything from system.
 	 *
 	 * Both options will have a warning that deleting items from the
@@ -531,6 +542,7 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 			if (null != m_warningImg) m_warningImg.addStyleName("vibe-deleteSelectionsDlg-warningImgActive");
 			if (null != m_warningTxt) m_warningTxt.addStyleName("vibe-deleteSelectionsDlg-warningTxtActive");
 		}
+		
 		else {
 			if (null != m_warningImg) m_warningImg.removeStyleName("vibe-deleteSelectionsDlg-warningImgActive");
 			if (null != m_warningTxt) m_warningTxt.removeStyleName("vibe-deleteSelectionsDlg-warningTxtActive");
