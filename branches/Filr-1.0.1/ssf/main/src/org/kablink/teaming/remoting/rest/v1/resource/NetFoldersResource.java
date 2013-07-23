@@ -147,8 +147,4 @@ public class NetFoldersResource extends AbstractResource {
         }
         return results;
     }
-
-    private static CoreDao getCoreDao() {
-   		return (CoreDao) SpringContextUtil.getBean("coreDao");
-   	}
 }
