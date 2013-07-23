@@ -34,23 +34,24 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.DeleteSelectedUsersMode;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'get selection details' command.
+ * 'delete selected users' command.
  * 
  * @author drfoster@novell.com
  */
-public class GetSelectionDetailsCmd extends VibeRpcCmd {
-	private List<EntityId>	m_entityIds;	//
+public class DeleteSelectedUsersCmd extends DeletePurgeUsersCmdBase {
+	private boolean					m_purgeUsersWithWS;	//
+	private DeleteSelectedUsersMode	m_dsuMode;			//
 	
 	/**
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public GetSelectionDetailsCmd() {
+	public DeleteSelectedUsersCmd() {
 		// Initialize the super class.
 		super();
 	}
@@ -58,14 +59,15 @@ public class GetSelectionDetailsCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param entityIds
+	 * @param userIds
 	 */
-	public GetSelectionDetailsCmd(List<EntityId> entityIds) {
-		// Initialize this object...
-		this();
+	public DeleteSelectedUsersCmd(final List<Long> userIds, DeleteSelectedUsersMode dsuMode, boolean purgeUsersWithWS) {
+		// Initialize the super class...
+		super(userIds);
 		
-		// ...and store the parameters.
-		setEntityIds(entityIds);
+		// ...and store the remaining parameters.
+		setDeleteSelectedUsersMode(dsuMode         );
+		setPurgeUsersWithWorkspace(purgeUsersWithWS);
 	}
 	
 	/**
@@ -73,24 +75,26 @@ public class GetSelectionDetailsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<EntityId> getEntityIds() {return m_entityIds;}
-
+	public boolean                 getPurgeUsersWithWorkspace() {return m_purgeUsersWithWS;}
+	public DeleteSelectedUsersMode getDeleteSelectedUsersMode() {return m_dsuMode;         }
+	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntityIds(List<EntityId> entityIds) {m_entityIds = entityIds;}
+	public void setPurgeUsersWithWorkspace(boolean                 purgeUsersWithWS) {m_purgeUsersWithWS = purgeUsersWithWS;}
+	public void setDeleteSelectedUsersMode(DeleteSelectedUsersMode dsuMode)          {m_dsuMode          = dsuMode;         }
 	
 	/**
 	 * Returns the command's enumeration value.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
+	 * Implements the DeletePurgeUsersCmdBase.getCmdType() method.
 	 * 
 	 * @return
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.GET_SELECTION_DETAILS.ordinal();
+		return VibeRpcCmdType.DELETE_SELECTED_USERS.ordinal();
 	}
 }

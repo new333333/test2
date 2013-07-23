@@ -36,43 +36,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSelectionDetailsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSelectedUsersDetailsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * Helper class for obtaining a SelectionDetails object.
+ * Helper class for obtaining a SelectedUsersDetails object.
  *
  * @author drfoster@novell.com
  */
-public class SelectionDetailsHelper {
+public class SelectedUsersDetailsHelper {
 	/**
-	 * Callback interface to return a SelectionDetails object. 
+	 * Callback interface to return a SelectedUsersDetails object. 
 	 */
-	public interface SelectionDetailsCallback {
+	public interface SelectedUsersDetailsCallback {
 		public void onFailure();
-		public void onSuccess(SelectionDetails selectionDetails);
+		public void onSuccess(SelectedUsersDetails selectionDetails);
 	}
 	
 	/*
 	 * Constructor method. 
 	 */
-	private SelectionDetailsHelper() {
+	private SelectedUsersDetailsHelper() {
 		// Inhibits this class from being instantiated.
 	}
 	
 	/**
-	 * Uses the callback to return a SelectionDetails for the given
-	 * List<EntityId>.
+	 * Uses the callback to return a SelectedUsersDetails for the given
+	 * List<Long>.
 	 * 
-	 * @param entityIds
-	 * @param sdCallback
+	 * @param usersIds
+	 * @param sudCallback
 	 */
-	public static void getSelectionDetails(final List<EntityId> entityIds, final SelectionDetailsCallback sdCallback) {
-		// Can we get the SelectionDetails for the entities?
+	public static void getSelectedUsersDetails(final List<Long> usersIds, final SelectedUsersDetailsCallback sudCallback) {
+		// Can we get the SelectedUsersDetails for the users?
 		GwtClientHelper.executeCommand(
-				new GetSelectionDetailsCmd(entityIds),
+				new GetSelectedUsersDetailsCmd(usersIds),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -80,23 +80,23 @@ public class SelectionDetailsHelper {
 				// failure callback.
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					GwtTeaming.getMessages().rpcFailure_GetSelectionDetails());
-				sdCallback.onFailure();
+					GwtTeaming.getMessages().rpcFailure_GetSelectedUsersDetails());
+				sudCallback.onFailure();
 			}
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Yes, we've got the SelectionDetails for the given
-				// entities!  Return it through the callback.
-				sdCallback.onSuccess((SelectionDetails) response.getResponseData());
+				// Yes, we've got the SelectedUsersDetails for the
+				// given users!  Return it through the callback.
+				sudCallback.onSuccess((SelectedUsersDetails) response.getResponseData());
 			}
 		});
 	}
 	
-	public static void getSelectionDetails(EntityId entityId, SelectionDetailsCallback callback) {
+	public static void getSelectedUsersDetails(Long userId, SelectedUsersDetailsCallback callback) {
 		// Always use the initial form of the method.
-		List<EntityId> entityIds = new ArrayList<EntityId>();
-		entityIds.add(entityId);
-		getSelectionDetails(entityIds, callback);
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		getSelectedUsersDetails(userIds, callback);
 	}
 }

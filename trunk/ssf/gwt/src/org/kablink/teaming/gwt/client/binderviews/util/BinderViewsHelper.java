@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg.ChangeEntr
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg.CopyMoveEntriesDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeUsersHelper.DeletePurgeUsersCallback;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.AddFilesHtml5Popup;
@@ -79,8 +80,10 @@ import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
-import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
+import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg;
+import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg.DeleteSelectedUsersDlgClient;
+import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg.DeleteSelectionsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
@@ -99,15 +102,16 @@ import com.google.gwt.user.client.ui.UIObject;
  * @author drfoster@novell.com
  */
 public class BinderViewsHelper {
-	private static AddFilesDlg			m_addFilesAppletDlg;					// An instance of the add files (via an applet) dialog.
-	private static AddFilesHtml5Popup	m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
-	private static ChangeEntryTypesDlg	m_cetDlg;								// An instance of a change entry types dialog. 
-	private static CopyMoveEntriesDlg	m_cmeDlg;								// An instance of a copy/move entries dialog.
-	private static DeleteSelectionsDlg	m_dsDlg;								// An instance of a delete selections dialog.
-	private static EmailNotificationDlg	m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
-	private static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
-	private static ShareThisDlg			m_shareDlg;								// An instance of a share this dialog.
-	private static WhoHasAccessDlg		m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
+	private static AddFilesDlg				m_addFilesAppletDlg;					// An instance of the add files (via an applet) dialog.
+	private static AddFilesHtml5Popup		m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
+	private static ChangeEntryTypesDlg		m_cetDlg;								// An instance of a change entry types dialog. 
+	private static CopyMoveEntriesDlg		m_cmeDlg;								// An instance of a copy/move entries dialog.
+	private static DeleteSelectedUsersDlg	m_dsuDlg;								// An instance of a delete selected users dialog.
+	private static DeleteSelectionsDlg		m_dsDlg;								// An instance of a delete selections dialog.
+	private static EmailNotificationDlg		m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
+	private static GwtTeamingMessages		m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
+	private static ShareThisDlg				m_shareDlg;								// An instance of a share this dialog.
+	private static WhoHasAccessDlg			m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
 
 	// Controls whether a prompt is included in the purge user
 	// workspace confirmation dialog allowing for the purging of the
@@ -340,6 +344,46 @@ public class BinderViewsHelper {
 			// Yes, we already have instance of one!  Simply run
 			// it.
 			DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
+		}
+	}
+	
+	/**
+	 * Deletes the users based on a List<Long> of their IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void deleteSelectedUsers(final List<Long> userIds, final DeletePurgeUsersCallback dpuCallback) {
+		// If we weren't given any user IDs to be deleted...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+
+		// Have we created an instance of the delete selection users
+		// dialog yet?
+		if (null == m_dsuDlg) {
+			// No!  Create one now...
+			DeleteSelectedUsersDlg.createAsync(new DeleteSelectedUsersDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(DeleteSelectedUsersDlg dsuDlg) {
+					// ...and run it.
+					m_dsuDlg = dsuDlg;
+					DeleteSelectedUsersDlg.initAndShow(m_dsuDlg, userIds, dpuCallback);
+				}
+			});
+			
+		}
+		
+		else {
+			// Yes, we already have instance of one!  Simply run
+			// it.
+			DeleteSelectedUsersDlg.initAndShow(m_dsuDlg, userIds, dpuCallback);
 		}
 	}
 	

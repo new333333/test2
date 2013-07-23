@@ -30,67 +30,18 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client.util;
 
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.util.EntityId;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'get selection details' command.
+ * Enumeration used to communicate how the selected users are to be
+ * deleted.
  * 
  * @author drfoster@novell.com
  */
-public class GetSelectionDetailsCmd extends VibeRpcCmd {
-	private List<EntityId>	m_entityIds;	//
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
-	 */
-	public GetSelectionDetailsCmd() {
-		// Initialize the super class.
-		super();
-	}
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param entityIds
-	 */
-	public GetSelectionDetailsCmd(List<EntityId> entityIds) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setEntityIds(entityIds);
-	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public List<EntityId> getEntityIds() {return m_entityIds;}
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setEntityIds(List<EntityId> entityIds) {m_entityIds = entityIds;}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_SELECTION_DETAILS.ordinal();
-	}
+public enum DeleteSelectedUsersMode implements IsSerializable {
+	TRASH_ALL_WORKSPACES,
+	TRASH_ADHOC_WORKSPACES_PURGE_OTHERS,
+	PURGE_ALL_WORKSPACES,
 }

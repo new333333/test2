@@ -38,14 +38,13 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
-import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
-import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeUsersHelper;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeUsersHelper.DeletePurgeUsersCallback;
+import org.kablink.teaming.gwt.client.util.DeleteSelectedUsersMode;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.SelectionDetails;
-import org.kablink.teaming.gwt.client.util.SelectionDetailsHelper;
-import org.kablink.teaming.gwt.client.util.SelectionDetailsHelper.SelectionDetailsCallback;
+import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
+import org.kablink.teaming.gwt.client.util.SelectedUsersDetailsHelper;
+import org.kablink.teaming.gwt.client.util.SelectedUsersDetailsHelper.SelectedUsersDetailsCallback;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -54,6 +53,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -66,23 +66,24 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Implements the delete selections dialog.
+ * Implements the delete selected user dialog.
  *  
  * @author drfoster@novell.com
  */
-public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler {
-	private DialogMode					m_dialogMode;		// The mode the dialog is running in.  Defines what's displayed on the dialog.
-	private DeletePurgeEntriesCallback	m_dpeCallback;		// Callback used to interact with who called the dialog.
-	private FlexCellFormatter			m_cellFormatter;	// The formatter to control how m_grid is laid out.
-	private FlexTable					m_grid;				// The table holding the dialog's content.
-	private GwtTeamingImageBundle		m_images;			// Access to the base images.
-	private GwtTeamingMessages			m_messages;			// Access to our localized strings.
-	private Image						m_warningImg;		// The <IMG>  on the 'can't be undone' warning. 
-	private InlineLabel					m_warningTxt;		// The <SPAN> on the 'can't be undone' warning.
-	private List<EntityId>				m_entityIds;		// The entities to be deleted.
-	private RadioButton					m_purgeRB;			// The 'Delete from system' radio button.
-	private RadioButton					m_trashRB;			// The 'Move to trash'      radio button.
-	private SelectionDetails			m_selectionDetails;	// Populated via a GWT RPC call while constructing the dialog's contents.  Contains an analysis of what m_entityIds refers to.
+public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHandler {
+	private CheckBox					m_purgeWorkspaceCB;		// The 'Delete users from system whose workspaces are deleted' checkbox.
+	private DialogMode					m_dialogMode;			// The mode the dialog is running in.  Defines what's displayed on the dialog.
+	private DeletePurgeUsersCallback	m_dpuCallback;			// Callback used to interact with who called the dialog.
+	private FlexCellFormatter			m_cellFormatter;		// The formatter to control how m_grid is laid out.
+	private FlexTable					m_grid;					// The table holding the dialog's content.
+	private GwtTeamingImageBundle		m_images;				// Access to the base images.
+	private GwtTeamingMessages			m_messages;				// Access to our localized strings.
+	private Image						m_purgeWarningImg;		// The <IMG>  on the 'can't be undone' warning. 
+	private InlineLabel					m_purgeWarningTxt;		// The <SPAN> on the 'can't be undone' warning.
+	private List<Long>					m_userIds;				// The users to be deleted.
+	private RadioButton					m_purgeRB;				// The 'Delete from system' radio button.
+	private RadioButton					m_trashRB;				// The 'Move to trash'      radio button.
+	private SelectedUsersDetails		m_selectedUsersDetails;	// Populated via a GWT RPC call while constructing the dialog's contents.  Contains an analysis of what m_userIds refers to.
 	
 	// The buttons displayed on this dialog.
 	private final static DlgButtonMode	DLG_BUTTONS = DlgButtonMode.OkCancel; 
@@ -94,9 +95,9 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 *    https://teaming.innerweb.novell.com/ssf/a/c/p_name/ss_forum/p_action/1/action/view_permalink/entityType/folderEntry/entryId/422728/vibeonprem_url/1
 	 */
 	private enum DialogMode {
-		Situation1,	// Selections contain only items from personal storage.
-		Situation2,	// Selections contain only remote (i.e., Cloud Folder, Net Folder or Vibe Mirrored Folder) items.
-		Situation3	// Selections contain a mixture of personal storage and remote items.
+		Situation1,	// Selections contain only users with workspaces containing items from personal storage.
+		Situation2,	// Selections contain only users with workspaces containing remote (i.e., Cloud Folder, Net Folder or Vibe Mirrored Folder) items.
+		Situation3	// Selections contain a mixture of workspaces containing personal storage and remote items.
 	}
 	
 	/*
@@ -106,40 +107,51 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private DeleteSelectionsDlg() {
+	private DeleteSelectedUsersDlg() {
 		// Initialize the superclass...
 		super(false, true, DLG_BUTTONS);
 
 		// ...initialize everything else...
-		addStyleName("vibe-deleteSelectionsDlg");
+		addStyleName("vibe-deleteSelectedUsersDlg");
 		m_images   = GwtTeaming.getImageBundle();
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			m_messages.deleteSelectionsDlgHeader(),	// The dialog's header.
-			this,									// The dialog's EditSuccessfulHandler.
-			DlgBox.getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
-			null);									// Create callback data.  Unused. 
+			m_messages.deleteSelectedUsersDlgHeader(),	// The dialog's header.
+			this,										// The dialog's EditSuccessfulHandler.
+			DlgBox.getSimpleCanceledHandler(),			// The dialog's EditCanceledHandler.
+			null);										// Create callback data.  Unused. 
 	}
 
 	/*
 	 * Returns a Widget containing what's displayed for purge warnings.
 	 */
-	private Widget buildWarningWidget(String text) {
+	private Widget buildPurgeWarningWidget(String text) {
 		HorizontalPanel hp = new VibeHorizontalPanel(null, null);
-		hp.addStyleName("vibe-deleteSelectionsDlg-warningPanel");
+		hp.addStyleName("vibe-deleteSelectedUsersDlg-warningPanel");
 		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		
-		m_warningImg = GwtClientHelper.buildImage(m_images.warningIcon16());
-		m_warningImg.addStyleName("vibe-deleteSelectionsDlg-warningImg");
-		hp.add(m_warningImg);
+		m_purgeWarningImg = GwtClientHelper.buildImage(m_images.warningIcon16());
+		m_purgeWarningImg.addStyleName("vibe-deleteSelectedUsersDlg-warningImg");
+		hp.add(m_purgeWarningImg);
 		
-		m_warningTxt = new InlineLabel(text);
-		m_warningTxt.addStyleName("vibe-deleteSelectionsDlg-warningTxt");
-		hp.add(m_warningTxt);
+		m_purgeWarningTxt = new InlineLabel(text);
+		m_purgeWarningTxt.addStyleName("vibe-deleteSelectedUsersDlg-warningTxt");
+		hp.add(m_purgeWarningTxt);
 		
 		return hp;
+	}
+	
+	/*
+	 * Returns a CheckBox for selecting to purge users whose workspace
+	 * is being purged.
+	 */
+	private CheckBox buildPurgeWorkspaceCheckBox(String cbText) {
+		m_purgeWorkspaceCB = new CheckBox(cbText);
+		m_purgeWorkspaceCB.addStyleName("vibe-deleteSelectedUsersDlg-purgeCheckBoxWS");
+		m_purgeWorkspaceCB.removeStyleName("gwt-CheckBox");
+		return m_purgeWorkspaceCB;
 	}
 	
 	/**
@@ -155,7 +167,7 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	public Panel createContent(Object callbackData) {
 		// Create and return a table to hold the dialog's content.
 		m_grid = new VibeFlexTable();
-		m_grid.addStyleName("vibe-deleteSelectionsDlg-rootPanel");
+		m_grid.addStyleName("vibe-deleteSelectedUsersDlg-rootPanel");
 		m_grid.setCellPadding(0);
 		m_grid.setCellSpacing(0);
 		m_cellFormatter = m_grid.getFlexCellFormatter();
@@ -163,7 +175,7 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	}
 
 	/*
-	 * Asynchronously deletes the selected items.
+	 * Asynchronously deletes the selected users.
 	 */
 	private void doDeletesAsync() {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
@@ -175,36 +187,39 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	}
 	
 	/*
-	 * Synchronously deletes the selected items.
+	 * Synchronously deletes the selected users.
 	 */
 	private void doDeletesNow() {
 		// Determine how to perform the delete...
-		DeleteSelectionsMode dsMode;
+		DeleteSelectedUsersMode dsuMode;
 		switch (m_dialogMode) {
 		default:
 		case Situation1:
 		case Situation3:
 			if (m_purgeRB.getValue()) {
-				dsMode = DeleteSelectionsMode.PURGE_ALL;
+				dsuMode = DeleteSelectedUsersMode.PURGE_ALL_WORKSPACES;
 			}
 			
 			else {
 				if (DialogMode.Situation1.equals(m_dialogMode))
-				     dsMode = DeleteSelectionsMode.TRASH_ALL;
-				else dsMode = DeleteSelectionsMode.TRASH_ADHOC_PURGE_OTHERS;
+				     dsuMode = DeleteSelectedUsersMode.TRASH_ALL_WORKSPACES;
+				else dsuMode = DeleteSelectedUsersMode.TRASH_ADHOC_WORKSPACES_PURGE_OTHERS;
 			}
 			break;
 			
 		case Situation2:
-			dsMode = DeleteSelectionsMode.PURGE_ALL;
+			dsuMode = DeleteSelectedUsersMode.PURGE_ALL_WORKSPACES;
 			break;
 		}
 
 		// ...and do it.
-		DeletePurgeEntriesHelper.deleteSelectedEntriesAsync(
-			m_entityIds,
-			dsMode,
-			m_dpeCallback);
+		DeletePurgeUsersHelper.deleteSelectedUsersAsync(
+			m_userIds,
+			dsuMode,
+			((null == m_purgeWorkspaceCB) ?
+				false                     :
+				m_purgeWorkspaceCB.getValue()),
+			m_dpuCallback);
 	}
 	
 	/**
@@ -242,14 +257,18 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		//    user has chosen to move some things to the trash and
 		//    purge others.
 		boolean needsConfirmaiton =
-			(m_selectionDetails.hasPurgeConfirmations() &&
+			(m_selectedUsersDetails.hasPurgeConfirmations() &&
 			(m_dialogMode.equals(DialogMode.Situation3) && m_trashRB.getValue()));
 		
 		if (needsConfirmaiton) {
 			// Yes!  Does the user accept what's going to be purged?
+			String confirm;
+			if ((null != m_purgeWorkspaceCB) && m_purgeWorkspaceCB.getValue())
+			     confirm = m_messages.deleteSelectedUsersDlgConfirmWSAndUsers();
+			else confirm = m_messages.deleteSelectedUsersDlgConfirmWS();
 			GwtClientHelper.displayMultipleErrors(
-						m_messages.deleteSelectionsDlgConfirm(),
-						m_selectionDetails.getPurgeConfirmations(),
+						confirm,
+						m_selectedUsersDetails.getPurgeConfirmations(),
 						new ConfirmCallback() {
 					@Override
 					public void dialogReady() {
@@ -259,8 +278,8 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	
 					@Override
 					public void accepted() {
-						// Yes, the user said do it!  Start deleting the
-						// selections.
+						// Yes, the user said do it!  Start deleting
+						// the users.
 						doDeletesAsync();
 					}
 	
@@ -276,7 +295,7 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		
 		else {
 			// No, we're not performing a delete that needs a user
-			// confirmation!  Start deleting the selections.
+			// confirmation!  Start deleting the users.
 			doDeletesAsync();
 		}
 	}
@@ -322,18 +341,18 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void loadPart1Now() {
-		SelectionDetailsHelper.getSelectionDetails(m_entityIds, new SelectionDetailsCallback() {
+		SelectedUsersDetailsHelper.getSelectedUsersDetails(m_userIds, new SelectedUsersDetailsCallback() {
 			@Override
 			public void onFailure() {
-				// Nothing to do.  getSelectionDetails() will have told
-				// the user about it's problems.
+				// Nothing to do.  getSelectedUsersDetails() will have
+				// told the user about it's problems.
 			}
 
 			@Override
-			public void onSuccess(SelectionDetails selectionDetails) {
+			public void onSuccess(SelectedUsersDetails selectedUsersDetails) {
 				// Store the details and continue populating the
 				// dialog.
-				m_selectionDetails = selectionDetails;
+				m_selectedUsersDetails = selectedUsersDetails;
 				setDialogMode();
 				populateDlgAsync();
 			}
@@ -361,8 +380,9 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		m_grid.removeAllRows();
 		
 		// ...forget any previous widgets...
-		m_trashRB =
-		m_purgeRB = null;
+		m_trashRB          =
+		m_purgeRB          = null;
+		m_purgeWorkspaceCB = null;
 
 		// ...and repopulate the dialog.
 		switch (m_dialogMode) {
@@ -377,9 +397,9 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 
 	/*
 	 * Dialog has two radio buttons:
-	 *    - Move to trash (default); and
-	 *    - Delete from system (and a warning that the operation cannot
-	 *      be undone.)
+	 *    - Move user workspaces to trash (default); and
+	 *    - Delete user workspaces from system (and a warning that the
+	 *      operation cannot be undone.)
 	 */
 	private void populateSituation1() {
 		// Create a ValueChangeHandler we can use to tweak the dialog
@@ -392,52 +412,61 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		};
 		
 		// Add the 'Move to trash' radio button...
-		m_trashRB = new RadioButton("deleteMode", m_messages.deleteSelectionsDlgLabel_Trash());
-		m_trashRB.addStyleName("vibe-deleteSelectionsDlg-radio");
+		m_trashRB = new RadioButton("deleteMode", m_messages.deleteSelectedUsersDlgLabel_Trash());
+		m_trashRB.addStyleName("vibe-deleteSelectedUsersDlg-radio");
 		m_trashRB.removeStyleName("gwt-RadioButton");
 		m_trashRB.addValueChangeHandler(rbChangedHandler);
 		m_trashRB.setValue(true);
 		m_grid.setWidget(            0, 0, m_trashRB);
-		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectionsDlg-trashRadio");
+		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectedUsersDlg-trashRadio");
 		m_cellFormatter.setWordWrap( 0, 0, false);
 		
 		// ...add the 'Delete from system' radio button...
-		m_purgeRB = new RadioButton("deleteMode", m_messages.deleteSelectionsDlgLabel_Purge());
-		m_purgeRB.addStyleName("vibe-deleteSelectionsDlg-radio");
+		m_purgeRB = new RadioButton("deleteMode", m_messages.deleteSelectedUsersDlgLabel_Purge());
+		m_purgeRB.addStyleName("vibe-deleteSelectedUsersDlg-radio");
 		m_purgeRB.removeStyleName("gwt-RadioButton");
 		m_purgeRB.addValueChangeHandler(rbChangedHandler);
 		m_grid.setWidget(            1, 0, m_purgeRB);
-		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectionsDlg-purgeRadio");
+		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectedUsersDlg-purgeRadio");
 		m_cellFormatter.setWordWrap( 1, 0, false);
 		
+		// ...add a checkbox to purge users when purging workspaces...
+		m_grid.setWidget(            2, 0, buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers1()));
+		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectedUsersDlg-purgeCheckBox vibe-deleteSelectedUsersDlg-indent");
+		
 		// ...and add the warning about the delete.
-		m_grid.setWidget(            2, 0, buildWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo()));
-		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectionsDlg-warning vibe-deleteSelectionsDlg-warningSituation1 vibe-deleteSelectionsDlg-indent");
+		m_grid.setWidget(            3, 0, buildPurgeWarningWidget(m_messages.deleteSelectedUsersDlgWarning_CantUndo()));
+		m_cellFormatter.addStyleName(3, 0, "vibe-deleteSelectedUsersDlg-warning vibe-deleteSelectedUsersDlg-warningSituation1 vibe-deleteSelectedUsersDlg-indent");
+		setPurgeWarningActive(false);
 	}
 	
 	/*
 	 * Dialog has no options.
 	 * 
-	 * Contains a note that everything will be deleted from the system
-	 * and a warning that the operation cannot be undone.
+	 * Contains a note that all user workspaces will be deleted from
+	 * the system and a warning that the operation cannot be undone.
 	 */
 	private void populateSituation2() {
 		// Add a note that everything will be deleted from the
 		// system...
-		m_grid.setText(              0, 0, m_messages.deleteSelectionsDlgLabel_PurgeOnly());
-		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectionsDlg-purgeNote");
+		m_grid.setText(              0, 0, m_messages.deleteSelectedUsersDlgLabel_PurgeOnly());
+		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectedUsersDlg-purgeNote");
+		
+		// ...add a checkbox to purge users when purging workspaces...
+		m_grid.setWidget(            1, 0, buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers1()));
+		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectedUsersDlg-purgeCheckBox");
 		
 		// ...and add a warning about the delete.
-		m_grid.setWidget(            1, 0, buildWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo()));
-		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectionsDlg-warning vibe-deleteSelectionsDlg-warningSituation2");
+		m_grid.setWidget(            2, 0, buildPurgeWarningWidget(m_messages.deleteSelectedUsersDlgWarning_CantUndo()));
+		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectedUsersDlg-warning vibe-deleteSelectedUsersDlg-warningSituation2");
 		setPurgeWarningActive(true);
 	}
 	
 	/*
 	 * Dialog has two radio buttons:
-	 *    - Move personal storage items to trash and delete others from
-	 *      system (default); and
-	 *    - Delete everything from system.
+	 *    - Move user workspaces with only personal storage items to
+	 *      trash and delete others from system (default); and
+	 *    - Delete all user workspaces from system.
 	 *
 	 * Both options will have a warning that deleting items from the
 	 * system cannot be undone.
@@ -445,54 +474,58 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	private void populateSituation3() {
 		// Add the 'Move items in personal storage to trash and delete
 		// everything else from system' radio button...
-		m_trashRB = new RadioButton("deleteMode", m_messages.deleteSelectionsDlgLabel_TrashAdHoc());
-		m_trashRB.addStyleName("vibe-deleteSelectionsDlg-radio");
+		m_trashRB = new RadioButton("deleteMode", m_messages.deleteSelectedUsersDlgLabel_TrashAdHoc());
+		m_trashRB.addStyleName("vibe-deleteSelectedUsersDlg-radio");
 		m_trashRB.removeStyleName("gwt-RadioButton");
 		m_trashRB.setValue(true);
 		m_grid.setWidget(            0, 0, m_trashRB);
-		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectionsDlg-trashRadio");
+		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectedUsersDlg-trashRadio");
 		m_cellFormatter.setWordWrap( 0, 0, false);
 		
 		// ...add the 'Delete everything from system' radio button...
-		m_purgeRB = new RadioButton("deleteMode", m_messages.deleteSelectionsDlgLabel_PurgeAll());
-		m_purgeRB.addStyleName("vibe-deleteSelectionsDlg-radio");
+		m_purgeRB = new RadioButton("deleteMode", m_messages.deleteSelectedUsersDlgLabel_PurgeAll());
+		m_purgeRB.addStyleName("vibe-deleteSelectedUsersDlg-radio");
 		m_purgeRB.removeStyleName("gwt-RadioButton");
 		m_grid.setWidget(            1, 0, m_purgeRB);
-		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectionsDlg-purgeRadio");
+		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectedUsersDlg-purgeRadio");
 		m_cellFormatter.setWordWrap( 1, 0, false);
 		
+		// ...add a checkbox to purge users when purging workspaces...
+		m_grid.setWidget(            2, 0, buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers2()));
+		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectedUsersDlg-purgeCheckBox");
+		
 		// ...and add the warning about the deletes.
-		m_grid.setWidget(            2, 0, buildWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo()));
-		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectionsDlg-warning vibe-deleteSelectionsDlg-warningSituation3");
+		m_grid.setWidget(            3, 0, buildPurgeWarningWidget(m_messages.deleteSelectedUsersDlgWarning_CantUndo()));
+		m_cellFormatter.addStyleName(3, 0, "vibe-deleteSelectedUsersDlg-warning vibe-deleteSelectedUsersDlg-warningSituation3");
 		setPurgeWarningActive(true);
 	}
 	
 	/*
-	 * Asynchronously runs the given instance of the delete selections
-	 * dialog.
+	 * Asynchronously runs the given instance of the delete select
+	 * users dialog.
 	 */
-	private static void runDlgAsync(final DeleteSelectionsDlg dsDlg, final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
+	private static void runDlgAsync(final DeleteSelectedUsersDlg dsuDlg, final List<Long> userIds, final DeletePurgeUsersCallback dpuCallback) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				dsDlg.runDlgNow(entityIds, dpeCallback);
+				dsuDlg.runDlgNow(userIds, dpuCallback);
 			}
 		});
 	}
 	
 	/*
-	 * Synchronously runs the given instance of the delete selections
-	 * dialog.
+	 * Synchronously runs the given instance of the delete selected
+	 * users dialog.
 	 */
-	private void runDlgNow(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
+	private void runDlgNow(final List<Long> userIds, final DeletePurgeUsersCallback dpuCallback) {
 		// Store the parameters and populate the dialog.
-		m_entityIds   = entityIds;
-		m_dpeCallback = dpeCallback;
+		m_userIds     = userIds;
+		m_dpuCallback = dpuCallback;
 		loadPart1Async();
 	}
 
 	/*
-	 * Maps the information in the dialog's SelectionDetails to a
+	 * Maps the information in the dialog's SelectedUsersDetails to a
 	 * DialogMode.
 	 *
 	 * Situation1 -> Selections contain only items from personal storage.
@@ -504,9 +537,9 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 */
 	private void setDialogMode() {
 		// Is anything remote selected?
-		if (m_selectionDetails.hasRemoteSelections()) {
-			// Yes!  Are there any selections from personal storage?
-			if (m_selectionDetails.hasAdHocSelections()) {
+		if (m_selectedUsersDetails.hasRemoteSelections()) {
+			// Yes!  Are there any users from personal storage?
+			if (m_selectedUsersDetails.hasAdHocUserWorkspaces()) {
 				// Yes!  We have a mixture.  This is situation 3.
 			    m_dialogMode = DialogMode.Situation3;
 			}
@@ -529,13 +562,15 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 */
 	private void setPurgeWarningActive(boolean active) {
 		if (active) {
-			if (null != m_warningImg) m_warningImg.addStyleName("vibe-deleteSelectionsDlg-warningImgActive");
-			if (null != m_warningTxt) m_warningTxt.addStyleName("vibe-deleteSelectionsDlg-warningTxtActive");
+			if (null != m_purgeWarningImg)  m_purgeWarningImg.addStyleName("vibe-deleteSelectedUsersDlg-warningImgActive");
+			if (null != m_purgeWarningTxt)  m_purgeWarningTxt.addStyleName("vibe-deleteSelectedUsersDlg-warningTxtActive");
+			if (null != m_purgeWorkspaceCB) m_purgeWorkspaceCB.setVisible( true                                          );
 		}
 		
 		else {
-			if (null != m_warningImg) m_warningImg.removeStyleName("vibe-deleteSelectionsDlg-warningImgActive");
-			if (null != m_warningTxt) m_warningTxt.removeStyleName("vibe-deleteSelectionsDlg-warningTxtActive");
+			if (null != m_purgeWarningImg)  m_purgeWarningImg.removeStyleName("vibe-deleteSelectedUsersDlg-warningImgActive");
+			if (null != m_purgeWarningTxt)  m_purgeWarningTxt.removeStyleName("vibe-deleteSelectedUsersDlg-warningTxtActive");
+			if (null != m_purgeWorkspaceCB) m_purgeWorkspaceCB.setVisible(    false                                         );
 		}
 	}
 	
@@ -550,71 +585,71 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 * Callback interface to interact with the delete selections dialog
 	 * asynchronously after it loads. 
 	 */
-	public interface DeleteSelectionsDlgClient {
-		void onSuccess(DeleteSelectionsDlg dsDlg);
+	public interface DeleteSelectedUsersDlgClient {
+		void onSuccess(DeleteSelectedUsersDlg dsuDlg);
 		void onUnavailable();
 	}
 
 	/*
-	 * Asynchronously loads the DeleteSelectionsDlg and performs some
+	 * Asynchronously loads the DeleteSelectedUsersDlg and performs some
 	 * operation against the code.
 	 */
 	private static void doAsyncOperation(
 			// Required creation parameters.
-			final DeleteSelectionsDlgClient	dsDlgClient,
+			final DeleteSelectedUsersDlgClient	dsuDlgClient,
 			
 			// initAndShow parameters,
-			final DeleteSelectionsDlg			dsDlg,
-			final List<EntityId>				entityIds,
-			final DeletePurgeEntriesCallback	dpeCallback) {
-		GWT.runAsync(DeleteSelectionsDlg.class, new RunAsyncCallback() {
+			final DeleteSelectedUsersDlg	dsuDlg,
+			final List<Long>				userIds,
+			final DeletePurgeUsersCallback	dpuCallback) {
+		GWT.runAsync(DeleteSelectedUsersDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_DeleteSelectionsDlg());
-				if (null != dsDlgClient) {
-					dsDlgClient.onUnavailable();
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_DeleteSelectedUsersDlg());
+				if (null != dsuDlgClient) {
+					dsuDlgClient.onUnavailable();
 				}
 			}
 
 			@Override
 			public void onSuccess() {
 				// Is this a request to create a dialog?
-				if (null != dsDlgClient) {
+				if (null != dsuDlgClient) {
 					// Yes!  Create it and return it via the callback.
-					DeleteSelectionsDlg dsDlg = new DeleteSelectionsDlg();
-					dsDlgClient.onSuccess(dsDlg);
+					DeleteSelectedUsersDlg dsuDlg = new DeleteSelectedUsersDlg();
+					dsuDlgClient.onSuccess(dsuDlg);
 				}
 				
 				else {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(dsDlg, entityIds, dpeCallback);
+					runDlgAsync(dsuDlg, userIds, dpuCallback);
 				}
 			}
 		});
 	}
 	
 	/**
-	 * Loads the DeleteSelectionsDlg split point and returns an instance of it
+	 * Loads the DeleteSelectedUsersDlg split point and returns an instance of it
 	 * via the callback.
 	 * 
-	 * @param dsDlgClient
+	 * @param dsuDlgClient
 	 */
-	public static void createAsync(DeleteSelectionsDlgClient dsDlgClient) {
+	public static void createAsync(DeleteSelectedUsersDlgClient dsuDlgClient) {
 		// Invoke the appropriate asynchronous operation.
-		doAsyncOperation(dsDlgClient, null, null, null);
+		doAsyncOperation(dsuDlgClient, null, null, null);
 	}
 	
 	/**
-	 * Initializes and shows the delete selections dialog.
+	 * Initializes and shows the delete selected users dialog.
 	 * 
-	 * @param dsDlg
-	 * @param entityIds
-	 * @param dpeCallback
+	 * @param dsuDlg
+	 * @param userIds
+	 * @param dpuCallback
 	 */
-	public static void initAndShow(DeleteSelectionsDlg dsDlg, List<EntityId> entityIds, DeletePurgeEntriesCallback dpeCallback) {
+	public static void initAndShow(DeleteSelectedUsersDlg dsuDlg, List<Long> userIds, DeletePurgeUsersCallback dpuCallback) {
 		// Invoke the appropriate asynchronous operation.
-		doAsyncOperation(null, dsDlg, entityIds, dpeCallback);
+		doAsyncOperation(null, dsuDlg, userIds, dpuCallback);
 	}
 }

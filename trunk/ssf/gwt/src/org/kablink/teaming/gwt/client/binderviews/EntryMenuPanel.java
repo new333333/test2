@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUserWorkspacesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
@@ -1155,6 +1156,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case COPY_SELECTED_ENTRIES:                 event = new CopySelectedEntriesEvent(             folderId      ); break;
 					case DELETE_SELECTED_ENTRIES:               event = new DeleteSelectedEntriesEvent(           folderId      ); break;
 					case DELETE_SELECTED_USER_WORKSPACES:       event = new DeleteSelectedUserWorkspacesEvent(    folderId      ); break;
+					case DELETE_SELECTED_USERS:                 event = new DeleteSelectedUsersEvent(             folderId      ); break;
 					case DISABLE_SELECTED_USERS:                event = new DisableSelectedUsersEvent(            folderId      ); break;
 					case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:  event = new DisableSelectedUsersAdHocFoldersEvent(folderId      ); break;
 					case ENABLE_SELECTED_USERS:                 event = new EnableSelectedUsersEvent(             folderId      ); break;
