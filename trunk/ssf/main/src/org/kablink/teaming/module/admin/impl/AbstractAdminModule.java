@@ -3467,7 +3467,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	return (ProfileModule) SpringContextUtil.getBean("profileModule");
     }
 
-    public boolean isUnsafeReindexinginProgress() {
+    public boolean isUnsafeReindexingInProgress() {
 		final IndexNode indexNode = loadNonHAIndexNode();
 		if(indexNode == null)
 			return false;
