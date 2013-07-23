@@ -48,6 +48,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
@@ -536,14 +537,15 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired, boolean includeAllPublic) {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         List<ShareItem> filteredItems = new ArrayList<ShareItem>(shareItems.size());
-        boolean publicIncluded = false;
+        Map<String, Boolean> publicIncludedMap = new HashMap<String, Boolean>();
         for (ShareItem item : shareItems) {
             if ((!item.isExpired() || includeExpired) && item.isLatest() &&
                     (excludedSharer==null || !excludedSharer.equals(item.getSharerId()))) {
                 if (!includeAllPublic && item.getIsPartOfPublicShare()) {
-                    if (!publicIncluded) {
+                    Boolean publicIncluded = publicIncludedMap.get(item.getSharedEntityIdentifier().toString());
+                    if (publicIncluded==null || !publicIncluded) {
                         filteredItems.add(item);
-                        publicIncluded = true;
+                        publicIncludedMap.put(item.getSharedEntityIdentifier().toString(), Boolean.TRUE);
                     }
                 } else {
                     filteredItems.add(item);
@@ -1514,5 +1516,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } catch (AccessControlException e) {
             return false;
         }
+    }
+
+
+    protected static CoreDao getCoreDao() {
+        return (CoreDao) SpringContextUtil.getBean("coreDao");
     }
 }
