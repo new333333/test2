@@ -162,6 +162,7 @@ import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FileLinkAction;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
+import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TagInfo;
@@ -1687,6 +1688,36 @@ public class GwtViewHelper {
 	}
 	
 	/*
+	 * Dumps the contents of a SelectedUsersDetails object.
+	 */
+	private static void dumpSelectedUsersDetails(SelectedUsersDetails sd) {
+		// If debug tracing isn't enabled...
+		if (!(GwtLogHelper.isDebugEnabled(m_logger))) {
+			// ...bail.
+			return;
+		}
+
+		// If we weren't given a SelectionDetails to dump...
+		if (null == sd) {
+			// ...trace that fact and bail.
+			GwtLogHelper.debug(m_logger, "...dumpSelectionDetails( null ):  No SelectionDetails to dump.");
+			return;
+		}
+
+		// Dump the contents of the SelectionDetails.
+		GwtLogHelper.debug(m_logger, "...dumpSelectionDetails():");
+		GwtLogHelper.debug(m_logger, "......Has AdHoc User Workspaces:                     " + sd.hasAdHocUserWorkspaces()                );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc User Workspaces With Nested Remote:  " + sd.hasAdHocUserWorkspacesWithNestedRemote());
+		GwtLogHelper.debug(m_logger, "......Has Purge Confirmatiions:                      " + sd.hasPurgeConfirmations()                 );
+		GwtLogHelper.debug(m_logger, "......Has Remote Selections:                         " + sd.hasRemoteSelections()                   );
+		GwtLogHelper.debug(m_logger, "......Has Remote Workspaces:                         " + sd.hasRemoteWorkspaces()                   );
+		GwtLogHelper.debug(m_logger, "......Has Unclassified:                              " + sd.hasUnclassified()                       );
+		GwtLogHelper.debug(m_logger, "......Has User Workspaces:                           " + sd.hasUserWorkspaces()                     );
+		GwtLogHelper.debug(m_logger, "......User Workspace Count:                          " + sd.getUserWorkspaceCount()                 );
+		GwtLogHelper.debug(m_logger, "......Total Count:                                   " + sd.getTotalCount()                         );
+	}
+	
+	/*
 	 * Dumps the contents of a SelectionDetails object.
 	 */
 	private static void dumpSelectionDetails(SelectionDetails sd) {
@@ -1705,24 +1736,30 @@ public class GwtViewHelper {
 
 		// Dump the contents of the SelectionDetails.
 		GwtLogHelper.debug(m_logger, "...dumpSelectionDetails():");
-		GwtLogHelper.debug(m_logger, "......Has AdHoc Binders:     " + sd.hasAdHocBinders()   );
-		GwtLogHelper.debug(m_logger, "......Has AdHoc Entries:     " + sd.hasAdHocEntries()   );
-		GwtLogHelper.debug(m_logger, "......Has AdHoc Folders:     " + sd.hasAdHocFolders()   );
-		GwtLogHelper.debug(m_logger, "......Has AdHoc Workspace:   " + sd.hasAdHocWorkspaces());
-		GwtLogHelper.debug(m_logger, "......Has Cloud Folders:     " + sd.hasCloudFolders()   );
-		GwtLogHelper.debug(m_logger, "......Has Mirrored Folders:  " + sd.hasMirroredFolders());
-		GwtLogHelper.debug(m_logger, "......Has Net Folders:       " + sd.hasNetFolders()     );
-		GwtLogHelper.debug(m_logger, "......Has Remote Entries:    " + sd.hasRemoteEntries()  );
-		GwtLogHelper.debug(m_logger, "......Has Binders:           " + sd.hasBinders()        );
-		GwtLogHelper.debug(m_logger, "......Has Entries:           " + sd.hasEntries()        );
-		GwtLogHelper.debug(m_logger, "......Has Folders:           " + sd.hasFolders()        );
-		GwtLogHelper.debug(m_logger, "......Has Unclassified:      " + sd.hasUnclassified()   );
-		GwtLogHelper.debug(m_logger, "......Has Workspaces:        " + sd.hasWorkspaces()     );
-		GwtLogHelper.debug(m_logger, "......Binder    Count:       " + sd.getBinderCount()    );
-		GwtLogHelper.debug(m_logger, "......Entry     Count:       " + sd.getEntryCount()     );
-		GwtLogHelper.debug(m_logger, "......Folder    Count:       " + sd.getFolderCount()    );
-		GwtLogHelper.debug(m_logger, "......Workspace Count:       " + sd.getWorkspaceCount() );
-		GwtLogHelper.debug(m_logger, "......Total     Count:       " + sd.getTotalCount()     );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc Binders:                        " + sd.hasAdHocBinders()                   );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc Entries:                        " + sd.hasAdHocEntries()                   );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc Folders:                        " + sd.hasAdHocFolders()                   );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc Folders With Nested Remote:     " + sd.hasAdHocFoldersWithNestedRemote()   );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc Workspaces:                     " + sd.hasAdHocWorkspaces()                );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc Workspaces With Nested Remote:  " + sd.hasAdHocWorkspacesWithNestedRemote());
+		GwtLogHelper.debug(m_logger, "......Has Cloud Folders:                        " + sd.hasCloudFolders()                   );
+		GwtLogHelper.debug(m_logger, "......Has Mirrored Folders:                     " + sd.hasMirroredFolders()                );
+		GwtLogHelper.debug(m_logger, "......Has Net Folders:                          " + sd.hasNetFolders()                     );
+		GwtLogHelper.debug(m_logger, "......Has Purge Confirmatiions:                 " + sd.hasPurgeConfirmations()             );
+		GwtLogHelper.debug(m_logger, "......Has Remote Entries:                       " + sd.hasRemoteEntries()                  );
+		GwtLogHelper.debug(m_logger, "......Has Remote Folders:                       " + sd.hasRemoteFolders()                  );
+		GwtLogHelper.debug(m_logger, "......Has Remote Selections:                    " + sd.hasRemoteSelections()               );
+		GwtLogHelper.debug(m_logger, "......Has Remote Workspaces:                    " + sd.hasRemoteWorkspaces()               );
+		GwtLogHelper.debug(m_logger, "......Has Binders:                              " + sd.hasBinders()                        );
+		GwtLogHelper.debug(m_logger, "......Has Entries:                              " + sd.hasEntries()                        );
+		GwtLogHelper.debug(m_logger, "......Has Folders:                              " + sd.hasFolders()                        );
+		GwtLogHelper.debug(m_logger, "......Has Unclassified:                         " + sd.hasUnclassified()                   );
+		GwtLogHelper.debug(m_logger, "......Has Workspaces:                           " + sd.hasWorkspaces()                     );
+		GwtLogHelper.debug(m_logger, "......Binder    Count:                          " + sd.getBinderCount()                    );
+		GwtLogHelper.debug(m_logger, "......Entry     Count:                          " + sd.getEntryCount()                     );
+		GwtLogHelper.debug(m_logger, "......Folder    Count:                          " + sd.getFolderCount()                    );
+		GwtLogHelper.debug(m_logger, "......Workspace Count:                          " + sd.getWorkspaceCount()                 );
+		GwtLogHelper.debug(m_logger, "......Total     Count:                          " + sd.getTotalCount()                     );
 	}
 	
 	/*
@@ -5491,6 +5528,84 @@ public class GwtViewHelper {
 			}
 		}
 		return user;
+	}
+
+	/**
+	 * Returns a SelectedUsersDetails object containing information
+	 * about the selected users in a List<Long>.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings({"unchecked", "unused"})
+	public static SelectedUsersDetails getSelectedUsersDetails(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getSelectedUsersDetails()");
+		try {
+			// Allocate a SelectedUsersDetails we can return.
+			SelectedUsersDetails reply = new SelectedUsersDetails();
+
+			// Are there any user ID's to check?
+			int totalCount = ((null == userIds) ? 0 : userIds.size());
+			if (0 < totalCount) {
+				// Yes!  Store the total count and scan those we can
+				// resolve.
+				reply.setTotalCount(totalCount);
+				List resolvedList = ResolveIds.getPrincipals(userIds, false);
+				if (MiscUtil.hasItems(resolvedList)) {
+					for (Object userO: resolvedList) {
+						// Does this user have a workspace?
+						User user     = ((User) userO);
+						Long userWSId = user.getWorkspaceId();
+						if (null != userWSId) {
+							// Yes!  Process whether contains only
+							// items from personal storage or not.
+							if (SearchUtils.binderHasNestedRemoteFolders(bs, userWSId)) {
+								reply.setHasAdHocUserWorkspacesWithNestedRemote(true);
+								reply.addPurgeConfirmation(
+									NLT.get(
+										"purgeConfirmation.userWS",
+										new String[] {
+											user.getTitle()
+										}));
+							}
+							else {
+								reply.setHasAdHocUserWorkspaces(true);
+							}
+							
+							// Increment the count of user workspaces.
+							reply.incrUserWorkspaceCount();
+						}
+					}
+				}
+			}
+
+			// If we get here, reply refers to a SelectedUsersDetails
+			// containing the information about what's in the
+			// List<Long>.  Return it.
+			if (GwtLogHelper.isDebugEnabled(m_logger)) {
+				dumpSelectedUsersDetails(reply);
+			}
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getSelectedUsersDetails( SOURCE EXCEPTION ):  ");
+		}
+		
+		finally {
+			gsp.stop();
+		}
 	}
 
 	/**

@@ -139,6 +139,7 @@ import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
+import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -538,10 +539,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case DELETE_SELECTED_USERS:
+		{
+			DeleteSelectedUsersCmd dsuCmd = ((DeleteSelectedUsersCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtServerHelper.deleteSelectedUsers( this, getRequest( ri ), dsuCmd.getUserIds(), dsuCmd.getDeleteSelectedUsersMode(), dsuCmd.getPurgeUsersWithWorkspace() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case DELETE_SELECTIONS:
 		{
-			DeleteSelectionsCmd dfeCmd = ((DeleteSelectionsCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtServerHelper.deleteSelections( this, getRequest( ri ), dfeCmd.getEntityIds(), dfeCmd.getDeleteSelectionsMode() );
+			DeleteSelectionsCmd dsCmd = ((DeleteSelectionsCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtServerHelper.deleteSelections( this, getRequest( ri ), dsCmd.getEntityIds(), dsCmd.getDeleteSelectionsMode() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1955,10 +1964,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case GET_SELECTED_USERS_DETAILS:
+		{
+			GetSelectedUsersDetailsCmd gsudCmd = ((GetSelectedUsersDetailsCmd) cmd);
+			SelectedUsersDetails result = GwtViewHelper.getSelectedUsersDetails( this, getRequest( ri ), gsudCmd.getUserIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_SELECTION_DETAILS:
 		{
-			GetSelectionDetailsCmd gzdfuCmd = ((GetSelectionDetailsCmd) cmd);
-			SelectionDetails result = GwtViewHelper.getSelectionDetails( this, getRequest( ri ), gzdfuCmd.getEntityIds() );
+			GetSelectionDetailsCmd gsdCmd = ((GetSelectionDetailsCmd) cmd);
+			SelectionDetails result = GwtViewHelper.getSelectionDetails( this, getRequest( ri ), gsdCmd.getEntityIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

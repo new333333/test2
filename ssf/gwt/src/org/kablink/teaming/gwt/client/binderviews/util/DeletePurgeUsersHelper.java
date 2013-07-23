@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews.util;
 
 import java.util.ArrayList;
@@ -41,12 +40,14 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.DeletePurgeUsersCmdBase;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteSelectedUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteUserWorkspacesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeUserWorkspacesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.DeleteSelectedUsersMode;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
 import org.kablink.teaming.gwt.client.util.ProgressDlg.ProgressCallback;
@@ -64,12 +65,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author drfoster@novell.com
  */
 public class DeletePurgeUsersHelper {
-	private boolean					m_operationCanceled;	// Set true if the operation gets canceled.
-	private DeletePurgeUsersCmdBase	m_dpuCmd;				// The delete/purge users command to perform.
-	private int						m_totalUserCount;		// Count of items in m_sourceUserIds.
-	private List<ErrorInfo>			m_collectedErrors;		// Collects errors that occur while processing an operation on the list of users. 
-	private List<Long>				m_sourceUserIds;		// The user IDs being operated on.
-	private Map<StringIds, String>	m_strMap;				// Initialized with a map of the strings used to run the operation.
+	private boolean						m_operationCanceled;	// Set true if the operation gets canceled.
+	private DeletePurgeUsersCallback	m_dpuCallback;			// Callback interface used to inform callers about what happens.
+	private DeletePurgeUsersCmdBase		m_dpuCmd;				// The delete/purge users command to perform.
+	private int							m_totalUserCount;		// Count of items in m_sourceUserIds.
+	private List<ErrorInfo>				m_collectedErrors;		// Collects errors that occur while processing an operation on the list of users. 
+	private List<Long>					m_sourceUserIds;		// The user IDs being operated on.
+	private Map<StringIds, String>		m_strMap;				// Initialized with a map of the strings used to run the operation.
 	
 	// The following are used to manage the strings displayed by a
 	// delete/purge operation.  A map is loaded with the appropriate
@@ -82,13 +84,23 @@ public class DeletePurgeUsersHelper {
 		PROGRESS_MESSAGE,
 	}
 	
+	/**
+	 * Interface used by the helper to inform the caller about what
+	 * happened. 
+	 */
+	public interface DeletePurgeUsersCallback {
+		public void operationCanceled();
+		public void operationComplete();
+		public void operationFailed();
+	}
+	
 	/*
 	 * Constructor method.
 	 * 
 	 * Private to inhibit the class from being instantiated from
 	 * outside of it.
 	 */
-	private DeletePurgeUsersHelper(List<Long> sourceUserIds, Map<StringIds, String> strMap, DeletePurgeUsersCmdBase dpuCmd) {
+	private DeletePurgeUsersHelper(List<Long> sourceUserIds, Map<StringIds, String> strMap, DeletePurgeUsersCmdBase dpuCmd, DeletePurgeUsersCallback dpuCallback) {
 		// Initialize the super class...
 		super();
 		
@@ -97,77 +109,37 @@ public class DeletePurgeUsersHelper {
 		m_sourceUserIds  = sourceUserIds;
 		m_totalUserCount = m_sourceUserIds.size();
 		m_dpuCmd         = dpuCmd;
+		m_dpuCallback    = dpuCallback;
 		
 		// ...and initialize everything else.
 		m_collectedErrors = new ArrayList<ErrorInfo>();
 	}
 
 	/**
-	 * Asynchronously deletes the user's workspaces.
+	 * Asynchronously deletes the selected users.
 	 * 
 	 * @param sourceUserIds
+	 * @param dsMode
+	 * @param purgeUsersWithWS
+	 * @param dpuCallback
 	 */
-	public static void deleteUserWorkspacesAsync(final List<Long> sourceUserIds) {
-		ProgressDlg.createAsync(new ProgressDlgClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(final ProgressDlg pDlg) {
-				// Load the strings...
-				Map<StringIds, String> strMap = new HashMap<StringIds, String>();
-				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().deleteUserWorkspacesError()              );
-				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_DeleteUserWorkspaces()        );
-				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteUserWorkspacesCaption() );
-				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteUserWorkspacesProgress());
-
-				// ...create the helper...
-				final DeletePurgeUsersHelper dpuHelper = new DeletePurgeUsersHelper(
-					sourceUserIds,
-					strMap,
-					new DeleteUserWorkspacesCmd(
-						sourceUserIds));
-				
-				// ...and perform the delete...
-				if (ProgressDlg.needsChunking(dpuHelper.m_totalUserCount)) {
-					// ...chunking as necessary.
-					ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
-						@Override
-						public void dialogReady() {
-							dpuHelper.dpuOpAsync(pDlg);
-						}
-						
-						@Override
-						public void operationCanceled() {
-							// Simply mark the global indicating we've
-							// been canceled.  The operation will stop
-							// on the next chunk.
-							dpuHelper.m_operationCanceled = true;
-						}
-
-						@Override
-						public void operationComplete() {
-							// Nothing to do.  We manage completion via
-							// how we handle the items in the list.
-						}
-					},
-					true,	// true -> Operation can be canceled.
-					strMap.get(StringIds.PROGRESS_CAPTION),
-					strMap.get(StringIds.PROGRESS_MESSAGE),
-					dpuHelper.m_totalUserCount);
-				}
-				
-				else {
-					// ...without chunking.
-					dpuHelper.dpuOpAsync(null);
-				}
-			}
-		});
+	public static void deleteSelectedUsersAsync(final List<Long> sourceUserIds, final DeleteSelectedUsersMode dsMode, final boolean purgeUsersWithWS, final DeletePurgeUsersCallback dpuCallback) {
+		switch (dsMode) {
+		case TRASH_ALL_WORKSPACES:                 trashUserWorkspacesAsync(            sourceUserIds,                   dpuCallback); break;
+		case TRASH_ADHOC_WORKSPACES_PURGE_OTHERS:  trashAdHocPurgeRemoteWorkspacesAsync(sourceUserIds, purgeUsersWithWS, dpuCallback); break;
+		case PURGE_ALL_WORKSPACES:
+			if (purgeUsersWithWS)
+			     purgeUsersAsync(         sourceUserIds, true, dpuCallback);
+			else purgeUserWorkspacesAsync(sourceUserIds, true, dpuCallback);
+			break;
+		}
 	}
-
+	
+	public static void deleteUserWorkspacesAsync(final List<Long> sourceUserIds) {
+		// Always use the initial form of the method.
+		deleteSelectedUsersAsync(sourceUserIds, DeleteSelectedUsersMode.TRASH_ALL_WORKSPACES, false, null);
+	}
+	
 	/*
 	 * Asynchronously performs an operation on a collection of users.
 	 */
@@ -213,12 +185,20 @@ public class DeletePurgeUsersHelper {
 				m_collectedErrors,
 				500);	// Delay to allow a progress dialog time to reflect any final updates.
 		}
-		
-		// If anything was done...
-		if (totalErrorCount != m_totalUserCount) {
-			// ...force the content to refresh just in case its got
-			// ...something displayed that depends on it.
-			FullUIReloadEvent.fireOne();
+
+		// If we don't have a callback...
+		if (null == m_dpuCallback) {
+			// ...and if anything was done...
+			if (totalErrorCount != m_totalUserCount) {
+				// ...force the content to refresh just in case its got
+				// ...something displayed that depends on it.
+				FullUIReloadEvent.fireOne();
+			}
+		}
+		else {
+			// ...otherwise, tell the caller that the operation has
+			// ...completed.
+			m_dpuCallback.operationComplete();
 		}
 	}
 	
@@ -303,6 +283,9 @@ public class DeletePurgeUsersHelper {
 
 				// ...mark the operation as having been canceled...
 				m_operationCanceled = true;
+				if (null != m_dpuCallback) {
+					m_dpuCallback.operationFailed();
+				}
 
 				// ...and tell the user about the RPC failure.
 				GwtClientHelper.handleGwtRPCFailure(
@@ -351,8 +334,10 @@ public class DeletePurgeUsersHelper {
 	 * Asynchronously purges the users and their workspaces.
 	 * 
 	 * @param sourceUserIds
+	 * @param purgeMirrored
+	 * @param dpuCallback
 	 */
-	public static void purgeUsersAsync(final List<Long> sourceUserIds, final boolean purgeMirrored) {
+	public static void purgeUsersAsync(final List<Long> sourceUserIds, final boolean purgeMirrored, final DeletePurgeUsersCallback dpuCallback) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -370,56 +355,33 @@ public class DeletePurgeUsersHelper {
 				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsPurgeUsersProgress());
 
 				// ...create the helper...
-				final DeletePurgeUsersHelper dpuHelper = new DeletePurgeUsersHelper(
+				DeletePurgeUsersHelper dpuHelper = new DeletePurgeUsersHelper(
 					sourceUserIds,
 					strMap,
 					new PurgeUsersCmd(
 						sourceUserIds,
-						purgeMirrored));
+						purgeMirrored),
+					dpuCallback);
 				
 				// ...and perform the purge...
-				if (ProgressDlg.needsChunking(dpuHelper.m_totalUserCount)) {
-					// ...chunking as necessary.
-					ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
-						@Override
-						public void dialogReady() {
-							dpuHelper.dpuOpAsync(pDlg);
-						}
-						
-						@Override
-						public void operationCanceled() {
-							// Simply mark the global indicating we've
-							// been canceled.  The operation will stop
-							// on the next chunk.
-							dpuHelper.m_operationCanceled = true;
-						}
-
-						@Override
-						public void operationComplete() {
-							// Nothing to do.  We manage completion via
-							// how we handle the items in the list.
-						}
-					},
-					true,	// true -> Operation can be canceled.
-					strMap.get(StringIds.PROGRESS_CAPTION),
-					strMap.get(StringIds.PROGRESS_MESSAGE),
-					dpuHelper.m_totalUserCount);
-				}
-				
-				else {
-					// ...without chunking.
-					dpuHelper.dpuOpAsync(null);
-				}
+				dpuHelper.runOpNow(pDlg);
 			}
 		});
+	}
+	
+	public static void purgeUsersAsync(final List<Long> sourceUserIds, final boolean purgeMirrored) {
+		// Always use the initial form of the method.
+		purgeUsersAsync(sourceUserIds, purgeMirrored, null);
 	}
 	
 	/**
 	 * Asynchronously purges the user's workspaces.
 	 * 
 	 * @param sourceUserIds
+	 * @param purgeMirrored
+	 * @param dpuCallback
 	 */
-	public static void purgeUserWorkspacesAsync(final List<Long> sourceUserIds, final boolean purgeMirrored) {
+	public static void purgeUserWorkspacesAsync(final List<Long> sourceUserIds, final boolean purgeMirrored, final DeletePurgeUsersCallback dpuCallback) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -437,47 +399,142 @@ public class DeletePurgeUsersHelper {
 				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsPurgeUserWorkspacesProgress());
 
 				// ...create the helper...
-				final DeletePurgeUsersHelper dpuHelper = new DeletePurgeUsersHelper(
+				DeletePurgeUsersHelper dpuHelper = new DeletePurgeUsersHelper(
 					sourceUserIds,
 					strMap,
 					new PurgeUserWorkspacesCmd(
 						sourceUserIds,
-						purgeMirrored));
+						purgeMirrored),
+					dpuCallback);
 				
 				// ...and perform the purge...
-				if (ProgressDlg.needsChunking(dpuHelper.m_totalUserCount)) {
-					// ...chunking as necessary.
-					ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
-						@Override
-						public void dialogReady() {
-							dpuHelper.dpuOpAsync(pDlg);
-						}
-						
-						@Override
-						public void operationCanceled() {
-							// Simply mark the global indicating we've
-							// been canceled.  The operation will stop
-							// on the next chunk.
-							dpuHelper.m_operationCanceled = true;
-						}
-
-						@Override
-						public void operationComplete() {
-							// Nothing to do.  We manage completion via
-							// how we handle the items in the list.
-						}
-					},
-					true,	// true -> Operation can be canceled.
-					strMap.get(StringIds.PROGRESS_CAPTION),
-					strMap.get(StringIds.PROGRESS_MESSAGE),
-					dpuHelper.m_totalUserCount);
-				}
-				
-				else {
-					// ...without chunking.
-					dpuHelper.dpuOpAsync(null);
-				}
+				dpuHelper.runOpNow(pDlg);
 			}
 		});
+	}
+	
+	public static void purgeUserWorkspacesAsync(final List<Long> sourceUserIds, final boolean purgeMirrored) {
+		// Always use the initial form of the method.
+		purgeUserWorkspacesAsync(sourceUserIds, purgeMirrored, null);
+	}
+	
+	/*
+	 * Runs the delete/purge operation via the progress dialog.
+	 */
+	private void runOpNow(final ProgressDlg pDlg) {
+		// Perform the operation...
+		if (ProgressDlg.needsChunking(m_totalUserCount)) {
+			// ...chunking as necessary.
+			ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
+				@Override
+				public void dialogReady() {
+					dpuOpAsync(pDlg);
+				}
+				
+				@Override
+				public void operationCanceled() {
+					// Mark the global indicating we've been canceled
+					// (the operation will stop on the next chunk.)
+					m_operationCanceled = true;
+					m_dpuCallback.operationCanceled();
+				}
+
+				@Override
+				public void operationComplete() {
+					// Nothing to do.  We manage completion via
+					// how we handle the items in the list.
+				}
+			},
+			true,	// true -> Operation can be canceled.
+			m_strMap.get(StringIds.PROGRESS_CAPTION),
+			m_strMap.get(StringIds.PROGRESS_MESSAGE),
+			m_totalUserCount);
+		}
+		
+		else {
+			// ...without chunking.
+			dpuOpAsync(null);
+		}
+	}
+	
+	/**
+	 * Asynchronously deletes the user's workspaces.
+	 * 
+	 * @param sourceUserIds
+	 * @param dpuCallback
+	 */
+	public static void trashAdHocPurgeRemoteWorkspacesAsync(final List<Long> sourceUserIds, final boolean purgeUsersWithWS, final DeletePurgeUsersCallback dpuCallback) {
+		ProgressDlg.createAsync(new ProgressDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(final ProgressDlg pDlg) {
+				// Load the strings...
+				Map<StringIds, String> strMap = new HashMap<StringIds, String>();
+				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().deleteSelectedUsersError()              );
+				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_DeleteSelectedUsers()        );
+				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteSelectedUsersCaption() );
+				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteSelectedUsersProgress());
+
+				// ...create the helper...
+				DeletePurgeUsersHelper dpuHelper = new DeletePurgeUsersHelper(
+					sourceUserIds,
+					strMap,
+					new DeleteSelectedUsersCmd(
+						sourceUserIds,
+						DeleteSelectedUsersMode.TRASH_ADHOC_WORKSPACES_PURGE_OTHERS,
+						purgeUsersWithWS),
+					dpuCallback);
+				
+				// ...and perform the delete.
+				dpuHelper.runOpNow(pDlg);
+			}
+		});
+	}
+
+	/**
+	 * Asynchronously deletes the user's workspaces.
+	 * 
+	 * @param sourceUserIds
+	 * @param dpuCallback
+	 */
+	public static void trashUserWorkspacesAsync(final List<Long> sourceUserIds, final DeletePurgeUsersCallback dpuCallback) {
+		ProgressDlg.createAsync(new ProgressDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(final ProgressDlg pDlg) {
+				// Load the strings...
+				Map<StringIds, String> strMap = new HashMap<StringIds, String>();
+				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().deleteUserWorkspacesError()              );
+				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_DeleteUserWorkspaces()        );
+				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteUserWorkspacesCaption() );
+				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteUserWorkspacesProgress());
+
+				// ...create the helper...
+				DeletePurgeUsersHelper dpuHelper = new DeletePurgeUsersHelper(
+					sourceUserIds,
+					strMap,
+					new DeleteUserWorkspacesCmd(
+						sourceUserIds),
+					dpuCallback);
+				
+				// ...and perform the purge...
+				dpuHelper.runOpNow(pDlg);
+			}
+		});
+	}
+	
+	public static void trashUserWorkspacesAsync(final List<Long> sourceUserIds) {
+		// Always use the initial form of the method.
+		trashUserWorkspacesAsync(sourceUserIds, null);
 	}
 }

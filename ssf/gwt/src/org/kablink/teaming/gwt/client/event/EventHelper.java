@@ -604,6 +604,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case DELETE_SELECTED_USERS:
+				// A DeleteSelectedUsersEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof DeleteSelectedUsersEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DeleteSelectedUsersEvent.registerEvent(eventBus, ((DeleteSelectedUsersEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case DISABLE_SELECTED_USERS:
 				// A DisableSelectedUsersEvent!  Can the event handler
 				// we were given handle that?
@@ -2675,6 +2684,7 @@ public class EventHelper {
 			case COPY_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof CopySelectedEntriesEvent.Handler);                    break;
 			case DELETE_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);                  break;
 			case DELETE_SELECTED_USER_WORKSPACES:              hasHandler = (eventHandler instanceof DeleteSelectedUserWorkspacesEvent.Handler);           break;
+			case DELETE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof DeleteSelectedUsersEvent.Handler);                    break;
 			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;
 			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
 			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;

@@ -269,6 +269,7 @@ public enum TeamingEvents implements IsSerializable {
 	COPY_SELECTED_ENTRIES,							// Copies the Selected Entries.
 	DELETE_SELECTED_ENTRIES,						// Deletes the Selected Entries.
 	DELETE_SELECTED_USER_WORKSPACES,				// Deletes the Selected User Workspaces.
+	DELETE_SELECTED_USERS,							// Deletes the Selected Users.
 	DISABLE_SELECTED_USERS,							// Disables the Selected Users.
 	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
 	ENABLE_SELECTED_USERS,							// Enables the Selected Users.

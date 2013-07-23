@@ -324,6 +324,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_DeleteNetFolderServers();
 	String rpcFailure_DeleteFolderEntries();
 	String rpcFailure_DeleteGroups();
+	String rpcFailure_DeleteSelectedUsers();
 	String rpcFailure_DeleteSelections();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_DeleteUserWorkspaces();
@@ -439,6 +440,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetReportsInfo();
 	String rpcFailure_GetRootWorkspaceId();
 	String rpcFailure_GetSavedSearches();
+	String rpcFailure_GetSelectedUsersDetails();
 	String rpcFailure_GetSelectionDetails();
 	String rpcFailure_GetSelfRegInfo();
 	String rpcFailure_GetSendToFriendUrl();
@@ -612,6 +614,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_CreateBlogPageDlg();
 	String codeSplitFailure_CopyMoveEntriesDlg();
+	String codeSplitFailure_DeleteSelectedUsersDlg();
 	String codeSplitFailure_DeleteSelectionsDlg();
 	String codeSplitFailure_DescriptionPanel();
 	String codeSplitFailure_DesktopAppDownloadControl();
@@ -1910,6 +1913,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the operations against selected users.
 	String enableUsersError();
+	String deleteSelectedUsersError();
 	String deleteUserWorkspacesError();
 	String disableUsersError();
 	String purgeUserWorkspacesError();
@@ -2002,6 +2006,8 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsConfirmPurgeUserWS();
 	String binderViewsDeleteFolderEntriesCaption();
 	String binderViewsDeleteFolderEntriesProgress();
+	String binderViewsDeleteSelectedUsersCaption();
+	String binderViewsDeleteSelectedUsersProgress();
 	String binderViewsDeleteSelectionsCaption();
 	String binderViewsDeleteSelectionsProgress();
 	String binderViewsDeleteTasksCaption();
@@ -2762,4 +2768,17 @@ public interface GwtTeamingMessages extends Messages
 	String deleteSelectionsDlgLabel_PurgeAll();
 	String deleteSelectionsDlgLabel_PurgeOnly();
 	String deleteSelectionsDlgWarning_CantUndo();
+	
+	// Strings used in the Delete Selected Users dialog.
+	String deleteSelectedUsersDlgConfirmWS();
+	String deleteSelectedUsersDlgConfirmWSAndUsers();
+	String deleteSelectedUsersDlgHeader();
+	String deleteSelectedUsersDlgLabel_Trash();
+	String deleteSelectedUsersDlgLabel_TrashAdHoc();
+	String deleteSelectedUsersDlgLabel_Purge();
+	String deleteSelectedUsersDlgLabel_PurgeAll();
+	String deleteSelectedUsersDlgLabel_PurgeOnly();
+	String deleteSelectedUsersDlgLabel_PurgeUsers1();
+	String deleteSelectedUsersDlgLabel_PurgeUsers2();
+	String deleteSelectedUsersDlgWarning_CantUndo();
 }// end GwtTeamingMessages

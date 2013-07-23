@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeUsersHelper.DeletePurgeUsersCallback;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.ActionMenuColumn;
@@ -85,6 +86,7 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUserWorkspacesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
@@ -209,6 +211,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ContributorIdsRequestEvent.Handler,
 		CopySelectedEntriesEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
+		DeleteSelectedUsersEvent.Handler,
 		DeleteSelectedUserWorkspacesEvent.Handler,
 		DisableSelectedUsersEvent.Handler,
 		DisableSelectedUsersAdHocFoldersEvent.Handler,
@@ -294,6 +297,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.COPY_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_USER_WORKSPACES,
+		TeamingEvents.DELETE_SELECTED_USERS,
 		TeamingEvents.DISABLE_SELECTED_USERS,
 		TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.ENABLE_SELECTED_USERS,
@@ -1818,6 +1822,46 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					}
 				});
 			}
+		}
+	}
+	
+	/**
+	 * Handles DeleteSelectedUsersEvent's received by this class.
+	 * 
+	 * Implements the DeleteSelectedUsersEvent.Handler.onDeleteSelectedUsers() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDeleteSelectedUsers(DeleteSelectedUsersEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Delete the users selected in the data table and
+			// reset the view to redisplay things with the users
+			// deleted.
+			List<Long> selectedUserIds = EntityId.getLongsFromEntityIds(getSelectedEntityIds());
+			BinderViewsHelper.deleteSelectedUsers(
+					selectedUserIds,
+					new DeletePurgeUsersCallback() {
+				@Override
+				public void operationCanceled() {
+					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+					FullUIReloadEvent.fireOne();
+				}
+
+				@Override
+				public void operationComplete() {
+					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+					FullUIReloadEvent.fireOne();
+				}
+				
+				@Override
+				public void operationFailed() {
+					// Nothing to do.  The delete call will have told
+					// the user about the failure.
+				}
+			});
 		}
 	}
 	

@@ -218,6 +218,7 @@ import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
+import org.kablink.teaming.gwt.client.util.DeleteSelectedUsersMode;
 import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -2107,6 +2108,40 @@ public class GwtServerHelper {
 		}
 		
 		return Boolean.TRUE;
+	}
+
+	/**
+	 * Deletes the specified users.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param userIds
+	 * @param dsuMode
+	 * @param purgeUsersWithWS
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData deleteSelectedUsers(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, DeleteSelectedUsersMode dsuMode, boolean purgeUsersWithWS) throws GwtTeamingException {
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		deleteSelectedUsersImpl(bs, request, userIds, dsuMode, reply);
+		return reply;
+	}
+	
+	private static void deleteSelectedUsersImpl(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, DeleteSelectedUsersMode dsMode, ErrorListRpcResponseData reply) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.deleteSelectedUsersImpl()");
+		try {
+//!			...this needs to be implemented...
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}
+		
+		finally {
+			gsp.stop();
+		}
 	}
 
 	/**
@@ -9544,6 +9579,7 @@ public class GwtServerHelper {
 		case DELETE_NET_FOLDER_ROOTS:
 		case DELETE_FOLDER_ENTRIES:
 		case DELETE_GROUPS:
+		case DELETE_SELECTED_USERS:
 		case DELETE_SELECTIONS:
 		case DELETE_TASKS:
 		case DELETE_USER_WORKSPACES:
@@ -9664,6 +9700,7 @@ public class GwtServerHelper {
 		case GET_REPORTS_INFO:
 		case GET_ROOT_WORKSPACE_ID:
 		case GET_SAVED_SEARCHES:
+		case GET_SELECTED_USERS_DETAILS:
 		case GET_SELECTION_DETAILS:
 		case GET_SEND_TO_FRIEND_URL:
 		case GET_ZIP_DOWNLOAD_FILES_URL:

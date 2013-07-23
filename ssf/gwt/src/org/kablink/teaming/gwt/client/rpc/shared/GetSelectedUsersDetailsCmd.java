@@ -34,23 +34,21 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntityId;
-
 /**
  * This class holds all of the information necessary to execute the
- * 'get selection details' command.
+ * 'get selected users details' command.
  * 
  * @author drfoster@novell.com
  */
-public class GetSelectionDetailsCmd extends VibeRpcCmd {
-	private List<EntityId>	m_entityIds;	//
+public class GetSelectedUsersDetailsCmd extends VibeRpcCmd {
+	private List<Long>	m_userIds;	//
 	
 	/**
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public GetSelectionDetailsCmd() {
+	public GetSelectedUsersDetailsCmd() {
 		// Initialize the super class.
 		super();
 	}
@@ -58,14 +56,14 @@ public class GetSelectionDetailsCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param entityIds
+	 * @param userIds
 	 */
-	public GetSelectionDetailsCmd(List<EntityId> entityIds) {
+	public GetSelectedUsersDetailsCmd(List<Long> userIds) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setEntityIds(entityIds);
+		setUserIds(userIds);
 	}
 	
 	/**
@@ -73,14 +71,14 @@ public class GetSelectionDetailsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<EntityId> getEntityIds() {return m_entityIds;}
+	public List<Long> getUserIds() {return m_userIds;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntityIds(List<EntityId> entityIds) {m_entityIds = entityIds;}
+	public void setUserIds(List<Long> userIds) {m_userIds = userIds;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -91,6 +89,6 @@ public class GetSelectionDetailsCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.GET_SELECTION_DETAILS.ordinal();
+		return VibeRpcCmdType.GET_SELECTED_USERS_DETAILS.ordinal();
 	}
 }
