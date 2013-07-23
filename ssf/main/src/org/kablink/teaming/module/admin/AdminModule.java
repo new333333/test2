@@ -502,7 +502,7 @@ public interface AdminModule {
      * 
      * @return
      */
-    public boolean isUnsafeReindexinginProgress();
+    public boolean isUnsafeReindexingInProgress();
     
     /**
      * Load the index node associated with the system configured with non-H/A Lucene service. 
