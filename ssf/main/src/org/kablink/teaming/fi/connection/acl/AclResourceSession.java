@@ -133,41 +133,19 @@ public interface AclResourceSession extends ResourceSession {
 	 * @throws IllegalStateException If the path is not set, etc.
 	 */
 	public List<ResourceItem> getChildren(boolean directoryOnly, boolean includeAclInfoForFolder, boolean includeAclInfoForFile, boolean includeOwnerInfo) throws FIException, IllegalStateException;
-	
+		
 	/**
-	 * Return whether or not the context owner of this session has the specified permission on the 
-	 * resource that this session currently points to by path.
+	 * Return the name of the permission that the context owner of this session has on the file or
+	 * folder pointed to by the current path. If the user has no permission on that file or folder, 
+	 * it should return <code>null</code>.
 	 * <p>
-	 * The permission name is specific to the resource driver implementation and is defined by the
-	 * accompanying driver helper class implementing <code>AclItemPermissionMapper</code> interface. 
+	 * The permission name is specific to the resource driver implementing this interface and is defined
+	 * by the accompanying driver helper class implementing <code>AclItemPermissionMapper</code> interface. 
 	 * 
-	 * @param permissionName
-	 * @return <code>true</code> if the user has access to the resource at the specified permission
-	 * level, <code>false</code> otherwise.
+	 * @return permission name or <code>null</code>
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public boolean testAccess(String permissionName) throws FIException, UncheckedIOException;
+	public String checkPermission () throws FIException, UncheckedIOException;
 	
-	/**
-	 * Return whether or not the context owner of this session has the specified permission on 
-	 * each of the resources represented by the specified paths. The resource that this session
-	 * currently points to, if any, should be ignored and not be evaluated.
-	 * <p>
-	 * The number of resources that pass the test should not exceed the <code>maxAccessible</code>
-	 * value specified. Once it reaches the maximum value, it should stop testing access on the
-	 * remaining resources and return the partial result that it has accumulated up to that point.
-	 * This is important to avoid doing any more work than is necessary.
-	 * <p>
-	 * The permission name is specific to the resource driver implementation and is defined by the
-	 * accompanying driver helper class implementing <code>AclItemPermissionMapper</code> interface. 
-	 * 
-	 * @param permissionName
-	 * @param resourcePath
-	 * @param maxAccessible
-	 * @return
-	 * @throws FIException
-	 * @throws UncheckedIOException
-	 */
-	public boolean[] testAccess(String permissionName, String[] resourcePath, int maxAccessible) throws FIException, UncheckedIOException;
 }
