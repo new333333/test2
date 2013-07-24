@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -61,7 +61,6 @@ import org.kablink.teaming.gwt.client.widgets.EventButton;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Unit;
@@ -169,13 +168,12 @@ public class TaskListing extends Composite implements TaskProvider {
 		m_taskRootDIV.add(m_taskListingDIV);
 		
 		// ...populate the task panels...
-		ScheduledCommand populateCommand = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateTaskDIVs();
 			}
-		};
-		Scheduler.get().scheduleDeferred(populateCommand);
+		});
 
 		// ...and tell the Composite that we're good to go.
 		initWidget(m_taskRootDIV);
@@ -575,13 +573,12 @@ public class TaskListing extends Composite implements TaskProvider {
 	 * on the current size of the content frame.
 	 */
 	public void resize() {
-		ScheduledCommand resizeCommand = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				resizeNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(resizeCommand);
+		});
 	}
 	
 	public void resize(boolean immediate) {
@@ -689,13 +686,12 @@ public class TaskListing extends Composite implements TaskProvider {
 	 * Shows the TaskBundle into the task listing DIV.
 	 */
 	private void showTaskBundle(final long readTime) {
-		ScheduledCommand showCommand = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showTaskBundleNow(readTime);
 			}
-		};
-		Scheduler.get().scheduleDeferred(showCommand);
+		});
 	}
 	
 	private void showTaskBundleNow(final long readTime) {
@@ -705,7 +701,7 @@ public class TaskListing extends Composite implements TaskProvider {
 		final long showTime = m_taskTable.showTasks(m_taskBundle);
 		if (newTaskTable) m_taskListingDIV.add(m_taskTable);
 		if (m_taskBundle.getIsDebug() && GwtClientHelper.isDebugUI()) {
-			ScheduledCommand showTimeCommand = new ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					Window.alert(m_messages.taskDebug_times(
@@ -714,8 +710,7 @@ public class TaskListing extends Composite implements TaskProvider {
 						String.valueOf(showTime),
 						String.valueOf(readTime + showTime)));
 				}
-			};
-			Scheduler.get().scheduleDeferred(showTimeCommand);
+			});
 		}
 	}
 
@@ -734,6 +729,12 @@ public class TaskListing extends Composite implements TaskProvider {
 		m_taskToolsLinkageDIV.setVisible(false);
 		m_taskToolsWarningDIV.setVisible(true );
 	}
+
+
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the task listing and perform some operation on it.            */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	/**
 	 * Callback interface to interact with the task listing
@@ -751,8 +752,7 @@ public class TaskListing extends Composite implements TaskProvider {
 	 * @param taskListingClient
 	 */
 	public static void createAsync(final TaskFolderView taskFolderView, final TaskListingClient taskListingClient) {
-		GWT.runAsync(TaskListing.class, new RunAsyncCallback()
-		{			
+		GWT.runAsync(TaskListing.class, new RunAsyncCallback() {			
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_TaskListing() );
