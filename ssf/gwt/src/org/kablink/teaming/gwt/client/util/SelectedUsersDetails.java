@@ -35,8 +35,8 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -47,13 +47,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class SelectedUsersDetails implements IsSerializable, VibeRpcResponseData {
-	public final static boolean USE_NEW_DELETE_USERS_DIALOG	= false;	//! DRF (20130723):  Leave false on checkin until it's all working.
-	
 	private boolean						m_hasAdHocUserWorkspaces;					// true -> Selections include user Workspaces.
 	private boolean						m_hasAdHocUserWorkspacesWithNestedRemote;	// true -> Selections include user Workspaces that contain nested remote (i.e., Mirrored, Net or Cloud) folders.
-	private ErrorListRpcResponseData	m_purgeConfirmations;					// Set containing information about the items that will be purged.
-	private int							m_totalCount;							// Total count of everything being tracked.
-	private int							m_userWorkspaceCount;					// Count of user's with workspaces selected.
+	private ErrorListRpcResponseData	m_purgeConfirmations;						// Set containing information about the items that will be purged.
+	private int							m_totalCount;								// Total count of everything being tracked.
+	private int							m_userWorkspaceCount;						// Count of user's with workspaces selected.
 	
 	/**
 	 * Constructor method.
