@@ -2125,14 +2125,68 @@ public class GwtServerHelper {
 	 */
 	public static ErrorListRpcResponseData deleteSelectedUsers(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, DeleteSelectedUsersMode dsuMode, boolean purgeUsersWithWS) throws GwtTeamingException {
 		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-		deleteSelectedUsersImpl(bs, request, userIds, dsuMode, reply);
+		deleteSelectedUsersImpl(bs, request, userIds, dsuMode, purgeUsersWithWS, reply);
 		return reply;
 	}
 	
-	private static void deleteSelectedUsersImpl(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, DeleteSelectedUsersMode dsMode, ErrorListRpcResponseData reply) throws GwtTeamingException {
+	private static void deleteSelectedUsersImpl(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, DeleteSelectedUsersMode dsuMode, boolean purgeUsersWithWS, ErrorListRpcResponseData reply) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.deleteSelectedUsersImpl()");
 		try {
-//!			...this needs to be implemented...
+			// Decide what's to be trashed and what's to be purged.
+			List<Long> trashIds;
+			List<Long> purgeIds;
+			switch (dsuMode) {
+			default:
+				reply.addError(NLT.get("deleteSelectedUsers.InternalError.BogusDeleteMode", new String[]{dsuMode.name()}));
+				return;
+				
+			case PURGE_ALL_WORKSPACES:  purgeIds = userIds; trashIds = null;    break;
+			case TRASH_ALL_WORKSPACES:  purgeIds = null;    trashIds = userIds; break;
+				
+			case TRASH_ADHOC_WORKSPACES_PURGE_OTHERS:
+				purgeIds = new ArrayList<Long>();
+				trashIds = new ArrayList<Long>();
+				List resolvedList = ResolveIds.getPrincipals(userIds, false);
+				if (MiscUtil.hasItems(resolvedList)) {
+					for (Object userO: resolvedList) {
+						User user   = ((User) userO);
+						Long userId = user.getId();
+						if (SearchUtils.binderHasNestedRemoteFolders(bs, user.getWorkspaceId()))
+						     purgeIds.add(userId);
+						else trashIds.add(userId);
+						userIds.remove(userId);
+					}
+				}
+				if (purgeIds.isEmpty()) purgeIds = null;
+				if (trashIds.isEmpty()) trashIds = null;
+
+				// Did we handle all the users we were given?
+				if (!(userIds.isEmpty())) {
+					// No!  Then something unexpected happened!  Tell
+					// the user about the problem.
+					StringBuffer buf = new StringBuffer();
+					boolean firstId = true;
+					for (Long uid:  userIds) {
+						if (!firstId) buf.append(", ");
+						buf.append(String.valueOf(uid));
+					}
+					reply.addWarning(NLT.get("deleteSelectedUsers.InternalError.UnhandledUsers", new String[]{buf.toString()}));
+				}
+				
+				break;
+			}
+			
+			// Purge the purge items...
+			if (null != purgeIds) {
+				if (purgeUsersWithWS)
+				     GwtViewHelper.purgeUsersImpl(         bs, request, purgeIds, true, reply);	// true -> purge from..
+				else GwtViewHelper.purgeUserWorkspacesImpl(bs, request, purgeIds, true, reply);	// ...remote source.
+			}
+			
+			// ...and delete the trash items.
+			if (null != trashIds) {
+				GwtViewHelper.deleteUserWorkspacesImpl(bs, request, trashIds, reply);
+			}
 		}
 		
 		catch (Exception ex) {
@@ -2166,33 +2220,33 @@ public class GwtServerHelper {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.deleteSelectionsImpl()");
 		try {
 			// Decide what's to be trashed and what's to be purged.
-			List<EntityId> trashIds;
 			List<EntityId> purgeIds;
+			List<EntityId> trashIds;
 			switch (dsMode) {
 			default:
 				reply.addError(NLT.get("deleteSelections.InternalError.BogusDeleteMode", new String[]{dsMode.name()}));
 				return;
 				
-			case PURGE_ALL:  trashIds = null;      purgeIds = entityIds; break;
-			case TRASH_ALL:  trashIds = entityIds; purgeIds = null;      break;
+			case PURGE_ALL:  purgeIds = entityIds; trashIds = null;      break;
+			case TRASH_ALL:  purgeIds = null;      trashIds = entityIds; break;
 			
 			case TRASH_ADHOC_PURGE_OTHERS:
-				trashIds = new ArrayList<EntityId>();
 				purgeIds = new ArrayList<EntityId>();
+				trashIds = new ArrayList<EntityId>();
 				for (EntityId eid:  entityIds) {
 					if (isEntityRemote(bs, eid, reply))
 					     purgeIds.add(eid);
 					else trashIds.add(eid);
 				}
-				if (trashIds.isEmpty()) trashIds = null;
 				if (purgeIds.isEmpty()) purgeIds = null;
+				if (trashIds.isEmpty()) trashIds = null;
 				
 				break;
 			}
 
-			// Delete the trash items and purge the purge items.
+			// Purge the purge items and delete the trash items.
+			if (null != purgeIds) purgeFolderEntriesImpl( bs, request, purgeIds, true, reply);	// true -> purge from remote source.
 			if (null != trashIds) deleteFolderEntriesImpl(bs, request, trashIds,       reply);
-			if (null != purgeIds) purgeFolderEntriesImpl( bs, request, purgeIds, true, reply);
 		}
 		
 		catch (Exception ex) {
