@@ -7095,8 +7095,11 @@ public class GwtServerHelper {
 	 */
 	public static void setExtUserProvState( GwtUser gwtUser, User user )
 	{
+		IdentityInfo idInfo;
+		
 		// Are we dealing with an external user?
-		if ( user.getIdentityInfo().isInternal() == false )
+		idInfo = user.getIdentityInfo();
+		if ( idInfo != null && idInfo.isInternal() == false )
 		{
 			// Yes.
 			switch ( user.getExtProvState() )
