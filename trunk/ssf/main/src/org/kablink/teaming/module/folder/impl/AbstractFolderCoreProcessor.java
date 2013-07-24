@@ -1197,6 +1197,11 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 					if (fEntry.getTopEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
 					if (fEntry.getParentEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
 					if (!Validator.isNull(fEntry.getPostedBy())) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
+				} else if (entry instanceof Binder) {
+					if (operation.equals(ChangeLog.DELETEBINDER) || operation.equals(ChangeLog.PREDELETEBINDER)) {
+						//Add the path so it can be shown in the activity reports
+						XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_PATH, ((Binder)entry).getPathName());
+					}
 				}
 				ChangeLogUtils.save(changes);
 			}

@@ -197,5 +197,6 @@ public interface ReportModule {
 	public List<Long> getDeletedFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
 	public List<Long> getRestoredFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
 	public List<Long> getMovedFolderEntryIds(Date startDate, Date endDate);
+	public List<ChangeLog> getDeletedBinderLogs(Set<Long> binderIds);
 	public List<ChangeLog> getDeletedEntryLogs(Set<Long> entryIds);
 }
