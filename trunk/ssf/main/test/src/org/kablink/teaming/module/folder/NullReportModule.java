@@ -279,4 +279,10 @@ public class NullReportModule implements ReportModule {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public List<ChangeLog> getDeletedBinderLogs(Set<Long> binderIds) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
