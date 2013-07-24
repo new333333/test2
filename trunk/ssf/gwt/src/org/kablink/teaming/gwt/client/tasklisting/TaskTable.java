@@ -116,7 +116,6 @@ import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
@@ -1479,7 +1478,7 @@ public class TaskTable extends Composite
 		if (eventBinderId.equals(m_taskListing.getBinderId())) {
 			// Yes!  Asynchronously fire the corresponding reply event
 			// with the contributor IDs.
-			ScheduledCommand doReply = new ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					GwtTeaming.fireEvent(
@@ -1488,8 +1487,7 @@ public class TaskTable extends Composite
 							TaskListItemHelper.findContributorIds(
 								m_taskBundle.getTasks())));
 				}
-			};
-			Scheduler.get().scheduleDeferred(doReply);
+			});
 		}
 	}
 	
@@ -1673,13 +1671,12 @@ public class TaskTable extends Composite
 	 * asynchronously run the due date editor dialog.
 	 */
 	private void handleTaskChangeDueDateAsync(final Anchor dueDateAnchor, final TaskListItem task) {
-		ScheduledCommand dueDateEditor = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				handleTaskChangeDueDateNow(dueDateAnchor, task);
 			}
-		};
-		Scheduler.get().scheduleDeferred(dueDateEditor);
+		});
 	}
 	
 	/*
@@ -1833,13 +1830,12 @@ public class TaskTable extends Composite
 	 * Shows the dialog asynchronously.
 	 */
 	private void handleTaskHierarchyDisabledAsync() {
-		ScheduledCommand reasonShower = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				handleTaskHierarchyDisabledNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(reasonShower);
+		});
 	}
 	
 	/*
@@ -2191,13 +2187,12 @@ public class TaskTable extends Composite
 	 * the change into affect.
 	 */
 	private void handleTaskPostRemoveAsync(final List<EntityId> taskIds) {
-		ScheduledCommand postRemover = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				handleTaskPostRemoveNow(taskIds);
 			}
-		};
-		Scheduler.get().scheduleDeferred(postRemover);
+		});
 	}
 	
 	private void handleTaskPostRemoveNow(List<EntityId> taskIds) {
@@ -2482,13 +2477,12 @@ public class TaskTable extends Composite
 			if (null != newStatus) {
 				// Yes!  Apply it.
 				final String finalNewStatus = newStatus;
-				ScheduledCommand statusUpdater = new ScheduledCommand() {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
 					public void execute() {
 						handleTaskSetStatus(task, finalNewStatus);
 					}
-				};
-				Scheduler.get().scheduleDeferred(statusUpdater);
+				});
 			}
 		}
 	}
@@ -2838,7 +2832,36 @@ public class TaskTable extends Composite
 			List<EntityId> selectedEntityIds = event.getSelectedEntities();
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				// No!  Delete the entities selected in the view.
-				handleTaskDelete();
+				List<TaskListItem> tasksChecked = getTasksChecked();
+				int c = ((null == tasksChecked) ? 0 : tasksChecked.size());
+				for (int i = (c - 1); i >= 0; i -= 1) {
+					TaskListItem task = tasksChecked.get(i);
+					if (!(task.getTask().getCanTrash())) {
+						tasksChecked.remove(i);
+					}
+				}
+				if (!(GwtClientHelper.hasItems(tasksChecked))) {
+					// ...there's nothing to delete.
+					return;
+				}
+				final List<EntityId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+				BinderViewsHelper.deleteFolderEntries(taskIds, new DeletePurgeEntriesCallback() {
+					@Override
+					public void operationCanceled() {
+						handleTaskPostRemoveAsync(taskIds);
+					}
+
+					@Override
+					public void operationComplete() {
+						handleTaskPostRemoveAsync(taskIds);
+					}
+
+					@Override
+					public void operationFailed() {
+						// Nothing to do.  The delete call will have
+						// told the user about the failure.
+					}
+				});
 			}
 		}
 	}
@@ -3162,13 +3185,12 @@ public class TaskTable extends Composite
 	 * Called to write the change in linkage to the folder preferences.
 	 */
 	private void persistLinkageChangeAsync(final ScheduledCommand postChangeCommand) {
-		ScheduledCommand persistor = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				persistLinkageChangeNow(postChangeCommand);
 			}
-		};
-		Scheduler.get().scheduleDeferred(persistor);
+		});
 	}
 	
 	private void persistLinkageChangeNow(final ScheduledCommand postChangeCommand) {
@@ -3199,7 +3221,7 @@ public class TaskTable extends Composite
 				// If we have a post change command...
 				if (null != postChangeCommand) {
 					// ...schedule it.
-					Scheduler.get().scheduleDeferred(postChangeCommand);
+					GwtClientHelper.deferCommand(postChangeCommand);
 				}
 			}
 		});
@@ -3238,13 +3260,12 @@ public class TaskTable extends Composite
 	 * new task.
 	 */
 	private void promptForDispositionAsync(final Long newTaskId, final Long selectedTaskId) {
-		ScheduledCommand promptor = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				promptForDispositionNow(newTaskId, selectedTaskId);
 			}
-		};
-		Scheduler.get().scheduleDeferred(promptor);
+		});
 	}
 	
 	/*
@@ -3269,13 +3290,12 @@ public class TaskTable extends Composite
 	 * Called to completely refresh the contents of the TaskTable.
 	 */
 	private void refreshTaskTableAsync(final ProcessActive pa, final boolean preserveChecks, final boolean persistLinkage) {
-		ScheduledCommand refresher = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				refreshTaskTableNow(pa, preserveChecks, persistLinkage);
 			}
-		};
-		Scheduler.get().scheduleDeferred(refresher);
+		});
 	}
 	
 	private void refreshTaskTableNow(final ProcessActive pa, final boolean preserveChecks, final boolean persistLinkage) {
@@ -4124,13 +4144,12 @@ public class TaskTable extends Composite
 				m_messages.taskProcess_unSelectAll()),
 			0);
 		
-		ScheduledCommand selector = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				selectAllTasksNow(pa, select);
 			}
-		};
-		Scheduler.get().scheduleDeferred(selector);
+		});
 	}
 	
 	private void selectAllTasksNow(ProcessActive pa, boolean select) {
@@ -4426,13 +4445,12 @@ public class TaskTable extends Composite
 	}
 	
 	private void updateCalculatedDatesAsync(final ProcessActive pa, final Long binderId, final Long entryId) {
-		ScheduledCommand updater = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				updateCalculatedDatesNow(pa, binderId, entryId);
 			}
-		};
-		Scheduler.get().scheduleDeferred(updater);
+		});
 	}
 	
 	/*
@@ -4440,13 +4458,12 @@ public class TaskTable extends Composite
 	 * in the TaskListing.
 	 */
 	private void validateTaskToolsAsync() {
-		ScheduledCommand validator = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				validateTaskToolsNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(validator);
+		});
 	}
 	
 	private void validateTaskToolsNow() {
