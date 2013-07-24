@@ -88,7 +88,6 @@ import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
-import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -1018,7 +1017,7 @@ public class GwtMenuHelper {
 	 * The initial logic for this was copied from
 	 * ProfilesBinderHelper.buildViewEntryToolbar().
 	 */
-	@SuppressWarnings({"unchecked", "unused"})
+	@SuppressWarnings("unchecked")
 	private static void constructEntryProfilesRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, boolean manageUsers) {
 		// If we're not in the manage users version of the profiles
 		// root WS viewer...
@@ -1112,39 +1111,13 @@ public class GwtMenuHelper {
 			
 			// ...and add the delete users item.
 			tbi = new ToolbarItem("1_deletedSelectedWS");
-			if (SelectedUsersDetails.USE_NEW_DELETE_USERS_DIALOG) {
-				markTBITitle(tbi, "toolbar.delete.users");
-				markTBIEvent(tbi, TeamingEvents.DELETE_SELECTED_USERS);
-			}
-			else {
-				markTBITitle(tbi, "toolbar.delete.workspaces");
-				markTBIEvent(tbi, TeamingEvents.DELETE_SELECTED_USER_WORKSPACES);
-			}
+			markTBITitle(tbi, "toolbar.delete.users");
+			markTBIEvent(tbi, TeamingEvents.DELETE_SELECTED_USERS);
 			moreTBI.addNestedItem(tbi);
 			
 			needSep2 = true;
 		}
 			
-		// If the user can purge binders from the workspace...
-		if (canManageProfiles && (!SelectedUsersDetails.USE_NEW_DELETE_USERS_DIALOG)) {	// Should we be checking something else?
-			// ...if needed add a separator item...
-			needSeparator = addNestedSeparatorIfNeeded(moreTBI, needSeparator);
-			
-			// ...add the purge workspaces item...
-			tbi = new ToolbarItem("1_purgeSelectedWS");
-			markTBITitle(tbi, "toolbar.purge.workspaces");
-			markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_USER_WORKSPACES);
-			moreTBI.addNestedItem(tbi);
-			
-			// ...add the purge users item...
-			tbi = new ToolbarItem("1_purgeSelectedUsers");
-			markTBITitle(tbi, "toolbar.purge.users");
-			markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_USERS);
-			moreTBI.addNestedItem(tbi);
-			
-			needSep2 = true;
-		}
-
 		// ...if the user can manage profiles...
 		if (canManageProfiles) {
 			// ...if needed add a separator item...
