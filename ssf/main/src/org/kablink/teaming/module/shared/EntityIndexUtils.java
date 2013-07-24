@@ -80,6 +80,7 @@ import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
@@ -867,7 +868,11 @@ public class EntityIndexUtils {
 
     private static void markEntryAsInheritingAcls(Document doc, Binder binder, Entry entry) {
     	if(entry instanceof FolderEntry) {
-    		doc.add(new NumericField(Constants.ENTRY_ACL_PARENT_ID_FIELD).setLongValue(binder.getId().longValue()));
+    		long value = binder.getId().longValue(); // parent folder id
+    		// Currently only the FAMT resource driver exposes files whose ACLs are not stored in Filr.
+    		if(ResourceDriverConfig.DriverType.famt == binder.getResourceDriverType())
+    			value *= -1; // make it negative number
+    		doc.add(new NumericField(Constants.ENTRY_ACL_PARENT_ID_FIELD, Field.Store.YES, true).setLongValue(value));
     	}
     }
     
@@ -1467,14 +1472,37 @@ public class EntityIndexUtils {
     /**
      * 
      */
-    public static void addBinderResourceDriverName( Document doc, Binder binder, boolean fieldsOnly )
+    public static void addResourceDriverName( Document doc, DefinableEntity entity, boolean fieldsOnly )
     {
-    	if ( (binder instanceof Folder) && binder.isMirrored() && binder.getResourceDriverName() != null )
-    	{
-    		Field path;
-    		
-    		path = FieldFactory.createFieldStoredNotAnalyzed( RESOURCE_DRIVER_NAME_FIELD, binder.getResourceDriverName() );
-    		doc.add( path );
+    	if(entity instanceof Folder) {
+    		Folder folder = (Folder) entity;
+    		if(folder.isMirrored() && folder.getResourceDriverName() != null) {
+        		Field path = FieldFactory.createFieldStoredNotAnalyzed( RESOURCE_DRIVER_NAME_FIELD, folder.getResourceDriverName() );
+        		doc.add( path );    			
+    		}
+    	}
+    	else if(entity instanceof FolderEntry) {
+    		Folder parentFolder = ((FolderEntry)entity).getParentFolder();
+    		if(parentFolder.isMirrored() && parentFolder.getResourceDriverName() != null) {
+        		Field path = FieldFactory.createFieldStoredNotAnalyzed( RESOURCE_DRIVER_NAME_FIELD, parentFolder.getResourceDriverName() );
+        		doc.add( path );    			
+    		}
+    	}
+    }
+    
+    public static void addNetFolderFileResourcePath( Document doc, DefinableEntity entity, boolean fieldsOnly )
+    {
+    	if(entity instanceof FolderEntry) {
+    		FolderEntry folderEntry = (FolderEntry) entity;
+    		Folder parentFolder = folderEntry.getParentFolder();
+    		if(parentFolder.isMirrored() && parentFolder.getResourceDriverName() != null) {
+    			ResourceDriver driver = getResourceDriverManager().getDriver(parentFolder.getResourceDriverName());
+    			ResourceDriverConfig config = driver.getConfig();
+    			if(ResourceDriverConfig.DriverType.famt == config.getDriverType()) {
+            		Field path = FieldFactory.createFieldStoredNotIndexed( RESOURCE_PATH_FIELD, parentFolder.getResourceDriverName() + "/" + folderEntry.getTitle());
+            		doc.add( path );    			
+    			}
+     		}
     	}
     }
     
@@ -1493,5 +1521,9 @@ public class EntityIndexUtils {
 		
 		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_CLOUD_FOLDER_FIELD, (isCloudFolder ? Constants.TRUE : Constants.FALSE));
 		doc.add(path);
+    }
+    
+    private static ResourceDriverManager getResourceDriverManager() {
+    	return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
     }
 }

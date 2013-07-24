@@ -2532,6 +2532,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add ancestry 
         EntityIndexUtils.addAncestry(indexDoc, entity, fieldsOnly);
         
+    	EntityIndexUtils.addResourceDriverName( indexDoc, entity, fieldsOnly );
+
+    	EntityIndexUtils.addNetFolderFileResourcePath( indexDoc, entity, fieldsOnly );
+
         if (entity instanceof Binder) {
             //Add binder path
         	EntityIndexUtils.addBinderPath(indexDoc, (Binder) entity, fieldsOnly);
@@ -2542,10 +2546,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	EntityIndexUtils.addBinderIsMyFilesDir(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderHasResourceDriver(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsTopFolder(indexDoc, (Binder) entity, fieldsOnly);
-        	EntityIndexUtils.addBinderResourceDriverName( indexDoc, (Binder) entity, fieldsOnly );
         	EntityIndexUtils.addBinderCloudFolderInfo( indexDoc, (Binder) entity, fieldsOnly );
         }
- 
+        
         // Add data fields driven by the entry's definition object. 
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
 			@Override
