@@ -323,6 +323,8 @@ public class ReportDownloadController extends  SAbstractController {
 		HashMap<String,Definition> definitionMap = new HashMap<String, Definition>();
 		HashMap<Long,Binder> binderMap = new HashMap<Long, Binder>();
 		HashMap<Long,FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
+		HashMap<Long,String> deletedBinderTitles = new HashMap<Long,String>();
+		HashMap<Long,String> deletedBinderPaths = new HashMap<Long,String>();
 		HashMap<Long,String> deletedEntryTitles = new HashMap<Long,String>();
         User requestor = RequestContextHolder.getRequestContext().getUser();
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM, requestor.getLocale());
@@ -363,12 +365,6 @@ public class ReportDownloadController extends  SAbstractController {
 				userMap.put(p.getId(), p);
 			}
 		}
-		if(binderIds.size() > 0) {
-			SortedSet<Binder> binders = getBinderModule().getBinders(binderIds);
-			for(Binder b : binders) {
-				binderMap.put(b.getId(), b);
-			}
-		}
 		if(entryIds.size() > 0) {
 			HashSet<Long> deletedEntryIds = new HashSet<Long>();
 			deletedEntryIds.addAll(entryIds);
@@ -398,6 +394,54 @@ public class ReportDownloadController extends  SAbstractController {
 							if (titleEle != null) title = titleEle.getText();
 							if (!deletedEntryTitles.containsKey(entityId) || !title.equals("")) {
 								deletedEntryTitles.put(entityId, title);
+							}
+							Long owningBinderId = cLog.getOwningBinderId();
+							if (owningBinderId != null && !binderIds.contains(owningBinderId)) {
+								//Make sure to get the parent binders title and path in case it was also deleted
+								binderIds.add(owningBinderId);
+							}
+						} catch(Exception e) {
+							e.getMessage();
+						}
+					}
+				}
+			}
+		}
+		if(binderIds.size() > 0) {
+			HashSet<Long> deletedBinderIds = new HashSet<Long>();
+			deletedBinderIds.addAll(binderIds);
+			SortedSet<Binder> binders = getBinderModule().getBinders(binderIds);
+			for(Binder b : binders) {
+				binderMap.put(b.getId(), b);
+				deletedBinderIds.remove(b.getId());
+			}
+			//Now get the titles of any deleted binder
+			if (deletedBinderIds.size() > 0) {
+				while (!deletedBinderIds.isEmpty()) {
+					HashSet<Long> nextDeletedBinderIds = new HashSet<Long>();
+					int i = 0;
+					for (Long id : deletedBinderIds) {
+						nextDeletedBinderIds.add(id);
+						i++;
+						if (i >= 1000) break;
+					}
+					deletedBinderIds.removeAll(nextDeletedBinderIds);
+					List<ChangeLog> cLogs = getReportModule().getDeletedBinderLogs(nextDeletedBinderIds);
+					for (ChangeLog cLog : cLogs) {
+						try {
+							Long entityId = cLog.getEntityId();
+							Element root = cLog.getEntityRoot();
+							Element titleEle = (Element)root.selectSingleNode("//attribute[@name='title']");
+							String title = "";
+							if (titleEle != null) title = titleEle.getText();
+							if (!deletedBinderTitles.containsKey(entityId) || !title.equals("")) {
+								deletedBinderTitles.put(entityId, title);
+							}
+							Element pathEle = (Element)root.selectSingleNode("//property[@name='binderPath']"); 
+							String path = "";
+							if (pathEle != null) path = pathEle.getText();
+							if (!deletedBinderPaths.containsKey(entityId) || !path.equals("")) {
+								deletedBinderPaths.put(entityId, path);
 							}
 						} catch(Exception e) {
 							e.getMessage();
@@ -456,7 +500,17 @@ public class ReportDownloadController extends  SAbstractController {
 			if (row.containsKey(ReportModule.BINDER_ID)) {
 				binder = binderMap.get(row.get(ReportModule.BINDER_ID));
 				try {
-					if (binder != null) row.put(ReportModule.FOLDER, binder.getPathName());
+					if (binder != null) {
+						row.put(ReportModule.FOLDER, binder.getPathName());
+						row.put(ReportModule.ENTRY_TITLE, binder.getTitle());
+					} else {
+						if (deletedBinderPaths.containsKey(row.get(ReportModule.BINDER_ID))) {
+							row.put(ReportModule.FOLDER, deletedBinderPaths.get(row.get(ReportModule.BINDER_ID)));
+						}
+						if (deletedBinderTitles.containsKey(row.get(ReportModule.BINDER_ID))) {
+							row.put(ReportModule.ENTRY_TITLE, deletedBinderTitles.get(row.get(ReportModule.BINDER_ID)));
+						}
+					}
 				} catch(Exception e) {}
 			}
 			FolderEntry entry;

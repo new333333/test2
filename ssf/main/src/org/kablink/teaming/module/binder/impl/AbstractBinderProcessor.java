@@ -2742,6 +2742,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 					wfm.addChangeLog(element);
 				}
 			}
+			if (operation.equals(ChangeLog.DELETEBINDER) || operation.equals(ChangeLog.PREDELETEBINDER)) {
+				//Add the path so it can be shown in the activity reports
+				XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_PATH, binder.getPathName());
+			}
 			ChangeLogUtils.save(changes);
 		}
 		

@@ -543,6 +543,31 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return list;
 	}
 
+	public List<ChangeLog> getDeletedBinderLogs(Set<Long> binderIds) {
+		if (binderIds == null || binderIds.isEmpty()) return new ArrayList<ChangeLog>();
+		
+		final Long[] eIds = new Long[binderIds.size()];
+		Iterator iEntryIds = binderIds.iterator();
+		int i = 0;
+		while (iEntryIds.hasNext()) {
+			eIds[i++] = new Long((Long)iEntryIds.next());
+		}
+		final String[] entityTypes = new String[2];
+		entityTypes[0] = EntityIdentifier.EntityType.folder.name();
+		entityTypes[1] = EntityIdentifier.EntityType.workspace.name();
+
+		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(ChangeLog.class)
+				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+				.add(Restrictions.in("entityType", entityTypes));
+				crit.add(Restrictions.in("entityId", eIds));
+				crit.addOrder(Order.asc("operationDate"));
+				return crit.list();
+			}});
+		return ids;
+	}
+
 	public List<ChangeLog> getDeletedEntryLogs(Set<Long> entryIds) {
 		if (entryIds == null || entryIds.isEmpty()) return new ArrayList<ChangeLog>();
 		
@@ -795,7 +820,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				try {
 					ProjectionList proj = Projections.projectionList()
 									.add(Projections.groupProperty("startBy"))
-									.add(Projections.max("startDate"))
+									.add(Projections.groupProperty("startDate"))
 									.add(Projections.groupProperty("transactionType"));
 					if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 						proj.add(Projections.rowCount());
@@ -812,7 +837,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.add(Restrictions.ge("startDate", startDate))
 						.add(Restrictions.lt("startDate", endDate));
 					if (!userIdsToReport.isEmpty()) crit.add(Restrictions.in("startBy", userIdsToReport));
-					crit.addOrder(Order.asc("startBy"));
+					crit.addOrder(Order.asc("startDate"));
 					auditTrail = crit.list();
 				} catch(Exception e) {
 				}

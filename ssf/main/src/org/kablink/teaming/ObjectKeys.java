@@ -889,6 +889,7 @@ public interface ObjectKeys {
     public static final String XTAG_BINDER_INHERITTEAMMEMBERS="inheritTeamMembers";
     public static final String XTAG_BINDER_TEAMMEMBERS="teamMembers";
     public static final String XTAG_BINDER_TEAMMEMBER_NAME="teamMemberName";
+    public static final String XTAG_BINDER_PATH="binderPath";
      
     //value of name= attribute on XTAG_ELEMENT_TYPE_HISTORYSTAMP 
     public static final String XTAG_WF_CHANGE="workflowChange";
