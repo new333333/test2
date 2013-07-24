@@ -1788,8 +1788,6 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_TrashConfirmPurge();
 	String vibeDataTable_TrashConfirmPurgeAll();
 	String vibeDataTable_TrashConfirmPurgeAllWithSelections();
-	String vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Filr();
-	String vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Vibe();
 	String vibeDataTable_TrashConfirmRestoreAllWithSelections();
 	String vibeDataTable_TrashInternalErrorOverrideMissing(String methodName);
 	String vibeDataTable_View();
