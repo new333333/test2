@@ -405,6 +405,7 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 		// Create the purge workspace checkbox we can associate with
 		// the purge radio buttons.
 		final CheckBox purgeCB = buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers1());
+		m_purgeWorkspaceCB = null;
 		
 		// Create a ValueChangeHandler we can use to tweak the dialog
 		// when the user changes the selected radio button.
@@ -491,6 +492,7 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 		// the trash and purge radio buttons.
 		final CheckBox purgeCB = buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers3());
 		final CheckBox trashCB = buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers4());
+		m_purgeWorkspaceCB = trashCB;
 		
 		// Create a ValueChangeHandler we can use to tweak the dialog
 		// when the user changes the selected radio button.

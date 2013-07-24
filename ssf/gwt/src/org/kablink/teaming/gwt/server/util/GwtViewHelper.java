@@ -1531,10 +1531,13 @@ public class GwtViewHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static ErrorListRpcResponseData deleteUserWorkspaces(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		deleteUserWorkspacesImpl(bs, request, userIds, reply);
+		return reply;
+	}
+	
+	public static void deleteUserWorkspacesImpl(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, ErrorListRpcResponseData reply) throws GwtTeamingException {
 		try {
-			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-
 			// Were we given the IDs of any users to delete?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
 			if (MiscUtil.hasItems(userIds)) {
@@ -1583,11 +1586,6 @@ public class GwtViewHelper {
 					}
 				}
 			}
-
-			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing any errors we
-			// encountered.  Return it.
-			return reply;
 		}
 		
 		catch (Exception e) {
@@ -5568,7 +5566,7 @@ public class GwtViewHelper {
 								reply.setHasAdHocUserWorkspacesWithNestedRemote(true);
 								reply.addPurgeConfirmation(
 									NLT.get(
-										"purgeConfirmation.userWS",
+										"purgeConfirmation.user",
 										new String[] {
 											user.getTitle()
 										}));
@@ -7745,12 +7743,15 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	@SuppressWarnings("unchecked")
 	public static ErrorListRpcResponseData purgeUsers(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, boolean purgeMirrored) throws GwtTeamingException {
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		purgeUsersImpl(bs, request, userIds, purgeMirrored, reply);
+		return reply;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void purgeUsersImpl(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, boolean purgeMirrored, ErrorListRpcResponseData reply) throws GwtTeamingException {
 		try {
-			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-
 			// Were we given the IDs of any users to purge?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
 			if (MiscUtil.hasItems(userIds)) {
@@ -7798,11 +7799,6 @@ public class GwtViewHelper {
 					}
 				}
 			}
-
-			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing any errors we
-			// encountered.  Return it.
-			return reply;
 		}
 		
 		catch (Exception e) {
@@ -7829,10 +7825,13 @@ public class GwtViewHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static ErrorListRpcResponseData purgeUserWorkspaces(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, boolean purgeMirrored) throws GwtTeamingException {
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		purgeUserWorkspacesImpl(bs, request, userIds, purgeMirrored, reply);
+		return reply;
+	}
+	
+	public static void purgeUserWorkspacesImpl(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, boolean purgeMirrored, ErrorListRpcResponseData reply) throws GwtTeamingException {
 		try {
-			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-
 			// Were we given the IDs of any users to purge?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
 			if (MiscUtil.hasItems(userIds)) {
@@ -7881,11 +7880,6 @@ public class GwtViewHelper {
 					}
 				}
 			}
-
-			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing any errors we
-			// encountered.  Return it.
-			return reply;
 		}
 		
 		catch (Exception e) {
