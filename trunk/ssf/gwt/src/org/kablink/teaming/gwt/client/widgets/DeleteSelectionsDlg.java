@@ -77,12 +77,11 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	private FlexTable					m_grid;				// The table holding the dialog's content.
 	private GwtTeamingImageBundle		m_images;			// Access to the base images.
 	private GwtTeamingMessages			m_messages;			// Access to our localized strings.
-	private Image						m_warningImg;		// The <IMG>  on the 'can't be undone' warning. 
-	private InlineLabel					m_warningTxt;		// The <SPAN> on the 'can't be undone' warning.
 	private List<EntityId>				m_entityIds;		// The entities to be deleted.
 	private RadioButton					m_purgeRB;			// The 'Delete from system' radio button.
 	private RadioButton					m_trashRB;			// The 'Move to trash'      radio button.
 	private SelectionDetails			m_selectionDetails;	// Populated via a GWT RPC call while constructing the dialog's contents.  Contains an analysis of what m_entityIds refers to.
+	private Widget						m_purgeWarning;			// The Widget containing the 'can't be undone' warning. 
 	
 	// The buttons displayed on this dialog.
 	private final static DlgButtonMode	DLG_BUTTONS = DlgButtonMode.OkCancel; 
@@ -126,18 +125,18 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	/*
 	 * Returns a Widget containing what's displayed for purge warnings.
 	 */
-	private Widget buildWarningWidget(String text) {
+	private Widget buildPurgeWarningWidget(String text) {
 		HorizontalPanel hp = new VibeHorizontalPanel(null, null);
 		hp.addStyleName("vibe-deleteSelectionsDlg-warningPanel");
 		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		
-		m_warningImg = GwtClientHelper.buildImage(m_images.warningIcon16());
-		m_warningImg.addStyleName("vibe-deleteSelectionsDlg-warningImg");
-		hp.add(m_warningImg);
+		Image img = GwtClientHelper.buildImage(m_images.warningIcon16());
+		img.addStyleName("vibe-deleteSelectionsDlg-warningImg");
+		hp.add(img);
 		
-		m_warningTxt = new InlineLabel(text);
-		m_warningTxt.addStyleName("vibe-deleteSelectionsDlg-warningTxt");
-		hp.add(m_warningTxt);
+		InlineLabel txt = new InlineLabel(text);
+		txt.addStyleName("vibe-deleteSelectionsDlg-warningTxt");
+		hp.add(txt);
 		
 		return hp;
 	}
@@ -361,8 +360,9 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		m_grid.removeAllRows();
 		
 		// ...forget any previous widgets...
-		m_trashRB =
-		m_purgeRB = null;
+		m_trashRB      =
+		m_purgeRB      = null;
+		m_purgeWarning = null;
 
 		// ...and repopulate the dialog.
 		switch (m_dialogMode) {
@@ -411,7 +411,8 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		m_cellFormatter.setWordWrap( 1, 0, false);
 		
 		// ...and add the warning about the delete.
-		m_grid.setWidget(            2, 0, buildWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo()));
+		m_purgeWarning = buildPurgeWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo());
+		m_grid.setWidget(            2, 0, m_purgeWarning);
 		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectionsDlg-warning vibe-deleteSelectionsDlg-warningSituation1 vibe-deleteSelectionsDlg-indent");
 	}
 	
@@ -428,7 +429,8 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectionsDlg-purgeNote");
 		
 		// ...and add a warning about the delete.
-		m_grid.setWidget(            1, 0, buildWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo()));
+		m_purgeWarning = buildPurgeWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo());
+		m_grid.setWidget(            1, 0, m_purgeWarning);
 		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectionsDlg-warning vibe-deleteSelectionsDlg-warningSituation2");
 		setPurgeWarningActive(true);
 	}
@@ -462,7 +464,8 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		m_cellFormatter.setWordWrap( 1, 0, false);
 		
 		// ...and add the warning about the deletes.
-		m_grid.setWidget(            2, 0, buildWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo()));
+		m_purgeWarning = buildPurgeWarningWidget(m_messages.deleteSelectionsDlgWarning_CantUndo());
+		m_grid.setWidget(            2, 0, m_purgeWarning);
 		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectionsDlg-warning vibe-deleteSelectionsDlg-warningSituation3");
 		setPurgeWarningActive(true);
 	}
@@ -528,14 +531,10 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 * Sets the purge warning as being active or inactive.
 	 */
 	private void setPurgeWarningActive(boolean active) {
-		if (active) {
-			if (null != m_warningImg) m_warningImg.addStyleName("vibe-deleteSelectionsDlg-warningImgActive");
-			if (null != m_warningTxt) m_warningTxt.addStyleName("vibe-deleteSelectionsDlg-warningTxtActive");
-		}
-		
-		else {
-			if (null != m_warningImg) m_warningImg.removeStyleName("vibe-deleteSelectionsDlg-warningImgActive");
-			if (null != m_warningTxt) m_warningTxt.removeStyleName("vibe-deleteSelectionsDlg-warningTxtActive");
+		if (null != m_purgeWarning) {
+			if (active)
+			     m_purgeWarning.addStyleName(   "vibe-deleteSelectionsDlg-warningPanelActive");
+			else m_purgeWarning.removeStyleName("vibe-deleteSelectionsDlg-warningPanelActive");
 		}
 	}
 	
