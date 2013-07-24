@@ -1055,15 +1055,24 @@ public class GwtMenuHelper {
 			entryToolbar.addNestedItem(importProfilesTBI);
 		}
 		
-		// Create a 'more' item for the disable/enable and purge/delete
-		// items.
+		// If the user can delete binders from the workspace...
+		boolean canManageProfiles = pm.testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries);
+		boolean	canTrash          = canManageProfiles;	// Should we be checking something else?
+		if (canTrash) {
+			// ...and add the delete users item.
+			ToolbarItem deleteTBI = new ToolbarItem("1_deletedSelectedWS");
+			markTBITitle(deleteTBI, "toolbar.delete.users");
+			markTBIEvent(deleteTBI, TeamingEvents.DELETE_SELECTED_USERS);
+			entryToolbar.addNestedItem(deleteTBI);
+		}
+			
+		// Create a 'more' item for the disable/enable items.
 		ToolbarItem tbi;
 		ToolbarItem moreTBI = new ToolbarItem("1_more");
 		markTBITitle(moreTBI, "toolbar.more");
 		
 		// If the user can manage entries in the workspace...
 		boolean needSeparator     = false;
-		boolean canManageProfiles = pm.testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries);
 		if (canManageProfiles) {
 			// ...add the disable users item...
 			tbi = new ToolbarItem("1_disableSelected");
@@ -1102,23 +1111,8 @@ public class GwtMenuHelper {
 			needSeparator = true;
 		}
 		
-		// If the user can delete binders from the workspace...
-		boolean	canTrash = canManageProfiles;	// Should we be checking something else?
-		boolean needSep2 = false;
-		if (canTrash) {
-			// ...if needed add a separator item...
-			needSeparator = addNestedSeparatorIfNeeded(moreTBI, needSeparator);
-			
-			// ...and add the delete users item.
-			tbi = new ToolbarItem("1_deletedSelectedWS");
-			markTBITitle(tbi, "toolbar.delete.users");
-			markTBIEvent(tbi, TeamingEvents.DELETE_SELECTED_USERS);
-			moreTBI.addNestedItem(tbi);
-			
-			needSep2 = true;
-		}
-			
 		// ...if the user can manage profiles...
+		boolean needSep2 = false;
 		if (canManageProfiles) {
 			// ...if needed add a separator item...
 			addNestedSeparatorIfNeeded(moreTBI, (needSep2 || needSeparator));

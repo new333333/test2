@@ -1069,20 +1069,6 @@ public class BinderViewsHelper {
 			return;
 		}
 		
-    	// If we need to, add a checkbox about purging mirrored sources.
-		final CheckBox cb;
-		final boolean purgeBinders = EntityId.areBindersInEntityIds(entityIds);
-	    if (purgeBinders) {
-	    	String caption;
-	    	if (GwtClientHelper.isLicenseFilr())
-	    	     caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Filr();
-	    	else caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Vibe();
-	    	cb = new CheckBox(caption);
-	    }
-	    else {
-	    	cb = null;
-	    }
-		
 		// Is the user sure they want to purge the folder entries?
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
@@ -1121,7 +1107,7 @@ public class BinderViewsHelper {
 							// Yes, they're sure!  Perform the purge.
 							DeletePurgeEntriesHelper.purgeSelectedEntriesAsync(
 								entityIds,
-								((null == cb) ? false : cb.getValue()),
+								true,
 								dpeCallback);
 						}
 
@@ -1130,8 +1116,7 @@ public class BinderViewsHelper {
 							// No, they're not sure!
 						}
 					},
-					confirmationMsg,
-					cb);
+					confirmationMsg);
 			}
 		});
 	}
