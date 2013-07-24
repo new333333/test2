@@ -1617,8 +1617,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	        	Attributes attrs;
 	        	
 	        	sr = (SearchResult) answer.next();
-	        	attrs = sr.getAttributes();
-	        	domainName = (String) attrs.get( "defaultNamingContext" ).get();
+	        	if ( sr != null )
+	        	{
+	        		attrs = sr.getAttributes();
+	        		if ( attrs != null )
+	        		{
+	        			Attribute attrib;
+	        			
+	        			attrib = attrs.get( "defaultNamingContext" );
+	        			if ( attrib != null )
+	        			{
+		        			Object value;
+	        				
+		        			value = attrib.get();
+		        			if ( value != null && value instanceof String )
+		        				domainName = (String) value;
+	        			}
+	        		}
+	        	}
 	        }
 		}
 		catch ( Exception ex )
