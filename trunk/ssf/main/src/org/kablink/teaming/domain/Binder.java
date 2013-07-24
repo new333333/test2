@@ -45,6 +45,7 @@ import java.util.HashSet;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
@@ -702,6 +703,14 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		// Just a convenience method
 		if(getResourceDriverName() != null)
 			return ResourceDriverManagerUtil.findResourceDriver(getResourceDriverName());
+		else
+			return null;
+	}
+	
+	public DriverType getResourceDriverType() {
+		// Just a convenience method
+		if(getResourceDriverName() != null)
+			return ResourceDriverManagerUtil.getResourceDriverType(getResourceDriverName());
 		else
 			return null;
 	}

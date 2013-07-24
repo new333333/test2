@@ -289,14 +289,14 @@ public class Constants {
 	public static final String ICON_NAME_FIELD = "_iconName";
 	public static final String TASK_COMPLETED_DATE_FIELD = "_taskCompleted";
 	public static final String IS_GROUP_DYNAMIC_FIELD = "_isGroupDynamic";
-	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This numeric field is only used for entries that inherit ACLs from parent folders.
+	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This field is only used for mirrored file entries with regard to ACL.
 	public static final String FOLDER_ID_FIELD = "_folderId"; // This numeric field contains folder ID. Used only for folders.
 	public static final String GENERAL_TEXT_FIELD = "_generalText"; // This field contains textual representation of all field values except for title and description fields.
 	public static final String IDENTITY_INTERNAL_FIELD = "_iInternal";
 	public static final String IS_HOME_DIR_FIELD = "_isHomeDir";
 	public static final String IS_CLOUD_FOLDER_FIELD = "_isCloud";
 	public static final String IS_MYFILES_DIR_FIELD = "_isMyFilesDir";
-    public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName";
+    public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName"; // Applicable to all mirrored folders and files (legacy + net + cloud)
     public static final String CLOUD_FOLDER_ROOT_FIELD = "_cloudFolderRoot";
     public static final String ALLOW_MOBILE_SYNC_FIELD = "_allowMobileSync";
     public static final String ALLOW_DESKTOP_SYNC_FIELD = "_allowDesktopSync";
@@ -305,6 +305,7 @@ public class Constants {
     public static final String CONTENT_INDEXED_FIELD = "_contentIndexed";
     public static final String HIDDEN_FROM_SEARCH_FIELD = "_hiddenSearch";
     public static final String HIDDEN_FROM_FIND_USER_FIELD = "_hiddenFindUser";
+    public static final String RESOURCE_PATH_FIELD = "_resourcePath"; // Only for net folder files
 
 	/**
 	 * Constructor method.

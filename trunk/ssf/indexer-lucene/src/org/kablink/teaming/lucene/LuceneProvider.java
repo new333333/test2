@@ -1504,11 +1504,15 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	}
 	
 	private Query makeAclInheritingEntriesQuery() {
+		return NumericRangeQuery.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, Long.MIN_VALUE, Long.MAX_VALUE, true, true);		
+	}
+	
+	private Query makeAclInheritingEntriesStrictQuery() {
 		return NumericRangeQuery.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, 1L, Long.MAX_VALUE, true, true);		
 	}
 	
 	private Filter makeAclInheritingEntriesFilter() {
-		return NumericRangeFilter.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, 1L, Long.MAX_VALUE, true, true);				
+		return NumericRangeFilter.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, Long.MIN_VALUE, Long.MAX_VALUE, true, true);				
 	}
 	
 	private Query makeAccessibleFoldersAclQuery(Query aclQuery) {
@@ -1531,7 +1535,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 
 			final TLongHashSet accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), null, accessibleFoldersAclQuery);
 
-			Query aclInheritingEntriesQuery = makeAclInheritingEntriesQuery();
+			Query aclInheritingEntriesQuery = makeAclInheritingEntriesStrictQuery();
 
 			// Pass I
 			indexSearcherHandle.getIndexSearcher().search(aclQuery, new Collector() {
