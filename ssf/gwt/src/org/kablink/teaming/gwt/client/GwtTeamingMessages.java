@@ -2780,5 +2780,7 @@ public interface GwtTeamingMessages extends Messages
 	String deleteSelectedUsersDlgLabel_PurgeOnly();
 	String deleteSelectedUsersDlgLabel_PurgeUsers1();
 	String deleteSelectedUsersDlgLabel_PurgeUsers2();
+	String deleteSelectedUsersDlgLabel_PurgeUsers3();
+	String deleteSelectedUsersDlgLabel_PurgeUsers4();
 	String deleteSelectedUsersDlgWarning_CantUndo();
 }// end GwtTeamingMessages

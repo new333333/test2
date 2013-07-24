@@ -615,22 +615,21 @@
 /* End:  Empty widget styles. */
 
 /* Start:  Delete selections dialog styles. */
-	.vibe-deleteSelectionsDlg                   {min-width: 220px;}
-	.vibe-deleteSelectionsDlg-indent            {padding-left: 20px;}
-	.vibe-deleteSelectionsDlg-purgeNote         {font-size: 14px;}
-	.vibe-deleteSelectionsDlg-purgeRadio label  {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
-	.vibe-deleteSelectionsDlg-radio             {} 
-	.vibe-deleteSelectionsDlg-trashRadio label  {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
-	.vibe-deleteSelectionsDlg-rootPanel         {padding: 8px;}
-	.vibe-deleteSelectionsDlg-warning           {}
-	.vibe-deleteSelectionsDlg-warningImg        {margin-right: 3px; display: none; visibility: hidden;}
-	.vibe-deleteSelectionsDlg-warningImgActive  {display: inline !important; visibility: visible !important;}
-	.vibe-deleteSelectionsDlg-warningPanel      {padding-top: 5px;}
-	.vibe-deleteSelectionsDlg-warningTxt        {font-size: 14px; font-weight: bold; display: none; visibility: hidden;}
-	.vibe-deleteSelectionsDlg-warningTxtActive  {display: inline !important; visibility: visible !important;}
-	.vibe-deleteSelectionsDlg-warningSituation1 {}
-	.vibe-deleteSelectionsDlg-warningSituation2 {padding-top: 5px;}
-	.vibe-deleteSelectionsDlg-warningSituation3 {padding-top: 5px; padding-left: 3px;}
+	.vibe-deleteSelectionsDlg                    {min-width: 220px;}
+	.vibe-deleteSelectionsDlg-indent             {padding-left: 20px;}
+	.vibe-deleteSelectionsDlg-purgeNote          {font-size: 14px;}
+	.vibe-deleteSelectionsDlg-purgeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+	.vibe-deleteSelectionsDlg-radio              {} 
+	.vibe-deleteSelectionsDlg-trashRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+	.vibe-deleteSelectionsDlg-rootPanel          {padding: 8px;}
+	.vibe-deleteSelectionsDlg-warning            {padding-top: 8px;}
+	.vibe-deleteSelectionsDlg-warningImg         {margin-right: 3px;}
+	.vibe-deleteSelectionsDlg-warningPanel       {display: none; visibility: hidden;}
+	.vibe-deleteSelectionsDlg-warningPanelActive {display: inline !important; visibility: visible !important;}
+	.vibe-deleteSelectionsDlg-warningTxt         {font-size: 14px; font-weight: bold;}
+	.vibe-deleteSelectionsDlg-warningSituation1  {}
+	.vibe-deleteSelectionsDlg-warningSituation2  {}
+	.vibe-deleteSelectionsDlg-warningSituation3  {padding-left: 3px;}
 /* End:  Delete selections dialog styles. */
 
 
@@ -644,13 +643,12 @@
 	.vibe-deleteSelectedUsersDlg-radio                 {} 
 	.vibe-deleteSelectedUsersDlg-trashRadio label      {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
 	.vibe-deleteSelectedUsersDlg-rootPanel             {padding: 8px;}
-	.vibe-deleteSelectedUsersDlg-warning               {}
-	.vibe-deleteSelectedUsersDlg-warningImg            {margin-right: 3px; display: none; visibility: hidden;}
-	.vibe-deleteSelectedUsersDlg-warningImgActive      {display: inline !important; visibility: visible !important;}
-	.vibe-deleteSelectedUsersDlg-warningPanel          {padding-top: 5px;}
-	.vibe-deleteSelectedUsersDlg-warningTxt            {font-size: 14px; font-weight: bold; display: none; visibility: hidden;}
-	.vibe-deleteSelectedUsersDlg-warningTxtActive      {display: inline !important; visibility: visible !important;}
+	.vibe-deleteSelectedUsersDlg-warning               {padding-top: 8px;}
+	.vibe-deleteSelectedUsersDlg-warningImg            {margin-right: 3px;}
+	.vibe-deleteSelectedUsersDlg-warningPanel          {display: none; visibility: hidden;}
+	.vibe-deleteSelectedUsersDlg-warningPanelActive    {display: inline !important; visibility: visible !important;}
+	.vibe-deleteSelectedUsersDlg-warningTxt            {font-size: 14px; font-weight: bold;}
 	.vibe-deleteSelectedUsersDlg-warningSituation1     {}
-	.vibe-deleteSelectedUsersDlg-warningSituation2     {padding-top: 5px;}
-	.vibe-deleteSelectedUsersDlg-warningSituation3     {padding-top: 5px; padding-left: 3px;}
+	.vibe-deleteSelectedUsersDlg-warningSituation2     {}
+	.vibe-deleteSelectedUsersDlg-warningSituation3     {padding-left: 3px;}
 /* End:  Delete selected users dialog styles. */

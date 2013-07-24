@@ -5542,7 +5542,7 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	@SuppressWarnings({"unchecked", "unused"})
+	@SuppressWarnings("unchecked")
 	public static SelectedUsersDetails getSelectedUsersDetails(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getSelectedUsersDetails()");
 		try {

@@ -78,12 +78,11 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 	private FlexTable					m_grid;					// The table holding the dialog's content.
 	private GwtTeamingImageBundle		m_images;				// Access to the base images.
 	private GwtTeamingMessages			m_messages;				// Access to our localized strings.
-	private Image						m_purgeWarningImg;		// The <IMG>  on the 'can't be undone' warning. 
-	private InlineLabel					m_purgeWarningTxt;		// The <SPAN> on the 'can't be undone' warning.
 	private List<Long>					m_userIds;				// The users to be deleted.
 	private RadioButton					m_purgeRB;				// The 'Delete from system' radio button.
 	private RadioButton					m_trashRB;				// The 'Move to trash'      radio button.
 	private SelectedUsersDetails		m_selectedUsersDetails;	// Populated via a GWT RPC call while constructing the dialog's contents.  Contains an analysis of what m_userIds refers to.
+	private Widget						m_purgeWarning;			// The Widget containing the 'can't be undone' warning. 
 	
 	// The buttons displayed on this dialog.
 	private final static DlgButtonMode	DLG_BUTTONS = DlgButtonMode.OkCancel; 
@@ -99,7 +98,7 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 		Situation2,	// Selections contain only users with workspaces containing remote (i.e., Cloud Folder, Net Folder or Vibe Mirrored Folder) items.
 		Situation3	// Selections contain a mixture of workspaces containing personal storage and remote items.
 	}
-	
+
 	/*
 	 * Class constructor.
 	 * 
@@ -132,13 +131,13 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 		hp.addStyleName("vibe-deleteSelectedUsersDlg-warningPanel");
 		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		
-		m_purgeWarningImg = GwtClientHelper.buildImage(m_images.warningIcon16());
-		m_purgeWarningImg.addStyleName("vibe-deleteSelectedUsersDlg-warningImg");
-		hp.add(m_purgeWarningImg);
+		Image img = GwtClientHelper.buildImage(m_images.warningIcon16());
+		img.addStyleName("vibe-deleteSelectedUsersDlg-warningImg");
+		hp.add(img);
 		
-		m_purgeWarningTxt = new InlineLabel(text);
-		m_purgeWarningTxt.addStyleName("vibe-deleteSelectedUsersDlg-warningTxt");
-		hp.add(m_purgeWarningTxt);
+		InlineLabel txt = new InlineLabel(text);
+		txt.addStyleName("vibe-deleteSelectedUsersDlg-warningTxt");
+		hp.add(txt);
 		
 		return hp;
 	}
@@ -148,10 +147,10 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 	 * is being purged.
 	 */
 	private CheckBox buildPurgeWorkspaceCheckBox(String cbText) {
-		m_purgeWorkspaceCB = new CheckBox(cbText);
-		m_purgeWorkspaceCB.addStyleName("vibe-deleteSelectedUsersDlg-purgeCheckBoxWS");
-		m_purgeWorkspaceCB.removeStyleName("gwt-CheckBox");
-		return m_purgeWorkspaceCB;
+		CheckBox reply = new CheckBox(cbText);
+		reply.addStyleName("vibe-deleteSelectedUsersDlg-purgeCheckBoxWS");
+		reply.removeStyleName("gwt-CheckBox");
+		return reply;
 	}
 	
 	/**
@@ -382,6 +381,7 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 		// ...forget any previous widgets...
 		m_trashRB          =
 		m_purgeRB          = null;
+		m_purgeWarning     = null;
 		m_purgeWorkspaceCB = null;
 
 		// ...and repopulate the dialog.
@@ -402,12 +402,25 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 	 *      operation cannot be undone.)
 	 */
 	private void populateSituation1() {
+		// Create the purge workspace checkbox we can associate with
+		// the purge radio buttons.
+		final CheckBox purgeCB = buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers1());
+		
 		// Create a ValueChangeHandler we can use to tweak the dialog
 		// when the user changes the selected radio button.
 		ValueChangeHandler<Boolean> rbChangedHandler = new ValueChangeHandler<Boolean>() {
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				setPurgeWarningActive(m_purgeRB.getValue());
+				if (m_purgeRB.getValue()) {
+					setPurgeWarningActive(true);
+					m_purgeWorkspaceCB = purgeCB;
+					purgeCB.setVisible(true);
+				}
+				else {
+					setPurgeWarningActive(false);
+					m_purgeWorkspaceCB = null;
+					purgeCB.setVisible(false);
+				}
 			}
 		};
 		
@@ -429,13 +442,13 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 		m_grid.setWidget(            1, 0, m_purgeRB);
 		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectedUsersDlg-purgeRadio");
 		m_cellFormatter.setWordWrap( 1, 0, false);
-		
-		// ...add a checkbox to purge users when purging workspaces...
-		m_grid.setWidget(            2, 0, buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers1()));
+		m_grid.setWidget(            2, 0, purgeCB);
 		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectedUsersDlg-purgeCheckBox vibe-deleteSelectedUsersDlg-indent");
+		purgeCB.setVisible(false);
 		
 		// ...and add the warning about the delete.
-		m_grid.setWidget(            3, 0, buildPurgeWarningWidget(m_messages.deleteSelectedUsersDlgWarning_CantUndo()));
+		m_purgeWarning = buildPurgeWarningWidget(m_messages.deleteSelectedUsersDlgWarning_CantUndo());
+		m_grid.setWidget(            3, 0, m_purgeWarning);
 		m_cellFormatter.addStyleName(3, 0, "vibe-deleteSelectedUsersDlg-warning vibe-deleteSelectedUsersDlg-warningSituation1 vibe-deleteSelectedUsersDlg-indent");
 		setPurgeWarningActive(false);
 	}
@@ -453,11 +466,13 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectedUsersDlg-purgeNote");
 		
 		// ...add a checkbox to purge users when purging workspaces...
-		m_grid.setWidget(            1, 0, buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers1()));
+		m_purgeWorkspaceCB = buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers2());
+		m_grid.setWidget(            1, 0, m_purgeWorkspaceCB);
 		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectedUsersDlg-purgeCheckBox");
 		
 		// ...and add a warning about the delete.
-		m_grid.setWidget(            2, 0, buildPurgeWarningWidget(m_messages.deleteSelectedUsersDlgWarning_CantUndo()));
+		m_purgeWarning = buildPurgeWarningWidget(m_messages.deleteSelectedUsersDlgWarning_CantUndo());
+		m_grid.setWidget(            2, 0, m_purgeWarning);
 		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectedUsersDlg-warning vibe-deleteSelectedUsersDlg-warningSituation2");
 		setPurgeWarningActive(true);
 	}
@@ -472,31 +487,58 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 	 * system cannot be undone.
 	 */
 	private void populateSituation3() {
+		// Create the purge workspace checkboxes we can associate with
+		// the trash and purge radio buttons.
+		final CheckBox purgeCB = buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers3());
+		final CheckBox trashCB = buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers4());
+		
+		// Create a ValueChangeHandler we can use to tweak the dialog
+		// when the user changes the selected radio button.
+		ValueChangeHandler<Boolean> rbChangedHandler = new ValueChangeHandler<Boolean>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (m_purgeRB.getValue()) {
+					m_purgeWorkspaceCB = purgeCB;
+					trashCB.setVisible(false);
+					purgeCB.setVisible(true );
+				}
+				else {
+					m_purgeWorkspaceCB = trashCB;
+					trashCB.setVisible(true );
+					purgeCB.setVisible(false);
+				}
+			}
+		};
+		
 		// Add the 'Move items in personal storage to trash and delete
 		// everything else from system' radio button...
 		m_trashRB = new RadioButton("deleteMode", m_messages.deleteSelectedUsersDlgLabel_TrashAdHoc());
 		m_trashRB.addStyleName("vibe-deleteSelectedUsersDlg-radio");
 		m_trashRB.removeStyleName("gwt-RadioButton");
+		m_trashRB.addValueChangeHandler(rbChangedHandler);
 		m_trashRB.setValue(true);
 		m_grid.setWidget(            0, 0, m_trashRB);
 		m_cellFormatter.addStyleName(0, 0, "vibe-deleteSelectedUsersDlg-trashRadio");
 		m_cellFormatter.setWordWrap( 0, 0, false);
+		m_grid.setWidget(            1, 0, trashCB);
+		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectedUsersDlg-purgeCheckBox vibe-deleteSelectedUsersDlg-indent");
 		
 		// ...add the 'Delete everything from system' radio button...
 		m_purgeRB = new RadioButton("deleteMode", m_messages.deleteSelectedUsersDlgLabel_PurgeAll());
 		m_purgeRB.addStyleName("vibe-deleteSelectedUsersDlg-radio");
 		m_purgeRB.removeStyleName("gwt-RadioButton");
-		m_grid.setWidget(            1, 0, m_purgeRB);
-		m_cellFormatter.addStyleName(1, 0, "vibe-deleteSelectedUsersDlg-purgeRadio");
-		m_cellFormatter.setWordWrap( 1, 0, false);
-		
-		// ...add a checkbox to purge users when purging workspaces...
-		m_grid.setWidget(            2, 0, buildPurgeWorkspaceCheckBox(m_messages.deleteSelectedUsersDlgLabel_PurgeUsers2()));
-		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectedUsersDlg-purgeCheckBox");
+		m_purgeRB.addValueChangeHandler(rbChangedHandler);
+		m_grid.setWidget(            2, 0, m_purgeRB);
+		m_cellFormatter.addStyleName(2, 0, "vibe-deleteSelectedUsersDlg-purgeRadio");
+		m_cellFormatter.setWordWrap( 2, 0, false);
+		m_grid.setWidget(            3, 0, purgeCB);
+		m_cellFormatter.addStyleName(3, 0, "vibe-deleteSelectedUsersDlg-purgeCheckBox vibe-deleteSelectedUsersDlg-indent");
+		purgeCB.setVisible(false);
 		
 		// ...and add the warning about the deletes.
-		m_grid.setWidget(            3, 0, buildPurgeWarningWidget(m_messages.deleteSelectedUsersDlgWarning_CantUndo()));
-		m_cellFormatter.addStyleName(3, 0, "vibe-deleteSelectedUsersDlg-warning vibe-deleteSelectedUsersDlg-warningSituation3");
+		m_purgeWarning = buildPurgeWarningWidget(m_messages.deleteSelectedUsersDlgWarning_CantUndo());
+		m_grid.setWidget(            4, 0, m_purgeWarning);
+		m_cellFormatter.addStyleName(4, 0, "vibe-deleteSelectedUsersDlg-warning vibe-deleteSelectedUsersDlg-warningSituation3");
 		setPurgeWarningActive(true);
 	}
 	
@@ -561,16 +603,10 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 	 * Sets the purge warning as being active or inactive.
 	 */
 	private void setPurgeWarningActive(boolean active) {
-		if (active) {
-			if (null != m_purgeWarningImg)  m_purgeWarningImg.addStyleName("vibe-deleteSelectedUsersDlg-warningImgActive");
-			if (null != m_purgeWarningTxt)  m_purgeWarningTxt.addStyleName("vibe-deleteSelectedUsersDlg-warningTxtActive");
-			if (null != m_purgeWorkspaceCB) m_purgeWorkspaceCB.setVisible( true                                          );
-		}
-		
-		else {
-			if (null != m_purgeWarningImg)  m_purgeWarningImg.removeStyleName("vibe-deleteSelectedUsersDlg-warningImgActive");
-			if (null != m_purgeWarningTxt)  m_purgeWarningTxt.removeStyleName("vibe-deleteSelectedUsersDlg-warningTxtActive");
-			if (null != m_purgeWorkspaceCB) m_purgeWorkspaceCB.setVisible(    false                                         );
+		if (null != m_purgeWarning) {
+			if (active)
+			     m_purgeWarning.addStyleName(   "vibe-deleteSelectedUsersDlg-warningPanelActive");
+			else m_purgeWarning.removeStyleName("vibe-deleteSelectedUsersDlg-warningPanelActive");
 		}
 	}
 	
