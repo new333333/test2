@@ -43,7 +43,6 @@ import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
@@ -231,7 +230,6 @@ public class ContextMenuItem extends VibeMenuItem {
 				case COPY_SELECTED_ENTRIES:
 				case DELETE_SELECTED_ENTRIES:
 				case MOVE_SELECTED_ENTRIES:
-				case PURGE_SELECTED_ENTRIES:
 					// Create the appropriate selected entries event...
 					Long				binderId       = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",       m_eventQualifiers));
 					Long				binderParentId = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderParentId", m_eventQualifiers));
@@ -242,7 +240,6 @@ public class ContextMenuItem extends VibeMenuItem {
 					case COPY_SELECTED_ENTRIES:    selEvent = new CopySelectedEntriesEvent(  binderId, eid); break;
 					case DELETE_SELECTED_ENTRIES:  selEvent = new DeleteSelectedEntriesEvent(binderId, eid); break;
 					case MOVE_SELECTED_ENTRIES:    selEvent = new MoveSelectedEntriesEvent(  binderId, eid); break;
-					case PURGE_SELECTED_ENTRIES:   selEvent = new PurgeSelectedEntriesEvent( binderId, eid); break;
 					}
 					
 					// ...and fire it.

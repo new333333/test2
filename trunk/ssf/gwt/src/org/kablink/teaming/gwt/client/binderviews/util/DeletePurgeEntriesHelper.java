@@ -39,12 +39,10 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.DeletePurgeFolderEntriesCmdBase;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteSelectionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
@@ -124,9 +122,9 @@ public class DeletePurgeEntriesHelper {
 	 */
 	public static void deleteSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeleteSelectionsMode dsMode, final DeletePurgeEntriesCallback dpeCallback) {
 		switch (dsMode) {
-		case TRASH_ALL:                 trashSelectedEntriesAsync(                sourceEntityIds,       dpeCallback); break;
-		case TRASH_ADHOC_PURGE_OTHERS:  trashAdHocPurgeRemoteSelectedEntriesAsync(sourceEntityIds,       dpeCallback); break;
-		case PURGE_ALL:                 purgeSelectedEntriesAsync(                sourceEntityIds, true, dpeCallback); break;
+		case TRASH_ALL:                 trashSelectedEntitiesAsync(                sourceEntityIds, dpeCallback); break;
+		case TRASH_ADHOC_PURGE_OTHERS:  trashAdHocPurgeRemoteSelectedEntitiesAsync(sourceEntityIds, dpeCallback); break;
+		case PURGE_ALL:                 purgeSelectedEntitiesAsync(                sourceEntityIds, dpeCallback); break;
 		}
 	}
 	
@@ -348,14 +346,10 @@ public class DeletePurgeEntriesHelper {
 		});
 	}
 	
-	/**
+	/*
 	 * Asynchronously purges the selected entries.
-	 * 
-	 * @param sourceEntityIds
-	 * @param deleteMirroredSource
-	 * @param dpeCallback
 	 */
-	public static void purgeSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final boolean deleteMirroredSource, final DeletePurgeEntriesCallback dpeCallback) {
+	private static void purgeSelectedEntitiesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -367,16 +361,16 @@ public class DeletePurgeEntriesHelper {
 			public void onSuccess(final ProgressDlg pDlg) {
 				// Load the strings...
 				Map<StringIds, String> strMap = new HashMap<StringIds, String>();
-				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().purgeFolderEntriesError()              );
-				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_PurgeFolderEntries()        );
-				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsPurgeFolderEntriesCaption() );
-				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsPurgeFolderEntriesProgress());
+				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().deleteFolderEntriesError()           );
+				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_DeleteSelections()        );
+				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteSelectionsCaption() );
+				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteSelectionsProgress());
 
 				// ...create the helper...
 				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
 					sourceEntityIds,
 					strMap,
-					new PurgeFolderEntriesCmd(sourceEntityIds, deleteMirroredSource),
+					new DeleteSelectionsCmd(sourceEntityIds, DeleteSelectionsMode.PURGE_ALL),
 					dpeCallback);
 				
 				// ...and perform the purge...
@@ -463,7 +457,7 @@ public class DeletePurgeEntriesHelper {
 	/*
 	 * Asynchronously deletes the selected entries.
 	 */
-	private static void trashAdHocPurgeRemoteSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
+	private static void trashAdHocPurgeRemoteSelectedEntitiesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -496,7 +490,7 @@ public class DeletePurgeEntriesHelper {
 	/*
 	 * Asynchronously deletes the selected entries.
 	 */
-	private static void trashSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
+	private static void trashSelectedEntitiesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -508,16 +502,16 @@ public class DeletePurgeEntriesHelper {
 			public void onSuccess(final ProgressDlg pDlg) {
 				// Load the strings...
 				Map<StringIds, String> strMap = new HashMap<StringIds, String>();
-				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().deleteFolderEntriesError()              );
-				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_DeleteFolderEntries()        );
-				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteFolderEntriesCaption() );
-				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteFolderEntriesProgress());
+				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().deleteFolderEntriesError()           );
+				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_DeleteSelections()        );
+				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteSelectionsCaption() );
+				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteSelectionsProgress());
 
 				// ...create the helper...
 				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
 					sourceEntityIds,
 					strMap,
-					new DeleteFolderEntriesCmd(sourceEntityIds),
+					new DeleteSelectionsCmd(sourceEntityIds, DeleteSelectionsMode.TRASH_ALL),
 					dpeCallback);
 				
 				// ...and perform the delete.

@@ -322,12 +322,10 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CreateUserActivityReport();
 	String rpcFailure_DeleteNetFolders();
 	String rpcFailure_DeleteNetFolderServers();
-	String rpcFailure_DeleteFolderEntries();
 	String rpcFailure_DeleteGroups();
 	String rpcFailure_DeleteSelectedUsers();
 	String rpcFailure_DeleteSelections();
 	String rpcFailure_DeleteTasks();
-	String rpcFailure_DeleteUserWorkspaces();
 	String rpcFailure_DisableUsers();
 	String rpcFailure_DisableUsersAdHocFolders();
 	String rpcFailure_EnableUsers();
@@ -496,10 +494,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
 	String rpcFailure_PinEntry();
-	String rpcFailure_PurgeFolderEntries();
 	String rpcFailure_PurgeTasks();
-	String rpcFailure_PurgeUsers();
-	String rpcFailure_PurgeUserWorkspaces();
 	String rpcFailure_QViewMicroBlog();
 	String rpcFailure_RemoveBinderTag();
 	String rpcFailure_RemoveFavorite();
@@ -1903,19 +1898,13 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the operations against selected entries.
 	String deleteFolderEntriesError();
-	String deleteFolderEntryError();
 	String deleteTasksError();
-	String purgeFolderEntriesError();
-	String purgeFolderEntryError();
 	String purgeTasksError();
 	
 	// Strings used by the operations against selected users.
 	String enableUsersError();
 	String deleteSelectedUsersError();
-	String deleteUserWorkspacesError();
 	String disableUsersError();
-	String purgeUserWorkspacesError();
-	String purgeUsersError();
 	
 	// Strings used by the lock selected entries facility.
 	String lockEntriesError();
@@ -2000,28 +1989,14 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsConfirmPurgeEntry();
 	String binderViewsConfirmPurgeFolder();
 	String binderViewsConfirmPurgeWorkspace();
-	String binderViewsConfirmPurgeUsers();
-	String binderViewsConfirmPurgeUserWS();
-	String binderViewsDeleteFolderEntriesCaption();
-	String binderViewsDeleteFolderEntriesProgress();
 	String binderViewsDeleteSelectedUsersCaption();
 	String binderViewsDeleteSelectedUsersProgress();
 	String binderViewsDeleteSelectionsCaption();
 	String binderViewsDeleteSelectionsProgress();
 	String binderViewsDeleteTasksCaption();
 	String binderViewsDeleteTasksProgress();
-	String binderViewsDeleteUserWorkspacesCaption();
-	String binderViewsDeleteUserWorkspacesProgress();
-	String binderViewsPromptPurgeMirroredFolders_Filr();
-	String binderViewsPromptPurgeMirroredFolders_Vibe();
-	String binderViewsPurgeFolderEntriesCaption();
-	String binderViewsPurgeFolderEntriesProgress();
 	String binderViewsPurgeTasksCaption();
 	String binderViewsPurgeTasksProgress();
-	String binderViewsPurgeUsersCaption();
-	String binderViewsPurgeUsersProgress();
-	String binderViewsPurgeUserWorkspacesCaption();
-	String binderViewsPurgeUserWorkspacesProgress();
 	
 	// Strings used in the calendar view.
 	String calendarNav_Alt_GoTo();
@@ -2037,12 +2012,9 @@ public interface GwtTeamingMessages extends Messages
 	String calendarNav_Alt_ViewWorkWeek();
 	String calendarNav_Hours_FullDay();
 	String calendarNav_Hours_WorkDay();
-	String calendarView_Confirm_DeleteEntry();
-	String calendarView_Confirm_PurgeEntry();
 	String calendarView_Error_CantAdd();
 	String calendarView_Error_CantClickCreateWhenViewByDate();
 	String calendarView_Error_CantModify();
-	String calendarView_Error_CantPurge();
 	String calendarView_Error_CantTrash();
 	String calendarView_Error_CantUpdateRecurrence();
 	String calendarView_Error_CantUpdateWhenViewByDate();

@@ -49,7 +49,6 @@ import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShowViewPermalinksEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
@@ -230,7 +229,6 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       eid.getBinderId(), eid      );      break;
 					case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     eid.getBinderId(), eid      );      break;
 					case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           eid.getBinderId(), eid      );      break;
-					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          eid.getBinderId(), eid      );      break;
 					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          eid.getBinderId(), eid      );      break;
 					case SHOW_VIEW_PERMALINKS:                event = new ShowViewPermalinksEvent();                                              break;
 					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      eid.getBinderId(), eid      );      break;

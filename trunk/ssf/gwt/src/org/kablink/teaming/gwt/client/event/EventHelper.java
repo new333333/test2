@@ -595,15 +595,6 @@ public class EventHelper {
 				}
 				break;
 			
-			case DELETE_SELECTED_USER_WORKSPACES:
-				// A DeleteSelectedUserWorkspacesEvent!  Can the event
-				// handler we were given handle that?
-				if (eventHandler instanceof DeleteSelectedUserWorkspacesEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = DeleteSelectedUserWorkspacesEvent.registerEvent(eventBus, ((DeleteSelectedUserWorkspacesEvent.Handler) eventHandler));
-				}
-				break;
-			
 			case DELETE_SELECTED_USERS:
 				// A DeleteSelectedUsersEvent!  Can the event handler
 				// we were given handle that?
@@ -1390,33 +1381,6 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = PreviewLandingPageEvent.registerEvent( eventBus, ((PreviewLandingPageEvent.Handler) eventHandler) );
-				}
-				break;
-			
-			case PURGE_SELECTED_ENTRIES:
-				// A PurgeSelectedEntriesEvent!  Can the event handler
-				// we were given handle that?
-				if (eventHandler instanceof PurgeSelectedEntriesEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = PurgeSelectedEntriesEvent.registerEvent(eventBus, ((PurgeSelectedEntriesEvent.Handler) eventHandler));
-				}
-				break;
-			
-			case PURGE_SELECTED_USER_WORKSPACES:
-				// A PurgeSelectedUserWorkspacesEvent!  Can the event
-				// handler we were given handle that?
-				if (eventHandler instanceof PurgeSelectedUserWorkspacesEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = PurgeSelectedUserWorkspacesEvent.registerEvent(eventBus, ((PurgeSelectedUserWorkspacesEvent.Handler) eventHandler));
-				}
-				break;
-			
-			case PURGE_SELECTED_USERS:
-				// A PurgeSelectedUsersEvent!  Can the event handler we
-				// were given handle that?
-				if (eventHandler instanceof PurgeSelectedUsersEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = PurgeSelectedUsersEvent.registerEvent(eventBus, ((PurgeSelectedUsersEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2683,7 +2647,6 @@ public class EventHelper {
 			case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:           hasHandler = (eventHandler instanceof ClearSelectedUsersAdHocFoldersEvent.Handler);         break;
 			case COPY_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof CopySelectedEntriesEvent.Handler);                    break;
 			case DELETE_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);                  break;
-			case DELETE_SELECTED_USER_WORKSPACES:              hasHandler = (eventHandler instanceof DeleteSelectedUserWorkspacesEvent.Handler);           break;
 			case DELETE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof DeleteSelectedUsersEvent.Handler);                    break;
 			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;
 			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
@@ -2697,9 +2660,6 @@ public class EventHelper {
 			case MARK_READ_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler);                break;
 			case MARK_UNREAD_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof MarkUnreadSelectedEntriesEvent.Handler);              break;
 			case MOVE_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof MoveSelectedEntriesEvent.Handler);                    break;
-			case PURGE_SELECTED_ENTRIES:                       hasHandler = (eventHandler instanceof PurgeSelectedEntriesEvent.Handler);                   break;
-			case PURGE_SELECTED_USER_WORKSPACES:               hasHandler = (eventHandler instanceof PurgeSelectedUserWorkspacesEvent.Handler);            break;
-			case PURGE_SELECTED_USERS:                         hasHandler = (eventHandler instanceof PurgeSelectedUsersEvent.Handler);                     break;
 			case SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY:  hasHandler = (eventHandler instanceof SetDesktopDownloadAppControlVisibilityEvent.Handler); break;
 			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;
 			case SET_SELECTED_USER_DESKTOP_SETTINGS:           hasHandler = (eventHandler instanceof SetSelectedUserDesktopSettingsEvent.Handler);         break;

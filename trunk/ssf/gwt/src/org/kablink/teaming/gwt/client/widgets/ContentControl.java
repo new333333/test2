@@ -80,7 +80,6 @@ import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCalendarFolderEvent;
@@ -162,7 +161,6 @@ public class ContentControl extends Composite
 		GetCurrentViewInfoEvent.Handler,
 		GotoUrlEvent.Handler,
 		MoveSelectedEntriesEvent.Handler,
-		PurgeSelectedEntriesEvent.Handler,
 		ShowBlogFolderEvent.Handler,
 		ShowCalendarFolderEvent.Handler,
 		ShowCollectionViewEvent.Handler,
@@ -214,7 +212,6 @@ public class ContentControl extends Composite
 		TeamingEvents.COPY_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
 		TeamingEvents.MOVE_SELECTED_ENTRIES,
-		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		
 		// Show events.
 		TeamingEvents.SHOW_BLOG_FOLDER,
@@ -1407,7 +1404,7 @@ public class ContentControl extends Composite
 		// Delete the selected entities and reload the view to
 		// redisplay things with the entries deleted.
 		final boolean deletingBinders = EntityId.areBindersInEntityIds( selectedEntityIds );
-		BinderViewsHelper.deleteFolderEntries(
+		BinderViewsHelper.deleteSelections(
 			selectedEntityIds,
 			new DeletePurgeEntriesCallback()
 		{
@@ -1497,130 +1494,6 @@ public class ContentControl extends Composite
 			}
 		}
 	}
-	
-	
-	/**
-	 * Handles PurgeSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onPurgeSelectedEntries( PurgeSelectedEntriesEvent event )
-	{
-		// Do have information about a binder currently in the view?  
-		BinderInfo bi = getCurrentBinderInfo();
-		if ( null == bi )
-		{
-			// No!  Ignore the event.
-			return;
-		}
-		
-		// Is the event targeted to the current view?
-		final Long eventFolderId = event.getFolderId();
-		final Long biId          = bi.getBinderIdAsLong();
-		if ( eventFolderId.equals( biId ) )
-		{
-			// Yes!  Are there any entities in the event?
-			final List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if ( GwtClientHelper.hasItems(selectedEntityIds ) )
-			{
-				// Are we purging the binder in the view?
-				if ( EntityId.isBinderInEntityIds( biId, selectedEntityIds ) )
-				{
-					// Yes!  After purging it, we'll need to load its
-					// parent.  Can we get a URL to it? 
-					GetParentBinderPermalinkCmd cmd = new GetParentBinderPermalinkCmd( biId );
-					cmd.setShowCollectionOnUserWS( GwtClientHelper.isLicenseFilr() );
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-					{
-						@Override
-						public void onFailure( Throwable t )
-						{
-							GwtClientHelper.handleGwtRPCFailure(
-								t,
-								GwtTeaming.getMessages().rpcFailure_GetParentBinderPermalink(),
-								biId );
-						}//end onFailure()
-						
-						@Override
-						public void onSuccess( VibeRpcResponse response )
-						{
-							// Yes!  Perform the purge.
-							StringRpcResponseData	responseData          = ((StringRpcResponseData) response.getResponseData());
-							String					parentBinderPermalink = responseData.getStringValue();
-							onPurgeSelectedEntriesAsync( selectedEntityIds, parentBinderPermalink );
-						}// end onSuccess()
-					});
-				}
-				else
-				{
-					// No, we aren't purging the binder in the view!
-					// Perform the purge.
-					onPurgeSelectedEntriesAsync( selectedEntityIds, null );
-				}
-			}
-		}
-	}// end onPurgeSelectedEntries()
-
-	
-	/*
-	 * Asynchronously purges the selected entities.
-	 */
-	private void onPurgeSelectedEntriesAsync( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
-	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				onPurgeSelectedEntriesNow( selectedEntityIds, targetBinderPermalink );
-			}// end execute()
-		} );
-	}// end onPurgeSelectedEntriesAsync()
-	
-	
-	/*
-	 * Synchronously purges the selected entities.
-	 */
-	private void onPurgeSelectedEntriesNow( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
-	{
-		// Purge the selected entities and reload the view to redisplay
-		// things with the entries purged.
-		final boolean purgingBinders = EntityId.areBindersInEntityIds( selectedEntityIds );
-		BinderViewsHelper.purgeFolderEntries(
-				selectedEntityIds,
-				new DeletePurgeEntriesCallback()
-		{
-			@Override
-			public void operationCanceled()
-			{
-				if ( purgingBinders )
-				{
-					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-				}
-				postDeletePurgeReloadAsync( targetBinderPermalink );
-			}// end operationCanceled())
-
-			@Override
-			public void operationComplete()
-			{
-				if ( purgingBinders )
-				{
-					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-				}
-				postDeletePurgeReloadAsync( targetBinderPermalink );
-			}// end operationComplete()
-			
-			@Override
-			public void operationFailed()
-			{
-				// Nothing to do.  The purge call will have told the
-				// user about the failure.
-			}// end operationFailed()
-		});
-	}// end onPurgeSelectedEntriesNow()
 	
 	
 	/**
