@@ -2907,6 +2907,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         	return Utils.validateDefinitions(defs, binder);
     	}
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+    	List<Definition> defaultEntryDefinitions = binder.getEntryDefinitions();
+    	List<Definition> defs = new ArrayList<Definition>();
    	 	if (includeAncestors.equals(Boolean.TRUE)) {
   	       	Map params = new HashMap();
   	    	params.put("type", type);
@@ -2915,15 +2917,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
   	    	params.put("binderId", ids);
    	 		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
 
-   	 		List<Definition> defs = filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId  and type=:type", params));
-   	 		return Utils.validateDefinitions(defs, binder);
+   	 		defs = filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId  and type=:type", params));
   	 	} else {
   	      	FilterControls filter = new FilterControls()
   	      		.add(Restrictions.eq("type", type))
   	      		.add(Restrictions.eq("binderId", binder.getId()));
-  	      	List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
-  	      	return Utils.validateDefinitions(defs, binder);
+  	      	defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
   	 	}
+   	 	for (Definition def : defaultEntryDefinitions) {
+   	 		//Make sure to include the default defs in use by this binder
+   	 		if (!defs.contains(def)) defs.add(def);
+   	 	}
+ 		return Utils.validateDefinitions(defs, binder);
 
     }
     private List<Long> getAncestorIds(Binder binder) {

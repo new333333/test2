@@ -256,11 +256,24 @@ function ss_getSelectedBinders(url) {
 	if (binderIdObj !== undefined && binderIdObj != null) {
 		contextBinderId = binderIdObj.value;
 	}
+	var searchScopeCurrent = "";
+	var searchScopeCurrentObj = document.getElementById('search_scope_current');
+	if (searchScopeCurrentObj !== undefined && searchScopeCurrentObj != null) {
+		if (searchScopeCurrentObj.checked) {
+			searchScopeCurrent = "&scope=current";
+		}	
+	} else {
+		searchScopeCurrentObj = document.getElementById('search_scope_current_filter');
+		if (searchScopeCurrentObj !== undefined && searchScopeCurrentObj != null) {
+			//This is a filter form, so set the scope to be current
+			searchScopeCurrent = "&scope=current";
+		}
+	}
 	var obj = document.getElementById('search_currentFolder');
 	if (obj !== undefined && obj != null && obj.checked) {
 		//get current folder
 		obj = document.getElementById('search_dashboardFolders');
-		return url += "&idChoices=" + encodeURIComponent(" searchFolders_" + obj.value) + "&contextBinderId=" + encodeURIComponent(contextBinderId);
+		return url += "&idChoices=" + encodeURIComponent(" searchFolders_" + obj.value) + "&contextBinderId=" + encodeURIComponent(contextBinderId) + searchScopeCurrent;
 	}
 	obj = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
 	if (obj !== undefined && obj != null) value = obj.value;
@@ -274,7 +287,7 @@ function ss_getSelectedBinders(url) {
 		value = value.replace(re, "");
 		value += id;
 	}
-	return url += "&idChoices=" + encodeURIComponent(value) + "&contextBinderId=" + encodeURIComponent(contextBinderId);
+	return url += "&idChoices=" + encodeURIComponent(value) + "&contextBinderId=" + encodeURIComponent(contextBinderId) + searchScopeCurrent;
  
 }
 function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle) {

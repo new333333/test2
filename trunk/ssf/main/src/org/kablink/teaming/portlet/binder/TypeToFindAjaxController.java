@@ -372,6 +372,11 @@ public class TypeToFindAjaxController extends SAbstractController {
 		int maxEntries = PortletRequestUtils.getIntParameter(request, "maxEntries", 10);
 		int pageNumber = PortletRequestUtils.getIntParameter(request, "pageNumber", 0);
 		String searchContextBinderId = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_BINDER_ID, "");
+		String searchScope = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_SCOPE, "");
+		Boolean showAllDefinitions = Boolean.TRUE;
+		if (searchScope.equals(ObjectKeys.SEARCH_SCOPE_CURRENT)) {
+			showAllDefinitions = Boolean.FALSE;
+		}
 		
 		while (searchText.endsWith("*")) {
 			searchText = searchText.substring(0, searchText.length() - 1); 
@@ -385,7 +390,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 			}
 			for (Long id:ids) {
 				try {
-					entries.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.FOLDER_ENTRY));
+					entries.addAll(getDefinitionModule().getDefinitions(id, showAllDefinitions, Definition.FOLDER_ENTRY));
 				} catch (Exception ex) {}
 			}
 			if (entries.isEmpty()) entries.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY));
