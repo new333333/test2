@@ -56,7 +56,6 @@ import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -367,7 +366,6 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						case MARK_READ_SELECTED_ENTRIES:            event = new MarkReadSelectedEntriesEvent(         binderId, eid      ); break;
 						case MARK_UNREAD_SELECTED_ENTRIES:          event = new MarkUnreadSelectedEntriesEvent(       binderId, eid      ); break;
 						case MOVE_SELECTED_ENTRIES:                 event = new MoveSelectedEntriesEvent(             binderId, eid      ); break;
-						case PURGE_SELECTED_ENTRIES:                event = new PurgeSelectedEntriesEvent(            binderId, eid      ); break;
 						case SHARE_SELECTED_ENTRIES:                event = new ShareSelectedEntriesEvent(            binderId, eid      ); break;
 						case SUBSCRIBE_SELECTED_ENTRIES:            event = new SubscribeSelectedEntriesEvent(        binderId, eid      ); break;
 						case VIEW_SELECTED_ENTRY:                   event = new ViewSelectedEntryEvent(               binderId, eid      ); break;

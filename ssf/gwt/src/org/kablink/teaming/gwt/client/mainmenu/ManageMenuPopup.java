@@ -225,7 +225,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify"            );
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.INVOKE_RENAME_ENTITY   );
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.PURGE_SELECTED_ENTRIES );
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.COPY_SELECTED_ENTRIES  );
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.MOVE_SELECTED_ENTRIES  );
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);

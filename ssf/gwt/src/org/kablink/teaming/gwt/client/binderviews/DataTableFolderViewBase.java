@@ -85,7 +85,6 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
@@ -102,9 +101,6 @@ import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedUserWorkspacesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
@@ -212,7 +208,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		CopySelectedEntriesEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
 		DeleteSelectedUsersEvent.Handler,
-		DeleteSelectedUserWorkspacesEvent.Handler,
 		DisableSelectedUsersEvent.Handler,
 		DisableSelectedUsersAdHocFoldersEvent.Handler,
 		EnableSelectedUsersEvent.Handler,
@@ -226,9 +221,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		MarkReadSelectedEntriesEvent.Handler,
 		MarkUnreadSelectedEntriesEvent.Handler,
 		MoveSelectedEntriesEvent.Handler,
-		PurgeSelectedEntriesEvent.Handler,
-		PurgeSelectedUserWorkspacesEvent.Handler,
-		PurgeSelectedUsersEvent.Handler,
 		QuickFilterEvent.Handler,
 		SharedViewFilterEvent.Handler,
 		ShareSelectedEntriesEvent.Handler,
@@ -296,7 +288,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
-		TeamingEvents.DELETE_SELECTED_USER_WORKSPACES,
 		TeamingEvents.DELETE_SELECTED_USERS,
 		TeamingEvents.DISABLE_SELECTED_USERS,
 		TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS,
@@ -311,9 +302,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
 		TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES,
 		TeamingEvents.MOVE_SELECTED_ENTRIES,
-		TeamingEvents.PURGE_SELECTED_ENTRIES,
-		TeamingEvents.PURGE_SELECTED_USER_WORKSPACES,
-		TeamingEvents.PURGE_SELECTED_USERS,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SHARED_VIEW_FILTER,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
@@ -1790,7 +1778,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// entities deleted.
 				selectedEntityIds = getSelectedEntityIds();
 				final boolean deletingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
-				BinderViewsHelper.deleteFolderEntries(
+				BinderViewsHelper.deleteSelections(
 						selectedEntityIds,
 						new DeletePurgeEntriesCallback() {
 					@Override
@@ -1862,25 +1850,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					// the user about the failure.
 				}
 			});
-		}
-	}
-	
-	/**
-	 * Handles DeleteSelectedUserWorkspacesEvent's received by this class.
-	 * 
-	 * Implements the DeleteSelectedUserWorkspacesEvent.Handler.onDeleteSelectedUserWorkspaces() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDeleteSelectedUserWorkspaces(DeleteSelectedUserWorkspacesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventWorkspaceId = event.getWorkspaceId();
-		if (eventWorkspaceId.equals(getFolderId())) {
-			// Yes!  Invoke the delete.
-			BinderViewsHelper.deleteUserWorkspaces(
-				EntityId.getLongsFromEntityIds(
-					getSelectedEntityIds()));
 		}
 	}
 	
@@ -2240,99 +2209,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 				BinderViewsHelper.moveEntries(selectedEntityIds);
 			}
-		}
-	}
-	
-	/**
-	 * Handles PurgeSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Does the event contain any entities?
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				// No!  Purge the entities selected in the data table
-				// and reset the view to redisplay things with the
-				// entities purged.
-				selectedEntityIds = getSelectedEntityIds();
-				final boolean purgingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
-				BinderViewsHelper.purgeFolderEntries(
-						selectedEntityIds,
-						new DeletePurgeEntriesCallback() {
-					@Override
-					public void operationCanceled() {
-						if (purgingBinders) {
-							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-							FullUIReloadEvent.fireOne();
-						}
-						else {
-							resetViewAsync();
-						}
-					}
-	
-					@Override
-					public void operationComplete() {
-						if (purgingBinders) {
-							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-							FullUIReloadEvent.fireOne();
-						}
-						else {
-							resetViewAsync();
-						}
-					}
-					
-					@Override
-					public void operationFailed() {
-						// Nothing to do.  The purge call will have told the
-						// user about the failure.
-					}
-				});
-			}
-		}
-	}
-	
-	/**
-	 * Handles PurgeSelectedUsersEvent's received by this class.
-	 * 
-	 * Implements the PurgeSelectedUsersEvent.Handler.onPurgeSelectedUsers() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onPurgeSelectedUsers(PurgeSelectedUsersEvent event) {
-		// Is the event targeted to this folder?
-		Long eventWorkspaceId = event.getWorkspaceId();
-		if (eventWorkspaceId.equals(getFolderId())) {
-			// Yes!  Invoke the purge.
-			BinderViewsHelper.purgeUsers(
-				EntityId.getLongsFromEntityIds(
-					getSelectedEntityIds()));
-		}
-	}
-	
-	/**
-	 * Handles PurgeSelectedUserWorkspacesEvent's received by this class.
-	 * 
-	 * Implements the PurgeSelectedUserWorkspacesEvent.Handler.onPurgeSelectedUserWorkspaces() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onPurgeSelectedUserWorkspaces(PurgeSelectedUserWorkspacesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventWorkspaceId = event.getWorkspaceId();
-		if (eventWorkspaceId.equals(getFolderId())) {
-			// Yes!  Invoke the purge.
-			BinderViewsHelper.purgeUserWorkspaces(
-				EntityId.getLongsFromEntityIds(
-					getSelectedEntityIds()));
 		}
 	}
 	

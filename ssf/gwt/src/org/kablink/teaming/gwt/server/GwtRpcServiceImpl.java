@@ -531,14 +531,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case DELETE_FOLDER_ENTRIES:
-		{
-			DeleteFolderEntriesCmd dfeCmd = ((DeleteFolderEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtServerHelper.deleteFolderEntries( this, getRequest( ri ), dfeCmd.getEntityIds() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
 		case DELETE_SELECTED_USERS:
 		{
 			DeleteSelectedUsersCmd dsuCmd = ((DeleteSelectedUsersCmd) cmd);
@@ -559,14 +551,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			DeleteTasksCmd dtCmd = ((DeleteTasksCmd) cmd);
 			ErrorListRpcResponseData responseData = deleteTasks( ri, dtCmd.getEntityIds() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case DELETE_USER_WORKSPACES:
-		{
-			DeleteUserWorkspacesCmd duwCmd = ((DeleteUserWorkspacesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.deleteUserWorkspaces( this, getRequest( ri ), duwCmd.getUserIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -2555,34 +2539,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case PURGE_FOLDER_ENTRIES:
-		{
-			PurgeFolderEntriesCmd pfeCmd = ((PurgeFolderEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtServerHelper.purgeFolderEntries( this, getRequest( ri ), pfeCmd.getEntityIds(), pfeCmd.getDeleteMirroredSource() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
 		case PURGE_TASKS:
 		{
 			PurgeTasksCmd dtCmd = ((PurgeTasksCmd) cmd);
 			ErrorListRpcResponseData responseData = purgeTasks( ri, dtCmd.getEntityIds() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case PURGE_USERS:
-		{
-			PurgeUsersCmd puCmd = ((PurgeUsersCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.purgeUsers( this, getRequest( ri ), puCmd.getUserIds(), puCmd.getPurgeMirrored() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case PURGE_USER_WORKSPACES:
-		{
-			PurgeUserWorkspacesCmd puwCmd = ((PurgeUserWorkspacesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.purgeUserWorkspaces( this, getRequest( ri ), puwCmd.getUserIds(), puwCmd.getPurgeMirrored() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

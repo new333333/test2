@@ -51,7 +51,6 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
@@ -168,7 +167,6 @@ public class TaskTable extends Composite
 		LockSelectedEntriesEvent.Handler,
 		MarkReadSelectedEntriesEvent.Handler,
 		MoveSelectedEntriesEvent.Handler,
-		PurgeSelectedEntriesEvent.Handler,
 		QuickFilterEvent.Handler,
 		ShareSelectedEntriesEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
@@ -254,7 +252,6 @@ public class TaskTable extends Composite
 		TeamingEvents.LOCK_SELECTED_ENTRIES,
 		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
 		TeamingEvents.MOVE_SELECTED_ENTRIES,
-		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
@@ -2845,7 +2842,7 @@ public class TaskTable extends Composite
 					return;
 				}
 				final List<EntityId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-				BinderViewsHelper.deleteFolderEntries(taskIds, new DeletePurgeEntriesCallback() {
+				BinderViewsHelper.deleteSelections(taskIds, new DeletePurgeEntriesCallback() {
 					@Override
 					public void operationCanceled() {
 						handleTaskPostRemoveAsync(taskIds);
@@ -2939,27 +2936,6 @@ public class TaskTable extends Composite
 				// No!  Invoke the move on those selected in the view.
 				selectedEntityIds = getTaskIdsChecked();
 				BinderViewsHelper.moveEntries(selectedEntityIds);
-			}
-		}
-	}
-	
-	/**
-	 * Handles PurgeSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Are there any entities in the event?
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				// No!  Purge the entities selected in the view.
-				handleTaskPurge();
 			}
 		}
 	}

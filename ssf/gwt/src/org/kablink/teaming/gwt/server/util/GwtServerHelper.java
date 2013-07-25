@@ -2009,71 +2009,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Deletes the specified folder entries.
-	 *
-	 * @param bs
-	 * @param request
-	 * @param entityIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ErrorListRpcResponseData deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
-		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-		deleteFolderEntriesImpl(bs, request, entityIds, reply);
-		return reply;
-	}
-
-	private static void deleteFolderEntriesImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, ErrorListRpcResponseData reply) throws GwtTeamingException {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.deleteFolderEntriesImpl()");
-		try {
-			// Scan the entry IDs...
-			BinderModule bm = bs.getBinderModule();
-			for (EntityId entityId:  entityIds) {
-				try {
-					// ...deleting each entity...
-					if (entityId.isBinder()) {
-						Long binderId = entityId.getEntityId();
-						if (BinderHelper.isBinderHomeFolder(bm.getBinder(binderId))) {
-							// ...except Home folders which cannot...
-							// ...be deleted...
-							String entryTitle = getEntityTitle(bs, entityId);
-							reply.addError(NLT.get("deleteEntryError.AccssControlException", new String[]{entryTitle}));
-						}
-						else {
-							TrashHelper.preDeleteBinder(bs, entityId.getEntityId());
-						}
-					}
-					
-					else {
-						TrashHelper.preDeleteEntry(bs, entityId.getBinderId(), entityId.getEntityId());
-					}
-				}
-
-				catch (Exception e) {
-					// ...tracking any that we couldn't delete.
-					String entryTitle = getEntityTitle(bs, entityId);
-					String messageKey;
-					if (e instanceof AccessControlException) messageKey = "deleteEntryError.AccssControlException";
-					else                                     messageKey = "deleteEntryError.OtherException";
-					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
-					
-					GwtLogHelper.error(m_logger, "GwtServerHelper.deleteFolderEntriesImpl( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
-				}
-			}
-		}
-		
-		catch (Exception ex) {
-			throw GwtLogHelper.getGwtClientException(m_logger, ex);
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-
-	/**
 	 * 
 	 */
 	public static Boolean deleteGroups( AllModulesInjected ami, ArrayList<GroupInfo> listOfGroups ) throws GwtTeamingException
@@ -2179,8 +2114,8 @@ public class GwtServerHelper {
 			// Purge the purge items...
 			if (null != purgeIds) {
 				if (purgeUsersWithWS)
-				     GwtViewHelper.purgeUsersImpl(         bs, request, purgeIds, true, reply);	// true -> purge from..
-				else GwtViewHelper.purgeUserWorkspacesImpl(bs, request, purgeIds, true, reply);	// ...remote source.
+				     doPurgeUsers(         bs, request, purgeIds, true, reply);	// true -> purge from..
+				else doPurgeUserWorkspaces(bs, request, purgeIds, true, reply);	// ...remote source.
 			}
 			
 			// ...and delete the trash items.
@@ -2245,8 +2180,59 @@ public class GwtServerHelper {
 			}
 
 			// Purge the purge items and delete the trash items.
-			if (null != purgeIds) purgeFolderEntriesImpl( bs, request, purgeIds, true, reply);	// true -> purge from remote source.
-			if (null != trashIds) deleteFolderEntriesImpl(bs, request, trashIds,       reply);
+			if (null != purgeIds) doPurgeSelections( bs, request, purgeIds, true, reply);	// true -> purge from remote source.
+			if (null != trashIds) doDeleteSelections(bs, request, trashIds,       reply);
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+
+	/*
+	 * Deletes the specified entities.
+	 */
+	private static void doDeleteSelections(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, ErrorListRpcResponseData reply) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.doDeleteSelections()");
+		try {
+			// Scan the entry IDs...
+			BinderModule bm = bs.getBinderModule();
+			for (EntityId entityId:  entityIds) {
+				try {
+					// ...deleting each entity...
+					if (entityId.isBinder()) {
+						Long binderId = entityId.getEntityId();
+						if (BinderHelper.isBinderHomeFolder(bm.getBinder(binderId))) {
+							// ...except Home folders which cannot...
+							// ...be deleted...
+							String entryTitle = getEntityTitle(bs, entityId);
+							reply.addError(NLT.get("deleteEntryError.AccssControlException", new String[]{entryTitle}));
+						}
+						else {
+							TrashHelper.preDeleteBinder(bs, entityId.getEntityId());
+						}
+					}
+					
+					else {
+						TrashHelper.preDeleteEntry(bs, entityId.getBinderId(), entityId.getEntityId());
+					}
+				}
+
+				catch (Exception e) {
+					// ...tracking any that we couldn't delete.
+					String entryTitle = getEntityTitle(bs, entityId);
+					String messageKey;
+					if (e instanceof AccessControlException) messageKey = "deleteEntryError.AccssControlException";
+					else                                     messageKey = "deleteEntryError.OtherException";
+					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+					
+					GwtLogHelper.error(m_logger, "GwtServerHelper.doDeleteSelections( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
+				}
+			}
 		}
 		
 		catch (Exception ex) {
@@ -2356,6 +2342,193 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
+	/*
+	 * Purges the specified entities.
+	 */
+	private static void doPurgeSelections(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, boolean deleteMirroredSource, ErrorListRpcResponseData reply) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.doPurgeSelections()");
+		try {
+			// Scan the entry IDs...
+			BinderModule bm         = bs.getBinderModule();
+			FolderModule fm         = bs.getFolderModule();
+			for (EntityId entityId:  entityIds) {
+				try {
+					// ...purging each entity...
+					if (entityId.isBinder()) {
+						Long   binderId = entityId.getEntityId();
+						Binder binder   = bm.getBinder(binderId);
+						if (BinderHelper.isBinderHomeFolder(binder)) {
+							// ...except Home folders which cannot...
+							// ...be purged...
+							String entryTitle = getEntityTitle(bs, entityId);
+							reply.addError(NLT.get("purgeEntryError.AccssControlException", new String[]{entryTitle}));
+						}
+						else if (CloudFolderHelper.isCloudFolder(binder)) {
+							CloudFolderHelper.deleteCloudFolder(bs, ((Folder) binder), deleteMirroredSource);
+						}
+						else {
+							bm.deleteBinder(binderId, deleteMirroredSource, null);
+						}
+					}
+					
+					else {
+						fm.deleteEntry(entityId.getBinderId(), entityId.getEntityId());
+					}
+				}
+				
+				catch (Exception e) {
+					// ...tracking any that we couldn't purge.
+					String entryTitle = getEntityTitle(bs, entityId);
+					String msgKey;
+					if (e instanceof AccessControlException) msgKey = "purgeEntryError.AccssControlException";
+					else                                     msgKey = "purgeEntryError.OtherException";
+					reply.addError(NLT.get(msgKey, new String[]{entryTitle}));
+					
+					GwtLogHelper.error(m_logger, "GwtServerHelper.doPurgeSelections( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
+				}
+			}
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+	
+	/*
+	 * Purge users and their workspaces.
+	 */
+	private static void doPurgeUsers(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, boolean purgeMirrored, ErrorListRpcResponseData reply) throws GwtTeamingException {
+		try {
+			// Were we given the IDs of any users to purge?
+			Long currentUserId = getCurrentUserId(); 
+			if (MiscUtil.hasItems(userIds)) {
+				// Yes!  Scan them.
+				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
+				for (Long userId:  userIds) {
+					// Can we resolve the user being purge?
+					User user = getResolvedUser(userId);
+					if (null != user) {
+						// Yes!  Is it the user that's logged in?
+						if (user.getId().equals(currentUserId)) {
+							// Yes!  They can't purge their own
+							// user object or workspace.  Ignore it.
+							reply.addError(NLT.get("purgeUserError.self"));
+							continue;
+						}
+
+						// Is it a reserved user?
+						if (user.isReserved()) {
+							// Yes!  They can't do that.  Ignore it.
+							String userTitle = getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+							reply.addError(NLT.get("purgeUserError.reserved", new String[]{userTitle}));
+							continue;
+						}
+					}
+					
+					try {
+						// Purge the user and their workspace, if they have one.
+						Map options = new HashMap();
+						options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE,         new Boolean(null != user.getWorkspaceId()));
+						options.put(ObjectKeys.INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE, new Boolean(purgeMirrored                ));
+						bs.getProfileModule().deleteEntry(userId, options);
+					}
+
+					catch (Exception e) {
+						// No!  Add an error to the error list...
+						String userTitle = getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+						String messageKey;
+						if      (e instanceof AccessControlException) messageKey = "purgeUserError.AccssControlException";
+						else                                          messageKey = "purgeUserError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtServerHelper.doPurgeUsers( User:  '" + user.getTitle() + "', EXCEPTION ):  ", e);
+					}
+				}
+			}
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtServerHelper.doPurgeUsers( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
+	/*
+	 * Purge user workspaces.
+	 */
+	private static void doPurgeUserWorkspaces(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, boolean purgeMirrored, ErrorListRpcResponseData reply) throws GwtTeamingException {
+		try {
+			// Were we given the IDs of any users to purge?
+			Long currentUserId = getCurrentUserId(); 
+			if (MiscUtil.hasItems(userIds)) {
+				// Yes!  Scan them.
+				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
+				for (Long userId:  userIds) {
+					// Can we resolve the user being purge?
+					User user = getResolvedUser(userId);
+					if (null != user) {
+						// Yes!  Is it the user that's logged in?
+						if (user.getId().equals(currentUserId)) {
+							// Yes!  They can't purge their own
+							// workspace.  Ignore it.
+							reply.addError(NLT.get("purgeUserWorkspaceError.self"));
+							continue;
+						}
+
+						// Is it a reserved user?
+						if (user.isReserved()) {
+							// Yes!  They can't do that.  Ignore it.
+							String userTitle = getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+							reply.addError(NLT.get("purgeUserWorkspaceError.reserved", new String[]{userTitle}));
+							continue;
+						}
+					}
+					
+					try {
+						// Does this user have a workspace ID?
+						Long wsId = user.getWorkspaceId();
+						if (null != wsId) {
+							// Yes!  Purge the workspace.
+							bs.getBinderModule().deleteBinder(wsId, purgeMirrored, null);
+						}
+					}
+
+					catch (Exception e) {
+						// No!  Add an error to the error list...
+						String userTitle = getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+						String messageKey;
+						if      (e instanceof AccessControlException) messageKey = "purgeUserWorkspaceError.AccssControlException";
+						else                                          messageKey = "purgeUserWorkspaceError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtServerHelper.doPurgeUserWorkspaces( User:  '" + userTitle + "', EXCEPTION ):  ", e);
+					}
+				}
+			}
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtServerHelper.doPurgeUserWorkspaces( SOURCE EXCEPTION ):  ");
+		}
+	}
+
 	/**
 	 * Execute the given enhanced view jsp and return the resulting html.
 	 */
@@ -7545,6 +7718,28 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Resolves, if possible, a user ID to a User object.
+	 * 
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static User getResolvedUser(Long userId) {
+		User user = null;
+		String userIdS = String.valueOf(userId);
+		List<String> userIdList = new ArrayList<String>();
+		userIdList.add(userIdS);
+		List resolvedList = ResolveIds.getPrincipals(userIdList, false);
+		if (MiscUtil.hasItems(resolvedList)) {
+			Object o = resolvedList.get(0);
+			if (o instanceof User) {
+				user = ((User) o);
+			}
+		}
+		return user;
+	}
+
+	/**
 	 * Return subscription data for the given entry id.
 	 */
 	public static SubscriptionData getSubscriptionData( AllModulesInjected bs, String entryId )
@@ -9634,12 +9829,10 @@ public class GwtServerHelper {
 		case CREATE_NET_FOLDER_ROOT:
 		case DELETE_NET_FOLDERS:
 		case DELETE_NET_FOLDER_ROOTS:
-		case DELETE_FOLDER_ENTRIES:
 		case DELETE_GROUPS:
 		case DELETE_SELECTED_USERS:
 		case DELETE_SELECTIONS:
 		case DELETE_TASKS:
-		case DELETE_USER_WORKSPACES:
 		case DISABLE_USERS:
 		case ENABLE_USERS:
 		case EXECUTE_ENHANCED_VIEW_JSP:
@@ -9815,10 +10008,7 @@ public class GwtServerHelper {
 		case PERSIST_NODE_COLLAPSE:
 		case PERSIST_NODE_EXPAND:
 		case PIN_ENTRY:
-		case PURGE_FOLDER_ENTRIES:
 		case PURGE_TASKS:
-		case PURGE_USER_WORKSPACES:
-		case PURGE_USERS:
 		case REMOVE_EXTENSION:
 		case REMOVE_FAVORITE:
 		case REMOVE_TASK_LINKAGE:
@@ -9988,77 +10178,6 @@ public class GwtServerHelper {
 	public static Boolean pinEntry(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId) throws GwtTeamingException {
 		EntityId eid = new EntityId(folderId, entryId, EntityId.FOLDER_ENTRY);
 		return setEntryPinState(bs, request, eid, true);
-	}
-	
-	/**
-	 * Purges the specified folder entries.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param entityIds
-	 * @param deleteMirroredSource
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ErrorListRpcResponseData purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, boolean deleteMirroredSource) throws GwtTeamingException {
-		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-		purgeFolderEntriesImpl(bs, request, entityIds, deleteMirroredSource, reply);
-		return reply;
-	}
-	
-	private static void purgeFolderEntriesImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, boolean deleteMirroredSource, ErrorListRpcResponseData reply) throws GwtTeamingException {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.purgeFolderEntriesImpl()");
-		try {
-			// Scan the entry IDs...
-			BinderModule bm         = bs.getBinderModule();
-			FolderModule fm         = bs.getFolderModule();
-			for (EntityId entityId:  entityIds) {
-				try {
-					// ...purging each entity...
-					if (entityId.isBinder()) {
-						Long   binderId = entityId.getEntityId();
-						Binder binder   = bm.getBinder(binderId);
-						if (BinderHelper.isBinderHomeFolder(binder)) {
-							// ...except Home folders which cannot...
-							// ...be purged...
-							String entryTitle = getEntityTitle(bs, entityId);
-							reply.addError(NLT.get("purgeEntryError.AccssControlException", new String[]{entryTitle}));
-						}
-						else if (CloudFolderHelper.isCloudFolder(binder)) {
-							CloudFolderHelper.deleteCloudFolder(bs, ((Folder) binder), deleteMirroredSource);
-						}
-						else {
-							bm.deleteBinder(binderId, deleteMirroredSource, null);
-						}
-					}
-					
-					else {
-						fm.deleteEntry(entityId.getBinderId(), entityId.getEntityId());
-					}
-				}
-				
-				catch (Exception e) {
-					// ...tracking any that we couldn't purge.
-					String entryTitle = getEntityTitle(bs, entityId);
-					String msgKey;
-					if (e instanceof AccessControlException) msgKey = "purgeEntryError.AccssControlException";
-					else                                     msgKey = "purgeEntryError.OtherException";
-					reply.addError(NLT.get(msgKey, new String[]{entryTitle}));
-					
-					GwtLogHelper.error(m_logger, "GwtServerHelper.purgeFolderEntriesImpl( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
-				}
-			}
-		}
-		
-		catch (Exception ex) {
-			throw GwtLogHelper.getGwtClientException(m_logger, ex);
-		}
-		
-		finally {
-			gsp.stop();
-		}
 	}
 	
 	/**

@@ -52,7 +52,6 @@ import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShowViewPermalinksEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
@@ -117,7 +116,6 @@ public class FolderEntryComposite extends ResizeComposite
 		MarkReadSelectedEntriesEvent.Handler,
 		MarkUnreadSelectedEntriesEvent.Handler,
 		MoveSelectedEntriesEvent.Handler,
-		PurgeSelectedEntriesEvent.Handler,
 		ShareSelectedEntriesEvent.Handler,
 		ShowViewPermalinksEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
@@ -179,7 +177,6 @@ public class FolderEntryComposite extends ResizeComposite
 		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
 		TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES,
 		TeamingEvents.MOVE_SELECTED_ENTRIES,
-		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
 		TeamingEvents.SHOW_VIEW_PERMALINKS,
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
@@ -837,7 +834,7 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously handles deleting the folder entry.
 	 */
 	private void onDeleteSelectedEntriesNow(List<EntityId> deletedEntities) {
-		BinderViewsHelper.deleteFolderEntries(deletedEntities, new DeletePurgeEntriesCallback() {
+		BinderViewsHelper.deleteSelections(deletedEntities, new DeletePurgeEntriesCallback() {
 			@Override
 			public void operationCanceled() {
 				// Nothing to do.
@@ -1093,61 +1090,6 @@ public class FolderEntryComposite extends ResizeComposite
 			new FolderEntryActionCompleteEvent(
 				m_vfei.getEntityId(),
 				true));
-	}
-	
-	/**
-	 * Handles PurgeSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
-		// Is the event targeted to this entry?
-		List<EntityId> purgedEntities = event.getSelectedEntities();
-		if (isCompositeEntry(purgedEntities)) {
-			// Yes!  Run the purge on it.
-			onPurgeSelectedEntriesAsync(purgedEntities);
-		}
-	}
-	
-	/*
-	 * Asynchronously handles purging the folder entry.
-	 */
-	private void onPurgeSelectedEntriesAsync(final List<EntityId> purgedEntities) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onPurgeSelectedEntriesNow(purgedEntities);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously handles purging the folder entry.
-	 */
-	private void onPurgeSelectedEntriesNow(List<EntityId> purgedEntities) {
-		BinderViewsHelper.purgeFolderEntries(purgedEntities, new DeletePurgeEntriesCallback() {
-			@Override
-			public void operationCanceled() {
-				// Nothing to do.
-			}
-
-			@Override
-			public void operationComplete() {
-				GwtTeaming.fireEventAsync(
-					new FolderEntryActionCompleteEvent(
-						m_vfei.getEntityId(),
-						true));
-			}
-			
-			@Override
-			public void operationFailed() {
-				// Nothing to do.  The purge call will have told the
-				// user about the failure.
-			}
-		});
 	}
 	
 	/**

@@ -78,9 +78,6 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg.DeleteSelectedUsersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
@@ -92,7 +89,6 @@ import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
@@ -113,12 +109,6 @@ public class BinderViewsHelper {
 	private static ShareThisDlg				m_shareDlg;								// An instance of a share this dialog.
 	private static WhoHasAccessDlg			m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
 
-	// Controls whether a prompt is included in the purge user
-	// workspace confirmation dialog allowing for the purging of the
-	// source information for net folders.  true -> The prompt is
-	// included.  false -> It's not.
-	private static boolean PROMPT_PURGE_USER_WORKSPACE_NET_FOLDERS	= false;
-	
 	/*
 	 * Constructor method. 
 	 */
@@ -307,47 +297,6 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Deletes the folder entries based on a folder ID and List<Long>
-	 * of their entity IDs.
-	 *
-	 * @param entityIds
-	 */
-	public static void deleteFolderEntries(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
-		// If we weren't given any entity IDs to be deleted...
-		if (!(GwtClientHelper.hasItems(entityIds))) {
-			// ...bail.
-			return;
-		}
-
-		// Have we created an instance of the delete selections dialog
-		// yet?
-		if (null == m_dsDlg) {
-			// No!  Create one now...
-			DeleteSelectionsDlg.createAsync(new DeleteSelectionsDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(DeleteSelectionsDlg dsDlg) {
-					// ...and run it.
-					m_dsDlg = dsDlg;
-					DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
-				}
-			});
-			
-		}
-		
-		else {
-			// Yes, we already have instance of one!  Simply run
-			// it.
-			DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
-		}
-	}
-	
-	/**
 	 * Deletes the users based on a List<Long> of their IDs.
 	 *
 	 * @param userIds
@@ -388,52 +337,43 @@ public class BinderViewsHelper {
 	}
 	
 	/**
-	 * Deletes the user workspaces based on a List<Long> of their user
-	 * IDs.
+	 * Deletes the entities based on a List<EntityId> of the entities.
 	 *
-	 * @param userIds
+	 * @param entityIds
 	 */
-	public static void deleteUserWorkspaces(final List<Long> userIds) {
-		// If we weren't given any user IDs to be deleted...
-		if (!(GwtClientHelper.hasItems(userIds))) {
+	public static void deleteSelections(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
+		// If we weren't given any entity IDs to be deleted...
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
-		
-		// Is the user sure they want to delete the selected user
-		// workspaces?
-		ConfirmDlg.createAsync(new ConfirmDlgClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}
+
+		// Have we created an instance of the delete selections dialog
+		// yet?
+		if (null == m_dsDlg) {
+			// No!  Create one now...
+			DeleteSelectionsDlg.createAsync(new DeleteSelectionsDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(DeleteSelectionsDlg dsDlg) {
+					// ...and run it.
+					m_dsDlg = dsDlg;
+					DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
+				}
+			});
 			
-			@Override
-			public void onSuccess(ConfirmDlg cDlg) {
-				ConfirmDlg.initAndShow(
-					cDlg,
-					new ConfirmCallback() {
-						@Override
-						public void dialogReady() {
-							// Ignored.  We don't really care when the
-							// dialog is ready.
-						}
-
-						@Override
-						public void accepted() {
-							// Yes, they're sure!  Perform the delete.
-							DeletePurgeUsersHelper.deleteUserWorkspacesAsync(userIds);
-						}
-
-						@Override
-						public void rejected() {
-							// No, they're not sure!
-						}
-					},
-					m_messages.binderViewsConfirmDeleteUserWS());
-			}
-		});
+		}
+		
+		else {
+			// Yes, we already have instance of one!  Simply run
+			// it.
+			DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
+		}
 	}
 	
 	/**
@@ -1056,203 +996,6 @@ public class BinderViewsHelper {
 		moveEntries(entityIds, null);
 	}
 	
-	/**
-	 * Purges the folder entries based on a folder ID and List<Long> of
-	 * the entity IDs.
-	 *
-	 * @param entityIds
-	 */
-	public static void purgeFolderEntries(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
-		// If we weren't given any entity IDs to be purged...
-		if (!(GwtClientHelper.hasItems(entityIds))) {
-			// ...bail.
-			return;
-		}
-		
-		// Is the user sure they want to purge the folder entries?
-		ConfirmDlg.createAsync(new ConfirmDlgClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess(ConfirmDlg cDlg) {
-				String confirmationMsg;
-				switch (entityIds.size()) {
-				case 1:
-					EntityId	eid     = entityIds.get(0);
-					String		eidType = eid.getEntityType();
-					if      (eidType.equals(EntityId.FOLDER))    confirmationMsg = m_messages.binderViewsConfirmPurgeFolder();
-					else if (eidType.equals(EntityId.WORKSPACE)) confirmationMsg = m_messages.binderViewsConfirmPurgeWorkspace();
-					else                                         confirmationMsg = m_messages.binderViewsConfirmPurgeEntry();
-					break;
-					
-				default:
-					confirmationMsg = m_messages.binderViewsConfirmPurgeEntries();
-					break;
-				}
-				ConfirmDlg.initAndShow(
-					cDlg,
-					new ConfirmCallback() {
-						@Override
-						public void dialogReady() {
-							// Ignored.  We don't really care when the
-							// dialog is ready.
-						}
-
-						@Override
-						public void accepted() {
-							// Yes, they're sure!  Perform the purge.
-							DeletePurgeEntriesHelper.purgeSelectedEntriesAsync(
-								entityIds,
-								true,
-								dpeCallback);
-						}
-
-						@Override
-						public void rejected() {
-							// No, they're not sure!
-						}
-					},
-					confirmationMsg);
-			}
-		});
-	}
-
-	/**
-	 * Purges the user workspaces and user objects based on a
-	 * List<Long> of their user IDs.
-	 *
-	 * @param userIds
-	 */
-	public static void purgeUsers(final List<Long> userIds) {
-		// If we weren't given any user IDs to be purged...
-		if (!(GwtClientHelper.hasItems(userIds))) {
-			// ...bail.
-			return;
-		}
-
-		// Is the user sure they want to the selected user workspaces
-		// and user objects?
-		CheckBox cb;
-		if (PROMPT_PURGE_USER_WORKSPACE_NET_FOLDERS) {
-			String caption;
-			if (GwtClientHelper.isLicenseFilr())
-			     caption = m_messages.binderViewsPromptPurgeMirroredFolders_Filr();
-			else caption = m_messages.binderViewsPromptPurgeMirroredFolders_Vibe();
-			cb = new CheckBox(caption);
-		}
-		else {
-			cb = null;
-		}
-		final CheckBox finalCB = cb;
-		ConfirmDlg.createAsync(new ConfirmDlgClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess(ConfirmDlg cDlg) {
-				ConfirmDlg.initAndShow(
-					cDlg,
-					new ConfirmCallback() {
-						@Override
-						public void dialogReady() {
-							// Ignored.  We don't really care when the
-							// dialog is ready.
-						}
-
-						@Override
-						public void accepted() {
-							// Yes, they're sure!  Perform the purge.
-							DeletePurgeUsersHelper.purgeUsersAsync(
-								userIds,
-								((null == finalCB) ?
-									false          :
-									finalCB.getValue()));
-						}
-
-						@Override
-						public void rejected() {
-							// No, they're not sure!
-						}
-					},
-					m_messages.binderViewsConfirmPurgeUsers(),
-					finalCB);
-			}
-		});
-	}
-
-	/**
-	 * Purges the user workspaces based on a List<Long> of their user
-	 * IDs.
-	 *
-	 * @param userIds
-	 */
-	public static void purgeUserWorkspaces(final List<Long> userIds) {
-		// If we weren't given any user IDs to be purged...
-		if (!(GwtClientHelper.hasItems(userIds))) {
-			// ...bail.
-			return;
-		}
-		
-		// Is the user sure they want to purge the selected user
-		// workspaces?
-		CheckBox cb;
-		if (PROMPT_PURGE_USER_WORKSPACE_NET_FOLDERS) {
-			String caption;
-			if (GwtClientHelper.isLicenseFilr())
-			     caption = m_messages.binderViewsPromptPurgeMirroredFolders_Filr();
-			else caption = m_messages.binderViewsPromptPurgeMirroredFolders_Vibe();
-			cb = new CheckBox(caption);
-		}
-		else {
-			cb = null;
-		}
-		final CheckBox finalCB = cb;
-		ConfirmDlg.createAsync(new ConfirmDlgClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess(ConfirmDlg cDlg) {
-				ConfirmDlg.initAndShow(
-					cDlg,
-					new ConfirmCallback() {
-						@Override
-						public void dialogReady() {
-							// Ignored.  We don't really care when the
-							// dialog is ready.
-						}
-
-						@Override
-						public void accepted() {
-							// Yes, they're sure!  Perform the purge.
-							DeletePurgeUsersHelper.purgeUserWorkspacesAsync(
-								userIds,
-								((null == finalCB) ?
-									false          :
-									finalCB.getValue()));
-						}
-
-						@Override
-						public void rejected() {
-							// No, they're not sure!
-						}
-					},
-					m_messages.binderViewsConfirmPurgeUserWS(),
-					finalCB);
-			}
-		});
-	}
-
 	/**
 	 * Invokes the appropriate UI to share the entities based on a
 	 * List<EntityId> of the entries.

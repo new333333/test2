@@ -43,7 +43,6 @@ import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
@@ -64,9 +63,6 @@ import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent.ManageUsersFi
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedUserWorkspacesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
@@ -1155,7 +1151,6 @@ public class EntryMenuPanel extends ToolPanelBase
 					case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:    event = new ClearSelectedUsersAdHocFoldersEvent(  folderId      ); break;
 					case COPY_SELECTED_ENTRIES:                 event = new CopySelectedEntriesEvent(             folderId      ); break;
 					case DELETE_SELECTED_ENTRIES:               event = new DeleteSelectedEntriesEvent(           folderId      ); break;
-					case DELETE_SELECTED_USER_WORKSPACES:       event = new DeleteSelectedUserWorkspacesEvent(    folderId      ); break;
 					case DELETE_SELECTED_USERS:                 event = new DeleteSelectedUsersEvent(             folderId      ); break;
 					case DISABLE_SELECTED_USERS:                event = new DisableSelectedUsersEvent(            folderId      ); break;
 					case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:  event = new DisableSelectedUsersAdHocFoldersEvent(folderId      ); break;
@@ -1172,9 +1167,6 @@ public class EntryMenuPanel extends ToolPanelBase
 					case MARK_READ_SELECTED_ENTRIES:            event = new MarkReadSelectedEntriesEvent(         folderId      ); break;
 					case MARK_UNREAD_SELECTED_ENTRIES:          event = new MarkUnreadSelectedEntriesEvent(       folderId      ); break;
 					case MOVE_SELECTED_ENTRIES:                 event = new MoveSelectedEntriesEvent(             folderId      ); break;
-					case PURGE_SELECTED_ENTRIES:                event = new PurgeSelectedEntriesEvent(            folderId      ); break;
-					case PURGE_SELECTED_USER_WORKSPACES:        event = new PurgeSelectedUserWorkspacesEvent(     folderId      ); break;
-					case PURGE_SELECTED_USERS:                  event = new PurgeSelectedUsersEvent(              folderId      ); break;
 					case SET_SELECTED_USER_DESKTOP_SETTINGS:    event = new SetSelectedUserDesktopSettingsEvent(  folderId      ); break;
 					case SET_SELECTED_USER_MOBILE_SETTINGS:     event = new SetSelectedUserMobileSettingsEvent(   folderId      ); break;
 					case SET_SELECTED_USER_SHARE_RIGHTS:        event = new SetSelectedUserShareRightsEvent(      folderId      ); break;

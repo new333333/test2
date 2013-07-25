@@ -268,7 +268,6 @@ public enum TeamingEvents implements IsSerializable {
 	CLEAR_SELECTED_USERS_ADHOC_FOLDERS,				// Clears the adHoc folder setting for the Selected Users so they revert to the zone setting.
 	COPY_SELECTED_ENTRIES,							// Copies the Selected Entries.
 	DELETE_SELECTED_ENTRIES,						// Deletes the Selected Entries.
-	DELETE_SELECTED_USER_WORKSPACES,				// Deletes the Selected User Workspaces.
 	DELETE_SELECTED_USERS,							// Deletes the Selected Users.
 	DISABLE_SELECTED_USERS,							// Disables the Selected Users.
 	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
@@ -283,9 +282,6 @@ public enum TeamingEvents implements IsSerializable {
 	MARK_READ_SELECTED_ENTRIES,						// Marks the Selected Entries as     Having Been Read.
 	MARK_UNREAD_SELECTED_ENTRIES,					// Marks the Selected Entries as Not Having Been Read.
 	MOVE_SELECTED_ENTRIES,							// Moves the Selected Entries.
-	PURGE_SELECTED_ENTRIES,							// Deletes and Immediately Purges the Selected Entries.
-	PURGE_SELECTED_USER_WORKSPACES,					// Purges the Selected User Workspaces.
-	PURGE_SELECTED_USERS,							// Purges the Selected User Workspaces and User Objects.
 	RELOAD_DIALOG_CONTENT,							// Tells a dialog to reload its content.
 	RESET_ENTRY_MENU,								// Resets the Entry Menu on the Given Folder.
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 
