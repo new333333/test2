@@ -43,7 +43,7 @@ import java.util.Set;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
-import org.kablink.teaming.gwt.client.event.DeleteEntryEvent;
+import org.kablink.teaming.gwt.client.event.DeleteActivityStreamUIEntryEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendToFriendEvent;
@@ -123,7 +123,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
-		DeleteEntryEvent.Handler,
+		DeleteActivityStreamUIEntryEvent.Handler,
 		InvokeReplyEvent.Handler,
 		InvokeSendToFriendEvent.Handler,
 		InvokeShareEvent.Handler,
@@ -212,7 +212,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
 		
 		// Delete events
-		TeamingEvents.DELETE_ENTRY,
+		TeamingEvents.DELETE_ACTIVITY_STREAM_UI_ENTRY,
 		
 		// Invoke events.
 		TeamingEvents.INVOKE_REPLY,
@@ -2206,14 +2206,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}// end onActivityStreamExit()
 
 	/**
-	 * Handles DeleteEntryEvent's received by this class.
+	 * Handles DeleteActivityStreamUIEntryEvent's received by this class.
 	 * 
-	 * Implements the DeleteEntryEvent.Handler.onDeleteEntry() method.
+	 * Implements the DeleteActivityStreamUIEntryEvent.Handler.onDeleteActivityStreamUIEntry() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onDeleteEntry( DeleteEntryEvent event )
+	public void onDeleteActivityStreamUIEntry( DeleteActivityStreamUIEntryEvent event )
 	{
 		final ActivityStreamUIEntry uiEntry = event.getUIEntry();
 		if ( null != uiEntry )

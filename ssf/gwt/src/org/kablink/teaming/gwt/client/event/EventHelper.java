@@ -577,12 +577,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case DELETE_ENTRY:
-				// A DeleteEntryEvent!  Can the event handler we were given handle that?
-				if ( eventHandler instanceof DeleteEntryEvent.Handler )
-				{
+			case DELETE_ACTIVITY_STREAM_UI_ENTRY:
+				// A DeleteActivityStreamUIEntryEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof DeleteActivityStreamUIEntryEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = DeleteEntryEvent.registerEvent( eventBus, ((DeleteEntryEvent.Handler) eventHandler));
+					registrationHandler = DeleteActivityStreamUIEntryEvent.registerEvent(eventBus, ((DeleteActivityStreamUIEntryEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -2451,7 +2451,7 @@ public class EventHelper {
 			case CONTRIBUTOR_IDS_REPLY:                        hasHandler = (eventHandler instanceof ContributorIdsReplyEvent.Handler);                    break;
 			case CONTRIBUTOR_IDS_REQUEST:                      hasHandler = (eventHandler instanceof ContributorIdsRequestEvent.Handler);                  break;
 			
-			case DELETE_ENTRY:                   		       hasHandler = (eventHandler instanceof DeleteEntryEvent.Handler);                            break;
+			case DELETE_ACTIVITY_STREAM_UI_ENTRY:              hasHandler = (eventHandler instanceof DeleteActivityStreamUIEntryEvent.Handler);            break;
 
 			case EDIT_CURRENT_BINDER_BRANDING:      	       hasHandler = (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler);              break;
 			case EDIT_PERSONAL_PREFERENCES:         	       hasHandler = (eventHandler instanceof EditPersonalPreferencesEvent.Handler);                break;
