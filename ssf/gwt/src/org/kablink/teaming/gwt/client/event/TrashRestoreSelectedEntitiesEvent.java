@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,97 +32,58 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.util.EntityId;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The LockSelectedEntriesEvent is used to lock the currently selected
- * entries in a folder.
- * 
- * See the definition of the SelectedEntriesEventBase class for how and
- * when an EntityId (or List<EntityId>) should be passed into the
- * construction of this class.
+ * The TrashRestoreSelectedEntitiesEvent is used to restore the
+ * currently selected entities from the trash.
  * 
  * @author drfoster@novell.com
  */
-public class LockSelectedEntriesEvent extends SelectedEntriesEventBase<LockSelectedEntriesEvent.Handler> {
+public class TrashRestoreSelectedEntitiesEvent extends VibeEventBase<TrashRestoreSelectedEntitiesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    public Long	m_folderId;	//
-    
+    public Long m_binderId;	//
+
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onLockSelectedEntries(LockSelectedEntriesEvent event);
+		void onTrashRestoreSelectedEntities(TrashRestoreSelectedEntitiesEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public LockSelectedEntriesEvent() {
-		// Initialize the super class.
+	public TrashRestoreSelectedEntitiesEvent() {
 		super();
 	}
 	
 	/**
 	 * Class constructor.
 	 * 
-	 * @param folderId
-	 * @param selectedEntityId
+	 * @param binderId
 	 */
-	public LockSelectedEntriesEvent(Long folderId, EntityId selectedEntityId) {
-		// Initialize this object...
+	public TrashRestoreSelectedEntitiesEvent(Long binderId) {
 		this();
-		
-		// ...and store the parameters.
-		setFolderId(        folderId        );
-		setSelectedEntityId(selectedEntityId);
+		m_binderId = binderId;
 	}
 
 	/**
-	 * Class constructor.
-	 * 
-	 * @param folderId
-	 * @param selectedEntities
-	 */
-	public LockSelectedEntriesEvent(Long folderId, List<EntityId> selectedEntities) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setFolderId(        folderId        );
-		setSelectedEntities(selectedEntities);
-	}
-
-	/**
-	 * Class constructor.
-	 * 
-	 * @param folderId
-	 */
-	public LockSelectedEntriesEvent(Long folderId) {
-		// Initialize this object.
-		this(folderId, ((List<EntityId>) null));
-	}
-
-	/**
-	 * Get'er methods.
+	 * Get'er method.
 	 * 
 	 * @return
 	 */
-	public Long getFolderId() {return m_folderId;}
+	public Long getBinderId() {return m_binderId;}
 	
 	/**
-	 * Set'er methods.
+	 * Set'er method.
 	 * 
-	 * @param
+	 * @param binderId
 	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;} 
+	public void setBinderId(Long binderId) {m_binderId = binderId;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
@@ -133,8 +94,8 @@ public class LockSelectedEntriesEvent extends SelectedEntriesEventBase<LockSelec
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-   		handler.onLockSelectedEntries(this);
-    }    
+        handler.onTrashRestoreSelectedEntities(this);
+    }
 	
 	/**
 	 * Returns the GwtEvent.Type of this event.
@@ -158,7 +119,7 @@ public class LockSelectedEntriesEvent extends SelectedEntriesEventBase<LockSelec
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.LOCK_SELECTED_ENTRIES;
+		return TeamingEvents.TRASH_RESTORE_SELECTED_ENTITIES;
 	}
 		
 	/**

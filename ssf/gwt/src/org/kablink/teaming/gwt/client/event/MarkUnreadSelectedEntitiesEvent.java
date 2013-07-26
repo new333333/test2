@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,31 +41,31 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The DeleteSelectedEntriesEvent is used to delete the currently
- * selected entries from a folder.
+ * The MarkUnreadSelectedEntitiesEvent is used to mark a collection of
+ * entities as not having been read.
  * 
- * See the definition of the SelectedEntriesEventBase class for how and
+ * See the definition of the SelectedEntitiesEventBase class for how and
  * when an EntityId (or List<EntityId>) should be passed into the
  * construction of this class.
  * 
  * @author drfoster@novell.com
  */
-public class DeleteSelectedEntriesEvent extends SelectedEntriesEventBase<DeleteSelectedEntriesEvent.Handler> {
+public class MarkUnreadSelectedEntitiesEvent extends SelectedEntitiesEventBase<MarkUnreadSelectedEntitiesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public Long	m_folderId;	//
-
+    
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event);
+		void onMarkUnreadSelectedEntities(MarkUnreadSelectedEntitiesEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public DeleteSelectedEntriesEvent() {
+	public MarkUnreadSelectedEntitiesEvent() {
 		// Initialize the super class.
 		super();
 	}
@@ -76,7 +76,7 @@ public class DeleteSelectedEntriesEvent extends SelectedEntriesEventBase<DeleteS
 	 * @param folderId
 	 * @param selectedEntityId
 	 */
-	public DeleteSelectedEntriesEvent(Long folderId, EntityId selectedEntityId) {
+	public MarkUnreadSelectedEntitiesEvent(Long folderId, EntityId selectedEntityId) {
 		// Initialize this object...
 		this();
 		
@@ -91,7 +91,7 @@ public class DeleteSelectedEntriesEvent extends SelectedEntriesEventBase<DeleteS
 	 * @param folderId
 	 * @param selectedEntities
 	 */
-	public DeleteSelectedEntriesEvent(Long folderId, List<EntityId> selectedEntities) {
+	public MarkUnreadSelectedEntitiesEvent(Long folderId, List<EntityId> selectedEntities) {
 		// Initialize this object...
 		this();
 		
@@ -105,7 +105,7 @@ public class DeleteSelectedEntriesEvent extends SelectedEntriesEventBase<DeleteS
 	 * 
 	 * @param folderId
 	 */
-	public DeleteSelectedEntriesEvent(Long folderId) {
+	public MarkUnreadSelectedEntitiesEvent(Long folderId) {
 		// Initialize this object.
 		this(folderId, ((List<EntityId>) null));
 	}
@@ -133,8 +133,8 @@ public class DeleteSelectedEntriesEvent extends SelectedEntriesEventBase<DeleteS
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-   		handler.onDeleteSelectedEntries(this);
-    }
+   		handler.onMarkUnreadSelectedEntities(this);
+    }    
 	
 	/**
 	 * Returns the GwtEvent.Type of this event.
@@ -158,7 +158,7 @@ public class DeleteSelectedEntriesEvent extends SelectedEntriesEventBase<DeleteS
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.DELETE_SELECTED_ENTRIES;
+		return TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES;
 	}
 		
 	/**

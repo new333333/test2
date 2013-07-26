@@ -48,24 +48,24 @@ import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarSettingsEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
-import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarAppointmentsRpcResponseData;
@@ -133,19 +133,19 @@ public class CalendarFolderView extends FolderViewBase
 		CalendarSettingsEvent.Handler,
 		CalendarShowEvent.Handler,
 		CalendarViewDaysEvent.Handler,
-		ChangeEntryTypeSelectedEntriesEvent.Handler,
-		CopySelectedEntriesEvent.Handler,
+		ChangeEntryTypeSelectedEntitiesEvent.Handler,
+		CopySelectedEntitiesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
-		DeleteSelectedEntriesEvent.Handler,
+		DeleteSelectedEntitiesEvent.Handler,
 		InvokeDropBoxEvent.Handler,
-		LockSelectedEntriesEvent.Handler,
-		MarkReadSelectedEntriesEvent.Handler,
-		MarkUnreadSelectedEntriesEvent.Handler,
-		MoveSelectedEntriesEvent.Handler,
+		LockSelectedEntitiesEvent.Handler,
+		MarkReadSelectedEntitiesEvent.Handler,
+		MarkUnreadSelectedEntitiesEvent.Handler,
+		MoveSelectedEntitiesEvent.Handler,
 		QuickFilterEvent.Handler,
-		ShareSelectedEntriesEvent.Handler,
-		SubscribeSelectedEntriesEvent.Handler,
-		UnlockSelectedEntriesEvent.Handler,
+		ShareSelectedEntitiesEvent.Handler,
+		SubscribeSelectedEntitiesEvent.Handler,
+		UnlockSelectedEntitiesEvent.Handler,
 		ViewSelectedEntryEvent.Handler,
 		ViewWhoHasAccessEvent.Handler
 {
@@ -171,19 +171,19 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.CALENDAR_SETTINGS,
 		TeamingEvents.CALENDAR_SHOW,
 		TeamingEvents.CALENDAR_VIEW_DAYS,
-		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
+		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
-		TeamingEvents.COPY_SELECTED_ENTRIES,
-		TeamingEvents.DELETE_SELECTED_ENTRIES,
+		TeamingEvents.COPY_SELECTED_ENTITIES,
+		TeamingEvents.DELETE_SELECTED_ENTITIES,
 		TeamingEvents.INVOKE_DROPBOX,
-		TeamingEvents.LOCK_SELECTED_ENTRIES,
-		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
-		TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES,
-		TeamingEvents.MOVE_SELECTED_ENTRIES,
+		TeamingEvents.LOCK_SELECTED_ENTITIES,
+		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
+		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
+		TeamingEvents.MOVE_SELECTED_ENTITIES,
 		TeamingEvents.QUICK_FILTER,
-		TeamingEvents.SHARE_SELECTED_ENTRIES,
-		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
-		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
+		TeamingEvents.SHARE_SELECTED_ENTITIES,
+		TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES,
+		TeamingEvents.UNLOCK_SELECTED_ENTITIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
 		TeamingEvents.VIEW_WHO_HAS_ACCESS,
 	};
@@ -1108,14 +1108,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles ChangeEntryTypeSelectedEntriesEvent's received by this class.
+	 * Handles ChangeEntryTypeSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the ChangeEntryTypeSelectedEntriesEvent.Handler.onChangeEntryTypeSelectedEntries() method.
+	 * Implements the ChangeEntryTypeSelectedEntitiesEvent.Handler.onChangeEntryTypeSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onChangeEntryTypeSelectedEntries(ChangeEntryTypeSelectedEntriesEvent event) {
+	public void onChangeEntryTypeSelectedEntities(ChangeEntryTypeSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1129,14 +1129,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles CopySelectedEntriesEvent's received by this class.
+	 * Handles CopySelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
+	 * Implements the CopySelectedEntitiesEvent.Handler.onCopySelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onCopySelectedEntries(CopySelectedEntriesEvent event) {
+	public void onCopySelectedEntities(CopySelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1151,14 +1151,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles DeleteSelectedEntriesEvent's received by this class.
+	 * Handles DeleteSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
+	 * Implements the DeleteSelectedEntitiesEvent.Handler.onDeleteSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
+	public void onDeleteSelectedEntities(DeleteSelectedEntitiesEvent event) {
 		// If we don't have an event selected...
 		if (null == m_selectedEvent) {
 			// ...bail.
@@ -1215,14 +1215,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles LockSelectedEntriesEvent's received by this class.
+	 * Handles LockSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the LockSelectedEntriesEvent.Handler.onLockSelectedEntries() method.
+	 * Implements the LockSelectedEntitiesEvent.Handler.onLockSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onLockSelectedEntries(LockSelectedEntriesEvent event) {
+	public void onLockSelectedEntities(LockSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1236,14 +1236,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MarkReadSelectedEntriesEvent's received by this class.
+	 * Handles MarkReadSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the MarkReadSelectedEntriesEvent.Handler.onMarkReadSelectedEntries() method.
+	 * Implements the MarkReadSelectedEntitiesEvent.Handler.onMarkReadSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkReadSelectedEntries(MarkReadSelectedEntriesEvent event) {
+	public void onMarkReadSelectedEntities(MarkReadSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1257,14 +1257,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MarkUnreadSelectedEntriesEvent's received by this class.
+	 * Handles MarkUnreadSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the MarkUnreadSelectedEntriesEvent.Handler.onMarkUnreadSelectedEntries() method.
+	 * Implements the MarkUnreadSelectedEntitiesEvent.Handler.onMarkUnreadSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkUnreadSelectedEntries(MarkUnreadSelectedEntriesEvent event) {
+	public void onMarkUnreadSelectedEntities(MarkUnreadSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1278,14 +1278,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MoveSelectedEntriesEvent's received by this class.
+	 * Handles MoveSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
+	 * Implements the MoveSelectedEntitiesEvent.Handler.onMoveSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMoveSelectedEntries(MoveSelectedEntriesEvent event) {
+	public void onMoveSelectedEntities(MoveSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1318,14 +1318,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 
 	/**
-	 * Handles ShareSelectedEntriesEvent's received by this class.
+	 * Handles ShareSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
+	 * Implements the ShareSelectedEntitiesEvent.Handler.onShareSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
+	public void onShareSelectedEntities(ShareSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1339,14 +1339,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles SubscribeSelectedEntriesEvent's received by this class.
+	 * Handles SubscribeSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the SubscribeSelectedEntriesEvent.Handler.onSubscribeSelectedEntries() method.
+	 * Implements the SubscribeSelectedEntitiesEvent.Handler.onSubscribeSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onSubscribeSelectedEntries(SubscribeSelectedEntriesEvent event) {
+	public void onSubscribeSelectedEntities(SubscribeSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1360,14 +1360,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles UnlockSelectedEntriesEvent's received by this class.
+	 * Handles UnlockSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the UnlockSelectedEntriesEvent.Handler.onUnlockSelectedEntries() method.
+	 * Implements the UnlockSelectedEntitiesEvent.Handler.onUnlockSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onUnlockSelectedEntries(UnlockSelectedEntriesEvent event) {
+	public void onUnlockSelectedEntities(UnlockSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {

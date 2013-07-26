@@ -77,14 +77,14 @@ import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
@@ -96,23 +96,23 @@ import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
-import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ShowSelectedSharesEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ToggleSharedViewEvent;
 import org.kablink.teaming.gwt.client.event.TrashPurgeAllEvent;
-import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreAllEvent;
-import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
@@ -201,12 +201,12 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public abstract class DataTableFolderViewBase extends FolderViewBase
 	implements ApplyColumnWidths,
 	// Event handlers implemented by this class.
-		ChangeEntryTypeSelectedEntriesEvent.Handler,
+		ChangeEntryTypeSelectedEntitiesEvent.Handler,
 		ClearSelectedUsersAdHocFoldersEvent.Handler,
 		ContentChangedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
-		CopySelectedEntriesEvent.Handler,
-		DeleteSelectedEntriesEvent.Handler,
+		CopySelectedEntitiesEvent.Handler,
+		DeleteSelectedEntitiesEvent.Handler,
 		DeleteSelectedUsersEvent.Handler,
 		DisableSelectedUsersEvent.Handler,
 		DisableSelectedUsersAdHocFoldersEvent.Handler,
@@ -216,22 +216,22 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		InvokeColumnResizerEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		InvokeSignGuestbookEvent.Handler,
-		LockSelectedEntriesEvent.Handler,
-		ManageSharesSelectedEntriesEvent.Handler,
-		MarkReadSelectedEntriesEvent.Handler,
-		MarkUnreadSelectedEntriesEvent.Handler,
-		MoveSelectedEntriesEvent.Handler,
+		LockSelectedEntitiesEvent.Handler,
+		ManageSharesSelectedEntitiesEvent.Handler,
+		MarkReadSelectedEntitiesEvent.Handler,
+		MarkUnreadSelectedEntitiesEvent.Handler,
+		MoveSelectedEntitiesEvent.Handler,
 		QuickFilterEvent.Handler,
 		SharedViewFilterEvent.Handler,
-		ShareSelectedEntriesEvent.Handler,
+		ShareSelectedEntitiesEvent.Handler,
 		ShowSelectedSharesEvent.Handler,
-		SubscribeSelectedEntriesEvent.Handler,
+		SubscribeSelectedEntitiesEvent.Handler,
 		ToggleSharedViewEvent.Handler,
 		TrashPurgeAllEvent.Handler,
-		TrashPurgeSelectedEntriesEvent.Handler,
+		TrashPurgeSelectedEntitiesEvent.Handler,
 		TrashRestoreAllEvent.Handler,
-		TrashRestoreSelectedEntriesEvent.Handler,
-		UnlockSelectedEntriesEvent.Handler,
+		TrashRestoreSelectedEntitiesEvent.Handler,
+		UnlockSelectedEntitiesEvent.Handler,
 		ViewPinnedEntriesEvent.Handler,
 		ViewSelectedEntryEvent.Handler,
 		ViewWhoHasAccessEvent.Handler,
@@ -282,12 +282,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
+		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.CONTENT_CHANGED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
-		TeamingEvents.COPY_SELECTED_ENTRIES,
-		TeamingEvents.DELETE_SELECTED_ENTRIES,
+		TeamingEvents.COPY_SELECTED_ENTITIES,
+		TeamingEvents.DELETE_SELECTED_ENTITIES,
 		TeamingEvents.DELETE_SELECTED_USERS,
 		TeamingEvents.DISABLE_SELECTED_USERS,
 		TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS,
@@ -297,22 +297,22 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
-		TeamingEvents.LOCK_SELECTED_ENTRIES,
-		TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES,
-		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
-		TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES,
-		TeamingEvents.MOVE_SELECTED_ENTRIES,
+		TeamingEvents.LOCK_SELECTED_ENTITIES,
+		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
+		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
+		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
+		TeamingEvents.MOVE_SELECTED_ENTITIES,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SHARED_VIEW_FILTER,
-		TeamingEvents.SHARE_SELECTED_ENTRIES,
+		TeamingEvents.SHARE_SELECTED_ENTITIES,
 		TeamingEvents.SHOW_SELECTED_SHARES,
-		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
+		TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES,
 		TeamingEvents.TOGGLE_SHARED_VIEW,
 		TeamingEvents.TRASH_PURGE_ALL,
-		TeamingEvents.TRASH_PURGE_SELECTED_ENTRIES,
+		TeamingEvents.TRASH_PURGE_SELECTED_ENTITIES,
 		TeamingEvents.TRASH_RESTORE_ALL,
-		TeamingEvents.TRASH_RESTORE_SELECTED_ENTRIES,
-		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
+		TeamingEvents.TRASH_RESTORE_SELECTED_ENTITIES,
+		TeamingEvents.UNLOCK_SELECTED_ENTITIES,
 		TeamingEvents.VIEW_PINNED_ENTRIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
 		TeamingEvents.VIEW_WHO_HAS_ACCESS,
@@ -1650,14 +1650,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles ChangeEntryTypeSelectedEntriesEvent's received by this class.
+	 * Handles ChangeEntryTypeSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the ChangeEntryTypeSelectedEntriesEvent.Handler.onChangeEntryTypeSelectedEntries() method.
+	 * Implements the ChangeEntryTypeSelectedEntitiesEvent.Handler.onChangeEntryTypeSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onChangeEntryTypeSelectedEntries(ChangeEntryTypeSelectedEntriesEvent event) {
+	public void onChangeEntryTypeSelectedEntities(ChangeEntryTypeSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1736,14 +1736,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles CopySelectedEntriesEvent's received by this class.
+	 * Handles CopySelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
+	 * Implements the CopySelectedEntitiesEvent.Handler.onCopySelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onCopySelectedEntries(CopySelectedEntriesEvent event) {
+	public void onCopySelectedEntities(CopySelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1759,14 +1759,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles DeleteSelectedEntriesEvent's received by this class.
+	 * Handles DeleteSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
+	 * Implements the DeleteSelectedEntitiesEvent.Handler.onDeleteSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
+	public void onDeleteSelectedEntities(DeleteSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2098,14 +2098,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles LockSelectedEntriesEvent's received by this class.
+	 * Handles LockSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the LockSelectedEntriesEvent.Handler.onLockSelectedEntries() method.
+	 * Implements the LockSelectedEntitiesEvent.Handler.onLockSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onLockSelectedEntries(LockSelectedEntriesEvent event) {
+	public void onLockSelectedEntities(LockSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2119,14 +2119,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles ManageSharesSelectedEntriesEvent's received by this class.
+	 * Handles ManageSharesSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the ManageSharesSelectedEntriesEvent.Handler.onManageSharesSelectedEntries() method.
+	 * Implements the ManageSharesSelectedEntitiesEvent.Handler.onManageSharesSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onManageSharesSelectedEntries(ManageSharesSelectedEntriesEvent event) {
+	public void onManageSharesSelectedEntities(ManageSharesSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals( getFolderId())) {
@@ -2148,14 +2148,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MarkReadSelectedEntriesEvent's received by this class.
+	 * Handles MarkReadSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the MarkReadSelectedEntriesEvent.Handler.onMarkReadSelectedEntries() method.
+	 * Implements the MarkReadSelectedEntitiesEvent.Handler.onMarkReadSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkReadSelectedEntries(MarkReadSelectedEntriesEvent event) {
+	public void onMarkReadSelectedEntities(MarkReadSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2169,14 +2169,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MarkUnreadSelectedEntriesEvent's received by this class.
+	 * Handles MarkUnreadSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the MarkUnreadSelectedEntriesEvent.Handler.onMarkUnreadSelectedEntries() method.
+	 * Implements the MarkUnreadSelectedEntitiesEvent.Handler.onMarkUnreadSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkUnreadSelectedEntries(MarkUnreadSelectedEntriesEvent event) {
+	public void onMarkUnreadSelectedEntities(MarkUnreadSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2190,14 +2190,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MoveSelectedEntriesEvent's received by this class.
+	 * Handles MoveSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
+	 * Implements the MoveSelectedEntitiesEvent.Handler.onMoveSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMoveSelectedEntries(MoveSelectedEntriesEvent event) {
+	public void onMoveSelectedEntities(MoveSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2458,14 +2458,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/**
-	 * Handles ShareSelectedEntriesEvent's received by this class.
+	 * Handles ShareSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
+	 * Implements the ShareSelectedEntitiesEvent.Handler.onShareSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
+	public void onShareSelectedEntities(ShareSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2491,7 +2491,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
-					onShareSelectedEntriesAsync(selectedEntities, responseData.getEntityRightsMap());
+					onShareSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap());
 				}
 			});
 		}
@@ -2501,11 +2501,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Asynchronously processes the share request on the selected
 	 * entries, given the current user's rights to them.
 	 */
-	private void onShareSelectedEntriesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+	private void onShareSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onShareSelectedEntriesNow(selectedEntities, entityRightsMap);
+				onShareSelectedEntitiesNow(selectedEntities, entityRightsMap);
 			}
 		});
 	}
@@ -2514,7 +2514,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Synchronously processes the share request on the selected
 	 * entries, given the current user's rights to them.
 	 */
-	private void onShareSelectedEntriesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+	private void onShareSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
 		final List<FolderRow> invalidRows = validateSelectedRows_Sharing(entityRightsMap);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
 			// Yes!  Invoke the share.
@@ -2614,14 +2614,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles SubscribeSelectedEntriesEvent's received by this class.
+	 * Handles SubscribeSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the SubscribeSelectedEntriesEvent.Handler.onSubscribeSelectedEntries() method.
+	 * Implements the SubscribeSelectedEntitiesEvent.Handler.onSubscribeSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onSubscribeSelectedEntries(SubscribeSelectedEntriesEvent event) {
+	public void onSubscribeSelectedEntities(SubscribeSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2690,14 +2690,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/**
-	 * Handles TrashPurgeSelectedEntriesEvent's received by this class.
+	 * Handles TrashPurgeSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the TrashPurgeSelectedEntriesEvent.Handler.onTrashPurgeSelectedEntries() method.
+	 * Implements the TrashPurgeSelectedEntitiesEvent.Handler.onTrashPurgeSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onTrashPurgeSelectedEntries(TrashPurgeSelectedEntriesEvent event) {
+	public void onTrashPurgeSelectedEntities(TrashPurgeSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getBinderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2706,7 +2706,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
-					trashPurgeSelectedEntries();
+					trashPurgeSelectedEntities();
 				}
 			});
 		}
@@ -2736,14 +2736,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/**
-	 * Handles TrashRestoreSelectedEntriesEvent's received by this class.
+	 * Handles TrashRestoreSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the TrashRestoreSelectedEntriesEvent.Handler.onTrashRestoreSelectedEntries() method.
+	 * Implements the TrashRestoreSelectedEntitiesEvent.Handler.onTrashRestoreSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onTrashRestoreSelectedEntries(TrashRestoreSelectedEntriesEvent event) {
+	public void onTrashRestoreSelectedEntities(TrashRestoreSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getBinderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2752,21 +2752,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
-					trashRestoreSelectedEntries();
+					trashRestoreSelectedEntities();
 				}
 			});
 		}
 	}
 	
 	/**
-	 * Handles UnlockSelectedEntriesEvent's received by this class.
+	 * Handles UnlockSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the UnlockSelectedEntriesEvent.Handler.onUnlockSelectedEntries() method.
+	 * Implements the UnlockSelectedEntitiesEvent.Handler.onUnlockSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onUnlockSelectedEntries(UnlockSelectedEntriesEvent event) {
+	public void onUnlockSelectedEntities(UnlockSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -3406,8 +3406,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Stub provided as a convenience method.  Must be overridden by
 	 * those classes that extend this that provide trash handling.
 	 */
-	public void trashPurgeSelectedEntries() {
-		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashPurgeSelectedEntries()"));
+	public void trashPurgeSelectedEntities() {
+		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashPurgeSelectedEntities()"));
 	}
 	
 	/**
@@ -3426,8 +3426,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Stub provided as a convenience method.  Must be overridden by
 	 * those classes that extend this that provide trash handling.
 	 */
-	public void trashRestoreSelectedEntries() {
-		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreSelectedEntries()"));
+	public void trashRestoreSelectedEntities() {
+		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreSelectedEntities()"));
 	}
 	
 	/*

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,8 +40,8 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import com.google.gwt.event.shared.EventHandler;
 
 /**
- * The SelectedEntriesEventBase is used as a base class for those
- * events that operation against the selected entries in a folder.
+ * The SelectedEntitiesEventBase is used as a base class for those
+ * events that operation against a collection of entities.
  * 
  * Typically, the extender of this class will NOT provide it with any
  * EntityId's.  They'll be obtained by the context the event was fired
@@ -58,13 +58,13 @@ import com.google.gwt.event.shared.EventHandler;
  * 
  * @author drfoster@novell.com
  */
-public abstract class SelectedEntriesEventBase<H extends EventHandler> extends VibeEventBase<H> {
+public abstract class SelectedEntitiesEventBase<H extends EventHandler> extends VibeEventBase<H> {
     public List<EntityId>	m_selectedEntities;	//
     
 	/**
 	 * Class constructor.
 	 */
-	public SelectedEntriesEventBase() {
+	public SelectedEntitiesEventBase() {
 		// Initialize the super this.
 		super();
 	}
@@ -74,7 +74,7 @@ public abstract class SelectedEntriesEventBase<H extends EventHandler> extends V
 	 * 
 	 * @param selectedEntityId
 	 */
-	public SelectedEntriesEventBase(EntityId selectedEntityId) {
+	public SelectedEntitiesEventBase(EntityId selectedEntityId) {
 		// Initialize this object...
 		this();
 
@@ -87,7 +87,7 @@ public abstract class SelectedEntriesEventBase<H extends EventHandler> extends V
 	 * 
 	 * @param selectedEntityIds
 	 */
-	public SelectedEntriesEventBase(List<EntityId> selectedEntities) {
+	public SelectedEntitiesEventBase(List<EntityId> selectedEntities) {
 		// Initialize this object...
 		this();
 		

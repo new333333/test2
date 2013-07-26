@@ -343,11 +343,11 @@ public class TrashView extends DataTableFolderViewBase {
 	/**
 	 * Purges the selected entries from the trash.
 	 * 
-	 * Overrides the DataTableFolderViewBase.trashPurgeSelectedEntries()
+	 * Overrides the DataTableFolderViewBase.trashPurgeSelectedEntities()
 	 * method.
 	 */
 	@Override
-	public void trashPurgeSelectedEntries() {
+	public void trashPurgeSelectedEntities() {
 		final boolean purgeBinders = areBindersInDataTable();
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
@@ -495,11 +495,11 @@ public class TrashView extends DataTableFolderViewBase {
 	/**
 	 * Restores the selected entries in the trash.
 	 * 
-	 * Overrides the DataTableFolderViewBase.trashRestoreSelectedEntries()
+	 * Overrides the DataTableFolderViewBase.trashRestoreSelectedEntities()
 	 * method.
 	 */
 	@Override
-	public void trashRestoreSelectedEntries() {
+	public void trashRestoreSelectedEntities() {
 		// Perform the restore.
 	    showBusySpinner();
 		final boolean restoreBinders = areBindersInDataTable();

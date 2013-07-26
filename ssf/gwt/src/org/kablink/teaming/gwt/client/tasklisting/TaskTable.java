@@ -42,18 +42,18 @@ import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TaskDeleteEvent;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveDownEvent;
@@ -62,7 +62,7 @@ import org.kablink.teaming.gwt.client.event.TaskMoveRightEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveUpEvent;
 import org.kablink.teaming.gwt.client.event.TaskPurgeEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -161,15 +161,15 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class TaskTable extends Composite
 	implements
 	// Event handlers implemented by this class.
-		ChangeEntryTypeSelectedEntriesEvent.Handler,
-		CopySelectedEntriesEvent.Handler,
-		DeleteSelectedEntriesEvent.Handler,
-		LockSelectedEntriesEvent.Handler,
-		MarkReadSelectedEntriesEvent.Handler,
-		MoveSelectedEntriesEvent.Handler,
+		ChangeEntryTypeSelectedEntitiesEvent.Handler,
+		CopySelectedEntitiesEvent.Handler,
+		DeleteSelectedEntitiesEvent.Handler,
+		LockSelectedEntitiesEvent.Handler,
+		MarkReadSelectedEntitiesEvent.Handler,
+		MoveSelectedEntitiesEvent.Handler,
 		QuickFilterEvent.Handler,
-		ShareSelectedEntriesEvent.Handler,
-		SubscribeSelectedEntriesEvent.Handler,
+		ShareSelectedEntitiesEvent.Handler,
+		SubscribeSelectedEntitiesEvent.Handler,
 		TaskDeleteEvent.Handler,
 		TaskHierarchyDisabledEvent.Handler,
 		TaskMoveDownEvent.Handler,
@@ -177,7 +177,7 @@ public class TaskTable extends Composite
 		TaskMoveRightEvent.Handler,
 		TaskMoveUpEvent.Handler,
 		TaskPurgeEvent.Handler,
-		UnlockSelectedEntriesEvent.Handler,
+		UnlockSelectedEntitiesEvent.Handler,
 		ViewSelectedEntryEvent.Handler,
 		ViewWhoHasAccessEvent.Handler
 {
@@ -246,15 +246,15 @@ public class TaskTable extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
-		TeamingEvents.COPY_SELECTED_ENTRIES,
-		TeamingEvents.DELETE_SELECTED_ENTRIES,
-		TeamingEvents.LOCK_SELECTED_ENTRIES,
-		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
-		TeamingEvents.MOVE_SELECTED_ENTRIES,
+		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
+		TeamingEvents.COPY_SELECTED_ENTITIES,
+		TeamingEvents.DELETE_SELECTED_ENTITIES,
+		TeamingEvents.LOCK_SELECTED_ENTITIES,
+		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
+		TeamingEvents.MOVE_SELECTED_ENTITIES,
 		TeamingEvents.QUICK_FILTER,
-		TeamingEvents.SHARE_SELECTED_ENTRIES,
-		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
+		TeamingEvents.SHARE_SELECTED_ENTITIES,
+		TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES,
 		TeamingEvents.TASK_DELETE,
 		TeamingEvents.TASK_HIERARCHY_DISABLED,
 		TeamingEvents.TASK_MOVE_DOWN,
@@ -262,7 +262,7 @@ public class TaskTable extends Composite
 		TeamingEvents.TASK_MOVE_RIGHT,
 		TeamingEvents.TASK_MOVE_UP,
 		TeamingEvents.TASK_PURGE,
-		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
+		TeamingEvents.UNLOCK_SELECTED_ENTITIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
 		TeamingEvents.VIEW_WHO_HAS_ACCESS,
 	};
@@ -2771,14 +2771,14 @@ public class TaskTable extends Composite
 	}
 	
 	/**
-	 * Handles ChangeEntryTypeSelectedEntriesEvent's received by this class.
+	 * Handles ChangeEntryTypeSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the ChangeEntryTypeSelectedEntriesEvent.Handler.onChangeEntryTypeSelectedEntries() method.
+	 * Implements the ChangeEntryTypeSelectedEntitiesEvent.Handler.onChangeEntryTypeSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onChangeEntryTypeSelectedEntries(ChangeEntryTypeSelectedEntriesEvent event) {
+	public void onChangeEntryTypeSelectedEntities(ChangeEntryTypeSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
@@ -2792,14 +2792,14 @@ public class TaskTable extends Composite
 	}
 	
 	/**
-	 * Handles CopySelectedEntriesEvent's received by this class.
+	 * Handles CopySelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
+	 * Implements the CopySelectedEntitiesEvent.Handler.onCopySelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onCopySelectedEntries(CopySelectedEntriesEvent event) {
+	public void onCopySelectedEntities(CopySelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
@@ -2814,14 +2814,14 @@ public class TaskTable extends Composite
 	}
 	
 	/**
-	 * Handles DeleteSelectedEntriesEvent's received by this class.
+	 * Handles DeleteSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
+	 * Implements the DeleteSelectedEntitiesEvent.Handler.onDeleteSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
+	public void onDeleteSelectedEntities(DeleteSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
@@ -2877,14 +2877,14 @@ public class TaskTable extends Composite
 	}
 	
 	/**
-	 * Handles LockSelectedEntriesEvent's received by this class.
+	 * Handles LockSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the LockSelectedEntriesEvent.Handler.onLockSelectedEntries() method.
+	 * Implements the LockSelectedEntitiesEvent.Handler.onLockSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onLockSelectedEntries(LockSelectedEntriesEvent event) {
+	public void onLockSelectedEntities(LockSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
@@ -2898,14 +2898,14 @@ public class TaskTable extends Composite
 	}
 	
 	/**
-	 * Handles MarkReadSelectedEntriesEvent's received by this class.
+	 * Handles MarkReadSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the MarkReadSelectedEntriesEvent.Handler.onMarkReadSelectedEntries() method.
+	 * Implements the MarkReadSelectedEntitiesEvent.Handler.onMarkReadSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkReadSelectedEntries(MarkReadSelectedEntriesEvent event) {
+	public void onMarkReadSelectedEntities(MarkReadSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
@@ -2919,14 +2919,14 @@ public class TaskTable extends Composite
 	}
 	
 	/**
-	 * Handles MoveSelectedEntriesEvent's received by this class.
+	 * Handles MoveSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
+	 * Implements the MoveSelectedEntitiesEvent.Handler.onMoveSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMoveSelectedEntries(MoveSelectedEntriesEvent event) {
+	public void onMoveSelectedEntities(MoveSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
@@ -2957,14 +2957,14 @@ public class TaskTable extends Composite
 	}
 
 	/**
-	 * Handles ShareSelectedEntriesEvent's received by this class.
+	 * Handles ShareSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
+	 * Implements the ShareSelectedEntitiesEvent.Handler.onShareSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
+	public void onShareSelectedEntities(ShareSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
@@ -2978,14 +2978,14 @@ public class TaskTable extends Composite
 	}
 	
 	/**
-	 * Handles SubscribeSelectedEntriesEvent's received by this class.
+	 * Handles SubscribeSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the SubscribeSelectedEntriesEvent.Handler.onSubscribeSelectedEntries() method.
+	 * Implements the SubscribeSelectedEntitiesEvent.Handler.onSubscribeSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onSubscribeSelectedEntries(SubscribeSelectedEntriesEvent event) {
+	public void onSubscribeSelectedEntities(SubscribeSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
@@ -3083,14 +3083,14 @@ public class TaskTable extends Composite
 	}
 
 	/**
-	 * Handles UnlockSelectedEntriesEvent's received by this class.
+	 * Handles UnlockSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the UnlockSelectedEntriesEvent.Handler.onUnlockSelectedEntries() method.
+	 * Implements the UnlockSelectedEntitiesEvent.Handler.onUnlockSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onUnlockSelectedEntries(UnlockSelectedEntriesEvent event) {
+	public void onUnlockSelectedEntities(UnlockSelectedEntitiesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {

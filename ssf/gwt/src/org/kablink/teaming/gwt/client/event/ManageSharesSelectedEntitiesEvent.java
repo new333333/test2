@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,63 +41,62 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The MarkUnreadSelectedEntriesEvent is used to mark the currently
- * selected entries in a folder as not having been read.
+ * The ManageSharesSelectedEntitiesEvent is used to invoke the Share
+ * dialog in administrative mode for a collection of entities.
  * 
- * See the definition of the SelectedEntriesEventBase class for how and
- * when an EntityId (or List<EntityId>) should be passed into the
+ * See the definition of the SelectedEntitiesEventBase class for how
+ * and when an EntityId (or List<EntityId>) should be passed into the
  * construction of this class.
  * 
- * @author drfoster@novell.com
+ * @author jwootton@novell.com
  */
-public class MarkUnreadSelectedEntriesEvent extends SelectedEntriesEventBase<MarkUnreadSelectedEntriesEvent.Handler> {
+public class ManageSharesSelectedEntitiesEvent extends SelectedEntitiesEventBase<ManageSharesSelectedEntitiesEvent.Handler>
+{
     public static Type<Handler> TYPE = new Type<Handler>();
-    
-    public Long	m_folderId;	//
-    
+
+    public Long	m_folderId;
+
 	/**
 	 * Handler interface for this event.
 	 */
-	public interface Handler extends EventHandler {
-		void onMarkUnreadSelectedEntries(MarkUnreadSelectedEntriesEvent event);
+	public interface Handler extends EventHandler
+	{
+		void onManageSharesSelectedEntities( ManageSharesSelectedEntitiesEvent event );
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public MarkUnreadSelectedEntriesEvent() {
+	public ManageSharesSelectedEntitiesEvent() 
+	{
 		// Initialize the super class.
 		super();
 	}
 	
 	/**
 	 * Class constructor.
-	 * 
-	 * @param folderId
-	 * @param selectedEntityId
 	 */
-	public MarkUnreadSelectedEntriesEvent(Long folderId, EntityId selectedEntityId) {
+	public ManageSharesSelectedEntitiesEvent( Long folderId, EntityId selectedEntityId )
+	{
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
-		setFolderId(        folderId        );
-		setSelectedEntityId(selectedEntityId);
+		setFolderId( folderId );
+		setSelectedEntityId( selectedEntityId );
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param folderId
 	 * @param selectedEntities
 	 */
-	public MarkUnreadSelectedEntriesEvent(Long folderId, List<EntityId> selectedEntities) {
+	public ManageSharesSelectedEntitiesEvent( Long folderId, List<EntityId> selectedEntities )
+	{
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
-		setFolderId(        folderId        );
-		setSelectedEntities(selectedEntities);
+		setFolderId( folderId );
+		setSelectedEntities( selectedEntities );
 	}
 
 	/**
@@ -105,25 +104,12 @@ public class MarkUnreadSelectedEntriesEvent extends SelectedEntriesEventBase<Mar
 	 * 
 	 * @param folderId
 	 */
-	public MarkUnreadSelectedEntriesEvent(Long folderId) {
+	public ManageSharesSelectedEntitiesEvent( Long folderId )
+	{
 		// Initialize this object.
-		this(folderId, ((List<EntityId>) null));
+		this( folderId, ((List<EntityId>) null) );
 	}
 
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public Long getFolderId() {return m_folderId;}
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;} 
-	
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
@@ -132,8 +118,9 @@ public class MarkUnreadSelectedEntriesEvent extends SelectedEntriesEventBase<Mar
 	 * @param handler
 	 */
     @Override
-    protected void doDispatch(Handler handler) {
-   		handler.onMarkUnreadSelectedEntries(this);
+    protected void doDispatch( Handler handler )
+    {
+   		handler.onManageSharesSelectedEntities( this );
     }    
 	
 	/**
@@ -144,7 +131,8 @@ public class MarkUnreadSelectedEntriesEvent extends SelectedEntriesEventBase<Mar
 	 * @return
 	 */
     @Override
-    public Type<Handler> getAssociatedType() {
+    public Type<Handler> getAssociatedType() 
+    {
         return TYPE;
     }
     
@@ -157,10 +145,27 @@ public class MarkUnreadSelectedEntriesEvent extends SelectedEntriesEventBase<Mar
 	 * @return
 	 */
 	@Override
-	public TeamingEvents getEventEnum() {
-		return TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES;
+	public TeamingEvents getEventEnum()
+	{
+		return TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES;
 	}
 		
+	/**
+	 * 
+	 */
+	public Long getFolderId() 
+	{
+		return m_folderId;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setFolderId( Long folderId )
+	{
+		m_folderId = folderId;
+	} 
+	
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -170,7 +175,8 @@ public class MarkUnreadSelectedEntriesEvent extends SelectedEntriesEventBase<Mar
 	 * 
 	 * @return
 	 */
-	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
-		return eventBus.addHandler(TYPE, handler);
+	public static HandlerRegistration registerEvent( SimpleEventBus eventBus, Handler handler )
+	{
+		return eventBus.addHandler( TYPE, handler );
 	}
 }

@@ -114,13 +114,13 @@ public class DeletePurgeEntriesHelper {
 	}
 
 	/**
-	 * Asynchronously deletes the selected entries.
+	 * Asynchronously deletes the selected entities.
 	 * 
 	 * @param sourceEntityIds
 	 * @param dsMode
 	 * @param dpeCallback
 	 */
-	public static void deleteSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeleteSelectionsMode dsMode, final DeletePurgeEntriesCallback dpeCallback) {
+	public static void deleteSelectedEntitiesAsync(final List<EntityId> sourceEntityIds, final DeleteSelectionsMode dsMode, final DeletePurgeEntriesCallback dpeCallback) {
 		switch (dsMode) {
 		case TRASH_ALL:                 trashSelectedEntitiesAsync(                sourceEntityIds, dpeCallback); break;
 		case TRASH_ADHOC_PURGE_OTHERS:  trashAdHocPurgeRemoteSelectedEntitiesAsync(sourceEntityIds, dpeCallback); break;
@@ -128,9 +128,9 @@ public class DeletePurgeEntriesHelper {
 		}
 	}
 	
-	public static void deleteSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
+	public static void deleteSelectedEntitiesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
 		// Always use the initial form of the method.
-		deleteSelectedEntriesAsync(sourceEntityIds, DeleteSelectionsMode.TRASH_ALL, dpeCallback);
+		deleteSelectedEntitiesAsync(sourceEntityIds, DeleteSelectionsMode.TRASH_ALL, dpeCallback);
 	}
 	
 	/**
