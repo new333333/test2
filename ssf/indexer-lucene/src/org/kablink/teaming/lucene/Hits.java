@@ -34,9 +34,12 @@ package org.kablink.teaming.lucene;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.BitSet;
+import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
+import org.kablink.util.search.Constants;
 
 
 /**
@@ -46,17 +49,38 @@ import org.apache.lucene.search.ScoreDoc;
  */
 public class Hits implements Serializable {
 
-    private int size;
+	private static final long serialVersionUID = 1L;
+	
+	private int size;
     private Document[] documents;
     private float[] scores;
-    private int totalHits = 0;
+    private int totalHits = 0; // no longer used?
+    
+    // This field is for internal use only. Not used by application.
+    private boolean[] noAclButAccessibleThroughSharing; // all elements initialized to false
+    
 
     public Hits(int length) {
         this.size = length;
         documents = new Document[length];
         scores = new float[length];
+        noAclButAccessibleThroughSharing = new boolean[length];
     }
 
+    // A sort of copy constructor
+    public Hits(Hits hits, BitSet bitSet, int accessibleCount) {
+    	this(accessibleCount);
+    	int index = 0;
+    	for(int i = 0; i < hits.size; i++) {
+    		if(bitSet.get(i)) {
+    			this.setDoc(hits.doc(i), index);
+    			this.setScore(hits.score(i), index);
+    			index++;
+    		}
+    	}
+    	this.setTotalHits(hits.totalHits);
+    }
+    
     public Document doc(int n) {
         return documents[n];
     }
@@ -69,8 +93,12 @@ public class Hits implements Serializable {
         return scores[n];
     }
 
+    public boolean noAclButAccessibleThroughSharing(int n) {
+    	return noAclButAccessibleThroughSharing[n];
+    }
+    
     public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
-            int offset, int maxSize) throws IOException {
+            int offset, int maxSize, Set<String> noAclButAccessibleThroughSharingEntryIds) throws IOException {
         if (topDocs == null) return new Hits(0);
     	int length = topDocs.totalHits;
         if (maxSize > 0) {
@@ -79,9 +107,26 @@ public class Hits implements Serializable {
         if (length <= 0) return new Hits(0);
         Hits ss_hits = new Hits(length);
         ScoreDoc[] hits = topDocs.scoreDocs;
-        int docId;
+        Document doc;
+        String entityType;
+        String entryId;
         for(int i = 0; i < length; i++) {
-            ss_hits.setDoc(searcher.doc(hits[offset + i].doc), i);
+        	doc = searcher.doc(hits[offset + i].doc);
+        	if(noAclButAccessibleThroughSharingEntryIds != null) {
+	        	entityType = doc.get(Constants.ENTITY_FIELD);
+	        	if(entityType != null && Constants.ENTITY_TYPE_FOLDER_ENTRY.equals(entityType)) {
+	        		entryId = doc.get(Constants.DOCID_FIELD);
+	        		if(entryId != null && noAclButAccessibleThroughSharingEntryIds.contains(entryId)) {
+	        			// This doc represents a folder entry or reply/comment or attachment that doesn't
+	        			// have its intrinsic ACL indexed with it but instead have share-granted ACL
+	        			// that made it pass the caller's regular ACL filter. We want to pass this
+	        			// information to the caller so that the caller wouldn't have to apply 
+	        			// post-filtering on this doc.
+	        			ss_hits.setNoAclButAccessibleThroughSharing(true, i);
+	        		}
+	        	}
+        	}
+            ss_hits.setDoc(doc, i);
             ss_hits.setScore(hits[offset + i].score, i);
         }
         ss_hits.setTotalHits(topDocs.totalHits);
@@ -94,6 +139,10 @@ public class Hits implements Serializable {
 
     public void setScore(float score, int n) {
         scores[n] = score;
+    }
+    
+    public void setNoAclButAccessibleThroughSharing(boolean value, int n) {
+    	noAclButAccessibleThroughSharing[n] = value;
     }
 
 	/**
@@ -109,4 +158,5 @@ public class Hits implements Serializable {
 	public void setTotalHits(int totalHits) {
 		this.totalHits = totalHits;
 	}
+
 }

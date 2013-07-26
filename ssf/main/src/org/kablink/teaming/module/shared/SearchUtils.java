@@ -35,6 +35,7 @@ package org.kablink.teaming.module.shared;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.NumericField;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
@@ -62,11 +64,15 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.fi.auth.AuthException;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
+import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
+import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.util.LanguageTaster;
@@ -80,6 +86,7 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EventHelper;
+import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
@@ -655,11 +662,117 @@ public class SearchUtils {
 			// Ignore all other exceptions
 		}
 		
-		return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
+		if(ResourceDriverConfig.DriverType.famt == parentBinder.getResourceDriverType()) {
+			// The parent binder is a net folder which does not store file ACLs in the search index.
+			// In this case, we do two things differently.
+			// 1. Do NOT apply ACL during search.
+			// 2. (This naturally follows from 1) Do NOT attempt inferred access computation.
+			Hits hits = luceneSession.search(contextUserId, null, mode, query, sort, offset, size);
+			
+			// Now that we have raw result back from the search engine, we must apply post-filtering
+			// to filter out those items that the calling user doesn't have access to if the calling
+			// user is confined to access checking.
+			if(Validator.isNotNull(aclQueryStr) && hits.length() > 0) {
+				BitSet bitSet = new BitSet(hits.length());
+				int accessibleCount = 0;
+				
+				AclResourceSession session = openAclResourceSession(parentBinder);
+				
+				try {
+					boolean accessGranted;
+					for(int i = 0; i < hits.length(); i++) {
+						if(hits.noAclButAccessibleThroughSharing(i)) {
+							accessGranted = true;
+						}
+						else {
+							Document doc = hits.doc(i);
+							NumericField entryAclParentId = (NumericField) doc.getFieldable(Constants.ENTRY_ACL_PARENT_ID_FIELD);
+							if(entryAclParentId != null) {
+								// This doc represents folder entry, comment, or file where the entry either inherits
+								// its ACL from the parent folder or its ACL is not stored with the index.
+								if(entryAclParentId.getNumericValue().longValue() < 0) {
+									// This is a folder entry/comment/file whose ACL is not stored with the index.
+									// We must dynamically check the user's access on this item against the external
+									// source if possible.
+									if(session != null) {
+										String resourcePath = doc.get(Constants.RESOURCE_PATH_FIELD);
+										if(resourcePath != null) {
+											session.setPath(resourcePath);
+											boolean exists;
+											try {
+												exists = session.exists();
+											}
+											catch(Exception e) {
+												logger.error("Error calling exists()", e);
+												exists = false; // Deny access
+											}
+											if(exists) { // Grant access
+												accessGranted = true;														
+											}
+											else { // Deny access
+												accessGranted = false;											
+											}
+										}
+										else {
+											// For whatever reason, resource path isn't avaialble for this item. Deny access.
+											accessGranted = false;
+										}
+									}
+									else {
+										// The external system doesn't recognize this user. Deny access.
+										accessGranted = false;
+									}
+								}
+								else { // access granted
+									accessGranted = true;														
+								}
+							}
+							else { // access granted
+								accessGranted = true;					
+							}
+						}
+						if(accessGranted) {
+							bitSet.set(i);
+							accessibleCount++;															
+						}
+						else {
+							bitSet.clear(i);								
+						}
+					}
+				}
+				finally {
+					if(session != null)
+						session.close();
+				}
+				
+				return new Hits(hits, bitSet, accessibleCount);
+			}
+			else {
+				return hits;
+			}
+		}
+		else {
+			// All other cases
+			return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
+		}
 	}
 
+	private static AclResourceSession openAclResourceSession(Binder binder) {
+		AclResourceDriver driver = (AclResourceDriver) binder.getResourceDriver();
+		try {
+			return getResourceDriverManager().openSessionUserMode(driver);
+		} catch (AclItemPrincipalMappingException e) {
+			if(logger.isTraceEnabled())
+				logger.trace("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + RequestContextHolder.getRequestContext().getUserName() + "'");
+			return null;
+		}
+	}
 	
 	private static FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+	
+	private static ResourceDriverManager getResourceDriverManager() {
+		return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
 	}
 }

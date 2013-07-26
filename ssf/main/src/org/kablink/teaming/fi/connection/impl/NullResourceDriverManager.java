@@ -42,6 +42,7 @@ import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.ResourceSession;
+import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 
@@ -126,6 +127,12 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	public AclResourceSession openSessionWithAuth(
 			AclResourceDriver authSupportingAclResourceDriver,
 			Long netFolderOwnerDbId) {
+		return null;
+	}
+
+	@Override
+	public AclResourceSession openSessionUserMode(AclResourceDriver driver)
+			throws AclItemPrincipalMappingException {
 		return null;
 	}
 }

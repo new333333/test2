@@ -289,7 +289,7 @@ public class Constants {
 	public static final String ICON_NAME_FIELD = "_iconName";
 	public static final String TASK_COMPLETED_DATE_FIELD = "_taskCompleted";
 	public static final String IS_GROUP_DYNAMIC_FIELD = "_isGroupDynamic";
-	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This field is only used for mirrored file entries with regard to ACL.
+	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This field is used to represent ACL relationship with the parent
 	public static final String FOLDER_ID_FIELD = "_folderId"; // This numeric field contains folder ID. Used only for folders.
 	public static final String GENERAL_TEXT_FIELD = "_generalText"; // This field contains textual representation of all field values except for title and description fields.
 	public static final String IDENTITY_INTERNAL_FIELD = "_iInternal";

@@ -1499,7 +1499,7 @@ public class EntityIndexUtils {
     			ResourceDriver driver = getResourceDriverManager().getDriver(parentFolder.getResourceDriverName());
     			ResourceDriverConfig config = driver.getConfig();
     			if(ResourceDriverConfig.DriverType.famt == config.getDriverType()) {
-            		Field path = FieldFactory.createFieldStoredNotIndexed( RESOURCE_PATH_FIELD, parentFolder.getResourceDriverName() + "/" + folderEntry.getTitle());
+            		Field path = FieldFactory.createFieldStoredNotIndexed( RESOURCE_PATH_FIELD, parentFolder.getResourcePath() + "/" + folderEntry.getTitle());
             		doc.add( path );    			
     			}
      		}
