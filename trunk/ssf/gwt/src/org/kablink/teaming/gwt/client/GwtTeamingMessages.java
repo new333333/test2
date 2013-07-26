@@ -1983,12 +1983,6 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsConfirmDeleteFolder();
 	String binderViewsConfirmDeleteWorkspace();
 	String binderViewsConfirmDeleteUserWS();
-	String binderViewsConfirmPurgeDeleteSourceOnMirroredSubFolders_Filr();
-	String binderViewsConfirmPurgeDeleteSourceOnMirroredSubFolders_Vibe();
-	String binderViewsConfirmPurgeEntries();
-	String binderViewsConfirmPurgeEntry();
-	String binderViewsConfirmPurgeFolder();
-	String binderViewsConfirmPurgeWorkspace();
 	String binderViewsDeleteSelectedUsersCaption();
 	String binderViewsDeleteSelectedUsersProgress();
 	String binderViewsDeleteSelectionsCaption();

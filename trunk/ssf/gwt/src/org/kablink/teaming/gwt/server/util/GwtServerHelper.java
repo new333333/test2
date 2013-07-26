@@ -11064,7 +11064,7 @@ public class GwtServerHelper {
 					
 					switch (teamingEvent)
 					{
-						case DELETE_ENTRY:
+						case DELETE_ACTIVITY_STREAM_UI_ENTRY:
 							folderModule.checkAccess( folderEntry, FolderOperation.deleteEntry );
 							break;
 						

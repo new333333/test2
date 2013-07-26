@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.whatsnew;
 
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.event.DeleteEntryEvent;
+import org.kablink.teaming.gwt.client.event.DeleteActivityStreamUIEntryEvent;
 import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendToFriendEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareEvent;
@@ -71,8 +70,8 @@ import com.google.gwt.user.client.ui.UIObject;
 
 /**
  * This popup menu is used to display the actions a user can take on a given entry.
+ * 
  * @author jwootton
- *
  */
 public class ActionsPopupMenu extends PopupMenu
 {
@@ -126,7 +125,7 @@ public class ActionsPopupMenu extends PopupMenu
 				{
 				case DELETE:
 					// Create the "Delete" menu item.
-					m_deleteMenuItem = addMenuItem( new DeleteEntryEvent(), null, messages.deleteEntry() );
+					m_deleteMenuItem = addMenuItem( new DeleteActivityStreamUIEntryEvent(), null, messages.deleteEntry() );
 					break;
 					
 				case MARK_READ:
@@ -285,7 +284,7 @@ public class ActionsPopupMenu extends PopupMenu
 											m_tagMenuItem.setVisible( false );
 										break;
 									
-									case DELETE_ENTRY:
+									case DELETE_ACTIVITY_STREAM_UI_ENTRY:
 										if ( m_deleteMenuItem != null )
 											m_deleteMenuItem.setVisible( false );
 										break;
@@ -408,7 +407,7 @@ public class ActionsPopupMenu extends PopupMenu
 		
 		if ( m_deleteMenuItem != null )
 		{
-			DeleteEntryEvent tag = ((DeleteEntryEvent) m_deleteMenuItem.getEvent());
+			DeleteActivityStreamUIEntryEvent tag = ((DeleteActivityStreamUIEntryEvent) m_deleteMenuItem.getEvent());
 			tag.setUIEntry( entry );
 
 			m_deleteMenuItem.setVisible( true );

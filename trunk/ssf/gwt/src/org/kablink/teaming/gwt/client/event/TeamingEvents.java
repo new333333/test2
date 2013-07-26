@@ -78,7 +78,7 @@ public enum TeamingEvents implements IsSerializable {
 	CONTRIBUTOR_IDS_REPLY,							// Fired with the current set of contributor IDs.
 	CONTRIBUTOR_IDS_REQUEST,						// Requests that the current contributor IDs be posted via a CONTRIBUTOR_IDS_REPLY event.
 	
-	DELETE_ENTRY,									// Delete the given entry
+	DELETE_ACTIVITY_STREAM_UI_ENTRY,				// Delete the given ActivityStreamUIEntry.
 
 	EDIT_CURRENT_BINDER_BRANDING,					// Edits the branding on the current binder.
 	EDIT_LANDING_PAGE_PROPERTIES,					// Edit the landing page properties
