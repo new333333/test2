@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,62 +41,63 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ManageSharesSelectedEntriesEvent is used to invoke the Share dialog in administrative mode
- * for the selected entries in a folder.
+ * The ShareSelectedEntitiesEvent is used to share a collection of
+ * entities.
  * 
- * See the definition of the SelectedEntriesEventBase class for how and
+ * See the definition of the SelectedEntitiesEventBase class for how and
  * when an EntityId (or List<EntityId>) should be passed into the
  * construction of this class.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public class ManageSharesSelectedEntriesEvent extends SelectedEntriesEventBase<ManageSharesSelectedEntriesEvent.Handler>
-{
+public class ShareSelectedEntitiesEvent extends SelectedEntitiesEventBase<ShareSelectedEntitiesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
-
-    public Long	m_folderId;
-
+    
+    public Long	m_folderId;	//
+    
 	/**
 	 * Handler interface for this event.
 	 */
-	public interface Handler extends EventHandler
-	{
-		void onManageSharesSelectedEntries( ManageSharesSelectedEntriesEvent event );
+	public interface Handler extends EventHandler {
+		void onShareSelectedEntities(ShareSelectedEntitiesEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public ManageSharesSelectedEntriesEvent() 
-	{
+	public ShareSelectedEntitiesEvent() {
 		// Initialize the super class.
 		super();
 	}
 	
 	/**
 	 * Class constructor.
+	 * 
+	 * @param folderId
+	 * @param selectedEntityId
 	 */
-	public ManageSharesSelectedEntriesEvent( Long folderId, EntityId selectedEntityId )
-	{
+	public ShareSelectedEntitiesEvent(Long folderId, EntityId selectedEntityId) {
 		// Initialize this object...
 		this();
 		
-		setFolderId( folderId );
-		setSelectedEntityId( selectedEntityId );
+		// ...and store the parameters.
+		setFolderId(        folderId        );
+		setSelectedEntityId(selectedEntityId);
 	}
 
 	/**
 	 * Class constructor.
 	 * 
+	 * @param folderId
 	 * @param selectedEntities
 	 */
-	public ManageSharesSelectedEntriesEvent( Long folderId, List<EntityId> selectedEntities )
-	{
+	public ShareSelectedEntitiesEvent(Long folderId, List<EntityId> selectedEntities) {
 		// Initialize this object...
 		this();
 		
-		setFolderId( folderId );
-		setSelectedEntities( selectedEntities );
+		// ...and store the parameters.
+		setFolderId(        folderId        );
+		setSelectedEntities(selectedEntities);
 	}
 
 	/**
@@ -104,12 +105,25 @@ public class ManageSharesSelectedEntriesEvent extends SelectedEntriesEventBase<M
 	 * 
 	 * @param folderId
 	 */
-	public ManageSharesSelectedEntriesEvent( Long folderId )
-	{
+	public ShareSelectedEntitiesEvent(Long folderId) {
 		// Initialize this object.
-		this( folderId, ((List<EntityId>) null) );
+		this(folderId, ((List<EntityId>) null));
 	}
 
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public Long getFolderId() {return m_folderId;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setFolderId(Long folderId) {m_folderId = folderId;} 
+	
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
@@ -118,9 +132,8 @@ public class ManageSharesSelectedEntriesEvent extends SelectedEntriesEventBase<M
 	 * @param handler
 	 */
     @Override
-    protected void doDispatch( Handler handler )
-    {
-   		handler.onManageSharesSelectedEntries( this );
+    protected void doDispatch(Handler handler) {
+   		handler.onShareSelectedEntities(this);
     }    
 	
 	/**
@@ -131,8 +144,7 @@ public class ManageSharesSelectedEntriesEvent extends SelectedEntriesEventBase<M
 	 * @return
 	 */
     @Override
-    public Type<Handler> getAssociatedType() 
-    {
+    public Type<Handler> getAssociatedType() {
         return TYPE;
     }
     
@@ -145,27 +157,10 @@ public class ManageSharesSelectedEntriesEvent extends SelectedEntriesEventBase<M
 	 * @return
 	 */
 	@Override
-	public TeamingEvents getEventEnum()
-	{
-		return TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES;
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.SHARE_SELECTED_ENTITIES;
 	}
 		
-	/**
-	 * 
-	 */
-	public Long getFolderId() 
-	{
-		return m_folderId;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setFolderId( Long folderId )
-	{
-		m_folderId = folderId;
-	} 
-	
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -175,8 +170,7 @@ public class ManageSharesSelectedEntriesEvent extends SelectedEntriesEventBase<M
 	 * 
 	 * @return
 	 */
-	public static HandlerRegistration registerEvent( SimpleEventBus eventBus, Handler handler )
-	{
-		return eventBus.addHandler( TYPE, handler );
+	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
+		return eventBus.addHandler(TYPE, handler);
 	}
 }

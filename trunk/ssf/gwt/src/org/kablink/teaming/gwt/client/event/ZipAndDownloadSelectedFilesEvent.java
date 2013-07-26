@@ -44,13 +44,13 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * The ZipAndDownloadSelectedFilesEvent is used to zip and download the
  * currently selected files in a folder.
  * 
- * See the definition of the SelectedEntriesEventBase class for how and
+ * See the definition of the SelectedEntitiesEventBase class for how and
  * when an EntityId (or List<EntityId>) should be passed into the
  * construction of this class.
  * 
  * @author drfoster@novell.com
  */
-public class ZipAndDownloadSelectedFilesEvent extends SelectedEntriesEventBase<ZipAndDownloadSelectedFilesEvent.Handler> {
+public class ZipAndDownloadSelectedFilesEvent extends SelectedEntitiesEventBase<ZipAndDownloadSelectedFilesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public boolean	m_recursive;	// true -> Recursively descends and he folder hierarchies downloading everything.  Only downloads top level files.

@@ -487,12 +487,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:
-				// A ChangeEntryTypeSelectedEntriesEvent!  Can the
+			case CHANGE_ENTRY_TYPE_SELECTED_ENTITIES:
+				// A ChangeEntryTypeSelectedEntitiesEvent!  Can the
 				// event handler we were given handle that?
-				if (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler) {
+				if (eventHandler instanceof ChangeEntryTypeSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = ChangeEntryTypeSelectedEntriesEvent.registerEvent(eventBus, ((ChangeEntryTypeSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = ChangeEntryTypeSelectedEntitiesEvent.registerEvent(eventBus, ((ChangeEntryTypeSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -568,12 +568,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case COPY_SELECTED_ENTRIES:
-				// A CopySelectedEntriesEvent!  Can the event handler
+			case COPY_SELECTED_ENTITIES:
+				// A CopySelectedEntitiesEvent!  Can the event handler
 				// we were given handle that?
-				if (eventHandler instanceof CopySelectedEntriesEvent.Handler) {
+				if (eventHandler instanceof CopySelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = CopySelectedEntriesEvent.registerEvent(eventBus, ((CopySelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = CopySelectedEntitiesEvent.registerEvent(eventBus, ((CopySelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -586,12 +586,12 @@ public class EventHelper {
 				}
 				break;
 				
-			case DELETE_SELECTED_ENTRIES:
-				// A DeleteSelectedEntriesEvent!  Can the event handler
-				// we were given handle that?
-				if (eventHandler instanceof DeleteSelectedEntriesEvent.Handler) {
+			case DELETE_SELECTED_ENTITIES:
+				// A DeleteSelectedEntitiesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof DeleteSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = DeleteSelectedEntriesEvent.registerEvent(eventBus, ((DeleteSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = DeleteSelectedEntitiesEvent.registerEvent(eventBus, ((DeleteSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1295,12 +1295,12 @@ public class EventHelper {
 				}
 				break;
 				
-			case LOCK_SELECTED_ENTRIES:
-				// A LockSelectedEntriesEvent!  Can the event handler
+			case LOCK_SELECTED_ENTITIES:
+				// A LockSelectedEntitiesEvent!  Can the event handler
 				// we were given handle that?
-				if (eventHandler instanceof LockSelectedEntriesEvent.Handler) {
+				if (eventHandler instanceof LockSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = LockSelectedEntriesEvent.registerEvent(eventBus, ((LockSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = LockSelectedEntitiesEvent.registerEvent(eventBus, ((LockSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1402,14 +1402,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case MANAGE_SHARES_SELECTED_ENTRIES:
-				// A ManageSharesSelectedEntriesEvent!  Can the event handler we were given handle that?
-				if ( eventHandler instanceof ManageSharesSelectedEntriesEvent.Handler )
-				{
+			case MANAGE_SHARES_SELECTED_ENTITIES:
+				// A ManageSharesSelectedEntitiesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof ManageSharesSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = ManageSharesSelectedEntriesEvent.registerEvent(
-																					eventBus,
-																					((ManageSharesSelectedEntriesEvent.Handler) eventHandler) );
+					registrationHandler = ManageSharesSelectedEntitiesEvent.registerEvent(eventBus, ((ManageSharesSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1440,21 +1438,21 @@ public class EventHelper {
 				}
 				break;
 
-			case MARK_READ_SELECTED_ENTRIES:
-				// A MarkReadSelectedEntriesEvent!  Can the event
+			case MARK_READ_SELECTED_ENTITIES:
+				// A MarkReadSelectedEntitiesEvent!  Can the event
 				// handler we were given handle that?
-				if (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler) {
+				if (eventHandler instanceof MarkReadSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = MarkReadSelectedEntriesEvent.registerEvent(eventBus, ((MarkReadSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = MarkReadSelectedEntitiesEvent.registerEvent(eventBus, ((MarkReadSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
-			case MARK_UNREAD_SELECTED_ENTRIES:
-				// A MarkUnreadSelectedEntriesEvent!  Can the event
+			case MARK_UNREAD_SELECTED_ENTITIES:
+				// A MarkUnreadSelectedEntitiesEvent!  Can the event
 				// handler we were given handle that?
-				if (eventHandler instanceof MarkUnreadSelectedEntriesEvent.Handler) {
+				if (eventHandler instanceof MarkUnreadSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = MarkUnreadSelectedEntriesEvent.registerEvent(eventBus, ((MarkUnreadSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = MarkUnreadSelectedEntitiesEvent.registerEvent(eventBus, ((MarkUnreadSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1503,12 +1501,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case MOVE_SELECTED_ENTRIES:
-				// A MoveSelectedEntriesEvent!  Can the event handler
+			case MOVE_SELECTED_ENTITIES:
+				// A MoveSelectedEntitiesEvent!  Can the event handler
 				// we were given handle that?
-				if (eventHandler instanceof MoveSelectedEntriesEvent.Handler) {
+				if (eventHandler instanceof MoveSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = MoveSelectedEntriesEvent.registerEvent(eventBus, ((MoveSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = MoveSelectedEntitiesEvent.registerEvent(eventBus, ((MoveSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1647,12 +1645,12 @@ public class EventHelper {
 				}
 				break;
 				
-			case SHARE_SELECTED_ENTRIES:
-				// A ShareSelectedEntriesEvent!  Can the event handler
+			case SHARE_SELECTED_ENTITIES:
+				// A ShareSelectedEntitiesEvent!  Can the event handler
 				// we were given handle that?
-				if (eventHandler instanceof ShareSelectedEntriesEvent.Handler) {
+				if (eventHandler instanceof ShareSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = ShareSelectedEntriesEvent.registerEvent(eventBus, ((ShareSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = ShareSelectedEntitiesEvent.registerEvent(eventBus, ((ShareSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1948,12 +1946,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case SUBSCRIBE_SELECTED_ENTRIES:
-				// A SubscribeSelectedEntriesEvent!  Can the event
+			case SUBSCRIBE_SELECTED_ENTITIES:
+				// A SubscribeSelectedEntitiesEvent!  Can the event
 				// handler we were given handle that?
-				if (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler) {
+				if (eventHandler instanceof SubscribeSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = SubscribeSelectedEntriesEvent.registerEvent(eventBus, ((SubscribeSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = SubscribeSelectedEntitiesEvent.registerEvent(eventBus, ((SubscribeSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2110,12 +2108,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case TRASH_PURGE_SELECTED_ENTRIES:
-				// A TrashPurgeSelectedEntriesEvent!  Can the event
+			case TRASH_PURGE_SELECTED_ENTITIES:
+				// A TrashPurgeSelectedEntitiesEvent!  Can the event
 				// handler we were given handle that?
-				if (eventHandler instanceof TrashPurgeSelectedEntriesEvent.Handler) {
+				if (eventHandler instanceof TrashPurgeSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = TrashPurgeSelectedEntriesEvent.registerEvent(eventBus, ((TrashPurgeSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = TrashPurgeSelectedEntitiesEvent.registerEvent(eventBus, ((TrashPurgeSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2128,12 +2126,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case TRASH_RESTORE_SELECTED_ENTRIES:
-				// A TrashRestoreSelectedEntriesEvent!  Can the event
+			case TRASH_RESTORE_SELECTED_ENTITIES:
+				// A TrashRestoreSelectedEntitiesEvent!  Can the event
 				// handler we were given handle that?
-				if (eventHandler instanceof TrashRestoreSelectedEntriesEvent.Handler) {
+				if (eventHandler instanceof TrashRestoreSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = TrashRestoreSelectedEntriesEvent.registerEvent(eventBus, ((TrashRestoreSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = TrashRestoreSelectedEntitiesEvent.registerEvent(eventBus, ((TrashRestoreSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2164,12 +2162,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case UNLOCK_SELECTED_ENTRIES:
-				// A UnlockSelectedEntriesEvent!  Can the event handler
-				// we were given handle that?
-				if (eventHandler instanceof UnlockSelectedEntriesEvent.Handler) {
+			case UNLOCK_SELECTED_ENTITIES:
+				// A UnlockSelectedEntitiesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof UnlockSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = UnlockSelectedEntriesEvent.registerEvent(eventBus, ((UnlockSelectedEntriesEvent.Handler) eventHandler));
+					registrationHandler = UnlockSelectedEntitiesEvent.registerEvent(eventBus, ((UnlockSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2540,7 +2538,7 @@ public class EventHelper {
 
 			case PREVIEW_LANDING_PAGE:      			       hasHandler = (eventHandler instanceof PreviewLandingPageEvent.Handler);     	               break;
 
-			case MANAGE_SHARES_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof ManageSharesSelectedEntriesEvent.Handler);            break;
+			case MANAGE_SHARES_SELECTED_ENTITIES:              hasHandler = (eventHandler instanceof ManageSharesSelectedEntitiesEvent.Handler);           break;
 			case MARK_ENTRY_READ:                   	       hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                          break;
 			case MARK_ENTRY_UNREAD:                 	       hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);                        break;
 			
@@ -2618,9 +2616,9 @@ public class EventHelper {
 			case TASK_VIEW:                         	       hasHandler = (eventHandler instanceof TaskViewEvent.Handler);                               break;
 			
 			case TRASH_PURGE_ALL:                              hasHandler = (eventHandler instanceof TrashPurgeAllEvent.Handler);                          break;
-			case TRASH_PURGE_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof TrashPurgeSelectedEntriesEvent.Handler);              break;
+			case TRASH_PURGE_SELECTED_ENTITIES:                hasHandler = (eventHandler instanceof TrashPurgeSelectedEntitiesEvent.Handler);             break;
 			case TRASH_RESTORE_ALL:                            hasHandler = (eventHandler instanceof TrashRestoreAllEvent.Handler);                        break;
-			case TRASH_RESTORE_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof TrashRestoreSelectedEntriesEvent.Handler);            break;
+			case TRASH_RESTORE_SELECTED_ENTITIES:              hasHandler = (eventHandler instanceof TrashRestoreSelectedEntitiesEvent.Handler);           break;
 			
 			case TREE_NODE_COLLAPSED:                          hasHandler = (eventHandler instanceof TreeNodeCollapsedEvent.Handler);                      break;
 			case TREE_NODE_EXPANDED:                           hasHandler = (eventHandler instanceof TreeNodeExpandedEvent.Handler);                       break;
@@ -2641,12 +2639,12 @@ public class EventHelper {
 			case VIEW_WHATS_UNSEEN_IN_BINDER:			       hasHandler = (eventHandler instanceof ViewWhatsUnseenInBinderEvent.Handler);                break;
 			case VIEW_WHO_HAS_ACCESS:                  	       hasHandler = (eventHandler instanceof ViewWhoHasAccessEvent.Handler);                       break;
 			
-			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:           hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler);         break;
+			case CHANGE_ENTRY_TYPE_SELECTED_ENTITIES:          hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntitiesEvent.Handler);        break;
 			case CHANGE_FAVORITE_STATE:                        hasHandler = (eventHandler instanceof ChangeFavoriteStateEvent.Handler);                    break;
 			case CHECK_MANAGE_USERS_ACTIVE:                    hasHandler = (eventHandler instanceof CheckManageUsersActiveEvent.Handler);                 break;
 			case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:           hasHandler = (eventHandler instanceof ClearSelectedUsersAdHocFoldersEvent.Handler);         break;
-			case COPY_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof CopySelectedEntriesEvent.Handler);                    break;
-			case DELETE_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);                  break;
+			case COPY_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof CopySelectedEntitiesEvent.Handler);                   break;
+			case DELETE_SELECTED_ENTITIES:                     hasHandler = (eventHandler instanceof DeleteSelectedEntitiesEvent.Handler);                 break;
 			case DELETE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof DeleteSelectedUsersEvent.Handler);                    break;
 			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;
 			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
@@ -2656,20 +2654,20 @@ public class EventHelper {
 			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;
 			case GET_MANAGE_USERS_TITLE:                       hasHandler = (eventHandler instanceof GetManageUsersTitleEvent.Handler);                    break;
 			case HIDE_SELECTED_SHARES:                         hasHandler = (eventHandler instanceof HideSelectedSharesEvent.Handler);                     break;
-			case LOCK_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof LockSelectedEntriesEvent.Handler);                    break;
-			case MARK_READ_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler);                break;
-			case MARK_UNREAD_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof MarkUnreadSelectedEntriesEvent.Handler);              break;
-			case MOVE_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof MoveSelectedEntriesEvent.Handler);                    break;
+			case LOCK_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof LockSelectedEntitiesEvent.Handler);                   break;
+			case MARK_READ_SELECTED_ENTITIES:                  hasHandler = (eventHandler instanceof MarkReadSelectedEntitiesEvent.Handler);               break;
+			case MARK_UNREAD_SELECTED_ENTITIES:                hasHandler = (eventHandler instanceof MarkUnreadSelectedEntitiesEvent.Handler);             break;
+			case MOVE_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof MoveSelectedEntitiesEvent.Handler);                   break;
 			case SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY:  hasHandler = (eventHandler instanceof SetDesktopDownloadAppControlVisibilityEvent.Handler); break;
 			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;
 			case SET_SELECTED_USER_DESKTOP_SETTINGS:           hasHandler = (eventHandler instanceof SetSelectedUserDesktopSettingsEvent.Handler);         break;
 			case SET_SELECTED_USER_MOBILE_SETTINGS:            hasHandler = (eventHandler instanceof SetSelectedUserMobileSettingsEvent.Handler);          break;
 			case SET_SELECTED_USER_SHARE_RIGHTS:               hasHandler = (eventHandler instanceof SetSelectedUserShareRightsEvent.Handler);             break;
-			case SHARE_SELECTED_ENTRIES:                       hasHandler = (eventHandler instanceof ShareSelectedEntriesEvent.Handler);                   break;
+			case SHARE_SELECTED_ENTITIES:                      hasHandler = (eventHandler instanceof ShareSelectedEntitiesEvent.Handler);                  break;
 			case SHOW_SELECTED_SHARES:                         hasHandler = (eventHandler instanceof ShowSelectedSharesEvent.Handler);                     break;
-			case SUBSCRIBE_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);               break;
+			case SUBSCRIBE_SELECTED_ENTITIES:                  hasHandler = (eventHandler instanceof SubscribeSelectedEntitiesEvent.Handler);              break;
 			case TOGGLE_SHARED_VIEW:                  	       hasHandler = (eventHandler instanceof ToggleSharedViewEvent.Handler);                       break;
-			case UNLOCK_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof UnlockSelectedEntriesEvent.Handler);                  break;
+			case UNLOCK_SELECTED_ENTITIES:                     hasHandler = (eventHandler instanceof UnlockSelectedEntitiesEvent.Handler);                 break;
 			case ZIP_AND_DOWNLOAD_FOLDER:                      hasHandler = (eventHandler instanceof ZipAndDownloadFolderEvent.Handler);                   break;
 			case ZIP_AND_DOWNLOAD_SELECTED_FILES:              hasHandler = (eventHandler instanceof ZipAndDownloadSelectedFilesEvent.Handler);            break;
 			

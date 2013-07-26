@@ -71,16 +71,16 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EventsHandledBySourceMarker;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCalendarFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionViewEvent;
@@ -106,7 +106,7 @@ import org.kablink.teaming.gwt.client.event.ShowTeamRootWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
@@ -156,11 +156,11 @@ public class ContentControl extends Composite
 	// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
 		ChangeContextEvent.Handler,
-		CopySelectedEntriesEvent.Handler,
-		DeleteSelectedEntriesEvent.Handler,
+		CopySelectedEntitiesEvent.Handler,
+		DeleteSelectedEntitiesEvent.Handler,
 		GetCurrentViewInfoEvent.Handler,
 		GotoUrlEvent.Handler,
-		MoveSelectedEntriesEvent.Handler,
+		MoveSelectedEntitiesEvent.Handler,
 		ShowBlogFolderEvent.Handler,
 		ShowCalendarFolderEvent.Handler,
 		ShowCollectionViewEvent.Handler,
@@ -208,10 +208,10 @@ public class ContentControl extends Composite
 		// Contributor events.
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		
-		// Selected entries events.
-		TeamingEvents.COPY_SELECTED_ENTRIES,
-		TeamingEvents.DELETE_SELECTED_ENTRIES,
-		TeamingEvents.MOVE_SELECTED_ENTRIES,
+		// Selected entities events.
+		TeamingEvents.COPY_SELECTED_ENTITIES,
+		TeamingEvents.DELETE_SELECTED_ENTITIES,
+		TeamingEvents.MOVE_SELECTED_ENTITIES,
 		
 		// Show events.
 		TeamingEvents.SHOW_BLOG_FOLDER,
@@ -1050,7 +1050,7 @@ public class ContentControl extends Composite
 									if ( vi.isInvokeShareEnabled() )
 									{
 										GwtTeaming.fireEventAsync(
-											new ShareSelectedEntriesEvent(
+											new ShareSelectedEntitiesEvent(
 												eid.getBinderId(),
 												eid ) );
 									}
@@ -1062,7 +1062,7 @@ public class ContentControl extends Composite
 								if ( vi.isInvokeSubscribe() )
 								{
 									GwtTeaming.fireEventAsync(
-										new SubscribeSelectedEntriesEvent(
+										new SubscribeSelectedEntitiesEvent(
 											eid.getBinderId(),
 											eid ) );
 								}
@@ -1086,7 +1086,7 @@ public class ContentControl extends Composite
 							if ( vi.isInvokeShareEnabled() )
 							{
 								GwtTeaming.fireEventAsync(
-									new ShareSelectedEntriesEvent(
+									new ShareSelectedEntitiesEvent(
 										eid.getBinderId(),
 										eid ) );
 							}
@@ -1098,7 +1098,7 @@ public class ContentControl extends Composite
 						if ( vi.isInvokeSubscribe() )
 						{
 							GwtTeaming.fireEventAsync(
-								new SubscribeSelectedEntriesEvent(
+								new SubscribeSelectedEntitiesEvent(
 									eid.getBinderId(),
 									eid ) );
 						}
@@ -1283,14 +1283,14 @@ public class ContentControl extends Composite
 	
 	
 	/**
-	 * Handles CopySelectedEntriesEvent's received by this class.
+	 * Handles CopySelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
+	 * Implements the CopySelectedEntitiesEvent.Handler.onCopySelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onCopySelectedEntries( CopySelectedEntriesEvent event )
+	public void onCopySelectedEntities( CopySelectedEntitiesEvent event )
 	{
 		// Do have information about a binder currently in the view?  
 		BinderInfo bi = getCurrentBinderInfo();
@@ -1316,14 +1316,14 @@ public class ContentControl extends Composite
 	
 	
 	/**
-	 * Handles DeleteSelectedEntriesEvent's received by this class.
+	 * Handles DeleteSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
+	 * Implements the DeleteSelectedEntitiesEvent.Handler.onDeleteSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onDeleteSelectedEntries( DeleteSelectedEntriesEvent event )
+	public void onDeleteSelectedEntities( DeleteSelectedEntitiesEvent event )
 	{
 		// Do have information about a binder currently in the view?  
 		BinderInfo bi = getCurrentBinderInfo();
@@ -1366,7 +1366,7 @@ public class ContentControl extends Composite
 							// Yes!  Perform the delete.
 							StringRpcResponseData	responseData          = ((StringRpcResponseData) response.getResponseData());
 							String					parentBinderPermalink = responseData.getStringValue();
-							onDeleteSelectedEntriesAsync( selectedEntityIds, parentBinderPermalink );
+							onDeleteSelectedEntitiesAsync( selectedEntityIds, parentBinderPermalink );
 						}// end onSuccess()
 					});
 				}
@@ -1374,32 +1374,32 @@ public class ContentControl extends Composite
 				{
 					// No, we aren't deleting the folder itself!
 					// Perform the delete.
-					onDeleteSelectedEntriesAsync( selectedEntityIds, null );
+					onDeleteSelectedEntitiesAsync( selectedEntityIds, null );
 				}
 			}
 		}
-	}// end onDeleteSelectedEntries()
+	}// end onDeleteSelectedEntities()
 	
 
 	/*
 	 * Asynchronously deletes the selected entities.
 	 */
-	private void onDeleteSelectedEntriesAsync( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
+	private void onDeleteSelectedEntitiesAsync( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
 	{
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				onDeleteSelectedEntriesNow( selectedEntityIds, targetBinderPermalink );
+				onDeleteSelectedEntitiesNow( selectedEntityIds, targetBinderPermalink );
 			}// end execute()
 		} );
-	}// end onDeleteSelectedEntriesAsync()
+	}// end onDeleteSelectedEntitiesAsync()
 	
 	/*
 	 * Synchronously deletes the selected entities.
 	 */
-	private void onDeleteSelectedEntriesNow( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
+	private void onDeleteSelectedEntitiesNow( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
 	{
 		// Delete the selected entities and reload the view to
 		// redisplay things with the entries deleted.
@@ -1435,7 +1435,7 @@ public class ContentControl extends Composite
 				// user about the failure.
 			}// end operationFailed()
 		} );
-	}// end onDeleteSelectedEntriesNow()
+	}// end onDeleteSelectedEntitiesNow()
 	
 	
 	/**
@@ -1464,14 +1464,14 @@ public class ContentControl extends Composite
 
 	
 	/**
-	 * Handles MoveSelectedEntriesEvent's received by this class.
+	 * Handles MoveSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
+	 * Implements the MoveSelectedEntitiesEvent.Handler.onMoveSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMoveSelectedEntries( MoveSelectedEntriesEvent event )
+	public void onMoveSelectedEntities( MoveSelectedEntitiesEvent event )
 	{
 		// Do have information about a binder currently in the view?  
 		BinderInfo bi = getCurrentBinderInfo();

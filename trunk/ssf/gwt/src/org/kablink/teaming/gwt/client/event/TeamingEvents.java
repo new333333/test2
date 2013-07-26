@@ -239,9 +239,9 @@ public enum TeamingEvents implements IsSerializable {
 	TASK_VIEW,										// Sets a Task's View.
 
 	TRASH_PURGE_ALL,								// Purges everything in the trash.
-	TRASH_PURGE_SELECTED_ENTRIES,					// Purges the selected entries in the trash.
+	TRASH_PURGE_SELECTED_ENTITIES,					// Purges the selected entries in the trash.
 	TRASH_RESTORE_ALL,								// Restores everything in the trash.
-	TRASH_RESTORE_SELECTED_ENTRIES,					// Restores the selected entries in the trash.
+	TRASH_RESTORE_SELECTED_ENTITIES,				// Restores the selected entries in the trash.
 	
 	TREE_NODE_COLLAPSED,							// Fired when the node in a tree is collapsed.
 	TREE_NODE_EXPANDED,								// Fired when the node in a tree is expanded.
@@ -262,12 +262,12 @@ public enum TeamingEvents implements IsSerializable {
 	VIEW_WHATS_NEW_IN_BINDER,						// Shows the items that are new    in the current binder.
 	VIEW_WHO_HAS_ACCESS,							// Opens the who has access viewer on an item.
 
-	CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,				// Changes the Entry Type of the Selected Entries.
+	CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,			// Changes the Entry Type of the Selected Entities.
 	CHANGE_FAVORITE_STATE,							// Changes the favorites state of a binder.
 	CHECK_MANAGE_USERS_ACTIVE,						// Event to detect if the the manage users facility is active.
 	CLEAR_SELECTED_USERS_ADHOC_FOLDERS,				// Clears the adHoc folder setting for the Selected Users so they revert to the zone setting.
-	COPY_SELECTED_ENTRIES,							// Copies the Selected Entries.
-	DELETE_SELECTED_ENTRIES,						// Deletes the Selected Entries.
+	COPY_SELECTED_ENTITIES,							// Copies the Selected Entities.
+	DELETE_SELECTED_ENTITIES,						// Deletes the Selected Entities.
 	DELETE_SELECTED_USERS,							// Deletes the Selected Users.
 	DISABLE_SELECTED_USERS,							// Disables the Selected Users.
 	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
@@ -277,11 +277,11 @@ public enum TeamingEvents implements IsSerializable {
 	FOLDER_ENTRY_ACTION_COMPLETE,					// An action on a folder entry has completed.
 	GET_MANAGE_USERS_TITLE,							// Event to request the manage users title.
 	HIDE_SELECTED_SHARES,							// Marks the selected shares as being hidden.
-	LOCK_SELECTED_ENTRIES,							// Locks the Selected Entries.
-	MANAGE_SHARES_SELECTED_ENTRIES,					// Invokes the Share dialog in administrative mode.
-	MARK_READ_SELECTED_ENTRIES,						// Marks the Selected Entries as     Having Been Read.
-	MARK_UNREAD_SELECTED_ENTRIES,					// Marks the Selected Entries as Not Having Been Read.
-	MOVE_SELECTED_ENTRIES,							// Moves the Selected Entries.
+	LOCK_SELECTED_ENTITIES,							// Locks the Selected Entities.
+	MANAGE_SHARES_SELECTED_ENTITIES,				// Invokes the Share dialog in administrative mode.
+	MARK_READ_SELECTED_ENTITIES,					// Marks the Selected Entities as     Having Been Read.
+	MARK_UNREAD_SELECTED_ENTITIES,					// Marks the Selected Entities as Not Having Been Read.
+	MOVE_SELECTED_ENTITIES,							// Moves the Selected Entities.
 	RELOAD_DIALOG_CONTENT,							// Tells a dialog to reload its content.
 	RESET_ENTRY_MENU,								// Resets the Entry Menu on the Given Folder.
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 
@@ -289,11 +289,11 @@ public enum TeamingEvents implements IsSerializable {
 	SET_SELECTED_USER_DESKTOP_SETTINGS,				// Sets the desktop application settings for the selected users.
 	SET_SELECTED_USER_MOBILE_SETTINGS,				// Sets the mobile  application settings for the selected users.
 	SET_SELECTED_USER_SHARE_RIGHTS,					// Sets the share               rights   for the selected users.
-	SHARE_SELECTED_ENTRIES,							// Shares the Selected Entries.
+	SHARE_SELECTED_ENTITIES,						// Shares the Selected Entities.
 	SHOW_SELECTED_SHARES,							// Marks the selected shares as no longer being hidden.
-	SUBSCRIBE_SELECTED_ENTRIES,						// Subscribes the Current User to the Selected Entries.
+	SUBSCRIBE_SELECTED_ENTITIES,					// Subscribes the Current User to the Selected Entities.
 	TOGGLE_SHARED_VIEW,								// Toggles the 'Shared by/with Me' Views Between Files and All Entries.
-	UNLOCK_SELECTED_ENTRIES,						// Unlocks the Selected Entries.
+	UNLOCK_SELECTED_ENTITIES,						// Unlocks the Selected Entities.
 	ZIP_AND_DOWNLOAD_FOLDER,						// Zips and Downloads all files in a folder.
 	ZIP_AND_DOWNLOAD_SELECTED_FILES,				// Zips and Downloads the currently selected files.
 		

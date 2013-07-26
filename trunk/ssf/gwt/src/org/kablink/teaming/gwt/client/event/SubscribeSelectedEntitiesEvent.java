@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,16 +41,16 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ShareSelectedEntriesEvent is used to share the currently
- * selected entries in a folder.
+ * The SubscribeSelectedEntitiesEvent is used to subscribe the current
+ * user to a collection of entities.
  * 
- * See the definition of the SelectedEntriesEventBase class for how and
+ * See the definition of the SelectedEntitiesEventBase class for how and
  * when an EntityId (or List<EntityId>) should be passed into the
  * construction of this class.
  * 
  * @author drfoster@novell.com
  */
-public class ShareSelectedEntriesEvent extends SelectedEntriesEventBase<ShareSelectedEntriesEvent.Handler> {
+public class SubscribeSelectedEntitiesEvent extends SelectedEntitiesEventBase<SubscribeSelectedEntitiesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public Long	m_folderId;	//
@@ -59,13 +59,13 @@ public class ShareSelectedEntriesEvent extends SelectedEntriesEventBase<ShareSel
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onShareSelectedEntries(ShareSelectedEntriesEvent event);
+		void onSubscribeSelectedEntities(SubscribeSelectedEntitiesEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public ShareSelectedEntriesEvent() {
+	public SubscribeSelectedEntitiesEvent() {
 		// Initialize the super class.
 		super();
 	}
@@ -76,7 +76,7 @@ public class ShareSelectedEntriesEvent extends SelectedEntriesEventBase<ShareSel
 	 * @param folderId
 	 * @param selectedEntityId
 	 */
-	public ShareSelectedEntriesEvent(Long folderId, EntityId selectedEntityId) {
+	public SubscribeSelectedEntitiesEvent(Long folderId, EntityId selectedEntityId) {
 		// Initialize this object...
 		this();
 		
@@ -91,7 +91,7 @@ public class ShareSelectedEntriesEvent extends SelectedEntriesEventBase<ShareSel
 	 * @param folderId
 	 * @param selectedEntities
 	 */
-	public ShareSelectedEntriesEvent(Long folderId, List<EntityId> selectedEntities) {
+	public SubscribeSelectedEntitiesEvent(Long folderId, List<EntityId> selectedEntities) {
 		// Initialize this object...
 		this();
 		
@@ -105,7 +105,7 @@ public class ShareSelectedEntriesEvent extends SelectedEntriesEventBase<ShareSel
 	 * 
 	 * @param folderId
 	 */
-	public ShareSelectedEntriesEvent(Long folderId) {
+	public SubscribeSelectedEntitiesEvent(Long folderId) {
 		// Initialize this object.
 		this(folderId, ((List<EntityId>) null));
 	}
@@ -133,7 +133,7 @@ public class ShareSelectedEntriesEvent extends SelectedEntriesEventBase<ShareSel
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-   		handler.onShareSelectedEntries(this);
+   		handler.onSubscribeSelectedEntities(this);
     }    
 	
 	/**
@@ -158,7 +158,7 @@ public class ShareSelectedEntriesEvent extends SelectedEntriesEventBase<ShareSel
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.SHARE_SELECTED_ENTRIES;
+		return TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES;
 	}
 		
 	/**

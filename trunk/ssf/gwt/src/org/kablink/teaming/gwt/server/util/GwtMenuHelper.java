@@ -762,7 +762,7 @@ public class GwtMenuHelper {
 		// Add a Delete item.
 		ToolbarItem deleteTBI = new ToolbarItem("1_deleteSelected");
 		markTBITitle(deleteTBI, "toolbar.delete");
-		markTBIEvent(deleteTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
+		markTBIEvent(deleteTBI, TeamingEvents.DELETE_SELECTED_ENTITIES);
 		entryToolbar.addNestedItem(deleteTBI);
 	}
 	
@@ -877,7 +877,7 @@ public class GwtMenuHelper {
 			// Yes!  Add the 'Manage Shares...' menu item.
 			ToolbarItem tbi = new ToolbarItem("1_manageSharesSelected");
 			markTBITitle(tbi, "toolbar.menu.manageSharesSelected");
-			markTBIEvent(tbi, TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES);
+			markTBIEvent(tbi, TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES);
 			entryToolbar.addNestedItem(tbi);
 		}
 	}
@@ -901,7 +901,7 @@ public class GwtMenuHelper {
 		// ...add the copy item...
 		ToolbarItem tbi = new ToolbarItem("1_copySelected");
 		markTBITitle(tbi, "toolbar.copy");
-		markTBIEvent(tbi, TeamingEvents.COPY_SELECTED_ENTRIES);
+		markTBIEvent(tbi, TeamingEvents.COPY_SELECTED_ENTITIES);
 		moreTBI.addNestedItem(tbi);
 
 		// ...for non-shared collections...
@@ -909,7 +909,7 @@ public class GwtMenuHelper {
 			// ...add the move item....
 			tbi = new ToolbarItem("1_moveSelected");
 			markTBITitle(tbi, "toolbar.move");
-			markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTRIES);
+			markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTITIES);
 			moreTBI.addNestedItem(tbi);
 		}
 		
@@ -930,13 +930,13 @@ public class GwtMenuHelper {
 				// ...add the lock item....
 				tbi = new ToolbarItem("1_lockSelected");
 				markTBITitle(tbi, "toolbar.lock");
-				markTBIEvent(tbi, TeamingEvents.LOCK_SELECTED_ENTRIES);
+				markTBIEvent(tbi, TeamingEvents.LOCK_SELECTED_ENTITIES);
 				moreTBI.addNestedItem(tbi);
 				
 				// ...add the unlock item....
 				tbi = new ToolbarItem("1_unlockSelected");
 				markTBITitle(tbi, "toolbar.unlock");
-				markTBIEvent(tbi, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
+				markTBIEvent(tbi, TeamingEvents.UNLOCK_SELECTED_ENTITIES);
 				moreTBI.addNestedItem(tbi);
 			}
 			
@@ -945,13 +945,13 @@ public class GwtMenuHelper {
 				// ...add the mark read....
 				tbi = new ToolbarItem("1_markReadSelected");
 				markTBITitle(tbi, "toolbar.markRead");
-				markTBIEvent(tbi, TeamingEvents.MARK_READ_SELECTED_ENTRIES);
+				markTBIEvent(tbi, TeamingEvents.MARK_READ_SELECTED_ENTITIES);
 				moreTBI.addNestedItem(tbi);
 				
 				// ...and the mark unread items....
 				tbi = new ToolbarItem("1_markUnreadSelected");
 				markTBITitle(tbi, "toolbar.markUnread");
-				markTBIEvent(tbi, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
+				markTBIEvent(tbi, TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES);
 				moreTBI.addNestedItem(tbi);
 			}
 		}
@@ -979,7 +979,7 @@ public class GwtMenuHelper {
 			// ...add the change entry type item when not Filr....
 			tbi = new ToolbarItem("1_changeEntryTypeSelected");
 			markTBITitle(tbi, "toolbar.changeEntryType");
-			markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
+			markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES);
 			moreTBI.addNestedItem(tbi);
 		}
 
@@ -1206,7 +1206,7 @@ public class GwtMenuHelper {
 			// ...add the share item.
 			ToolbarItem shareTBI = new ToolbarItem("1_shareSelected");
 			markTBITitle(shareTBI, "toolbar.shareSelected");
-			markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTRIES);
+			markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
 			entryToolbar.addNestedItem(shareTBI);
 		}
 	}
@@ -1336,12 +1336,12 @@ public class GwtMenuHelper {
 	private static void constructEntryTrashItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
 		ToolbarItem trashTBI = new ToolbarItem("1_trashRestore");
 		markTBITitle(trashTBI, "toolbar.menu.trash.restore");
-		markTBIEvent(trashTBI, TeamingEvents.TRASH_RESTORE_SELECTED_ENTRIES);
+		markTBIEvent(trashTBI, TeamingEvents.TRASH_RESTORE_SELECTED_ENTITIES);
 		entryToolbar.addNestedItem(trashTBI);
 		
 		trashTBI = new ToolbarItem("2_trashPurge");
 		markTBITitle(trashTBI, "toolbar.menu.trash.purge");
-		markTBIEvent(trashTBI, TeamingEvents.TRASH_PURGE_SELECTED_ENTRIES);
+		markTBIEvent(trashTBI, TeamingEvents.TRASH_PURGE_SELECTED_ENTITIES);
 		entryToolbar.addNestedItem(trashTBI);
 		
 		trashTBI = new ToolbarItem("3_trashRestoreAll");
@@ -1367,7 +1367,7 @@ public class GwtMenuHelper {
 			}
 			ToolbarItem tbi = new ToolbarItem("1_subscribeSelected");
 			markTBITitle(tbi, "toolbar.menu.subscribeToEntrySelected");
-			markTBIEvent(tbi, TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES);
+			markTBIEvent(tbi, TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES);
 			entryToolbar.addNestedItem(tbi);
 		}
 	}
@@ -1635,7 +1635,7 @@ public class GwtMenuHelper {
 					// ...add the move item....
 					actionTBI = new ToolbarItem(MOVE);
 					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.move_folder" : "toolbar.menu.move_workspace"));
-					markTBIEvent(         actionTBI, TeamingEvents.MOVE_SELECTED_ENTRIES                                    );
+					markTBIEvent(         actionTBI, TeamingEvents.MOVE_SELECTED_ENTITIES                                   );
 					markTBISelectedBinder(actionTBI, binder                                                                 );
 					
 					configTBI.addNestedItem(actionTBI);
@@ -1649,7 +1649,7 @@ public class GwtMenuHelper {
 					
 					actionTBI = new ToolbarItem(COPY);
 					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.copy_folder" : "toolbar.menu.copy_workspace"));
-					markTBIEvent(         actionTBI, TeamingEvents.COPY_SELECTED_ENTRIES                                    );
+					markTBIEvent(         actionTBI, TeamingEvents.COPY_SELECTED_ENTITIES                                   );
 					markTBISelectedBinder(actionTBI, binder                                                                 );
 					
 					configTBI.addNestedItem(actionTBI);
@@ -1795,7 +1795,7 @@ public class GwtMenuHelper {
 		
 					actionTBI = new ToolbarItem(DELETE);
 					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.delete_folder" : "toolbar.menu.delete_workspace"));
-					markTBIEvent(         actionTBI, TeamingEvents.DELETE_SELECTED_ENTRIES                                      );
+					markTBIEvent(         actionTBI, TeamingEvents.DELETE_SELECTED_ENTITIES                                     );
 					markTBISelectedBinder(actionTBI, binder                                                                     );
 					
 					configTBI.addNestedItem(actionTBI);
@@ -3181,9 +3181,9 @@ public class GwtMenuHelper {
 			if ((!isGuest) && sm.isSharingEnabled() && sm.testAddShareEntity(fe)) {
 				// Yes!  Add a share toolbar item for it.
 				actionTBI = new ToolbarItem(SHARE);
-				markTBITitle(   actionTBI, "toolbar.shareSelected"             );
-				markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTRIES);
-				markTBIEntryIds(actionTBI, fe                                  );
+				markTBITitle(   actionTBI, "toolbar.shareSelected"              );
+				markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
+				markTBIEntryIds(actionTBI, fe                                   );
 				reply.add(actionTBI);
 			}
 			
@@ -3249,9 +3249,9 @@ public class GwtMenuHelper {
 			if (canTrashEntity(bs, fe)) {
 				// Yes!  Add a delete toolbar item for it.
 				actionTBI = new ToolbarItem(DELETE);
-				markTBITitle(   actionTBI, "toolbar.delete"                     );
-				markTBIEvent(   actionTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
-				markTBIEntryIds(actionTBI, fe                                   );
+				markTBITitle(   actionTBI, "toolbar.delete"                      );
+				markTBIEvent(   actionTBI, TeamingEvents.DELETE_SELECTED_ENTITIES);
+				markTBIEntryIds(actionTBI, fe                                    );
 				reply.add(actionTBI);
 			}
 			
@@ -3268,9 +3268,9 @@ public class GwtMenuHelper {
 			if (fe.isTop() && fm.testAccess(fe, FolderOperation.copyEntry)) {
 				// Yes!  Add a copy toolbar item for it.
 				actionTBI = new ToolbarItem(COPY);
-				markTBITitle(   actionTBI, "toolbar.copy"                     );
-				markTBIEvent(   actionTBI, TeamingEvents.COPY_SELECTED_ENTRIES);
-				markTBIEntryIds(actionTBI, fe                                 );
+				markTBITitle(   actionTBI, "toolbar.copy"                      );
+				markTBIEvent(   actionTBI, TeamingEvents.COPY_SELECTED_ENTITIES);
+				markTBIEntryIds(actionTBI, fe                                  );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
@@ -3279,9 +3279,9 @@ public class GwtMenuHelper {
 			if (((!locked) || isLockedByLoggedInUser) && fe.isTop() && fm.testAccess(fe, FolderOperation.moveEntry)) {
 				// Yes!  Add a move toolbar item for it.
 				actionTBI = new ToolbarItem(MOVE);
-				markTBITitle(   actionTBI, "toolbar.move"                     );
-				markTBIEvent(   actionTBI, TeamingEvents.MOVE_SELECTED_ENTRIES);
-				markTBIEntryIds(actionTBI, fe                                 );
+				markTBITitle(   actionTBI, "toolbar.move"                      );
+				markTBIEvent(   actionTBI, TeamingEvents.MOVE_SELECTED_ENTITIES);
+				markTBIEntryIds(actionTBI, fe                                  );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
@@ -3303,9 +3303,9 @@ public class GwtMenuHelper {
 					if (!locked) {
 						// No!  Add a lock toolbar item for it.
 						actionTBI = new ToolbarItem(LOCK);
-						markTBITitle(   actionTBI, "toolbar.lock.entry");
-						markTBIEvent(   actionTBI, TeamingEvents.LOCK_SELECTED_ENTRIES);
-						markTBIEntryIds(actionTBI, fe                                 );
+						markTBITitle(   actionTBI, "toolbar.lock.entry"                );
+						markTBIEvent(   actionTBI, TeamingEvents.LOCK_SELECTED_ENTITIES);
+						markTBIEntryIds(actionTBI, fe                                  );
 						dropdownTBI.addNestedItem(actionTBI);
 					}
 					
@@ -3318,9 +3318,9 @@ public class GwtMenuHelper {
 						boolean	isBinderAdmin = fm.testAccess(fe, FolderOperation.overrideReserveEntry);
 						if (isBinderAdmin || isLockedByLoggedInUser) {
 							actionTBI = new ToolbarItem(UNLOCK);
-							markTBITitle(   actionTBI, "toolbar.unlock.entry");
-							markTBIEvent(   actionTBI, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
-							markTBIEntryIds(actionTBI, fe                                   );
+							markTBITitle(   actionTBI, "toolbar.unlock.entry"                );
+							markTBIEvent(   actionTBI, TeamingEvents.UNLOCK_SELECTED_ENTITIES);
+							markTBIEntryIds(actionTBI, fe                                    );
 							dropdownTBI.addNestedItem(actionTBI);
 						}
 					}
@@ -3332,16 +3332,16 @@ public class GwtMenuHelper {
 			boolean entrySeen = seenMap.checkIfSeen(fe);
 			if (entrySeen) {
 				actionTBI = new ToolbarItem(UNSEEN);
-				markTBITitle(   actionTBI, "toolbar.markUnread.entry"                );
-				markTBIEvent(   actionTBI, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
-				markTBIEntryIds(actionTBI, fe                                        );
+				markTBITitle(   actionTBI, "toolbar.markUnread.entry"                 );
+				markTBIEvent(   actionTBI, TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES);
+				markTBIEntryIds(actionTBI, fe                                         );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			else {
 				actionTBI = new ToolbarItem(SEEN);
-				markTBITitle(   actionTBI, "toolbar.markRead.entry"                );
-				markTBIEvent(   actionTBI, TeamingEvents.MARK_READ_SELECTED_ENTRIES);
-				markTBIEntryIds(actionTBI, fe                                      );
+				markTBITitle(   actionTBI, "toolbar.markRead.entry"                 );
+				markTBIEvent(   actionTBI, TeamingEvents.MARK_READ_SELECTED_ENTITIES);
+				markTBIEntryIds(actionTBI, fe                                       );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
@@ -3377,9 +3377,9 @@ public class GwtMenuHelper {
 					// ...and add a change entry type toolbar item for
 					// ...it.
 					actionTBI = new ToolbarItem(CHANGE_ENTRY_TYPE);
-					markTBITitle(   actionTBI, "toolbar.changeEntryType"                       );
-					markTBIEvent(   actionTBI, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
-					markTBIEntryIds(actionTBI, fe                                              );
+					markTBITitle(   actionTBI, "toolbar.changeEntryType"                        );
+					markTBIEvent(   actionTBI, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES);
+					markTBIEntryIds(actionTBI, fe                                               );
 					dropdownTBI.addNestedItem(actionTBI);
 				}
 			}
@@ -3391,9 +3391,9 @@ public class GwtMenuHelper {
 				
 				// ...and add a subscribe toolbar item.
 				actionTBI = new ToolbarItem(SUBSCRIBE);
-				markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected" );
-				markTBIEvent(   actionTBI, TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES);
-				markTBIEntryIds(actionTBI, fe                                      );
+				markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected"  );
+				markTBIEvent(   actionTBI, TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES);
+				markTBIEntryIds(actionTBI, fe                                       );
 				dropdownTBI.addNestedItem(actionTBI);
 
 				// Does the user have an email address?

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,31 +41,31 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The CopySelectedEntriesEvent is used to copy the currently selected
- * entries in a folder.
+ * The DeleteSelectedEntitiesEvent is used to delete a collection of
+ * entities.
  * 
- * See the definition of the SelectedEntriesEventBase class for how and
+ * See the definition of the SelectedEntitiesEventBase class for how and
  * when an EntityId (or List<EntityId>) should be passed into the
  * construction of this class.
  * 
  * @author drfoster@novell.com
  */
-public class CopySelectedEntriesEvent extends SelectedEntriesEventBase<CopySelectedEntriesEvent.Handler> {
+public class DeleteSelectedEntitiesEvent extends SelectedEntitiesEventBase<DeleteSelectedEntitiesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public Long	m_folderId;	//
-    
+
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onCopySelectedEntries(CopySelectedEntriesEvent event);
+		void onDeleteSelectedEntities(DeleteSelectedEntitiesEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public CopySelectedEntriesEvent() {
+	public DeleteSelectedEntitiesEvent() {
 		// Initialize the super class.
 		super();
 	}
@@ -76,7 +76,7 @@ public class CopySelectedEntriesEvent extends SelectedEntriesEventBase<CopySelec
 	 * @param folderId
 	 * @param selectedEntityId
 	 */
-	public CopySelectedEntriesEvent(Long folderId, EntityId selectedEntityId) {
+	public DeleteSelectedEntitiesEvent(Long folderId, EntityId selectedEntityId) {
 		// Initialize this object...
 		this();
 		
@@ -84,14 +84,14 @@ public class CopySelectedEntriesEvent extends SelectedEntriesEventBase<CopySelec
 		setFolderId(        folderId        );
 		setSelectedEntityId(selectedEntityId);
 	}
-	
+
 	/**
 	 * Class constructor.
 	 * 
 	 * @param folderId
 	 * @param selectedEntities
 	 */
-	public CopySelectedEntriesEvent(Long folderId, List<EntityId> selectedEntities) {
+	public DeleteSelectedEntitiesEvent(Long folderId, List<EntityId> selectedEntities) {
 		// Initialize this object...
 		this();
 		
@@ -99,17 +99,17 @@ public class CopySelectedEntriesEvent extends SelectedEntriesEventBase<CopySelec
 		setFolderId(        folderId        );
 		setSelectedEntities(selectedEntities);
 	}
-	
+
 	/**
 	 * Class constructor.
 	 * 
 	 * @param folderId
 	 */
-	public CopySelectedEntriesEvent(Long folderId) {
+	public DeleteSelectedEntitiesEvent(Long folderId) {
 		// Initialize this object.
 		this(folderId, ((List<EntityId>) null));
 	}
-	
+
 	/**
 	 * Get'er methods.
 	 * 
@@ -133,8 +133,8 @@ public class CopySelectedEntriesEvent extends SelectedEntriesEventBase<CopySelec
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-   		handler.onCopySelectedEntries(this);
-    }    
+   		handler.onDeleteSelectedEntities(this);
+    }
 	
 	/**
 	 * Returns the GwtEvent.Type of this event.
@@ -158,7 +158,7 @@ public class CopySelectedEntriesEvent extends SelectedEntriesEventBase<CopySelec
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.COPY_SELECTED_ENTRIES;
+		return TeamingEvents.DELETE_SELECTED_ENTITIES;
 	}
 		
 	/**

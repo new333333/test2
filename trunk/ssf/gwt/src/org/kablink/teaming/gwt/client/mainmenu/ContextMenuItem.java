@@ -35,14 +35,14 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
@@ -227,9 +227,9 @@ public class ContextMenuItem extends VibeMenuItem {
 				
 			case TEAMING_EVENT:
 				switch (m_teamingEvent) {
-				case COPY_SELECTED_ENTRIES:
-				case DELETE_SELECTED_ENTRIES:
-				case MOVE_SELECTED_ENTRIES:
+				case COPY_SELECTED_ENTITIES:
+				case DELETE_SELECTED_ENTITIES:
+				case MOVE_SELECTED_ENTITIES:
 					// Create the appropriate selected entries event...
 					Long				binderId       = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",       m_eventQualifiers));
 					Long				binderParentId = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderParentId", m_eventQualifiers));
@@ -237,9 +237,9 @@ public class ContextMenuItem extends VibeMenuItem {
 					EntityId			eid            = new EntityId(binderParentId, binderId, binderType);
 					VibeEventBase<?>	selEvent = null;
 					switch (m_teamingEvent) {
-					case COPY_SELECTED_ENTRIES:    selEvent = new CopySelectedEntriesEvent(  binderId, eid); break;
-					case DELETE_SELECTED_ENTRIES:  selEvent = new DeleteSelectedEntriesEvent(binderId, eid); break;
-					case MOVE_SELECTED_ENTRIES:    selEvent = new MoveSelectedEntriesEvent(  binderId, eid); break;
+					case COPY_SELECTED_ENTITIES:    selEvent = new CopySelectedEntitiesEvent(  binderId, eid); break;
+					case DELETE_SELECTED_ENTITIES:  selEvent = new DeleteSelectedEntitiesEvent(binderId, eid); break;
+					case MOVE_SELECTED_ENTITIES:    selEvent = new MoveSelectedEntitiesEvent(  binderId, eid); break;
 					}
 					
 					// ...and fire it.

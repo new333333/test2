@@ -200,7 +200,7 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		}
 
 		// ...and do it.
-		DeletePurgeEntriesHelper.deleteSelectedEntriesAsync(
+		DeletePurgeEntriesHelper.deleteSelectedEntitiesAsync(
 			m_entityIds,
 			dsMode,
 			m_dpeCallback);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,7 +52,7 @@ import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeRunAReportDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
-import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -153,7 +153,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeRunAReportDlgEvent.Handler,
 		InvokeUserDesktopSettingsDlgEvent.Handler,
 		InvokeUserMobileSettingsDlgEvent.Handler,
-		ManageSharesSelectedEntriesEvent.Handler,
+		ManageSharesSelectedEntitiesEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -204,7 +204,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
-		TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES,
+		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
 		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
 		TeamingEvents.INVOKE_USER_DESKTOP_SETTINGS_DLG,
@@ -840,10 +840,10 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_SHARE_ITEMS )
 		{
-			ManageSharesSelectedEntriesEvent event;
+			ManageSharesSelectedEntitiesEvent event;
 			
 			// Fire the event to invoke the Manage Shares dialog.
-			event = new ManageSharesSelectedEntriesEvent();
+			event = new ManageSharesSelectedEntitiesEvent();
 			GwtTeaming.fireEvent( event );
 		}
 				
@@ -2704,14 +2704,14 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
-	 * Handles ManageSharesSelectedEntriesEvent's received by this class.
+	 * Handles ManageSharesSelectedEntitiesEvent's received by this class.
 	 * 
-	 * Implements the ManageSharesSelectedEntriesEvent.Handler.onManageSharesSelectedEntries() method.
+	 * Implements the ManageSharesSelectedEntitiesEvent.Handler.onManageSharesSelectedEntities() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onManageSharesSelectedEntries( ManageSharesSelectedEntriesEvent event )
+	public void onManageSharesSelectedEntities( ManageSharesSelectedEntitiesEvent event )
 	{
 		Scheduler.ScheduledCommand cmd;
 
