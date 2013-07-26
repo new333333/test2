@@ -556,9 +556,9 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_TrashPurgeAll();
-	String rpcFailure_TrashPurgeSelectedEntries();
+	String rpcFailure_TrashPurgeSelectedEntities();
 	String rpcFailure_TrashRestoreAll();
-	String rpcFailure_TrashRestoreSelectedEntries();
+	String rpcFailure_TrashRestoreSelectedEntities();
 	String rpcFailure_UnknownCause();
 	String rpcFailure_UnknownException();
 	String rpcFailure_UnlockEntries();

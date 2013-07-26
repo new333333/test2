@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
@@ -44,7 +43,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
  * 
  * @author drfoster@novell.com
  */
-public class DeleteSelectionsCmd extends DeletePurgeFolderEntriesCmdBase {
+public class DeleteSelectionsCmd extends DeleteEntitiesCmdBase {
 	private DeleteSelectionsMode	m_dsMode;	//
 	
 	/**
@@ -103,7 +102,7 @@ public class DeleteSelectionsCmd extends DeletePurgeFolderEntriesCmdBase {
 	/**
 	 * Returns the command's enumeration value.
 	 * 
-	 * Implements DeletePurgeUsersCmdBase.getCmdType()
+	 * Implements DeleteEntitiesCmdBase.getCmdType()
 	 * 
 	 * @return
 	 */

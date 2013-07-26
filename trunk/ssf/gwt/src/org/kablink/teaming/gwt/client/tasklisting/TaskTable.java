@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
@@ -1735,7 +1735,7 @@ public class TaskTable extends Composite
 						public void accepted() {
 							// Yes!  Delete the selected tasks.
 							final List<EntityId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-							DeletePurgeEntriesHelper.deleteSelectedTasksAsync(taskIds, new DeletePurgeEntriesCallback() {
+							DeleteEntitiesHelper.deleteSelectedTasksAsync(taskIds, new DeleteEntitiesCallback() {
 								@Override
 								public void operationCanceled() {
 									handleTaskPostRemoveAsync(taskIds);
@@ -2268,7 +2268,7 @@ public class TaskTable extends Composite
 						public void accepted() {
 							// Yes!  Purge the selected tasks.
 							final List<EntityId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-							DeletePurgeEntriesHelper.purgeSelectedTasksAsync(taskIds, new DeletePurgeEntriesCallback() {
+							DeleteEntitiesHelper.purgeSelectedTasksAsync(taskIds, new DeleteEntitiesCallback() {
 								@Override
 								public void operationCanceled() {
 									handleTaskPostRemoveAsync(taskIds);
@@ -2842,7 +2842,7 @@ public class TaskTable extends Composite
 					return;
 				}
 				final List<EntityId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-				BinderViewsHelper.deleteSelections(taskIds, new DeletePurgeEntriesCallback() {
+				BinderViewsHelper.deleteSelections(taskIds, new DeleteEntitiesCallback() {
 					@Override
 					public void operationCanceled() {
 						handleTaskPostRemoveAsync(taskIds);

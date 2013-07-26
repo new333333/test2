@@ -38,7 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryCookies.Cookie;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
@@ -834,7 +834,7 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously handles deleting the folder entry.
 	 */
 	private void onDeleteSelectedEntitiesNow(List<EntityId> deletedEntities) {
-		BinderViewsHelper.deleteSelections(deletedEntities, new DeletePurgeEntriesCallback() {
+		BinderViewsHelper.deleteSelections(deletedEntities, new DeleteEntitiesCallback() {
 			@Override
 			public void operationCanceled() {
 				// Nothing to do.

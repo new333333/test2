@@ -42,8 +42,8 @@ import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg;
 import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg.ChangeEntryTypesDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg.CopyMoveEntriesDlgClient;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeUsersHelper.DeletePurgeUsersCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteUsersHelper.DeleteUsersCallback;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.AddFilesHtml5Popup;
@@ -301,7 +301,7 @@ public class BinderViewsHelper {
 	 *
 	 * @param userIds
 	 */
-	public static void deleteSelectedUsers(final List<Long> userIds, final DeletePurgeUsersCallback dpuCallback) {
+	public static void deleteSelectedUsers(final List<Long> userIds, final DeleteUsersCallback dpuCallback) {
 		// If we weren't given any user IDs to be deleted...
 		if (!(GwtClientHelper.hasItems(userIds))) {
 			// ...bail.
@@ -341,7 +341,7 @@ public class BinderViewsHelper {
 	 *
 	 * @param entityIds
 	 */
-	public static void deleteSelections(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
+	public static void deleteSelections(final List<EntityId> entityIds, final DeleteEntitiesCallback deCallback) {
 		// If we weren't given any entity IDs to be deleted...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
@@ -363,7 +363,7 @@ public class BinderViewsHelper {
 				public void onSuccess(DeleteSelectionsDlg dsDlg) {
 					// ...and run it.
 					m_dsDlg = dsDlg;
-					DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
+					DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, deCallback);
 				}
 			});
 			
@@ -372,7 +372,7 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we already have instance of one!  Simply run
 			// it.
-			DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, dpeCallback);
+			DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, deCallback);
 		}
 	}
 	

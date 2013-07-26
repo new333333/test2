@@ -38,8 +38,8 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -71,17 +71,17 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler {
-	private DialogMode					m_dialogMode;		// The mode the dialog is running in.  Defines what's displayed on the dialog.
-	private DeletePurgeEntriesCallback	m_dpeCallback;		// Callback used to interact with who called the dialog.
-	private FlexCellFormatter			m_cellFormatter;	// The formatter to control how m_grid is laid out.
-	private FlexTable					m_grid;				// The table holding the dialog's content.
-	private GwtTeamingImageBundle		m_images;			// Access to the base images.
-	private GwtTeamingMessages			m_messages;			// Access to our localized strings.
-	private List<EntityId>				m_entityIds;		// The entities to be deleted.
-	private RadioButton					m_purgeRB;			// The 'Delete from system' radio button.
-	private RadioButton					m_trashRB;			// The 'Move to trash'      radio button.
-	private SelectionDetails			m_selectionDetails;	// Populated via a GWT RPC call while constructing the dialog's contents.  Contains an analysis of what m_entityIds refers to.
-	private Widget						m_purgeWarning;			// The Widget containing the 'can't be undone' warning. 
+	private DialogMode				m_dialogMode;		// The mode the dialog is running in.  Defines what's displayed on the dialog.
+	private DeleteEntitiesCallback	m_deCallback;		// Callback used to interact with who called the dialog.
+	private FlexCellFormatter		m_cellFormatter;	// The formatter to control how m_grid is laid out.
+	private FlexTable				m_grid;				// The table holding the dialog's content.
+	private GwtTeamingImageBundle	m_images;			// Access to the base images.
+	private GwtTeamingMessages		m_messages;			// Access to our localized strings.
+	private List<EntityId>			m_entityIds;		// The entities to be deleted.
+	private RadioButton				m_purgeRB;			// The 'Delete from system' radio button.
+	private RadioButton				m_trashRB;			// The 'Move to trash'      radio button.
+	private SelectionDetails		m_selectionDetails;	// Populated via a GWT RPC call while constructing the dialog's contents.  Contains an analysis of what m_entityIds refers to.
+	private Widget					m_purgeWarning;			// The Widget containing the 'can't be undone' warning. 
 	
 	// The buttons displayed on this dialog.
 	private final static DlgButtonMode	DLG_BUTTONS = DlgButtonMode.OkCancel; 
@@ -200,10 +200,10 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 		}
 
 		// ...and do it.
-		DeletePurgeEntriesHelper.deleteSelectedEntitiesAsync(
+		DeleteEntitiesHelper.deleteSelectedEntitiesAsync(
 			m_entityIds,
 			dsMode,
-			m_dpeCallback);
+			m_deCallback);
 	}
 	
 	/**
@@ -474,11 +474,11 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 * Asynchronously runs the given instance of the delete selections
 	 * dialog.
 	 */
-	private static void runDlgAsync(final DeleteSelectionsDlg dsDlg, final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
+	private static void runDlgAsync(final DeleteSelectionsDlg dsDlg, final List<EntityId> entityIds, final DeleteEntitiesCallback deCallback) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				dsDlg.runDlgNow(entityIds, dpeCallback);
+				dsDlg.runDlgNow(entityIds, deCallback);
 			}
 		});
 	}
@@ -487,10 +487,10 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 * Synchronously runs the given instance of the delete selections
 	 * dialog.
 	 */
-	private void runDlgNow(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
+	private void runDlgNow(final List<EntityId> entityIds, final DeleteEntitiesCallback deCallback) {
 		// Store the parameters and populate the dialog.
-		m_entityIds   = entityIds;
-		m_dpeCallback = dpeCallback;
+		m_entityIds  = entityIds;
+		m_deCallback = deCallback;
 		loadPart1Async();
 	}
 
@@ -563,9 +563,9 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 			final DeleteSelectionsDlgClient	dsDlgClient,
 			
 			// initAndShow parameters,
-			final DeleteSelectionsDlg			dsDlg,
-			final List<EntityId>				entityIds,
-			final DeletePurgeEntriesCallback	dpeCallback) {
+			final DeleteSelectionsDlg		dsDlg,
+			final List<EntityId>			entityIds,
+			final DeleteEntitiesCallback	deCallback) {
 		GWT.runAsync(DeleteSelectionsDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -588,7 +588,7 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(dsDlg, entityIds, dpeCallback);
+					runDlgAsync(dsDlg, entityIds, deCallback);
 				}
 			}
 		});
@@ -610,10 +610,10 @@ public class DeleteSelectionsDlg extends DlgBox implements EditSuccessfulHandler
 	 * 
 	 * @param dsDlg
 	 * @param entityIds
-	 * @param dpeCallback
+	 * @param deCallback
 	 */
-	public static void initAndShow(DeleteSelectionsDlg dsDlg, List<EntityId> entityIds, DeletePurgeEntriesCallback dpeCallback) {
+	public static void initAndShow(DeleteSelectionsDlg dsDlg, List<EntityId> entityIds, DeleteEntitiesCallback deCallback) {
 		// Invoke the appropriate asynchronous operation.
-		doAsyncOperation(null, dsDlg, entityIds, dpeCallback);
+		doAsyncOperation(null, dsDlg, entityIds, deCallback);
 	}
 }

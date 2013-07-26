@@ -3216,10 +3216,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case TRASH_PURGE_SELECTED_ENTRIES:
+		case TRASH_PURGE_SELECTED_ENTITIES:
 		{
-			TrashPurgeSelectedEntriesCmd tpseCmd = ((TrashPurgeSelectedEntriesCmd) cmd);
-			StringRpcResponseData responseData = GwtViewHelper.trashPurgeSelectedEntries(
+			TrashPurgeSelectedEntitiesCmd tpseCmd = ((TrashPurgeSelectedEntitiesCmd) cmd);
+			StringRpcResponseData responseData = GwtViewHelper.trashPurgeSelectedEntities(
 				this,
 				getRequest( ri ),
 				tpseCmd.getBinderId(),
@@ -3240,10 +3240,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case TRASH_RESTORE_SELECTED_ENTRIES:
+		case TRASH_RESTORE_SELECTED_ENTITIES:
 		{
-			TrashRestoreSelectedEntriesCmd trseCmd = ((TrashRestoreSelectedEntriesCmd) cmd);
-			StringRpcResponseData responseData = GwtViewHelper.trashRestoreSelectedEntries(
+			TrashRestoreSelectedEntitiesCmd trseCmd = ((TrashRestoreSelectedEntitiesCmd) cmd);
+			StringRpcResponseData responseData = GwtViewHelper.trashRestoreSelectedEntities(
 				this,
 				getRequest( ri ),
 				trseCmd.getBinderId(),
