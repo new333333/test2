@@ -37,7 +37,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -49,8 +51,10 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.FileSizeLimitException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -71,8 +75,10 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TempFileUtil;
@@ -81,6 +87,7 @@ import org.kablink.teaming.web.util.Html5Helper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Helper methods for the GWT UI server code that services requests
@@ -276,6 +283,7 @@ public class GwtHtml5Helper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
+	@SuppressWarnings("unchecked")
 	public static StringRpcResponseData uploadFileBlob(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, FileBlob fileBlob, boolean lastBlob) throws GwtTeamingException {
 		try {
 			// Trace what we read to the log.
@@ -366,24 +374,53 @@ public class GwtHtml5Helper {
     	    	Folder			folder = fm.getFolder(folderInfo.getBinderIdAsLong());
     	    	FileInputStream fi     = new FileInputStream(tempFile);
     	    	try {
-        	    	// If there's an existing entry...
+    	    		// What do we know about the file?
     				String	fileName  = fileBlob.getFileName();
         	    	Date	modDate;
         	    	Long	fileUTCMS = fileBlob.getFileUTCMS();
         	    	if (null == fileUTCMS)
         	    	     modDate = null;
         	    	else modDate = new Date(fileUTCMS);
-        	    	FolderEntry existingEntry = fm.getLibraryFolderEntryByFileName(folder, fileName);
-    	    		if (null != existingEntry) {
-    	    			// ...we modify it...
-        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, modDate, null, true, null, null);
-        				pm.setSeen(null, existingEntry);
+
+        	    	// Are we creating an entry in a library folder?
+        	    	if (folder.isLibrary()) {
+            	    	// Yes!  If there's an existing entry...
+	        	    	FolderEntry existingEntry = fm.getLibraryFolderEntryByFileName(folder, fileName);
+	    	    		if (null != existingEntry) {
+	    	    			// ...we modify it...
+	        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, modDate, null, true, null, null);
+	        				pm.setSeen(null, existingEntry);
+	        	    	}
+	    	    		
+	    	    		else {
+	    	    			// ...otherwise, we create a new one.
+	        	    		FolderEntry fe = FolderUtils.createLibraryEntry(folder, fileName, fi, modDate, null, true);
+	        				pm.setSeen(null, fe);
+	        	    	}
         	    	}
-    	    		
-    	    		else {
-    	    			// ...otherwise, we create a new one.
-        	    		FolderEntry fe = FolderUtils.createLibraryEntry(folder, fileName, fi, modDate, null, true);
-        				pm.setSeen(null, fe);
+        	    	else {
+            	    	// No, we aren't creating an entry in a library
+        	    		// folder!  Get the definition to use for the
+        	    		// entry...
+        	        	Definition fileDef   = folder.getDefaultFileEntryDef();
+        	        	String     fileDefId = ((fileDef != null) ? fileDef.getId() : null); 
+        	        	
+        	        	// ...setup and input data map using the file's
+        	        	// ...name as the title...
+    	        		Map entryNameOnly = new HashMap();
+	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
+	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
+
+	        			// ...wrap the input stream in a data structure
+	        	    	// suitable for the business module...
+	        			MultipartFile mf          = new ExtendedMultipartFile(fileName, fi, modDate);
+	        			Map           oneFileMap  = new HashMap();
+	        			String        elementName = FolderUtils.getDefinitionElementNameForNonMirroredFile(fileDef);
+	        			oneFileMap.put(elementName, mf);
+	        			
+	        			// ...and create the entry.
+        	    		FolderEntry fe = fm.addEntry(folder.getId(), fileDefId, inputData, oneFileMap, null);
+	    				pm.setSeen(null, fe);
         	    	}
     	    	}
     	    	

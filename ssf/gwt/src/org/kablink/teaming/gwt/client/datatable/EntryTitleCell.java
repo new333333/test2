@@ -398,16 +398,17 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		}
 
 		// Initialize the variables required to render the title cell.
-		Image			binderImg    = ((Image) eti.getClientItemImage());
-		String			entryIdS     = String.valueOf(eti.getEntityId().getEntityId());
-		String			entityType   = eti.getEntityId().getEntityType();
-		boolean			entryUnseen  = (!(eti.isSeen()));
-		boolean			hasBinderImg = (null != binderImg);
-		boolean			isHidden     = eti.isHidden();
-		boolean			isTrash      = eti.isTrash();
-		boolean			isEntry      = entityType.equals("folderEntry");
-		boolean			titleIsLink  = ((!isTrash) || ((null != entityType) && entityType.equals("folderEntry")));
-		VibeFlowPanel	html         = new VibeFlowPanel();
+		Image			binderImg       = ((Image) eti.getClientItemImage());
+		String			entryIdS        = String.valueOf(eti.getEntityId().getEntityId());
+		String			entityType      = eti.getEntityId().getEntityType();
+		boolean			entryUnseen     = (!(eti.isSeen()));
+		boolean			hasBinderImg    = (null != binderImg);
+		boolean			isHidden        = eti.isHidden();
+		boolean			isTrash         = eti.isTrash();
+		boolean			isEntry         = entityType.equals("folderEntry");
+		boolean			titleIsLink     = ((!isTrash) || ((null != entityType) && entityType.equals("folderEntry")));
+		boolean			titleIsFileLink = (titleIsLink && eti.isFile());
+		VibeFlowPanel	html            = new VibeFlowPanel();
 		
 		// We don't word wrap the title of files or folders.
 		VibeFlowPanel etContainerWidget = new VibeFlowPanel();
@@ -464,7 +465,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		Widget  titleWidget = null;
 		Element titleElement;
 		if (null != titleImg) {
-			if (titleIsLink && eti.isFile()) {
+			if (titleIsFileLink) {
 				String titleUrl = getFileLinkUrl(eti);
 				if (GwtClientHelper.hasString(titleUrl)) {
 					titleImg.getElement().setAttribute("border", "0");
@@ -480,6 +481,20 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			titleWidget.setStyleName("vibe-dataTableEntry-titleLinkPanel");
 			titleElement = titleWidget.getElement();
 			titleElement.appendChild(titleImg.getElement());
+		}
+		else if (titleIsFileLink) {
+			String titleUrl = getFileLinkUrl(eti);
+			if (GwtClientHelper.hasString(titleUrl)) {
+				Anchor a = new Anchor();
+				a.setHref(titleUrl);
+				a.setTarget("_blank");
+				titleWidget = a;
+			}
+			if (null == titleWidget) {
+				titleWidget = new VibeFlowPanel();
+			}
+			titleWidget.setStyleName("vibe-dataTableEntry-titleLinkPanel");
+			titleElement = titleWidget.getElement();
 		}
 		else {
 			titleElement = null;
