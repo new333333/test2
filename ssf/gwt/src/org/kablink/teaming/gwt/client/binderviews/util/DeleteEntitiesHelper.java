@@ -53,7 +53,6 @@ import org.kablink.teaming.gwt.client.util.ProgressDlg.ProgressCallback;
 import org.kablink.teaming.gwt.client.util.ProgressDlg.ProgressDlgClient;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -179,26 +178,24 @@ public class DeleteEntitiesHelper {
 			return;
 		}
 		
-		ScheduledCommand doOp = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				deOpNow(pDlg);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doOp);
+		});
 	}
 
 	/*
 	 * Asynchronously completes the operation sequence.
 	 */
 	private void deOpCompleteAsync() {
-		ScheduledCommand doOpDone = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				deOpCompleteNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doOpDone);
+		});
 	}
 	
 	/*

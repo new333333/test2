@@ -34,11 +34,11 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -109,13 +109,12 @@ public class DownloadPanel extends ToolPanelBase {
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart1Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*

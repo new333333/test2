@@ -1407,7 +1407,7 @@ public class GwtMenuHelper {
 
 		// Create the view toolbar item...
 		ToolbarItem viewTBI = new ToolbarItem("1_view");
-		markTBITitle(viewTBI, "calendar.navi.chooseMode");
+		markTBITitle(viewTBI, "calendar.navi.chooseMode.gwt");
 		markTBIContentsSelectable(viewTBI);
 
 		// ...if the calendar folder is directly contained by a user...

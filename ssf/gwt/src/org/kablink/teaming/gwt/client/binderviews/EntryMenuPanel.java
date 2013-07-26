@@ -111,7 +111,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -418,13 +417,12 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart1Async(final ToolPanelClient tpClient) {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now(tpClient);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -475,13 +473,12 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart2Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart2Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -573,13 +570,12 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart3Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart3Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -642,14 +638,13 @@ public class EntryMenuPanel extends ToolPanelBase
 			return;
 		}
 		
-		ScheduledCommand doNotify = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				// ...otherwise, notify them.
 				notifiyClientNow(tpClient, onSuccess);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doNotify);
+		});
 	}
 	
 	/*
