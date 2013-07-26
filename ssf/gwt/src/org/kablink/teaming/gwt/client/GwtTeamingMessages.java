@@ -2728,6 +2728,7 @@ public interface GwtTeamingMessages extends Messages
 	String netFolderSyncStatisticsDlg_FoldersSetOwnership();
 	String netFolderSyncStatisticsDlg_Header( String netFolderName );
 	String netFolderSyncStatisticsDlg_MiscHeading();
+	String netFolderSyncStatisticsDlg_NodeIpAddress();
 	String netFolderSyncStatisticsDlg_NoValue();
 	String netFolderSyncStatisticsDlg_StartDate();
 	

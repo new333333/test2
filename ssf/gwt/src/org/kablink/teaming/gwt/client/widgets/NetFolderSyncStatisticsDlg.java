@@ -68,6 +68,7 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 	private FlexTable m_table;
 	private int m_startDateRow;
 	private int m_endDateRow;
+	private int m_nodeIpAddressRow;
 	private int m_dirOnlyRow;
 	private int m_dirEnumRow;
 	private int m_fileCountRow;
@@ -188,6 +189,15 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 				label.setText( messages.netFolderSyncStatisticsDlg_EndDate() );
 				m_table.setHTML( nextRow, 0, labelPanel.getElement().getInnerHTML() );
 	
+				++nextRow;
+			}
+			
+			// Create the controls for "Node IP Address"
+			{
+				m_nodeIpAddressRow = nextRow;
+				label.setText( messages.netFolderSyncStatisticsDlg_NodeIpAddress() );
+				m_table.setHTML( nextRow, 0, labelPanel.getElement().getInnerHTML() );
+				
 				++nextRow;
 			}
 			
@@ -516,6 +526,9 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 			// Date sync stopped
 			updateDateValue( m_endDateRow, syncStatistics.getEndDate() );
 			
+			// Node IP address
+			updateStringValue( m_nodeIpAddressRow, syncStatistics.getStatusIpv4Address() );
+			
 			// Directory only
 			updateBoolValue( m_dirOnlyRow, syncStatistics.getDirOnly() );
 			
@@ -592,6 +605,27 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 	}
 
 	/**
+	 * Update the given boolean value in the dialog
+	 */
+	private void updateBoolValue( int row, Boolean value )
+	{
+		FlowPanel valuePanel;
+		InlineLabel valueLabel;
+		
+		if ( row > m_endRow )
+			return;
+		
+		valueLabel = new InlineLabel( GwtTeaming.getMessages().no() );
+		valueLabel.addStyleName( "netFolderSyncStatisticsDlg_StatisticsValue" );
+		if ( value != null && value == Boolean.TRUE )
+			valueLabel.setText( GwtTeaming.getMessages().yes() );
+		
+		valuePanel = new FlowPanel();
+		valuePanel.add( valueLabel );
+		m_table.setHTML( row, 1, valuePanel.getElement().getInnerHTML() );
+	}
+	
+	/**
 	 * Update the given date value in the dialog
 	 */
 	private void updateDateValue( final int row, Long value )
@@ -657,27 +691,6 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 	}
 	
 	/**
-	 * Update the given boolean value in the dialog
-	 */
-	private void updateBoolValue( int row, Boolean value )
-	{
-		FlowPanel valuePanel;
-		InlineLabel valueLabel;
-		
-		if ( row > m_endRow )
-			return;
-		
-		valueLabel = new InlineLabel( GwtTeaming.getMessages().no() );
-		valueLabel.addStyleName( "netFolderSyncStatisticsDlg_StatisticsValue" );
-		if ( value != null && value == Boolean.TRUE )
-			valueLabel.setText( GwtTeaming.getMessages().yes() );
-		
-		valuePanel = new FlowPanel();
-		valuePanel.add( valueLabel );
-		m_table.setHTML( row, 1, valuePanel.getElement().getInnerHTML() );
-	}
-	
-	/**
 	 * Update the given integer value in the dialog
 	 */
 	private void updateIntValue( int row, Integer value )
@@ -692,6 +705,28 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 		valueLabel.addStyleName( "netFolderSyncStatisticsDlg_StatisticsValue" );
 		if ( value != null )
 			valueLabel.setText( value.toString() );
+		
+		valuePanel = new FlowPanel();
+		valuePanel.add( valueLabel );
+		m_table.setHTML( row, 1, valuePanel.getElement().getInnerHTML() );
+	}
+	
+	/**
+	 * Update the given string value in the dialog
+	 */
+	private void updateStringValue( int row, String value )
+	{
+		FlowPanel valuePanel;
+		InlineLabel valueLabel;
+		
+		if ( row > m_endRow )
+			return;
+		
+		if ( value != null )
+			valueLabel = new InlineLabel( value );
+		else
+			valueLabel = new InlineLabel( "" );
+		valueLabel.addStyleName( "netFolderSyncStatisticsDlg_StatisticsValue" );
 		
 		valuePanel = new FlowPanel();
 		valuePanel.add( valueLabel );
