@@ -241,4 +241,13 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jay" context="schema" failOnError="true" id="16">
+        <comment>Net Folder sync schedule option</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="syncScheduleOption" type="SMALLINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

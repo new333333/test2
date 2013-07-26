@@ -29,6 +29,7 @@
     <property name="jitsMaxAge" access="field"/>
     <property name="jitsAclMaxAge" access="field"/>
     <property name="fullSyncDirOnly" access="field"/>
+    <property name="syncScheduleOption" access="field" type="short" />
     <many-to-one name="parentBinder">
           <column name="parentBinder" index="owningBinder_Binder"/>
     </many-to-one>

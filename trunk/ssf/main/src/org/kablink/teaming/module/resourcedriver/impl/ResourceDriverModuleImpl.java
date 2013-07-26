@@ -46,6 +46,7 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
+import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -542,14 +543,48 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		{
 			for ( Long binderId:  listOfNetFolderIds )
 			{
-				ScheduleInfo scheduleInfo;
+				boolean syncFolder;
 				
-				// Does this net folder have a sync schedule that is enabled?
-				scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
-				if ( excludeFoldersWithSchedule == false || scheduleInfo == null || scheduleInfo.isEnabled() == false )
+				syncFolder = false;
+				
+				if ( excludeFoldersWithSchedule )
+				{
+					SyncScheduleOption syncScheduleOption;
+
+					// Does this net folder have a syncScheduleOption?
+					syncScheduleOption = NetFolderHelper.getSyncScheduleOption( getBinderModule(), binderId );
+					if ( syncScheduleOption != null )
+					{
+						// Yes
+						// Does the syncScheduleOption indicate to use the net folder server's schedule?
+						if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
+						{
+							// Yes
+							syncFolder = true;
+						}
+					}
+					else
+					{
+						ScheduleInfo scheduleInfo;
+
+						// No
+						// Does this net folder have a sync schedule that is enabled?
+						scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
+						if ( scheduleInfo == null || scheduleInfo.isEnabled() == false )
+						{
+							// No
+							syncFolder = true;
+						}
+					}
+				}
+				else
+					syncFolder = true;
+					
+				// Should we add this folder to the list of "to-be sync'd folders"?
+				if ( syncFolder )
 				{
 					try {
-						// No, sync this net folder ... only if system shutdown is not in progress
+						// Yes, sync this net folder ... only if system shutdown is not in progress
 						if(!ContextListenerPostSpring.isShutdownInProgress()) {
 							folderModule.enqueueFullSynchronize( binderId );
 						}

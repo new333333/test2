@@ -46,6 +46,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -311,6 +312,7 @@ public class NetFolderHelper
 															rdConfig.getName(),
 															path,
 															null,
+															SyncScheduleOption.useNetFolderServerSchedule,
 															workspaceId,
 															true,
 															false );
@@ -411,6 +413,7 @@ public class NetFolderHelper
 		String rootName,
 		String path,
 		ScheduleInfo scheduleInfo,
+		SyncScheduleOption syncScheduleOption,
 		Long parentBinderId,
 		boolean isHomeDir,
 		boolean indexContent ) throws WriteFilesException, WriteEntryDataException
@@ -451,11 +454,16 @@ public class NetFolderHelper
 
 		if ( templateId != null )
 		{			
-			binder = folderModule.createNetFolder(templateId, parentBinderId, name, owner, rootName, path, isHomeDir, indexContent);
+			binder = folderModule.createNetFolder(templateId, parentBinderId, name, owner, rootName, path, isHomeDir, indexContent, syncScheduleOption );
 			
 			// Set the net folder's sync schedule
 			if ( scheduleInfo != null )
 			{
+				// If the sync schedule option is to use the net folder server's schedule then
+				// disable the schedule on the net folder.
+				if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
+					scheduleInfo.setEnabled( false );
+				
 				scheduleInfo.setFolderId( binder.getId() );
 				folderModule.setSynchronizationSchedule( scheduleInfo, binder.getId() );
 			}
@@ -759,14 +767,20 @@ public class NetFolderHelper
 		String netFolderRootName,
 		String relativePath,
 		ScheduleInfo scheduleInfo,
+		SyncScheduleOption syncScheduleOption,
 		boolean indexContent ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		// Modify the binder with the net folder information.
-		folderModule.modifyNetFolder(id, netFolderName, netFolderRootName, relativePath, null, indexContent);
+		folderModule.modifyNetFolder(id, netFolderName, netFolderRootName, relativePath, null, indexContent, syncScheduleOption );
 
 		// Set the net folder's sync schedule
 		if ( scheduleInfo != null )
 		{
+			// If the sync schedule option is to use the net folder server's schedule then
+			// disable the schedule on the net folder.
+			if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
+				scheduleInfo.setEnabled( false );
+			
 			scheduleInfo.setFolderId( id );
 			folderModule.setSynchronizationSchedule( scheduleInfo, id );
 		}
@@ -1011,5 +1025,21 @@ public class NetFolderHelper
 		String className = SPropsUtil.getString("job.net.folder.server.synchronization.class", "org.kablink.teaming.jobs.DefaultNetFolderServerSynchronization");
 
 		return (NetFolderServerSynchronization)ReflectHelper.getInstance(className);
-    }    
+    }
+	
+	/**
+	 * Return the SyncScheduleOption for the given binder id
+	 */
+	public static SyncScheduleOption getSyncScheduleOption(
+		BinderModule binderModule,
+		Long folderId )
+	{
+		Binder binder;
+		
+		binder = binderModule.getBinder( folderId );
+		if ( binder != null )
+			return binder.getSyncScheduleOption();
+		
+		return null;
+	}
 }

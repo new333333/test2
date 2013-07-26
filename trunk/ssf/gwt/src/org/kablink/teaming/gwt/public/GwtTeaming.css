@@ -4862,8 +4862,14 @@ td.datePickerMonth {
 {
 }
 
-.modifyNetFolderDlg_ScheduleWidget, .modifyNetFolderServerDlg_ScheduleWidget
+.modifyNetFolderServerDlg_ScheduleWidget
 {
+}
+
+.modifyNetFolderDlg_ScheduleWidget
+{
+	margin-left: 30px;
+	margin-top: 4px;
 }
 
 .modifyNetFolderServerDlg_ServerPathHint

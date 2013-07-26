@@ -100,7 +100,7 @@ public class DefaultMirroredFolderSynchronization extends SSCronTriggerJob
 	public class SyncJobDescription extends CronJobDescription {
 		private Long folderId;
 		public SyncJobDescription(Long zoneId, Long folderId) {
-			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId, false, 
+			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId, true, 
 					SPropsUtil.getInt("job.mirrored.folder.synchronization.priority", 4));
 			this.folderId = folderId;
 		}

@@ -51,6 +51,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.BinderState.FullSyncStatus;
@@ -67,6 +68,8 @@ import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver.ConnectionTestStatus;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
+import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig;
+import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig.NetFolderSyncScheduleOption;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
@@ -180,14 +183,27 @@ public class GwtNetFolderHelper
 		try
 		{
 			Binder binder;
-			ScheduleInfo scheduleInfo;
+			ScheduleInfo scheduleInfo = null;
+			SyncScheduleOption syncScheduleOption = null;
 			
 			// Create the net folder in the global "net folder roots" workspace.
 			parentBinder = getCoreDao().loadReservedBinder(
 													ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
 													RequestContextHolder.getRequestContext().getZoneId() );
 
-			scheduleInfo = getScheduleInfoFromGwtSchedule( netFolder.getSyncSchedule() );
+			// Get the schedule information
+			{
+				GwtNetFolderSyncScheduleConfig config;
+				
+				config = netFolder.getSyncScheduleConfig();
+				if ( config != null )
+				{
+					scheduleInfo = getScheduleInfoFromGwtSchedule( config.getSyncSchedule() );
+					
+					syncScheduleOption = getSyncScheduleOptionFromGwtSyncScheduleOption( config.getSyncScheduleOption() );
+				}
+			}
+			
 			binder = NetFolderHelper.createNetFolder(
 												ami.getTemplateModule(),
 												ami.getBinderModule(),
@@ -198,6 +214,7 @@ public class GwtNetFolderHelper
 												netFolder.getNetFolderRootName(),
 												netFolder.getRelativePath(),
 												scheduleInfo,
+												syncScheduleOption,
 												parentBinder.getId(),
 												false,
 												netFolder.getIndexContent() );
@@ -230,7 +247,7 @@ public class GwtNetFolderHelper
 			newNetFolder.setRelativePath( netFolder.getRelativePath() );
 			newNetFolder.setId( binder.getId() );
 			newNetFolder.setStatus( getNetFolderSyncStatus( newNetFolder.getId() ) );
-			newNetFolder.setSyncSchedule( netFolder.getSyncSchedule() );
+			newNetFolder.setSyncScheduleConfig( netFolder.getSyncScheduleConfig() );
 			newNetFolder.setRoles( netFolder.getRoles() );
 			newNetFolder.setDataSyncSettings( netFolder.getDataSyncSettings() );
 			newNetFolder.setJitsConfig( netFolder.getJitsConfig() );
@@ -635,7 +652,7 @@ public class GwtNetFolderHelper
 			return null;
 		
 		// Get the ScheduleInfo for the given binder.
-		scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule(binder.getId() );
+		scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binder.getId() );
 		
 		gwtSchedule = GwtNetFolderHelper.getGwtSyncSchedule( scheduleInfo );
 		
@@ -763,7 +780,6 @@ public class GwtNetFolderHelper
 	{
 		NetFolder netFolder;
 		Binder binder;
-		GwtSchedule gwtSchedule;
 		ArrayList<GwtRole> listOfRoles;
 		NetFolderDataSyncSettings dataSyncSettings;
 		GwtJitsNetFolderConfig jitsSettings;
@@ -779,9 +795,45 @@ public class GwtNetFolderHelper
 		netFolder.setIsHomeDir( binder.isHomeDir() );
 		netFolder.setIndexContent( binder.getIndexContent() );
 
-		// Get the net folder's sync schedule.
-		gwtSchedule = getGwtSyncSchedule( ami, binder );
-		netFolder.setSyncSchedule( gwtSchedule );
+		// Get the net folder's sync schedule configuration.
+		{
+			GwtNetFolderSyncScheduleConfig config;
+			GwtSchedule gwtSchedule;
+			NetFolderSyncScheduleOption nfSyncScheduleOption;
+			SyncScheduleOption syncScheduleOption;
+			
+			config = new GwtNetFolderSyncScheduleConfig();
+			
+			gwtSchedule = getGwtSyncSchedule( ami, binder );
+			config.setSyncSchedule( gwtSchedule );
+			
+			// Get the sync schedule option
+			nfSyncScheduleOption = NetFolderSyncScheduleOption.USE_NET_FOLDER_SERVER_SCHEDULE;
+			syncScheduleOption = binder.getSyncScheduleOption();
+			if ( syncScheduleOption != null )
+			{
+				switch ( syncScheduleOption )
+				{
+				case useNetFolderServerSchedule:
+					nfSyncScheduleOption = NetFolderSyncScheduleOption.USE_NET_FOLDER_SERVER_SCHEDULE;
+					break;
+					
+				case useNetFolderSchedule:
+					nfSyncScheduleOption = NetFolderSyncScheduleOption.USE_NET_FOLDER_SCHEDULE;
+					break;
+				}
+			}
+			else
+			{
+				// The binder doesn't have a value for the syncScheduleOption field.
+				// Determine what the value is based on whether or not the net folder has a schedule defined.
+				if ( gwtSchedule != null && gwtSchedule.getEnabled() == true )
+					nfSyncScheduleOption = NetFolderSyncScheduleOption.USE_NET_FOLDER_SCHEDULE;
+			}
+			config.setSyncScheduleOption( nfSyncScheduleOption );
+			
+			netFolder.setSyncScheduleConfig( config );
+		}
 		
 		// Get the rights associated with this net folder.
 		listOfRoles = getNetFolderRights( ami, binder );
@@ -1118,6 +1170,27 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
+	 * For the given NetFolderSyncScheduleOption, return a SyncScheduleOption
+	 */
+	public static SyncScheduleOption getSyncScheduleOptionFromGwtSyncScheduleOption( NetFolderSyncScheduleOption option )
+	{
+		if ( option != null )
+		{
+			switch ( option )
+			{
+			case USE_NET_FOLDER_SERVER_SCHEDULE:
+				return SyncScheduleOption.useNetFolderServerSchedule;
+				
+			case USE_NET_FOLDER_SCHEDULE:
+			default:
+				return SyncScheduleOption.useNetFolderSchedule;
+			}
+		}
+		else
+			return null;
+	}
+	
+	/**
 	 * Modify the net folder from the given data
 	 */
 	public static NetFolder modifyNetFolder(
@@ -1126,10 +1199,22 @@ public class GwtNetFolderHelper
 	{
 		try
 		{
-			ScheduleInfo scheduleInfo;
+			ScheduleInfo scheduleInfo = null;
+			SyncScheduleOption syncScheduleOption = null;
 			
-			scheduleInfo = getScheduleInfoFromGwtSchedule( netFolder.getSyncSchedule() );
-
+			// Get the schedule information
+			{
+				GwtNetFolderSyncScheduleConfig config;
+				
+				config = netFolder.getSyncScheduleConfig();
+				if ( config != null )
+				{
+					scheduleInfo = getScheduleInfoFromGwtSchedule( config.getSyncSchedule() );
+					
+					syncScheduleOption = getSyncScheduleOptionFromGwtSyncScheduleOption( config.getSyncScheduleOption() );
+				}
+			}
+			
 			NetFolderHelper.modifyNetFolder(
 										ami.getBinderModule(),
 										ami.getFolderModule(),
@@ -1138,6 +1223,7 @@ public class GwtNetFolderHelper
 										netFolder.getNetFolderRootName(),
 										netFolder.getRelativePath(),
 										scheduleInfo,
+										syncScheduleOption,
 										netFolder.getIndexContent() );
 
 			// Set the rights on the net folder
