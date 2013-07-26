@@ -42,7 +42,7 @@ import org.kablink.teaming.gwt.client.util.DeleteSelectedUsersMode;
  * 
  * @author drfoster@novell.com
  */
-public class DeleteSelectedUsersCmd extends DeletePurgeUsersCmdBase {
+public class DeleteSelectedUsersCmd extends DeleteUsersCmdBase {
 	private boolean					m_purgeUsersWithWS;	//
 	private DeleteSelectedUsersMode	m_dsuMode;			//
 	
@@ -89,7 +89,7 @@ public class DeleteSelectedUsersCmd extends DeletePurgeUsersCmdBase {
 	/**
 	 * Returns the command's enumeration value.
 	 * 
-	 * Implements the DeletePurgeUsersCmdBase.getCmdType() method.
+	 * Implements the DeleteUserCmdBase.getCmdType() method.
 	 * 
 	 * @return
 	 */

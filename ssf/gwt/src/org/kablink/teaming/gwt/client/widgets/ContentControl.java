@@ -62,7 +62,7 @@ import org.kablink.teaming.gwt.client.binderviews.TrashView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
@@ -1406,7 +1406,7 @@ public class ContentControl extends Composite
 		final boolean deletingBinders = EntityId.areBindersInEntityIds( selectedEntityIds );
 		BinderViewsHelper.deleteSelections(
 			selectedEntityIds,
-			new DeletePurgeEntriesCallback()
+			new DeleteEntitiesCallback()
 		{
 			@Override
 			public void operationCanceled()

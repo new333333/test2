@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,40 +32,61 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'Trash Purge Selected Entries' command.
+ * Base class that holds all of the information necessary to execute
+ * one of the 'delete entities' commands.
  * 
  * @author drfoster@novell.com
  */
-public class TrashPurgeSelectedEntriesCmd extends VibeRpcCmd {
-	private boolean			m_purgeMirroredSources;	//
-	private List<String>	m_trashSelectionData;	//
-	private Long			m_binderId;				//
+public abstract class DeleteEntitiesCmdBase extends VibeRpcCmd {
+	private List<EntityId>	m_entityIds;	//
 	
 	/**
-	 * Constructor method.
+	 * Class constructor.
 	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
 	 */
-	public TrashPurgeSelectedEntriesCmd() {
-		super();
+	public DeleteEntitiesCmdBase() {
+		// Initialize the super class.
+		super();		
+	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param entityIds
+	 */
+	public DeleteEntitiesCmdBase(List<EntityId> entityIds) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setEntityIds(entityIds);
 	}
 	
 	/**
-	 * Constructor method
+	 * Class constructor.
 	 * 
-	 * @param binderId
+	 * @param entityId
 	 */
-	public TrashPurgeSelectedEntriesCmd(Long binderId, boolean purgeMirroredSources, List<String> trashSelectionData) {
-		this();
-		
-		setBinderId(            binderId            );
-		setPurgeMirroredSources(purgeMirroredSources);
-		setTrashSelectionData(  trashSelectionData  );
+	public DeleteEntitiesCmdBase(EntityId entityId) {
+		// Initialize this object.
+		this(getEIdListFromEId(entityId));
+	}
+
+	/*
+	 * Returns a List<EntityId> that contains the specified EntityId.
+	 */
+	private static List<EntityId> getEIdListFromEId(EntityId l) {
+		List<EntityId> reply = new ArrayList<EntityId>();
+		reply.add(l);
+		return reply;
 	}
 	
 	/**
@@ -73,18 +94,14 @@ public class TrashPurgeSelectedEntriesCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean      getPurgeMirroredSources() {return m_purgeMirroredSources;}
-	public List<String> getTrashSelectionData()   {return m_trashSelectionData;  }
-	public Long         getBinderId()             {return m_binderId;            }
-	
+	public List<EntityId> getEntityIds() {return m_entityIds;}	
+
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setPurgeMirroredSources(boolean      purgeMirroredSources) {m_purgeMirroredSources = purgeMirroredSources;}
-	public void setTrashSelectionData(  List<String> trashSelectionData)   {m_trashSelectionData   = trashSelectionData;  }
-	public void setBinderId(            Long         binderId)             {m_binderId             = binderId;            }
+	public void setEntityIds(List<EntityId> entityIds) {m_entityIds = entityIds;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -94,7 +111,5 @@ public class TrashPurgeSelectedEntriesCmd extends VibeRpcCmd {
 	 * @return
 	 */
 	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.TRASH_PURGE_SELECTED_ENTRIES.ordinal();
-	}
+	public abstract int getCmdType();
 }

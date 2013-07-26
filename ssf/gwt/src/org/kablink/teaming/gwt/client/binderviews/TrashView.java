@@ -44,9 +44,9 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.RefreshSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TrashPurgeAllCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.TrashPurgeSelectedEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TrashPurgeSelectedEntitiesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TrashRestoreAllCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.TrashRestoreSelectedEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TrashRestoreSelectedEntitiesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -373,7 +373,7 @@ public class TrashView extends DataTableFolderViewBase {
 						    showBusySpinner();
 							List<String> trashSelectionData = buildTrashSelectionList();
 							Long binderId = getFolderInfo().getBinderIdAsLong();
-							GwtClientHelper.executeCommand(new TrashPurgeSelectedEntriesCmd(
+							GwtClientHelper.executeCommand(new TrashPurgeSelectedEntitiesCmd(
 									binderId,
 									true,
 									trashSelectionData),
@@ -383,7 +383,7 @@ public class TrashView extends DataTableFolderViewBase {
 								    hideBusySpinner();
 									GwtClientHelper.handleGwtRPCFailure(
 										t,
-										m_messages.rpcFailure_TrashPurgeSelectedEntries());
+										m_messages.rpcFailure_TrashPurgeSelectedEntities());
 								}
 								
 								@Override
@@ -505,13 +505,13 @@ public class TrashView extends DataTableFolderViewBase {
 		final boolean restoreBinders = areBindersInDataTable();
 		List<String> trashSelectionData = buildTrashSelectionList();
 		Long binderId = getFolderInfo().getBinderIdAsLong();
-		GwtClientHelper.executeCommand(new TrashRestoreSelectedEntriesCmd(binderId, trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
+		GwtClientHelper.executeCommand(new TrashRestoreSelectedEntitiesCmd(binderId, trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 			    hideBusySpinner();
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					m_messages.rpcFailure_TrashRestoreSelectedEntries());
+					m_messages.rpcFailure_TrashRestoreSelectedEntities());
 			}
 			
 			@Override

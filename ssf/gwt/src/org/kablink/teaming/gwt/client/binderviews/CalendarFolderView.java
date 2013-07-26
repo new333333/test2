@@ -39,7 +39,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.event.CalendarChangedEvent;
 import org.kablink.teaming.gwt.client.event.CalendarGotoDateEvent;
 import org.kablink.teaming.gwt.client.event.CalendarHoursEvent;
@@ -235,7 +235,7 @@ public class CalendarFolderView extends FolderViewBase
 				}
 				
 				// Delete the selected appointment.
-				doDeleteEntryAsync((CalendarAppointment) event.getTarget());
+				doDeleteEntityAsync((CalendarAppointment) event.getTarget());
 				event.setCancelled(true);
 			}
 		});
@@ -515,11 +515,11 @@ public class CalendarFolderView extends FolderViewBase
 	/*
 	 * Asynchronously deletes the given appointment.
 	 */
-	private void doDeleteEntryAsync(final CalendarAppointment appointment) {
+	private void doDeleteEntityAsync(final CalendarAppointment appointment) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				doDeleteEntryNow(appointment);
+				doDeleteEntityNow(appointment);
 			}
 		});
 	}
@@ -527,10 +527,10 @@ public class CalendarFolderView extends FolderViewBase
 	/*
 	 * Synchronously deletes the given appointment.
 	 */
-	private void doDeleteEntryNow(final CalendarAppointment appointment) {
+	private void doDeleteEntityNow(final CalendarAppointment appointment) {
 		// Is the user sure they want to delete the appointment?
 		final List<EntityId> entityIds = appointment.getEntityIdAsList();
-		BinderViewsHelper.deleteSelections(entityIds, new DeletePurgeEntriesCallback() {
+		BinderViewsHelper.deleteSelections(entityIds, new DeleteEntitiesCallback() {
 			@Override
 			public void operationCanceled() {
 				// No, they're not sure!
@@ -1178,7 +1178,7 @@ public class CalendarFolderView extends FolderViewBase
 			}
 			
 			// Delete the selected appointment.
-			doDeleteEntryAsync(m_selectedEvent);
+			doDeleteEntityAsync(m_selectedEvent);
 		}
 	}
 	

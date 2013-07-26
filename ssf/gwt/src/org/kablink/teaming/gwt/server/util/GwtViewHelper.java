@@ -255,7 +255,7 @@ import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
-import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
+import org.kablink.teaming.web.util.TrashHelper.TrashEntity;
 import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
@@ -3996,7 +3996,7 @@ public class GwtViewHelper {
 				// No, the user isn't currently viewing pinned entries!
 				// Read the entries based on a search.
 				Map searchResults;
-				if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder, options);
+				if      (isTrash)          searchResults = TrashHelper.getTrashEntities(bs, binder, options);
 				else if (isProfilesRootWS) searchResults = getUserEntries(      bs, request, binder, quickFilter, options                            );
 				else if (isCollection)     searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, collectionType, shareItems);
 				else {
@@ -8422,7 +8422,7 @@ public class GwtViewHelper {
 	}
 	
 	/**
-	 * Called to purge all the entries in the trash.
+	 * Called to purge all the entities in the trash.
 	 * 
 	 * @param bs
 	 * @param reqeust
@@ -8438,9 +8438,9 @@ public class GwtViewHelper {
 			// Allocate an error list response we can return.
 			StringRpcResponseData reply = new StringRpcResponseData();
 
-			// Purge the entries in the trash...
-			TrashEntry[] trashEntries = TrashHelper.getAllTrashEntries(bs, binderId);
-			TrashResponse tr = TrashHelper.purgeSelectedEntries(bs, trashEntries, purgeMirroredSources);
+			// Purge the entities in the trash...
+			TrashEntity[] trashEntities = TrashHelper.getAllTrashEntities(bs, binderId);
+			TrashResponse tr = TrashHelper.purgeSelectedEntities(bs, trashEntities, purgeMirroredSources);
 			if (tr.isError() || tr.m_rd.hasRenames()) {
 				// ...and return any messages we get in response.
 				reply.setStringValue(tr.getTrashMessage(bs));
@@ -8463,7 +8463,7 @@ public class GwtViewHelper {
 	}
 	
 	/**
-	 * Called to purge the selected entries in the trash.
+	 * Called to purge the selected entities in the trash.
 	 * 
 	 * @param bs
 	 * @param reqeust
@@ -8475,7 +8475,7 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static StringRpcResponseData trashPurgeSelectedEntries(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId, boolean purgeMirroredSources, List<String> trashSelectionData) throws GwtTeamingException {
+	public static StringRpcResponseData trashPurgeSelectedEntities(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId, boolean purgeMirroredSources, List<String> trashSelectionData) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			StringRpcResponseData reply = new StringRpcResponseData();
@@ -8483,14 +8483,14 @@ public class GwtViewHelper {
 			// Do we have any selections to purge?
 			int count = ((null == trashSelectionData) ? 0 : trashSelectionData.size());
 			if (0 < count) {
-				// Yes!  Convert them to a TrashEntry[]...
-				TrashEntry[] trashEntries = new TrashEntry[count];
+				// Yes!  Convert them to a TrashEntity[]...
+				TrashEntity[] trashEntities = new TrashEntity[count];
 				for (int i = 0; i < count; i += 1) {
-					trashEntries[i] = new TrashEntry(trashSelectionData.get(i));
+					trashEntities[i] = new TrashEntity(trashSelectionData.get(i));
 				}
 				
 				// ...purge those...
-				TrashResponse tr = TrashHelper.purgeSelectedEntries(bs, trashEntries, purgeMirroredSources);
+				TrashResponse tr = TrashHelper.purgeSelectedEntities(bs, trashEntities, purgeMirroredSources);
 				if (tr.isError() || tr.m_rd.hasRenames()) {
 					// ...and return any messages we get in response.
 					reply.setStringValue(tr.getTrashMessage(bs));
@@ -8509,12 +8509,12 @@ public class GwtViewHelper {
 				GwtLogHelper.getGwtClientException(
 					m_logger,
 					e,
-					"GwtViewHelper.trashPurgeSelectedEntries( SOURCE EXCEPTION ):  ");
+					"GwtViewHelper.trashPurgeSelectedEntities( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
 	/**
-	 * Called to restore all the entries in the trash.
+	 * Called to restore all the entities in the trash.
 	 * 
 	 * @param bs
 	 * @param reqeust
@@ -8529,9 +8529,9 @@ public class GwtViewHelper {
 			// Allocate an error list response we can return.
 			StringRpcResponseData reply = new StringRpcResponseData();
 
-			// Restore the entries in the trash...
-			TrashEntry[] trashEntries = TrashHelper.getAllTrashEntries(bs, binderId);
-			TrashResponse tr = TrashHelper.restoreSelectedEntries(bs, trashEntries);
+			// Restore the entities in the trash...
+			TrashEntity[] trashEntities = TrashHelper.getAllTrashEntities(bs, binderId);
+			TrashResponse tr = TrashHelper.restoreSelectedEntities(bs, trashEntities);
 			if (tr.isError() || tr.m_rd.hasRenames()) {
 				// ...and return any messages we get in response.
 				reply.setStringValue(tr.getTrashMessage(bs));
@@ -8554,7 +8554,7 @@ public class GwtViewHelper {
 	}
 	
 	/**
-	 * Called to restore the selected entries in the trash.
+	 * Called to restore the selected entities in the trash.
 	 * 
 	 * @param bs
 	 * @param reqeust
@@ -8565,7 +8565,7 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static StringRpcResponseData trashRestoreSelectedEntries(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId, List<String> trashSelectionData) throws GwtTeamingException {
+	public static StringRpcResponseData trashRestoreSelectedEntities(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId, List<String> trashSelectionData) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			StringRpcResponseData reply = new StringRpcResponseData();
@@ -8573,14 +8573,14 @@ public class GwtViewHelper {
 			// Do we have any selections to restore?
 			int count = ((null == trashSelectionData) ? 0 : trashSelectionData.size());
 			if (0 < count) {
-				// Yes!  Convert them to a TrashEntry[]...
-				TrashEntry[] trashEntries = new TrashEntry[count];
+				// Yes!  Convert them to a TrashEntity[]...
+				TrashEntity[] trashEntities = new TrashEntity[count];
 				for (int i = 0; i < count; i += 1) {
-					trashEntries[i] = new TrashEntry(trashSelectionData.get(i));
+					trashEntities[i] = new TrashEntity(trashSelectionData.get(i));
 				}
 				
 				// ...restore those...
-				TrashResponse tr = TrashHelper.restoreSelectedEntries(bs, trashEntries);
+				TrashResponse tr = TrashHelper.restoreSelectedEntities(bs, trashEntities);
 				if (tr.isError() || tr.m_rd.hasRenames()) {
 					// ...and return any messages we get in response.
 					reply.setStringValue(tr.getTrashMessage(bs));
@@ -8599,7 +8599,7 @@ public class GwtViewHelper {
 				GwtLogHelper.getGwtClientException(
 					m_logger,
 					e,
-					"GwtViewHelper.trashRestoreSelectedEntries( SOURCE EXCEPTION ):  ");
+					"GwtViewHelper.trashRestoreSelectedEntities( SOURCE EXCEPTION ):  ");
 		}
 	}
 	

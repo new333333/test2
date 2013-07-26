@@ -47,8 +47,8 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeUsersHelper.DeletePurgeUsersCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteUsersHelper.DeleteUsersCallback;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.ActionMenuColumn;
@@ -1780,7 +1780,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				final boolean deletingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
 				BinderViewsHelper.deleteSelections(
 						selectedEntityIds,
-						new DeletePurgeEntriesCallback() {
+						new DeleteEntitiesCallback() {
 					@Override
 					public void operationCanceled() {
 						if (deletingBinders) {
@@ -1831,7 +1831,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			List<Long> selectedUserIds = EntityId.getLongsFromEntityIds(getSelectedEntityIds());
 			BinderViewsHelper.deleteSelectedUsers(
 					selectedUserIds,
-					new DeletePurgeUsersCallback() {
+					new DeleteUsersCallback() {
 				@Override
 				public void operationCanceled() {
 					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();

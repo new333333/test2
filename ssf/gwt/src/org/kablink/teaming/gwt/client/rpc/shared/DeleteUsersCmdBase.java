@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,64 +30,40 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
  * Base class that holds all of the information necessary to execute
- * a 'delete/purge of folder entries' commands.
+ * the 'delete users' commands.
  * 
  * @author drfoster@novell.com
  */
-public abstract class DeletePurgeFolderEntriesCmdBase extends VibeRpcCmd {
-	private List<EntityId>	m_entityIds;	//
+public abstract class DeleteUsersCmdBase extends VibeRpcCmd {
+	private List<Long>	m_userIds;	//
 	
 	/**
-	 * Class constructor.
+	 * Constructor method.
 	 * 
-	 * For GWT serialization, must have a zero parameter
-	 * constructor.
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public DeletePurgeFolderEntriesCmdBase() {
+	public DeleteUsersCmdBase() {
 		// Initialize the super class.
-		super();		
+		super();
 	}
-
+	
 	/**
-	 * Class constructor.
+	 * Constructor method.
 	 * 
-	 * @param entityIds
+	 * @param userIds
 	 */
-	public DeletePurgeFolderEntriesCmdBase(List<EntityId> entityIds) {
+	public DeleteUsersCmdBase(final List<Long> userIds) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameter.
-		setEntityIds(entityIds);
-	}
-	
-	/**
-	 * Class constructor.
-	 * 
-	 * @param entityId
-	 */
-	public DeletePurgeFolderEntriesCmdBase(EntityId entityId) {
-		// Initialize this object.
-		this(getEIdListFromEId(entityId));
-	}
-
-	/*
-	 * Returns a List<EntityId> that contains the specified EntityId.
-	 */
-	private static List<EntityId> getEIdListFromEId(EntityId l) {
-		List<EntityId> reply = new ArrayList<EntityId>();
-		reply.add(l);
-		return reply;
+		// ...and store the parameters.
+		setUserIds(userIds);
 	}
 	
 	/**
@@ -95,14 +71,14 @@ public abstract class DeletePurgeFolderEntriesCmdBase extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<EntityId> getEntityIds() {return m_entityIds;}	
+	final public List<Long> getUserIds() {return m_userIds;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntityIds(List<EntityId> entityIds) {m_entityIds = entityIds;}
+	final public void setUserIds(List<Long> userIds) {m_userIds = userIds;}
 	
 	/**
 	 * Returns the command's enumeration value.

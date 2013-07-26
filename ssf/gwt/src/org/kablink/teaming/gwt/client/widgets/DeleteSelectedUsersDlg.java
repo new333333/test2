@@ -38,8 +38,8 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeUsersHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeUsersHelper.DeletePurgeUsersCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteUsersHelper;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteUsersHelper.DeleteUsersCallback;
 import org.kablink.teaming.gwt.client.util.DeleteSelectedUsersMode;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
@@ -71,18 +71,18 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHandler {
-	private CheckBox					m_purgeWorkspaceCB;		// The 'Delete users from system whose workspaces are deleted' checkbox.
-	private DialogMode					m_dialogMode;			// The mode the dialog is running in.  Defines what's displayed on the dialog.
-	private DeletePurgeUsersCallback	m_dpuCallback;			// Callback used to interact with who called the dialog.
-	private FlexCellFormatter			m_cellFormatter;		// The formatter to control how m_grid is laid out.
-	private FlexTable					m_grid;					// The table holding the dialog's content.
-	private GwtTeamingImageBundle		m_images;				// Access to the base images.
-	private GwtTeamingMessages			m_messages;				// Access to our localized strings.
-	private List<Long>					m_userIds;				// The users to be deleted.
-	private RadioButton					m_purgeRB;				// The 'Delete from system' radio button.
-	private RadioButton					m_trashRB;				// The 'Move to trash'      radio button.
-	private SelectedUsersDetails		m_selectedUsersDetails;	// Populated via a GWT RPC call while constructing the dialog's contents.  Contains an analysis of what m_userIds refers to.
-	private Widget						m_purgeWarning;			// The Widget containing the 'can't be undone' warning. 
+	private CheckBox				m_purgeWorkspaceCB;		// The 'Delete users from system whose workspaces are deleted' checkbox.
+	private DialogMode				m_dialogMode;			// The mode the dialog is running in.  Defines what's displayed on the dialog.
+	private DeleteUsersCallback		m_duCallback;			// Callback used to interact with who called the dialog.
+	private FlexCellFormatter		m_cellFormatter;		// The formatter to control how m_grid is laid out.
+	private FlexTable				m_grid;					// The table holding the dialog's content.
+	private GwtTeamingImageBundle	m_images;				// Access to the base images.
+	private GwtTeamingMessages		m_messages;				// Access to our localized strings.
+	private List<Long>				m_userIds;				// The users to be deleted.
+	private RadioButton				m_purgeRB;				// The 'Delete from system' radio button.
+	private RadioButton				m_trashRB;				// The 'Move to trash'      radio button.
+	private SelectedUsersDetails	m_selectedUsersDetails;	// Populated via a GWT RPC call while constructing the dialog's contents.  Contains an analysis of what m_userIds refers to.
+	private Widget					m_purgeWarning;			// The Widget containing the 'can't be undone' warning. 
 	
 	// The buttons displayed on this dialog.
 	private final static DlgButtonMode	DLG_BUTTONS = DlgButtonMode.OkCancel; 
@@ -212,13 +212,13 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 		}
 
 		// ...and do it.
-		DeletePurgeUsersHelper.deleteSelectedUsersAsync(
+		DeleteUsersHelper.deleteSelectedUsersAsync(
 			m_userIds,
 			dsuMode,
 			((null == m_purgeWorkspaceCB) ?
 				false                     :
 				m_purgeWorkspaceCB.getValue()),
-			m_dpuCallback);
+			m_duCallback);
 	}
 	
 	/**
@@ -548,11 +548,11 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 	 * Asynchronously runs the given instance of the delete select
 	 * users dialog.
 	 */
-	private static void runDlgAsync(final DeleteSelectedUsersDlg dsuDlg, final List<Long> userIds, final DeletePurgeUsersCallback dpuCallback) {
+	private static void runDlgAsync(final DeleteSelectedUsersDlg dsuDlg, final List<Long> userIds, final DeleteUsersCallback duCallback) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				dsuDlg.runDlgNow(userIds, dpuCallback);
+				dsuDlg.runDlgNow(userIds, duCallback);
 			}
 		});
 	}
@@ -561,10 +561,10 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 	 * Synchronously runs the given instance of the delete selected
 	 * users dialog.
 	 */
-	private void runDlgNow(final List<Long> userIds, final DeletePurgeUsersCallback dpuCallback) {
+	private void runDlgNow(final List<Long> userIds, final DeleteUsersCallback duCallback) {
 		// Store the parameters and populate the dialog.
-		m_userIds     = userIds;
-		m_dpuCallback = dpuCallback;
+		m_userIds    = userIds;
+		m_duCallback = duCallback;
 		loadPart1Async();
 	}
 
@@ -639,7 +639,7 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 			// initAndShow parameters,
 			final DeleteSelectedUsersDlg	dsuDlg,
 			final List<Long>				userIds,
-			final DeletePurgeUsersCallback	dpuCallback) {
+			final DeleteUsersCallback		duCallback) {
 		GWT.runAsync(DeleteSelectedUsersDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -662,7 +662,7 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(dsuDlg, userIds, dpuCallback);
+					runDlgAsync(dsuDlg, userIds, duCallback);
 				}
 			}
 		});
@@ -684,10 +684,10 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 	 * 
 	 * @param dsuDlg
 	 * @param userIds
-	 * @param dpuCallback
+	 * @param duCallback
 	 */
-	public static void initAndShow(DeleteSelectedUsersDlg dsuDlg, List<Long> userIds, DeletePurgeUsersCallback dpuCallback) {
+	public static void initAndShow(DeleteSelectedUsersDlg dsuDlg, List<Long> userIds, DeleteUsersCallback duCallback) {
 		// Invoke the appropriate asynchronous operation.
-		doAsyncOperation(null, dsuDlg, userIds, dpuCallback);
+		doAsyncOperation(null, dsuDlg, userIds, duCallback);
 	}
 }
