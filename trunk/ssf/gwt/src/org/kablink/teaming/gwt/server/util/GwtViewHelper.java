@@ -255,8 +255,6 @@ import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
-import org.kablink.teaming.web.util.TrashHelper.TrashEntity;
-import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -1244,7 +1242,7 @@ public class GwtViewHelper {
 			}
 
 			// Is this share item's entity in the trash?
-			if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
+			if (GwtDeleteHelper.isEntityPreDeleted(siEntity)) {
 				// Yes!  Skip it.
 				continue;
 			}
@@ -1346,7 +1344,7 @@ public class GwtViewHelper {
 				
 				// Is this share item's entity in the trash?
 				DefinableEntity siEntity = sm.getSharedEntity(si);
-				if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
+				if (GwtDeleteHelper.isEntityPreDeleted(siEntity)) {
 					// Yes!  Skip it.
 					continue;
 				}
@@ -1516,86 +1514,6 @@ public class GwtViewHelper {
 					m_logger,
 					e,
 					"GwtViewHelper.copyEntries( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	/**
-	 * Delete user workspaces.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param userIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ErrorListRpcResponseData deleteUserWorkspaces(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
-		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-		deleteUserWorkspacesImpl(bs, request, userIds, reply);
-		return reply;
-	}
-	
-	public static void deleteUserWorkspacesImpl(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, ErrorListRpcResponseData reply) throws GwtTeamingException {
-		try {
-			// Were we given the IDs of any users to delete?
-			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
-			if (MiscUtil.hasItems(userIds)) {
-				// Yes!  Scan them.
-				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
-				for (Long userId:  userIds) {
-					// Can we resolve the user being delete?
-					User user = GwtServerHelper.getResolvedUser(userId);
-					if (null != user) {
-						// Yes!  Is it the user that's logged in?
-						if (user.getId().equals(currentUserId)) {
-							// Yes!  They can't delete their own
-							// workspace.  Ignore it.
-							reply.addError(NLT.get("deleteUserWorkspaceError.self"));
-							continue;
-						}
-
-						// Is it a reserved user?
-						if (user.isReserved()) {
-							// Yes!  They can't do that.  Ignore it.
-							String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
-							reply.addError(NLT.get("deleteUserWorkspaceError.reserved", new String[]{userTitle}));
-							continue;
-						}
-					}
-					
-					try {
-						// Does this user have a workspace ID?
-						Long wsId = user.getWorkspaceId();
-						if (null != wsId) {
-							// Yes!  Delete the workspace.
-							TrashHelper.preDeleteBinder(bs, wsId);
-						}
-					}
-
-					catch (Exception e) {
-						// No!  Add an error to the error list...
-						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
-						String messageKey;
-						if      (e instanceof AccessControlException) messageKey = "deleteUserWorkspaceError.AccssControlException";
-						else                                          messageKey = "deleteUserWorkspaceError.OtherException";
-						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
-						
-						// ...and log it.
-						GwtLogHelper.error(m_logger, "GwtViewHelper.deleteUserWorkspaces( User:  '" + user.getTitle() + "', EXCEPTION ):  ", e);
-					}
-				}
-			}
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.deleteUserWorkspaces( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -5957,45 +5875,6 @@ public class GwtViewHelper {
 		return reply;
 	}
 
-	/**
-	 * Returns a StringRpcResponseData containing the URL for viewing
-	 * the trash on the given BinderInfo.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param bi
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static StringRpcResponseData getTrashUrl(AllModulesInjected bs, HttpServletRequest request, BinderInfo bi) throws GwtTeamingException {
-		try {
-			// Construct the URL for viewing the trash on this BinderInfo...
-			Binder binder    = bs.getBinderModule().getBinderWithoutAccessCheck(bi.getBinderIdAsLong());
-			String binderUrl = PermaLinkUtil.getPermalink(request, binder);
-			String trashUrl  = GwtUIHelper.getTrashPermalink(binderUrl);
-			
-			// ...and wrap it in a StringRpcResponseData.
-			StringRpcResponseData reply = new StringRpcResponseData(trashUrl);
-			
-			// If we get here, reply refers to the
-			// StringRpcResponseData object containing the URL for
-			// viewing the trash on the given BinderInfo.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.getTrashUrl( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
 	/*
 	 * Returns a Map of the search results for users based on the
 	 * criteria in the options Map.
@@ -8419,188 +8298,6 @@ public class GwtViewHelper {
 		}
 		
 		return reply;
-	}
-	
-	/**
-	 * Called to purge all the entities in the trash.
-	 * 
-	 * @param bs
-	 * @param reqeust
-	 * @param binderId
-	 * @param purgeMirroredSources
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static StringRpcResponseData trashPurgeAll(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId, boolean purgeMirroredSources) throws GwtTeamingException {
-		try {
-			// Allocate an error list response we can return.
-			StringRpcResponseData reply = new StringRpcResponseData();
-
-			// Purge the entities in the trash...
-			TrashEntity[] trashEntities = TrashHelper.getAllTrashEntities(bs, binderId);
-			TrashResponse tr = TrashHelper.purgeSelectedEntities(bs, trashEntities, purgeMirroredSources);
-			if (tr.isError() || tr.m_rd.hasRenames()) {
-				// ...and return any messages we get in response.
-				reply.setStringValue(tr.getTrashMessage(bs));
-			}
-
-			// If we get here, reply refers to a StringRpcResponseData
-			// containing any errors we encountered.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.trashPurgeAll( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	/**
-	 * Called to purge the selected entities in the trash.
-	 * 
-	 * @param bs
-	 * @param reqeust
-	 * @param binderId
-	 * @param purgeMirroredSources
-	 * @param trashSelectionData
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static StringRpcResponseData trashPurgeSelectedEntities(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId, boolean purgeMirroredSources, List<String> trashSelectionData) throws GwtTeamingException {
-		try {
-			// Allocate an error list response we can return.
-			StringRpcResponseData reply = new StringRpcResponseData();
-
-			// Do we have any selections to purge?
-			int count = ((null == trashSelectionData) ? 0 : trashSelectionData.size());
-			if (0 < count) {
-				// Yes!  Convert them to a TrashEntity[]...
-				TrashEntity[] trashEntities = new TrashEntity[count];
-				for (int i = 0; i < count; i += 1) {
-					trashEntities[i] = new TrashEntity(trashSelectionData.get(i));
-				}
-				
-				// ...purge those...
-				TrashResponse tr = TrashHelper.purgeSelectedEntities(bs, trashEntities, purgeMirroredSources);
-				if (tr.isError() || tr.m_rd.hasRenames()) {
-					// ...and return any messages we get in response.
-					reply.setStringValue(tr.getTrashMessage(bs));
-				}
-			}
-			
-			// If we get here, reply refers to a StringRpcResponseData
-			// containing any errors we encountered.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.trashPurgeSelectedEntities( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	/**
-	 * Called to restore all the entities in the trash.
-	 * 
-	 * @param bs
-	 * @param reqeust
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static StringRpcResponseData trashRestoreAll(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId) throws GwtTeamingException {
-		try {
-			// Allocate an error list response we can return.
-			StringRpcResponseData reply = new StringRpcResponseData();
-
-			// Restore the entities in the trash...
-			TrashEntity[] trashEntities = TrashHelper.getAllTrashEntities(bs, binderId);
-			TrashResponse tr = TrashHelper.restoreSelectedEntities(bs, trashEntities);
-			if (tr.isError() || tr.m_rd.hasRenames()) {
-				// ...and return any messages we get in response.
-				reply.setStringValue(tr.getTrashMessage(bs));
-			}
-
-			// If we get here, reply refers to a StringRpcResponseData
-			// containing any errors we encountered.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.trashRestoreAll( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	/**
-	 * Called to restore the selected entities in the trash.
-	 * 
-	 * @param bs
-	 * @param reqeust
-	 * @param binderId
-	 * @param trashSelectionData
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static StringRpcResponseData trashRestoreSelectedEntities(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId, List<String> trashSelectionData) throws GwtTeamingException {
-		try {
-			// Allocate an error list response we can return.
-			StringRpcResponseData reply = new StringRpcResponseData();
-
-			// Do we have any selections to restore?
-			int count = ((null == trashSelectionData) ? 0 : trashSelectionData.size());
-			if (0 < count) {
-				// Yes!  Convert them to a TrashEntity[]...
-				TrashEntity[] trashEntities = new TrashEntity[count];
-				for (int i = 0; i < count; i += 1) {
-					trashEntities[i] = new TrashEntity(trashSelectionData.get(i));
-				}
-				
-				// ...restore those...
-				TrashResponse tr = TrashHelper.restoreSelectedEntities(bs, trashEntities);
-				if (tr.isError() || tr.m_rd.hasRenames()) {
-					// ...and return any messages we get in response.
-					reply.setStringValue(tr.getTrashMessage(bs));
-				}
-			}
-			
-			// If we get here, reply refers to a StringRpcResponseData
-			// containing any errors we encountered.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.trashRestoreSelectedEntities( SOURCE EXCEPTION ):  ");
-		}
 	}
 	
 	/*
