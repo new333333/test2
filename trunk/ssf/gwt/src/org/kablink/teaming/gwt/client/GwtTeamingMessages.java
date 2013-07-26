@@ -2185,6 +2185,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFoldersDlg_ConfirmDelete( String netFolderName );
 	String manageNetFoldersDlg_DeleteNetFolderErrorMsg( String netFolderName, String errorMsg );
 	String manageNetFoldersDlg_DeleteNetFolderLabel();
+	String manageNetFoldersDlg_FilterOptionsAlt();
 	String manageNetFoldersDlg_Header();
 	String manageNetFoldersDlg_NameCol();
 	String manageNetFoldersDlg_NoNetFoldersLabel();
@@ -2194,6 +2195,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFoldersDlg_SelectFoldersToDelete();
 	String manageNetFoldersDlg_SelectFoldersToStopSync();
 	String manageNetFoldersDlg_SelectFoldersToSync();
+	String manageNetFoldersDlg_ShowHomeDirsLabel();
 	String manageNetFoldersDlg_StopSyncLabel();
 	String manageNetFoldersDlg_SyncLabel();
 	String manageNetFoldersDlg_Syncing();
