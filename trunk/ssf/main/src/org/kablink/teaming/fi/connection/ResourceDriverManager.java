@@ -38,6 +38,7 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.FIException;
+import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 
@@ -118,4 +119,7 @@ public interface ResourceDriverManager {
 	public ResourceDriver createResourceDriver(ResourceDriverConfig config);
 
 	public AclResourceSession openSessionWithAuth(AclResourceDriver authSupportingAclResourceDriver, Long netFolderOwnerDbId);
+	
+	public AclResourceSession openSessionUserMode(AclResourceDriver driver)  throws AclItemPrincipalMappingException;
+
 }

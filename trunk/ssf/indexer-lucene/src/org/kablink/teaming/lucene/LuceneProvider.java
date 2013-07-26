@@ -646,6 +646,17 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 
 	private org.kablink.teaming.lucene.Hits searchInternal(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size, Filter alternateAclFilter) throws LuceneException {
+		ThreadLocalAclQueryFilter.clear();
+		try {
+			return doSearchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, alternateAclFilter);
+		}
+		finally {
+			ThreadLocalAclQueryFilter.clear();			
+		}
+	}
+	
+	private org.kablink.teaming.lucene.Hits doSearchInternal(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
+			int offset, int size, Filter alternateAclFilter) throws LuceneException {
 		long startTime = System.nanoTime();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
@@ -664,6 +675,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					
 					QueryWrapperFilter aclQueryFilter = new QueryWrapperFilter(aclQuery);
 					
+					ThreadLocalAclQueryFilter threadLocalAclQueryFilter = new ThreadLocalAclQueryFilter(aclQueryFilter);
+					
 					Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(aclQueryCopy);
 					
 					TLongHashSet accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), contextUserId, accessibleFoldersAclQuery);
@@ -673,9 +686,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					AclInheritingAccessibleEntriesFilter aclInheritingAccessibleEntriesFilter = new AclInheritingAccessibleEntriesFilter(aclInheritingEntriesFilter, accessibleFolderIds);
 					
 					if(alternateAclFilter != null)
-						aclFilter = new ChainedFilter(new Filter[] {aclQueryFilter, aclInheritingAccessibleEntriesFilter, alternateAclFilter}, ChainedFilter.OR);		
+						aclFilter = new ChainedFilter(new Filter[] {threadLocalAclQueryFilter, aclInheritingAccessibleEntriesFilter, alternateAclFilter}, ChainedFilter.OR);		
 					else
-						aclFilter = new ChainedFilter(new Filter[] {aclQueryFilter, aclInheritingAccessibleEntriesFilter}, ChainedFilter.OR);		
+						aclFilter = new ChainedFilter(new Filter[] {threadLocalAclQueryFilter, aclInheritingAccessibleEntriesFilter}, ChainedFilter.OR);		
 				}
 				else if(mode == Constants.SEARCH_MODE_SELF_CONTAINED_ONLY) {
 					if(alternateAclFilter != null)
@@ -737,10 +750,10 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	        		throw new LuceneException(log);
 	        	}
 	        }
-	        /// END: Debug
+	        /// END: Debug			
 			
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size);
+					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, ThreadLocalAclQueryFilter.getNoAclButAccessibleThroughSharingEntryIds());
 			
 			/// BEGIN: Debug
 			if(hitsTransferBegin != null) {
