@@ -167,6 +167,7 @@ import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
+import org.kablink.teaming.gwt.server.util.GwtDeleteHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
 import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
@@ -526,7 +527,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			DeleteGroupsCmd dgCmd;
 			
 			dgCmd = (DeleteGroupsCmd) cmd;
-			result = GwtServerHelper.deleteGroups( this, dgCmd.getListOfGroupsToDelete() );
+			result = GwtDeleteHelper.deleteGroups( this, dgCmd.getListOfGroupsToDelete() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -534,7 +535,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_SELECTED_USERS:
 		{
 			DeleteSelectedUsersCmd dsuCmd = ((DeleteSelectedUsersCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtServerHelper.deleteSelectedUsers( this, getRequest( ri ), dsuCmd.getUserIds(), dsuCmd.getDeleteSelectedUsersMode(), dsuCmd.getPurgeUsersWithWorkspace() );
+			ErrorListRpcResponseData responseData = GwtDeleteHelper.deleteSelectedUsers( this, getRequest( ri ), dsuCmd.getUserIds(), dsuCmd.getDeleteSelectedUsersMode(), dsuCmd.getPurgeUsersWithWorkspace() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -542,7 +543,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_SELECTIONS:
 		{
 			DeleteSelectionsCmd dsCmd = ((DeleteSelectionsCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtServerHelper.deleteSelections( this, getRequest( ri ), dsCmd.getEntityIds(), dsCmd.getDeleteSelectionsMode() );
+			ErrorListRpcResponseData responseData = GwtDeleteHelper.deleteSelections( this, getRequest( ri ), dsCmd.getEntityIds(), dsCmd.getDeleteSelectionsMode() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -2208,7 +2209,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_TRASH_URL:
 		{
 			GetTrashUrlCmd gtuCmd = ((GetTrashUrlCmd) cmd);
-			StringRpcResponseData responseData = GwtViewHelper.getTrashUrl( this, getRequest( ri ), gtuCmd.getBinderInfo() );
+			StringRpcResponseData responseData = GwtDeleteHelper.getTrashUrl( this, getRequest( ri ), gtuCmd.getBinderInfo() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3207,7 +3208,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case TRASH_PURGE_ALL:
 		{
 			TrashPurgeAllCmd tpaCmd = ((TrashPurgeAllCmd) cmd);
-			StringRpcResponseData responseData = GwtViewHelper.trashPurgeAll( 
+			StringRpcResponseData responseData = GwtDeleteHelper.trashPurgeAll( 
 				this,
 				getRequest( ri ),
 				tpaCmd.getBinderId(),
@@ -3219,7 +3220,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case TRASH_PURGE_SELECTED_ENTITIES:
 		{
 			TrashPurgeSelectedEntitiesCmd tpseCmd = ((TrashPurgeSelectedEntitiesCmd) cmd);
-			StringRpcResponseData responseData = GwtViewHelper.trashPurgeSelectedEntities(
+			StringRpcResponseData responseData = GwtDeleteHelper.trashPurgeSelectedEntities(
 				this,
 				getRequest( ri ),
 				tpseCmd.getBinderId(),
@@ -3232,7 +3233,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case TRASH_RESTORE_ALL:
 		{
 			TrashRestoreAllCmd traCmd = ((TrashRestoreAllCmd) cmd);
-			StringRpcResponseData responseData = GwtViewHelper.trashRestoreAll(
+			StringRpcResponseData responseData = GwtDeleteHelper.trashRestoreAll(
 				this,
 				getRequest( ri ),
 				traCmd.getBinderId() );
@@ -3243,7 +3244,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case TRASH_RESTORE_SELECTED_ENTITIES:
 		{
 			TrashRestoreSelectedEntitiesCmd trseCmd = ((TrashRestoreSelectedEntitiesCmd) cmd);
-			StringRpcResponseData responseData = GwtViewHelper.trashRestoreSelectedEntities(
+			StringRpcResponseData responseData = GwtDeleteHelper.trashRestoreSelectedEntities(
 				this,
 				getRequest( ri ),
 				trseCmd.getBinderId(),
