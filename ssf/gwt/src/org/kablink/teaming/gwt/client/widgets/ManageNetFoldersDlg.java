@@ -52,6 +52,8 @@ import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderModifiedEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
+import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFoldersStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFoldersStatusRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderResult;
@@ -84,12 +86,15 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -114,6 +119,10 @@ public class ManageNetFoldersDlg extends DlgBox
 	private ListDataProvider<NetFolder> m_dataProvider;
 	private VibeSimplePager m_pager;
 	private QuickFilter m_quickFilter;
+	private PopupMenu m_filterPopupMenu;
+	private VibeMenuItem m_showHomeDirsMenuItem;
+	private Command m_toggleShowHomeDirsCmd;
+	private String m_currentFilterStr = null;
 	private List<NetFolder> m_listOfNetFolders;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg;
 	private NetFolderSyncStatisticsDlg m_netFolderSyncStatisticsDlg;
@@ -393,17 +402,78 @@ public class ManageNetFoldersDlg extends DlgBox
 			} );
 			menuPanel.add( label );
 
-			// Add a quick filter
+			// Add filtering controls
 			{
+				FlowPanel mainFilterPanel;
 				FlowPanel qfPanel;
+				
+				mainFilterPanel = new FlowPanel();
+				mainFilterPanel.addStyleName( GwtClientHelper.jsIsIE() ? "displayInline" : "displayInlineBlock" );
+				mainFilterPanel.addStyleName( "manageNetFoldersDlg_MainFilterPanel" );
 				
 				qfPanel = new FlowPanel();
 				qfPanel.addStyleName( "manageNetFoldersDlg_QuickFilterPanel" );
+				qfPanel.addStyleName( GwtClientHelper.jsIsIE() ? "displayInline" : "displayInlineBlock" );
+				
+				mainFilterPanel.add( qfPanel );
 				
 				m_quickFilter = new QuickFilter( MANAGE_NET_FOLDERS_ID );
 				qfPanel.add( m_quickFilter );
 				
-				menuPanel.add( qfPanel );
+				// Add an image the user can click on to invoke the menu items that allows the
+				// user to select if they want to display home dir net folders.
+				{
+					FlowPanel tmpPanel;
+					final Anchor a;
+					Image filterImg;
+					
+					tmpPanel = new FlowPanel();
+					tmpPanel.addStyleName( GwtClientHelper.jsIsIE() ? "displayInline" : "displayInlineBlock" );
+					
+					a = new Anchor();
+					a.setTitle( messages.manageNetFoldersDlg_FilterOptionsAlt() );
+					filterImg = new Image( GwtTeaming.getImageBundle().menuButton() );
+					filterImg.addStyleName( "vibe-filterMenuImg" );
+					filterImg.getElement().setAttribute( "align", "absmiddle" );
+					a.getElement().appendChild( filterImg.getElement() );
+					
+					// Create the popup menu that will be displayed when the user clicks on the image.
+					{
+						m_filterPopupMenu = new PopupMenu( true, false, true );
+						m_filterPopupMenu.addStyleName( "vibe-filterMenuBarDropDown" );
+						
+						// Add the "Show Home Directories" menu item.
+						{
+							m_toggleShowHomeDirsCmd = new Command()
+							{
+								@Override
+								public void execute()
+								{
+									handleShowHomeDirectoriesMenuItem();
+								}
+							};
+							
+							m_showHomeDirsMenuItem = m_filterPopupMenu.addMenuItem(
+																			m_toggleShowHomeDirsCmd,
+																			null,
+																			messages.manageNetFoldersDlg_ShowHomeDirsLabel() );
+						}
+					}
+					
+					a.addClickHandler( new ClickHandler()
+					{
+						@Override
+						public void onClick( ClickEvent event )
+						{
+							m_filterPopupMenu.showRelativeToTarget( a );
+						}
+					} );
+
+					tmpPanel.add( a );
+					mainFilterPanel.add( tmpPanel );
+				}
+				
+				menuPanel.add( mainFilterPanel );
 			}
 		}
 		
@@ -764,11 +834,13 @@ public class ManageNetFoldersDlg extends DlgBox
 	/**
 	 * Issue an ajax request to get a list of all the net folders.
 	 */
-	private void getAllNetFoldersFromServer( String filter )
+	private void getAllNetFoldersFromServer( String filter, boolean includeHomeDirectories )
 	{
 		GetNetFoldersCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
 
+		m_currentFilterStr = filter;
+		
 		// Create the callback that will be used when we issue an ajax call to get all the net folders.
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -810,7 +882,7 @@ public class ManageNetFoldersDlg extends DlgBox
 
 		// Issue an ajax request to get a list of all the net folders.
 		cmd = new GetNetFoldersCmd();
-		cmd.setIncludeHomeDirNetFolders( false );
+		cmd.setIncludeHomeDirNetFolders( includeHomeDirectories );
 		cmd.setFilter( filter );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
@@ -859,6 +931,21 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 	
 	/**
+	 * This method gets called when the user clicks on the "Show Home Directories" menu item.
+	 * If we are currently showing home directories we will stop showing them.  If we are not
+	 * showing them we will start showing them. 
+	 */
+	private void handleShowHomeDirectoriesMenuItem()
+	{
+		boolean currentState;
+		
+		currentState = m_showHomeDirsMenuItem.isChecked();
+		m_showHomeDirsMenuItem.setCheckedState( !currentState );
+		
+		getAllNetFoldersFromServer( m_currentFilterStr, !currentState );
+	}
+	
+	/**
 	 * 
 	 */
 	public void init()
@@ -866,7 +953,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		hideErrorPanel();
 		
 		// Issue an ajax request to get a list of all the net folders
-		getAllNetFoldersFromServer( null );
+		getAllNetFoldersFromServer( null, m_showHomeDirsMenuItem.isChecked() );
 
 		// Check in the sync status every minute.
 		m_timer = new Timer()
@@ -1181,7 +1268,7 @@ public class ManageNetFoldersDlg extends DlgBox
 				@Override
 				public void execute()
 				{
-					getAllNetFoldersFromServer( filter );
+					getAllNetFoldersFromServer( filter, m_showHomeDirsMenuItem.isChecked() );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
