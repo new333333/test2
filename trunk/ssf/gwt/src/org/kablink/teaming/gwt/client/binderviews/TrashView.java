@@ -57,7 +57,6 @@ import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.cellview.client.AbstractCellTable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -221,13 +220,12 @@ public class TrashView extends DataTableFolderViewBase {
 	 * sidebar tree.
 	 */
 	private void reloadUIAsync(final boolean reloadSidebar) {
-		ScheduledCommand doReload = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				reloadUINow(reloadSidebar);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doReload);
+		});
 	}
 	
 	/*

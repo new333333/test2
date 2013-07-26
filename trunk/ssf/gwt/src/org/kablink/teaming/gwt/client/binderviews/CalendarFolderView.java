@@ -1627,7 +1627,7 @@ public class CalendarFolderView extends FolderViewBase
 	 * position in the view.
 	 */
 	private void resizeViewAsync() {
-		resizeViewAsync(INITIAL_RESIZE_DELAY);
+		resizeViewAsync(0);	// DRF (20130726):  Was INITIAL_RESIZE_DELAY (like other views.)  Changed to 0 to fix initial display glitches.
 	}
 	
 	/*

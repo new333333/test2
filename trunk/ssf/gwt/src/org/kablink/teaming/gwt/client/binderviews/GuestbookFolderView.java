@@ -49,7 +49,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -229,13 +229,12 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	 * Asynchronously launches the UI to sign the guest book.
 	 */
 	private void signGuestbookAsync() {
-		Scheduler.ScheduledCommand doSign = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				signGuestbookNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doSign);
+		});
 	}
 	
 	/*

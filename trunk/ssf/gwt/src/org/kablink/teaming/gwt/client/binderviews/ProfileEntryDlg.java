@@ -47,7 +47,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -153,13 +152,12 @@ public class ProfileEntryDlg extends DlgBox {
 	 * Asynchronously loads the entry types the user can select from.
 	 */
 	private void loadPart1Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -190,13 +188,12 @@ public class ProfileEntryDlg extends DlgBox {
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -317,13 +314,12 @@ public class ProfileEntryDlg extends DlgBox {
 	 * dialog.
 	 */
 	private static void runDlgAsync(final ProfileEntryDlg peDlg, final Long userId) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				peDlg.runDlgNow(userId);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*

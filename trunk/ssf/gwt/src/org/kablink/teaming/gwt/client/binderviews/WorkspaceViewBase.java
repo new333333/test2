@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,11 +46,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
-
 
 /**
  * Base class that workspace views MUST extend.
@@ -84,8 +82,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 		m_binderInfo = binderInfo;
 		m_contributorIds = new ArrayList<Long>();
 		
-		ScheduledCommand cmd;
-		cmd = new ScheduledCommand()
+		GwtClientHelper.deferCommand(new ScheduledCommand()
 		{
 			@Override
 			public void execute()
@@ -93,8 +90,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 				// Get the contributor ids for this workspace
 				requestContributorIds();
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		});
 	}
 
 	/**
@@ -180,10 +176,8 @@ public abstract class WorkspaceViewBase extends ViewBase
 		// Is this request for the workspace we are working with?
 		if ( eventBinderId.equals( getBinderId() ) )
 		{
-			ScheduledCommand cmd;
-				
 			// Yes!  Asynchronously fire the corresponding reply event with the contributor IDs.
-			cmd = new ScheduledCommand()
+			GwtClientHelper.deferCommand(new ScheduledCommand()
 			{
 				@Override
 				public void execute()
@@ -195,8 +189,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 														m_contributorIds ); 
 					GwtTeaming.fireEvent( replyEvent );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			});
 		}
 	}
 	
@@ -247,9 +240,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 				@Override
 				public void onFailure( final Throwable t )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand(new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -258,8 +249,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 									t,
 									GwtTeaming.getMessages().rpcFailure_GetWorkspaceContributorIds() );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					});
 				}
 		
 				/**
@@ -269,9 +259,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 				@Override
 				public void onSuccess( final VibeRpcResponse response )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand(new ScheduledCommand()
 					{
 						/**
 						 * 
@@ -284,8 +272,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 							responseData = (GetWorkspaceContributorIdsRpcResponseData) response.getResponseData();
 							m_contributorIds = responseData.getContributorIds();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					});
 				}
 			};
 			

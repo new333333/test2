@@ -38,10 +38,11 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.dom.client.Style.Unit;
 
@@ -161,13 +162,12 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 	 * Asynchronously loads the micro-blog folder's content.
 	 */
 	private void loadPart1Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*

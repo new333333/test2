@@ -80,7 +80,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -288,14 +287,13 @@ public class BlogFolderView extends FolderViewBase
 				@Override
 				public void onSuccess(  VibeRpcResponse response )
 				{
-					Scheduler.ScheduledCommand cmd;
 					StringRpcResponseData responseData;
 					final String binderPermalink;
 
 					responseData = (StringRpcResponseData) response.getResponseData();
 					binderPermalink = responseData.getStringValue();
 					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand(new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -313,8 +311,7 @@ public class BlogFolderView extends FolderViewBase
 									Instigator.BLOG_PAGE_SELECT );
 
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					});
 				}
 			};
 			
@@ -353,12 +350,11 @@ public class BlogFolderView extends FolderViewBase
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				Scheduler.ScheduledCommand cmd;
 				final GetFolderSortSettingRpcResponseData responseData;
 
 				responseData = (GetFolderSortSettingRpcResponseData) response.getResponseData();
 				
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand(new ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -367,8 +363,7 @@ public class BlogFolderView extends FolderViewBase
 						// setting we just read.
 						searchForBlogEntries( responseData.getSortKey(), responseData.getSortDescending() );
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				});
 			}
 		};
 		
@@ -445,9 +440,7 @@ public class BlogFolderView extends FolderViewBase
 		folder = event.getFolder();
 		if ( month != null && folder != null )
 		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand(new ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -463,8 +456,7 @@ public class BlogFolderView extends FolderViewBase
 					
 					searchForBlogEntries( month.getCreationStartTime(), month.getCreationEndTime() );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			});
 		}
 	}
 	
@@ -484,9 +476,7 @@ public class BlogFolderView extends FolderViewBase
 		
 		if ( month != null )
 		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand(new ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -506,8 +496,7 @@ public class BlogFolderView extends FolderViewBase
 					// were created in the given month and year.
 					searchForBlogEntries( month.getCreationStartTime(), month.getCreationEndTime() );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			});
 		}
 	}
 	
@@ -527,9 +516,7 @@ public class BlogFolderView extends FolderViewBase
 		
 		if ( tagInfo != null )
 		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand(new ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -538,8 +525,7 @@ public class BlogFolderView extends FolderViewBase
 					// have the selected tag.
 					searchForBlogEntries( tagInfo );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			});
 		}
 	}
 	
@@ -558,9 +544,7 @@ public class BlogFolderView extends FolderViewBase
 		folderId = event.getFolderId();
 		if ( folderId != null )
 		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand(new ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -571,8 +555,7 @@ public class BlogFolderView extends FolderViewBase
 					// should be working with the selected blog page.
 					fireContextChangedEvent( true );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			});
 		}
 	}
 	
@@ -591,9 +574,7 @@ public class BlogFolderView extends FolderViewBase
 		blogPage = event.getBlogPage();
 		if ( blogPage != null )
 		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand(new ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -612,8 +593,7 @@ public class BlogFolderView extends FolderViewBase
 					if ( m_archiveCtrl != null )
 						m_archiveCtrl.clearAllSelections();
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			});
 		}
 	}
 	
@@ -633,10 +613,8 @@ public class BlogFolderView extends FolderViewBase
 		// Is this request for the workspace we are working with?
 		if ( eventBinderId.equals( getFolderInfo().getBinderIdAsLong() ) )
 		{
-			ScheduledCommand cmd;
-				
 			// Yes!  Asynchronously fire the corresponding reply event with the contributor IDs.
-			cmd = new ScheduledCommand()
+			GwtClientHelper.deferCommand(new ScheduledCommand()
 			{
 				@Override
 				public void execute()
@@ -651,8 +629,7 @@ public class BlogFolderView extends FolderViewBase
 														contributorIds ); 
 					GwtTeaming.fireEvent( replyEvent );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			});
 		}
 	}
 	
@@ -745,17 +722,14 @@ public class BlogFolderView extends FolderViewBase
 	 */
 	private void populateViewAsync()
 	{
-		Scheduler.ScheduledCommand doPopulate;
-
-		doPopulate = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand(new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				populateViewNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*

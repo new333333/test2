@@ -51,7 +51,6 @@ import org.kablink.teaming.gwt.client.util.ProgressDlg.ProgressCallback;
 import org.kablink.teaming.gwt.client.util.ProgressDlg.ProgressDlgClient;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -146,26 +145,24 @@ public class DeleteUsersHelper {
 			return;
 		}
 		
-		ScheduledCommand doOp = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				duOpNow(pDlg);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doOp);
+		});
 	}
 
 	/*
 	 * Asynchronously completes the operation sequence.
 	 */
 	private void duOpCompleteAsync() {
-		ScheduledCommand doOpDone = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				duOpCompleteNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doOpDone);
+		});
 	}
 	
 	/*
