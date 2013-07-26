@@ -71,6 +71,61 @@ import org.kablink.util.search.Constants;
  *
  */
 public abstract class Binder extends DefinableEntity implements WorkArea, InstanceLevelProcessorSupport  {
+	/**
+	 * Different values for the sync schedule option 
+	 */
+	public enum SyncScheduleOption
+	{
+		/**
+		 * The sync schedule defined on the net folder server this net folder points to should be
+		 * used to perform scheduled syncs on this net folder.
+		 * 
+		 */
+		useNetFolderServerSchedule( (short)1 ),
+		
+		/**
+		 * The sync schedule defined on the net folder should be used to perform schedule syncs on
+		 * this net folder.
+		 */
+		useNetFolderSchedule( (short)2 );
+		
+		short value;
+		
+		/**
+		 * 
+		 */
+		SyncScheduleOption( short value )
+		{
+			this.value = value;
+		}
+		
+		/**
+		 * 
+		 */
+		public short getValue()
+		{
+			return value;
+		}
+		
+		/**
+		 * 
+		 */
+		public static SyncScheduleOption valueOf( short value )
+		{
+			switch(value)
+			{
+			case 1:
+				return SyncScheduleOption.useNetFolderServerSchedule;
+				
+			case 2:
+				return SyncScheduleOption.useNetFolderSchedule;
+				
+			default:
+				throw new IllegalArgumentException( "Invalid db value " + value + " for enum SyncScheduleOption" );
+			}
+		}
+	}
+
 	protected String name="";
     protected Principal owner; //initialized by hibernate access=field  
     protected Map properties;
@@ -117,7 +172,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Long jitsMaxAge; // in milliseconds
     protected Long jitsAclMaxAge; // in milliseconds
     protected Boolean fullSyncDirOnly; // Applicable only to mirrored folders
-    
+    protected Short syncScheduleOption;	// SyncScheduleOption
+
     
     public Binder() {
     }
@@ -156,6 +212,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 jitsMaxAge = source.jitsMaxAge;
 		 jitsAclMaxAge = source.jitsAclMaxAge;
 		 fullSyncDirOnly = source.fullSyncDirOnly;
+		 syncScheduleOption = source.syncScheduleOption;
      }
     /**
      * Return the zone id
@@ -878,6 +935,31 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
         
     	return parentBinder.getLandingPagePropertiesSourceBinder();
 	}
+    
+
+    /**
+     * Return the sync schedule option.  Currently there are 2 possible values:
+     * "Use sync schedule from net folder server" and "Use sync schedule from net folder"
+     * @return
+     */
+    public SyncScheduleOption getSyncScheduleOption()
+    {
+    	if ( syncScheduleOption == null )
+    		return null;
+    	
+    	return SyncScheduleOption.valueOf( syncScheduleOption.shortValue() );
+    }
+
+    /**
+     * 
+     */
+    public void setSyncScheduleOption( SyncScheduleOption option )
+    {
+    	if ( option == null )
+    		syncScheduleOption = null;
+    	else
+    		syncScheduleOption = new Short( option.getValue() );
+    }
     
     /**
      * @hibernate.property

@@ -38,8 +38,9 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
+import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig;
+import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig.NetFolderSyncScheduleOption;
 import org.kablink.teaming.gwt.client.GwtRole;
-import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
@@ -78,7 +79,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -90,6 +90,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -117,6 +118,8 @@ public class ModifyNetFolderDlg extends DlgBox
 	private TextBox m_jitsResultsMaxAge;
 	private TextBox m_jitsAclMaxAge;
 	private InlineLabel m_noNetFolderRootsLabel;
+	private RadioButton m_useNFServerScheduleRB;
+	private RadioButton m_useNFScheduleRB;
 	private ScheduleWidget m_scheduleWidget;
 	private NetFolderSelectPrincipalsWidget m_selectPrincipalsWidget;
 	private FlowPanel m_inProgressPanel;
@@ -580,24 +583,39 @@ public class ModifyNetFolderDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel;
-		FlowPanel captionPanelMainPanel;
-		CaptionPanel captionPanel;
 		
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		
-		captionPanel = new CaptionPanel( messages.modifyNetFolderDlg_SyncScheduleCaption() );
-		captionPanel.addStyleName( "modifyNetFolderDlg_SyncScheduleCaptionPanel" );
+		// Add some space at the top
+		{
+			FlowPanel tmpPanel;
+			
+			tmpPanel = new FlowPanel();
+			tmpPanel.addStyleName( "marginTop5px" );
+			mainPanel.add( tmpPanel );
+		}
 		
-		captionPanelMainPanel = new FlowPanel();
-		captionPanel.add( captionPanelMainPanel );
+		// Add the radio buttons for selecting which sync schedule to use.
+		{
+			FlowPanel rbPanel;
+			
+			m_useNFServerScheduleRB = new RadioButton( "scheduledSyncOption", messages.modifyNetFolderDlg_UseNetFolderServerScheduleRbLabel() );
+			rbPanel = new FlowPanel();
+			rbPanel.add( m_useNFServerScheduleRB );
+			mainPanel.add( rbPanel );
+		
+			m_useNFScheduleRB = new RadioButton( "scheduledSyncOption", messages.modifyNetFolderDlg_UseNetFolderScheduleRbLabel() );
+			rbPanel = new FlowPanel();
+			rbPanel.add( m_useNFScheduleRB );
+			mainPanel.add( rbPanel );
+		}
 
 		m_scheduleWidget = new ScheduleWidget( messages.modifyNetFolderDlg_EnableSyncScheduleLabel());
 		m_scheduleWidget.addStyleName( "modifyNetFolderDlg_ScheduleWidget" );
-		captionPanelMainPanel.add( m_scheduleWidget );
 
-		mainPanel.add( captionPanel );
+		mainPanel.add( m_scheduleWidget );
 		
 		return mainPanel;
 	}
@@ -959,7 +977,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
 		netFolder.setIndexContent( getIndexContent() );
-		netFolder.setSyncSchedule( getSyncSchedule() );
+		netFolder.setSyncScheduleConfig( getSyncScheduleConfig() );
 		netFolder.setDataSyncSettings( getDataSyncSettings() );
 		netFolder.setJitsConfig( getJitsSettings() );
 		
@@ -1044,9 +1062,20 @@ public class ModifyNetFolderDlg extends DlgBox
 	/**
 	 * Return the sync schedule
 	 */
-	private GwtSchedule getSyncSchedule()
+	private GwtNetFolderSyncScheduleConfig getSyncScheduleConfig()
 	{
-		return m_scheduleWidget.getSchedule( );
+		GwtNetFolderSyncScheduleConfig config;
+		
+		config = new GwtNetFolderSyncScheduleConfig();
+
+		config.setSyncSchedule( m_scheduleWidget.getSchedule() );
+		
+		if ( m_useNFServerScheduleRB.getValue() == true )
+			config.setSyncScheduleOption( NetFolderSyncScheduleOption.USE_NET_FOLDER_SERVER_SCHEDULE );
+		else
+			config.setSyncScheduleOption( NetFolderSyncScheduleOption.USE_NET_FOLDER_SCHEDULE );
+		
+		return config;
 	}
 	
 	/**
@@ -1233,10 +1262,28 @@ public class ModifyNetFolderDlg extends DlgBox
 	{
 		if ( m_scheduleWidget != null )
 		{
+			m_scheduleWidget.init( null );
+			m_useNFServerScheduleRB.setValue( false );
+			m_useNFScheduleRB.setValue( true );
+			
 			if ( m_netFolder != null )
-				m_scheduleWidget.init( m_netFolder.getSyncSchedule() );
-			else
-				m_scheduleWidget.init( null );
+			{
+				GwtNetFolderSyncScheduleConfig config;
+				
+				config = m_netFolder.getSyncScheduleConfig();
+				if ( config != null )
+				{
+					m_scheduleWidget.init( config.getSyncSchedule() );
+					
+					m_useNFServerScheduleRB.setValue( false );
+					m_useNFScheduleRB.setValue( false );
+					
+					if ( config.getSyncScheduleOption() == NetFolderSyncScheduleOption.USE_NET_FOLDER_SERVER_SCHEDULE )
+						m_useNFServerScheduleRB.setValue( true );
+					else
+						m_useNFScheduleRB.setValue( true );
+				}
+			}
 		}
 		else
 		{

@@ -2246,6 +2246,8 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_SelectPrincipalsHint();
 	String modifyNetFolderDlg_ScheduleTab();
 	String modifyNetFolderDlg_SyncScheduleCaption();
+	String modifyNetFolderDlg_UseNetFolderScheduleRbLabel();
+	String modifyNetFolderDlg_UseNetFolderServerScheduleRbLabel();
 	
 	// Strings used in the Schedule widget
 	String scheduleWidget_AtTimeLabel();

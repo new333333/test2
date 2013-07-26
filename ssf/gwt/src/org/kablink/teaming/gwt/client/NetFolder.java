@@ -54,7 +54,7 @@ public class NetFolder
 	private String m_relativePath;
 	private String m_netFolderRootName;
 	private NetFolderSyncStatus m_status;
-	private GwtSchedule m_syncSchedule;
+	private GwtNetFolderSyncScheduleConfig m_syncScheduleConfig;
 	private ArrayList<GwtRole> m_roles;
 	private boolean m_isHomeDir;
 	private boolean m_indexContent;
@@ -96,7 +96,7 @@ public class NetFolder
 		m_name = netFolder.getName();
 		m_relativePath = netFolder.getRelativePath();
 		m_netFolderRootName = netFolder.getNetFolderRootName();
-		m_syncSchedule = netFolder.getSyncSchedule();
+		m_syncScheduleConfig = netFolder.getSyncScheduleConfig();
 		m_isHomeDir = netFolder.getIsHomeDir();
 		m_indexContent = netFolder.getIndexContent();
 		
@@ -186,9 +186,9 @@ public class NetFolder
 	/**
 	 * 
 	 */
-	public GwtSchedule getSyncSchedule()
+	public GwtNetFolderSyncScheduleConfig getSyncScheduleConfig()
 	{
-		return m_syncSchedule;
+		return m_syncScheduleConfig;
 	}
 	
 	/**
@@ -279,9 +279,9 @@ public class NetFolder
 	/**
 	 * 
 	 */
-	public void setSyncSchedule( GwtSchedule schedule )
+	public void setSyncScheduleConfig( GwtNetFolderSyncScheduleConfig config )
 	{
-		m_syncSchedule = schedule;
+		m_syncScheduleConfig = config;
 	}
 	
 	/**

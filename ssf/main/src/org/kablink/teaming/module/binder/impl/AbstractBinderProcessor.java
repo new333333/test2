@@ -748,6 +748,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    				if ( value != null )
    					entryData.put( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE, value );
    			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION ) &&
+         		 !entryData.containsKey( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION ) )
+  			{
+  				Object value;
+  				
+  				value = inputData.getSingleObject( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION );
+				entryData.put( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION, value );
+  			}
    		}
    		Boolean library = null;
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY))
