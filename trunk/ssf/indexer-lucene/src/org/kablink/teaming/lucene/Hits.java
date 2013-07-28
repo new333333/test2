@@ -104,9 +104,7 @@ public class Hits implements Serializable {
             int offset, int maxSize, Set<String> noAclButAccessibleThroughSharingEntryIds) throws IOException {
         if (topDocs == null) return new Hits(0);
     	int length = topDocs.totalHits;
-        if (maxSize > 0) {
-          length = Math.min(length - offset, maxSize);
-        }
+        length = Math.min(length - offset, maxSize);
         if (length <= 0) return new Hits(0);
         Hits ss_hits = new Hits(length);
         ScoreDoc[] hits = topDocs.scoreDocs;
