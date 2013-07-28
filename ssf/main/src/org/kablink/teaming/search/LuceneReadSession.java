@@ -33,6 +33,7 @@
 package org.kablink.teaming.search;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
@@ -116,6 +117,9 @@ public interface LuceneReadSession extends LuceneSession {
 	 * This method differs from other general purpose search method in that this implementation takes
 	 * into account implicit/inferred accesses. 
 	 * 
+	 * NOTE: This method is to be used on a binder where the hierarchy below the binder has all required
+	 * ACLs indexed with them (e.g. adhoc folder, cloud folder, etc.)
+	 * 
 	 * @param contextUserId
 	 * @param aclQueryStr
 	 * @param mode
@@ -131,6 +135,25 @@ public interface LuceneReadSession extends LuceneSession {
 	public Hits searchFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
 			Long parentBinderId, String parentBinderPath) throws LuceneException;
 
+	/**
+	 * Return immediate children entities (entries and binders) of the specified
+	 * parent binder where those entities are accessible/visible to the user.
+	 * 
+	 * NOTE: This method is to be used on a binder where the entries below the binder have no ACLs
+	 * indexed with them (e.g. net folder exposed through FAMT, etc.)
+	 * 
+	 * @param contextUserId
+	 * @param aclQueryStr
+	 * @param titles
+	 * @param query
+	 * @param sort
+	 * @param offset
+	 * @param size
+	 * @return
+	 * @throws LuceneException
+	 */
+	public Hits searchFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException;
+	
 	/**
      * Return whether or not the calling user can gain inferred access to the specified
      * binder because the user has explicit access to at least one descendant binder of

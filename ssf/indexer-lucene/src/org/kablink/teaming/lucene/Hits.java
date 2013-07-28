@@ -56,16 +56,19 @@ public class Hits implements Serializable {
     private float[] scores;
     private int totalHits = 0; // no longer used?
     
-    // This field is for internal use only. Not used by application.
+    // This optional field is for internal use only. Not used directly by application tier.
+    // If true the document represents a net folder file/entry/comment that is accessible
+    // to the user via ACL granted through sharing.
+    // The value of false doesn't necessarily mean the opposite. It may simply means that
+    // the information is unknown.
     private boolean[] noAclButAccessibleThroughSharing; // all elements initialized to false
     
-
     public Hits(int length) {
         this.size = length;
         documents = new Document[length];
         scores = new float[length];
         noAclButAccessibleThroughSharing = new boolean[length];
-    }
+     }
 
     // A sort of copy constructor
     public Hits(Hits hits, BitSet bitSet, int accessibleCount) {
@@ -96,7 +99,7 @@ public class Hits implements Serializable {
     public boolean noAclButAccessibleThroughSharing(int n) {
     	return noAclButAccessibleThroughSharing[n];
     }
-    
+
     public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
             int offset, int maxSize, Set<String> noAclButAccessibleThroughSharingEntryIds) throws IOException {
         if (topDocs == null) return new Hits(0);
@@ -144,7 +147,7 @@ public class Hits implements Serializable {
     public void setNoAclButAccessibleThroughSharing(boolean value, int n) {
     	noAclButAccessibleThroughSharing[n] = value;
     }
-
+    
 	/**
 	 * @return Returns the totalHits.
 	 */
