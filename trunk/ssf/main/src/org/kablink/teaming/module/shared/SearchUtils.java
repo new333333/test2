@@ -35,7 +35,6 @@ package org.kablink.teaming.module.shared;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,7 +50,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.NumericField;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
@@ -73,6 +71,7 @@ import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
+import org.kablink.teaming.fi.connection.acl.ResourceItem;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.util.LanguageTaster;
@@ -664,101 +663,58 @@ public class SearchUtils {
 		
 		if(ResourceDriverConfig.DriverType.famt == parentBinder.getResourceDriverType()) {
 			// The parent binder is a net folder which does not store file ACLs in the search index.
-			// In this case, we do two things differently.
-			// 1. Do NOT apply ACL during search.
-			// 2. (This naturally follows from 1) Do NOT attempt inferred access computation.
-			Hits hits = luceneSession.search(contextUserId, null, mode, query, sort, offset, size);
+			// We need to consolidate the information in the search index with the dynamic list
+			// obtained from the file system in order to determine which subset of the children
+			// the user has access to.
 			
-			// Now that we have raw result back from the search engine, we must apply post-filtering
-			// to filter out those items that the calling user doesn't have access to if the calling
-			// user is confined to access checking.
-			if(Validator.isNotNull(aclQueryStr) && hits.length() > 0) {
-				BitSet bitSet = new BitSet(hits.length());
-				int accessibleCount = 0;
-				
-				AclResourceSession session = openAclResourceSession(parentBinder);
-				
-				try {
-					boolean accessGranted;
-					for(int i = 0; i < hits.length(); i++) {
-						if(hits.noAclButAccessibleThroughSharing(i)) {
-							accessGranted = true;
-						}
-						else {
-							Document doc = hits.doc(i);
-							NumericField entryAclParentId = (NumericField) doc.getFieldable(Constants.ENTRY_ACL_PARENT_ID_FIELD);
-							if(entryAclParentId != null) {
-								// This doc represents folder entry, comment, or file where the entry either inherits
-								// its ACL from the parent folder or its ACL is not stored with the index.
-								if(entryAclParentId.getNumericValue().longValue() < 0) {
-									// This is a folder entry/comment/file whose ACL is not stored with the index.
-									// We must dynamically check the user's access on this item against the external
-									// source if possible.
-									if(session != null) {
-										String resourcePath = doc.get(Constants.RESOURCE_PATH_FIELD);
-										if(resourcePath != null) {
-											session.setPath(resourcePath);
-											boolean exists;
-											try {
-												exists = session.exists();
-											}
-											catch(Exception e) {
-												logger.error("Error calling exists()", e);
-												exists = false; // Deny access
-											}
-											if(exists) { // Grant access
-												accessGranted = true;														
-											}
-											else { // Deny access
-												accessGranted = false;											
-											}
-										}
-										else {
-											// For whatever reason, resource path isn't avaialble for this item. Deny access.
-											accessGranted = false;
-										}
-									}
-									else {
-										// The external system doesn't recognize this user. Deny access.
-										accessGranted = false;
-									}
-								}
-								else { // access granted
-									accessGranted = true;														
-								}
-							}
-							else { // access granted
-								accessGranted = true;					
-							}
-						}
-						if(accessGranted) {
-							bitSet.set(i);
-							accessibleCount++;															
-						}
-						else {
-							bitSet.clear(i);								
-						}
-					}
-				}
-				finally {
-					if(session != null)
-						session.close();
-				}
-				
-				return new Hits(hits, bitSet, accessibleCount);
+			List<String> childrenTitles = null;
+			if(Validator.isNotNull(aclQueryStr)) {
+				// We must apply access check one way or another
+				childrenTitles = getChildrenTitlesFromSourceSystem(parentBinder);
 			}
 			else {
-				return hits;
+				// The user is not confined by access check (e.g. admin), which means that 
+				// dynamic filtering against file system is not necessary either.
 			}
+			
+		    return luceneSession.searchFolderOneLevel(contextUserId, aclQueryStr, childrenTitles, query, sort, offset, size);
 		}
 		else {
 			// All other cases
 			return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
 		}
 	}
+	
+	private static List<String> getChildrenTitlesFromSourceSystem(Binder parentBinder) {
+		AclResourceSession session = openAclResourceSession((AclResourceDriver) parentBinder.getResourceDriver());
+		
+		if(session == null)
+			return null; // The source system doesn't recognize this user. 
+		
+		try {
+			session.setPath(parentBinder.getResourcePath());
+			List<ResourceItem> children = session.getChildren(false, false, false, false);
+			List<String> titles = null;
+			if(children != null && children.size() > 0) {
+				titles = new ArrayList<String>(children.size());
+				for(ResourceItem child:children) {
+					titles.add(child.getName());
+				}
+			}
+			return titles;
+		}
+		catch(Exception e) {
+			logger.error("Error getting listing for folder [" + parentBinder.getPathName() + "] with resource path [" + 
+					parentBinder.getResourcePath() + "] through net folder server '" + parentBinder.getResourceDriverName() + "'");
+			return null;
+		}
+		finally {
+			session.close();
+		}
+	}
+	
 
-	private static AclResourceSession openAclResourceSession(Binder binder) {
-		AclResourceDriver driver = (AclResourceDriver) binder.getResourceDriver();
+	private static AclResourceSession openAclResourceSession(AclResourceDriver driver) {
 		try {
 			return getResourceDriverManager().openSessionUserMode(driver);
 		} catch (AclItemPrincipalMappingException e) {

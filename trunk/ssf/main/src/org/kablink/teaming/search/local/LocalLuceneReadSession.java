@@ -33,6 +33,7 @@
 package org.kablink.teaming.search.local;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -172,6 +173,19 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.testInferredAccessToBinder()");
+		}
+	}
+
+	@Override
+	public Hits searchFolderOneLevel(Long contextUserId, String aclQueryStr,
+			List<String> titles, Query query, Sort sort, int offset, int size)
+			throws LuceneException {
+		SimpleProfiler.start("LocalLuceneReadSession.searchFolderOneLevel()");
+		try {
+			return luceneProvider.searchFolderOneLevel(contextUserId, aclQueryStr, titles, query, sort, offset, size);
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.searchFolderOneLevel()");
 		}
 	}
 }

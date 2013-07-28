@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -49,7 +50,6 @@ import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.cn.ChineseAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -599,6 +599,13 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		
 	}
 	
+	/*
+	 * This method executes search query that limits its search space only to the 
+	 * immediate children of the specified binder.
+	 * The search result is restricted by the ACL filter if specified.
+	 * This method fully computes inferred access (visibility) based on the ACLs
+	 * stored in the index.
+	 */
 	public org.kablink.teaming.lucene.Hits searchFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
 			Long parentBinderId, String parentBinderPath) throws LuceneException {
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
@@ -639,6 +646,73 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, implicitlyAccessibleSubFoldersFilter);
 	}
 
+	/*
+	 * This method executes search query that limits its search space only to the 
+	 * immediate children of the specified binder.
+	 * The search result only contains items that pass at least one of the filters
+	 * specified.
+	 * This method doesn't make any attempt to compute inferred access.
+	 */
+	public org.kablink.teaming.lucene.Hits searchFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException {
+		long startTime = System.nanoTime();
+
+		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
+
+		TopDocs topDocs = null;
+		
+		Filter aclFilter = null;
+
+		try {
+			if(aclQueryStr != null && aclQueryStr.length() > 0) {
+				Query aclQuery = parseAclQueryStr(aclQueryStr);
+				aclFilter = new QueryWrapperFilter(aclQuery);
+			}
+			if(titles != null && titles.size() > 0) {
+				BooleanQuery titleQuery = new BooleanQuery();
+				for(String title:titles) {
+					titleQuery.add(new TermQuery(new Term(Constants.TITLE_FIELD, title.toLowerCase())), BooleanClause.Occur.SHOULD);
+				}
+				QueryWrapperFilter titleFilter = new QueryWrapperFilter(titleQuery);
+				if(aclFilter == null) {
+					aclFilter = titleFilter;
+				}
+				else {
+					aclFilter = new ChainedFilter(new Filter[] {aclFilter, titleFilter}, ChainedFilter.OR);
+				}
+			}
+			
+			if (size < 0)
+				size = Integer.MAX_VALUE;
+
+			if (sort == null) {
+				topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE);
+			}
+			else {
+				try {
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE, sort);
+				} catch (Exception ex) {
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE);
+				}
+			}
+		   
+			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
+					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, null);
+
+			end(startTime, "searchFolderOneLevel", contextUserId, aclQueryStr, titles, query, sort, offset, size, tempHits.length());
+			
+			return tempHits;
+		} catch (IOException e) {
+			throw newLuceneException("Error searching index", e);
+		} catch (OutOfMemoryError e) {
+			getIndexingResource().closeOOM(e);
+			throw e;
+		} catch (ParseException e) {
+			throw newLuceneException("Error parsing query", e);
+		} finally {
+			releaseIndexSearcherHandle(indexSearcherHandle);
+		}
+	}
+	
 	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size) throws LuceneException {
 		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, null);
@@ -1154,6 +1228,25 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					", contextUserId=" + contextUserId + 
 					", aclQueryStr=[" + aclQueryStr + 
 					"], mode=" + mode + 
+					", query=[" + ((query==null)? null : query.toString()) + 
+					"], sort=[" + ((sort==null)? null : sort.toString()) + 
+					"], offset=" + offset +
+					", size=" + size);
+		}
+		else if(logger.isDebugEnabled()) {
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 					
+					", offset=" + offset +
+					", size=" + size);
+		}
+	}
+	
+	private void end(long begin, String methodName, Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size, int resultLength) {
+		endStat(begin, methodName);
+		if(logger.isTraceEnabled()) {
+			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 
+					", contextUserId=" + contextUserId + 
+					", aclQueryStr=[" + aclQueryStr + 
+					"], titles=" + titles +
 					", query=[" + ((query==null)? null : query.toString()) + 
 					"], sort=[" + ((sort==null)? null : sort.toString()) + 
 					"], offset=" + offset +

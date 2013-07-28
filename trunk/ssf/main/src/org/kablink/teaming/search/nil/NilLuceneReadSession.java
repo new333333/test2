@@ -33,6 +33,7 @@
 package org.kablink.teaming.search.nil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -90,6 +91,13 @@ public class NilLuceneReadSession implements LuceneReadSession {
 	public boolean testInferredAccessToBinder(Long contextUserId,
 			String aclQueryStr, String binderPath) throws LuceneException {
 		return false;
+	}
+
+	@Override
+	public Hits searchFolderOneLevel(Long contextUserId, String aclQueryStr,
+			List<String> titles, Query query, Sort sort, int offset, int size)
+			throws LuceneException {
+		return new Hits(0);
 	}
 
 }
