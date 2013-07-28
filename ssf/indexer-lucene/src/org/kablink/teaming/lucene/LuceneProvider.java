@@ -654,6 +654,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	 * This method doesn't make any attempt to compute inferred access.
 	 */
 	public org.kablink.teaming.lucene.Hits searchFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException {
+		if(size == 0)
+			throw new IllegalArgumentException("Size must be specified");
+
 		long startTime = System.nanoTime();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
@@ -684,14 +687,16 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			if (size < 0)
 				size = Integer.MAX_VALUE;
 
+			int searchMaxSize = getSearchMaxSize(offset, size);
+
 			if (sort == null) {
-				topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE);
+				topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);
 			}
 			else {
 				try {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE, sort);
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize, sort);
 				} catch (Exception ex) {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE);
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);
 				}
 			}
 		   
@@ -713,6 +718,13 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 	
+	private int getSearchMaxSize(int offset, int requestedMaxSize) {
+		if(requestedMaxSize == Integer.MAX_VALUE)
+			return Integer.MAX_VALUE;
+		else
+			return offset + requestedMaxSize;
+	}
+	
 	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size) throws LuceneException {
 		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, null);
@@ -731,6 +743,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	
 	private org.kablink.teaming.lucene.Hits doSearchInternal(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size, Filter alternateAclFilter) throws LuceneException {
+		if(size == 0)
+			throw new IllegalArgumentException("Size must be specified");
+		
 		long startTime = System.nanoTime();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
@@ -788,22 +803,23 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			if (size < 0)
 				size = Integer.MAX_VALUE;
 			
+			int searchMaxSize = getSearchMaxSize(offset, size);
+			
 			if (sort == null) {
-				topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE);
+				topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);
 			}
 			else {
 				try {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE, sort);
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize, sort);
 				} catch (Exception ex) {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE);
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);
 				}
 			}
 			
 			/// BEGIN: Debug
 			int hitsThreshold = PropsUtil.getInt("lucene.hits.threshold", 100000);
 	    	int length = topDocs.totalHits;
-	        if (size > 0)
-	          length = Math.min(length - offset, size);
+	        length = Math.min(length - offset, size);
 	        Long hitsTransferBegin = null;
 	        if(length > hitsThreshold) {
 	        	hitsTransferBegin = System.nanoTime();
