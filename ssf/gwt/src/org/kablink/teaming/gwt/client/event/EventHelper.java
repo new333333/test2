@@ -2279,9 +2279,18 @@ public class EventHelper {
 				}
 				break;
 			
+			case WINDOW_TITLE_SET:
+				// A WindowTitleSetEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof WindowTitleSetEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = WindowTitleSetEvent.registerEvent(eventBus, ((WindowTitleSetEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case ZIP_AND_DOWNLOAD_FOLDER:
-				// A ZipAndDownloadFolderFilesEvent!  Can the event
-				// handler we were given handle that?
+				// A ZipAndDownloadFolderEvent!  Can the event handler
+				// we were given handle that?
 				if (eventHandler instanceof ZipAndDownloadFolderEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = ZipAndDownloadFolderEvent.registerEvent(eventBus, ((ZipAndDownloadFolderEvent.Handler) eventHandler));
@@ -2668,6 +2677,7 @@ public class EventHelper {
 			case SUBSCRIBE_SELECTED_ENTITIES:                  hasHandler = (eventHandler instanceof SubscribeSelectedEntitiesEvent.Handler);              break;
 			case TOGGLE_SHARED_VIEW:                  	       hasHandler = (eventHandler instanceof ToggleSharedViewEvent.Handler);                       break;
 			case UNLOCK_SELECTED_ENTITIES:                     hasHandler = (eventHandler instanceof UnlockSelectedEntitiesEvent.Handler);                 break;
+			case WINDOW_TITLE_SET:                             hasHandler = (eventHandler instanceof WindowTitleSetEvent.Handler);                         break;
 			case ZIP_AND_DOWNLOAD_FOLDER:                      hasHandler = (eventHandler instanceof ZipAndDownloadFolderEvent.Handler);                   break;
 			case ZIP_AND_DOWNLOAD_SELECTED_FILES:              hasHandler = (eventHandler instanceof ZipAndDownloadSelectedFilesEvent.Handler);            break;
 			

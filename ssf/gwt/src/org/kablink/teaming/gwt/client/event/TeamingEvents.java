@@ -294,6 +294,7 @@ public enum TeamingEvents implements IsSerializable {
 	SUBSCRIBE_SELECTED_ENTITIES,					// Subscribes the Current User to the Selected Entities.
 	TOGGLE_SHARED_VIEW,								// Toggles the 'Shared by/with Me' Views Between Files and All Entries.
 	UNLOCK_SELECTED_ENTITIES,						// Unlocks the Selected Entities.
+	WINDOW_TITLE_SET,								// Window Title has been Set.
 	ZIP_AND_DOWNLOAD_FOLDER,						// Zips and Downloads all files in a folder.
 	ZIP_AND_DOWNLOAD_SELECTED_FILES,				// Zips and Downloads the currently selected files.
 		
