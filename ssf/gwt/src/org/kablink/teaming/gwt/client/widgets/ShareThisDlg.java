@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.text.DateFormat;
@@ -132,7 +131,6 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
-
 
 /**
  * This class is used to present a UI the user can use to share an item with
@@ -3077,7 +3075,7 @@ public class ShareThisDlg extends DlgBox
 		}
 		else
 		{
-			// We are sharing mulitiple items.  Use the entry image.
+			// We are sharing multiple items.  Use the entry image.
 			imgResource = GwtTeaming.getFilrImageBundle().entry_large();
 			
 			if ( m_mode == ShareThisDlgMode.NORMAL )
@@ -3085,7 +3083,10 @@ public class ShareThisDlg extends DlgBox
 			else
 				m_headerNameLabel.setText( GwtTeaming.getMessages().shareDlg_manageMultipleItems( numItems ) );
 			
-			m_headerPathLabel.setText( "" );
+			// Put a non-breaking space in the path so that it gets a
+			// height.  This fixes the layout so that the header
+			// doesn't overlap a make public button.
+			m_headerPathLabel.getElement().setInnerHTML("&nbsp;");
 		}
 
 		m_headerImg.setVisible( true );
