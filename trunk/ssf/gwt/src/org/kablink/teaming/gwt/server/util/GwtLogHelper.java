@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.PasswordMismatchException;
+import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
@@ -383,6 +384,7 @@ public class GwtLogHelper {
 				else if (ex instanceof GroupExistsException                 ) exType = ExceptionType.GROUP_ALREADY_EXISTS;
 				else if (ex instanceof RDException                          ) exType = ExceptionType.NET_FOLDER_ROOT_ALREADY_EXISTS;
 				else if (ex instanceof PasswordMismatchException            ) exType = ExceptionType.CHANGE_PASSWORD_EXCEPTION;
+				else if (ex instanceof UserExistsException                  ) exType = ExceptionType.USER_ALREADY_EXISTS;
 				else                                                          exType = ExceptionType.UNKNOWN;
 				
 				reply.setExceptionType(exType);

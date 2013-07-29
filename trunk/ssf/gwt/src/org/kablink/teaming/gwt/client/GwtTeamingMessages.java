@@ -315,7 +315,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CreateBlogPage();
 	String rpcFailure_CreateEmailReport();
 	String rpcFailure_CreateGroup();
-	String rpcFailure_CreateGroupAlreadyExists();
+	String rpcFailure_CreateUserGroupAlreadyExists();
 	String rpcFailure_CreateLicenseReport();
 	String rpcFailure_CreateLoginReport();
 	String rpcFailure_CreateUserAccessReport();
