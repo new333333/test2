@@ -668,7 +668,7 @@ public class GwtClientHelper {
 					
 				case GROUP_ALREADY_EXISTS:
 					displayAlert = true;
-					cause = patchMessage(messages.rpcFailure_CreateGroupAlreadyExists(), patches);
+					cause = patchMessage(messages.rpcFailure_CreateUserGroupAlreadyExists(), patches);
 					break;
 					
 				case LDAP_GUID_NOT_CONFIGURED:
@@ -679,6 +679,11 @@ public class GwtClientHelper {
 				case NO_BINDER_BY_THE_ID_EXCEPTION:
 					displayAlert = true;
 					cause = patchMessage(messages.rpcFailure_FolderDoesNotExist(), patches);
+					break;
+					
+				case USER_ALREADY_EXISTS:
+					displayAlert = true;
+					cause = patchMessage(messages.rpcFailure_CreateUserGroupAlreadyExists(), patches);
 					break;
 					
 				case USER_NOT_LOGGED_IN:
