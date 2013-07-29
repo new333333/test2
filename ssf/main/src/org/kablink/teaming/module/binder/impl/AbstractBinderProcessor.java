@@ -1648,18 +1648,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(searchOptions); 
     	so.setSortBy(fields);
-    	Query soQuery = so.getLuceneQuery();    //Get the query into a variable to avoid doing this very slow operation twice
-    	
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Query is: " + soQuery.toString());
-    	}
     	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	Hits hits = null;
         try {
         	hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
-        			so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, soQuery, so.getSortBy(), searchOffset, maxResults,
+        			so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, searchOffset, maxResults,
         			binder);
         }
         finally {

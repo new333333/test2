@@ -1917,19 +1917,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	private Hits executeNetFolderLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults, Binder parentBinder) {
 		Hits hits = new Hits(0);
 
-		Query soQuery = so.getLuceneQuery(); // Get the query into a variable to avoid
-		// doing this very slow operation twice
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("Query is in executeNetFolderLuceneQuery: "
-					+ soQuery.toString());
-		}
-
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
 				.openReadSession();
 		try {
 			hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
-					so.getAclQueryStr(), searchMode, soQuery, so.getSortBy(), offset,
+					so, searchMode, offset,
 					maxResults, parentBinder);
 		} catch (Exception e) {
 			logger.info("Exception:" + e);
@@ -2653,20 +2645,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				// Create the Lucene query
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
-				Query query = searchObject.getLuceneQuery(); // Get the query into a
-				// variable to avoid
-				// doing this very slow
-				// operation twice
-				if (logger.isDebugEnabled()) {
-					logger.debug("Query is in executeSearchQuery: "
-							+ query.toString());
-				}
 
 				// We have to figure out the size of the pool before building
 				// the buckets
 				Hits testHits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(), 
-						searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject
-						.getSortBy(), 0, maxBucketSize, top);
+						searchObject, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+						0, maxBucketSize, top);
 				totalHits = testHits.getTotalHits();
 				if (totalHits > maxBucketSize) {
 					skipLength = testHits.getTotalHits() / maxBucketSize;
@@ -2698,15 +2682,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				}
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
-				Query query = searchObject.getLuceneQuery(); // Get the query into a
-				// variable to avoid
-				// doing this very slow
-				// operation twice
-				if (logger.isDebugEnabled()) {
-					logger.debug("Query is in executeSearchQuery: "
-							+ query.toString());
-				}
-				hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(), searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject.getSortBy(), 0,
+				hits = SearchUtils.searchFolderOneLevelWithInferredAccess
+						(luceneSession, RequestContextHolder.getRequestContext().getUserId(), searchObject, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0,
 						-1, top);
 			}
 		} finally {

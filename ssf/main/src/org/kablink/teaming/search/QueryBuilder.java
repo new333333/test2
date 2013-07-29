@@ -178,7 +178,7 @@ public class QueryBuilder {
 		
 		if(useAcls) {
 			// add acl check to every query. 
-			String acls = getAclClause();
+			String acls = getAclClause(so);
 			so.setAclQueryStr(acls);	
 		}
 		
@@ -684,10 +684,10 @@ public class QueryBuilder {
 	}
 
 	public String buildAclClause() {
-		return getAclClause();
+		return getAclClause(null);
 	}
 	
-	private String getAclClause()
+	private String getAclClause(SearchObject so)
 	{
 		//KEEP THIS AND getAclClauseForIds IN SYNC WITH ACCESSUTILS.CHECKACCESS 
 		
@@ -702,16 +702,16 @@ public class QueryBuilder {
 
 		StringBuilder sb = new StringBuilder();
 		
-		getAclClauseForIds(userPrincipals, user.getId(), sb);
+		getAclClauseForIds(userPrincipals, user.getId(), sb, so);
 		if(applicationPrincipals != null) {
 			sb.append(" AND ");
-			getAclClauseForIds(applicationPrincipals, null, sb);
+			getAclClauseForIds(applicationPrincipals, null, sb, so);
 		}
 		
 		return sb.toString();
 	}
 	
-	private StringBuilder getAclClauseForIds(Set principalIds, Long userId, StringBuilder qString)
+	private StringBuilder getAclClauseForIds(Set principalIds, Long userId, StringBuilder qString, SearchObject so)
 	{
 		Long allUsersGroupId = Utils.getAllUsersGroupId();
 		Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();
@@ -784,6 +784,9 @@ public class QueryBuilder {
 			rootPrincipals += " OR " + ROOT_PREFIX + String.valueOf(allExtUsersGroupId);
 		}
 		qString.append("((" + rootPrincipals + ") AND ");
+		
+		if(so != null)
+			so.setNetFolderRootAclQueryStr(rootPrincipals);
 		
 		// folderAcl:1,2,3...
 		if (widen) {

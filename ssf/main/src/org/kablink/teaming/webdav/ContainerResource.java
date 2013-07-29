@@ -230,10 +230,8 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
         	if(oneLevelWithInferredAccess) {
     			hits = org.kablink.teaming.module.shared.SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession,
     					RequestContextHolder.getRequestContext().getUserId(),
-    					so.getAclQueryStr(), 
+    					so, 
     					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
-    					soQuery, 
-    					null, 
     					0,
     					Integer.MAX_VALUE, 
     					parentBinder);
