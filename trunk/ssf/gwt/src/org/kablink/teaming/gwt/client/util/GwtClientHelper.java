@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.WindowTitleSetEvent;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
@@ -1171,6 +1172,16 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Used to fire a simple Vibe event to the outer most GwtMainpage's
+	 * event bus from anywhere within the application.
+	 * 
+	 * @param eventEnum
+	 */
+	public static native void jsFireVibeEventOnMainEventBus(TeamingEvents eventEnum) /*-{
+		$wnd.top.ss_fireVibeEventOnMainEventBus(eventEnum);
+	}-*/;
+
+	/**
 	 * Returns the JavaScript variable ss_allowNextPrevOnView.
 	 * 
 	 * @return
@@ -1215,6 +1226,15 @@ public class GwtClientHelper {
 	public static native int jsGetContentIFrameTop() /*-{
 		var iFrameDIV = $wnd.top.document.getElementById('contentControl');
 		return $wnd.top.ss_getObjectTop(iFrameDIV);
+	}-*/;
+
+	/**
+	 * Returns the text on the main GWT page's <title>.
+	 * 
+	 * @return
+	 */
+	public static native String jsGetMainTitle() /*-{
+		return $wnd.top.document.title;
 	}-*/;
 
 	/**
@@ -1394,16 +1414,6 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Used to fire a simple Vibe event to the outer most GwtMainpage's
-	 * event bus from anywhere within the application.
-	 * 
-	 * @param event
-	 */
-	public static native void jsFireVibeEventOnMainEventBus(TeamingEvents eventEnum) /*-{
-		$wnd.top.ss_fireVibeEventOnMainEventBus(eventEnum);
-	}-*/;
-
-	/**
 	 * Called to force the GWT UI content area to resize itself based
 	 * on its current content.
 	 * 
@@ -1438,12 +1448,22 @@ public class GwtClientHelper {
 		$wnd.top.ss_setEntryPopupIframeSize();
 	}-*/;
 
-	/**
+	/*
 	 * Sets the text on the main GWT page's <title>.
 	 */
-	public static native void jsSetMainTitle(String title) /*-{
+	private static native void jsSetMainTitleImpl(String title) /*-{
 		$wnd.top.document.title = title;
 	}-*/;
+	
+	/**
+	 * Sets the text on the main GWT page's <title>.
+	 * 
+	 * @param title
+	 */
+	public static void jsSetMainTitle(String title) {
+		jsSetMainTitleImpl(title);
+		GwtTeaming.fireEventAsync(new WindowTitleSetEvent(title));
+	}
 
 	/**
 	 * Runs an entry view URL in the content frame.
