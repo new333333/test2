@@ -1540,11 +1540,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(options); 
     	so.setSortBy(fields);
-    	Query soQuery = so.getLuceneQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + queryTree.asXML());
-    		logger.debug("Query is: " + soQuery.toString());
     	}
     	
     	if(searchMode == null) {
@@ -1562,7 +1560,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         try {
 	        //Make sure to get inaccessible sub-folders that have visible folders further down the tree
         	hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getAclQueryStr(), searchMode.intValue(), soQuery, so.getSortBy(), searchOffset, 
+	        		so, searchMode.intValue(), searchOffset, 
 	        		maxResults, binder);
         }
         finally {

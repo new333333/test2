@@ -78,6 +78,7 @@ import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.SearchFieldResult;
+import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterToSearchBooleanConverter;
@@ -627,15 +628,23 @@ public class SearchUtils {
 	 */
 	public static Hits searchFolderOneLevelWithInferredAccess(LuceneReadSession luceneSession,
 			Long contextUserId, 
-			String aclQueryStr, 
+			SearchObject so,
 			int mode, 
-			Query query, 
-			Sort sort, 
 			int offset, 
 			int size, 
 			Binder parentBinder)
 					throws LuceneException, AuthException {
+		if(so == null)
+			throw new IllegalArgumentException("Search object must be specifed");
 		
+		String aclQueryStr = so.getAclQueryStr();
+		Query query = so.getLuceneQuery();
+		Sort sort = so.getSortBy();
+		
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + query.toString());
+    	}
+
 		try {
 			if(parentBinder.isMirrored() && parentBinder instanceof Folder) {			
 				if(!getFolderModule().jitSynchronize((Folder)parentBinder)) {
@@ -661,7 +670,13 @@ public class SearchUtils {
 			// Ignore all other exceptions
 		}
 		
-		if(ResourceDriverConfig.DriverType.famt == parentBinder.getResourceDriverType()) {
+		Binder netFoldersBinder = org.kablink.teaming.search.SearchUtils.getNetFoldersRootBinder();
+		
+		if(netFoldersBinder != null && netFoldersBinder.getId().equals(parentBinder.getId())) {
+			// TODO To be fixed
+			return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
+		}
+		else if(ResourceDriverConfig.DriverType.famt == parentBinder.getResourceDriverType()) {
 			// The parent binder is a net folder which does not store file ACLs in the search index.
 			// We need to consolidate the information in the search index with the dynamic list
 			// obtained from the file system in order to determine which subset of the children
@@ -718,8 +733,8 @@ public class SearchUtils {
 		try {
 			return getResourceDriverManager().openSessionUserMode(driver);
 		} catch (AclItemPrincipalMappingException e) {
-			if(logger.isTraceEnabled())
-				logger.trace("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + RequestContextHolder.getRequestContext().getUserName() + "'");
+			if(logger.isDebugEnabled())
+				logger.debug("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + RequestContextHolder.getRequestContext().getUserName() + "'");
 			return null;
 		}
 	}
