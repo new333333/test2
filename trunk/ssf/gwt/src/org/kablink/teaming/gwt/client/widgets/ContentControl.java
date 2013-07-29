@@ -41,7 +41,6 @@ import org.kablink.teaming.gwt.client.binderviews.CollectionView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
-import org.kablink.teaming.gwt.client.binderviews.FolderEntryComposite;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg.FolderEntryDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryView;
@@ -73,7 +72,6 @@ import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.EventsHandledBySourceMarker;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
@@ -108,7 +106,6 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetParentBinderPermalinkCmd;
@@ -117,7 +114,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
-import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -150,7 +146,6 @@ import com.google.gwt.user.client.ui.NamedFrame;
  * 
  * @author jwootton@novell.com
  */
-@SuppressWarnings("unused")
 public class ContentControl extends Composite
 	implements
 	// Event handlers implemented by this class.
@@ -412,11 +407,13 @@ public class ContentControl extends Composite
 		return m_contentInstigator;
 	}// end getContentInstigator()
 
-	/*
+	/**
 	 * Returns the BinderInfo of what's currently loaded in the content
 	 * area, if it can be determined.  If it can't, null is returned.
+	 * 
+	 * @return
 	 */
-	private BinderInfo getCurrentBinderInfo()
+	public BinderInfo getCurrentBinderInfo()
 	{
 		// Do we have a current view?
 		BinderInfo reply;
@@ -488,6 +485,28 @@ public class ContentControl extends Composite
 		}
 	}-*/;
 
+	/*
+	 * Returns true if the given entity is currently being viewed and
+	 * false otherwise.
+	 */
+	private boolean isEntityInJSPEntryView( EntityId eid )
+	{
+		// Are we currently in a JSP entry viewer and we're we given an
+		// EntityId of a folder entry? 
+		if ( ( null != m_currentView ) && m_currentView.getViewType().equals( ViewType.FOLDER_ENTRY   ) &&
+		     ( null != m_viewMode    ) && m_viewMode.equals(                  ViewMode.JSP_ENTRY_VIEW ) &&
+		     ( null != eid )           && eid.isEntry() )
+		{
+			// Yes!  Return true if the given EntityId matches that
+			// being viewed and false otherwise.
+			return eid.equalsEntityId( m_currentView.getFolderEntryInfo().getEntityId() );
+		}
+	
+		// If we get here, we're not viewing the given entity an a JSP
+		// entry viewer.  Return false. 
+		return false;
+	}//end isEntityInJSPEntryView()
+	
 	/*
 	 * Returns the URL from the content history at the specified index.
 	 * 
@@ -1372,9 +1391,44 @@ public class ContentControl extends Composite
 				}
 				else
 				{
-					// No, we aren't deleting the folder itself!
-					// Perform the delete.
-					onDeleteSelectedEntitiesAsync( selectedEntityIds, null );
+					// No, we aren't deleting the binder in the view!
+					// Are we deleting a folder entry that we're
+					// currently viewing?
+					EntityId eid = selectedEntityIds.get( 0 );
+					if ( isEntityInJSPEntryView( eid ) )
+					{
+						// Yes!  Then we do the delete and refresh back
+						// to deleted entry's parent binder.
+						final Long binderId = eid.getBinderId();
+						GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd( String.valueOf( binderId ) );
+						GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+						{
+							@Override
+							public void onFailure( Throwable t )
+							{
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+									binderId );
+								onDeleteSelectedEntitiesAsync( selectedEntityIds, null );
+							}//end onFailure()
+							
+							@Override
+							public void onSuccess( VibeRpcResponse response )
+							{
+								StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+								String binderPermalink = responseData.getStringValue();
+								onDeleteSelectedEntitiesAsync( selectedEntityIds, binderPermalink );
+							}// end onSuccess()
+						});
+					}
+					else
+					{
+						// No, we aren't deleting a folder entry that
+						// we're currently viewing either!  Simply
+						// perform the delete.
+						onDeleteSelectedEntitiesAsync( selectedEntityIds, null );
+					}
 				}
 			}
 		}
@@ -1415,7 +1469,7 @@ public class ContentControl extends Composite
 				{
 					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
 				}
-				postDeletePurgeReloadAsync( targetBinderPermalink );
+				postDeleteReloadAsync( targetBinderPermalink );
 			}// end operationCanceled())
 
 			@Override
@@ -1425,7 +1479,7 @@ public class ContentControl extends Composite
 				{
 					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
 				}
-				postDeletePurgeReloadAsync( targetBinderPermalink );
+				postDeleteReloadAsync( targetBinderPermalink );
 			}// end operationComplete()
 			
 			@Override
@@ -2255,25 +2309,25 @@ public class ContentControl extends Composite
 
 	/*
 	 * Asynchronously performs the reload necessary after an item has
-	 * been deleted or purged.
+	 * been deleted.
 	 */
-	private void postDeletePurgeReloadAsync( final String targetBinderPermalink ) {
+	private void postDeleteReloadAsync( final String targetBinderPermalink ) {
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				postDeletePurgeReloadNow( targetBinderPermalink );
+				postDeleteReloadNow( targetBinderPermalink );
 			}// end execute()
 		} );
-	}// end postDeletePurgeReloadAsync();
+	}// end postDeleteReloadAsync();
 	
 	
 	/*
 	 * Synchronously performs the reload necessary after an item has
-	 * been deleted or purged.
+	 * been deleted.
 	 */
-	private void postDeletePurgeReloadNow( final String targetBinderPermalink ) {
+	private void postDeleteReloadNow( final String targetBinderPermalink ) {
 		// Do we have a specific place to reload to?
 		if ( GwtClientHelper.hasString( targetBinderPermalink ) )
 		{
@@ -2293,7 +2347,7 @@ public class ContentControl extends Composite
 			// already in the view.
 			FullUIReloadEvent.fireOne();
 		}
-	}// end postDeletePurgeReloadNow();
+	}// end postDeleteReloadNow();
 	
 	
 	/*

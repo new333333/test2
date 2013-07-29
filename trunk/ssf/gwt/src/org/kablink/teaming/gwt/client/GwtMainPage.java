@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -642,6 +643,7 @@ public class GwtMainPage extends ResizeComposite
 			}
 		});
 	}
+	
 	/*
 	 * Starts the initializations of the main page.
 	 */
@@ -1158,6 +1160,10 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Initialize the JavaScript that runs the entry viewer.
 		initShowForumEntry( this );
+		
+		// Initialize the JavaScript that will delete an entry that can
+		// be invoked from a JSP page.
+		initDeleteForumEntry( this );
 	}
 
 	/*
@@ -1201,12 +1207,24 @@ public class GwtMainPage extends ResizeComposite
 	}-*/;
 	
 	/*
-	 * Called to create a JavaScript method that can be called to show an entry viewer.
+	 * Called to create a JavaScript method that can be called to show
+	 * an entry viewer.
 	 */
 	private native void initShowForumEntry( GwtMainPage gwtMainPage ) /*-{
 		$wnd.ss_showForumEntryGwt = function( url, isDashboard )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::viewForumEntry(Ljava/lang/String;Ljava/lang/String;)( url, isDashboard );
+		}
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that can be called to
+	 * delete and entry.
+	 */
+	private native void initDeleteForumEntry( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_deleteForumEntryGwt = function( folderId, entryId  )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::deleteForumEntry(Ljava/lang/String;Ljava/lang/String;)( folderId, entryId );
 		}
 	}-*/;
 
@@ -2117,11 +2135,27 @@ public class GwtMainPage extends ResizeComposite
 
 	
 	/*
+	 * Runs the GWT code to delete an entry.
+	 */
+	private void deleteForumEntry( String folderId, String entryId )
+	{
+		// Fire a DeleteSelectedEntitiesEvent.
+		GwtTeaming.fireEventAsync(
+			new DeleteSelectedEntitiesEvent(
+				m_contentCtrl.getCurrentBinderInfo().getBinderIdAsLong(),
+				new EntityId(
+					Long.parseLong( folderId ),
+					Long.parseLong( entryId  ),
+					EntityId.FOLDER_ENTRY) ) );
+	}
+
+	/*
 	 * Runs the given URL in the entry viewer.
 	 */
 	private void viewForumEntry( String url )
 	{
-		GwtTeaming.fireEventAsync(new ViewForumEntryEvent( url ));
+		// Fire a ViewForumEntryEvent.
+		GwtTeaming.fireEventAsync( new ViewForumEntryEvent( url ) );
 	}
 
 	private void viewForumEntry( String url, String isDashboard )
