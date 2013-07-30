@@ -2400,8 +2400,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					}
 					
 					// Apply the rows we read.
-					vdt.setRowData( responseData.getStartOffset(), folderRows);
-					vdt.setRowCount(responseData.getTotalRows()              );
+					vdt.setRowData( responseData.getStartOffset(), folderRows                            );
+					vdt.setRowCount(responseData.getTotalRows(),   (!(responseData.isTotalApproximate())));
 					
 					// If we have an entry menu...
 					EntryMenuPanel emp = getEntryMenuPanel();

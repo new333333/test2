@@ -47,11 +47,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private CloudFolderAuthentication	m_cfAuthentication;	//
-	private int							m_startOffset;		//
-	private int							m_totalRows;		//
-	private List<FolderRow> 			m_folderRows;		//
-	private List<Long>					m_contributorIds;	//
+	private boolean						m_totalIsApproximate;	// true -> m_totalRows is an approximate row count.  false -> It's the correct count.
+	private CloudFolderAuthentication	m_cfAuthentication;		//
+	private int							m_startOffset;			//
+	private int							m_totalRows;			//
+	private List<FolderRow> 			m_folderRows;			//
+	private List<Long>					m_contributorIds;		//
 
 	/**
 	 * Constructor method.
@@ -69,17 +70,19 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * @param folderRows
 	 * @param startOffset
 	 * @param totalRows
+	 * @param totalIsApproximate
 	 * @param contributorIds
 	 */
-	public FolderRowsRpcResponseData(List<FolderRow> folderRows, int startOffset, int totalRows, List<Long> contributorIds) {
+	public FolderRowsRpcResponseData(List<FolderRow> folderRows, int startOffset, int totalRows, boolean totalIsApproximate, List<Long> contributorIds) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setFolderRows(    folderRows    );
-		setStartOffset(   startOffset   );
-		setTotalRows(     totalRows     );
-		setContributorIds(contributorIds);
+		setFolderRows(        folderRows        );
+		setStartOffset(       startOffset       );
+		setTotalRows(         totalRows         );
+		setTotalIsApproximate(totalIsApproximate);
+		setContributorIds(    contributorIds    );
 	}
 	
 	/**
@@ -116,22 +119,24 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * 
 	 * @return
 	 */
-	public CloudFolderAuthentication getCloudFolderAuthentication() {return m_cfAuthentication;}
-	public int                       getStartOffset()               {return m_startOffset;     }
-	public int                       getTotalRows()                 {return m_totalRows;       }
-	public List<FolderRow>           getFolderRows()                {return m_folderRows;      }
-	public List<Long>                getContributorIds()            {return m_contributorIds;  }
+	public boolean                   isTotalApproximate()           {return m_totalIsApproximate;}
+	public CloudFolderAuthentication getCloudFolderAuthentication() {return m_cfAuthentication;  }
+	public int                       getStartOffset()               {return m_startOffset;       }
+	public int                       getTotalRows()                 {return m_totalRows;         }
+	public List<FolderRow>           getFolderRows()                {return m_folderRows;        }
+	public List<Long>                getContributorIds()            {return m_contributorIds;    }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setCloudFolderAuthentication(CloudFolderAuthentication cfAuthentication) {m_cfAuthentication = cfAuthentication;}
-	public void setStartOffset(              int                       startOffset)      {m_startOffset      = startOffset;     }
-	public void setTotalRows(                int                       totalRows)        {m_totalRows        = totalRows;       }
-	public void setFolderRows(               List<FolderRow>           folderRows)       {m_folderRows       = folderRows;      }
-	public void setContributorIds(           List<Long>                contributorIds)   {m_contributorIds   = contributorIds;  }
+	public void setTotalIsApproximate(       boolean                   totalIsApproximate) {m_totalIsApproximate = totalIsApproximate;}
+	public void setCloudFolderAuthentication(CloudFolderAuthentication cfAuthentication)   {m_cfAuthentication   = cfAuthentication;  }
+	public void setStartOffset(              int                       startOffset)        {m_startOffset        = startOffset;       }
+	public void setTotalRows(                int                       totalRows)          {m_totalRows          = totalRows;         }
+	public void setFolderRows(               List<FolderRow>           folderRows)         {m_folderRows         = folderRows;        }
+	public void setContributorIds(           List<Long>                contributorIds)     {m_contributorIds     = contributorIds;    }
 
 	/**
 	 * Returns a count of the folder rows being tracked.
