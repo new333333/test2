@@ -34,10 +34,7 @@ package org.kablink.teaming.module.binder.impl;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +43,6 @@ import java.util.Set;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
@@ -64,8 +60,6 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TitleException;
@@ -91,8 +85,6 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
-import org.kablink.teaming.runas.RunasCallback;
-import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
@@ -115,7 +107,6 @@ import org.kablink.util.search.FieldFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Add entries to the binder.
@@ -1420,6 +1411,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
         //Total number of results returned
         model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
+        //Are there more?
+        if (hits.getThereIsMore()) {
+            model.put(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE, Boolean.TRUE);
+        }
         return model;
    }
     
@@ -1749,7 +1744,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	SimpleProfiler.stop("buildIndexDocumentFromEntry");
         return indexDoc;
     }
-    public org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
+    
+    @Override
+	public org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
 	(Binder binder, Entry entry, FileAttachment fa, Collection tags, boolean skipFileContentIndexing) {
     	SimpleProfiler.start("buildIndexDocumentFromEntryFile");
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
