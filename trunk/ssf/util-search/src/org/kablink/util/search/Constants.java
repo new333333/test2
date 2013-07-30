@@ -305,7 +305,7 @@ public class Constants {
     public static final String CONTENT_INDEXED_FIELD = "_contentIndexed";
     public static final String HIDDEN_FROM_SEARCH_FIELD = "_hiddenSearch";
     public static final String HIDDEN_FROM_FIND_USER_FIELD = "_hiddenFindUser";
-    public static final String RESOURCE_PATH_FIELD = "_resourcePath"; // Only for net folder files
+    public static final String RESOURCE_PATH_FIELD = "_resourcePath"; // Only for net folder (famt) files and folders
 
 	/**
 	 * Constructor method.

@@ -40,6 +40,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
+import org.kablink.teaming.search.postfilter.PostFilterCallback;
 
 
 /**
@@ -88,6 +89,9 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @throws LuceneException
 	 */
 	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size)
+			throws LuceneException;
+	
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, PostFilterCallback callback)
 			throws LuceneException;
 	
 	/**
