@@ -3974,9 +3974,18 @@ public class GwtViewHelper {
 					}
 				}
 				searchEntries      = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
-				totalRecords       = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+				Integer total      = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 				Boolean approx     = ((Boolean)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE));
 				totalIsApproximate = ((null != approx) && approx);
+				if (totalIsApproximate) {
+					totalRecords = (start + searchEntries.size() + 1);
+					if ((null != total) && total > totalRecords) {
+						totalRecords = total;
+					}
+				}
+				else {
+					totalRecords = total;
+				}
 			}
 
 			// Scan the entries we read.
