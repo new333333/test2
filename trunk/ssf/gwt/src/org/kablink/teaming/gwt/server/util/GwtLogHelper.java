@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.server.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.kablink.teaming.ApplicationExistsException;
+import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.UserExistsException;
@@ -375,6 +377,8 @@ public class GwtLogHelper {
 				ExceptionType exType;
 				
 				if      (ex instanceof AccessControlException               ) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
+				else if (ex instanceof ApplicationExistsException           ) exType = ExceptionType.APPLICATION_EXISTS_EXCEPTION;
+				else if (ex instanceof ApplicationGroupExistsException      ) exType = ExceptionType.APPLICATION_GROUP_EXISTS_EXCEPTION;
 				else if (ex instanceof ExtensionDefinitionInUseException    ) exType = ExceptionType.EXTENSION_DEFINITION_IN_USE;
 				else if (ex instanceof FavoritesLimitExceededException      ) exType = ExceptionType.FAVORITES_LIMIT_EXCEEDED;
 				else if (ex instanceof NoBinderByTheIdException             ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;

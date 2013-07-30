@@ -660,6 +660,16 @@ public class GwtClientHelper {
 					cause = patchMessage(messages.rpcFailure_AccessToFolderDenied(), patches);
 					break;
 					
+				case APPLICATION_EXISTS_EXCEPTION:
+					displayAlert = true;
+					cause = patchMessage(messages.rpcFailure_CreateApplicationAlreadyExists(), patches);
+					break;
+					
+				case APPLICATION_GROUP_EXISTS_EXCEPTION:
+					displayAlert = true;
+					cause = patchMessage(messages.rpcFailure_CreateApplicationGroupAlreadyExists(), patches);
+					break;
+					
 				case FAVORITES_LIMIT_EXCEEDED:
 					errorMessage = messages.rpcFailure_AddFavoriteLimitExceeded();
 					cause = "";
@@ -668,7 +678,7 @@ public class GwtClientHelper {
 					
 				case GROUP_ALREADY_EXISTS:
 					displayAlert = true;
-					cause = patchMessage(messages.rpcFailure_CreateUserGroupAlreadyExists(), patches);
+					cause = patchMessage(messages.rpcFailure_CreateGroupAlreadyExists(), patches);
 					break;
 					
 				case LDAP_GUID_NOT_CONFIGURED:
@@ -683,7 +693,7 @@ public class GwtClientHelper {
 					
 				case USER_ALREADY_EXISTS:
 					displayAlert = true;
-					cause = patchMessage(messages.rpcFailure_CreateUserGroupAlreadyExists(), patches);
+					cause = patchMessage(messages.rpcFailure_CreateUserAlreadyExists(), patches);
 					break;
 					
 				case USER_NOT_LOGGED_IN:
