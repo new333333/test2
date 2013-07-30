@@ -56,25 +56,12 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 		this.luceneProvider = luceneProvider;
 	}
 
+	@Override
 	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) {
-		return this.search(contextUserId, aclQueryStr, mode, query, 0, -1);
+		return this.search(contextUserId, aclQueryStr, mode, query, null, 0, -1);
 	}
 
-	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, int offset,
-			int size) {
-		SimpleProfiler.start("LocalLuceneReadSession.search(Query,int,int)");
-		try {
-			return luceneProvider.search(contextUserId, aclQueryStr, mode, query, offset, size);
-		}
-		finally {
-			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,int,int)");
-		}
-	}
-
-	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort) {
-		return this.search(contextUserId, aclQueryStr, mode, query, sort, 0, -1);
-	}
-
+	@Override
 	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size) {
 		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
@@ -86,6 +73,7 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 		}
 	}
 
+	@Override
 	public ArrayList getTags(String aclQueryStr, String tag, String type)
 	throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.getTags()");
@@ -108,6 +96,7 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 	 * @return
 	 * @throws LuceneException
 	 */
+	@Override
 	public ArrayList getTagsWithFrequency(String aclQueryStr, String tag, String type)
 			throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.getTagsWithFrequency()");
@@ -135,6 +124,7 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 	// i.e. results[0] = {a, c}
 	//      results[1] = {d, g}
 	
+	@Override
 	public ArrayList getSortedTitles(Query query, String sortTitleFieldName, String start, String end, int skipsize)
 			throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.getSortedTitles()");
@@ -146,6 +136,7 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 		}
 	}	
 
+	@Override
 	public void close() {
 		// luceneProvider is stateless, and there is no resource to release here.
 	}

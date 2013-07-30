@@ -43,39 +43,36 @@ import org.kablink.teaming.search.LuceneReadSession;
 
 public class NilLuceneReadSession implements LuceneReadSession {
 
+	@Override
 	public ArrayList getSortedTitles(Query query, String sortTitleFieldName, String start, String end,
 			int skipsize) throws LuceneException {
 		return new ArrayList();
 	}
 
+	@Override
 	public ArrayList getTags(String aclQueryStr, String tag, String type)
 			throws LuceneException {
 		return new ArrayList();
 	}
 
+	@Override
 	public ArrayList getTagsWithFrequency(String aclQueryStr, String tag, String type)
 			throws LuceneException {
 		return new ArrayList();
 	}
 
+	@Override
 	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) throws LuceneException {
 		return new Hits(0);
 	}
 
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, int offset, int size)
-			throws LuceneException {
-		return new Hits(0);
-	}
-
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort) throws LuceneException {
-		return new Hits(0);
-	}
-
+	@Override
 	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size)
 			throws LuceneException {
 		return new Hits(0);
 	}
 
+	@Override
 	public void close() throws LuceneException {
 	}
 
