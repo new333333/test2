@@ -83,6 +83,7 @@ public class SearchFilterToMapConverter {
 	static final String SearchEndDateNotFormated = "endDateNotFormated";
 	
 	static final String SearchEntryType="entryType";
+	static final String SearchEntryTypeTitle="entryTypeTitle";
 	static final String SearchEntryElement="entryElement";
 	static final String SearchEntryValues="entryValues";
 	static final String SearchEntryValueType="valueType";
@@ -314,10 +315,18 @@ public class SearchFilterToMapConverter {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
 		String entryTypeId = filterTerm.attributeValue(SearchFilterKeys.FilterEntryDefId, "");
+		String entryTypeTitle = "";
 		if (entryTypeId == null || entryTypeId.equals("")) {
 			return new HashMap();
+		} else {
+			Definition entryDef = bs.getDefinitionModule().getDefinition(entryTypeId);
+			if (entryDef != null) {
+				entryTypeTitle = entryDef.getTitle();
+			}
 		}
 		block.put(SearchEntryType, entryTypeId);
+		block.put(SearchEntryTypeTitle, entryTypeTitle);
+		
 		String entryFieldId = filterTerm.attributeValue(SearchFilterKeys.FilterElementName, "");
 		if (entryFieldId == null || entryFieldId.equals("")) {
 			return block;
@@ -599,9 +608,10 @@ public class SearchFilterToMapConverter {
 			String entryType = (String) entryMap.get(SearchEntryType);
 			String fieldName = (String) entryMap.get(SearchEntryElement);
 			if (Validator.isNull(entryType)) continue;
-			Entry entry =null;
+			Entry entry = null;
+			Definition entryDef = null;
 			try {
-				Definition entryDef = bs.getDefinitionModule().getDefinition(entryType);
+				entryDef = bs.getDefinitionModule().getDefinition(entryType);
 				if (!entriesMap.containsKey(entryDef.getId())) {
 					entry = new Entry(entryDef, null); 
 					entriesMap.put(entryDef.getId(), entry);
@@ -612,7 +622,11 @@ public class SearchFilterToMapConverter {
 			
 			Map fieldsMap = bs.getDefinitionModule().getEntryDefinitionElements(entryType);
 			if (Validator.isNotNull(fieldName) && fieldsMap.get(fieldName) != null) {
-				EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
+				EntryField entryField = new EntryField(fieldName, 
+						(String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), 
+						(String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField), 
+						entryDef.getId(), 
+						entryDef.getTitle());
 				entry.addField(entryField);	
 			}
 		}
@@ -771,14 +785,20 @@ public class SearchFilterToMapConverter {
 		String name;
 		String title;
 		String type;
+		String entryType;
+		String entryTypeTitle;
 		public static String TitleField = "caption";
 		public static String TypeField = "type";
 		public static String ValuesField = "values";
+		public static String EntryTypeField = "entryType";
+		public static String EntryTypeTitleField = "entryTypeTitle";
 		
-		public EntryField(String name, String title, String type) {
+		public EntryField(String name, String title, String type, String entryType, String entryTypeTitle) {
 			this.name = name;
 			this.title = title;
 			this.type = type;
+			this.entryType = entryType;
+			this.entryTypeTitle = entryTypeTitle;
 		}
 		public String getName() {
 			return this.name;
@@ -788,6 +808,12 @@ public class SearchFilterToMapConverter {
 		}
 		public String getType() {
 			return this.type;
+		}
+		public String getEntryType() {
+			return this.entryType;
+		}
+		public String getEntryTypeTitle() {
+			return this.entryTypeTitle;
 		}
 	}
 

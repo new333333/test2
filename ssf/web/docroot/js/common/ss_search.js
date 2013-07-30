@@ -32,8 +32,11 @@
  */
 
 
-var ss_userOptionsCounter = 0;
-var ss_optionsArray = new Array();
+var ss_optionsArray;
+if (typeof ss_optionsArray == "undefined") {
+	ss_optionsArray = new Array();
+}
+var ss_userOptionsCounter = ss_optionsArray.length
 var ss_searchMoreInitialized = false;
 function ss_addOption(type) {
 	ss_optionsArray[ss_userOptionsCounter]=type;
@@ -77,13 +80,14 @@ function ss_addInitializedWorkflow(wfIdValue, stepsValue, stepTitles) {
 	ss_userOptionsCounter++;
 }
 
-function ss_addInitializedEntry(entryId, fieldName, value, valueLabel, valueType, fieldNameTitle) {
+function ss_addInitializedEntry(entryId, fieldName, value, valueLabel, valueType, fieldNameTitle, entryType, entryTypeTitle) {
+	ss_debug("ss_addInitializedEntry: " + entryType + ", " + entryTypeTitle)
 	if (typeof fieldNameTitle == "undefined") {
 		fieldNameTitle = fieldName;
 	}
 	ss_optionsArray[ss_userOptionsCounter]='entry';
-	//alert("fieldName: "+fieldName+", value: "+value+", valueLabel: "+valueLabel+", valueType: "+valueType+", fieldNameTitle: "+fieldNameTitle)
-	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle);
+	ss_debug("fieldName: "+fieldName+", value: "+value+", valueLabel: "+valueLabel+", valueType: "+valueType+", fieldNameTitle: "+fieldNameTitle)
+	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle, entryType, entryTypeTitle);
 	ss_userOptionsCounter++;
 }
 
@@ -290,7 +294,8 @@ function ss_getSelectedBinders(url) {
 	return url += "&idChoices=" + encodeURIComponent(value) + "&contextBinderId=" + encodeURIComponent(contextBinderId) + searchScopeCurrent;
  
 }
-function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle) {
+function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle, entryType, entryTypeTitle) {
+	ss_debug("ss_addEntry: " + fieldName + ", " + value + ", " + valueLabel + ", " + valueType + ", " + fieldNameTitle + ", " + entryType + ", " + entryTypeTitle)
 	if (typeof fieldNameTitle == "undefined") {
 		fieldNameTitle = fieldName;
 	}
@@ -358,7 +363,11 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 			var optionObj = document.createElement("option");
 			optionObj.value = valueOptionValue;
 			optionObj.selected = true;
-			optionObj.innerHTML = valueLabel;
+			if (typeof valueLabel != "undefined" && valueLabel != "") {
+				optionObj.innerHTML = valueLabel;
+			} else {
+				optionObj.innerHTML = valueOptionValue;
+			}
 			selectObj.appendChild(optionObj);
 			fieldValue3Div.appendChild(selectObj);
 		}
@@ -372,8 +381,17 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
     textAreaEntriesObj.name = entryInputId;
     textAreaEntriesObj.id = entryInputId;
     textAreaEntriesObj.style.width = "200px";
-	
+    if (typeof entryTypeTitle != "undefined") {
+    	textAreaEntriesObj.innerHTML = entryTypeTitle;
+    }
 	entryTypeDiv.appendChild(textAreaEntriesObj);
+    if (typeof entryType != "undefined") {
+    	var hiddenTypeObj = document.createElement('input');
+    	hiddenTypeObj.type = "hidden";
+    	hiddenTypeObj.name = entryInputId + "_initialized";
+    	hiddenTypeObj.value = entryType;
+    	entryTypeDiv.appendChild(hiddenTypeObj);
+    }
 	
 	var findEntries = ssFind.configSingle({
 		inputId: entryInputId,
@@ -626,7 +644,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 		}		
 	});
 	
-	if (entryId) {
+	if (entryId && typeof ss_searchEntries != "undefined") {
 		findEntries.setValue(entryId, ss_searchEntries[entryId]);
 		findEntries.selectItem({id: entryId});
 		// , fieldName, ss_searchFields[entryId+"-"+fieldName], 
@@ -1042,12 +1060,14 @@ function ss_goToSearchResultPageByInputValue(inputId) {
 }
 
 function ss_prepareAdditionalSearchOptions(formObj) {
+	ss_debug("ss_prepareAdditionalSearchOptions ss_userOptionsCounter = " + ss_userOptionsCounter)
 	var numbers = new Array();
 	var types = new Array();
 	for (var i=0; i<ss_userOptionsCounter; i++) {
 		if (ss_optionsArray[i] != "") {
 			numbers[numbers.length] = i;
 			types[types.length] = ss_optionsArray[i];
+			ss_debug("types: " +ss_optionsArray[i])
 		}
 	}
 	document.getElementById("searchNumbers").value = numbers.join(" ");

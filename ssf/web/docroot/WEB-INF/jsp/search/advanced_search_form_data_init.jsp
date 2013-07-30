@@ -36,7 +36,6 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="org.kablink.teaming.util.CalendarHelper" %>
 
-
 function ss_initSearchOptions() {
 	<c:if test="${! empty ss_filterMap.additionalFilters}">
 	  <ssf:ifNotFilr>
@@ -91,7 +90,14 @@ function ss_initSearchOptions() {
 		<ssf:ifNotFilr>
 		<c:if test="${!empty ss_filterMap.additionalFilters.entry}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.entry}">
-				ss_addInitializedEntry("<ssf:escapeJavaScript value="${block.entryType}"/>", "<ssf:escapeJavaScript value="${block.entryElement}"/>", "<ssf:escapeJavaScript value="${block.entryValuesNotFormatted}"/>", "<ssf:escapeJavaScript value="${block.entryValues}"/>", "<ssf:escapeJavaScript value="${block.valueType}"/>", "<ssf:escapeJavaScript value="${block.title}"/>");
+				ss_addInitializedEntry("<ssf:escapeJavaScript value="${block.entryType}"/>", 
+						"<ssf:escapeJavaScript value="${block.entryElement}"/>", 
+						"<ssf:escapeJavaScript value="${block.entryValuesNotFormatted}"/>", 
+						"<ssf:escapeJavaScript value="${block.entryValues}"/>", 
+						"<ssf:escapeJavaScript value="${block.valueType}"/>", 
+						"<ssf:escapeJavaScript value="${block.title}"/>",
+						"<ssf:escapeJavaScript value="${block.entryType}"/>",
+						"<ssf:escapeJavaScript value="${block.entryTypeTitle}"/>");
 			</c:forEach>
 		</c:if>
 		</ssf:ifNotFilr>
