@@ -212,7 +212,10 @@ public class SearchFilterRequestParser {
 			for (int i = 0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeEntry)) {
 					String entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]).concat("_selected"), "");
-					
+					if (entryTypeId.equals("")) {
+						//See if there was an initial value
+						entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]).concat("_initialized"), "");
+					}
 					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat(numbers[i].concat("_selected")), SearchFilter.AllEntries);
 					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("_selected"));
 					String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("_selected").concat("0"), null);
