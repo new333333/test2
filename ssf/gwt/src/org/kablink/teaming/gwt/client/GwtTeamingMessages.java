@@ -312,10 +312,13 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CheckNetFolderRootsStatus();
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();
+	String rpcFailure_CreateApplicationAlreadyExists();
+	String rpcFailure_CreateApplicationGroupAlreadyExists();
 	String rpcFailure_CreateBlogPage();
 	String rpcFailure_CreateEmailReport();
 	String rpcFailure_CreateGroup();
-	String rpcFailure_CreateUserGroupAlreadyExists();
+	String rpcFailure_CreateGroupAlreadyExists();
+	String rpcFailure_CreateUserAlreadyExists();
 	String rpcFailure_CreateLicenseReport();
 	String rpcFailure_CreateLoginReport();
 	String rpcFailure_CreateUserAccessReport();

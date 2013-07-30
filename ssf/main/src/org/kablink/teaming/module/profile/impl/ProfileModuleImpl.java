@@ -30,11 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-/*
- * Created on Nov 16, 2004
- *
- */
 package org.kablink.teaming.module.profile.impl;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,6 +51,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
@@ -138,6 +136,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -145,6 +144,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * ?
+ * 
+ * Created on Nov 16, 2004
  * 
  * @author ?
  */
@@ -1820,7 +1821,8 @@ public Map getUsers() {
 		};
 	}
 
-    public User findOrAddExternalUser(final String emailAddress) {
+    @Override
+	public User findOrAddExternalUser(final String emailAddress) {
         User user;
         try
         {
@@ -1977,6 +1979,38 @@ public Map getUsers() {
            		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_VIEW);
         }
         try {
+        	String name;
+        	Principal principal;
+        	
+        	// Does a user or group or application or application group already exist with this name?
+        	name = inputData.getSingleValue( "name" );
+        	principal = doesPrincipalExist( name );
+        	if ( principal != null )
+        	{
+        		EntityType entityType;
+        		
+        		// Yes
+        		entityType = principal.getEntityType();
+        		switch ( entityType )
+        		{
+        		case application:
+        			throw new ApplicationExistsException();
+
+        		case applicationGroup:
+        			throw new ApplicationGroupExistsException();
+        		
+        		case group:
+        			throw new GroupExistsException();
+        			
+        		case user:
+        			throw new UserExistsException();
+        			
+        		default:
+        			throw new UserExistsException();
+        		}
+
+        	}
+        	
         	Entry newEntry = loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
 
             //Added to allow default groups to be defined for users in ssf.properties file
