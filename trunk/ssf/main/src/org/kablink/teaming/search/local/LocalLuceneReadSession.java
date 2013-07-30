@@ -41,6 +41,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.LuceneProvider;
+import org.kablink.teaming.search.AbstractLuceneSession;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.postfilter.PostFilterCallback;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -49,7 +50,7 @@ import org.kablink.teaming.util.SimpleProfiler;
  * This implementation provides access to local Lucene index.
  * 
  */
-public class LocalLuceneReadSession implements LuceneReadSession {
+public class LocalLuceneReadSession extends AbstractLuceneSession implements LuceneReadSession {
 
 	private LuceneProvider luceneProvider;
 
@@ -67,7 +68,7 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 			int offset, int size) {
 		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
 		try {
-			return luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+			return doFilter(luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, getSearchSize(size)), size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,Sort,int,int)");
@@ -79,7 +80,7 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 			int offset, int size, PostFilterCallback callback) {
 		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
 		try {
-			return luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+			return doFilter(luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, getSearchSize(size)), size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,Sort,int,int)");
@@ -161,7 +162,7 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 			throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.searchFolderOneLevelWithInferredAccess()");
 		try {
-			return luceneProvider.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinderId, parentBinderPath);
+			return doFilter(luceneProvider.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, getSearchSize(size), parentBinderId, parentBinderPath), size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.searchFolderOneLevelWithInferredAccess()");
@@ -186,7 +187,7 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 			throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.searchFolderOneLevel()");
 		try {
-			return luceneProvider.searchFolderOneLevel(contextUserId, aclQueryStr, titles, query, sort, offset, size);
+			return doFilter(luceneProvider.searchFolderOneLevel(contextUserId, aclQueryStr, titles, query, sort, offset, getSearchSize(size)), size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.searchFolderOneLevel()");

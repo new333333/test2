@@ -53,7 +53,7 @@ public class Hits implements Serializable {
 	
 	// The number of documents in this object
 	private int size;
-    private int totalHits = 0; // no longer used??
+    private int totalHits = Integer.MAX_VALUE; // no longer used??
     // Indicates whether or not there is at least one more document in the search index
     // that matches the search query (including ACL filter) that isn't returned in this
     // object.
@@ -61,7 +61,7 @@ public class Hits implements Serializable {
     // the post-filtering that the client side may be performing. For the sake of
     // simplicity we will compute this on the client side under all circumstances.
     // That makes things a bit simpler at the expense of small lost in efficiency.
-    private boolean thereIsMore;
+    private boolean thereIsMore = false;
         
     private Document[] documents;
     private float[] scores;
@@ -92,7 +92,13 @@ public class Hits implements Serializable {
     			index++;
     		}
     	}
-    	this.setTotalHits(hits.totalHits);
+    }
+    
+    public void removeLast() {
+    	documents[size-1] = null;
+    	scores[size-1] = 0;
+    	noAclButAccessibleThroughSharing[size-1] = false;
+    	size -= 1;
     }
     
     public Document doc(int n) {
@@ -101,6 +107,10 @@ public class Hits implements Serializable {
 
     public int length() {
         return this.size;
+    }
+    
+    public void setLength(int length) {
+    	this.size = length;
     }
 
     public float score(int n) {
@@ -114,7 +124,7 @@ public class Hits implements Serializable {
     public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
             int offset, int maxSize, Set<String> noAclButAccessibleThroughSharingEntryIds) throws IOException {
         if (topDocs == null) return new Hits(0);
-    	int length = topDocs.totalHits;
+    	int length = (topDocs.scoreDocs == null)? 0: topDocs.scoreDocs.length;
         length = Math.min(length - offset, maxSize);
         if (length <= 0) return new Hits(0);
         Hits ss_hits = new Hits(length);
@@ -141,7 +151,6 @@ public class Hits implements Serializable {
             ss_hits.setDoc(doc, i);
             ss_hits.setScore(hits[offset + i].score, i);
         }
-        ss_hits.setTotalHits(topDocs.totalHits);
         return ss_hits;
     }
 
@@ -162,13 +171,6 @@ public class Hits implements Serializable {
 	 */
 	public int getTotalHits() {
 		return totalHits;
-	}
-
-	/**
-	 * @param totalHits The totalHits to set.
-	 */
-	public void setTotalHits(int totalHits) {
-		this.totalHits = totalHits;
 	}
 
 	public boolean getThereIsMore() {

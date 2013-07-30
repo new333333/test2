@@ -34,6 +34,7 @@ package org.kablink.teaming.search;
 
 import org.apache.commons.logging.Log;
 import org.apache.lucene.search.Query;
+import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.util.SPropsUtil;
 
 public class AbstractLuceneSession {
@@ -115,4 +116,20 @@ public class AbstractLuceneSession {
 		}
 	}
 
+	protected int getSearchSize(int size) {
+		if(size < 0 || size == Integer.MAX_VALUE) // unbounded search
+			return size;
+		else // bounded search - get one more than requested
+			return size + 1;
+	}
+	
+	protected Hits doFilter(Hits hits, int origSize) {
+		if(origSize > 0 && origSize < Integer.MAX_VALUE) { // bounded
+			if(hits.length() > origSize) {
+				hits.setLength(origSize);
+				hits.setThereIsMore(true);
+			}
+		}
+		return hits;
+	}
 }
