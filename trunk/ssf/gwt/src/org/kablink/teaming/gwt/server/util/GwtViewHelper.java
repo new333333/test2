@@ -3760,6 +3760,7 @@ public class GwtViewHelper {
 						new ArrayList<FolderRow>(),	// FolderRows.
 						0,							// Start index.
 						0,							// Total count.
+						false,						// false -> Total is accurate.
 						new ArrayList<Long>());		// Contributor IDs.
 			}
 			
@@ -3781,6 +3782,7 @@ public class GwtViewHelper {
 							new ArrayList<FolderRow>(),
 							start,
 							0,
+							false,	// false -> Total is accurate.
 							new ArrayList<Long>());
 				}
 			}
@@ -3836,6 +3838,7 @@ public class GwtViewHelper {
 								new ArrayList<FolderRow>(),
 								start,
 								0,
+								false,	// false -> Total is accurate.
 								new ArrayList<Long>());
 						
 					}
@@ -3904,6 +3907,7 @@ public class GwtViewHelper {
 			// Is the user currently viewing pinned entries?
 			List<Map>  searchEntries;
 			int        totalRecords;
+			boolean    totalIsApproximate = false;
 			if (viewPinnedEntries) {
 				// Yes!  Use the pinned entries as the search entries.
 				searchEntries = pinnedEntrySearchMaps;
@@ -3969,8 +3973,10 @@ public class GwtViewHelper {
 						SimpleProfiler.stop("GwtViewHelper.getFolderRows(Basic Folder Search)");
 					}
 				}
-				searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
-				totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+				searchEntries      = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+				totalRecords       = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+				Boolean approx     = ((Boolean)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE));
+				totalIsApproximate = ((null != approx) && approx);
 			}
 
 			// Scan the entries we read.
@@ -4528,6 +4534,7 @@ public class GwtViewHelper {
 					folderRows,
 					start,
 					totalRecords,
+					totalIsApproximate,
 					contributorIds);
 		}
 		
