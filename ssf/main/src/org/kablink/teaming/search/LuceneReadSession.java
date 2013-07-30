@@ -81,25 +81,6 @@ public interface LuceneReadSession extends LuceneSession {
 	/**
 	 * Search and return only the portion of the result specified.
 	 * 
-	 * @param query
-	 * @param offset
-	 * @param size
-	 * @return
-	 * @throws LuceneException
-	 */
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, int offset, int size)
-			throws LuceneException;
-
-	/**
-	 * Search and return the entire result set.
-	 * 
-	 * @throws LuceneException
-	 */
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort) throws LuceneException;
-
-	/**
-	 * Search and return only the portion of the result specified.
-	 * 
 	 * @param searchobject
 	 * @param offset
 	 * @param size

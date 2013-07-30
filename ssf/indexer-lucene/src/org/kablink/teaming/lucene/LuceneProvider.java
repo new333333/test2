@@ -528,10 +528,6 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 	
-	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) throws LuceneException {
-		return this.search(contextUserId, aclQueryStr, mode, query, null, 0, -1);
-	}
-
 	private IndexSearcherHandle getIndexSearcherHandle() throws LuceneException {
 		SearcherManager manager = getIndexingResource().getSearcherManager();
 		try {
@@ -553,15 +549,6 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			logError("Error releasing index searcher", e);
 		}	
 	}
-	
-	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, int offset, int size) throws LuceneException {
-		return search(contextUserId, aclQueryStr, mode, query, null, offset, size);
-	}
-	
-	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort) throws LuceneException {
-		return this.search(contextUserId, aclQueryStr, mode, query, sort, 0, -1);
-	}
-
 	
 	public boolean testInferredAccessToBinder(Long contextUserId,  String aclQueryStr, String binderPath) throws LuceneException {
 		long startTime = System.nanoTime();

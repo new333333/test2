@@ -51,17 +51,28 @@ public class Hits implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	// The number of documents in this object
 	private int size;
+    private int totalHits = 0; // no longer used??
+    // Indicates whether or not there is at least one more document in the search index
+    // that matches the search query (including ACL filter) that isn't returned in this
+    // object.
+    // Unfortunately we can't always compute this reliably on the server side due to
+    // the post-filtering that the client side may be performing. For the sake of
+    // simplicity we will compute this on the client side under all circumstances.
+    // That makes things a bit simpler at the expense of small lost in efficiency.
+    private boolean thereIsMore;
+        
     private Document[] documents;
     private float[] scores;
-    private int totalHits = 0; // no longer used?
-    
-    // This optional field is for internal use only. Not used directly by application tier.
+
+    // This optional field is for internal use only. Must NOT be used directly by the application code.
     // If true the document represents a net folder file/entry/comment that is accessible
     // to the user via ACL granted through sharing.
-    // The value of false doesn't necessarily mean the opposite. It may simply means that
-    // the information is unknown.
+    // The value of false doesn't necessarily mean the opposite, so shouldn't be interpreted in
+    // one particular way. For example it may simply mean that the pertaining information is unknown.
     private boolean[] noAclButAccessibleThroughSharing; // all elements initialized to false
+    
     
     public Hits(int length) {
         this.size = length;
@@ -158,6 +169,14 @@ public class Hits implements Serializable {
 	 */
 	public void setTotalHits(int totalHits) {
 		this.totalHits = totalHits;
+	}
+
+	public boolean getThereIsMore() {
+		return thereIsMore;
+	}
+
+	public void setThereIsMore(boolean thereIsMore) {
+		this.thereIsMore = thereIsMore;
 	}
 
 }

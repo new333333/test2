@@ -673,8 +673,17 @@ public class SearchUtils {
 		Binder netFoldersBinder = org.kablink.teaming.search.SearchUtils.getNetFoldersRootBinder();
 		
 		if(netFoldersBinder != null && netFoldersBinder.getId().equals(parentBinder.getId())) {
-			// TODO To be fixed
-			return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
+			// Getting a list of net folders that the user has access to. This requires special processing and
+			// filtering to ensure that the result only contains those net folders that meet all of the 
+			// following requirements.
+			// 1. The admin has granted the user "access net folder" right on the specific net folder.
+			// 2. The user has file system access to the net folder via either direct access or inferred access.
+			// 3. The user should not see this net folder listed under his "Net Folders" collection view just 
+			//    because some other user shared with him this net folder or anything within that net folder
+			//    (i.e., sub-folder or file within).
+			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), mode, query, sort, offset, size);
+			
+			//return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
 		}
 		else if(ResourceDriverConfig.DriverType.famt == parentBinder.getResourceDriverType()) {
 			// The parent binder is a net folder which does not store file ACLs in the search index.
