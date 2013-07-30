@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.fi.auth.AuthException;
+import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
@@ -82,6 +83,7 @@ import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterToSearchBooleanConverter;
+import org.kablink.teaming.search.postfilter.PostFilterCallback;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -681,7 +683,27 @@ public class SearchUtils {
 			// 3. The user should not see this net folder listed under his "Net Folders" collection view just 
 			//    because some other user shared with him this net folder or anything within that net folder
 			//    (i.e., sub-folder or file within).
-			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), mode, query, sort, offset, size);
+			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), mode, query, sort, offset, size,
+					new PostFilterCallback() {
+				public boolean doFilter(Document doc) {
+					String resourceDriverName = doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
+					if(resourceDriverName == null) 
+						return false; // no resource driver
+					String resourcePath = doc.get(Constants.RESOURCE_PATH_FIELD);
+					if(resourcePath == null)
+						resourcePath = ""; // It is possible to define a net folder without specifying a sub-path.
+					AclResourceSession session = openAclResourceSession(resourceDriverName);				
+					if(session == null)
+						return false; // cannot obtain session for the user
+					try {
+						session.setPath(resourcePath);
+						return session.exists();
+					}
+					finally {
+						session.close();
+					}
+				}
+			});
 			
 			//return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
 		}
@@ -737,10 +759,28 @@ public class SearchUtils {
 		}
 	}
 	
-
-	private static AclResourceSession openAclResourceSession(AclResourceDriver driver) {
+	private static AclResourceSession openAclResourceSession(String resourceDriverName) {
+		ResourceDriver driver;
+		
 		try {
-			return getResourceDriverManager().openSessionUserMode(driver);
+			driver = getResourceDriverManager().getDriver(resourceDriverName);
+		}
+		catch(Exception e) {
+			logger.warn("Can not find resource driver by name '" + resourceDriverName + "'", e);
+			return null;
+		}
+		
+		return openAclResourceSession(driver);
+	}
+	
+	private static AclResourceSession openAclResourceSession(ResourceDriver driver) {
+		if(!(driver instanceof AclResourceDriver)) {
+			logger.warn("Unable to open session on resource driver '" + driver.getName() + "' for user '" + RequestContextHolder.getRequestContext().getUserName() + " because the driver is of class '" + driver.getClass().getName() + "'");
+			return null;
+		}
+		
+		try {
+			return getResourceDriverManager().openSessionUserMode((AclResourceDriver) driver);
 		} catch (AclItemPrincipalMappingException e) {
 			if(logger.isDebugEnabled())
 				logger.debug("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + RequestContextHolder.getRequestContext().getUserName() + "'");

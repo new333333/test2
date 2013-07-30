@@ -42,6 +42,7 @@ import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.LuceneProvider;
 import org.kablink.teaming.search.LuceneReadSession;
+import org.kablink.teaming.search.postfilter.PostFilterCallback;
 import org.kablink.teaming.util.SimpleProfiler;
 
 /**
@@ -64,6 +65,18 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 	@Override
 	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size) {
+		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
+		try {
+			return luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,Sort,int,int)");
+		}
+	}
+
+	@Override
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
+			int offset, int size, PostFilterCallback callback) {
 		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
 		try {
 			return luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, size);

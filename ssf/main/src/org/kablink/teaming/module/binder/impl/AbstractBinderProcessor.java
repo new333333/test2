@@ -2538,7 +2538,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
     	EntityIndexUtils.addResourceDriverName( indexDoc, entity, fieldsOnly );
 
-    	EntityIndexUtils.addNetFolderFileResourcePath( indexDoc, entity, fieldsOnly );
+    	EntityIndexUtils.addNetFolderResourcePath( indexDoc, entity, fieldsOnly );
 
         if (entity instanceof Binder) {
             //Add binder path

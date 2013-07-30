@@ -1490,8 +1490,19 @@ public class EntityIndexUtils {
     	}
     }
     
-    public static void addNetFolderFileResourcePath( Document doc, DefinableEntity entity, boolean fieldsOnly )
+    public static void addNetFolderResourcePath( Document doc, DefinableEntity entity, boolean fieldsOnly )
     {
+    	if(entity instanceof Folder) {
+    		Folder folder = (Folder) entity;
+    		if(folder.isMirrored() && folder.getResourceDriver() != null) {
+    			ResourceDriver driver = getResourceDriverManager().getDriver(folder.getResourceDriverName());
+    			ResourceDriverConfig config = driver.getConfig();
+    			if(ResourceDriverConfig.DriverType.famt == config.getDriverType()) {
+            		Field path = FieldFactory.createFieldStoredNotIndexed(RESOURCE_PATH_FIELD, folder.getResourcePath());
+            		doc.add( path );    			
+    			}
+    		}
+    	}
     	if(entity instanceof FolderEntry) {
     		FolderEntry folderEntry = (FolderEntry) entity;
     		Folder parentFolder = folderEntry.getParentFolder();
@@ -1499,7 +1510,7 @@ public class EntityIndexUtils {
     			ResourceDriver driver = getResourceDriverManager().getDriver(parentFolder.getResourceDriverName());
     			ResourceDriverConfig config = driver.getConfig();
     			if(ResourceDriverConfig.DriverType.famt == config.getDriverType()) {
-            		Field path = FieldFactory.createFieldStoredNotIndexed( RESOURCE_PATH_FIELD, parentFolder.getResourcePath() + "/" + folderEntry.getTitle());
+            		Field path = FieldFactory.createFieldStoredNotIndexed(RESOURCE_PATH_FIELD, parentFolder.getResourcePath() + "/" + folderEntry.getTitle());
             		doc.add( path );    			
     			}
      		}
