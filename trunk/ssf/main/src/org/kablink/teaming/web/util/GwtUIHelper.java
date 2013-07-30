@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1414,6 +1416,8 @@ public class GwtUIHelper {
 	 * @param model
 	 */
 	public static void setCommonRequestInfoData(PortletRequest request, AllModulesInjected bs, Map<String, Object> model) {
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		
 		// Put out the flag indicating whether the UI should be in
 		// debug mode (i.e., perform extra checking, display messages,
 		// ...)
@@ -1491,6 +1495,13 @@ public class GwtUIHelper {
 		// access to the root workspace.
 		model.put(WebKeys.HAS_ROOT_DIR_ACCESS, hasRootDirAccess(bs));
 
+		// Put out the character the current user uses for a decimal
+		// separator.
+		DecimalFormat df = ((DecimalFormat) DecimalFormat.getInstance(currentUser.getLocale()));
+		DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
+		char decimalSeparator = dfs.getDecimalSeparator();
+		model.put(WebKeys.DECIMAL_SEPARATOR, new String(new char[]{decimalSeparator}));
+
 		// Is the request to activate an activity stream? 
 		String	showWhatsNewS        = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
 		boolean	showWhatsNew         = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
@@ -1564,7 +1575,7 @@ public class GwtUIHelper {
 				// ...put that out.
 				int sc = Integer.parseInt(showCollection);
 				if (PermaLinkUtil.COLLECTION_USER_DEFAULT == sc) {
-					if (SearchUtils.userCanAccessMyFiles(bs, RequestContextHolder.getRequestContext().getUser()))
+					if (SearchUtils.userCanAccessMyFiles(bs, currentUser))
 					     sc = PermaLinkUtil.COLLECTION_MY_FILES;
 					else sc = PermaLinkUtil.COLLECTION_SHARED_WITH_ME;
 					showCollection = String.valueOf(sc);

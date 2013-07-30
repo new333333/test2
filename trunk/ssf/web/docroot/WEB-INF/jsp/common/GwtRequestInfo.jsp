@@ -63,6 +63,7 @@
 		cloudFoldersEnabled:				'${cloudFoldersEnabled}',
 		contentCss:							'<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>',
 		currentUserWorkspaceId:				'${ssUser.workspaceId}',
+		decimalSeparator:					'${decimalSeparator}',
 		debugUI:							'${vibeUIDebug}',
 		debugLP:							'${vibeLPDebug}',
 		deleteUserUrl:						'${ss_deleteEntryAdapter}',
