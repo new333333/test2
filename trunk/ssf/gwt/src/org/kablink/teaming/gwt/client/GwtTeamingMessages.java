@@ -1315,7 +1315,6 @@ public interface GwtTeamingMessages extends Messages
 	String addAComment();
 	String defaultReplyTitle( String title );
 	String noReplyText();
-	String replyToEntryLabel();
 	
 	// The following strings are used in the activity stream "share this entry" ui.
 	String addRecipient();
