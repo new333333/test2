@@ -273,6 +273,10 @@ public class SearchFilterRequestParser {
 			for (int i = 0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeWorkflow)) {
 					String workflowId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]).concat("_selected"), "");
+					if (workflowId.equals("")) {
+						//See if there was an initial value
+						workflowId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]).concat("_initialized"), "");
+					}
 					String[] workflowSteps =  PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchWorkflowStep.concat(numbers[i]));
 					if (!workflowId.equals("")) {
 						if (workflowsMap.containsKey(workflowId)) {
