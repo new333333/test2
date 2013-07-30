@@ -184,6 +184,17 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return the current user's decimal separator character as a
+	 * string.
+	 * 
+	 * @return
+	 */
+	public final native String getDecimalSeparator()
+	/*-{
+		return this.decimalSeparator;
+	}-*/;
+	
+	/**
 	 * Return the URL used for simple searches.
 	 * 
 	 * @return
