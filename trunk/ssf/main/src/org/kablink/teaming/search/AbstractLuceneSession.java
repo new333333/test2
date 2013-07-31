@@ -33,18 +33,29 @@
 package org.kablink.teaming.search;
 
 import org.apache.commons.logging.Log;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.NumericField;
 import org.apache.lucene.search.Query;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.search.postfilter.PostFilterCallback;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 
 public class AbstractLuceneSession {
+	
+	private Log logger;
 	
 	private boolean inited = false;
 	private long readFloor = 0; // in milliseconds
 	private long writeFloor = 0; // in milliseconds
 	
+	protected AbstractLuceneSession(Log logger) {
+		this.logger = logger;
+	}
+	
 	// Used for read
-	protected void endRead(Log logger, long begin, String methodName, Query query, String result) {
+	protected void endRead(long begin, String methodName, Query query, String result) {
 		init();
 		if(logger.isTraceEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
@@ -59,12 +70,12 @@ public class AbstractLuceneSession {
 	}
 
 	// Used for read
-	protected void endRead(Log logger, long begin, String methodName, Query query, int length) {
-		endRead(logger, begin, methodName, query, String.valueOf(length));
+	protected void endRead(long begin, String methodName, Query query, int length) {
+		endRead(begin, methodName, query, String.valueOf(length));
 	}
 
 	// Used for read
-	protected void endRead(Log logger, long begin, String methodName, String aclQueryStr, String result) {
+	protected void endRead(long begin, String methodName, String aclQueryStr, String result) {
 		init();
 		if(logger.isTraceEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
@@ -79,12 +90,12 @@ public class AbstractLuceneSession {
 	}
 
 	// Used for read
-	protected void endRead(Log logger, long begin, String methodName, String aclQueryStr, int length) {
-		endRead(logger, begin, methodName, aclQueryStr, String.valueOf(length));
+	protected void endRead(long begin, String methodName, String aclQueryStr, int length) {
+		endRead(begin, methodName, aclQueryStr, String.valueOf(length));
 	}
 
 	// Used for read
-	protected void endRead(Log logger, long begin, String methodName, String aclQueryStr, String binderPath, boolean result) {
+	protected void endRead(long begin, String methodName, String aclQueryStr, String binderPath, boolean result) {
 		init();
 		if(logger.isTraceEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
@@ -99,7 +110,7 @@ public class AbstractLuceneSession {
 	}
 
 	// Used for write
-	protected void endWrite(Log logger, long begin, String methodName) {
+	protected void endWrite(long begin, String methodName) {
 		init();
 		if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
@@ -140,5 +151,22 @@ public class AbstractLuceneSession {
 			}			
 		}
 		return hits;
+	}
+	
+	protected PostFilterCallback getPostFilterCallback() {
+		return new PostFilterCallback() {
+			public boolean doFilter(Document doc) {
+				NumericField field = (NumericField) doc.getFieldable(Constants.ENTRY_ACL_PARENT_ID_FIELD);
+				if(field == null)
+					return true; // doesn't require access check
+				if(field.getNumericValue().longValue() >= 0)
+					return true; // doesn't require access check
+				String resourceDriverName = doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
+				if(Validator.isNull(resourceDriverName))
+					return false;
+				else
+					return true;
+			}
+		};
 	}
 }

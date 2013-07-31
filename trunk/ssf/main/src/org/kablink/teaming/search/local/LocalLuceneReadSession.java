@@ -35,6 +35,8 @@ package org.kablink.teaming.search.local;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -52,9 +54,12 @@ import org.kablink.teaming.util.SimpleProfiler;
  */
 public class LocalLuceneReadSession extends AbstractLuceneSession implements LuceneReadSession {
 
+	private static Log logger = LogFactory.getLog(LocalLuceneReadSession.class);
+	
 	private LuceneProvider luceneProvider;
 
 	public LocalLuceneReadSession(LuceneProvider luceneProvider) {
+		super(logger);
 		this.luceneProvider = luceneProvider;
 	}
 
@@ -66,13 +71,7 @@ public class LocalLuceneReadSession extends AbstractLuceneSession implements Luc
 	@Override
 	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size) {
-		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
-		try {
-			return doFilter(luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, adjustSearchSizeToFigureOutIfThereIsMore(size)), offset, size);
-		}
-		finally {
-			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,Sort,int,int)");
-		}
+		return search (contextUserId, aclQueryStr, mode, query, sort, offset, size, getPostFilterCallback());
 	}
 
 	@Override
