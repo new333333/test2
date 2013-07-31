@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -81,6 +81,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
+import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.SendMailErrorWrapper;
@@ -466,6 +467,7 @@ public class GwtShareHelper
 						gwtPublic.setName( NLT.get( "share.recipientType.title.public" ) );
 						publicShareItem.setRecipientName( gwtPublic.getName() );
 						publicShareItem.setRecipientType( GwtRecipientType.PUBLIC_TYPE );
+						publicShareItem.setRecipientUserType( UserType.UNKNOWN );
 						publicShareItem.setRecipientId( gwtPublic.getIdLong() );
 
 						// Remember the 2 share items that make up "share public"
@@ -1187,6 +1189,7 @@ public class GwtShareHelper
 						name = getGroupName( ami, nextShareItem );
 						gwtShareItem.setRecipientName( name );
 						gwtShareItem.setRecipientType( GwtRecipientType.GROUP );
+						gwtShareItem.setRecipientUserType( UserType.UNKNOWN );
 						break;
 						
 					case user:
@@ -1204,6 +1207,8 @@ public class GwtShareHelper
 								gwtShareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 							else
 								gwtShareItem.setRecipientType( GwtRecipientType.USER );
+							
+							gwtShareItem.setRecipientUserType( GwtViewHelper.getUserType( user ) );
 						}
 						else
 							m_logger.error( "could not find the user: " + nextShareItem.getRecipientId().toString() );
@@ -1307,7 +1312,6 @@ public class GwtShareHelper
 	 * Return the id of the given user.  If the user is an external user we will see if their
 	 * user account has been created.  If it hasn't we will create it.
 	 */
-	@SuppressWarnings("unchecked")
 	private static Long getRecipientId( AllModulesInjected ami, GwtShareItem gwtShareItem )
 	{
 		Long id;
