@@ -95,15 +95,16 @@ public interface LuceneReadSession extends LuceneSession {
 			throws LuceneException;
 	
 	/**
-	 * Return immediate children entities (entries and binders) of the specified 
-	 * parent binder where those entities are accessible/visible because the user
-	 * has either direct/explicit access or inferred/implicit access to those.
+	 * Return immediate children entities (entries and binders) of the specified parent
+	 * binder (which is not a net folder) where those entities are accessible/visible 
+	 * because the user has either direct/explicit access or inferred/implicit access to those.
 	 *
-	 * This method differs from other general purpose search method in that this implementation takes
-	 * into account implicit/inferred accesses. 
+	 * This method differs from other general purpose search method in that this implementation
+	 * takes into account implicit/inferred accesses. 
 	 * 
-	 * NOTE: This method is to be used on a binder where the hierarchy below the binder has all required
-	 * ACLs indexed with them (e.g. adhoc folder, cloud folder, etc.)
+	 * NOTE: This method is to be used on a binder where the hierarchy below the binder has 
+	 * all required ACLs indexed with them (e.g. adhoc folder, cloud folder, etc.).
+	 * This method should NEVER be used on a net folder.
 	 * 
 	 * @param contextUserId
 	 * @param aclQueryStr
@@ -112,20 +113,20 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @param sort
 	 * @param offset
 	 * @param size
-	 * @param parentBinderId
+	 * @param parentBinderId ID of the parent binder that is not a net folder
 	 * @param parentBinderPath
 	 * @return
 	 * @throws LuceneException
 	 */
-	public Hits searchFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
+	public Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
 			Long parentBinderId, String parentBinderPath) throws LuceneException;
 
 	/**
 	 * Return immediate children entities (entries and binders) of the specified
-	 * parent binder where those entities are accessible/visible to the user.
+	 * parent net folder where those entities are accessible/visible to the user.
 	 * 
-	 * NOTE: This method is to be used on a binder where the entries below the binder have no ACLs
-	 * indexed with them (e.g. net folder exposed through FAMT, etc.)
+	 * NOTE: This method is to be used only on a binder where the entries below the 
+	 * binder have no ACLs indexed with them (e.g. net folder exposed through FAMT).
 	 * 
 	 * @param contextUserId
 	 * @param aclQueryStr
@@ -137,7 +138,7 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public Hits searchFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException;
+	public Hits searchNetFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException;
 	
 	/**
      * Return whether or not the calling user can gain inferred access to the specified

@@ -116,19 +116,28 @@ public class AbstractLuceneSession {
 		}
 	}
 
-	protected int getSearchSize(int size) {
+	protected int adjustSearchSizeToFigureOutIfThereIsMore(int size) {
 		if(size < 0 || size == Integer.MAX_VALUE) // unbounded search
 			return size;
 		else // bounded search - get one more than requested
 			return size + 1;
 	}
 	
-	protected Hits doFilter(Hits hits, int origSize) {
+	protected Hits doFilter(Hits hits, int offset, int origSize) {
 		if(origSize > 0 && origSize < Integer.MAX_VALUE) { // bounded
-			if(hits.length() > origSize) {
-				hits.setLength(origSize);
-				hits.setThereIsMore(true);
+			if(hits.isTotalHitsApproximate()) {
+				// The search total is approximate. Use look-ahead element to determine whether there's at least one more match.
+				if(hits.length() > origSize) {
+					hits.setLength(origSize); // Do not return the look-ahead element in this current result
+					hits.setThereIsMore(true); // Indicate that there is at least one more match
+				}				
 			}
+			else {
+				// The search total is exact. In this case, there is no need for look-ahead, since whether or not there's at least 
+				// one more match is easily computable from the information returned from the server.
+				if(hits.getTotalHits() > offset + origSize)
+					hits.setThereIsMore(true); // 
+			}			
 		}
 		return hits;
 	}

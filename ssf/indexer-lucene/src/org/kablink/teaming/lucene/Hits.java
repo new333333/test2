@@ -51,26 +51,32 @@ public class Hits implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	// The number of documents in this object
+	// The number of documents in this object. This field is set on the server side.
 	private int size;
-    private int totalHits = Integer.MAX_VALUE; // no longer used??
+	// This may be exact or approximate depending on whether or not a search involves
+	// client side-driven post filtering for access check. 
+	// This field is set on the server side.
+    private int totalHits = 0;
+    // Indicates whether the totalHits is approximate or exact.
+    // This field is set on the server side.
+    private boolean totalHitsApproximate = true;
     // Indicates whether or not there is at least one more document in the search index
     // that matches the search query (including ACL filter) that isn't returned in this
     // object.
-    // Unfortunately we can't always compute this reliably on the server side due to
-    // the post-filtering that the client side may be performing. For the sake of
-    // simplicity we will compute this on the client side under all circumstances.
-    // That makes things a bit simpler at the expense of small lost in efficiency.
+    // This field is set on the client side.
     private boolean thereIsMore = false;
         
+    // Matching documents. This field is set on the server side.
     private Document[] documents;
+    // Scores for the matching documents. This field is set on the server side.
     private float[] scores;
 
-    // This optional field is for internal use only. Must NOT be used directly by the application code.
-    // If true the document represents a net folder file/entry/comment that is accessible
-    // to the user via ACL granted through sharing.
-    // The value of false doesn't necessarily mean the opposite, so shouldn't be interpreted in
-    // one particular way. For example it may simply mean that the pertaining information is unknown.
+    // This optional field is for internal use only. Must NOT be used directly by the
+    // application code. If true, the document represents a net folder file/entry/comment
+    // that is accessible to the user via ACL granted through sharing. The value of false
+    // doesn't necessarily mean the opposite, so shouldn't be interpreted in one particular
+    // way. For example it may simply mean that the pertaining information is unknown.
+    // This field is set on the server side.
     private boolean[] noAclButAccessibleThroughSharing; // all elements initialized to false
     
     
@@ -122,7 +128,7 @@ public class Hits implements Serializable {
     }
 
     public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
-            int offset, int maxSize, Set<String> noAclButAccessibleThroughSharingEntryIds) throws IOException {
+            int offset, int maxSize, Set<String> noAclButAccessibleThroughSharingEntryIds, boolean totalHitsApproximate) throws IOException {
         if (topDocs == null) return new Hits(0);
     	int length = (topDocs.scoreDocs == null)? 0: topDocs.scoreDocs.length;
         length = Math.min(length - offset, maxSize);
@@ -151,6 +157,8 @@ public class Hits implements Serializable {
             ss_hits.setDoc(doc, i);
             ss_hits.setScore(hits[offset + i].score, i);
         }
+        ss_hits.setTotalHits(topDocs.totalHits);
+        ss_hits.setTotalHitsApproximate(totalHitsApproximate);
         return ss_hits;
     }
 
@@ -173,12 +181,27 @@ public class Hits implements Serializable {
 		return totalHits;
 	}
 
+	/**
+	 * @param totalHits The totalHits to set.
+	 */
+	public void setTotalHits(int totalHits) {
+		this.totalHits = totalHits;
+	}
+
 	public boolean getThereIsMore() {
 		return thereIsMore;
 	}
 
 	public void setThereIsMore(boolean thereIsMore) {
 		this.thereIsMore = thereIsMore;
+	}
+
+	public boolean isTotalHitsApproximate() {
+		return totalHitsApproximate;
+	}
+
+	public void setTotalHitsApproximate(boolean totalHitsApproximate) {
+		this.totalHitsApproximate = totalHitsApproximate;
 	}
 
 }
