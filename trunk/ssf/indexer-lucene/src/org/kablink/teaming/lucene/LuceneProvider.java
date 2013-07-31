@@ -593,7 +593,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	 * This method fully computes inferred access (visibility) based on the ACLs
 	 * stored in the index.
 	 */
-	public org.kablink.teaming.lucene.Hits searchFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
+	public org.kablink.teaming.lucene.Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
 			Long parentBinderId, String parentBinderPath) throws LuceneException {
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
@@ -630,7 +630,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
 		
-		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, implicitlyAccessibleSubFoldersFilter);
+		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, implicitlyAccessibleSubFoldersFilter, false);
 	}
 
 	/*
@@ -640,7 +640,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	 * specified.
 	 * This method doesn't make any attempt to compute inferred access.
 	 */
-	public org.kablink.teaming.lucene.Hits searchFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException {
+	public org.kablink.teaming.lucene.Hits searchNetFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException {
 		if(size == 0)
 			throw new IllegalArgumentException("Size must be specified");
 
@@ -688,7 +688,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			}
 		   
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, null);
+					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, null, false);
 
 			end(startTime, "searchFolderOneLevel", contextUserId, aclQueryStr, titles, query, sort, offset, size, tempHits.length());
 			
@@ -714,14 +714,14 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	
 	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size) throws LuceneException {
-		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, null);
+		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, null, true);
 	}
 
 	private org.kablink.teaming.lucene.Hits searchInternal(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
-			int offset, int size, Filter alternateAclFilter) throws LuceneException {
+			int offset, int size, Filter alternateAclFilter, boolean totalHitsApproximate) throws LuceneException {
 		ThreadLocalAclQueryFilter.clear();
 		try {
-			return doSearchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, alternateAclFilter);
+			return doSearchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, alternateAclFilter, totalHitsApproximate);
 		}
 		finally {
 			ThreadLocalAclQueryFilter.clear();			
@@ -729,7 +729,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	}
 	
 	private org.kablink.teaming.lucene.Hits doSearchInternal(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
-			int offset, int size, Filter alternateAclFilter) throws LuceneException {
+			int offset, int size, Filter alternateAclFilter, boolean totalHitsApproximate) throws LuceneException {
 		if(size == 0)
 			throw new IllegalArgumentException("Size must be specified");
 		
@@ -830,7 +830,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	        /// END: Debug			
 			
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, ThreadLocalAclQueryFilter.getNoAclButAccessibleThroughSharingEntryIds());
+					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, ThreadLocalAclQueryFilter.getNoAclButAccessibleThroughSharingEntryIds(), totalHitsApproximate);
 			
 			/// BEGIN: Debug
 			if(hitsTransferBegin != null) {

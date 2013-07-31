@@ -66,10 +66,10 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	public org.kablink.teaming.lucene.Hits search(String indexname, Long contextUserId, String aclQueryStr, int mode, Query query,
 			Sort sort, int offset, int size) throws RemoteException;
 
-	public org.kablink.teaming.lucene.Hits searchFolderOneLevelWithInferredAccess(String indexname, Long contextUserId, String aclQueryStr, int mode, Query query,
+	public org.kablink.teaming.lucene.Hits searchNonNetFolderOneLevelWithInferredAccess(String indexname, Long contextUserId, String aclQueryStr, int mode, Query query,
 			Sort sort, int offset, int size, Long parentBinderId, String parentBinderPath) throws RemoteException;
 
-	public org.kablink.teaming.lucene.Hits searchFolderOneLevel(String indexname, Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) 
+	public org.kablink.teaming.lucene.Hits searchNetFolderOneLevel(String indexname, Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) 
 			throws RemoteException;
 
 	public boolean testInferredAccessToBinder(String indexname, Long contextUserId,  String aclQueryStr, String binderPath) throws RemoteException;

@@ -68,7 +68,7 @@ public class LocalLuceneReadSession extends AbstractLuceneSession implements Luc
 			int offset, int size) {
 		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
 		try {
-			return doFilter(luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, getSearchSize(size)), size);
+			return doFilter(luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, adjustSearchSizeToFigureOutIfThereIsMore(size)), offset, size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,Sort,int,int)");
@@ -80,7 +80,7 @@ public class LocalLuceneReadSession extends AbstractLuceneSession implements Luc
 			int offset, int size, PostFilterCallback callback) {
 		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
 		try {
-			return doFilter(luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, getSearchSize(size)), size);
+			return doFilter(luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, adjustSearchSizeToFigureOutIfThereIsMore(size)), offset, size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,Sort,int,int)");
@@ -156,13 +156,13 @@ public class LocalLuceneReadSession extends AbstractLuceneSession implements Luc
 	}
 
 	@Override
-	public Hits searchFolderOneLevelWithInferredAccess(Long contextUserId,
+	public Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId,
 			String aclQueryStr, int mode, Query query, Sort sort, int offset,
 			int size, Long parentBinderId, String parentBinderPath)
 			throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.searchFolderOneLevelWithInferredAccess()");
 		try {
-			return doFilter(luceneProvider.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, getSearchSize(size), parentBinderId, parentBinderPath), size);
+			return doFilter(luceneProvider.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinderId, parentBinderPath), offset, size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.searchFolderOneLevelWithInferredAccess()");
@@ -182,12 +182,12 @@ public class LocalLuceneReadSession extends AbstractLuceneSession implements Luc
 	}
 
 	@Override
-	public Hits searchFolderOneLevel(Long contextUserId, String aclQueryStr,
+	public Hits searchNetFolderOneLevel(Long contextUserId, String aclQueryStr,
 			List<String> titles, Query query, Sort sort, int offset, int size)
 			throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.searchFolderOneLevel()");
 		try {
-			return doFilter(luceneProvider.searchFolderOneLevel(contextUserId, aclQueryStr, titles, query, sort, offset, getSearchSize(size)), size);
+			return doFilter(luceneProvider.searchNetFolderOneLevel(contextUserId, aclQueryStr, titles, query, sort, offset, size), offset, size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.searchFolderOneLevel()");

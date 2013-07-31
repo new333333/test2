@@ -723,11 +723,11 @@ public class SearchUtils {
 				// dynamic filtering against file system is not necessary either.
 			}
 			
-		    return luceneSession.searchFolderOneLevel(contextUserId, aclQueryStr, childrenTitles, query, sort, offset, size);
+		    return luceneSession.searchNetFolderOneLevel(contextUserId, aclQueryStr, childrenTitles, query, sort, offset, size);
 		}
 		else {
 			// All other cases
-			return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
+			return luceneSession.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
 		}
 	}
 	
