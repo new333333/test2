@@ -687,7 +687,11 @@
 {
 }
 
-.shareThisDlg_RecipientTypeLabel
+.shareThisDlg_RecipientTypeImage
+{
+}
+
+.shareThisDlg_RecipientTypeImagePanel
 {
 }
 
@@ -722,13 +726,13 @@
 	margin-left: 4px;
 }
 
-.shareThisDlg_RightsLabel, .shareThisDlg_PublicRecipientTypeLabel
+.shareThisDlg_RightsLabel, .shareThisDlg_PublicRecipientTypeImage
 {
 	color: #135c8f;
 	padding-left: 4px;
 }
 
-.shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover, .shareThisDlg_NoteLabel:hover, .shareThisDlg_PublicRecipientTypeLabel:hover
+.shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover, .shareThisDlg_NoteLabel:hover, .shareThisDlg_PublicRecipientTypeImage:hover
 {
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;

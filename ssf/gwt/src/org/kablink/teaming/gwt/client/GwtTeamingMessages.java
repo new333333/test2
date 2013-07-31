@@ -2663,7 +2663,8 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Share with public info dialog
 	String shareWithPublicInfoDlg_Header();
-	String shareWithPublicInfoDlg_Instructions( String itemName );
+	String shareWithPublicInfoDlg_InstructionsEntry( String itemName );
+	String shareWithPublicInfoDlg_InstructionsFolder( String itemName );
 	String shareWithPublicInfoDlg_Instructions2( String itemName );
 
 	// Strings used in the Change Password dialog

@@ -6106,10 +6106,14 @@ public class GwtViewHelper {
 		}
 	}
 
-	/*
+	/**
 	 * Given a User, returns the type of that user.
+	 * 
+	 * @param user
+	 * 
+	 * @return
 	 */
-	private static UserType getUserType(User user) {
+	public static UserType getUserType(User user) {
 		// Are they an internal user?
 		UserType reply;
 		IdentityInfo ui = user.getIdentityInfo();
