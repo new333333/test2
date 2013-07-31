@@ -1884,6 +1884,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				.length()));
 
 		retMap.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
+
+        retMap.put(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE, new Boolean(hits.isTotalHitsApproximate()));
+        retMap.put(ObjectKeys.SEARCH_THERE_IS_MORE,           new Boolean(hits.getThereIsMore()        ));
 		
 		return retMap;
 	}
@@ -3416,5 +3419,4 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
             luceneSession.close();
         }
 	}
-
 }
