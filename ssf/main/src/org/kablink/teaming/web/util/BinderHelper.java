@@ -4027,6 +4027,8 @@ public class BinderHelper {
 	private static void preparePagination(AllModulesInjected bs, Map model, Map results, Map options, Tabs.TabEntry tab) {
 		Map<Long,FolderEntry> topEntries = new HashMap<Long,FolderEntry>();
 		int totalRecordsFound = (Integer) results.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+		boolean totalIsApproximate = (Boolean)results.get(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE);
+		boolean isMoreHits = (Boolean)results.get(ObjectKeys.SEARCH_THERE_IS_MORE);
 		int pageInterval = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
 		if (options != null && options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) {
 			pageInterval = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);
@@ -4111,6 +4113,14 @@ public class BinderHelper {
 			}
 		}
 		
+		//See if this is an approximate number of hits
+		if (totalIsApproximate) {
+			pagesCount = currentPageNo;
+			if (isMoreHits) {
+				pagesCount++;
+			}
+		}
+		
 		for (int i = currentPageNo+1; i <= currentPageNo+3; i++) {
 			if (i <= pagesCount) {
 				pageNos.add(i);
@@ -4122,7 +4132,8 @@ public class BinderHelper {
 		model.put(WebKeys.PAGE_TOTAL_RECORDS, totalRecordsFound);
 		model.put(WebKeys.PAGE_START_INDEX, firstOnCurrentPage+1);
 		model.put(WebKeys.PAGE_END_INDEX, lastOnCurrentPage);
-		
+		model.put(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE, results.get(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE));
+		model.put(ObjectKeys.SEARCH_THERE_IS_MORE, results.get(ObjectKeys.SEARCH_THERE_IS_MORE));
 	}
 	
 	
