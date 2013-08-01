@@ -708,7 +708,7 @@ public class SearchUtils {
 			
 			//return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
 		}
-		else if(ResourceDriverConfig.DriverType.famt == parentBinder.getResourceDriverType()) {
+		else if(parentBinder.noAclDredgedWithEntries()) {
 			// The parent binder is a net folder which does not store file ACLs in the search index.
 			// We need to consolidate the information in the search index with the dynamic list
 			// obtained from the file system in order to determine which subset of the children
@@ -774,7 +774,7 @@ public class SearchUtils {
 		return openAclResourceSession(driver);
 	}
 	
-	private static AclResourceSession openAclResourceSession(ResourceDriver driver) {
+	public static AclResourceSession openAclResourceSession(ResourceDriver driver) {
 		if(!(driver instanceof AclResourceDriver)) {
 			logger.warn("Unable to open session on resource driver '" + driver.getName() + "' for user '" + RequestContextHolder.getRequestContext().getUserName() + " because the driver is of class '" + driver.getClass().getName() + "'");
 			return null;

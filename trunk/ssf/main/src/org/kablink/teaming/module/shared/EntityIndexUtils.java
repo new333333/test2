@@ -870,7 +870,7 @@ public class EntityIndexUtils {
     	if(entry instanceof FolderEntry) {
     		long value = binder.getId().longValue(); // parent folder id
     		// Currently only the FAMT resource driver exposes files whose ACLs are not stored in Filr.
-    		if(ResourceDriverConfig.DriverType.famt == binder.getResourceDriverType())
+    		if(binder.noAclDredgedWithEntries())
     			value *= -1; // make it negative number
     		doc.add(new NumericField(Constants.ENTRY_ACL_PARENT_ID_FIELD, Field.Store.YES, true).setLongValue(value));
     	}
