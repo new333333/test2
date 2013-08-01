@@ -33,6 +33,7 @@
 package org.kablink.teaming.search;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -40,6 +41,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.NumericField;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
@@ -199,17 +201,138 @@ public abstract class AbstractLuceneSession {
 	
 	private Hits doSearchWithPostFiltering(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size, PostFilterCallback callback) throws LuceneException {
+		int k = 0;
+		if(k == 0)
+			return invokeSearchService(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+		
+		if(Validator.isNull(aclQueryStr)) {
+			// The user is not restricted by access check in the first place. So there is no point doing post filtering either.
+			return invokeSearchService(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+		}
+		
 		List<Document> result = new ArrayList<Document>();
 		
+		int filterSuccessCount = 0;
+		int filterFailureCount = 0;
+		int filterPredictedSuccessPercentage = SPropsUtil.getInt("search.post.filtering.predicted.success.rate.percentage", 80);
 		
-		Hits hits = invokeSearchService(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+		if(filterPredictedSuccessPercentage == 0) {
+			// We don't expect any of the items to pass post filtering. Then there is no point in even trying searching.
+			// NOTE: This value should NOT be used in production system.
+			return new Hits(0); 
+		}
+		else if(filterPredictedSuccessPercentage == 100) {
+			// We expect all items to pass post filtering. Then there is no point in applying post filtering.
+			// NOTE: This value should NOT be used in production system.
+			return invokeSearchService(contextUserId, aclQueryStr, mode, query, sort, offset, size);			
+		}
+		else if(filterPredictedSuccessPercentage < 0 || filterPredictedSuccessPercentage > 100) {
+			throw new ConfigurationException("The value of search.post.filtering.predicted.success.rate.percentage property must be between 0 and 100 non-inclusive"); 
+		}
+		
+		SearchServiceIterator searchServiceIterator = new SearchServiceIterator(contextUserId, aclQueryStr, mode, query, sort, offset, size, filterPredictedSuccessPercentage);
+		
+		// First, skip as many effective matches as offset
+		int skipCount = 0;
+		Hit hit;
+		while(skipCount < offset && searchServiceIterator.hasNext()) {
+			hit = searchServiceIterator.next();
+			if(callback.doFilter(hit.doc, hit.noAclButAccessibleThroughSharing)) {
+				// Effective match. This item counts;
+				skipCount++; 
+				filterSuccessCount++;
+			}
+			else {
+				// Ineffective match. This item doesn't count.
+				filterFailureCount++;
+			}
+		}
+		if(skipCount < offset) {
+			// There are not enough matching items to even get to the offset point.
+			return new Hits(0);
+		}
+		
+		// Second, get as many effective matches as size
+		while(result.size() < size && searchServiceIterator.hasNext()) {
+			hit = searchServiceIterator.next();
+			if(callback.doFilter(hit.doc, hit.noAclButAccessibleThroughSharing)) {
+				// Effective match. Put it in the result.
+				result.add(hit.doc); 
+				filterSuccessCount++;
+			}
+			else {
+				// Ineffective match. Throw this out.
+				filterFailureCount++;
+			}
+		}
+		
+		Hits hits = new Hits(result.size());
+		for(int i = 0; i < result.size(); i++)
+			hits.setDoc(result.get(i), i);
+		// Adjust the raw total hits count by subtracting the number of items that failed the post 
+		// filtering so far. In other word we factor in what we've learned by now. 
+		// This adjustment may not amount to much, but still better than nothing.
+		int adjustedTotalHits = searchServiceIterator.getLatestTotalHits() - filterFailureCount;
+		if(adjustedTotalHits < 0)
+			adjustedTotalHits = 0;
+		if(result.size() > 0 && (adjustedTotalHits < offset + result.size()))
+			adjustedTotalHits = offset + result.size();
+		hits.setTotalHits(adjustedTotalHits);
 		
 		return hits;
-		
-		// TODO $$$$$$$$$$$$$$$$$$$$$$$$
 	}
 	
 	protected Hits invokeSearchService(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size) throws LuceneException {
 		throw new UnsupportedOperationException("Subclass must override this method");
+	}
+	
+	class SearchServiceIterator implements Iterator<Hit> {
+
+		private int latestTotalHits;
+		
+		SearchServiceIterator(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
+				int offset, int size, int filterPredictedSuccessPercentage) {
+			
+			int serviceCurrentOffset = 0; // Always start from offset of zero because we can't jump into middle due to post filtering requirement
+			int serviceCurrentSize = computeServiceInitialSize(offset, size, filterPredictedSuccessPercentage); // Current batch size
+			
+			Hits hits = invokeSearchService(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return true;// $$$$$$$
+		}
+
+		@Override
+		public Hit next() {
+			return null;//$$$$$$$$$$$$$
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+		
+		public int getLatestTotalHits() {
+			return latestTotalHits;
+		}
+		
+		private int computeServiceInitialSize(int offset, int size, int filterPredictedSuccessPercentage) {
+			double serviceSize = ((double) (offset + size)) / ((double) filterPredictedSuccessPercentage);
+			return (int) Math.ceil(serviceSize);
+		}
+		
+	}
+	
+	static class Hit {
+		Document doc;
+		boolean noAclButAccessibleThroughSharing;
+		
+		Hit(Document doc, boolean noAclButAccessibleThroughSharing) {
+			this.doc = doc;
+			this.noAclButAccessibleThroughSharing = noAclButAccessibleThroughSharing;
+		}
 	}
 }
