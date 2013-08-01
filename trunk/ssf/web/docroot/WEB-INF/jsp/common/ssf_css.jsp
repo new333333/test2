@@ -5004,6 +5004,7 @@ div.ssPageNavi table td {
 .ssPageNavi .ss_go_to_page {
 	font-size: 11px;
 	color: #333333;
+	padding-right: 8px;
 	}
 .ssPageNavi input.form-text {
 	border: 1px solid #333333;
