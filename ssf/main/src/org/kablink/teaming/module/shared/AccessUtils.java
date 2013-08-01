@@ -38,6 +38,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.slide.util.logger.Logger;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
@@ -57,6 +60,10 @@ import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.fi.connection.acl.AclItemPermissionMapper;
+import org.kablink.teaming.fi.connection.acl.AclItemPermissionMappingException;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
+import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -82,6 +89,9 @@ import org.kablink.util.search.Constants;
 
 
 public class AccessUtils  {
+	
+	private static final Log logger = LogFactory.getLog(AccessUtils.class);
+	
 	private static AccessUtils instance; // A singleton instance
 	protected AccessControlManager accessControlManager;
 	protected FunctionManager functionManager;
@@ -1024,4 +1034,42 @@ public class AccessUtils  {
 
 	}
 
+	/**
+	 * Ask external system which role the user has on the specified net folder file.
+	 * This method returns the database ID of the Function object corresponding to
+	 * one of the following roles defined in Filr, or null if the user has no access
+	 * on the entry.
+	 * 
+	 * ObjectKeys.ROLE_TITLE_FILR_VIEWER
+	 * ObjectKeys.ROLE_TITLE_FILR_EDITOR
+	 * ObjectKeys.ROLE_TITLE_FILR_CONTRIBUTOR
+	 * 
+	 * @param netFolderFile
+	 * @return
+	 */
+	public static Long askExternalSystemForRoleId(FolderEntry netFolderFile) {
+		Folder parentFolder = netFolderFile.getParentFolder();
+		if(!parentFolder.noAclDredgedWithEntries())
+			throw new IllegalArgumentException("Invalid entry '" + netFolderFile.getId() + "' for this method");
+		AclResourceDriver driver = (AclResourceDriver) parentFolder.getResourceDriver();
+		AclResourceSession session = SearchUtils.openAclResourceSession(parentFolder.getResourceDriver());
+		if(session == null)
+			return null; // cannot obtain session for the user
+		try {
+			session.setPath(parentFolder.getResourcePath(), netFolderFile.getTitle());
+			String permissionName = session.getPermissionName();
+			if(permissionName == null)
+				return null;
+			AclItemPermissionMapper permissionMapper = driver.getAclItemPermissionMapper();
+			return permissionMapper.toVibeRoleId(permissionName);
+		}
+		catch (AclItemPermissionMappingException e) {
+			logger.error("Error getting permission info on entry '" + netFolderFile.getId() + "'", e);
+			return null;
+		}
+		finally {
+			session.close();
+		}
+	}
+	
 }
