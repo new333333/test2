@@ -1036,88 +1036,13 @@ public class SearchUtils {
 	public static void removeNetFoldersWithNoRootAccess(Map netFolderSearchResults) {
 		// Filter out any folders that don't have the 
 		// AllowAccessToNetFolder right
-		List<Map> netFolderMapList = (List)netFolderSearchResults.get(ObjectKeys.SEARCH_ENTRIES); 
-		List<Map> newNetFolderMapList = removeNetFoldersWithNoRootAccess(netFolderMapList);
-		int itemsRemoved = netFolderMapList.size() - newNetFolderMapList.size();
-      	if (itemsRemoved > 0) {
-      		// We had to remove some. Store the new list and fix up the
-      		// counts.
-	      	netFolderSearchResults.put(ObjectKeys.SEARCH_ENTRIES, newNetFolderMapList);
-      		Integer count = (Integer)netFolderSearchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL); 
-      		if (count != null) {
-      			count = count - itemsRemoved;
-      			if (count < 0) count = 0;
-      			netFolderSearchResults.put(ObjectKeys.SEARCH_COUNT_TOTAL, count); 
-      		}
-      		count = (Integer)netFolderSearchResults.get(ObjectKeys.TOTAL_SEARCH_COUNT); 
-      		if (count != null) {
-      			count = count - itemsRemoved;
-      			if (count < 0) count = 0;
-      			netFolderSearchResults.put(ObjectKeys.TOTAL_SEARCH_COUNT, count); 
-      		}
-      		count = (Integer)netFolderSearchResults.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED); 
-      		if (count != null) {
-      			count = count - itemsRemoved;
-      			if (count < 0) count = 0;
-      			netFolderSearchResults.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, count); 
-      		}
-      	}
-	}
-	
-	public static List<Map> removeNetFoldersWithNoRootAccess(List<Map> netFolderMapList) {
-		SimpleProfiler.start("SearchUtils.removeNetFoldersWithNoRootAccess()");
-		try {
-			User user = RequestContextHolder.getRequestContext().getUser();
-			List newNetFolderMapList = new ArrayList();
-			
-			Iterator iter = netFolderMapList.iterator();
-	      	while (iter.hasNext()) {
-	      		Map entryMap = (Map) iter.next();
-	      		String docId = (String)entryMap.get(Constants.DOCID_FIELD);
-	      		String entityType = (String)entryMap.get(Constants.ENTITY_FIELD);
-	      		if (EntityIdentifier.EntityType.folder.name().equals(entityType)) {
-	      			// See if the user has access to this root folder.
-		 			if (AccessUtils.checkIfUserHasAccessToRootId(user, docId) || user.isSuper()) {
-		  				// This user has access to this item in the
-		 				// search results, so keep this result.
-		 				newNetFolderMapList.add(entryMap);
-		  			}
-	      		}
-	      	}
-	      	return newNetFolderMapList;
-		}
 		
-		finally {
-			SimpleProfiler.stop("SearchUtils.removeNetFoldersWithNoRootAccess()");
-		}
+		// 7/31/2013 JK (bug 829793) - This method is no longer necessary due to changes made as part of ACL dredging reduction work.
 	}
-	
+		
 	public static List<BinderIndexData> removeNetFoldersWithNoRootAccess2(List<BinderIndexData> netFolderMapList) {
-		SimpleProfiler.start("SearchUtils.removeNetFoldersWithNoRootAccess2()");
-		try {
-			User user = RequestContextHolder.getRequestContext().getUser();
-			List<BinderIndexData> newNetFolderMapList = new ArrayList();
-			
-			Iterator iter = netFolderMapList.iterator();
-	      	while (iter.hasNext()) {
-	      		BinderIndexData bid = (BinderIndexData)iter.next();
-	      		Long docId = bid.getId();
-	      		String entityType = bid.getEntityType().name();
-	      		if (EntityIdentifier.EntityType.folder.name().equals(entityType)) {
-	      			// See if the user has access to this root folder.
-		 			if (AccessUtils.checkIfUserHasAccessToRootId(user, String.valueOf(docId)) || user.isSuper()) {
-		  				// This user has access to this item in the
-		 				// search results, so keep this result.
-		 				newNetFolderMapList.add(bid);
-		  			}
-	      		}
-	      	}
-	      	return newNetFolderMapList;
-		}
-		
-		finally {
-			SimpleProfiler.stop("SearchUtils.removeNetFoldersWithNoRootAccess2()");
-		}
+		// 7/31/2013 JK (bug 829793) - This method is no longer necessary due to changes made as part of ACL dredging reduction work.
+		return netFolderMapList;
 	}
 
 	/**
