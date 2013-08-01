@@ -32,17 +32,23 @@
  */
 package org.kablink.teaming.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.NumericField;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
+import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.search.postfilter.PostFilterCallback;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
-public class AbstractLuceneSession {
+public abstract class AbstractLuceneSession {
 	
 	private Log logger;
 	
@@ -127,14 +133,14 @@ public class AbstractLuceneSession {
 		}
 	}
 
-	protected int adjustSearchSizeToFigureOutIfThereIsMore(int size) {
+	protected int adjustSearchSizeToFindOutIfThereIsMoreWhenPostFilteringInvolved(int size) {
 		if(size < 0 || size == Integer.MAX_VALUE) // unbounded search
 			return size;
 		else // bounded search - get one more than requested
 			return size + 1;
 	}
 	
-	protected Hits doFilter(Hits hits, int offset, int origSize) {
+	protected Hits setClientSideFields(Hits hits, int offset, int origSize) {
 		if(origSize > 0 && origSize < Integer.MAX_VALUE) { // bounded
 			if(hits.isTotalHitsApproximate()) {
 				// The search total is approximate. Use look-ahead element to determine whether there's at least one more match.
@@ -155,18 +161,55 @@ public class AbstractLuceneSession {
 	
 	protected PostFilterCallback getPostFilterCallback() {
 		return new PostFilterCallback() {
-			public boolean doFilter(Document doc) {
+			public boolean doFilter(Document doc, boolean noAclButAccessibleThroughSharing) {
+				if(noAclButAccessibleThroughSharing)
+					return true; // This doc represents an entry the user has access via sharing. Need not consult file system for access test.
 				NumericField field = (NumericField) doc.getFieldable(Constants.ENTRY_ACL_PARENT_ID_FIELD);
 				if(field == null)
 					return true; // doesn't require access check
 				if(field.getNumericValue().longValue() >= 0)
 					return true; // doesn't require access check
 				String resourceDriverName = doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
-				if(Validator.isNull(resourceDriverName))
-					return false;
-				else
-					return true;
+				if(Validator.isNull(resourceDriverName)) {
+					logger.warn("Can not perform access check because resource driver name is missing on this doc: " + doc.toString());
+					return false; // fails the test
+				}
+				String resourcePath = doc.get(Constants.RESOURCE_PATH_FIELD);
+				if(resourcePath == null)
+					resourcePath = "";
+				AclResourceSession session = org.kablink.teaming.module.shared.SearchUtils.openAclResourceSession(resourceDriverName);				
+				if(session == null)
+					return false; // can not perform access check on this
+				try {
+					session.setPath(resourcePath);
+					return session.exists();
+				}
+				finally {
+					session.close();
+				}
 			}
 		};
+	}
+	
+	protected Hits searchWithPostFiltering(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
+			int offset, int size, PostFilterCallback callback) throws LuceneException {
+		Hits hits = doSearchWithPostFiltering(contextUserId, aclQueryStr, mode, query, sort, offset, adjustSearchSizeToFindOutIfThereIsMoreWhenPostFilteringInvolved(size), callback);
+		return setClientSideFields(hits, offset, size);
+	}
+	
+	private Hits doSearchWithPostFiltering(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
+			int offset, int size, PostFilterCallback callback) throws LuceneException {
+		List<Document> result = new ArrayList<Document>();
+		
+		
+		Hits hits = invokeSearchService(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+		
+		return hits;
+		
+		// TODO $$$$$$$$$$$$$$$$$$$$$$$$
+	}
+	
+	protected Hits invokeSearchService(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size) throws LuceneException {
+		throw new UnsupportedOperationException("Subclass must override this method");
 	}
 }

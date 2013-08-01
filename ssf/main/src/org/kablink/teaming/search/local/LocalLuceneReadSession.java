@@ -77,15 +77,20 @@ public class LocalLuceneReadSession extends AbstractLuceneSession implements Luc
 	@Override
 	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size, PostFilterCallback callback) {
-		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
+		SimpleProfiler.start("LocalLuceneReadSession.search()");
 		try {
-			return doFilter(luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, adjustSearchSizeToFigureOutIfThereIsMore(size)), offset, size);
+			return searchWithPostFiltering(contextUserId, aclQueryStr, mode, query, sort, offset, size, callback);
 		}
 		finally {
-			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,Sort,int,int)");
+			SimpleProfiler.stop("LocalLuceneReadSession.search()");
 		}
 	}
 
+	@Override
+	protected Hits invokeSearchService(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size) {
+		return luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+	}
+	
 	@Override
 	public ArrayList getTags(String aclQueryStr, String tag, String type)
 	throws LuceneException {
@@ -161,7 +166,7 @@ public class LocalLuceneReadSession extends AbstractLuceneSession implements Luc
 			throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.searchFolderOneLevelWithInferredAccess()");
 		try {
-			return doFilter(luceneProvider.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinderId, parentBinderPath), offset, size);
+			return setClientSideFields(luceneProvider.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinderId, parentBinderPath), offset, size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.searchFolderOneLevelWithInferredAccess()");
@@ -186,7 +191,7 @@ public class LocalLuceneReadSession extends AbstractLuceneSession implements Luc
 			throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.searchFolderOneLevel()");
 		try {
-			return doFilter(luceneProvider.searchNetFolderOneLevel(contextUserId, aclQueryStr, titles, query, sort, offset, size), offset, size);
+			return setClientSideFields(luceneProvider.searchNetFolderOneLevel(contextUserId, aclQueryStr, titles, query, sort, offset, size), offset, size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.searchFolderOneLevel()");

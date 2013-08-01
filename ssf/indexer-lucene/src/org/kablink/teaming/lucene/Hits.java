@@ -68,8 +68,6 @@ public class Hits implements Serializable {
         
     // Matching documents. This field is set on the server side.
     private Document[] documents;
-    // Scores for the matching documents. This field is set on the server side.
-    private float[] scores;
 
     // This optional field is for internal use only. Must NOT be used directly by the
     // application code. If true, the document represents a net folder file/entry/comment
@@ -83,7 +81,6 @@ public class Hits implements Serializable {
     public Hits(int length) {
         this.size = length;
         documents = new Document[length];
-        scores = new float[length];
         noAclButAccessibleThroughSharing = new boolean[length];
      }
 
@@ -94,7 +91,6 @@ public class Hits implements Serializable {
     	for(int i = 0; i < hits.size; i++) {
     		if(bitSet.get(i)) {
     			this.setDoc(hits.doc(i), index);
-    			this.setScore(hits.score(i), index);
     			index++;
     		}
     	}
@@ -102,7 +98,6 @@ public class Hits implements Serializable {
     
     public void removeLast() {
     	documents[size-1] = null;
-    	scores[size-1] = 0;
     	noAclButAccessibleThroughSharing[size-1] = false;
     	size -= 1;
     }
@@ -117,10 +112,6 @@ public class Hits implements Serializable {
     
     public void setLength(int length) {
     	this.size = length;
-    }
-
-    public float score(int n) {
-        return scores[n];
     }
 
     public boolean noAclButAccessibleThroughSharing(int n) {
@@ -155,7 +146,7 @@ public class Hits implements Serializable {
 	        	}
         	}
             ss_hits.setDoc(doc, i);
-            ss_hits.setScore(hits[offset + i].score, i);
+            //ss_hits.setScore(hits[offset + i].score, i);
         }
         ss_hits.setTotalHits(topDocs.totalHits);
         ss_hits.setTotalHitsApproximate(totalHitsApproximate);
@@ -166,10 +157,6 @@ public class Hits implements Serializable {
         documents[n] = doc;
     }
 
-    public void setScore(float score, int n) {
-        scores[n] = score;
-    }
-    
     public void setNoAclButAccessibleThroughSharing(boolean value, int n) {
     	noAclButAccessibleThroughSharing[n] = value;
     }
