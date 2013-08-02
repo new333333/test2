@@ -72,17 +72,19 @@ public class ThreadLocalAclQueryFilter extends Filter{
 		
 		if(docIdSet != null) {
 			DocIdSetIterator it = docIdSet.iterator();
-			int docId = it.nextDoc();
-			while(docId != DocIdSetIterator.NO_MORE_DOCS) {
-				if(entryAclParentIds[docId] < 0) {
-					// This doc represents an entry/reply/attachment whose intrinsic ACL information is not
-					// stored with the search index (e.g. a net folder file). The fact that this doc nevertheless
-					// passed the original ACL query filter is a clear indication that there are "additional" 
-					// ACL indexed on this doc that made it pass the filter. In the current application, that 
-					// should be share-granted ACL. We need to pass this information up to the caller
-					noAclButAccessibleThroughSharingEntryIds.add(entryIdStrs[docId]);
+			if(it != null) {
+				int docId = it.nextDoc();
+				while(docId != DocIdSetIterator.NO_MORE_DOCS) {
+					if(entryAclParentIds[docId] < 0) {
+						// This doc represents an entry/reply/attachment whose intrinsic ACL information is not
+						// stored with the search index (e.g. a net folder file). The fact that this doc nevertheless
+						// passed the original ACL query filter is a clear indication that there are "additional" 
+						// ACL indexed on this doc that made it pass the filter. In the current application, that 
+						// should be share-granted ACL. We need to pass this information up to the caller
+						noAclButAccessibleThroughSharingEntryIds.add(entryIdStrs[docId]);
+					}
+					docId = it.nextDoc();
 				}
-				docId = it.nextDoc();
 			}
 		}
 		
