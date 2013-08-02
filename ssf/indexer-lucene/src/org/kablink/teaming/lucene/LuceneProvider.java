@@ -1231,8 +1231,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					", contextUserId=" + contextUserId + 
 					", aclQueryStr=[" + aclQueryStr + 
 					"], mode=" + mode + 
-					", query=[" + ((query==null)? null : query.toString()) + 
-					"], sort=[" + ((sort==null)? null : sort.toString()) + 
+					", query=[" + ((query==null)? "" : query.toString()) + 
+					"], sort=[" + ((sort==null)? "" : sort.toString()) + 
 					"], offset=" + offset +
 					", size=" + size);
 		}
@@ -1250,8 +1250,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					", contextUserId=" + contextUserId + 
 					", aclQueryStr=[" + aclQueryStr + 
 					"], titles=" + titles +
-					", query=[" + ((query==null)? null : query.toString()) + 
-					"], sort=[" + ((sort==null)? null : sort.toString()) + 
+					", query=[" + ((query==null)? "" : query.toString()) + 
+					"], sort=[" + ((sort==null)? "" : sort.toString()) + 
 					"], offset=" + offset +
 					", size=" + size);
 		}

@@ -30,56 +30,68 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.search.local;
+package org.kablink.teaming.search;
 
 import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.Term;
 import org.kablink.teaming.lucene.LuceneException;
-import org.kablink.teaming.lucene.LuceneProvider;
-import org.kablink.teaming.search.AbstractLuceneWriteSession;
-import org.kablink.teaming.search.LuceneWriteSession;
+import org.kablink.teaming.util.SimpleProfiler;
 
-public class LocalLuceneWriteSession extends AbstractLuceneWriteSession implements LuceneWriteSession {
+public abstract class AbstractLuceneWriteSession extends AbstractLuceneSession implements LuceneWriteSession {
 
-	private static Log logger = LogFactory.getLog(LocalLuceneReadSession.class);
-
-	private LuceneProvider luceneProvider;
-
-	public LocalLuceneWriteSession(LuceneProvider luceneProvider) {
+	protected AbstractLuceneWriteSession(Log logger) {
 		super(logger);
-		this.luceneProvider = luceneProvider;
 	}
 
-	@Override
-	protected void invokeAddDocuments(ArrayList docs) {
-		luceneProvider.addDocuments(docs);
+	public void addDocuments(ArrayList docs) throws LuceneException {
+		SimpleProfiler.start("addDocuments()");
+		long begin = System.nanoTime();
+		invokeAddDocuments(docs);
+		SimpleProfiler.stop("addDocuments()");
+		endWrite(begin, "addDocuments");
 	}
 
-	@Override
-	protected void invokeDeleteDocuments(Term term) {
-		luceneProvider.deleteDocuments(term);
+	protected abstract void invokeAddDocuments(ArrayList docs) throws LuceneException;
+	
+	public void deleteDocuments(Term term) throws LuceneException {
+		SimpleProfiler.start("deleteDocuments()");
+		long begin = System.nanoTime();
+		invokeDeleteDocuments(term);
+		SimpleProfiler.stop("deleteDocuments()");
+		endWrite(begin, "deleteDocuments");
 	}
 
-	@Override
-	protected void invokeAddDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
-		luceneProvider.addDeleteDocuments(docsToAddOrDelete);
+	protected abstract void invokeDeleteDocuments(Term term) throws LuceneException;
+	
+	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
+		SimpleProfiler.start("addDeleteDocuments()");
+		long begin = System.nanoTime();
+		invokeAddDeleteDocuments(docsToAddOrDelete);
+		SimpleProfiler.stop("addDeleteDocuments()");
+		endWrite(begin, "addDeleteDocuments");
 	}
 
-	@Override
-	protected void invokeOptimize() {
-		luceneProvider.optimize();
-	}
-		
-	@Override
-	protected void invokeClearIndex() {
-		luceneProvider.clearIndex();
+	protected abstract void invokeAddDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException;
+	
+	public void optimize() throws LuceneException {
+		SimpleProfiler.start("optimize()");
+		long begin = System.nanoTime();
+		invokeOptimize();
+		SimpleProfiler.stop("optimize()");
+		endWrite(begin, "optimize");
 	}
 	
-	@Override
-	public void close() {
-		// luceneProvider automatically takes care of flush/commit, and there is no resource to release here.
+	protected abstract void invokeOptimize() throws LuceneException;
+
+	public void clearIndex() throws LuceneException {
+		SimpleProfiler.start("clearIndex()");
+		long begin = System.nanoTime();
+		invokeClearIndex();
+		SimpleProfiler.stop("clearIndex()");
+		endWrite(begin, "clearIndex");
 	}
+
+	protected abstract void invokeClearIndex() throws LuceneException;
 }
