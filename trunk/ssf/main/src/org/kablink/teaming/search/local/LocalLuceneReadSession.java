@@ -45,8 +45,6 @@ import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.LuceneProvider;
 import org.kablink.teaming.search.AbstractLuceneReadSession;
 import org.kablink.teaming.search.LuceneReadSession;
-import org.kablink.teaming.search.postfilter.PostFilterCallback;
-import org.kablink.teaming.util.SimpleProfiler;
 
 /**
  * This implementation provides access to local Lucene index.
