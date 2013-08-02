@@ -35,6 +35,7 @@ package org.kablink.teaming.search;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.logging.Log;
 import org.apache.lucene.document.Document;
@@ -272,7 +273,7 @@ public abstract class AbstractLuceneSession {
 		// Adjust the raw total hits count by subtracting the number of items that failed the post 
 		// filtering so far. In other word we factor in what we've learned by now. 
 		// This adjustment may not amount to much, but still better than nothing.
-		int adjustedTotalHits = searchServiceIterator.getLatestTotalHits() - filterFailureCount;
+		int adjustedTotalHits = searchServiceIterator.getTotalHits() - filterFailureCount;
 		if(adjustedTotalHits < 0)
 			adjustedTotalHits = 0;
 		if(result.size() > 0 && (adjustedTotalHits < offset + result.size()))
@@ -288,26 +289,120 @@ public abstract class AbstractLuceneSession {
 	
 	class SearchServiceIterator implements Iterator<Hit> {
 
-		private int latestTotalHits;
+		private static final int BEFORE_START = 1;
+		private static final int IN_PROGRESS = 2;
+		private static final int ENDED = 3;
+		
+		// Caller parameters
+		private Long contextUserId;
+		private String aclQueryStr;
+		private int mode;
+		private Query query;
+		private Sort sort;
+		private int offset;
+		private int size;
+		private int filterPredictedSuccessPercentage;
+		
+		private int incrSize;
+		
+		// Service parameters
+		private int state = BEFORE_START; // indicates initial state
+		private int serviceOffset;	// offset for service call
+		private int serviceSize; // size for service call
+		private Hits serviceHits;   // Hits objects from the last call to service
+		private int totalHits; // total hits count from the first hits object obtained
+		private int hitsPosition; // position on current hits object representing the state of the iterator
+		
+		private int serviceCallCount;
+		
 		
 		SearchServiceIterator(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 				int offset, int size, int filterPredictedSuccessPercentage) {
+			this.contextUserId = contextUserId;
+			this.aclQueryStr = aclQueryStr;
+			this.mode = mode;
+			this.query = query;
+			this.sort = sort;
+			this.offset = offset;
+			this.size = size;
+			this.filterPredictedSuccessPercentage = filterPredictedSuccessPercentage;
 			
-			int serviceCurrentOffset = 0; // Always start from offset of zero because we can't jump into middle due to post filtering requirement
-			int serviceCurrentSize = computeServiceInitialSize(offset, size, filterPredictedSuccessPercentage); // Current batch size
+			int incrSizePercentage = SPropsUtil.getInt("search.post.filtering.incr.size.percentage", 50);		
+			double dsize = (((double) size) * incrSizePercentage) / 100.0;
+			this.incrSize = (int) Math.ceil(dsize);
 			
-			Hits hits = invokeSearchService(contextUserId, aclQueryStr, mode, query, sort, offset, size);
-
+			// TODO $$$ MUST take care of case where size = MAX_VALUE
 		}
 		
 		@Override
 		public boolean hasNext() {
-			return true;// $$$$$$$
+			if(state == BEFORE_START) { // Service call never made yet
+				serviceOffset = 0; // Always start from offset of zero because we can't jump into middle due to post filtering requirement
+				serviceSize = computeServiceSizeInitial(offset, size, filterPredictedSuccessPercentage); // Current batch size
+				serviceHits = invokeSearchService(contextUserId, aclQueryStr, mode, query, sort, serviceOffset, serviceSize);
+				serviceCallCount++;
+				totalHits = serviceHits.getTotalHits();
+				hitsPosition = -1;
+				if(serviceHits.length() > 0) {
+					state = IN_PROGRESS;
+					return true;
+				}
+				else {
+					state = ENDED;
+					return false;
+				}
+			}
+			else if(state == IN_PROGRESS) {
+				if(serviceHits.length() > hitsPosition + 1) {
+					// There's still more element in the current hits object
+					return true;
+				}
+				else {
+					// There's no more element in the current hits object.
+					if(serviceHits.length() < serviceSize) {
+						// The current hits object returned less than we asked, which means there's no point in asking the index for more.
+						state = ENDED;
+						return false;
+					}
+					else if (serviceHits.getTotalHits() > serviceOffset + serviceSize) {
+						// According to the current hits object, the index contains more items. Let's get it.
+						serviceOffset += serviceSize;
+						serviceSize = incrSize;
+						serviceHits = invokeSearchService(contextUserId, aclQueryStr, mode, query, sort, serviceOffset, serviceSize);
+						serviceCallCount++;
+						hitsPosition = -1;
+						if(serviceHits.length() > 0) {
+							return true;
+						}
+						else {
+							state = ENDED;
+							return false;
+						}						
+					}
+					else {
+						// According to the current hits object, the index doesn't contain any more than we already retrieved.
+						state = ENDED;
+						return false;
+					}
+				}
+			}
+			else if (state == ENDED ) {
+				return false;
+			}
+			else {
+				return false;
+			}
 		}
 
 		@Override
 		public Hit next() {
-			return null;//$$$$$$$$$$$$$
+			if(state == IN_PROGRESS) {
+				hitsPosition++;
+				return new Hit(serviceHits.doc(hitsPosition), serviceHits.noAclButAccessibleThroughSharing(hitsPosition));
+			}
+			else {
+				throw new NoSuchElementException("Must be a bug in the code");
+			}
 		}
 
 		@Override
@@ -315,11 +410,16 @@ public abstract class AbstractLuceneSession {
 			throw new UnsupportedOperationException();
 		}
 		
-		public int getLatestTotalHits() {
-			return latestTotalHits;
+		public int getTotalHits() {
+			return totalHits;
 		}
 		
-		private int computeServiceInitialSize(int offset, int size, int filterPredictedSuccessPercentage) {
+		
+		public int getServiceCallCount() {
+			return serviceCallCount;
+		}
+		
+		private int computeServiceSizeInitial(int offset, int size, int filterPredictedSuccessPercentage) {
 			double serviceSize = ((double) (offset + size)) / ((double) filterPredictedSuccessPercentage);
 			return (int) Math.ceil(serviceSize);
 		}
