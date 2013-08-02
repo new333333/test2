@@ -171,7 +171,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 	
 	protected int adjustSearchSizeToFindOutIfThereIsMoreWhenPostFilteringInvolved(int size) {
 		if(size < 0 || size == Integer.MAX_VALUE) // unbounded search
-			return size;
+			return Integer.MAX_VALUE;
 		else // bounded search - get one more than requested
 			return size + 1;
 	}
@@ -235,35 +235,33 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 	
 	private Hits doSearchWithPostFiltering(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size, PostFilterCallback callback, PostFilteringStats stats) throws LuceneException {
-		int k = 0;
-		if(k == 0)
-			return invokeSearch(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+		if(size <= 0)
+			throw new IllegalArgumentException("Size must be positive number");
 		
 		if(Validator.isNull(aclQueryStr)) {
 			// The user is not restricted by access check in the first place. So there is no point doing post filtering either.
 			return invokeSearch(contextUserId, aclQueryStr, mode, query, sort, offset, size);
 		}
 		
-		List<Document> result = new ArrayList<Document>();
-		
-		int filterSuccessCount = 0;
-		int filterFailureCount = 0;
 		int filterPredictedSuccessPercentage = SPropsUtil.getInt("search.post.filtering.predicted.success.rate.percentage", 80);
 		
 		if(filterPredictedSuccessPercentage == 0) {
 			// We don't expect any of the items to pass post filtering. Then there is no point in even trying searching.
-			// NOTE: This value should NOT be used in production system.
+			// NOTE: This value is for development use only and unsupported for production system.
 			return new Hits(0); 
 		}
 		else if(filterPredictedSuccessPercentage == 100) {
 			// We expect all items to pass post filtering. Then there is no point in applying post filtering.
-			// NOTE: This value should NOT be used in production system.
+			// NOTE: This value is for development use only and unsupported for production system.
 			return invokeSearch(contextUserId, aclQueryStr, mode, query, sort, offset, size);			
 		}
 		else if(filterPredictedSuccessPercentage < 0 || filterPredictedSuccessPercentage > 100) {
 			throw new ConfigurationException("The value of search.post.filtering.predicted.success.rate.percentage property must be between 0 and 100 non-inclusive"); 
 		}
 		
+		int filterSuccessCount = 0;
+		int filterFailureCount = 0;
+
 		SearchServiceIterator searchServiceIterator = new SearchServiceIterator(contextUserId, aclQueryStr, mode, query, sort, offset, size, filterPredictedSuccessPercentage);
 		
 		// First, skip as many effective matches as offset
@@ -286,7 +284,9 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 			return new Hits(0);
 		}
 		
-		// Second, get as many effective matches as size
+		List<Document> result = new ArrayList<Document>();		
+
+		// Second, gather as many effective matches as size
 		while(result.size() < size && searchServiceIterator.hasNext()) {
 			hit = searchServiceIterator.next();
 			if(callback.doFilter(hit.doc, hit.noAclButAccessibleThroughSharing)) {
@@ -338,8 +338,6 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		private int size;
 		private int filterPredictedSuccessPercentage;
 		
-		private int incrSize;
-		
 		// Service parameters
 		private int state = BEFORE_START; // indicates initial state
 		private int serviceOffset;	// offset for service call
@@ -361,12 +359,6 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 			this.offset = offset;
 			this.size = size;
 			this.filterPredictedSuccessPercentage = filterPredictedSuccessPercentage;
-			
-			int incrSizePercentage = SPropsUtil.getInt("search.post.filtering.incr.size.percentage", 50);		
-			double dsize = (((double) size) * incrSizePercentage) / 100.0;
-			this.incrSize = (int) Math.ceil(dsize);
-			
-			// TODO $$$ MUST take care of case where size = MAX_VALUE
 		}
 		
 		@Override
@@ -402,7 +394,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 					else if (serviceHits.getTotalHits() > serviceOffset + serviceSize) {
 						// According to the current hits object, the index contains more items. Let's get it.
 						serviceOffset += serviceSize;
-						serviceSize = incrSize;
+						serviceSize = computeServiceSizeInitial();
 						serviceHits = invokeSearch(contextUserId, aclQueryStr, mode, query, sort, serviceOffset, serviceSize);
 						serviceCallCount++;
 						hitsPosition = -1;
@@ -455,10 +447,19 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		}
 		
 		private int computeServiceSizeInitial(int offset, int size, int filterPredictedSuccessPercentage) {
-			double serviceSize = ((double) (offset + size)) / ((double) filterPredictedSuccessPercentage);
+			if(size == Integer.MAX_VALUE)
+				return size;
+			double serviceSize = ((double) (offset + size)) / ((double) filterPredictedSuccessPercentage) * 100.0;
 			return (int) Math.ceil(serviceSize);
 		}
 		
+		private int computeServiceSizeInitial() {	
+			if(size == Integer.MAX_VALUE)
+				throw new IllegalStateException("Shouldn't call this method with unbounded size");
+			int incrSizePercentage = SPropsUtil.getInt("search.post.filtering.incr.size.percentage", 50);		
+			double dsize = (((double) size) * incrSizePercentage) / 100.0;
+			return (int) Math.ceil(dsize);
+		}
 	}
 	
 	static class Hit {
