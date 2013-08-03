@@ -85,7 +85,7 @@ public interface AclResourceSession extends ResourceSession {
 	 * 
 	 * @return
 	 */
-	public boolean isAclInherited();
+	public Boolean isAclInherited();
 	
 	/**
 	 * Returns the children of the directory as a list of <code>ResourceItem</code> objects.
