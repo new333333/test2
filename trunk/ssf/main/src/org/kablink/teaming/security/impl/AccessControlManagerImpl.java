@@ -68,9 +68,11 @@ import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.accesstoken.AccessToken;
+import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -390,17 +392,16 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			// Take container groups into consideration
 			List<Long> containerGroupsToLookup = getProfileDao().getMemberOfLdapContainerGroupIds(user.getId(), zoneId);
 			Set<Long> userAllMembersToLookup = null;
-			if(containerGroupsToLookup.isEmpty()) {
+			if (containerGroupsToLookup.isEmpty()) {
 				userAllMembersToLookup = userApplicationLevelMembersToLookup;
-			}
-			else {	
+			} else {	
 				userAllMembersToLookup = new HashSet<Long>(userApplicationLevelMembersToLookup);
 				userAllMembersToLookup.addAll(containerGroupsToLookup);
 			}
 			// Regular ACL checking must take container groups into consideration. 
 			// However, sharing-granted ACL checking must not because sharing can never take
 			// place against a container group.
-			if(checkWorkAreaFunctionMembership(user.getZoneId(),
+			if (checkWorkAreaFunctionMembership(user.getZoneId(),
 							workArea, workAreaOperation, userAllMembersToLookup)) {
 				if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
 					//OK, this is accessible by this user
@@ -409,8 +410,15 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					//See if this was shared. If so, we can ignore the rootFolderAccess check
 					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
 				}
-			}
-			else {
+			} else {
+				if (workArea.isAclExternallyControlled()) {
+					if (workArea instanceof FolderEntry && ((FolderEntry)workArea).noAclDredged()) {
+						//This entry has no ACL set up, so it has to get it from the file system 
+						if (testRightGrantedByDredgedAcl(user, (FolderEntry)workArea, workAreaOperation)) {
+							return true;
+						}
+					}
+				}
 				return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
 			}
 		}
@@ -546,6 +554,23 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	return testRightGrantedBySharing(user, workArea, workAreaOperation, userMembers);
     }
     
+    private boolean testRightGrantedByDredgedAcl(User user, FolderEntry workArea, WorkAreaOperation workAreaOperation) {
+    	// This entry has to get its ACL role from the file system
+    	if (user.equals(RequestContextHolder.getRequestContext().getUser())) {
+    		//We can only do this for the current user
+	    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+	    	Long roleId = AccessUtils.askExternalSystemForRoleId(workArea);
+	    	Function f = getFunctionManager().getFunction(zoneId, roleId);
+	    	for (WorkAreaOperation wao : (Set<WorkAreaOperation>)f.getOperations()) {
+	    		if (wao.equals(workAreaOperation)) {
+	    			//This function includes the desired operation.
+	    			return true;
+	    		}
+	    	}
+    	}
+    	return false;
+    }
+
     private boolean isExternalAclControlledOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) {
 		boolean isExternalAclControlledOperation = false;
 		if (workArea.isAclExternallyControlled()) {
