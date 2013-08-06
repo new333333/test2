@@ -158,6 +158,12 @@ public class GwtNetFolderHelper
 				{
 					if ( statusTicket.isDone() )
 						nextNetFolderServer.setStatus( NetFolderRootStatus.READY );
+					
+					// Currently, when we sync a net folder server, we add all of the net folders
+					// associated with the net folder server to a queue of net folders waiting to
+					// be sync'd.  Given this fact, there isn't really a "status" of on a
+					// net folder server.
+					nextNetFolderServer.setStatus( NetFolderRootStatus.READY );
 				}
 				else
 				{
