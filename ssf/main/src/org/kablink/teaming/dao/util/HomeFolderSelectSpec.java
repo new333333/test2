@@ -34,17 +34,17 @@ package org.kablink.teaming.dao.util;
 
 /**
  * This class encapsulates select specifications used to retrieve only
- * those My Files Storage folders that fulfill specified criteria.
+ * those Home folders that fulfill specified criteria.
  * 
  * @author drfoster@novell.com
  */
-public class MyFilesStorageSelectSpec {
+public class HomeFolderSelectSpec {
 	private Long m_userWorkspaceId;	//
 	
 	/*
 	 * Constructor method. 
 	 */
-	private MyFilesStorageSelectSpec() {
+	private HomeFolderSelectSpec() {
 		// Initialize the super class.
 		super();
 	}
@@ -54,7 +54,7 @@ public class MyFilesStorageSelectSpec {
 	 * 
 	 * @param userWorkspaceId
 	 */
-	public MyFilesStorageSelectSpec(Long userWorkspaceId) {
+	public HomeFolderSelectSpec(Long userWorkspaceId) {
 		// Initialize this object...
 		this();
 

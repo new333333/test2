@@ -56,6 +56,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.HomeFolderSelectSpec;
 import org.kablink.teaming.dao.util.MyFilesStorageSelectSpec;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.dao.util.OrderBy;
@@ -1021,8 +1022,49 @@ public void delete(final Folder folder) {
 	}	
 
     /**
-     * Returns a List<Folder> of the My Files Storage folders that meet
+     * Returns a List<Folder> of the Home folders that meet the
      * specifications.
+     * 
+     * @param selectSpec
+     * @param zoneId
+     * 
+     * @return
+     */
+ 	@Override
+	public List<Folder> findHomeFolders(final HomeFolderSelectSpec selectSpec, final long zoneId) {
+        List<Folder> result = new ArrayList<Folder>();
+
+        long begin = System.nanoTime();
+		try {
+            result = ((List<Folder>) getHibernateTemplate().execute(
+            		new HibernateCallback() {
+                @Override
+				public Object doInHibernate(Session session) throws HibernateException {
+                   	Criteria crit = session.createCriteria(Folder.class);
+    				crit.add(Restrictions.eq(ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.TRUE));
+    				
+    				Binder parentBinder = getCoreDao().loadBinder(selectSpec.getUserWorkspaceId(), zoneId);
+           			crit.add( Restrictions.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder));
+                   	
+                	return crit.list();
+				}
+            }));
+    	}
+		
+		catch (Exception ex) {
+			logger.error("findHomeFolders() caught an exception: " + ex.toString() );
+		}
+		
+    	finally {
+    		end(begin, "findHomeFolders(HomeFolderSelectSpec)");
+    	}	              	
+
+      	return result;   	
+	}
+ 
+    /**
+     * Returns a List<Folder> of the My Files Storage folders that meet
+     * the specifications.
      * 
      * @param selectSpec
      * @param zoneId

@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.HomeFolderSelectSpec;
 import org.kablink.teaming.dao.util.MyFilesStorageSelectSpec;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.dao.util.OrderBy;
@@ -141,6 +142,16 @@ public interface FolderDao {
      * @return List of folder entry ids
      */
 	public Set<Long> findFolderUnEncryptedEntries(final List<Long> binderIds);
+	
+	/**
+	 * Used to find all the Home folders that meet the specifications.
+	 * 
+	 * @param selectSpec
+	 * @param zoneId
+	 * 
+	 * @return
+	 */
+	public List<Folder> findHomeFolders(final HomeFolderSelectSpec selectSpec, final long zoneId);
 	
 	/**
 	 * Used to find all the My Files Storage folders that meet the
