@@ -1174,6 +1174,7 @@ public class GwtUIHelper {
 	 * Returns true if a request is a Vibe root URL or refers to a Vibe
 	 * root URL and returns false otherwise.
 	 */
+	@SuppressWarnings("deprecation")
 	private static boolean isVibeRootRequest(PortletRequest pRequest) {
 		// Is the base request a Vibe root URL?
 		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_NOVL_ROOT_FLAG, "");

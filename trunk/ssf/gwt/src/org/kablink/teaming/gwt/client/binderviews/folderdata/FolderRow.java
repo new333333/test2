@@ -66,7 +66,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class FolderRow implements IsSerializable {
 	private BinderIcons								m_binderIcons;				// Hold binder icons of various sizes for a binder.
-	private boolean									m_homeDir;					// true -> The row is a user's Home directory folder.  false -> It's not.
+	private boolean									m_homeDir;					// true -> The row is a user's Home             directory folder.  false -> It's not.
+	private boolean									m_myFilesDir;				// true -> The row is a user's My Files Storage directory folder.  false -> It's not.
 	private boolean									m_pinned;					// true -> The row is pinned.                          false -> It's not.
 	private EntityId								m_entityId;					// The entity ID of the FolderEntry this FolderRow corresponds to.
 	private List<FolderColumn>						m_columns;					// The FolderColumns that contribute to this FolderRow.
@@ -169,6 +170,7 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public boolean								isHomeDir()                            {                               return m_homeDir;            }
+	public boolean								isMyFilesDir()                         {                               return m_myFilesDir;         }
 	public boolean								isPinned()                             {                               return m_pinned;             }
 	public EntityId								getEntityId()                          {                               return m_entityId;           }
 	public List<FolderColumn>					getColumns()                           {                               return m_columns;            }
@@ -197,6 +199,7 @@ public class FolderRow implements IsSerializable {
 	public void setColumns(   List<FolderColumn> columns)                             {m_columns    = columns;                           }
 	public void setEntityId(  EntityId           entityId)                            {m_entityId   = entityId;                          }
 	public void setHomeDir(   boolean            homeDir)                             {m_homeDir    = homeDir;                           }
+	public void setMyFilesDir(boolean            myFilesDir)                          {m_myFilesDir = myFilesDir;                        }
 	public void setPinned(    boolean            pinned)                              {m_pinned     = pinned;                            }
 	public void setBinderIcon(String             binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}
 	

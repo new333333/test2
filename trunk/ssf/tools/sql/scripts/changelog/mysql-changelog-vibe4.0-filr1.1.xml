@@ -250,4 +250,11 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="dennis" context="schema" failOnError="true" id="17">
+        <comment>My Files Storage folder marker.</comment>
+        <addColumn tableName="SS_Forums">
+			<column name="myFilesDir" type="BIT"/>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

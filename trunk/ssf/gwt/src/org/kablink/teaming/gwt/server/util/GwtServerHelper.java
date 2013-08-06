@@ -1201,12 +1201,14 @@ public class GwtServerHelper {
 					long sbi = subBinderId.longValue();
 					for (Binder subBinder:  binders) {
 						if (subBinder.getId().longValue() == sbi) {
-							if (findBrowser || (!(BinderHelper.isBinderMyFilesStorage(subBinder)))) {	// Drop 'My Files Storage' folders.
+							// Drop any My Files Storage folders.
+							if (findBrowser || (!(BinderHelper.isBinderMyFilesStorage(subBinder)))) {
 								try {
 									TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, findBrowser, subBinder, expandedBindersList, false, depth);
 									childTIList.add(subWsTI);
-								} catch(AccessControlException ace) {
-								} catch(NoBinderByTheIdException nbe) {}
+								}
+								catch(AccessControlException   e) {/* Ignore. */}
+								catch(NoBinderByTheIdException e) {/* Ignore. */}
 							}
 							
 							break;
@@ -7266,22 +7268,17 @@ public class GwtServerHelper {
 	 * Resolves, if possible, a user ID to a User object.
 	 * 
 	 * @param userId
+	 * @param checkActive
 	 * 
 	 * @return
 	 */
+	public static User getResolvedUser(Long userId, boolean checkActive) {
+		return ResolveIds.getResolvedUser(userId, checkActive);
+	}
+	
 	public static User getResolvedUser(Long userId) {
-		User user = null;
-		String userIdS = String.valueOf(userId);
-		List<String> userIdList = new ArrayList<String>();
-		userIdList.add(userIdS);
-		List resolvedList = ResolveIds.getPrincipals(userIdList, false);
-		if (MiscUtil.hasItems(resolvedList)) {
-			Object o = resolvedList.get(0);
-			if (o instanceof User) {
-				user = ((User) o);
-			}
-		}
-		return user;
+		// Always use the initial form of the method.
+		return getResolvedUser(userId, false);
 	}
 
 	/**

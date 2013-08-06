@@ -327,7 +327,8 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
     public static final String BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "folderColumnSortOrder";
     public static final String BINDER_PROPERTY_FOLDER_COLUMN_TITLES = "folderColumnTitles";
-    public static final String BINDER_PROPERTY_MYFILES_DIR = "myFilesDir";
+    @Deprecated
+    public static final String BINDER_PROPERTY_MYFILES_DIR_DEPRECATED = "myFilesDir";
     public static final String BINDER_PROPERTY_TEAM_MEMBERS = "teamMembers";
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
     public static final String BINDER_PROPERTY_UPGRADE_VERSION = "binderUpgradeVersion";
@@ -599,7 +600,8 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_RESET_PWD = "userResetPwd";
     public static final String USER_THEME_DEFAULT="default";
 	public static final String USER_PROPERTY_TABS="userTabs";
-	public static final String USER_PROPERTY_MYFILES_DIR = BINDER_PROPERTY_MYFILES_DIR;
+    @Deprecated
+	public static final String USER_PROPERTY_MYFILES_DIR_DEPRECATED = BINDER_PROPERTY_MYFILES_DIR_DEPRECATED;
     
     //workflow definition names
     public static final String WORKFLOW_START_STATE = "__start_state";
@@ -692,6 +694,7 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_RESOURCE_DRIVER_NAME = "resourceDriverName";
 	public static final String FIELD_BINDER_RESOURCE_PATH = "resourcePath"; 
 	public static final String FIELD_BINDER_IS_HOME_DIR = "homeDir";
+	public static final String FIELD_BINDER_IS_MYFILES_DIR = "myFilesDir";
 	public static final String FIELD_BINDER_SYNC_SCHEDULE_OPTION = "syncScheduleOption";
 	public static final String FIELD_WS_SEARCHTITLE="searchTitle";
 	

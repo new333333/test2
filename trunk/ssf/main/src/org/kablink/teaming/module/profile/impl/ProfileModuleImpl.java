@@ -2484,6 +2484,13 @@ public String[] getUsernameAndDecryptedPassword(String username) {
             else if(Constants.FALSE.equals(homeDirStr))
                 homeDir = Boolean.FALSE;
 
+            Boolean myFilesDir = null;
+            String myFilesDirStr = (String) binder.get(Constants.IS_MYFILES_DIR_FIELD);
+            if(Constants.TRUE.equals(myFilesDirStr))
+                myFilesDir = Boolean.TRUE;
+            else if(Constants.FALSE.equals(myFilesDirStr))
+                myFilesDir = Boolean.FALSE;
+
             UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.CREATORID_FIELD)));
             UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.MODIFICATIONID_FIELD)));
 
@@ -2511,6 +2518,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
             info.setPermaLink(PermaLinkUtil.getPermalink(binder));
             info.setMirrored(mirrored);
             info.setHomeDir(homeDir);
+            info.setMyFilesDir(myFilesDir);
             info.setParentBinderId(parentBinderId);
             teamList.add(info);
         }

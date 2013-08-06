@@ -360,7 +360,7 @@ public class GwtViewHelper {
 				setBinderTargetId(targetBinder.getParentBinder().getId());
 			}
 			
-			// No, the initial target binder isn't a 'My FIles Storage'
+			// No, the initial target binder isn't a 'My Files Storage'
 			// folder.  Is it a user's workspace?
 			else if (BinderHelper.isBinderUserWorkspace(targetBinder)) {
 				// Yes!  Can we find any 'My Files Storage' folders
@@ -4041,10 +4041,15 @@ public class GwtViewHelper {
 						fr.setBinderIcon(Utils.getIconNameTranslated(iconName, IconSize.MEDIUM), BinderIconSize.MEDIUM);
 						fr.setBinderIcon(Utils.getIconNameTranslated(iconName, IconSize.LARGE ), BinderIconSize.LARGE );
 
-						// ...and whether it's a user's home directory
-						// ...folder in the row.
+						// ...whether it's a user's home directory
+						// ...folder...
 			            String homeDirStr = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.IS_HOME_DIR_FIELD);
 						fr.setHomeDir(Constants.TRUE.equals(homeDirStr));
+						
+						// ...and whether it's a user's my file storage
+						// ...directory folder in the row.
+			            String myFilesDirStr = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.IS_MYFILES_DIR_FIELD);
+						fr.setMyFilesDir(Constants.TRUE.equals(myFilesDirStr));
 					}
 					
 					// Scan the columns.
@@ -7176,7 +7181,7 @@ public class GwtViewHelper {
 		else if (bi.isBinderFolder()) {
 			// Yes!  Is it a 'My Files Storage' folder?
 			Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
-			if ((null != binder) && BinderHelper.isBinderUsersActiveMyFilesStorage(bs, user, binder)) {
+			if ((null != binder) && BinderHelper.isBinderMyFilesStorage(binder)) {
 				// Yes!  Is it the current user's?
 				Binder userWS          = binder.getParentBinder();
 				Long   currentUserWSId = user.getWorkspaceId();

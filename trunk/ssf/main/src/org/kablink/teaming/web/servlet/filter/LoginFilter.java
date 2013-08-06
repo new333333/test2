@@ -655,6 +655,7 @@ public class LoginFilter  implements Filter {
 	 * "view_ws_listing" or "view_folder_listing" or "view_profile_listing" or "view_folder_entry" or "view_profile_entry"
 	 * and the url does NOT have the GWT URL parameter marking.
 	 */
+	@SuppressWarnings("deprecation")
 	private boolean shouldUrlBeConvertedToAPermalink( HttpServletRequest req )
 	{
 		// Does the URL have the GWT URL parameter.
