@@ -560,12 +560,14 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     		//We can only do this for the current user
 	    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 	    	Long roleId = AccessUtils.askExternalSystemForRoleId(workArea);
-	    	Function f = getFunctionManager().getFunction(zoneId, roleId);
-	    	for (WorkAreaOperation wao : (Set<WorkAreaOperation>)f.getOperations()) {
-	    		if (wao.equals(workAreaOperation)) {
-	    			//This function includes the desired operation.
-	    			return true;
-	    		}
+	    	if (roleId != null) {
+		    	Function f = getFunctionManager().getFunction(zoneId, roleId);
+		    	for (WorkAreaOperation wao : (Set<WorkAreaOperation>)f.getOperations()) {
+		    		if (wao.equals(workAreaOperation)) {
+		    			//This function includes the desired operation.
+		    			return true;
+		    		}
+		    	}
 	    	}
     	}
     	return false;
