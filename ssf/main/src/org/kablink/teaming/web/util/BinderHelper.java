@@ -139,6 +139,8 @@ import org.kablink.teaming.portlet.forum.ViewController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
@@ -149,6 +151,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -175,8 +178,8 @@ import org.kablink.util.search.Criteria;
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class BinderHelper {
-	// The following control aspects of code in Vibe OnPrem that has
-	// been added to assist in debugging.
+	// The following control aspects of code in Vibe that has been
+	// added to assist in debugging.
 	public static final boolean BINDER_DEBUG_ENABLED = SPropsUtil.getBoolean("binders.debug.enabled", false);
 	public static final String  BINDER_MAGIC_TITLE   = "create.binders.";
 	
@@ -3096,10 +3099,10 @@ public class BinderHelper {
 	
 	public static void updateUserStatus(Long folderId, Long entryId, User user) {
 		Folder	miniBlog;
-		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
-		BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
-		ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
-		ReportModule reportModule = (ReportModule) SpringContextUtil.getBean("reportModule");
+		FolderModule  folderModule  = getFolderModule();
+		BinderModule  binderModule  = getBinderModule();
+		ProfileModule profileModule = getProfileModule();
+		ReportModule  reportModule  = getReportModule();
 		
 		// If the user is referencing a mini blog folder that we can't
 		// access or that has been deleted, we ignore it and use the
@@ -5000,12 +5003,6 @@ public class BinderHelper {
 		return reply;
 	}	
 
-	/*
-	 */
-	private static BinderModule getBinderModule() {
-		return ((BinderModule) SpringContextUtil.getBean("binderModule"));
-	}
-	
 	/**
 	 * Returns the family name from a Definition.
 	 * 
@@ -5048,6 +5045,12 @@ public class BinderHelper {
 	
 	/*
 	 */
+	private static BinderModule getBinderModule() {
+		return ((BinderModule) SpringContextUtil.getBean("binderModule"));
+	}
+	
+	/*
+	 */
 	private static FolderModule getFolderModule() {
 		return ((FolderModule) SpringContextUtil.getBean("folderModule"));
 	}
@@ -5064,10 +5067,20 @@ public class BinderHelper {
 		return ((ProfileModule) SpringContextUtil.getBean("profileModule"));
 	}
 	
+	/*
+	 */
+	private static ReportModule getReportModule() {
+		return ((ReportModule) SpringContextUtil.getBean("reportModule"));
+	}
+	
+	/*
+	 */
 	private static FolderDao getFolderDao() {
 		return ((FolderDao) SpringContextUtil.getBean("folderDao"));
 	}
 	
+	/*
+	 */
 	private static ResourceDriverManager getResourceDriverManager() {
 		return ((ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager"));
 	}
@@ -5210,18 +5223,143 @@ public class BinderHelper {
 	}
 
 	/**
-	 * Returns true if the specified binder is a My Files Storage
-	 * folder and false otherwise.
+	 * Returns true if the specified binder is recognized as a My Files
+	 * Storage folder and false otherwise.
 	 * 
 	 * @param binder
+	 * @param updateBinderFlags
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
+	public static boolean isBinderMyFilesStorage(Binder binder, boolean updateBinderFlags) {
+		// If we weren't given a binder or it's not a folder...
+		if ((null == binder) || (!(binder instanceof Folder))) {
+			// ...it's not a My Files Storage folder.
+			return false;
+		}
+
+		// If the binder says it's a My Files Storage folder...
+    	boolean reply = binder.isMyFilesDir();
+    	if (reply) {
+    		// ...there's nothing more to do.  Return what it
+    		// ...said.
+    		return reply;
+    	}
+
+    	// If the binder has a My Files Storage marker...
+    	Boolean mfDir = ((Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_MYFILES_DIR_DEPRECATED));
+    	if (null != mfDir) {
+    		// ...use that value...
+    		reply = mfDir.booleanValue();
+
+    		// ...and if we're supposed to...
+    		if (updateBinderFlags) {
+	    		// ...clean things up so all we'll use from here on is
+	    		// ...what's on the binder.
+	    		updateBinderMyFilesDirMarkers(binder);
+    		}
+    	}
+
+    	// If we get here, reply is true if the binder was recognized
+    	// as a My Files Storage folder and false otherwise.  Return
+    	// it.
+    	return reply;
+	}
+	
 	public static boolean isBinderMyFilesStorage(Binder binder) {
-    	Boolean isMyFilesDir = ((Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_MYFILES_DIR));
-    	return ((null != isMyFilesDir) && isMyFilesDir);
+		// Always use the initial form of the method.
+		return isBinderMyFilesStorage(binder, true);	// true -> If necessary, update the My Files Storage binder markers.
 	}
 
+	/**
+	 * Corrects the My Files Storage markings on a binder so that it
+	 * uses a database field instead of a binder property for that
+	 * purpose.
+	 * 
+	 * @param binder
+	 */
+	@SuppressWarnings("deprecation")
+	public static void updateBinderMyFilesDirMarkers(final Binder binder) {
+		// If we weren't given a binder...
+		if (null == binder) {
+			// ...there's nothing to correct.
+			return;
+		}
+		
+		// Does the binder have a My Files Storage marker stored in its
+		// properties?
+    	final Boolean mfDir = ((Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_MYFILES_DIR_DEPRECATED));
+    	if (null != mfDir) {
+    		// Yes!  Does it differ from that stored on the Binder?
+    		final boolean markersDiffer = (mfDir.booleanValue() != binder.isMyFilesDir());
+
+    		// Create a callback we can use to update the My Files
+    		// Storage markers as a particular user.
+    		final Long    binderOwnerId       = binder.getOwnerId();
+    		final boolean binderOwnerResolves = (null != ResolveIds.getResolvedUser(binderOwnerId, true));
+			RunasCallback doUpdate = new RunasCallback() {
+				@Override
+				public Object doAs() {
+					updateBinderMyFilesDirMarkersImpl(binder, binderOwnerResolves, mfDir, markersDiffer);
+					return null;
+				}
+			};
+			
+    		// If the user that owns the binder can be resolved, we
+			// correct the My Files Storage markers as that user.
+			// Otherwise, we do it as admin.
+    		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+    		if (binderOwnerResolves)
+    		     RunasTemplate.runas(     doUpdate, zoneName, binderOwnerId);
+    		else RunasTemplate.runasAdmin(doUpdate, zoneName               );
+    	}
+	}
+
+	/*
+	 * Does the actual changes as required by 
+	 * updateBinderMyFilesDirMarkers().
+	 */
+	@SuppressWarnings("deprecation")
+	private static void updateBinderMyFilesDirMarkersImpl(Binder binder, boolean binderOwnerResolves, boolean mfDir, boolean updateBinderFlag) {
+		// If necessary, update the binder's marker...
+		BinderModule bm = getBinderModule();
+		Long binderId = binder.getId();
+		if (updateBinderFlag) {
+			bm.setMyFilesDir(binderId, mfDir);
+		}
+		
+		// ...remove the property...
+		bm.setProperty(binderId, ObjectKeys.BINDER_PROPERTY_MYFILES_DIR_DEPRECATED, null);
+
+		// ...and if the binder owner can be resolved...
+		if (binderOwnerResolves) {
+			// ...remove any My Files Storage marked stored in their
+			// ...UserProperties. 
+			removeUserPropertiesMyFilesDirMarkers(binder.getOwnerId());
+		}
+	}
+	
+	/**
+	 * Removes any My Files Storage marker that may have been stored in
+	 * a user's properties.  We now use only the marker stored on the
+	 * binder for that purpose.
+	 * 
+	 * @param userId
+	 */
+	@SuppressWarnings("deprecation")
+	public static void removeUserPropertiesMyFilesDirMarkers(Long userId) {
+		// Does this user have a My Files Storage marker stored in
+		// their UserProperties?
+		ProfileModule  pm             = getProfileModule();
+   		UserProperties userProperties = pm.getUserProperties(userId);
+   		Long           mfId           = ((null == userProperties) ? null : ((Long) userProperties.getProperty(ObjectKeys.USER_PROPERTY_MYFILES_DIR_DEPRECATED)));
+   		if (null != mfId) {
+   			// Yes!  Remove it.
+	   		pm.setUserProperty(userId, ObjectKeys.USER_PROPERTY_MYFILES_DIR_DEPRECATED, null);
+   		}
+	}
+	
 	/**
 	 * Returns true if a binder is the root profiles workspace and
 	 * false otherwise.
@@ -5295,8 +5433,19 @@ public class BinderHelper {
 	 * @return
 	 */
 	public static boolean isBinderUsersActiveMyFilesStorage(AllModulesInjected bs, User user, Binder binder) {
-		Long myId = SearchUtils.getMyFilesFolderId(bs, user, false);
-		return ((null != myId) && myId.equals(binder.getId()));
+		// If the binder is a My Files Storage folder...
+		boolean reply = isBinderMyFilesStorage(binder);
+		if (reply) {
+			// ...that's contained in the user's workspace, it's
+			// ...recognized as the user's active My Files Storage
+			// ...folder.
+			reply = binder.getParentBinder().getId().equals(user.getWorkspaceId());
+		}
+		
+		// If we get here, reply is true if the binder was recognized
+		// as the user's My Files Storage folder and false otherwise.
+		// Return it.
+		return reply;
 	}
 	
 	public static boolean isBinderUsersActiveMyFilesStorage(AllModulesInjected bs, Binder binder) {

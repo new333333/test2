@@ -249,5 +249,14 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="17">
+        <comment>My Files Storage folder marker.</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="MYFILESDIR" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

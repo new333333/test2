@@ -1387,7 +1387,7 @@ public class EntityIndexUtils {
     }
 
     public static void addBinderIsMyFilesDir(Document doc, Binder binder, boolean fieldsOnly) {
-    	boolean isMyFilesDir = BinderHelper.isBinderMyFilesStorage(binder);
+    	boolean isMyFilesDir = BinderHelper.isBinderMyFilesStorage(binder, false);	// false -> Don't update the My Files Storage binder markers.
 		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_MYFILES_DIR_FIELD, (isMyFilesDir ? Constants.TRUE : Constants.FALSE));
 		doc.add(path);
     }

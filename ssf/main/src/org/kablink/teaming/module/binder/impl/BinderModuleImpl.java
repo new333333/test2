@@ -2220,6 +2220,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			return new ArrayList();
 		return SearchUtils.getSearchEntries(hits);
 	}
+	
+    //inside write transaction    	
+	@Override
+	public void setMyFilesDir(Long binderId, boolean value) {
+		//getBinder does read check
+		Binder binder = getBinder(binderId);
+		binder.setMyFilesDir(value);
+	}
+	
 
 	// inside write transaction
 	@Override
