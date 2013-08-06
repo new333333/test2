@@ -670,6 +670,7 @@
 	color: #505354;
 	font-size: 13px;
 	line-height: 16px;
+	overflow: hidden;
 }
 
 .shareThisDlg_NoteLabel

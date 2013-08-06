@@ -2007,6 +2007,7 @@ public class ShareThisDlg extends DlgBox
 								// Update the name of the entity in the header.
 								m_headerNameLabel.setText( gwtFolderEntry.getEntryName() );
 								m_headerPathLabel.setText( gwtFolderEntry.getParentBinderName() );
+								m_headerPathLabel.setTitle( gwtFolderEntry.getParentBinderName() );
 								
 								// Do we have a url for the file image?
 								imgUrl = gwtFolderEntry.getFileImgUrl();
