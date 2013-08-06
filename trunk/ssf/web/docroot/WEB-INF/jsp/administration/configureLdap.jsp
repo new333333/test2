@@ -96,13 +96,6 @@ var m_searchCount = 0;
 		
 				<table class="ss_style margintop3" border="0" cellspacing="0" cellpadding="3">
 					<tr>
-						<td><input type="checkbox" id="enabled" name="enabled"
-							<c:if test="${ssLdapConfig.enabled}">checked</c:if> /> <label
-							for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
-							tag="ldap.schedule.enable" /></span>
-						</label></td>
-					</tr>
-					<tr>
 						<td>
 							<!-- This hidden input is used to store the ids of the configs that need their guid syncd -->
 							<input id="listOfLdapConfigsToSyncGuid" name="listOfLdapConfigsToSyncGuid" type="hidden" value="" />
@@ -114,9 +107,16 @@ var m_searchCount = 0;
 
 						</label></td>
 					</tr>
+					<tr>
+						<td><input type="checkbox" id="enabled" name="enabled"
+							<c:if test="${ssLdapConfig.enabled}">checked</c:if> /> <label
+							for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
+							tag="ldap.schedule.enable" /></span>
+						</label></td>
+					</tr>
 				</table>
 		
-				<div class="margintop2" style="margin-left: 2.5em;"
+				<div class="margintop2" style="margin-left: 2.5em;">
 					<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>' initOpen="true">
 						<c:set var="schedule" value="${ssLdapConfig.schedule}" />
 						<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
