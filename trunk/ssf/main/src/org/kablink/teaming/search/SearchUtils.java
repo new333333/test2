@@ -53,6 +53,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.dao.util.HomeFolderSelectSpec;
 import org.kablink.teaming.dao.util.MyFilesStorageSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
@@ -722,6 +723,73 @@ public class SearchUtils {
 		return reply;
 	}
 
+	/**
+	 * Returns a List<Long> of the current user's home folder IDs.
+	 * 
+	 * @param bs
+	 * @param userWSId
+	 * 
+	 * @return
+	 */
+	public static List<Long> getHomeFolderIds(AllModulesInjected bs, Long userWSId) {
+		// Can we find any Home folders using a database query?
+		Long                 zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		HomeFolderSelectSpec hfSpec = new HomeFolderSelectSpec(userWSId);
+		List<Folder>         hfs    = getFolderDao().findHomeFolders(hfSpec, zoneId);
+		List<Long>	         reply  = new ArrayList<Long>();
+		if (MiscUtil.hasItems(hfs)) {
+			// Yes!  Copy their IDs into the reply List<Long>.
+			for (Folder mf:  hfs) {
+				reply.add(mf.getId());
+			}
+		}
+		
+		// If info logging is enabled and we found more than one Home
+		// folder for this user workspace...
+		if (m_logger.isInfoEnabled() && (null != reply) && (1 < reply.size())) {
+			// ...log that fact.
+			m_logger.info("SearchUtils.getHomeFolderIds():  User whose workspace ID is " + userWSId + " has " + reply.size() + " Home folders.");
+		}
+		
+		// If we get here, reply refers to a List<Long> of the IDs of
+		// the folders in a user's workspace that are recognized as
+		// Home folders.  Return it.
+		return reply;
+	}
+	
+	public static List<Long> getHomeFolderIds(AllModulesInjected bs, User user) {
+		// Always use the initial form of the method.
+		return getHomeFolderIds(bs, user.getWorkspaceId());
+	}
+	
+	/**
+	 * Returns the current user's home folder ID.
+	 * 
+	 * @param bs
+	 * @param userWSId
+	 * 
+	 * @return
+	 */
+	public static Long getHomeFolderId(AllModulesInjected bs, Long userWSId) {
+		List<Long> homeFolderIds = getHomeFolderIds(bs, userWSId);
+		Long reply;
+		if ((null != homeFolderIds) && (!(homeFolderIds.isEmpty())))
+		     reply = homeFolderIds.get(0);
+		else reply = null;
+		return reply;
+	}
+	
+	public static Long getHomeFolderId(AllModulesInjected bs, User user) {
+		// Always use the initial form of the method.
+		return getHomeFolderId(bs, user.getWorkspaceId());
+	}
+	
+	public static Long getHomeFolderId(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return getHomeFolderId(bs, user.getWorkspaceId());
+	}
+
     /**
    	 * If the user has a folder that's recognized as their My Files
    	 * folder, it's ID is returned.  Otherwise, null is returned.
@@ -1187,7 +1255,7 @@ public class SearchUtils {
 	 */
 	public static Criteria getBinderEntriesSearchCriteria(AllModulesInjected bs, List binderIds, boolean entriesOnly, boolean searchSubFolders) {
 		Criteria reply =
-			SearchUtils.entriesForTrackedPlacesEntriesAndPeople(
+			entriesForTrackedPlacesEntriesAndPeople(
 				bs,
 				binderIds,
 				null,
@@ -1259,8 +1327,10 @@ public class SearchUtils {
                 getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
                 getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
                 nfBinder);
-		//Remove any results where the current user does not have AllowNetFolderAccess rights
-		SearchUtils.removeNetFoldersWithNoRootAccess(netFolderResults);
+        
+		// Remove any results where the current user does not have
+        // AllowNetFolderAccess rights.
+		removeNetFoldersWithNoRootAccess(netFolderResults);
 		return netFolderResults;
     }
 
@@ -1311,121 +1381,6 @@ public class SearchUtils {
 		return reply;
     }
     
-	/**
-	 * Returns a List<Long> of the current user's home folder IDs.
-	 * 
-	 * @param bs
-	 * @param userWSId
-	 * 
-	 * @return
-	 */
-	public static List<Long> getHomeFolderIds(AllModulesInjected bs, Long userWSId) {
-		// Build a search for the user's binders...
-		Criteria crit = new Criteria();
-		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(userWSId)}));
-		
-		// ...that are file folders...
-		crit.add(in(Constants.FAMILY_FIELD,     new String[]{Definition.FAMILY_FILE}));
-		crit.add(in(Constants.IS_LIBRARY_FIELD, new String[]{Constants.TRUE}));
-
-		// ...that are configured mirrored File Home Folders.
-		crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-		crit.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
-
-		// Can we find any?
-		Map			searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE);
-		List<Map>	searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
-		List<Long>	reply         = new ArrayList<Long>();
-		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
-			// Yes!  Scan them...
-			for (Map entryMap:  searchEntries) {
-				// ...extracting their IDs from from the search
-				// ...results.
-				String docIdS = (String)entryMap.get(Constants.DOCID_FIELD);
-				if (docIdS != null && !docIdS.equals("")) {
-					reply.add(Long.valueOf(docIdS));
-				}
-			}
-		}
-		
-		// If we get here, reply refers to a List<Long> of the
-		// configured net folders in a user's workspace that are marked
-		// as being their Home Net Folder.  Return it.
-		return reply;
-	}
-	
-	public static List<Long> getHomeFolderIds(AllModulesInjected bs, User user) {
-		// Always use the initial form of the method.
-		Long userWSId = user.getWorkspaceId();
-		return getHomeFolderIds(bs, userWSId);
-	}
-	
-	/**
-	 * Returns the current user's home folder ID.
-	 * 
-	 * @param bs
-	 * @param userWSId
-	 * 
-	 * @return
-	 */
-	public static Long getHomeFolderId(AllModulesInjected bs, Long userWSId) {
-		List<Long> homeFolderIds = getHomeFolderIds(bs, userWSId);
-		Long reply;
-		if ((null != homeFolderIds) && (!(homeFolderIds.isEmpty())))
-		     reply = homeFolderIds.get(0);
-		else reply = null;
-		return reply;
-	}
-	
-	public static Long getHomeFolderId(AllModulesInjected bs, User user) {
-		// Always use the initial form of the method.
-		Long userWSIds = user.getWorkspaceId();
-		return getHomeFolderId(bs, userWSIds);
-	}
-	
-	public static Long getHomeFolderId(AllModulesInjected bs) {
-		// Always use the initial form of the method.
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Long userWSId = user.getWorkspaceId();
-		return getHomeFolderId(bs, userWSId);
-	}
-
-	/**
-	 * Returns true if the current user should have their My Files area
-	 * mapped to their home directory and false otherwise.
-	 * 
-	 * @param bs
-	 * @param user
-	 * 
-	 * @return
-	 */
-	public static boolean useHomeAsMyFiles(AllModulesInjected bs, User user) {
-		// If we're running Filr...
-		if (Utils.checkIfFilr()) {
-			// ...and the user has been provisioned from ldap...
-			IdentityInfo idInfo = user.getIdentityInfo();
-			if (idInfo.isFromLdap() || SPropsUtil.getBoolean("myfiles.allow.nonldap.homeOnly", false)) {
-				// ...check the user's and/or zone setting.
-				Boolean result = getEffectiveAdhocFolderSetting(bs, user);
-				if ((null != result) && (!(result))) {
-					return true;
-				}
-			}
-		}
-
-		// If we get here, we're not mapping 'Home' to 'My Files.  Return
-		// false.
-		return false;
-	}
-
-	public static boolean useHomeAsMyFiles(AllModulesInjected bs) {
-		// Always use the initial form of the method.
-		User user = RequestContextHolder.getRequestContext().getUser();
-		return useHomeAsMyFiles(bs, user);
-	}
-
 	/**
 	 * Return the effective 'AdHoc folder' setting from the given user.
 	 * We will look in the user's properties first for a value.  If one
@@ -1622,13 +1577,46 @@ public class SearchUtils {
         else {
             // The user can access My Files if adHoc folders are
             // not allowed and the user doesn't have a home folder.
-            if (SearchUtils.useHomeAsMyFiles(bs, user) && (null == SearchUtils.getHomeFolderId(bs, user))) {
+            if (useHomeAsMyFiles(bs, user) && (null == getHomeFolderId(bs, user))) {
                 reply = false;
             }
         }
         return reply;
     }
     
+	/**
+	 * Returns true if the current user should have their My Files area
+	 * mapped to their home directory and false otherwise.
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static boolean useHomeAsMyFiles(AllModulesInjected bs, User user) {
+		// If we're running Filr...
+		if (Utils.checkIfFilr()) {
+			// ...and the user has been provisioned from ldap...
+			IdentityInfo idInfo = user.getIdentityInfo();
+			if (idInfo.isFromLdap() || SPropsUtil.getBoolean("myfiles.allow.nonldap.homeOnly", false)) {
+				// ...check the user's and/or zone setting.
+				Boolean result = getEffectiveAdhocFolderSetting(bs, user);
+				if ((null != result) && (!(result))) {
+					return true;
+				}
+			}
+		}
+
+		// If we get here, we're not mapping 'Home' to 'My Files.  Return
+		// false.
+		return false;
+	}
+
+	public static boolean useHomeAsMyFiles(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return useHomeAsMyFiles(bs, RequestContextHolder.getRequestContext().getUser());
+	}
+
     /**
      * Routine to look for invalid wild cards.  This routine may also
      * fix up the text so that it will work
