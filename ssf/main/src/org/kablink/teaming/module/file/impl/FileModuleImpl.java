@@ -2361,8 +2361,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(contentLength != null)
 			fItem.setLength(contentLength);
 		
-		if(md5 != null)
-			fItem.setMd5(md5);
+        fItem.setMd5(md5);
 
 		if(description != null)
 			fItem.setDescription(description);
