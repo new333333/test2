@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.binderviews.QuickFilter;
 import org.kablink.teaming.gwt.client.datatable.NetFolderNameCell;
 import org.kablink.teaming.gwt.client.datatable.NetFolderSyncStatusCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
+import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderModifiedEvent;
@@ -75,6 +76,7 @@ import org.kablink.teaming.gwt.client.widgets.NetFolderSyncStatisticsDlg.NetFold
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
@@ -82,7 +84,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
@@ -123,6 +124,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	private VibeMenuItem m_showHomeDirsMenuItem;
 	private Command m_toggleShowHomeDirsCmd;
 	private String m_currentFilterStr = null;
+	private SelectAllHeader m_selectAllHeader;
 	private List<NetFolder> m_listOfNetFolders;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg;
 	private NetFolderSyncStatisticsDlg m_netFolderSyncStatisticsDlg;
@@ -504,9 +506,35 @@ public class ManageNetFoldersDlg extends DlgBox
 		// Add a checkbox in the first column
 		{
 			Column<NetFolder, Boolean> ckboxColumn;
-			CheckboxCell ckboxCell;
+			VibeCheckboxCell ckboxCell;
 			
-            ckboxCell = new CheckboxCell( true, false );
+			// Create a checkbox that will be in the column header and will be used to select/deselect
+			// net folders
+			{
+				CheckboxCell cbSelectAllCell;
+
+				cbSelectAllCell = new CheckboxCell();
+				m_selectAllHeader = new SelectAllHeader( cbSelectAllCell );
+				m_selectAllHeader.setUpdater( new ValueUpdater<Boolean>()
+				{
+					@Override
+					public void update( Boolean checked )
+					{
+						List<NetFolder> netFolders;
+
+						netFolders = m_netFoldersTable.getVisibleItems();
+						if ( netFolders != null )
+						{
+							for ( NetFolder nextNetFolder : netFolders )
+							{
+								m_selectionModel.setSelected( nextNetFolder, checked );
+							}
+						}
+					}
+				} );
+			}
+			
+            ckboxCell = new VibeCheckboxCell();
 		    ckboxColumn = new Column<NetFolder, Boolean>( ckboxCell )
             {
             	@Override
@@ -516,7 +544,26 @@ public class ManageNetFoldersDlg extends DlgBox
 		            return m_selectionModel.isSelected( netFolder );
 		        }
 		    };
-	        m_netFoldersTable.addColumn( ckboxColumn, SafeHtmlUtils.fromSafeConstant( "<br/>" ) );
+		    
+		    // Add a field updater so when the user checks/unchecks the checkbox next to a
+		    // net folder we will uncheck the "select all" checkbox that is in the header.
+		    {
+		    	ckboxColumn.setFieldUpdater( new FieldUpdater<NetFolder,Boolean>()
+		    	{
+		    		@Override
+		    		public void update( int index, NetFolder netFolder, Boolean checked )
+		    		{
+		    			m_selectionModel.setSelected( netFolder,  checked );
+		    			
+		    			if ( checked == false )
+		    			{
+		    				m_selectAllHeader.setValue( false );
+		    			}
+		    		}
+		    	} );
+		    }
+		    
+	        m_netFoldersTable.addColumn( ckboxColumn, m_selectAllHeader );
 		    m_netFoldersTable.setColumnWidth( ckboxColumn, 20, Unit.PX );			
 		}
 		
