@@ -574,9 +574,25 @@ public class LoginFilter  implements Filter {
 			}
 			
 			else {
-				// No, we found readFile but couldn't find the
-				// folderEntry marker.
-				reply = Boolean.FALSE;
+				String wsIdMarker;
+				int wsIdPos;
+				
+				wsIdMarker = "workspace" + "/";
+				wsIdPos = path.indexOf( wsIdMarker );
+				
+				// Did we find "workspace"?
+				if ( wsIdPos >= 0 )
+				{
+					// Yes.
+					// No need to check to see if the user has rights to the workspace.
+					reply = new Boolean( true );
+				}
+				else
+				{
+					// No, we found readFile but couldn't find the
+					// folderEntry or workspace marker.
+					reply = Boolean.FALSE;
+				}
 			}
 		}
 		
