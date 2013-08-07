@@ -610,6 +610,29 @@ public class GwtViewHelper {
 		reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(0)      );
 		return reply;
 	}
+
+	/*
+	 * Returns the display string to use for a file size.
+	 */
+	private static String buildFileSizeDisplayFromKBSize(User user, String fileSizeInKB) {
+		// Trim any leading 0's from the value.
+		fileSizeInKB = trimFileSize(fileSizeInKB);
+		try {
+			long vl = Long.parseLong(fileSizeInKB);
+			fileSizeInKB = NumberFormat.getInstance(user.getLocale()).format(vl);
+		}
+		catch (Exception ex) {}
+
+		if (MiscUtil.hasString(fileSizeInKB)) {
+			fileSizeInKB += (" " + NLT.get("file.sizeKB"));
+		}
+		return fileSizeInKB;
+	}
+	
+	private static String buildFileSizeDisplayFromKBSize(User user, long fileSizeInKB) {
+		// Always use the initial form of the method.
+		return buildFileSizeDisplayFromKBSize(user, String.valueOf(fileSizeInKB));
+	}
 	
 	/*
 	 * Constructs and returns a UserInfo object using a HistoryStamp.
@@ -3575,7 +3598,8 @@ public class GwtViewHelper {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderEntryDetails()");
 		try {
 			// Create the ViewFolderEntryInfo to return...
-			Long				userId = GwtServerHelper.getCurrentUserId();
+			User                user   = GwtServerHelper.getCurrentUser();
+			Long				userId = user.getId();
 			FolderEntryDetails	reply  = new FolderEntryDetails(entityId);
 			
 			// ...set whether the user has seen this entry...
@@ -3593,15 +3617,26 @@ public class GwtViewHelper {
 			}
 			reply.setSeen(feSeen);
 			
-			// ...set the entry's family and path... 
+			// ...set the entry's path... 
 			FolderEntry feTop = fe.getTopEntry();
 			boolean		isTop = (null == feTop);
 			if (isTop) {
 				feTop = fe;
 			}
-			reply.setTop(   isTop                                           );
-			reply.setFamily(GwtServerHelper.getFolderEntityFamily(bs, feTop));
-			reply.setPath(  feTop.getParentBinder().getPathName()           );
+			reply.setTop( isTop                                );
+			reply.setPath(feTop.getParentBinder().getPathName());
+			
+			// ...family and file size...
+			String  family = GwtServerHelper.getFolderEntityFamily(bs, feTop);
+			reply.setFamily(family);
+			String fileSizeDisplay = "";
+			if (GwtServerHelper.isFamilyFile(family)) {
+				FileAttachment fa = MiscUtil.getPrimaryFileAttachment(feTop);
+				if (null != fa) {
+					fileSizeDisplay = buildFileSizeDisplayFromKBSize(user, fa.getFileItem().getLengthKB());
+				}
+			}
+			reply.setFileSizeDisplay(fileSizeDisplay);
 	
 			// ...set the entry's creator...
 			HistoryStamp cStamp = fe.getCreation();
@@ -3803,8 +3838,6 @@ public class GwtViewHelper {
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
 			SeenMap			seenMap              = bs.getProfileModule().getUserSeenMap(null);
-			NumberFormat	userNF               = NumberFormat.getInstance(user.getLocale());
-			String			userKBTail           = (" " + NLT.get("file.sizeKB"));
 
 			// Setup the current search filter the user has selected
 			// on the folder.
@@ -4440,22 +4473,12 @@ public class GwtViewHelper {
 											// No, we aren't working on a Date field!  Are we
 											// working on a file size field?
 											else if (csk.equals(Constants.FILE_SIZE_FIELD)) {
-												// Yes!  Trim any leading 0's from the value.
-												if (isEntityFolderEntry) {
-													value = trimFileSize(value);
-													try {
-														long vl = Long.parseLong(value);
-														value = userNF.format(vl);
-													}
-													catch (Exception ex) {}
-		
-													if (MiscUtil.hasString(value)) {
-														value += userKBTail;
-													}
-												}
-												else {
-													value = "";
-												}
+												// Yes!  Generate a
+												// display string for
+												// it.
+												if (isEntityFolderEntry)
+												     value = buildFileSizeDisplayFromKBSize(user, value);
+												else value = "";
 											}
 		
 											// No, we aren't working on a file size field!  Are we
