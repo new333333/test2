@@ -24,6 +24,7 @@
 		.vibe-feView-headerContentTitleAsAnchor       {cursor: pointer; text-decoration: none;}
 		.vibe-feView-headerContentTitleAsAnchor:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-feView-headerContentTitleAsLabel        {font-size: 1.2em;}
+		.vibe-feView-headerContentTitleFileSize       {color: #505354; padding-left: 10px; font-size: 13px;}
 		.vibe-feView-headerContentTitleMarkRead       {cursor: pointer; padding-right: 3px;}
 		.vibe-feView-headerContentTitlePanel          {display: inline-block;}
 		.vibe-feView-headerDescription                {display: block; position: relative; margin-top: 10px;}

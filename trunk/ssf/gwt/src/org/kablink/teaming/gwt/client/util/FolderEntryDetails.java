@@ -63,6 +63,7 @@ public class FolderEntryDetails implements IsSerializable {
 	private String						m_desc;					// The entry description.
 	private String						m_descTxt;				// Plain text version of m_desc.
 	private String						m_family;				// The definition family of the folder entry.
+	private String                      m_fileSizeDisplay;		// For file entries, the display string for the size of the file.
 	private String						m_downloadUrl;			// The URL for downloading the file.
 	private String						m_path;					// The full path to the entry.
 	private String						m_title;				// The title of the folder entry.
@@ -168,8 +169,9 @@ public class FolderEntryDetails implements IsSerializable {
 	public List<ViewFolderEntryInfo> getCommentBreadCrumbs()   {return m_commentBreadCrumbs;  }
 	public String                    getDesc()                 {return m_desc;                }
 	public String                    getDescTxt()              {return m_descTxt;             }
-	public String                    getFamily()               {return m_family;              }
 	public String                    getDownloadUrl()          {return m_downloadUrl;         }
+	public String                    getFamily()               {return m_family;              }
+	public String                    getFileSizeDisplay()      {return m_fileSizeDisplay;     }
 	public String                    getPath()                 {return m_path;                }
 	public String                    getTitle()                {return m_title;               }
 	public String[]                  getContributors()         {return m_contributors;        }
@@ -199,8 +201,9 @@ public class FolderEntryDetails implements IsSerializable {
 	public void setCommentBreadCrumbs(  List<ViewFolderEntryInfo> commentBreadCrumbItems) {m_commentBreadCrumbs   = commentBreadCrumbItems;}
 	public void setDesc(                String                    desc)                   {m_desc                 = desc;                  }
 	public void setDescTxt(             String                    descTxt)                {m_descTxt              = descTxt;               }
-	public void setFamily(              String                    family)                 {m_family               = family;                }
 	public void setDownloadUrl(         String                    downloadUrl)            {m_downloadUrl          = downloadUrl;           }
+	public void setFamily(              String                    family)                 {m_family               = family;                }
+	public void setFileSizeDisplay(     String                    fileSizeDisplay)        {m_fileSizeDisplay      = fileSizeDisplay;       }
 	public void setPath(                String                    path)                   {m_path                 = path;                  }
 	public void setTitle(               String                    title)                  {m_title                = title;                 }
 	public void setContributors(        String[]                  contributors)           {m_contributors         = contributors;          }
