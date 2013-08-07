@@ -36,6 +36,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -2158,24 +2159,32 @@ public class ExportHelper {
 					Integer count = (Integer)reportMap.get(files);
 					reportMap.put(files, ++count);
 				} catch (Exception e) {
-					logger.error(e);
 					Integer c = (Integer)reportMap.get(errors);
 					reportMap.put(errors, ++c);
-					((List)reportMap.get(errorList)).add(e.getLocalizedMessage() + " (" + filename + ")");
-					throw e;
+					((List)reportMap.get(errorList)).add(NLT.get("export.error.noVersionFile", new String[] {filename}));
 				}
 			}
 		}
 
 		try {
 			iStream = new FileInputStream(new File(href));
-			if(logger.isDebugEnabled())
-				logger.debug("Adding file " + filename + " to entry " + entryId + " in binder " + binderId);
-			folderModule.modifyEntry(binderId, entryId, fileDataItemName,
-					filename, iStream, options);
-			iStream.close();
-			Integer count = (Integer)reportMap.get(files);
-			reportMap.put(files, ++count);
+			if (iStream != null) {
+				if(logger.isDebugEnabled())
+					logger.debug("Adding file " + filename + " to entry " + entryId + " in binder " + binderId);
+				folderModule.modifyEntry(binderId, entryId, fileDataItemName,
+						filename, iStream, options);
+				iStream.close();
+				Integer count = (Integer)reportMap.get(files);
+				reportMap.put(files, ++count);
+			} else {
+				Integer c = (Integer)reportMap.get(errors);
+				reportMap.put(errors, ++c);
+				((List)reportMap.get(errorList)).add(NLT.get("export.error.noAttachedFile", new String[] {filename}));
+			}
+		} catch (FileNotFoundException fnf) {
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(NLT.get("export.error.noAttachedFile", new String[] {filename}));
 		} catch (Exception e) {
 			logger.error(e);
 			Integer c = (Integer)reportMap.get(errors);
