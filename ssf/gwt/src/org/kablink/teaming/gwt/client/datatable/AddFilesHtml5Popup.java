@@ -149,6 +149,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private FileUploadExt					m_uploadButton;				// A hidden button that services the m_browseButton above.
 	private ProgressBar						m_pbPerItem;				// Displays a per item progress bar as items are uploaded to the server.
 	private ProgressBar						m_pbTotal;					// Displays a total    progress bar as items are uploaded to the server.
+	private UploadState						m_uploadState;				// Tracks the current state of uploading.
 
 	// The following are used to convert an Int8Array to a base64
 	// encoded string in the method toBase64().
@@ -202,6 +203,15 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		DATA_URL,
 		TEXT,
 	}
+	
+	/*
+	 * Used to specify the current state of uploading.
+	 */
+	private enum UploadState {
+		INACTIVE,	// Nothing is happening and we're waiting for user input.
+		UPLOADING,	// We're currently uploading files.
+		VALIDATING,	// We're currently validating files selected by the user on the server.
+	}
 
 	/*
 	 * Class constructor.
@@ -243,20 +253,23 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		// ...empty the read queue...
 		m_readQueue.clear();
 
-		// ...and tell the server that we've aborted the upload so
-		// ...it can clean up anything it has hanging around.
-		final AbortFileUploadCmd cmd = new AbortFileUploadCmd(m_folderInfo, m_fileBlob);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				// Ignored.
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse result) {
-				// Ignored.  Nothing to do.
-			}
-		});
+		// ...and if we have an active FileBlob...
+		if (null != m_fileBlob) {
+			// ...tell the server that we've aborted the upload so
+			// ...it can clean up anything it has hanging around.
+			final AbortFileUploadCmd cmd = new AbortFileUploadCmd(m_folderInfo, m_fileBlob);
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					// Ignored.
+				}
+	
+				@Override
+				public void onSuccess(VibeRpcResponse result) {
+					// Ignored.  Nothing to do.
+				}
+			});
+		}
 	}
 	
 	/**
@@ -818,7 +831,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Synchronously populates the contents of the popup.
 	 */
 	private void populatePopupNow() {
-		// Size the popup...
+		// Set the current upload state to inactive....
+		m_uploadState = UploadState.INACTIVE;
+		
+		// ...size the popup...
 		String h = (Math.max(MIN_HEIGHT, (Window.getClientHeight() - (TOP_BOTTOM_PAD * 2))) + "px"); 
 		String w = (Math.max(MIN_WIDTH,  (Window.getClientWidth()  - (LEFT_RIGHT_PAD * 2))) + "px");
 		
@@ -1045,18 +1061,22 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	}
 
 	/*
-	 * Does what's necessary with the UI to indicate an upload is active or not.
+	 * Does what's necessary with the UI to indicate the current upload
+	 * state.
 	 */
-	private void showUploadsActive(boolean active) {
-		// Are we showing uploads as being active?
-		if (active) {
-			// Yes!  If we aren't current showing an active upload...
-			if (!(m_busyImage.isVisible())) {
+	private void setUploadState(UploadState state) {
+		switch (state) {
+		case UPLOADING:
+			// We're uploading a file!  If we aren't currently showing
+			// an active upload...
+			if (!(m_uploadState.equals(UploadState.UPLOADING))) {
 				// ...update the text displayed...
-				m_browseButton.setText( m_messages.addFilesHtml5PopupAbort()   );
-				m_browseButton.setTitle(m_messages.addFilesHtml5PopupAbortAlt());
+				m_browseButton.setVisible(true                                   );
+				m_browseButton.setText(   m_messages.addFilesHtml5PopupAbort()   );
+				m_browseButton.setTitle(  m_messages.addFilesHtml5PopupAbortAlt());
 				
 				// ...hide the close button...
+				m_closeButton.setVisible(true );
 				m_closeButton.setVisible(false);
 				m_closeX.setVisible(     false);
 				
@@ -1073,30 +1093,57 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 				m_pbPanel.getRowFormatter().setVisible(1, showTotal);
 			}
 			
-			// ...and show the per item progress bar.
+			// ...show the per item progress bar...
 			m_pbPerItem.setMaxProgress(getCurrentFile().getSize());
 			m_pbPerItem.setMinProgress(0                         );
 			m_pbPerItem.setProgress(   0                         );
-		}
-		
-		else {
-			// No, we aren't showing uploads as being active!  They
-			// must changing to inactive.  Update the text displayed...
-			m_browseButton.setText( m_messages.addFilesHtml5PopupBrowse()   );
-			m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
-			m_hintLabel.setText(    m_messages.addFilesHtml5PopupHint()     );
+			
+			// ...and set the current upload state.
+			m_uploadState = UploadState.UPLOADING;
+			break;
+			
+		case INACTIVE:
+			// We're waiting for user input!  Restore the browse
+			// button...
+			m_browseButton.setVisible(true                                    );
+			m_browseButton.setText(   m_messages.addFilesHtml5PopupBrowse()   );
+			m_browseButton.setTitle(  m_messages.addFilesHtml5PopupBrowseAlt());
 			
 			// ..restore the close button...
 			m_closeButton.setVisible(true);
 			m_closeX.setVisible(     true);
 			
+			// ...update the text displayed...
+			m_hintLabel.setText(m_messages.addFilesHtml5PopupHint());
+			
 			// ...clear out any value in the upload widget so the the
 			// ...same file can be reselected, if desired...
 			m_uploadButton.getElement().setPropertyString("value", "");
 
-			// ...and hide any necessary widgets.
+			// ...hide any necessary widgets...
 			m_busyImage.setVisible(false);
 			m_pbPanel.setVisible(  false);
+			
+			// ...and set the current upload state.
+			m_uploadState = UploadState.INACTIVE;
+			break;
+			
+		case VALIDATING:
+			// We're validating the selections before uploading them!
+			// Hide the browse and close buttons...
+			m_browseButton.setVisible(false);
+			m_closeButton.setVisible( false);
+			m_closeX.setVisible(      false);
+
+			// ...show the busy spinner...
+			m_busyImage.setVisible(true);
+
+			// ...set the hint to show that we're validating...
+			m_hintLabel.setText(m_messages.addFilesHtml5PopupValidating());
+			
+			// ...and set the current upload state.
+			m_uploadState = UploadState.VALIDATING;
+			break;
 		}
 	}
 	
@@ -1191,7 +1238,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		if (!(uploadsPending())) {
 			// Yes!  Reset the popup to indicate there are no uploads
 			// in progress...
-			showUploadsActive(false);
+			setUploadState(UploadState.INACTIVE);
 
 			// ...tell the user about any folders that were ignored...
 			if (0 < handleIgnoredFolders()) {
@@ -1211,7 +1258,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		else {
 			// No, we aren't done uploading files!  Reset the popup to
 			// indicate that an upload is in progress..
-			showUploadsActive(true);
+			setUploadState(UploadState.UPLOADING);
 
 			// Change the hint to reflect the current file...
 			File file = getCurrentFile();
@@ -1296,6 +1343,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			cmd.addFile(file.getName(), file.getSize());
 		}
 		
+		// Change the display to reflect that the files to be uploaded
+		// are being verified on the server.
+		setUploadState(UploadState.VALIDATING);
+		
 		// ...and check if things are valid.
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -1303,6 +1354,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					m_messages.rpcFailure_ValidateUploads());
+				setUploadState(UploadState.INACTIVE);
 			}
 
 			@Override
