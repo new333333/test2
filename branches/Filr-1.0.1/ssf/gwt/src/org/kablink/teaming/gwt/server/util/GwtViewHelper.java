@@ -5968,38 +5968,58 @@ public class GwtViewHelper {
 				else workArea = bs.getBinderModule().getBinderWithoutAccessCheck(entityId.getBinderId());
 			}
 
-			// Get the access control information for the work are.
+			// Get the access control information for the work area.
 			Map model = new HashMap();
 			model.put(WebKeys.ACCESS_HONOR_INHERITANCE, Boolean.TRUE);
 			AccessControlController.setupAccess(bs, workArea, model);
-			List groups = ((List) model.get(WebKeys.ACCESS_SORTED_GROUPS));
-			List users  = ((List) model.get(WebKeys.ACCESS_SORTED_USERS ));
+
+			// Get the read access that's been granted from that access
+			// control information.
+			Map opsMap  = ((Map) model.get( WebKeys.OPERATION_MAP                   )); if (null == opsMap)  opsMap  = new HashMap();
+			Map readMap = ((Map) opsMap.get(WorkAreaOperation.READ_ENTRIES.getName())); if (null == readMap) readMap = new HashMap();
 			
-			// If there any groups with access...
+			// If there any groups with any kind of access...
+			List groups = ((List) model.get(WebKeys.ACCESS_SORTED_GROUPS));
 			if (MiscUtil.hasItems(groups)) {
-				// ...scan them...
-				for (Object gO:  groups) {
-					// ...and add an AccessInfo for each to the reply.
-					Group group = ((Group) gO);
-					reply.addGroup(new AccessInfo(group.getId(), group.getTitle()));
+				/// ...and if there are any groups with read access....
+				Map groupReads = ((Map) readMap.get(WebKeys.GROUPS));
+				if (MiscUtil.hasItems(groupReads)) {
+					// ...scan the groups...
+					for (Object gO:  groups) {
+						// ...and if this group has read access...
+						Group group = ((Group) gO);
+						if (null != groupReads.get(group.getId())) {
+							// ...add an AccessInfo for it to the
+							// ...reply.
+							reply.addGroup(new AccessInfo(group.getId(), group.getTitle()));
+						}
+					}
 				}
 			}
 			
-			// If there are any users with access...
+			// If there are any users with with any kind of access...
+			List users = ((List) model.get(WebKeys.ACCESS_SORTED_USERS));
 			if (MiscUtil.hasItems(users)) {
-				// ...scan them...
-				for (Object uO:  users) {
-					// ...and add an AccessInfo for each to the reply.
-					User user = ((User) uO);
-					reply.addUser(
-						new AccessInfo(
-							user.getId(),
-							user.getTitle(),
-							"",
-							GwtServerHelper.getUserAvatarUrl(
-								bs,
-								request,
-								user)));
+				/// ...and if there are any users with read access....
+				Map userReads = ((Map) readMap.get(WebKeys.USERS));
+				if (MiscUtil.hasItems(userReads)) {
+					// ...scan the users...
+					for (Object uO:  users) {
+						// ...and if this user has read access...
+						User user = ((User) uO);
+						if (null != userReads.get(user.getId())) {
+							// ...add an AccessInfo for it to the reply.
+							reply.addUser(
+								new AccessInfo(
+									user.getId(),
+									user.getTitle(),
+									"",
+									GwtServerHelper.getUserAvatarUrl(
+										bs,
+										request,
+										user)));
+						}
+					}
 				}
 			}
 
