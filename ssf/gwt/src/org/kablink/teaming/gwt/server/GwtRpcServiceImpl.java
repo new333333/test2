@@ -1007,6 +1007,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return new VibeRpcResponse( responseData );
 		}
 		
+		case GET_CAN_ADD_ENTITIES:
+		{
+			GetCanAddEntitiesCmd gcaeCmd = ((GetCanAddEntitiesCmd) cmd);
+			CanAddEntitiesRpcResponseData responseData = GwtViewHelper.getCanAddEntities( this, getRequest( ri ), gcaeCmd.getBinderInfo() );
+			return new VibeRpcResponse( responseData );
+		}
+		
 		case GET_CLIPBOARD_TEAM_USERS:
 		{
 			GetClipboardTeamUsersCmd gctuCmd = ((GetClipboardTeamUsersCmd) cmd);

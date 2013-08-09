@@ -133,7 +133,10 @@
 	/* ...End:  Footer panel styles. */
 	
 	/* ...Start:  Generic folder view styles. */
-		.vibe-folderViewBase {padding: 8px;}
+		.vibe-folderViewBase               {border: 8px solid transparent;}
+		.vibe-folderViewBase-dndPanel      {position: relative;}
+		.vibe-folderViewBase-dndPanelHover {}
+		.vibe-folderViewBase-hover         {border: 8px solid #09f !important;}
 	/* ...End:  Generic folder view styles. */
 	
 	/* ...Start:  Generic data table folder view styles. */

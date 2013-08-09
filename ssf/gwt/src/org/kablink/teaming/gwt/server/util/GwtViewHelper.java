@@ -115,6 +115,7 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
@@ -2059,6 +2060,72 @@ public class GwtViewHelper {
 					m_logger,
 					e,
 					"GwtViewHelper.getAccessoryStatus( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
+	/**
+	 * Return a CanAddEntitiesRpcResponseData object containing what
+	 * the user has rights to add to the given binder.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderInfo
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static CanAddEntitiesRpcResponseData getCanAddEntities(AllModulesInjected bs, HttpServletRequest request, BinderInfo binderInfo) throws GwtTeamingException {
+		try {
+			// Based on the binder type, determine what the user can do.
+			BinderModule bm     = bs.getBinderModule();
+			FolderModule fm     = bs.getFolderModule();
+			Binder       binder = bm.getBinder(binderInfo.getBinderIdAsLong());
+			boolean      canAddEntries = false;
+			boolean      canAddFolders = false;
+			switch (binderInfo.getBinderType()) {
+			case COLLECTION:
+				// The binder's a collection!  Is it their My Files?
+				if (CollectionType.MY_FILES.equals(binderInfo.getCollectionType())) {
+					// Yes!  Can we get their My Files Storage folder
+					// ID?
+					Long mfId = SearchUtils.getMyFilesFolderId(bs, false);
+					if (null != mfId) {
+						// Yes!  Check what they can add to it.
+						Folder mf = fm.getFolder(mfId);
+						canAddEntries = fm.testAccess(mf, FolderOperation.addEntry );
+						canAddFolders = bm.testAccess(mf,  BinderOperation.addFolder);
+					}
+				}
+				break;
+				
+			case FOLDER:
+				// The binder's a folder!  Check what they can add to
+				// it.
+				canAddEntries = fm.testAccess(((Folder) binder), FolderOperation.addEntry );
+				canAddFolders = bm.testAccess(          binder,  BinderOperation.addFolder);
+				break;
+				
+			case WORKSPACE:
+				// The binder's a workspace!  If they can add anything,
+				// it would only be folders.
+				canAddFolders = bm.testAccess(binder, BinderOperation.addFolder);
+				break;
+			}
+			
+			// Return a CanAddEntitiesRpcResponseData with the user's
+			// rights to add to the given binder.
+			return new CanAddEntitiesRpcResponseData(canAddEntries, canAddFolders);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getCanAddEntities( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
