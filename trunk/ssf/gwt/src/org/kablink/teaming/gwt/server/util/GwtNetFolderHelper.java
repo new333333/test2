@@ -414,7 +414,7 @@ public class GwtNetFolderHelper
 				selectSpec.setIncludeHomeDirNetFolders( true );
 				selectSpec.setRootName( nextRoot.getName() );
 				selectSpec.setFilter( null );
-				listOfNetFolders = getAllNetFolders( ami, selectSpec );
+				listOfNetFolders = getAllNetFolders( ami, selectSpec, true );
 				
 				// Is this net folder server being referenced by a net folder?
 				if ( listOfNetFolders == null || listOfNetFolders.size() == 0 )
@@ -446,7 +446,8 @@ public class GwtNetFolderHelper
 	 */
 	public static List<NetFolder> getAllNetFolders(
 		AllModulesInjected ami,
-		NetFolderSelectSpec selectSpec )
+		NetFolderSelectSpec selectSpec,
+		boolean getMinimalInfo )
 	{
 		List<Long> listOfNetFolderIds;
 		ArrayList<NetFolder> listOfNetFolders;
@@ -464,7 +465,10 @@ public class GwtNetFolderHelper
 			{
 				NetFolder netFolder;
 				
-				netFolder = GwtNetFolderHelper.getNetFolder( ami, binderId );
+				if ( getMinimalInfo )
+					netFolder = GwtNetFolderHelper.getNetFolderWithMinimalInfo( ami, binderId );
+				else
+					netFolder = GwtNetFolderHelper.getNetFolder( ami, binderId );
 				
 				listOfNetFolders.add( netFolder );
 			}
@@ -778,6 +782,31 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
+	 * Return a NetFolder object for the given net folder id.  We won't get all of the information
+	 * about the net folder.  Just a basic set of info.
+	 */
+	public static NetFolder getNetFolderWithMinimalInfo(
+		AllModulesInjected ami,
+		Long id )
+	{
+		NetFolder netFolder;
+		Binder binder;
+		
+		netFolder = new NetFolder();
+		netFolder.setId( id );
+		
+		binder = ami.getBinderModule().getBinder( id );
+		netFolder.setName( binder.getTitle() );
+		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
+		netFolder.setRelativePath( binder.getResourcePath() );
+		netFolder.setStatus( getNetFolderSyncStatus( netFolder.getId() ) );
+		netFolder.setIsHomeDir( binder.isHomeDir() );
+		netFolder.setIndexContent( binder.getIndexContent() );
+
+		return netFolder;
+	}
+	
+	/**
 	 * Return a NetFolder object for the given net folder id 
 	 */
 	public static NetFolder getNetFolder(
@@ -790,16 +819,9 @@ public class GwtNetFolderHelper
 		NetFolderDataSyncSettings dataSyncSettings;
 		GwtJitsNetFolderConfig jitsSettings;
 		
-		netFolder = new NetFolder();
-		netFolder.setId( id );
+		netFolder = getNetFolderWithMinimalInfo( ami, id );
 		
 		binder = ami.getBinderModule().getBinder( id );
-		netFolder.setName( binder.getTitle() );
-		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
-		netFolder.setRelativePath( binder.getResourcePath() );
-		netFolder.setStatus( getNetFolderSyncStatus( netFolder.getId() ) );
-		netFolder.setIsHomeDir( binder.isHomeDir() );
-		netFolder.setIndexContent( binder.getIndexContent() );
 
 		// Get the net folder's sync schedule configuration.
 		{

@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -126,6 +127,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	private String m_currentFilterStr = null;
 	private SelectAllHeader m_selectAllHeader;
 	private List<NetFolder> m_listOfNetFolders;
+	private List<NetFolder> m_emptyList;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg;
 	private NetFolderSyncStatisticsDlg m_netFolderSyncStatisticsDlg;
 	private int m_width;
@@ -696,19 +698,27 @@ public class ManageNetFoldersDlg extends DlgBox
 		selectedFolders = getSelectedNetFolders();
 		if ( selectedFolders != null )
 		{
-			// Get a list of all the selected net folder names
-			folderIterator = selectedFolders.iterator();
-			while ( folderIterator.hasNext() )
+			if ( selectedFolders.size() < 15 )
 			{
-				NetFolder nextFolder;
-				String text;
-				
-				nextFolder = folderIterator.next();
-				
-				text = nextFolder.getName();
-				folderNames += "\t" + text + "\n";
-				
-				++count;
+				// Get a list of all the selected net folder names
+				folderIterator = selectedFolders.iterator();
+				while ( folderIterator.hasNext() )
+				{
+					NetFolder nextFolder;
+					String text;
+					
+					nextFolder = folderIterator.next();
+					
+					text = nextFolder.getName();
+					folderNames += "\t" + text + "\n";
+					
+					++count;
+				}
+			}
+			else
+			{
+				folderNames = GwtTeaming.getMessages().manageNetFoldersDlg_nNetFoldersToDelete( selectedFolders.size() );
+				count = selectedFolders.size();
 			}
 		}
 		
@@ -888,6 +898,14 @@ public class ManageNetFoldersDlg extends DlgBox
 
 		m_currentFilterStr = filter;
 		
+		// Clear the current list we have displayed
+		{
+			if ( m_emptyList == null )
+				m_emptyList = new ArrayList<NetFolder>();
+			
+			addNetFolders( m_emptyList );
+		}
+		
 		// Create the callback that will be used when we issue an ajax call to get all the net folders.
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -911,6 +929,8 @@ public class ManageNetFoldersDlg extends DlgBox
 					{
 						GetNetFoldersRpcResponseData responseData;
 						
+						hideStatusMsg();
+						
 						responseData = (GetNetFoldersRpcResponseData) response.getResponseData();
 						
 						// Add the net folders to the ui
@@ -927,6 +947,8 @@ public class ManageNetFoldersDlg extends DlgBox
 			}
 		};
 
+		showStatusMsg( GwtTeaming.getMessages().manageNetFoldersDlg_SearchingForNetFolders() );
+		
 		// Issue an ajax request to get a list of all the net folders.
 		cmd = new GetNetFoldersCmd();
 		cmd.setIncludeHomeDirNetFolders( includeHomeDirectories );

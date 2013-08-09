@@ -828,7 +828,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			selectSpec.setFilter( gnfCmd.getFilter() );
 			selectSpec.setIncludeHomeDirNetFolders( gnfCmd.getIncludeHomeDirNetFolders() );
 			selectSpec.setRootName( gnfCmd.getRootName() );
-			result = GwtNetFolderHelper.getAllNetFolders( this, selectSpec );
+			result = GwtNetFolderHelper.getAllNetFolders( this, selectSpec, true );
 			responseData = new GetNetFoldersRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;

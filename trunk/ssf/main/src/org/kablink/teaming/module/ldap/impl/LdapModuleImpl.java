@@ -103,7 +103,9 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.jobs.LdapSynchronization;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -118,6 +120,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -6043,9 +6046,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	List listOfUsers,
     	Map<String, HomeDirInfo> homeDirInfoMap )
     {
+    	boolean createHomeDirNetFolders = false;
+    	boolean createFakeHomeDirNetFolders = false;
+    	
     	if ( listOfUsers == null || homeDirInfoMap == null || Utils.checkIfFilr() == false )
     		return;
     	
+		// See if we should create the home dir net folder.
+		createHomeDirNetFolders = SPropsUtil.getBoolean( "ldap.create.home.dir.net.folders", false );
+		
+		// For testing purposes should we create a fake home dir net folder?
+		createFakeHomeDirNetFolders = SPropsUtil.getBoolean( "ldap.create.fake.home.dir.net.folders", false );
+
 		for ( Object nextObj : listOfUsers )
 		{
 			if ( nextObj instanceof UserPrincipal )
@@ -6064,7 +6076,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					homeDirInfo = homeDirInfoMap.get( userName );
 					
 					if ( homeDirInfo != null )
+					{
 						createHomeDirNetFolderServer( homeDirInfo );
+						
+						if ( createHomeDirNetFolders )
+							createHomeDirNetFolder( homeDirInfo, nextUser );
+					}
+					else if ( createFakeHomeDirNetFolders )
+					{
+						homeDirInfo = new HomeDirInfo();
+						
+						homeDirInfo.setServerAddr( SPropsUtil.getString( "ldap.home.dir.net.folder.server.addr", "fake.server" ) );
+						homeDirInfo.setVolume( SPropsUtil.getString( "ldap.home.dir.net.folder.server.vol", "fakeVol" ) );
+						homeDirInfo.setPath( SPropsUtil.getString( "ldap.home.dir.net.folder.relative.path", "fakeHome" ) + "/" + userName );
+
+						createHomeDirNetFolder( homeDirInfo, nextUser );
+					}
 				} 
 				catch ( AccessControlException acEx )
 				{
@@ -6073,6 +6100,48 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}
     }
+    
+	/**
+	 * Create a Net folder and if needed a net folder server that represents the
+	 * user's home directory.
+	 */
+	private void createHomeDirNetFolder(
+		HomeDirInfo homeDirInfo,
+		UserPrincipal userPrincipal ) throws AccessControlException
+	{
+		User user;
+		String userName;
+
+		// Are we running Filr?
+		if ( homeDirInfo == null || userPrincipal == null || Utils.checkIfFilr() == false )
+		{
+			// No,
+			return;
+		}
+
+		userName = userPrincipal.getName();
+		user = profileModule.getUser( userName );
+
+		try
+		{
+			NetFolderHelper.createHomeDirNetFolder(
+											getProfileModule(),
+											getTemplateModule(),
+											getBinderModule(),
+											getFolderModule(),
+											getAdminModule(),
+											getResourceDriverModule(),
+											null,
+											homeDirInfo,
+											user);
+		}
+		catch ( Exception ex )
+		{
+			logger.info( "Unable to create the home directory net folder for user: " + user.getTitle() + " " + ex.toString() );
+		}
+	}
+
+
 
     /**
      * Create users.  
