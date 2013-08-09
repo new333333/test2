@@ -2191,10 +2191,12 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFoldersDlg_DeleteNetFolderLabel();
 	String manageNetFoldersDlg_FilterOptionsAlt();
 	String manageNetFoldersDlg_Header();
+	String manageNetFoldersDlg_nNetFoldersToDelete( int count );
 	String manageNetFoldersDlg_NameCol();
 	String manageNetFoldersDlg_NoNetFoldersLabel();
 	String manageNetFoldersDlg_PromptForSync();
 	String manageNetFoldersDlg_RelativePathCol();
+	String manageNetFoldersDlg_SearchingForNetFolders();
 	String manageNetFoldersDlg_ServerCol();
 	String manageNetFoldersDlg_SelectFoldersToDelete();
 	String manageNetFoldersDlg_SelectFoldersToStopSync();
