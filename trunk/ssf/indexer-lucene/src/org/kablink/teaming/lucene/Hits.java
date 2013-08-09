@@ -75,13 +75,13 @@ public class Hits implements Serializable {
     // doesn't necessarily mean the opposite, so shouldn't be interpreted in one particular
     // way. For example it may simply mean that the pertaining information is unknown.
     // This field is set on the server side.
-    private boolean[] noAclButAccessibleThroughSharing; // all elements initialized to false
+    private boolean[] noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl; // all elements initialized to false
     
     
     public Hits(int length) {
         this.size = length;
         documents = new Document[length];
-        noAclButAccessibleThroughSharing = new boolean[length];
+        noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl = new boolean[length];
      }
 
     // A sort of copy constructor
@@ -98,7 +98,7 @@ public class Hits implements Serializable {
     
     public void removeLast() {
     	documents[size-1] = null;
-    	noAclButAccessibleThroughSharing[size-1] = false;
+    	noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl[size-1] = false;
     	size -= 1;
     }
     
@@ -114,12 +114,12 @@ public class Hits implements Serializable {
     	this.size = length;
     }
 
-    public boolean noAclButAccessibleThroughSharing(int n) {
-    	return noAclButAccessibleThroughSharing[n];
+    public boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(int n) {
+    	return noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl[n];
     }
 
     public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
-            int offset, int maxSize, Set<String> noAclButAccessibleThroughSharingEntryIds, boolean totalHitsApproximate) throws IOException {
+            int offset, int maxSize, Set<String> noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds, boolean totalHitsApproximate) throws IOException {
         if (topDocs == null) return new Hits(0);
     	int length = (topDocs.scoreDocs == null)? 0: topDocs.scoreDocs.length;
         length = Math.min(length - offset, maxSize);
@@ -131,17 +131,17 @@ public class Hits implements Serializable {
         String entryId;
         for(int i = 0; i < length; i++) {
         	doc = searcher.doc(hits[offset + i].doc);
-        	if(noAclButAccessibleThroughSharingEntryIds != null) {
+        	if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds != null) {
 	        	entityType = doc.get(Constants.ENTITY_FIELD);
 	        	if(entityType != null && Constants.ENTITY_TYPE_FOLDER_ENTRY.equals(entityType)) {
 	        		entryId = doc.get(Constants.DOCID_FIELD);
-	        		if(entryId != null && noAclButAccessibleThroughSharingEntryIds.contains(entryId)) {
+	        		if(entryId != null && noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.contains(entryId)) {
 	        			// This doc represents a folder entry or reply/comment or attachment that doesn't
 	        			// have its intrinsic ACL indexed with it but instead have share-granted ACL
 	        			// that made it pass the caller's regular ACL filter. We want to pass this
 	        			// information to the caller so that the caller wouldn't have to apply 
 	        			// post-filtering on this doc.
-	        			ss_hits.setNoAclButAccessibleThroughSharing(true, i);
+	        			ss_hits.setNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(true, i);
 	        		}
 	        	}
         	}
@@ -157,8 +157,8 @@ public class Hits implements Serializable {
         documents[n] = doc;
     }
 
-    public void setNoAclButAccessibleThroughSharing(boolean value, int n) {
-    	noAclButAccessibleThroughSharing[n] = value;
+    public void setNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(boolean value, int n) {
+    	noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl[n] = value;
     }
     
 	/**

@@ -550,7 +550,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}	
 	}
 	
-	public boolean testInferredAccessToBinder(Long contextUserId,  String aclQueryStr, String binderPath) throws LuceneException {
+	public boolean testInferredAccessToNonNetFolder(Long contextUserId,  String aclQueryStr, String binderPath) throws LuceneException {
 		long startTime = System.nanoTime();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
@@ -565,7 +565,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				
 				boolean result = (topDocs.totalHits > 0);
 
-				end(startTime, "testInferredAccessToBinder", contextUserId, result, aclQueryStr, binderPath);
+				end(startTime, "testInferredAccessToNonNetFolder", contextUserId, result, aclQueryStr, binderPath);
 				
 				return result;
 			}
@@ -830,7 +830,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	        /// END: Debug			
 			
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, ThreadLocalAclQueryFilter.getNoAclButAccessibleThroughSharingEntryIds(), totalHitsApproximate);
+					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, ThreadLocalAclQueryFilter.getNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds(), totalHitsApproximate);
 			
 			/// BEGIN: Debug
 			if(hitsTransferBegin != null) {

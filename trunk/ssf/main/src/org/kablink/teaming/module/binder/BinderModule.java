@@ -840,12 +840,11 @@ public interface BinderModule {
      * the specified binder. 
      * 
      * Note: This method does not take into account whether or not the user has explicit
-     * access to the specified binder. That is something that the caller hast to check
+     * access to the specified binder. That is something that the caller has to check
      * separately before invoking this method. 
      * 
      * @param binder
      * @return
      */
-    public boolean testInferredAccessToBinder(Binder binder);
     public boolean testInferredAccessToBinder(User user, Binder binder);
 }

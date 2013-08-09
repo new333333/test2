@@ -108,7 +108,7 @@ public class LocalLuceneReadSession extends AbstractLuceneReadSession implements
 	@Override
 	protected boolean invokeTestInferredAccessToBinder(Long contextUserId,
 			String aclQueryStr, String binderPath) throws LuceneException {
-		return luceneProvider.testInferredAccessToBinder(contextUserId, aclQueryStr, binderPath);
+		return luceneProvider.testInferredAccessToNonNetFolder(contextUserId, aclQueryStr, binderPath);
 	}
 
 	@Override

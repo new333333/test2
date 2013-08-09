@@ -140,13 +140,13 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 			throws LuceneException;
 	
 	@Override
-	public boolean testInferredAccessToBinder(Long contextUserId,
+	public boolean testInferredAccessToNonNetFolder(Long contextUserId,
 			String aclQueryStr, String binderPath) throws LuceneException {
-		SimpleProfiler.start("testInferredAccessToBinder()");
+		SimpleProfiler.start("testInferredAccessToNonNetFolder()");
 		long begin = System.nanoTime();
 		boolean result = invokeTestInferredAccessToBinder(contextUserId, aclQueryStr, binderPath);
-		SimpleProfiler.stop("testInferredAccessToBinder()");
-		endRead(begin, "testInferredAccessToBinder", aclQueryStr, binderPath, result);
+		SimpleProfiler.stop("testInferredAccessToNonNetFolder()");
+		endRead(begin, "testInferredAccessToNonNetFolder", aclQueryStr, binderPath, result);
 		return result;
 	}
 
@@ -197,8 +197,8 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 	
 	protected PostFilterCallback getPostFilterCallback() {
 		return new PostFilterCallback() {
-			public boolean doFilter(Document doc, boolean noAclButAccessibleThroughSharing) {
-				if(noAclButAccessibleThroughSharing)
+			public boolean doFilter(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
+				if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl)
 					return true; // This doc represents an entry the user has access via sharing. Need not consult file system for access test.
 				NumericField field = (NumericField) doc.getFieldable(Constants.ENTRY_ACL_PARENT_ID_FIELD);
 				if(field == null)
@@ -269,7 +269,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		Hit hit;
 		while(skipCount < offset && searchServiceIterator.hasNext()) {
 			hit = searchServiceIterator.next();
-			if(callback.doFilter(hit.doc, hit.noAclButAccessibleThroughSharing)) {
+			if(callback.doFilter(hit.doc, hit.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl)) {
 				// Effective match. This item counts;
 				skipCount++; 
 				filterSuccessCount++;
@@ -289,7 +289,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		// Second, gather as many effective matches as size
 		while(result.size() < size && searchServiceIterator.hasNext()) {
 			hit = searchServiceIterator.next();
-			if(callback.doFilter(hit.doc, hit.noAclButAccessibleThroughSharing)) {
+			if(callback.doFilter(hit.doc, hit.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl)) {
 				// Effective match. Put it in the result.
 				result.add(hit.doc); 
 				filterSuccessCount++;
@@ -425,7 +425,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		public Hit next() {
 			if(state == IN_PROGRESS) {
 				hitsPosition++;
-				return new Hit(serviceHits.doc(hitsPosition), serviceHits.noAclButAccessibleThroughSharing(hitsPosition));
+				return new Hit(serviceHits.doc(hitsPosition), serviceHits.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(hitsPosition));
 			}
 			else {
 				throw new NoSuchElementException("Must be a bug in the code");
@@ -464,11 +464,11 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 	
 	static class Hit {
 		Document doc;
-		boolean noAclButAccessibleThroughSharing;
+		boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl;
 		
-		Hit(Document doc, boolean noAclButAccessibleThroughSharing) {
+		Hit(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
 			this.doc = doc;
-			this.noAclButAccessibleThroughSharing = noAclButAccessibleThroughSharing;
+			this.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl = noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl;
 		}
 	}
 

@@ -101,6 +101,7 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
+import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -3409,23 +3410,37 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     }
 
 	@Override
-	public boolean testInferredAccessToBinder(Binder binder) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		return testInferredAccessToBinder(user, binder);
-	}
-	@Override
 	public boolean testInferredAccessToBinder(User user, Binder binder) {
-       	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(true, false);
-    	String aclQueryStr = qb.buildAclClause();
+		if(binder.noAclDredgedWithEntries()) {
+			// This binder is a net folder which does not store file ACLs in the search index.
+			// Consequently inferred access computation is not always possible with the information
+			// stored in the search index. Specifically, when user has access to a file but not
+			// to any of its ancestor folders, the search index would not be able to compute it.
+			// So we have to ask the file system directly.
+			AclResourceSession session = SearchUtils.openAclResourceSession(binder.getResourceDriver());
+			if(session == null)
+				return false; // cannot obtain session for the user
+			try {
+				session.setPath(binder.getResourcePath());
+				return session.exists();
+			}
+			finally {
+				session.close();
+			}
+		}
+		else {
+	       	//Create the Lucene query
+	    	QueryBuilder qb = new QueryBuilder(true, false);
+	    	String aclQueryStr = qb.buildAclClause();
 
-    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
-        
-        try {
-        	return luceneSession.testInferredAccessToBinder(user.getId(), aclQueryStr, binder.getPathName());
-        }
-        finally {
-            luceneSession.close();
-        }
+	    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+	        
+	        try {
+	        	return luceneSession.testInferredAccessToNonNetFolder(user.getId(), aclQueryStr, binder.getPathName());
+	        }
+	        finally {
+	            luceneSession.close();
+	        }
+		}
 	}
 }
