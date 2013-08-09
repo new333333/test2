@@ -44,6 +44,7 @@ import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -1166,8 +1167,16 @@ public void delete(final Folder folder) {
                 	filter = selectSpec.getFilter();
                 	if ( filter != null && filter.length() > 0 )
                 	{
+                		Criterion title;
+                		Criterion path;
+                		Criterion server;
+                		
                 		// Yes
-                		crit.add( Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE ) );
+                		// See if the filter is in the title or the relative path or the server name.
+                		title = Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE );
+                		path = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, filter, MatchMode.ANYWHERE );
+                		server = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, filter, MatchMode.ANYWHERE );
+                		crit.add( Restrictions.or( server, Restrictions.or( title, path ) ) );
                 	}
 
                 	return crit.list();
