@@ -92,7 +92,7 @@ public class NilLuceneReadSession implements LuceneReadSession {
 	}
 
 	@Override
-	public boolean testInferredAccessToBinder(Long contextUserId,
+	public boolean testInferredAccessToNonNetFolder(Long contextUserId,
 			String aclQueryStr, String binderPath) throws LuceneException {
 		return false;
 	}

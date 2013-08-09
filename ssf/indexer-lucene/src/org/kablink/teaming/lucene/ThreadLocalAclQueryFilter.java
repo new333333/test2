@@ -66,7 +66,7 @@ public class ThreadLocalAclQueryFilter extends Filter{
 		final long[] entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
 		final String[] entryIdStrs = FieldCache.DEFAULT.getStrings(reader, Constants.DOCID_FIELD);
 		
-		Set<String> noAclButAccessibleThroughSharingEntryIds = new HashSet<String>();
+		Set<String> noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds = new HashSet<String>();
 
 		final DocIdSet docIdSet = aclQueryFilter.getDocIdSet(reader);
 		
@@ -81,22 +81,22 @@ public class ThreadLocalAclQueryFilter extends Filter{
 						// passed the original ACL query filter is a clear indication that there are "additional" 
 						// ACL indexed on this doc that made it pass the filter. In the current application, that 
 						// should be share-granted ACL. We need to pass this information up to the caller
-						noAclButAccessibleThroughSharingEntryIds.add(entryIdStrs[docId]);
+						noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.add(entryIdStrs[docId]);
 					}
 					docId = it.nextDoc();
 				}
 			}
 		}
 		
-		if(noAclButAccessibleThroughSharingEntryIds.isEmpty())
-			noAclButAccessibleThroughSharingEntryIds = null;
+		if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.isEmpty())
+			noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds = null;
 		
-		threadLocal.set(noAclButAccessibleThroughSharingEntryIds);
+		threadLocal.set(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds);
 		
 		return docIdSet;
 	}
 
-	public static Set<String> getNoAclButAccessibleThroughSharingEntryIds() {
+	public static Set<String> getNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds() {
 		return threadLocal.get();
 	}
 	

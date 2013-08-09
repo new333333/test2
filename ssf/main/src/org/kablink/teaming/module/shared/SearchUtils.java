@@ -685,7 +685,7 @@ public class SearchUtils {
 			//    (i.e., sub-folder or file within).
 			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), mode, query, sort, offset, size,
 					new PostFilterCallback() {
-				public boolean doFilter(Document doc, boolean noAclButAccessibleThroughSharing) {
+				public boolean doFilter(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
 					// This filter implementation ignores the second arg.
 					String resourceDriverName = doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
 					if(resourceDriverName == null) 

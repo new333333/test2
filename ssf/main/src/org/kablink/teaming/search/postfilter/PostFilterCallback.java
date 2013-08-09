@@ -36,5 +36,5 @@ import org.apache.lucene.document.Document;
 
 public interface PostFilterCallback {
 
-	public boolean doFilter(Document doc, boolean noAclButAccessibleThroughSharing);
+	public boolean doFilter(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl);
 }
