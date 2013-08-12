@@ -211,9 +211,12 @@ public class ManageSearchIndexController extends  SAbstractController {
 		
 		List<IndexNode> nodes = getAdminModule().retrieveIndexNodesHA();
 		
-		if(nodes != null) {
+		if (nodes != null) {
 			model.put(WebKeys.SEARCH_NODES, nodes);
+		} else {
+			model.put(WebKeys.SEARCH_NODE, getAdminModule().loadNonHAIndexNode());
 		}
+		model.put(WebKeys.SEARCH_SAFE_TO_INDEX, !(getAdminModule().isUnsafeReindexingInProgress()));
 			
 		IndexOptimizationSchedule schedule = getAdminModule().getIndexOptimizationSchedule();
 		model.put(WebKeys.SCHEDULE_INFO, schedule);

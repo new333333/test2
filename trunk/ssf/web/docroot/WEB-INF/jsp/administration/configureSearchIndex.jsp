@@ -254,27 +254,36 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	onSubmit="return ss_submitIndexingForm( true, '${renderResponse.namespace}fm', 'ss_indexingDone' );" >
 <input type="hidden" name="operation" value="index"/>
 
-<div class="margintop3 ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" 
-  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
-<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="return handleCloseBtn();"/>
-</div>
-<br>
-<input type="checkbox" name="indexAll"/>
-<span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.selectAll"/></span>
-<br>
-<br>
-<br>
-<span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.select"/></span>
-<br>
-<span class="ss_smallprint" style="padding-left:10px;"><ssf:nlt tag="administration.configure_search_index_hint"/></span>
-
-<div class="marginleft1 ss_subsection">
-	<ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
-	  rootOpen="true" topId="${ssWsDomTreeBinderId}" 
-	  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
-</div>
+<c:if test="${ssSearchSafeToIndex}">
+	<div class="margintop3 ss_buttonBarRight">
+	<input type="submit" class="ss_submit" name="okBtn" 
+	  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
+	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+			  onClick="return handleCloseBtn();"/>
+	</div>
+	<br>
+</c:if>
+<c:if test="${!ssSearchSafeToIndex}">
+	<span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.indexInProgress"/></span>
+	<br>
+	<br>
+</c:if>
+<c:if test="${ssSearchSafeToIndex}">
+	<input type="checkbox" name="indexAll"/>
+	<span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.selectAll"/></span>
+	<br>
+	<br>
+	<br>
+	<span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.select"/></span>
+	<br>
+	<span class="ss_smallprint" style="padding-left:10px;"><ssf:nlt tag="administration.configure_search_index_hint"/></span>
+	
+	<div class="marginleft1 ss_subsection">
+		<ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
+		  rootOpen="true" topId="${ssWsDomTreeBinderId}" 
+		  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
+	</div>
+</c:if>
 <div class="margintop2">
 <c:if test="${!empty ssSearchNodes}">
 </div>
@@ -286,18 +295,20 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br>
 <br>
   <c:forEach var="node" items="${ssSearchNodes}">
-    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords}">disabled</c:if>>
+    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords || node.isReindexingInProgress}">disabled</c:if>>
     ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
     <br/>
   </c:forEach>
   <input type="hidden" name="searchNodesPresent" value="1"/>
 </c:if>
-<div class="margintop3 ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" 
-  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
-<input type="submit" class="ss_submit" name="closeBtn" 
- value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
-</div>
+<c:if test="${ssSearchSafeToIndex || !empty ssSearchNodes}">
+	<div class="margintop3 ss_buttonBarRight">
+	<input type="submit" class="ss_submit" name="okBtn" 
+	  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
+	<input type="submit" class="ss_submit" name="closeBtn" 
+	 value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
+	</div>
+</c:if>
 <input type="hidden" name="btnClicked"/>
 </form>
 <br>
@@ -359,9 +370,13 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br>
   <c:forEach var="node" items="${ssSearchNodes}">
     <input type="checkbox" name="searchNodeName" value="${node.nodeName}" 
-    <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords}">disabled</c:if><c:if test="${ssScheduleInfo.nodeSelectionMap[node.nodeName]}">checked</c:if>>
+    <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords || node.isReindexingInProgress}">disabled</c:if><c:if test="${ssScheduleInfo.nodeSelectionMap[node.nodeName]}">checked</c:if>>
     ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
     <br/>
+    <c:if test="${node.isReindexingInProgress}">
+	    <span class="ss_small_print"><ssf:nlt tag="administration.configure.index.indexInProgressNode"/></span>
+	    <br/>
+    </c:if>
   </c:forEach>
   <input type="hidden" name="searchNodesPresent" value="1"/>
 </c:if>

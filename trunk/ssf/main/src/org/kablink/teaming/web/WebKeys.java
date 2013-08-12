@@ -1481,6 +1481,8 @@ public class WebKeys {
     public static final String TYPE="ss_type";
     public static final String TYPE2="ss_type2";
     public static final String TYPE3="ss_type3";
+    public static final String SEARCH_SAFE_TO_INDEX = "ssSearchSafeToIndex";
+    public static final String SEARCH_NODE="ssSearchNode";
     public static final String SEARCH_NODES="ssSearchNodes";
 	public static final Object SEARCH_SCOPE = "ss_searchScope";
 	public static final Object SEARCH_INCLUDE_NESTED_BINDERS = "ss_searchIncludeNestedBinders";
