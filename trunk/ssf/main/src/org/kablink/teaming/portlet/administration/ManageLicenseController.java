@@ -60,10 +60,12 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.DocumentSource;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.license.LicenseException;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.WebHelper;
@@ -202,7 +204,7 @@ public class ManageLicenseController extends SAbstractController {
 			} else {
 				if (effectiveDate.equalsIgnoreCase("trial")) {
 					String days = getValue( doc, "//Dates/@expiration");
-					int daysSinceInstallation = GwtServerHelper.getDaysSinceInstallation();
+					int daysSinceInstallation = getCoreDao().daysSinceInstallation();
 					Calendar trialEffectiveDate = Calendar.getInstance();
 					trialEffectiveDate.add(Calendar.DATE, -daysSinceInstallation);
 					Calendar trialEndDate = Calendar.getInstance();
@@ -297,4 +299,10 @@ public class ManageLicenseController extends SAbstractController {
 		List<Node> list = null;
 		return (doc != null && (list=doc.selectNodes(xpath))!=null)?list:null;
 	}
+	
+	private CoreDao getCoreDao()
+	{
+		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
+	}
+
 }
