@@ -35,6 +35,7 @@ package org.kablink.teaming.portlet.administration;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ import org.dom4j.Node;
 import org.dom4j.io.DocumentSource;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.license.LicenseException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
@@ -174,16 +176,14 @@ public class ManageLicenseController extends SAbstractController {
 			}
 			
 			// Format the "expiration" date according to the locale the user is running in.
+			SimpleDateFormat dateFormat = new SimpleDateFormat( "MM/dd/yyyy" );
 			expireDate = getValue(doc, "//Dates/@expiration");
 			expireDateOrig = expireDate;
 			if ( expireDate != null && expireDate.length() > 0 )
 			{
-				SimpleDateFormat dateFormat;
 				Date date;
 				
-				// Parse the "expiration" date.
-				dateFormat = new SimpleDateFormat( "MM/dd/yyyy" );
-				
+				// Parse the "expiration" date.				
 				try
 				{
 					date = dateFormat.parse( expireDate );
@@ -197,10 +197,24 @@ public class ManageLicenseController extends SAbstractController {
 				}
 			}
 
-			if ( expireDateOrig.equals("1/1/2500") )
+			if ( expireDateOrig.equals("1/1/2500") ) {
 				model.put(WebKeys.LICENSE_EFFECTIVE, effectiveDate + " - " + NLT.get("license.expire.never"));
-			else
-				model.put(WebKeys.LICENSE_EFFECTIVE, effectiveDate + " - " + expireDate);
+			} else {
+				if (effectiveDate.equalsIgnoreCase("trial")) {
+					String days = getValue( doc, "//Dates/@expiration");
+					int daysSinceInstallation = GwtServerHelper.getDaysSinceInstallation();
+					Calendar trialEffectiveDate = Calendar.getInstance();
+					trialEffectiveDate.add(Calendar.DATE, -daysSinceInstallation);
+					Calendar trialEndDate = Calendar.getInstance();
+					trialEndDate.setTime(trialEffectiveDate.getTime());
+					trialEndDate.add(Calendar.DATE, Integer.valueOf(days));
+					model.put(WebKeys.LICENSE_EFFECTIVE, effectiveDate + " - " + expireDate + " (" + 
+							localeDateFormat.format( trialEffectiveDate.getTime() ) + " - " + localeDateFormat.format( trialEndDate.getTime() ) + ")");
+				} else {
+					model.put(WebKeys.LICENSE_EFFECTIVE, effectiveDate + " - " + expireDate);
+				}
+
+			}
 
 			model.put(WebKeys.LICENSE_CONTACT, getValue(doc, "//AuditPolicy/ReportContact"));
 
