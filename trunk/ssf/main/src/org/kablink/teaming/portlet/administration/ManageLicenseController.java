@@ -62,14 +62,12 @@ import org.dom4j.io.DocumentSource;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.license.LicenseException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.WebHelper;
-import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
 
