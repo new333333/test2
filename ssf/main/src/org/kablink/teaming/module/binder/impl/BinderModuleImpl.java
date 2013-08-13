@@ -3422,7 +3422,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				return false; // cannot obtain session for the user
 			try {
 				session.setPath(binder.getResourcePath());
-				return session.exists();
+				return session.isVisible();
 			}
 			finally {
 				session.close();

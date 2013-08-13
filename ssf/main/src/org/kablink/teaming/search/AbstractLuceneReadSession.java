@@ -218,7 +218,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 					return false; // can not perform access check on this
 				try {
 					session.setPath(resourcePath);
-					return session.exists();
+					return session.isVisible();
 				}
 				finally {
 					session.close();
