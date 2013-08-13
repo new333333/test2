@@ -84,7 +84,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  *  
  * @author drfoster@novell.com
  */
-public class Html5FileUploaderClientHelper
+public class Html5UploadHelper
 	implements
 		ErrorHandler,
 		LoadEndHandler
@@ -93,15 +93,15 @@ public class Html5FileUploaderClientHelper
 	private byte[]						m_blobCache;		// A byte[] used to cache blobs as they're read and sent to the server.
 	private double						m_totalFileSize;	// Total size of everything to be uploaded.
 	private GwtTeamingMessages			m_messages;			// Access to our localized messages.
-	private Html5FileUploaderCallback	m_callback;			// Callback interface to keep the caller informed about what's going on.
 	private Html5SpecsRpcResponseData	m_html5Specs;		// Holds the specifications about how to perform HTML5 file uploads.
+	private Html5UploadCallback			m_callback;			// Callback interface to keep the caller informed about what's going on.
+	private Html5UploadState			m_uploadState;		// Tracks the current state of uploading.
 	private int							m_readThis;			// The file number out of the total that is currently being uploaded.
 	private int							m_readTotal;		// Total number of files to upload during an upload request.
 	private List<File>					m_ignoredAsFolders;	// Tracks files that are dropped because they 'appear' to be folders and are hence, ignored.
 	private List<File>					m_readQueue;		// List of files queued for uploading.
 	private FileBlob					m_fileBlob;			// Contains information about blobs of a file as they're read and uploaded.
 	private FileReader					m_reader;			// Used to reads files as they're being uploaded.
-	private UploadState					m_uploadState;		// Tracks the current state of uploading.
 
 	// The following is used to convert an Int8Array to a base64
 	// encoded string in the method toBase64().
@@ -150,24 +150,6 @@ public class Html5FileUploaderClientHelper
 		public boolean isText()         {return this.equals(TEXT         );}
 	}
 	
-	/**
-	 * Used to specify the current state of uploading.
-	 */
-	public enum UploadState {
-		INACTIVE,	// Nothing is happening and we're waiting for the caller to do something.
-		UPLOADING,	// We're currently uploading files.
-		VALIDATING;	// We're currently validating the files the caller said to upload on the server.
-		
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public boolean isInactive()   {return this.equals(INACTIVE  );}
-		public boolean isUploading()  {return this.equals(UPLOADING );}
-		public boolean isValidating() {return this.equals(VALIDATING);}
-	}
-	
 	/*
 	 * Class constructor.
 	 * 
@@ -175,7 +157,7 @@ public class Html5FileUploaderClientHelper
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private Html5FileUploaderClientHelper(Html5FileUploaderCallback callback) {
+	private Html5UploadHelper(Html5UploadCallback callback) {
 		// Initialize the superclass...
 		super();
 		
@@ -185,7 +167,7 @@ public class Html5FileUploaderClientHelper
 		// ...initialize the other data members...
 		m_messages = GwtTeaming.getMessages();
 		
-		m_uploadState      = UploadState.INACTIVE;
+		m_uploadState      = Html5UploadState.INACTIVE;
 		m_ignoredAsFolders = new ArrayList<File>();
 		m_readQueue        = new ArrayList<File>();
 		
@@ -200,7 +182,7 @@ public class Html5FileUploaderClientHelper
 	/*
 	 * Asynchronously aborts an upload. 
 	 */
-	private static void abortUploadAsync(final Html5FileUploaderClientHelper abortHelper) {
+	private static void abortUploadAsync(final Html5UploadHelper abortHelper) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -277,7 +259,7 @@ public class Html5FileUploaderClientHelper
 				}
 			}
 			boolean hasTail = GwtClientHelper.hasString(traceTail);
-			dump = ("Html5FileUploaderClientHelper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
+			dump = ("Html5UploadHelper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
 			byte[] data = m_fileBlob.getBlobData();
 			dump += ("\n\nData Read:  " + ((null == data) ? 0 : data.length) + (m_fileBlob.isBlobBase64Encoded() ? " base64 encoded" : "") + " bytes."); 
 			GwtClientHelper.debugAlert(dump);
@@ -460,7 +442,7 @@ public class Html5FileUploaderClientHelper
 				// Store the HTML5 upload specifications and tell the
 				// caller we're ready to go.
 				m_html5Specs = ((Html5SpecsRpcResponseData) response.getResponseData());
-				m_callback.onSuccess(Html5FileUploaderClientHelper.this);
+				m_callback.onSuccess(Html5UploadHelper.this);
 			}
 		});
 	}
@@ -644,7 +626,7 @@ public class Html5FileUploaderClientHelper
 		}
 		
 		// We start an upload in an inactive state.
-		setUploadStateImpl(UploadState.INACTIVE);
+		setUploadStateImpl(Html5UploadState.INACTIVE);
 		
 		// If we weren't given any files to process...
 		if (!(GwtClientHelper.hasItems(files))) {
@@ -714,12 +696,12 @@ public class Html5FileUploaderClientHelper
 	 * Does what's necessary with the UI to indicate the current upload
 	 * state.
 	 */
-	private void setUploadStateImpl(final UploadState newState) {
+	private void setUploadStateImpl(final Html5UploadState newState) {
 		switch (newState) {
 		case UPLOADING:
 			// We're uploading a file!  If we aren't currently showing
 			// an active upload...
-			if (!(m_uploadState.equals(UploadState.UPLOADING))) {
+			if (!(m_uploadState.equals(Html5UploadState.UPLOADING))) {
 				m_totalFileSize = getTotalQueueFileSize();
 				m_callback.setTotalMaxProgress(m_totalFileSize);
 			}
@@ -800,7 +782,7 @@ public class Html5FileUploaderClientHelper
 	/*
 	 * Asynchronously uploads the given files.
 	 */
-	private static void uploadFilesAsync(final Html5FileUploaderClientHelper uploadHelper, final BinderInfo fi, final List<File> files) {
+	private static void uploadFilesAsync(final Html5UploadHelper uploadHelper, final BinderInfo fi, final List<File> files) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -840,7 +822,7 @@ public class Html5FileUploaderClientHelper
 		if (!(uploadsPending())) {
 			// Yes!  Reset the upload to indicate there are no uploads
 			// in progress...
-			setUploadStateImpl(UploadState.INACTIVE);
+			setUploadStateImpl(Html5UploadState.INACTIVE);
 
 			// ...and tell the caller the uploads have completed.
 			if (0 < handleIgnoredFolders()) {
@@ -852,7 +834,7 @@ public class Html5FileUploaderClientHelper
 		else {
 			// No, we aren't done uploading files!  Reset the upload to
 			// indicate that an upload is in progress..
-			setUploadStateImpl(UploadState.UPLOADING);
+			setUploadStateImpl(Html5UploadState.UPLOADING);
 
 			// Tell the caller we're on to the next file...
 			final File file = getCurrentFile();
@@ -944,7 +926,7 @@ public class Html5FileUploaderClientHelper
 		
 		// Change the display to reflect that the files to be uploaded
 		// are being verified on the server.
-		setUploadStateImpl(UploadState.VALIDATING);
+		setUploadStateImpl(Html5UploadState.VALIDATING);
 		
 		// ...and check if things are valid.
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
@@ -953,7 +935,7 @@ public class Html5FileUploaderClientHelper
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					m_messages.rpcFailure_ValidateUploads());
-				setUploadStateImpl(UploadState.INACTIVE);
+				setUploadStateImpl(Html5UploadState.INACTIVE);
 			}
 
 			@Override
@@ -1040,125 +1022,25 @@ public class Html5FileUploaderClientHelper
 	/* the HTML5 helper and perform some operation on it.            */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
-	/**
-	 * Callback interface to interact with the HTML5 helper
-	 * asynchronously after it loads. 
-	 */
-	public interface Html5FileUploaderCallback {
-		/**
-		 * Tells the caller that some folders were in the files
-		 * requested to be uploaded and were skipped.
-		 * 
-		 * @param count
-		 * @param folderNames
-		 */
-		public void foldersSkipped(int count, String folderNames);
-		
-		/**
-		 * Tells the caller to advance it's progress indicator.
-		 * 
-		 * @param amount
-		 */
-		public void incrProgress(long amount);
-		
-		/**
-		 * Tells the caller that the helper was successfully loaded and
-		 * is available for uploading files.
-		 * 
-		 * @param uploadHelper
-		 */
-		public void onSuccess(Html5FileUploaderClientHelper uploadHelper);
-		
-		/**
-		 * Tell the caller if the helper fails to load for any reason.
-		 * 
-		 * Note that the user will have been told about the failure.
-		 */
-		public void onUnavailable();
-
-		/**
-		 * Tells the caller that an error occurred uploading a file.
-		 * 
-		 * @param fileName
-		 * @param errorDescription
-		 */
-		public void readError(String fileName, String errorDescription);
-
-		/**
-		 * Tells the caller to set the current files progress indicator.
-		 * 
-		 * @param min
-		 * @param max
-		 */
-		public void setPerItemProgress(long min, long max);
-		
-		/**
-		 * Tells the caller to update the total progress to the
-		 * specified value.
-		 * 
-		 * @param amount
-		 */
-		public void setTotalCurrentProgress(double amount);
-		
-		/**
-		 * Tells the caller to set it's total maximum progress value. 
-		 * 
-		 * @param max
-		 */
-		public void setTotalMaxProgress(double max);
-		
-		/**
-		 * Tells the caller what the current state of the upload is.
-		 * 
-		 * @param previousState
-		 * @param currentState
-		 */
-		public void setUploadState(UploadState previousState, UploadState currentState);
-		
-		/**
-		 * Tells the caller that the upload has completed.
-		 * 
-		 * @param aborted
-		 */
-		public void uploadComplete(boolean aborted);
-
-		/**
-		 * Tells the caller that we're now uploading the next file.
-		 * 
-		 * @param fileName
-		 * @param thisFile
-		 * @param totalFiles
-		 */
-		public void uploadingNextFile(String fileName, int thisFile, int totalFiles);
-		
-		/**
-		 * Tells the caller about errors that occurred while validating
-		 * the upload request.
-		 * 
-		 * @param errors
-		 */
-		public void validationErrors(List<ErrorInfo> errors);
-	}
-
 	/*
-	 * Asynchronously loads the Html5FileUploaderClientHelper and performs some
+	 * Asynchronously loads the Html5UploadHelper and performs some
 	 * operation against the code.
 	 */
 	private static void doAsyncOperation(
 			// Required creation parameters.
-			final Html5FileUploaderCallback callback,
+			final Html5UploadCallback callback,
 			
 			// abortUpload() parameters,
-			final Html5FileUploaderClientHelper	abortHelper,
+			final Html5UploadHelper	abortHelper,
 			
 			// uploadFiles() parameters,
-			final Html5FileUploaderClientHelper	uploadHelper,
-			final BinderInfo					fi,
-			final List<File>					files) {
-		GWT.runAsync(Html5FileUploaderClientHelper.class, new RunAsyncCallback() {
+			final Html5UploadHelper	uploadHelper,
+			final BinderInfo		fi,
+			final List<File>		files) {
+		GWT.runAsync(Html5UploadHelper.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
-				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_Html5FileUploaderClientHelper());
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_Html5UploadHelper());
 				if (null != callback) {
 					callback.onUnavailable();
 				}
@@ -1180,7 +1062,7 @@ public class Html5FileUploaderClientHelper
 						// Yes!  Create a helper and return it via the
 						// callback.
 						@SuppressWarnings("unused")
-						Html5FileUploaderClientHelper uploadHelper = new Html5FileUploaderClientHelper(callback);
+						Html5UploadHelper uploadHelper = new Html5UploadHelper(callback);
 					}
 				}
 				
@@ -1206,18 +1088,18 @@ public class Html5FileUploaderClientHelper
 	 * 
 	 * @param abortHelper
 	 */
-	public static void abortUpload(Html5FileUploaderClientHelper abortHelper) {
+	public static void abortUpload(Html5UploadHelper abortHelper) {
 		// Perform the appropriate asynchronous operation.
 		doAsyncOperation(null, abortHelper, null, null, null);
 	}
 	
 	/**
-	 * Loads the Html5FileUploaderClientHelper split point and returns an instance
+	 * Loads the Html5UploadHelper split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 * @param callback
 	 */
-	public static void createAsync(Html5FileUploaderCallback callback) {
+	public static void createAsync(Html5UploadCallback callback) {
 		// Perform the appropriate asynchronous operation.
 		doAsyncOperation(callback, null, null, null, null);
 	}
@@ -1228,7 +1110,7 @@ public class Html5FileUploaderClientHelper
 	 * @param uploadHelper
 	 * @param fi
 	 */
-	public static void uploadFiles(Html5FileUploaderClientHelper uploadHelper, BinderInfo fi, FileList fileList) {
+	public static void uploadFiles(Html5UploadHelper uploadHelper, BinderInfo fi, FileList fileList) {
 		// If we were given some files...
 		if ((null != fileList) && (0 < fileList.getLength())) {
 			// ...perform the appropriate asynchronous operation.

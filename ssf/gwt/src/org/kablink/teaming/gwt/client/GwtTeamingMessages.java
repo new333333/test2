@@ -644,7 +644,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_GenericWSView();
 	String codeSplitFailure_GuestbookFolderView();
 	String codeSplitFailure_HomeWSView();
-	String codeSplitFailure_Html5FileUploaderClientHelper();
+	String codeSplitFailure_Html5UploadHelper();
 	String codeSplitFailure_ImportIcalByFileDlg();
 	String codeSplitFailure_ImportIcalByUrlDlg();
 	String codeSplitFailure_ImportProfilesDlg();
@@ -1844,6 +1844,7 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesHtml5PopupBusy(String fileName, int thisOne, int total);
 	String addFilesHtml5PopupClose();
 	String addFilesHtml5PopupCloseAlt();
+	String addFilesHtml5PopupDnDHint(String folderName);
 	String addFilesHtml5PopupFoldersSkipped(String folderNames);
 	String addFilesHtml5PopupHint();
 	String addFilesHtml5PopupProgressItem();

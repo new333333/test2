@@ -44,9 +44,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.Html5FileUploaderClientHelper;
-import org.kablink.teaming.gwt.client.util.Html5FileUploaderClientHelper.Html5FileUploaderCallback;
-import org.kablink.teaming.gwt.client.util.Html5FileUploaderClientHelper.UploadState;
+import org.kablink.teaming.gwt.client.util.Html5UploadHelper;
+import org.kablink.teaming.gwt.client.util.Html5UploadCallback;
+import org.kablink.teaming.gwt.client.util.Html5UploadState;
 import org.kablink.teaming.gwt.client.widgets.ProgressBar;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 
@@ -94,7 +94,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		DragLeaveHandler,
 		DragOverHandler,
 		DropHandler,
-		Html5FileUploaderCallback,
+		Html5UploadCallback,
 		KeyDownHandler
 {
 	private AddFilesHtml5PopupClient		m_afPopupClient;			// Client callback into the code that loaded the popup's split point.
@@ -105,7 +105,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private FlexTable						m_pbPanel;					// Panel that will hold the progress bars.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
-	private Html5FileUploaderClientHelper	m_uploadHelper;				// The HTML5 upload APIs.
+	private Html5UploadHelper				m_uploadHelper;				// The HTML5 upload APIs.
 	private Image							m_busyImage;				// Image holding a spinner that's show while an upload is happening.
 	private Image							m_closeX;					// The 'X' in the upper right corner of the upload popup.
 	private InlineLabel						m_hintLabel;				// The label inside the hint box.
@@ -153,8 +153,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		addStyleName("vibe-addFilesHtml5Popup");
 		createContent();
 
-		// ...and create an Html5FileUploaderClientHelper to do the
-		// ...uploads with.
+		// ...and create an Html5UploadHelper to do the uploads with.
 		loadPart1Async();
 	}
 
@@ -263,7 +262,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * @param count
 	 * @param folderNames
 	 * 
-	 * Implements the Html5FileUploaderCallback.foldersSkipped() method.
+	 * Implements the Html5UploadCallback.foldersSkipped() method.
 	 */
 	@Override
 	public void foldersSkipped(int count, String folderNames) {
@@ -277,7 +276,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * 
 	 * @param amount
 	 * 
-	 * Implements the Html5FileUploaderCallback.incrProgress() method.
+	 * Implements the Html5UploadCallback.incrProgress() method.
 	 */
 	@Override
 	public void incrProgress(long amount) {
@@ -288,8 +287,8 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	}
 
 	/*
-	 * Asynchronously create an Html5FileUploaderClientHelper to do the
-	 * uploads with.
+	 * Asynchronously create an Html5UploadHelper to do the uploads
+	 * with.
 	 */
 	private void loadPart1Async() {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
@@ -301,12 +300,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	}
 	
 	/*
-	 * Synchronously create an Html5FileUploaderClientHelper to do the
-	 * uploads with.
+	 * Synchronously create an Html5UploadHelper to do the uploads
+	 * with.
 	 */
 	private void loadPart1Now() {
-		// Create the Html5FileUploaderClientHelper.
-		Html5FileUploaderClientHelper.createAsync(this);
+		// Create the Html5UploadHelper.
+		Html5UploadHelper.createAsync(this);
 	}
 	
 	/**
@@ -331,7 +330,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onChange(ChangeEvent event) {
-		Html5FileUploaderClientHelper.uploadFiles(
+		Html5UploadHelper.uploadFiles(
 			m_uploadHelper,
 			m_folderInfo,
 			m_uploadButton.getFiles());
@@ -350,7 +349,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		// Is the read queue is empty?
 		if (m_uploadHelper.uploadsPending()) {
 			// No!  Abort the uploads that are in progress.
-			Html5FileUploaderClientHelper.abortUpload(m_uploadHelper);
+			Html5UploadHelper.abortUpload(m_uploadHelper);
 		}
 		
 		else {
@@ -436,7 +435,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		if (!(m_uploadHelper.uploadsPending())) {
 	                   removeStyleName("vibe-addFilesHtml5Popup-hover"        );
 			m_dndPanel.removeStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
-			Html5FileUploaderClientHelper.uploadFiles(
+			Html5UploadHelper.uploadFiles(
 				m_uploadHelper,
 				m_folderInfo,
 				event.getDataTransfer().<DataTransferExt>cast().getFiles());
@@ -477,10 +476,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * 
 	 * @param uploadHelper
 	 * 
-	 * Implements the Html5FileUploaderCallback.onSuccess() method.
+	 * Implements the Html5UploadCallback.onSuccess() method.
 	 */
 	@Override
-	public void onSuccess(Html5FileUploaderClientHelper uploadHelper) {
+	public void onSuccess(Html5UploadHelper uploadHelper) {
 		m_uploadHelper = uploadHelper;
 		m_afPopupClient.onSuccess(this);
 	}
@@ -490,7 +489,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * 
 	 * Note that the user will have been told about the failure.
 	 * 
-	 * Implements the Html5FileUploaderCallback.onUnavailable() method.
+	 * Implements the Html5UploadCallback.onUnavailable() method.
 	 */
 	@Override
 	public void onUnavailable() {
@@ -539,7 +538,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * @param fileName
 	 * @param errorDescription
 	 * 
-	 * Implements the Html5FileUploaderCallback.readError() method.
+	 * Implements the Html5UploadCallback.readError() method.
 	 */
 	@Override
 	public void readError(String fileName, String errorDescription) {
@@ -598,7 +597,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * @param min
 	 * @param max
 	 * 
-	 * Implements the Html5FileUploaderCallback.setPerItemProgress() method.
+	 * Implements the Html5UploadCallback.setPerItemProgress() method.
 	 */
 	@Override
 	public void setPerItemProgress(long min, long max) {
@@ -612,7 +611,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * 
 	 * @param amount
 	 * 
-	 * Implements the Html5FileUploaderCallback.setTotalCurrentProgress() method.
+	 * Implements the Html5UploadCallback.setTotalCurrentProgress() method.
 	 */
 	@Override
 	public void setTotalCurrentProgress(double amount) {
@@ -626,7 +625,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * 
 	 * @param max
 	 * 
-	 * Implements the Html5FileUploaderCallback.setTotalMaxProgress() method.
+	 * Implements the Html5UploadCallback.setTotalMaxProgress() method.
 	 */
 	@Override
 	public void setTotalMaxProgress(double max) {
@@ -643,15 +642,15 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * @param previousState
 	 * @param newState
 	 * 
-	 * Implements the Html5FileUploaderCallback.setUploadState() method.
+	 * Implements the Html5UploadCallback.setUploadState() method.
 	 */
 	@Override
-	public void setUploadState(UploadState previousState, UploadState newState) {
+	public void setUploadState(Html5UploadState previousState, Html5UploadState newState) {
 		switch (newState) {
 		case UPLOADING:
 			// We're uploading a file!  If we weren't previously
 			// performing an upload...
-			if (!(previousState.equals(UploadState.UPLOADING))) {
+			if (!(previousState.equals(Html5UploadState.UPLOADING))) {
 				// ...update the text displayed...
 				m_browseButton.setVisible(true                                   );
 				m_browseButton.setText(   m_messages.addFilesHtml5PopupAbort()   );
@@ -726,7 +725,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * 
 	 * @param aborted
 	 * 
-	 * Implements the Html5FileUploaderCallback.uploadComplete() method.
+	 * Implements the Html5UploadCallback.uploadComplete() method.
 	 */
 	@Override
 	public void uploadComplete(boolean aborted) {
@@ -747,7 +746,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * @param thisFile
 	 * @param totalFiles
 	 * 
-	 * Implements the Html5FileUploaderCallback.uploadingNextFile() method.
+	 * Implements the Html5UploadCallback.uploadingNextFile() method.
 	 */
 	@Override
 	public void uploadingNextFile(String fileName, int thisFile, int totalFiles) {
@@ -759,7 +758,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * 
 	 * @param errors
 	 * 
-	 * Implements the Html5FileUploaderCallback.validationErrors() method.
+	 * Implements the Html5UploadCallback.validationErrors() method.
 	 */
 	@Override
 	public void validationErrors(List<ErrorInfo> errors) {
