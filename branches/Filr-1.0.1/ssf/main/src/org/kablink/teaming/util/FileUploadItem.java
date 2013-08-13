@@ -327,8 +327,8 @@ public class FileUploadItem {
     private void transferToTempFile() throws IOException {
         if(file == null) {
             file = TempFileUtil.createTempFile(TEMP_FILE_PREFIX);
-            mf.transferTo(file);
             isTempFile = true;
+            mf.transferTo(file);
             if (mf instanceof SimpleMultipartFile) {
                 md5 = ((SimpleMultipartFile) mf).getMd5();
             }
