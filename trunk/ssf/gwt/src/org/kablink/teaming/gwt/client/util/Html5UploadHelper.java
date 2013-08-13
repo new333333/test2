@@ -298,6 +298,24 @@ public class Html5UploadHelper
 		return ((null == fileDate) ? null : new Long((long) fileDate.getTime()));
 	}
 
+	/**
+	 * Extracts the File's from a FileList and returns them in a
+	 * List<File>.
+	 * 
+	 * @param fileList
+	 * 
+	 * @return
+	 */
+	public static List<File> getListFromFileList(FileList fileList) {
+		List<File> reply = new ArrayList<File>();
+		if ((null != fileList) && (0 < fileList.getLength())) {
+			for (File file:  fileList) {
+				reply.add(file);
+			}
+		}
+		return reply;
+	}
+	
 	/*
 	 * Returns the MD5 hash key for the given string.
 	 */
@@ -1109,16 +1127,14 @@ public class Html5UploadHelper
 	 * 
 	 * @param uploadHelper
 	 * @param fi
+	 * @param files
 	 */
-	public static void uploadFiles(Html5UploadHelper uploadHelper, BinderInfo fi, FileList fileList) {
-		// If we were given some files...
-		if ((null != fileList) && (0 < fileList.getLength())) {
-			// ...perform the appropriate asynchronous operation.
-			List<File> files = new ArrayList<File>();
-			for (File file:  fileList) {
-				files.add(file);
-			}
-			doAsyncOperation(null, null, uploadHelper, fi, files);
-		}
+	public static void uploadFiles(Html5UploadHelper uploadHelper, BinderInfo fi, List<File> files) {
+		doAsyncOperation(null, null, uploadHelper, fi, files);
+	}
+	
+	public static void uploadFiles(Html5UploadHelper uploadHelper, BinderInfo fi, FileList files) {
+		// Always use the initial form of the method.
+		uploadFiles(uploadHelper, fi, getListFromFileList(files));
 	}
 }
