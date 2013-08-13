@@ -100,21 +100,21 @@
   
   <div>
     <br/>
-  <span><ssf:nlt tag="license.key.uid"/> ${ssLicenseKey}</span>
+  <span><ssf:nlt tag="license.key.uid"/>&nbsp;${ssLicenseKey}</span>
     <br/>
-  <span><ssf:nlt tag="license.key.issued"/> ${ssLicenseIssued}</span>
+  <span><ssf:nlt tag="license.key.issued"/>&nbsp;${ssLicenseIssued}</span>
     <br/>
-  <span><ssf:nlt tag="license.key.issuer"/> ${ssLicenseIssuer}</span>
-    <br/>
-    <br/>
-  <span><ssf:nlt tag="license.product.id"/> ${ssLicenseProductID}</span>
-    <br/>
-  <span><ssf:nlt tag="license.product.title"/> ${ssLicenseProductTitle}</span>
-    <br/>
-  <span><ssf:nlt tag="license.product.version"/> ${ssLicenseProductVersion}</span>
+  <span><ssf:nlt tag="license.key.issuer"/>&nbsp;${ssLicenseIssuer}</span>
     <br/>
     <br/>
-  <span><ssf:nlt tag="license.effective"/> ${ssLicenseEffective}</span>
+  <span><ssf:nlt tag="license.product.id"/>&nbsp;${ssLicenseProductID}</span>
+    <br/>
+  <span><ssf:nlt tag="license.product.title"/>&nbsp;${ssLicenseProductTitle}</span>
+    <br/>
+  <span><ssf:nlt tag="license.product.version"/>&nbsp;${ssLicenseProductVersion}</span>
+    <br/>
+    <br/>
+  <span><ssf:nlt tag="license.effective"/>&nbsp;${ssLicenseEffective}</span>
     <br/>
     <br/>
 
