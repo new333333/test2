@@ -3369,6 +3369,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	}
     	catch(Exception e) {
     		logger.error("Error reindexing binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""), e);
+    		errors.addError(NLT.get("error.indexing.string", new String[] {e.getMessage()}));
     	}
     	finally {
     		setStateReindexEnd(nodeNames);

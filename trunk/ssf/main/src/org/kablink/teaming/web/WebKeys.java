@@ -923,6 +923,7 @@ public class WebKeys {
     public static final String ERROR_INDEXING_COUNT="ssErrorIndexingCount";
     public static final String ERROR_INDEXING_BINDERS="ssErrorIndexingBinders";
     public static final String ERROR_INDEXING_ENTRIES="ssErrorIndexingEntries";
+    public static final String ERROR_INDEXING_STRINGS="ssErrorIndexingStrings";
     public static final String ERROR_LIST="ssErrorList";
     public static final String EXCEPTION="ssException";
     public static final String ELEMENT_NAME="ssElementName";
