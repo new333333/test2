@@ -374,7 +374,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
     ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
     <br/>
     <c:if test="${node.isReindexingInProgress}">
-	    <span class="ss_small_print"><ssf:nlt tag="administration.configure.index.indexInProgressNode"/></span>
+	    <span class="ss_smallprint ss_italic"><ssf:nlt tag="administration.configure.index.indexInProgressNode"/></span>
 	    <br/>
     </c:if>
   </c:forEach>

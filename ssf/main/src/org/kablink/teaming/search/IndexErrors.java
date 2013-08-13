@@ -49,11 +49,13 @@ public class IndexErrors implements Serializable {
 	
 	private List<Binder> binders;
 	private List<Entry> entries;
+	private List<String> generalErrors;
 	private Integer errorCount;
 	
 	public IndexErrors() {
 		this.binders = new ArrayList();
 		this.entries = new ArrayList();
+		this.generalErrors = new ArrayList();
 		this.errorCount = new Integer(0);
 	}
 	
@@ -67,12 +69,21 @@ public class IndexErrors implements Serializable {
 		errorCount++;
 	}
 	
+	public void addError(String msg) {
+		generalErrors.add(msg);
+		errorCount++;
+	}
+	
 	public List<Binder> getBinders() {
 		return binders;
 	}
 	
 	public List<Entry> getEntries() {
 		return entries;
+	}
+	
+	public List<String> getGeneralErrors() {
+		return generalErrors;
 	}
 	
 	public Integer getErrorCount() {
@@ -91,6 +102,7 @@ public class IndexErrors implements Serializable {
 	public void add(IndexErrors ie) {
 		binders.addAll(ie.getBinders());
 		entries.addAll(ie.getEntries());
+		generalErrors.addAll(ie.getGeneralErrors());
 		add(ie.getErrorCount());
 	}
 }
