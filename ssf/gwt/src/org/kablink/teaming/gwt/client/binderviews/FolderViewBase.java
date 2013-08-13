@@ -53,8 +53,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorI
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCanAddEntitiesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyFilesContainerInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.Html5UploadHelper;
@@ -66,6 +68,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.dnd.DropPanel;
+import org.vectomatic.file.File;
 import org.vectomatic.file.FileList;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -1303,13 +1306,59 @@ public abstract class FolderViewBase extends ViewBase
 	/*
 	 * Called when some files are dropped on the panel.
 	 */
-	private void processFiles(FileList files) {
+	private void processFiles(final FileList fileList) {
+		// Are we uploading into the 'My Files' view?
+		final List<File> files = Html5UploadHelper.getListFromFileList(fileList);
+		if (m_folderInfo.isBinderCollection() && (CollectionType.MY_FILES.equals(m_folderInfo.getCollectionType()))) {
+			// Yes!  Then we need to upload into the 'My Files Storage'
+			// folder instead.
+			final GetMyFilesContainerInfoCmd cmd = new GetMyFilesContainerInfoCmd();
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetMyFilesContainerInfo());
+				}
+
+				@Override
+				public void onSuccess(final VibeRpcResponse result) {
+					// Perform the upload to the 'My Files Storage'
+					// folder.
+					processFilesAsync((BinderInfo) result.getResponseData(), files);
+				}
+			});
+		}
+		
+		else {
+			// No, we aren't we uploading into the 'My Files' view!
+			// Perform the upload to the folder directly.
+			processFilesAsync(m_folderInfo, files);
+		}
+	}
+	
+	/*
+	 * Asynchronously process files dropped on the panel.
+	 */
+	private void processFilesAsync(final BinderInfo fi, final List<File> files) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				processFilesNow(fi, files);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously process files dropped on the panel.
+	 */
+	private void processFilesNow(BinderInfo fi, List<File> files) {
 		// Show the upload popup and start the upload.
 		m_uploadPopup.setHtml5UploadHelper(m_uploadHelper);
 		m_uploadPopup.setActive(           true          );
 		Html5UploadHelper.uploadFiles(
 			m_uploadHelper,
-			m_folderInfo,
+			fi,
 			files);
 	}
 
