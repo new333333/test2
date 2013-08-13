@@ -674,7 +674,7 @@ public class BinderViewsHelper {
 	public static void invokeDropBox(final BinderInfo folderInfo, final UIObject showRelativeWidget) {
 		// Are we running in a browser that support file uploads using
 		// HTML5 and is the control key not pressed?
-		if (AddFilesHtml5Popup.browserSupportsHtml5() && (!(GwtClientHelper.isControlKeyDown()))) {
+		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs() && (!(GwtClientHelper.isControlKeyDown()))) {
 			// Yes!  Have we instantiated an HTML5 add files popup yet?
 			if (null == m_addFilesHtml5Popup) {
 				// No!  Instantiate one now...

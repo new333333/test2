@@ -644,6 +644,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_GenericWSView();
 	String codeSplitFailure_GuestbookFolderView();
 	String codeSplitFailure_HomeWSView();
+	String codeSplitFailure_Html5FileUploaderClientHelper();
 	String codeSplitFailure_ImportIcalByFileDlg();
 	String codeSplitFailure_ImportIcalByUrlDlg();
 	String codeSplitFailure_ImportProfilesDlg();
@@ -1850,6 +1851,10 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesHtml5PopupReadError(String fileName, String errorDesc);
 	String addFilesHtml5PopupUploadValidationError();
 	String addFilesHtml5PopupValidating();
+
+	// Strings used by Html5FileUploadClientHelper.java.
+	String html5Uploader_InternalError_NoBrowserSupport();
+	String html5Uploader_InternalError_UploaderAlreadyActive();
 	
 	// Strings used in the "Child binders widget"
 	String workspacesHeader();
