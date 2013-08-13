@@ -698,7 +698,7 @@ public class SearchUtils {
 						return false; // cannot obtain session for the user
 					try {
 						session.setPath(resourcePath);
-						return session.exists();
+						return session.isVisible();
 					}
 					finally {
 						session.close();

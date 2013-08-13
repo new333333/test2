@@ -148,4 +148,15 @@ public interface AclResourceSession extends ResourceSession {
 	 */
 	public String getPermissionName() throws FIException, UncheckedIOException;
 
+	/**
+	 * Return whether or not the resource referred to by the current path is visible to the user owning this session.
+	 * A resource may be file or folder, and defined to be visible if the user should be able to see the
+	 * existence of the resource, either by explicit rights granted on that resource or, in the case of folder, 
+	 * by inferred access given by some other resource below that folder.
+	 * 
+	 * @return
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
+	public boolean isVisible() throws FIException, UncheckedIOException;
 }
