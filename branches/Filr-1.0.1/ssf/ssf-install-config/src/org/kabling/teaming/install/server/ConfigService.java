@@ -2299,42 +2299,11 @@ public final class ConfigService
 				logger.debug("Error updating database,Error code " + result);
 				throw new ConfigurationSaveException();
 			}
-			clearMySqlLiquiBasePropertiesPassword(database);
+			
 		}
 	}
 
-	public static void clearMySqlLiquiBasePropertiesPassword(Database database) throws ConfigurationSaveException {
-		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR)) {
-
-			// Clear the mysql-liquibase.properties password
-			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
-			
-			String resourcePassword = "***";
-			
-			if (dbConfig != null) {
-
-				// Update mysql-liquibase.properties
-				File file = new File("/filrinstall/db/mysql-liquibase.properties");
-				if (file.exists()) {
-					Properties prop = new Properties();
-					try {
-						prop.load(new FileInputStream(file));
-						prop.setProperty("password", resourcePassword);
-						prop.setProperty("referencePassword", resourcePassword);
-						
-						// Java Properties store escapes colon. We need to store
-						// this natively.
-						store(prop, file);
-					} catch (IOException e) {
-						logger.debug("Error saving properties file " + e.getMessage());
-						throw new ConfigurationSaveException();
-					}
-				}
-			}
-		}
-
-	}
-
+	
 	public static void updateFsaUpdateUrl()
 	{
 		InstallerConfig installerConfig = getConfiguration();
