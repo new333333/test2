@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.Html5UploadHelper;
 import org.kablink.teaming.gwt.client.util.Html5UploadCallback;
+import org.kablink.teaming.gwt.client.util.Html5UploadHost;
 import org.kablink.teaming.gwt.client.util.Html5UploadState;
 import org.kablink.teaming.gwt.client.widgets.Html5UploadPopup;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
@@ -106,6 +107,7 @@ public abstract class FolderViewBase extends ViewBase
 		DragOverHandler,
 		DropHandler,
 		Html5UploadCallback,
+		Html5UploadHost,
 		ToolPanelReady
 {
 	private BinderInfo							m_folderInfo;					// A BinderInfo object that describes the folder being viewed.
@@ -262,8 +264,6 @@ public abstract class FolderViewBase extends ViewBase
 	final public boolean                          isSharedFiles()        {return m_sharedFiles;                        }	//
 	final public boolean                          isTrash()              {return m_folderInfo.isBinderTrash();         }	//
 	final public FolderDisplayDataRpcResponseData getFolderDisplayData() {return m_folderDisplayData;                  }	//
-	final public Html5UploadHelper                getHtml5UploadHelper() {return m_uploadHelper;                       }	//
-	final public Html5UploadPopup                 getHtml5UploadPopup()  {return m_uploadPopup;                        }	//
 	final public Long                             getFolderId()          {return m_folderInfo.getBinderIdAsLong();     }	//
 	final public VibeFlowPanel                    getFlowPanel()         {return m_flowPanel;                          }	// Flow panel holding the view's content (no toolbars, ...)
 
@@ -384,20 +384,22 @@ public abstract class FolderViewBase extends ViewBase
 			m_dndPanel.addDragOverHandler( this);
 			m_dndPanel.addDropHandler(     this);
 
-			// ...add it to the flow panel...
+			// ...and add it to the flow panel.
 			m_rootPanel.remove(m_verticalFlowPanel);
 			m_rootPanel.add(m_dndPanel);
 			m_dndPanel.add(m_verticalFlowPanel);
-			
-			// ...and create a hint we'll show at the top of the window
-			// ...while dragging over it.
-			m_dndHint = new Label(m_messages.addFilesHtml5PopupDnDHint());
-			m_dndHint.addStyleName("vibe-folderViewBase-dndHint");
-			m_dndHint.setVisible(false);
-			m_rootPanel.add(m_dndHint);
 		}
+		
+		// Create a hint we'll show at the top of the window while
+		// dragging over it.  We always add this because although the
+		// view itself may not be a drop target, one of its nested
+		// folders might be, in which case, it will show it.
+		m_dndHint = new Label(m_messages.addFilesHtml5PopupDnDHint());
+		m_dndHint.addStyleName("vibe-folderViewBase-dndHint");
+		m_dndHint.setVisible(false);
+		m_rootPanel.add(m_dndHint);
 
-		// ...and asynchronously complete the view construction.
+		// Finally, asynchronously complete the view construction.
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -422,6 +424,16 @@ public abstract class FolderViewBase extends ViewBase
 				folderNames));
 	}
 
+	/**
+	 * Returns the drag and drop hint Label for the view.
+	 * 
+	 * Implements the Html5UploadHost.getDndHintLabel() method.
+	 */
+	@Override
+	public Label getDnDHintLabel() {
+		return m_dndHint;
+	}
+	
 	/**
 	 * Scan the defined tool panels for a download panel and returns
 	 * it.
@@ -481,6 +493,26 @@ public abstract class FolderViewBase extends ViewBase
 		
 		// If we get here, a footer panel isn't defined.  Return null.
 		return null;
+	}
+	
+	/**
+	 * Returns the HTML5 upload helper for the view.
+	 * 
+	 * Implements the Html5UploadHost.getHtml5UploadHelper() method.
+	 */
+	@Override
+	public Html5UploadHelper getHtml5UploadHelper() {
+		return m_uploadHelper;
+	}
+	
+	/**
+	 * Returns the HTML5 upload popup for the view.
+	 * 
+	 * Implements the Html5UploadHost.getHtml5UploadPopup() method.
+	 */
+	@Override
+	public Html5UploadPopup getHtml5UploadPopup() {
+		return m_uploadPopup;
 	}
 	
 	/**
@@ -649,34 +681,23 @@ public abstract class FolderViewBase extends ViewBase
 
 	/*
 	 * Asynchronously loads the next part of the view.
-	 * 
-	 * If the folder supports being a drag and drop target, creates an
-	 * HTML5 helper object.
 	 */
 	private void loadPart2Async() {
-		// Is this folder a drop target?
-		if (supportsDragAndDrop()) {
-			// Yes!  Then we need an HTML5 helper to support it.
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					loadPart2Now();
-				}
-			});
-		}
-		
-		else {
-			// No, the folder isn't a drop target!  Proceed with the
-			// part of the load.
-			loadPart3Async();
-		}
+		// Note that we always load the HTML5 helper, even if the
+		// folder itself can't be a drop target.  The reason is that it
+		// may contain nested folders that can be drop targets and this
+		// HTML5 helper will be used for those, with this folder's
+		// listing.
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart2Now();
+			}
+		});
 	}
 
 	/*
 	 * Synchronously loads the next part of the view.
-	 * 
-	 * If the folder supports being a drag and drop target, creates an
-	 * HTML5 helper object.
 	 */
 	private void loadPart2Now() {
 		// Note that the implementation of 

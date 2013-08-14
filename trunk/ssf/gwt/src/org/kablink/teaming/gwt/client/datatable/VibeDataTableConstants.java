@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import com.google.gwt.dom.client.BrowserEvents;
+
 /**
  * Constants used by the various Vibe data table implementations (i.e.,
  * VibeDataGrid's, VibeCellTable's, ...
@@ -41,10 +43,14 @@ package org.kablink.teaming.gwt.client.datatable;
 public class VibeDataTableConstants {
 	// The following are used as event names that are captured by the
 	// various cell handlers. 
-	public final static String CELL_EVENT_CLICK		= "click";
-	public final static String CELL_EVENT_KEYDOWN	= "keydown";
-	public final static String CELL_EVENT_MOUSEOUT	= "mouseout";
-	public final static String CELL_EVENT_MOUSEOVER	= "mouseover";
+	public final static String CELL_EVENT_CLICK		= BrowserEvents.CLICK;
+	public final static String CELL_EVENT_DRAGENTER	= BrowserEvents.DRAGENTER;
+	public final static String CELL_EVENT_DRAGLEAVE	= BrowserEvents.DRAGLEAVE;
+	public final static String CELL_EVENT_DRAGOVER	= BrowserEvents.DRAGOVER;
+	public final static String CELL_EVENT_DROP		= BrowserEvents.DROP;
+	public final static String CELL_EVENT_KEYDOWN	= BrowserEvents.KEYDOWN;
+	public final static String CELL_EVENT_MOUSEOUT	= BrowserEvents.MOUSEOUT;
+	public final static String CELL_EVENT_MOUSEOVER	= BrowserEvents.MOUSEOVER;
 	
 	// The following are used to name widgets stored in various cells.
 	public final static String CELL_WIDGET_ATTRIBUTE					= "n-cellWidget";

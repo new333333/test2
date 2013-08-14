@@ -1128,6 +1128,87 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * When initially built, the EntryTitleInfo's in the rows didn't
+	 * contain the user's rights to add to any nested folders.  We need
+	 * to add that information to support drag and drop into nested
+	 * folders.
+	 */
+	private static void completeNestedFolderRights(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeNestedFolderRights()");
+		try {
+			// If we don't have any FolderRow's to complete...
+			if (!(MiscUtil.hasItems(frList))) {
+				// ...bail.
+				return;
+			}
+	
+			List<Long>                fIds  = new ArrayList<Long>();
+			Map<Long, EntryTitleInfo> fTMap = new HashMap<Long, EntryTitleInfo>();
+			SimpleProfiler.start("GwtViewHelper.completeNestedFolderRights(Collect Folder IDs)");
+			try {
+				// Scan the rows.
+				for (FolderRow fr:  frList) {
+					// Is this row a nested folder?
+					EntityId eid = fr.getEntityId();
+					if (eid.isFolder()) {
+						// Yes!  Can we find its EntryTitleInfo?
+						EntryTitleInfo ft = fr.getRowEntryTitlesMap().get("title");
+						if (null != ft) {
+							// Yes!  Track the folder's ID and
+							// EntryTitleInfo.
+							Long fid = eid.getEntityId();
+							fIds.add( fid    );
+							fTMap.put(fid, ft);
+						}
+					}
+				}
+			}
+			
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.completeNestedFolderRights(Collect Folder IDs)");
+			}
+			
+			// If we don't have any folder's whose rights need to be
+			// completed...
+			if (!(MiscUtil.hasItems(fIds))) {
+				// ...bail.
+				return;
+			}
+	
+			try {
+				SimpleProfiler.start("GwtViewHelper.completeNestedFolderRights(Complete Rights)");
+				try {
+					// Resolve the folder IDs...
+					BinderModule bm      = bs.getBinderModule();
+					FolderModule fm      = bs.getFolderModule();
+					Set<Folder>  folders = fm.getFolders(fIds);
+					
+					// ...scan the folders... 
+					for (Folder folder:  folders) {
+						// ...and add information about the user's
+						// ...rights to add to them to the folder's
+						// ...EntryTitleInfo.
+						boolean canAddEntries = fm.testAccess((folder), FolderOperation.addEntry );
+						boolean canAddFolders = bm.testAccess( folder,  BinderOperation.addFolder);
+						CanAddEntitiesRpcResponseData folderRights = new CanAddEntitiesRpcResponseData(canAddEntries, canAddFolders);
+						fTMap.get(folder.getId()).setCanAddFolderEntities(folderRights);
+					}
+				}
+				
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.completeNestedFolderRights(Complete Rights)");
+				}
+			}
+			
+			catch (Exception ex) {/* Ignored. */}
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+	
+	/*
 	 * Scans the List<FolderRow> and completes the PrincipalInfo's for
 	 * each row.
 	 */
@@ -4086,9 +4167,10 @@ public class GwtViewHelper {
 			}
 
 			// Scan the entries we read.
-			boolean         addedAssignments = false;
-			List<FolderRow> folderRows       = new ArrayList<FolderRow>();
-			List<Long>      contributorIds   = new ArrayList<Long>();
+			boolean         addedAssignments   = false;
+			boolean         addedNestedFolders = false;
+			List<FolderRow> folderRows         = new ArrayList<FolderRow>();
+			List<Long>      contributorIds     = new ArrayList<Long>();
 			for (Map entryMap:  searchEntries) {
 				// Initiate per row profiling.
 				String docIdS = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
@@ -4105,6 +4187,7 @@ public class GwtViewHelper {
 				try {
 					// Is this an entry or folder?
 					String  entityType          = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
+					boolean isEntityFolder      = EntityType.folder.name().equals(     entityType);
 					boolean isEntityFolderEntry = EntityType.folderEntry.name().equals(entityType);
 					boolean isLibraryEntry;
 					if (isEntityFolderEntry)
@@ -4407,6 +4490,9 @@ public class GwtViewHelper {
 													eti.setDescription(      description);
 													eti.setDescriptionIsHtml(false      );
 												}
+												if (isEntityFolder) {
+													addedNestedFolders = true;
+												}
 											}
 											if (isEntityFolderEntry && GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
 												String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
@@ -4597,6 +4683,18 @@ public class GwtViewHelper {
 				// IDs.  We need to complete them with each assignee's
 				// title, ...
 				completeAIs(bs, request, folderRows);
+			}
+
+			// Did we add any rows that were nested folders?
+			if (addedNestedFolders) {
+				// Yes!  We need to complete the definition of the
+				// EntryTitleInfo objects with the user's rights to
+				// add to the nested folders.
+				//
+				// When initially built, the EntryTitleInfo's in the
+				// rows didn't contain that information.  We need it
+				// to support drag and drop  into nested folders.
+				completeNestedFolderRights(bs, request, folderRows);
 			}
 			
 			// Walk the List<FolderRow>'s performing any remaining
