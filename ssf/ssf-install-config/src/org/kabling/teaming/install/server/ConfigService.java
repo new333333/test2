@@ -1263,7 +1263,10 @@ public final class ConfigService
 						resourceElement.setAttribute("username", config.getResourceUserName());
 
 						if (config.getResourcePassword() != null && !config.getResourcePassword().isEmpty())
+						{
 							resourceElement.setAttribute("password", config.getResourcePassword());
+							updateMySqlLiquiBaseProperties(db);
+						}
 						resourceElement.setAttribute("url", config.getResourceUrl());
 						resourceElement.setAttribute("for", config.getResourceFor());
 						resourceElement.setAttribute("driverClassName", config.getResourceDriverClassName());
@@ -1288,7 +1291,10 @@ public final class ConfigService
 
 					resourceElement.setAttribute("username", config.getResourceUserName());
 					if (config.getResourcePassword() != null && !config.getResourcePassword().isEmpty())
-						resourceElement.setAttribute("password", config.getResourcePassword());
+						{
+							resourceElement.setAttribute("password", config.getResourcePassword());
+							updateMySqlLiquiBaseProperties(db);
+						}
 
 					logger.debug("Adding to dbElement");
 					dbElement.appendChild(newInstallElement);
