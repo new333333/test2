@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.BlogArchiveMonth;
 import org.kablink.teaming.gwt.client.BlogPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogGlobalTagSelectedEvent;
@@ -47,6 +48,7 @@ import org.kablink.teaming.gwt.client.event.BlogPageCreatedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
@@ -102,6 +104,7 @@ public class BlogFolderView extends FolderViewBase
 		BlogPageCreatedEvent.Handler,
 		BlogPageSelectedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
+		InvokeDropBoxEvent.Handler,
 		QuickFilterEvent.Handler,
 		SetFolderSortEvent.Handler
 {
@@ -126,6 +129,7 @@ public class BlogFolderView extends FolderViewBase
 		TeamingEvents.BLOG_PAGE_CREATED,
 		TeamingEvents.BLOG_PAGE_SELECTED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SET_FOLDER_SORT
 	};
@@ -645,6 +649,27 @@ public class BlogFolderView extends FolderViewBase
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
+	}
+	
+	/**
+	 * Handles InvokeDropBoxEvent's received by this class.
+	 * 
+	 * Implements the InvokeDropBoxEvent.Handler.onInvokeDropBox() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeDropBox( InvokeDropBoxEvent event )
+	{
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if ( eventFolderId.equals( getFolderInfo().getBinderIdAsLong() ) )
+		{
+			// Yes!  Invoke the files drop box on the folder.
+			BinderViewsHelper.invokeDropBox(
+				getFolderInfo(),
+				getEntryMenuPanel().getAddFilesMenuItem() );
+		}
 	}
 	
 	/**
