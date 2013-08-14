@@ -188,6 +188,7 @@
 		.vibe-dataTableEntity-Marker              {display: inline; cursor: pointer;}
 		.vibe-dataTableEntry-download             {border: 0px solid #666666; padding-left: 0px; padding-right: 0px; line-height: 11px;}
 		.vibe-dataTableEntry-panel                {}
+		.vibe-dataTableEntry-panelDropTarget      {background-color: #09f !important; color: black !important;}
 		.vibe-dataTableEntry-title                {cursor: pointer; color: #135c8f !important; padding: 2px;}
 		.vibe-dataTableEntry-titleHidden          {cursor: pointer; color: #c4c4c4 !important; padding: 2px;}
 		.vibe-dataTableEntry-titleLinkPanel       {display: inline; text-decoration: none;}

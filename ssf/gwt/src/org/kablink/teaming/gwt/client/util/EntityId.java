@@ -121,6 +121,38 @@ public class EntityId implements IsSerializable {
 	public static boolean areEntriesInEntityIds(List<EntityId> entityIds) {
 		return (0 < countEntriesInEntityIds(entityIds));
 	}
+
+	/**
+	 * If this EnityId refers to a binder, returns a BinderInfo that
+	 * can reasonably be built using the information we've got.
+	 * Otherwise, returns null.
+	 * 
+	 * @return
+	 */
+	public BinderInfo buildBaseBinderInfo() {
+		// Is this entity a binder?
+		BinderInfo reply;
+		if (isBinder()) {
+			// Yes!  Construct an appropriate BinderInfo.
+			reply = new BinderInfo();
+			if      (isFolder())    reply.setBinderType(BinderType.FOLDER);
+			else if (isWorkspace()) reply.setBinderType(BinderType.WORKSPACE);
+			else                    reply.setBinderType(BinderType.OTHER);
+			reply.setFolderType(FolderType.OTHER);
+			reply.setBinderId(getEntityId());
+			reply.setParentBinderId(getBinderId());
+		}
+		
+		else {
+			// No, the entity isn't a binder!  Return null.
+			reply = null;
+		}
+		
+		// If we get here, reply refers to a BinderInfo that most
+		// closely describes a binder referenced by this EntityId or
+		// is false.  Return it.
+		return reply;
+	}
 	
 	/**
 	 * Convert a folder ID and List<Long> of entry IDs into a

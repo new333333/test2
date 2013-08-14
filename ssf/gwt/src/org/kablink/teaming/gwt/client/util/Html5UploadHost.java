@@ -30,25 +30,19 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.datatable;
+package org.kablink.teaming.gwt.client.util;
 
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
-import org.kablink.teaming.gwt.client.util.FileLinkAction;
-import org.kablink.teaming.gwt.client.util.Html5UploadHost;
+import org.kablink.teaming.gwt.client.widgets.Html5UploadPopup;
+
+import com.google.gwt.user.client.ui.Label;
 
 /**
- * A column that displays the contents for a title cell.
- *
- * @param <T> is a FolderRow.
- * 
+ * Interface to a host of HTML5 upload services. 
+ *  
  * @author drfoster@novell.com
  */
-public abstract class EntryTitleColumn<T> extends VibeColumn<T, EntryTitleInfo> {
-  /**
-   * Constructor method.
-   */
-  public EntryTitleColumn(FolderColumn fc, FileLinkAction fla, Html5UploadHost uploadHost) {
-	  super(fc, new EntryTitleCell(fla, uploadHost));
-  }
+public interface Html5UploadHost {
+	public Html5UploadHelper getHtml5UploadHelper();
+	public Html5UploadPopup  getHtml5UploadPopup();
+	public Label             getDnDHintLabel();
 }

@@ -1344,7 +1344,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// show an entry title?
 			else if (FolderColumn.isColumnTitle(cName)) {
 				// Yes!  Create a EntryTitleColumn for it.
-				column = new EntryTitleColumn<FolderRow>(fc, getFolderDisplayData().getFileLinkAction()) {
+				column = new EntryTitleColumn<FolderRow>(fc, getFolderDisplayData().getFileLinkAction(), this) {
 					@Override
 					public EntryTitleInfo getValue(FolderRow fr) {
 						EntryTitleInfo reply = fr.getColumnValueAsEntryTitle(fc);

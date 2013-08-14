@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
@@ -41,13 +43,20 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FileLinkAction;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.Html5UploadHelper;
+import org.kablink.teaming.gwt.client.util.Html5UploadHost;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.HoverHintPopup;
+import org.kablink.teaming.gwt.client.widgets.Html5UploadPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+
+import org.vectomatic.dnd.DataTransferExt;
+import org.vectomatic.file.File;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
@@ -71,22 +80,35 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
-	private FileLinkAction	m_fileLinkAction;	//
-	private HoverHintPopup	m_hoverHintPopup;	//
+	private FileLinkAction	m_fileLinkAction;	// The action to take when the cell's link is activated.
+	private Html5UploadHost	m_uploadHost;		// An HTML5 host we can use for uploading files into the folder represented by this cell.
+	private HoverHintPopup	m_hoverHintPopup;	// A hint popup that gets displayed when the user mouses over this cell.
+
+	// The following is used as the class name on the root <DIV>
+	// containing this cell.
+	private static final String ENTRY_TITLE_ROOT_STYLE	= "vibe-dataTableEntry-panel";
 	
 	/**
 	 * Constructor method.
+	 * 
+	 * @param fla
+	 * @param uploadHost
 	 */
-	public EntryTitleCell(FileLinkAction fla) {
+	public EntryTitleCell(FileLinkAction fla, Html5UploadHost uploadHost) {
 		// Sink the events we need to process an entry title...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
+			VibeDataTableConstants.CELL_EVENT_DRAGENTER,
+			VibeDataTableConstants.CELL_EVENT_DRAGLEAVE,
+			VibeDataTableConstants.CELL_EVENT_DRAGOVER,
+			VibeDataTableConstants.CELL_EVENT_DROP,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 		
-		// ...and store the parameter.
+		// ...and store the parameters.
 		m_fileLinkAction = fla;
+		m_uploadHost     = uploadHost;
 	}
 
 	/*
@@ -272,9 +294,9 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	}
 	
 	/**
-     * Called when an event occurs in a rendered instance of this
-     * cell.  The parent element refers to the element that contains
-     * the rendered cell, NOT to the outermost element that the cell
+     * Called when an event occurs in a rendered instance of this cell.
+     * The parent element refers to the element that contains the
+     * rendered cell, NOT to the outermost element that the cell
      * rendered.
      * 
      * @param context
@@ -297,6 +319,13 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		boolean isLabel     = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL ));
 		boolean isUnseenImg = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE));
 
+		// To use the title as a drop target, we want the root <DIV>
+		// that contains everything in the cell.
+		Element dndTarget = Element.as(event.getEventTarget());
+		while ((null != dndTarget) && (!(dndTarget.getClassName().contains(ENTRY_TITLE_ROOT_STYLE)))) {
+			dndTarget = dndTarget.getParentElement();
+		}
+		
 		// What type of event are we processing?
     	String eventType = event.getType();
     	if (VibeDataTableConstants.CELL_EVENT_KEYDOWN.equals(eventType)) {
@@ -319,6 +348,12 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     			markEntrySeen(eti, eventTarget);
     		}
     	}
+    	
+		// A drag and drop event!  Process it.
+    	else if (VibeDataTableConstants.CELL_EVENT_DRAGENTER.equals(eventType)) onDragEnter(event, dndTarget, eti);
+    	else if (VibeDataTableConstants.CELL_EVENT_DRAGLEAVE.equals(eventType)) onDragLeave(event, dndTarget, eti);
+    	else if (VibeDataTableConstants.CELL_EVENT_DRAGOVER.equals( eventType)) onDragOver( event, dndTarget, eti);
+    	else if (VibeDataTableConstants.CELL_EVENT_DROP.equals(     eventType)) onDrop(     event, dndTarget, eti);
     	
     	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
     		// A mouse over!  Add the hover style...
@@ -361,6 +396,102 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     	}
     }
     
+	/*
+	 * Called when a something is dragged into the drag and drop popup.
+	 */
+	private void onDragEnter(NativeEvent event, Element dndTarget, EntryTitleInfo eti) {
+		// If this isn't a folder we can add entries to...
+		if (!(eti.canAddFolderEntries())) {
+			// ...ignore the event.
+			return;
+		}
+
+		// If we're not currently uploading anything...
+		if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
+			// ...turn on the drag and drop highlighting...
+			setDnDHighlight(dndTarget, true);
+		}
+		
+		// ...and stop the event propagation since this is a valid drop
+		// ...target.
+		event.stopPropagation();
+		event.preventDefault();
+	}
+	
+	/*
+	 * Called when a something is dragged out of the drag and drop
+	 * popup.
+	 */
+	private void onDragLeave(NativeEvent event, Element dndTarget, EntryTitleInfo eti) {
+		// If this isn't a folder we can add entries to...
+		if (!(eti.canAddFolderEntries())) {
+			// ...ignore the event.
+			return;
+		}
+		
+		// If we're not currently uploading anything...
+		if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
+			// ...turn off the drag and drop highlighting...
+			setDnDHighlight(dndTarget, false);
+		}
+		
+		// ...and stop the event propagation since this is a valid drop
+		// ...target.
+		event.stopPropagation();
+		event.preventDefault();
+	}
+
+	/*
+	 * Called when a something is being dragged over the drag and drop
+	 * popup.
+	 */
+	private void onDragOver(NativeEvent event, Element dndTarget, EntryTitleInfo eti) {
+		// If this isn't a folder we can add entries to...
+		if (!(eti.canAddFolderEntries())) {
+			// ...ignore the event.
+			return;
+		}
+		
+		// If we're not currently uploading anything...
+		if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
+			// ...turn on the drag and drop highlighting...
+			setDnDHighlight(dndTarget, true);
+		}
+		
+		// ...and stop the event propagation since this is a valid drop
+		// ...target.
+		event.stopPropagation();
+		event.preventDefault();
+	}
+
+	/*
+	 * Called when a something is dropped on the drag and drop popup.
+	 */
+	private void onDrop(NativeEvent event, Element dndTarget, EntryTitleInfo eti) {
+		// If this isn't a folder we can add entries to...
+		if (!(eti.canAddFolderEntries())) {
+			// ...ignore the event.
+			return;
+		}
+		
+		// If we're not currently uploading anything...
+		if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
+			// ...turn off the drag and drop highlighting...
+			setDnDHighlight(dndTarget, false);
+			
+			// ...process the files that were dropped...
+			processFilesAsync(
+				eti.getEntityId().buildBaseBinderInfo(),
+				Html5UploadHelper.getListFromFileList(
+					event.getDataTransfer().<DataTransferExt>cast().getFiles()));
+		}
+		
+		// ...and stop the event propagation since this is a valid drop
+		// ...target.
+		event.stopPropagation();
+		event.preventDefault();
+	}
+
     /**
      * Called when the user presses the ENTER key will the cell is
      * selected.  You are not required to override this method, but
@@ -377,6 +508,32 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     	}
     }
     
+	/*
+	 * Asynchronously process files dropped on the panel.
+	 */
+	private void processFilesAsync(final BinderInfo fi, final List<File> files) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				processFilesNow(fi, files);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously process files dropped on the panel.
+	 */
+	private void processFilesNow(BinderInfo fi, List<File> files) {
+		// Show the upload popup...
+		Html5UploadHelper uploadHelper = m_uploadHost.getHtml5UploadHelper();
+		Html5UploadPopup  uploadPopup  = m_uploadHost.getHtml5UploadPopup();
+		uploadPopup.setHtml5UploadHelper(uploadHelper);
+		uploadPopup.setActive(true);
+		
+		// ...and start the upload.
+		Html5UploadHelper.uploadFiles(uploadHelper, fi, files);
+	}
+
 	/**
 	 * Called to render an instance of this cell.
 	 * 
@@ -412,7 +569,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		
 		// We don't word wrap the title of files or folders.
 		VibeFlowPanel etContainerWidget = new VibeFlowPanel();
-		etContainerWidget.addStyleName("vibe-dataTableEntry-panel");
+		etContainerWidget.addStyleName(ENTRY_TITLE_ROOT_STYLE);
 		html.add(etContainerWidget );
 		if (eti.isFile() || eti.getEntityId().isBinder()) {
 			etContainerWidget.addStyleName("gwtUI_nowrap");
@@ -523,5 +680,16 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		// ...and render that into the cell.
 		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(html.getElement().getInnerHTML());
 		sb.append(rendered);
+	}
+	
+	/*
+	 * Sets or clears the drag and drop highlighting on the cell.
+	 */
+	private void setDnDHighlight(Element dndTarget, boolean highlight) {
+		String highlightStyle = (ENTRY_TITLE_ROOT_STYLE + "DropTarget");
+		if (highlight)
+		     dndTarget.addClassName(   highlightStyle);
+		else dndTarget.removeClassName(highlightStyle);
+		m_uploadHost.getDnDHintLabel().setVisible(highlight);
 	}
 }

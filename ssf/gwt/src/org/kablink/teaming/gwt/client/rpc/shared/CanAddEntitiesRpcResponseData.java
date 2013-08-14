@@ -74,8 +74,9 @@ public class CanAddEntitiesRpcResponseData implements IsSerializable, VibeRpcRes
 	 * 
 	 * @return
 	 */
-	public boolean canAddEntries() {return m_canAddEntries;}
-	public boolean canAddFolders() {return m_canAddFolders;}
+	public boolean canAddEntities() {return (m_canAddEntries || m_canAddFolders);}
+	public boolean canAddEntries()  {return  m_canAddEntries;                    }
+	public boolean canAddFolders()  {return  m_canAddFolders;                    }
 
 	/**
 	 * Set'er methods.
