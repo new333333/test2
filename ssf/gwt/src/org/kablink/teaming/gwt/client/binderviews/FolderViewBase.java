@@ -391,7 +391,7 @@ public abstract class FolderViewBase extends ViewBase
 			
 			// ...and create a hint we'll show at the top of the window
 			// ...while dragging over it.
-			m_dndHint = new Label(m_messages.addFilesHtml5PopupDnDHint(m_folderInfo.getBinderTitle()));
+			m_dndHint = new Label(m_messages.addFilesHtml5PopupDnDHint());
 			m_dndHint.addStyleName("vibe-folderViewBase-dndHint");
 			m_dndHint.setVisible(false);
 			m_rootPanel.add(m_dndHint);
