@@ -93,6 +93,8 @@ public class Html5UploadHelper
 	private BinderInfo					m_folderInfo;		// The folder the HTML5 helper is uploading into.
 	private byte[]						m_blobCache;		// A byte[] used to cache blobs as they're read and sent to the server.
 	private double						m_totalFileSize;	// Total size of everything to be uploaded.
+	private FileBlob					m_fileBlob;			// Contains information about blobs of a file as they're read and uploaded.
+	private FileReader					m_reader;			// Used to reads files as they're being uploaded.
 	private GwtTeamingMessages			m_messages;			// Access to our localized messages.
 	private Html5SpecsRpcResponseData	m_html5Specs;		// Holds the specifications about how to perform HTML5 file uploads.
 	private Html5UploadCallback			m_callback;			// Callback interface to keep the caller informed about what's going on.
@@ -101,8 +103,7 @@ public class Html5UploadHelper
 	private int							m_readTotal;		// Total number of files to upload during an upload request.
 	private List<File>					m_ignoredAsFolders;	// Tracks files that are dropped because they 'appear' to be folders and are hence, ignored.
 	private List<File>					m_readQueue;		// List of files queued for uploading.
-	private FileBlob					m_fileBlob;			// Contains information about blobs of a file as they're read and uploaded.
-	private FileReader					m_reader;			// Used to reads files as they're being uploaded.
+	private ReadType					m_readType;			// The method used to read files.
 	private VibeEventBase<?>			m_completeEvent;	// Event to fire on completion of an upload.
 
 	// The following is used to convert an Int8Array to a base64
@@ -121,15 +122,6 @@ public class Html5UploadHelper
 	// true -> Information about file blobs being uploaded is displayed
 	// via alerts.  false -> They're not.
 	private static boolean TRACE_BLOBS	= false;	//
-	
-	// Defines the default type of HTML5 file read used to upload
-	// files.
-	//
-	// Note:  IE10 (the only version of IE that supports uploading
-	//    files using HTML5) only supports ARRAY_BUFFER.  Setting this
-	//    to anything else will break uploading files using this helper
-	//    there.
-	private static ReadType DEFAULT_READ_TYPE	= ReadType.ARRAY_BUFFER;
 	
 	/*
 	 * Used to specify how to read files for streaming to the server.
@@ -168,7 +160,8 @@ public class Html5UploadHelper
 		
 		// ...initialize the other data members...
 		m_messages = GwtTeaming.getMessages();
-		
+
+		m_readType         = getReadType();
 		m_uploadState      = Html5UploadState.INACTIVE;
 		m_ignoredAsFolders = new ArrayList<File>();
 		m_readQueue        = new ArrayList<File>();
@@ -226,8 +219,8 @@ public class Html5UploadHelper
 			});
 		}
 		
-		// ...and call uploadNext to clean up from the abort.
-		uploadNextAsync(true);
+		// ...and call uploadNextFile to clean up from the abort.
+		uploadNextFileAsync(true);
 	}
 	
 	/*
@@ -251,7 +244,11 @@ public class Html5UploadHelper
 	 */
 	private void debugTraceBlob(String methodName, boolean traceQueueSize, String traceHead, String traceTail) {
 		if (TRACE_BLOBS && GwtClientHelper.isDebugUI()) {
-			String	dump  = (traceHead + ":  '" + m_fileBlob.getFileName() + "' (fSize:" + m_fileBlob.getFileSize() + ", bStart:" + m_fileBlob.getBlobStart() + ", bSize:" + m_fileBlob.getBlobSize() + ", md5Hash:" + m_fileBlob.getBlobMD5Hash() + ")");
+			String blobHash = m_fileBlob.getBlobMD5Hash();
+			if (null == blobHash) {
+				blobHash = "***";
+			}
+			String	dump  = (traceHead + ":  '" + m_fileBlob.getFileName() + "' (fSize:" + m_fileBlob.getFileSize() + ", bStart:" + m_fileBlob.getBlobStart() + ", bSize:" + m_fileBlob.getBlobSize() + ", md5Hash:" + blobHash + ")");
 			if (traceQueueSize) {
 				int		files = (m_readQueue.size() - 1);
 				switch (files) {
@@ -282,6 +279,18 @@ public class Html5UploadHelper
 		     reply = m_readQueue.get(0);
 		else reply = null;
 		return reply;
+	}
+
+	/*
+	 * Defines the type of HTML5 file read used to upload files.
+	 * 
+	 * Note:  IE10 (the only version of IE that supports uploading
+	 *    files using HTML5) only supports ARRAY_BUFFER.  Setting this
+	 *    to anything else will break uploading files using this helper
+	 *    there.
+	 */
+	private ReadType getReadType() {
+		return ReadType.ARRAY_BUFFER;
 	}
 
 	/*
@@ -481,7 +490,7 @@ public class Html5UploadHelper
 			// ...process the error for the file.
 			handleError(getCurrentFile());
 			popCurrentFile();
-			uploadNextAsync(true);
+			uploadNextFileAsync(true);
 		}
 	}
 
@@ -509,7 +518,7 @@ public class Html5UploadHelper
 				// the next file to upload.
 				popCurrentFile();
 				m_callback.setTotalCurrentProgress(m_totalFileSize - getTotalQueueFileSize());
-				uploadNextNow(true);
+				uploadNextFileNow(true);
 			}
 		}
 	}
@@ -544,7 +553,7 @@ public class Html5UploadHelper
 		// Extract the data for the blob we just read...
 		final boolean lastBlob = ((m_fileBlob.getBlobStart() + m_fileBlob.getBlobSize()) >= m_fileBlob.getFileSize());
 		byte[] blobData;
-		if (DEFAULT_READ_TYPE.isArrayBuffer()) {
+		if (m_readType.isArrayBuffer()) {
 			ArrayBuffer buffer = m_reader.getArrayBufferResult();
 			Int8Array   array  = Int8ArrayNative.create(buffer);
 			if (m_fileBlob.isBlobBase64Encoded())
@@ -557,8 +566,8 @@ public class Html5UploadHelper
 			     blobData = FileUtils.base64encode(blobString).getBytes();
 			else blobData = blobString.getBytes();
 		}
-		m_fileBlob.setBlobData(              blobData );
-		m_fileBlob.setBlobMD5Hash(getMD5Hash(blobData));
+		m_fileBlob.setBlobData(                                                 blobData        );
+		m_fileBlob.setBlobMD5Hash(m_html5Specs.isMd5HashValidate() ? getMD5Hash(blobData) : null);
 		
 		// ...and trace it, if necessary.
 		debugTraceBlob("processBlobNow", true, "Just read");
@@ -576,7 +585,7 @@ public class Html5UploadHelper
 				
 				// ...and continue with the next file.
 				popCurrentFile();
-				uploadNextAsync(true);
+				uploadNextFileAsync(true);
 			}
 
 			@Override
@@ -596,7 +605,7 @@ public class Html5UploadHelper
 					if (uploadsPending()) {
 						// ...continue with the next file.
 						popCurrentFile();
-						uploadNextAsync(hasUploadError);
+						uploadNextFileAsync(hasUploadError);
 					}
 				}
 				
@@ -615,7 +624,7 @@ public class Html5UploadHelper
 						// Standard-complying browsers will to go in this branch.
 						handleError(file);
 						popCurrentFile();
-						uploadNextAsync(true);
+						uploadNextFileAsync(true);
 					}
 				}
 			}
@@ -709,7 +718,7 @@ public class Html5UploadHelper
 	
 	private void readNextBlobNow(final Blob readBlob) {
 		// Always use the initial form of the method.
-		readNextBlobNow(DEFAULT_READ_TYPE, readBlob);
+		readNextBlobNow(m_readType, readBlob);
 	}
 	
 	/*
@@ -824,11 +833,11 @@ public class Html5UploadHelper
 	/*
 	 * Asynchronously uploads the next file.
 	 */
-	private void uploadNextAsync(final boolean aborted) {
+	private void uploadNextFileAsync(final boolean aborted) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				uploadNextNow(aborted);
+				uploadNextFileNow(aborted);
 			}
 		});
 	}
@@ -838,7 +847,7 @@ public class Html5UploadHelper
 	 * 
 	 * Called to read and upload the next file in the queue.
 	 */
-	private void uploadNextNow(boolean aborted) {
+	private void uploadNextFileNow(boolean aborted) {
 		// Are we done uploading files?
 		if (!(uploadsPending())) {
 			// Yes!  Reset the upload to indicate there are no uploads
@@ -906,7 +915,7 @@ public class Html5UploadHelper
 				// Standard-complying browsers will to go in this branch.
 				handleError(file);
 				popCurrentFile();
-				uploadNextAsync(true);
+				uploadNextFileAsync(true);
 			}
 		}
 	}
@@ -1010,7 +1019,7 @@ public class Html5UploadHelper
 											// The user has accepted
 											// the duplicates.  We can
 											// start the override.
-											uploadNextAsync(false);
+											uploadNextFileAsync(false);
 										}
 
 										@Override
@@ -1030,7 +1039,7 @@ public class Html5UploadHelper
 					else {
 						// No, there were no duplicates!  We can start
 						// the upload.
-						uploadNextAsync(false);
+						uploadNextFileAsync(false);
 					}
 				}
 			}

@@ -44,6 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class Html5SpecsRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private boolean			m_encode;			//
+	private boolean			m_md5HashValidate;	//
 	private Html5UploadMode	m_mode;				//
 	private int				m_varBlobsPerFile;	//
 	private long			m_fixedBlobSize;	//
@@ -73,16 +74,18 @@ public class Html5SpecsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * Constructor method.
 	 * 
 	 * @param encode
+	 * @param md5HashValidate
 	 * @param fixedBlobSize
 	 */
-	public Html5SpecsRpcResponseData(boolean encode, long fixedBlobSize) {
+	public Html5SpecsRpcResponseData(boolean encode, boolean md5HashValidate, long fixedBlobSize) {
 		// Initialize this object...
 		this();
 
 		// ...store the parameters...
-		setMode(         Html5UploadMode.FIXED);
-		setEncode(       encode               );
-		setFixedBlobSize(fixedBlobSize        );
+		setMode(           Html5UploadMode.FIXED);
+		setEncode(         encode               );
+		setMd5HashValidate(md5HashValidate      );
+		setFixedBlobSize(  fixedBlobSize        );
 		
 		// ...and initialize the fields that don't apply.
 		setVariableBlobsPerFile(-1);
@@ -94,15 +97,17 @@ public class Html5SpecsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * Constructor method.
 	 * 
 	 * @param encode
+	 * @param md5HashValidate
 	 * @param blobsPerFile
 	 */
-	public Html5SpecsRpcResponseData(boolean encode, int varBlobsPerFile, long varMinBlobSize, long varMaxBlobSize) {
+	public Html5SpecsRpcResponseData(boolean encode, boolean md5HashValidate, int varBlobsPerFile, long varMinBlobSize, long varMaxBlobSize) {
 		// Initialize this object...
 		this();
 		
 		// ...store the parameters...
 		setMode(                Html5UploadMode.VARIABLE);
 		setEncode(              encode                  );
+		setMd5HashValidate(     md5HashValidate         );
 		setVariableBlobsPerFile(varBlobsPerFile         );
 		setVariableMinBlobSize( varMinBlobSize          );
 		setVariableMaxBlobSize( varMaxBlobSize          );
@@ -117,6 +122,7 @@ public class Html5SpecsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * @return
 	 */
 	public boolean         isEncode()                {return m_encode;         }
+	public boolean         isMd5HashValidate()       {return m_md5HashValidate;}
 	public Html5UploadMode getMode()                 {return m_mode;           }
 	public int             getVariableBlobsPerFile() {return m_varBlobsPerFile;}
 	public long            getFixedBlobSize()        {return m_fixedBlobSize;  }
@@ -129,6 +135,7 @@ public class Html5SpecsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * @param
 	 */
 	public void setEncode(              boolean         encode)          {m_encode          = encode;         }
+	public void setMd5HashValidate(     boolean         md5HashValidate) {m_md5HashValidate = md5HashValidate;}
 	public void setMode(                Html5UploadMode mode)            {m_mode            = mode;           }
 	public void setVariableBlobsPerFile(int             varBlobsPerFile) {m_varBlobsPerFile = varBlobsPerFile;}
 	public void setFixedBlobSize(       long            fixedBlobSize)   {m_fixedBlobSize   = fixedBlobSize;  }
