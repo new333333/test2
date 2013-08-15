@@ -531,7 +531,11 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		uploadPopup.setActive(true);
 		
 		// ...and start the upload.
-		Html5UploadHelper.uploadFiles(uploadHelper, fi, files);
+		Html5UploadHelper.uploadFiles(
+			uploadHelper,
+			fi,
+			files,
+			null);	// null -> No event needs to be fired on completion of an upload. 
 	}
 
 	/**

@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
@@ -1380,7 +1381,8 @@ public abstract class FolderViewBase extends ViewBase
 		Html5UploadHelper.uploadFiles(
 			m_uploadHelper,
 			fi,
-			files);
+			files,
+			new FullUIReloadEvent());
 	}
 
 	/**
@@ -1625,12 +1627,15 @@ public abstract class FolderViewBase extends ViewBase
 	 * Implements the Html5UploadCallback.uploadComplete() method.
 	 */
 	@Override
-	public void uploadComplete(boolean aborted) {
+	public void uploadComplete(boolean aborted, VibeEventBase<?> completeEvent) {
 		// Hide the upload popup...
 		m_uploadPopup.setActive(false);
-		
-		// ...and force the folder to refresh.
-		GwtTeaming.fireEventAsync(new FullUIReloadEvent());
+
+		// ...and if we were given an event to fire upon completion...
+		if (null != completeEvent) {
+			// ...fire it.
+			GwtTeaming.fireEventAsync(completeEvent);
+		}
 	}
 
 	/**

@@ -39,6 +39,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
 import org.kablink.teaming.gwt.client.datatable.FileConflictsDlg;
 import org.kablink.teaming.gwt.client.datatable.FileConflictsDlg.FileConflictsDlgClient;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.AbortFileUploadCmd;
@@ -102,6 +103,7 @@ public class Html5UploadHelper
 	private List<File>					m_readQueue;		// List of files queued for uploading.
 	private FileBlob					m_fileBlob;			// Contains information about blobs of a file as they're read and uploaded.
 	private FileReader					m_reader;			// Used to reads files as they're being uploaded.
+	private VibeEventBase<?>			m_completeEvent;	// Event to fire on completion of an upload.
 
 	// The following is used to convert an Int8Array to a base64
 	// encoded string in the method toBase64().
@@ -800,11 +802,11 @@ public class Html5UploadHelper
 	/*
 	 * Asynchronously uploads the given files.
 	 */
-	private static void uploadFilesAsync(final Html5UploadHelper uploadHelper, final BinderInfo fi, final List<File> files) {
+	private static void uploadFilesAsync(final Html5UploadHelper uploadHelper, final BinderInfo fi, final List<File> files, final VibeEventBase<?> completeEvent) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				uploadHelper.uploadFilesNow(fi, files);
+				uploadHelper.uploadFilesNow(fi, files, completeEvent);
 			}
 		});
 	}
@@ -812,9 +814,10 @@ public class Html5UploadHelper
 	/*
 	 * Synchronously uploads the given files.
 	 */
-	private void uploadFilesNow(BinderInfo fi, List<File> files) {
-		// Store the parameter and start processing the files.
-		m_folderInfo = fi;
+	private void uploadFilesNow(BinderInfo fi, List<File> files, VibeEventBase<?> completeEvent) {
+		// Store the parameters and start processing the files.
+		m_folderInfo    = fi;
+		m_completeEvent = completeEvent;
 		processFilesAsync(files);
 	}
 
@@ -846,7 +849,7 @@ public class Html5UploadHelper
 			if (0 < handleIgnoredFolders()) {
 				aborted = true;
 			}
-			m_callback.uploadComplete(aborted);
+			m_callback.uploadComplete(aborted, m_completeEvent);
 		}
 		
 		else {
@@ -1054,7 +1057,8 @@ public class Html5UploadHelper
 			// uploadFiles() parameters,
 			final Html5UploadHelper	uploadHelper,
 			final BinderInfo		fi,
-			final List<File>		files) {
+			final List<File>		files,
+			final VibeEventBase<?>	completeEvent) {
 		GWT.runAsync(Html5UploadHelper.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -1095,7 +1099,7 @@ public class Html5UploadHelper
 					// No, it's not a request to abort an upload
 					// either!  It must be a request to run an existing
 					// helper.  Run it.
-					uploadFilesAsync(uploadHelper, fi, files);
+					uploadFilesAsync(uploadHelper, fi, files, completeEvent);
 				}
 			}
 		});
@@ -1108,7 +1112,7 @@ public class Html5UploadHelper
 	 */
 	public static void abortUpload(Html5UploadHelper abortHelper) {
 		// Perform the appropriate asynchronous operation.
-		doAsyncOperation(null, abortHelper, null, null, null);
+		doAsyncOperation(null, abortHelper, null, null, null, null);
 	}
 	
 	/**
@@ -1119,7 +1123,7 @@ public class Html5UploadHelper
 	 */
 	public static void createAsync(Html5UploadCallback callback) {
 		// Perform the appropriate asynchronous operation.
-		doAsyncOperation(callback, null, null, null, null);
+		doAsyncOperation(callback, null, null, null, null, null);
 	}
 	
 	/**
@@ -1129,12 +1133,12 @@ public class Html5UploadHelper
 	 * @param fi
 	 * @param files
 	 */
-	public static void uploadFiles(Html5UploadHelper uploadHelper, BinderInfo fi, List<File> files) {
-		doAsyncOperation(null, null, uploadHelper, fi, files);
+	public static void uploadFiles(Html5UploadHelper uploadHelper, BinderInfo fi, List<File> files, VibeEventBase<?> completeEvent) {
+		doAsyncOperation(null, null, uploadHelper, fi, files, completeEvent);
 	}
 	
-	public static void uploadFiles(Html5UploadHelper uploadHelper, BinderInfo fi, FileList files) {
+	public static void uploadFiles(Html5UploadHelper uploadHelper, BinderInfo fi, FileList files, VibeEventBase<?> completeEvent) {
 		// Always use the initial form of the method.
-		uploadFiles(uploadHelper, fi, getListFromFileList(files));
+		uploadFiles(uploadHelper, fi, getListFromFileList(files), completeEvent);
 	}
 }
