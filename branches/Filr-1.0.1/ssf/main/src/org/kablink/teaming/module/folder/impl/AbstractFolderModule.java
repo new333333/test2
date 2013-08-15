@@ -1814,12 +1814,17 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 	}
 
     public Date getLastFullSyncCompletionTime(Long folderId) {
-        Folder folder = getTopMostMirroredFolder(getFolder(folderId));
-        if (folder!=null) {
-            BinderState binderState = getCoreDao().loadBinderState(folder.getId());
-            if (binderState!=null) {
-                return binderState.getLastFullSyncCompletionTime();
-            }
+        Folder topMostMirroredFolder = getTopMostMirroredFolder(getFolder(folderId));
+        if (topMostMirroredFolder!=null) {
+        	return getLastFullSyncCompletionTime(topMostMirroredFolder);
+        }
+        return null;
+    }
+
+    protected Date getLastFullSyncCompletionTime(Folder topMostMirroredFolder) {
+        BinderState binderState = (BinderState) getCoreDao().load(BinderState.class, topMostMirroredFolder.getId());
+        if (binderState!=null) {
+            return binderState.getLastFullSyncCompletionTime();
         }
         return null;
     }
