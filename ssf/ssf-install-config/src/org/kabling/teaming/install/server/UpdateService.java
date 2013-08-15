@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Random;
@@ -114,8 +115,10 @@ public final class UpdateService
 			FileUtils.copyFile(oldLocation, newLocation);
 
 			// Update the database
+			decryptMySqlLiquiBasePropertiesPassword();
 			int result = ConfigService.executeCommand("cd /filrinstall/db; pwd; sudo sh manage-database.sh mysql updateDatabase", true)
 					.getExitValue();
+			encryptMySqlLiquiBasePropertiesPassword();
 
 			// We got an error ( 0 for success, 107 for database exists)
 			if (result != 0)
@@ -245,6 +248,77 @@ public final class UpdateService
 	{
 		ConfigService.executeCommand("sudo rm -rf " + path, true);
 	}
+	
+	private static void encryptMySqlLiquiBasePropertiesPassword()
+	{
+		 String dbPassword = "";
+		 String encodedPassword = "";
+		
+		
+			// Update mysql-liquibase.properties
+			File file = new File("/filrinstall/db/mysql-liquibase.properties");
+			if (file.exists()) {
+				Properties prop = new Properties();
+				try {
+					prop.load(new FileInputStream(file));
+					dbPassword= prop.getProperty("password");
+					encodedPassword = EncodingUtils.encode(dbPassword);
+					prop.setProperty("password", encodedPassword);
+					prop.setProperty("referencePassword", encodedPassword);
+					
+					// Java Properties store escapes colon. We need to store
+					// this natively.
+					store(prop, file);
+				} catch (IOException e) {
+					logger.debug("Error saving properties file " + e.getMessage());
+					throw new ConfigurationSaveException();
+				}
+			}
+				
+		}
+	private static void decryptMySqlLiquiBasePropertiesPassword()
+	{
+		 String dbPassword = "";
+		 String decodedPassword = "";
+		
+		
+			// Update mysql-liquibase.properties
+			File file = new File("/filrinstall/db/mysql-liquibase.properties");
+			if (file.exists()) {
+				Properties prop = new Properties();
+				try {
+					prop.load(new FileInputStream(file));
+					dbPassword= prop.getProperty("password");
+					decodedPassword = EncodingUtils.decode(dbPassword);
+					prop.setProperty("password", decodedPassword);
+					prop.setProperty("referencePassword", decodedPassword);
+					
+					// Java Properties store escapes colon. We need to store
+					// this natively.
+					store(prop, file);
+				} catch (IOException e) {
+					logger.debug("Error saving properties file " + e.getMessage());
+					throw new ConfigurationSaveException();
+				}
+			}
+				
+		}
+	
+	@SuppressWarnings("rawtypes")
+	private static void store(Properties props, File file) throws FileNotFoundException {
+
+		PrintWriter pw = new PrintWriter(file);
+
+		for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
+			String key = (String) e.nextElement();
+			pw.println(key + "=" + props.getProperty(key));
+		}
+		pw.close();
+	}
+
+	
+	
+	
 
 	private static boolean isVAReleaseMatch(String newFilePath)
 	{
