@@ -86,7 +86,7 @@
 		    <javac srcdir="src" includes="**" encoding="utf-8"
 		        destdir="www/WEB-INF/classes"
 		        source="1.5" target="1.5" nowarn="true"
-		    	classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${lib.dir}/log4j.jar:${lib.dir}/xml-apis.jar:${lib.dir}/jna-3.4.0.jar:${lib.dir}/libpam4j-1.6.jar:${lib.dir}/joda-time.jar:${lib.dir}/commons-fileupload.jar;${lib.dir}/commons-io.jar;${lib.dir}/mail.jar"
+		    	classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${lib.dir}/log4j.jar:${lib.dir}/xml-apis.jar:${lib.dir}/jna-3.4.0.jar:${lib.dir}/libpam4j-1.6.jar:${lib.dir}/joda-time.jar:${lib.dir}/commons-fileupload.jar;${lib.dir}/commons-io.jar;${lib.dir}/mail.jar;${lib.dir}/commons-codec.jar"
 		        debug="true" debuglevel="lines,vars,source">
 		    </javac>
 		    <copy todir="www/WEB-INF/classes">
@@ -97,7 +97,7 @@
 	<target name="compile-gwt" depends="javac">
 		<!-- Compile the GWT stuff into www. -->
 		<java
-				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${lib.dir}/log4j.jar:${lib.dir}/xml-apis.jar:${lib.dir}/jna-3.4.0.jar:${lib.dir}/libpam4j-1.6.jar::${lib.dir}/joda-time.jar:${lib.dir}/commons-fileupload.jar;${lib.dir}/commons-io.jar;${lib.dir}/mail.jar"
+				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${lib.dir}/log4j.jar:${lib.dir}/xml-apis.jar:${lib.dir}/jna-3.4.0.jar:${lib.dir}/libpam4j-1.6.jar::${lib.dir}/joda-time.jar:${lib.dir}/commons-fileupload.jar;${lib.dir}/commons-io.jar;${lib.dir}/mail.jar;${lib.dir}/commons-codec.jar"
 				failonerror="true"
 				classname="com.google.gwt.dev.Compiler"
 				fork="true">
@@ -127,6 +127,7 @@
 		 		<include name="mysql-connector-java-5.1.22-bin.jar"/>
 		 		<include name="commons-io.jar"/>
 		 		<include name="mail.jar"/>
+                <include name="commons-codec.jar"/>
 		 	 </fileset>
 		 	<fileset dir="${gwt.dir}">
 		 		<include name="gwt-servlet.jar"/>

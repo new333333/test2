@@ -40,6 +40,7 @@ import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.DatabaseConfig;
 import org.kabling.teaming.install.shared.EmailSettings;
+import org.kabling.teaming.install.shared.EncodingUtils;
 import org.kabling.teaming.install.shared.Environment;
 import org.kabling.teaming.install.shared.FileConfig;
 import org.kabling.teaming.install.shared.FileSystem;
@@ -2144,7 +2145,7 @@ public final class ConfigService
 				resourceName = dbConfig.getResourceUserName();
 
 			if (dbConfig.getResourcePassword() != null)
-				resourcePassword = dbConfig.getResourcePassword();
+				resourcePassword = EncodingUtils.encode(dbConfig.getResourcePassword());
 
 			if (dbConfig.getResourceDatabase() != null)
 				resourceDatabase = dbConfig.getResourceDatabase();
@@ -2291,11 +2292,14 @@ public final class ConfigService
 		}
 	}
 
+	
 	public static void updateDatabase(Database database) throws ConfigurationSaveException
 	{
 		updateMySqlLiquiBaseProperties(database);
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
+			// Make sure password is not encrypted
+			decrytpMySqlLiquiBasePropertiesPassword(database);
 			// Update the database
 			int result = executeCommand("cd /filrinstall/db; pwd; sudo sh manage-database.sh mysql updateDatabase", true).getExitValue();
 
@@ -2305,9 +2309,82 @@ public final class ConfigService
 				logger.debug("Error updating database,Error code " + result);
 				throw new ConfigurationSaveException();
 			}
-			
+		
+			//Make sure password is encrypted
+			encrytpMySqlLiquiBasePropertiesPassword(database);
 		}
 	}
+	
+	public static void encrytpMySqlLiquiBasePropertiesPassword(Database database) throws ConfigurationSaveException {
+		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR)) {
+
+			// Encrypt password in the mysql-liquibase.properties filr
+			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
+			
+			String resourcePassword = "";
+			String encodedPassword ="";
+			
+			if (dbConfig != null) {
+
+				// Update mysql-liquibase.properties
+				File file = new File("/filrinstall/db/mysql-liquibase.properties");
+				if (file.exists()) {
+					Properties prop = new Properties();
+					try {
+						prop.load(new FileInputStream(file));
+						resourcePassword= prop.getProperty("password");
+						encodedPassword=EncodingUtils.encode(resourcePassword);
+						prop.setProperty("password", encodedPassword);
+						prop.setProperty("referencePassword", encodedPassword);
+						
+						// Java Properties store escapes colon. We need to store
+						// this natively.
+						store(prop, file);
+					} catch (IOException e) {
+						logger.debug("Error saving properties file " + e.getMessage());
+						throw new ConfigurationSaveException();
+					}
+				}
+			}
+		}
+
+	}
+
+	public static void decrytpMySqlLiquiBasePropertiesPassword(Database database) throws ConfigurationSaveException {
+		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR)) {
+
+			// Encrypt password in the mysql-liquibase.properties filr
+			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
+			
+			String resourcePassword = "";
+			String decodedPassword ="";
+			
+			if (dbConfig != null) {
+
+				// Update mysql-liquibase.properties
+				File file = new File("/filrinstall/db/mysql-liquibase.properties");
+				if (file.exists()) {
+					Properties prop = new Properties();
+					try {
+						prop.load(new FileInputStream(file));
+						resourcePassword= prop.getProperty("password");
+						decodedPassword=EncodingUtils.decode(resourcePassword);
+						prop.setProperty("password", decodedPassword);
+						prop.setProperty("referencePassword", decodedPassword);
+						
+						// Java Properties store escapes colon. We need to store
+						// this natively.
+						store(prop, file);
+					} catch (IOException e) {
+						logger.debug("Error saving properties file " + e.getMessage());
+						throw new ConfigurationSaveException();
+					}
+				}
+			}
+		}
+
+	}
+	
 
 	
 	public static void updateFsaUpdateUrl()
@@ -2498,6 +2575,8 @@ public final class ConfigService
 				}
 				tries--;
 			}
+			//Save configuration after every time we restart
+			saveFilrConfigLocally();
 		}
 	}
 
@@ -2771,10 +2850,15 @@ public final class ConfigService
 				+ " /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf.disabled", true);
 
 		executeCommand("sudo rcmysql stop", true);
-
-		executeCommand("sudo rcnovell-gmetad restart", true);
-		executeCommand("sudo rcnovell-gmond restart", true);
 		executeCommand("sudo chkconfig mysql off", true);
+		
+		executeCommand("sudo rcnovell-gmetad stop", true);
+		executeCommand("sudo rcnovell-gmond stop", true);
+		
+		//Remove the ganglia database becasue it has Mysql entries that we do not want.
+		executeCommand("sudo rm -rf /vastorage/ganglia/rrds/*", true);
+		executeCommand("sudo rcnovell-gmetad start", true);
+		executeCommand("sudo rcnovell-gmond start", true);
 	}
 
 	public static void reverConfiguration() throws IOException
