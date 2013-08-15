@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
@@ -118,9 +119,12 @@ import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
 import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
 import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesToBindersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetCanAddEntitiesToBindersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntityRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
@@ -277,6 +281,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// Width, in pixels for the action menu show in conjunction with an
 	// EntryTitleColumn.
 	private final static int ACTION_MENU_WIDTH_PX	= 30;
+	
+	// Defines how long we delay, in MS, after loading the rows for the
+	// view before we send the request for the user's rights for adding
+	// to any nested folder's.
+	private final static int NESTED_FOLDER_RIGHTS_QUERY_DELAY	= 0;	// 0 -> No delay, simply asynchronous.
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -993,6 +1002,78 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				isPinning()                                  ?
 					m_messages.vibeDataTable_Empty_Pinning() :
 					m_messages.vibeDataTable_Empty());
+	}
+
+	/*
+	 * Asynchronously process the nested folders in the rows so that
+	 * we can determine whether to make them drop targets.
+	 */
+	private void getNestedFolderRightsAsync(final List<FolderRow> folderRows) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				getNestedFolderRightsNow(folderRows);
+			}
+		},
+		NESTED_FOLDER_RIGHTS_QUERY_DELAY);
+	}
+	
+	/*
+	 * Synchronously process the nested folders in the rows so that
+	 * we can determine whether to make them drop targets.
+	 */
+	private void getNestedFolderRightsNow(final List<FolderRow> folderRows) {
+		// Scan the rows.
+		final Map<Long, EntryTitleInfo> etiMap = new HashMap<Long, EntryTitleInfo>();
+		final List<Long>                fIds   = new ArrayList<Long>();
+		for (FolderRow fr:  folderRows) {
+			// Is this row a nested folder?
+			EntityId eid = fr.getEntityId();
+			if (eid.isFolder()) {
+				// Yes!  Does it contain an EntryTitleInfo without the
+				// user's add rights?
+				EntryTitleInfo eti = fr.getRowEntryTitlesMap().get(FolderColumn.COLUMN_TITLE);
+				if ((null != eti) && (null == eti.getCanAddFolderEntities())) {
+					// Yes!  Track the folder's ID and its
+					// EntryTitleInfo.
+					Long fid = eid.getEntityId(); 
+					fIds.add(  fid     );
+					etiMap.put(fid, eti);
+				}
+			}
+		}
+
+		// Did we find any nested folders we need to get the user's add
+		// rights for?
+		if (!(fIds.isEmpty())) {
+			// Yes!  Get the user's add rights to them from the server.
+			final GetCanAddEntitiesToBindersCmd cmd = new GetCanAddEntitiesToBindersCmd(fIds);
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetCanAddEntitiesToBinders());
+				}
+
+				@Override
+				public void onSuccess(VibeRpcResponse result) {
+					// Extract the user's add rights from the
+					// response...
+					CanAddEntitiesToBindersRpcResponseData   response = ((CanAddEntitiesToBindersRpcResponseData) result.getResponseData());
+					Map<Long, CanAddEntitiesRpcResponseData> addMap   = response.getCanAddEntitiesMap();
+					
+					// ...scan the folder IDs we got the user's add
+					// ...rights for...
+					Set<Long> fIds = addMap.keySet();
+					for (Long fId:  fIds) {
+						// ...and add the rights to the folder's
+						// ...EntryTitleInfo.
+						etiMap.get(fId).setCanAddFolderEntities(addMap.get(fId));
+					}
+				}
+			});
+		}
 	}
 
 	/*
@@ -2409,6 +2490,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						// ...tell it to update the state of its items that
 						// ...require entries be available.
 						EntryMenuPanel.setEntriesAvailable(emp, (0 < rowsRead));
+					}
+
+					// Does the browser support uploads using HTML5?
+					if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs()) {
+						// Yes!  Then we need to process the nested
+						// folders in the rows so that we can determine
+						// whether to make them drop targets.
+						getNestedFolderRightsAsync(folderRows);
 					}
 
 					// Allow the view's that extend this do what ever

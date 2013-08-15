@@ -359,6 +359,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetCalendarDisplayData();
 	String rpcFailure_GetCalendarNextPreviousPeriod();
 	String rpcFailure_GetCanAddEntities();
+	String rpcFailure_GetCanAddEntitiesToBinders();
 	String rpcFailure_GetClipboardTeamUsers();
 	String rpcFailure_GetClipboardUsers();
 	String rpcFailure_GetClipboardUsersFromList();

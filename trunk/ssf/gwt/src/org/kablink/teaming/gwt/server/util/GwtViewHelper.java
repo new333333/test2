@@ -116,6 +116,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesToBindersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
@@ -1128,13 +1129,13 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * When initially built, the EntryTitleInfo's in the rows didn't
+	 * When initially built, the EntryTitleInfo's in the rows don't
 	 * contain the user's rights to add to any nested folders.  We need
 	 * to add that information to support drag and drop into nested
 	 * folders.
 	 */
-	private static void completeNestedFolderRights(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeNestedFolderRights()");
+	private static void completeNFRights(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeNFRights()");
 		try {
 			// If we don't have any FolderRow's to complete...
 			if (!(MiscUtil.hasItems(frList))) {
@@ -1142,9 +1143,8 @@ public class GwtViewHelper {
 				return;
 			}
 	
-			List<Long>                fIds  = new ArrayList<Long>();
-			Map<Long, EntryTitleInfo> fTMap = new HashMap<Long, EntryTitleInfo>();
-			SimpleProfiler.start("GwtViewHelper.completeNestedFolderRights(Collect Folder IDs)");
+			Map<Long, EntryTitleInfo> etiMap = new HashMap<Long, EntryTitleInfo>();
+			SimpleProfiler.start("GwtViewHelper.completeNFRights(Collect Folder IDs)");
 			try {
 				// Scan the rows.
 				for (FolderRow fr:  frList) {
@@ -1154,34 +1154,32 @@ public class GwtViewHelper {
 						// Yes!  Can we find its EntryTitleInfo?
 						EntryTitleInfo ft = fr.getRowEntryTitlesMap().get("title");
 						if (null != ft) {
-							// Yes!  Track the folder's ID and
+							// Yes!  Map the folder's ID to its
 							// EntryTitleInfo.
-							Long fid = eid.getEntityId();
-							fIds.add( fid    );
-							fTMap.put(fid, ft);
+							etiMap.put(eid.getEntityId(), ft);
 						}
 					}
 				}
 			}
 			
 			finally {
-				SimpleProfiler.stop("GwtViewHelper.completeNestedFolderRights(Collect Folder IDs)");
+				SimpleProfiler.stop("GwtViewHelper.completeNFRights(Collect Folder IDs)");
 			}
 			
 			// If we don't have any folder's whose rights need to be
 			// completed...
-			if (!(MiscUtil.hasItems(fIds))) {
+			if (!(MiscUtil.hasItems(etiMap.keySet()))) {
 				// ...bail.
 				return;
 			}
 	
 			try {
-				SimpleProfiler.start("GwtViewHelper.completeNestedFolderRights(Complete Rights)");
+				SimpleProfiler.start("GwtViewHelper.completeNFRights(Complete Rights)");
 				try {
 					// Resolve the folder IDs...
 					BinderModule bm      = bs.getBinderModule();
 					FolderModule fm      = bs.getFolderModule();
-					Set<Folder>  folders = fm.getFolders(fIds);
+					Set<Folder>  folders = fm.getFolders(etiMap.keySet());
 					
 					// ...scan the folders... 
 					for (Folder folder:  folders) {
@@ -1191,12 +1189,12 @@ public class GwtViewHelper {
 						boolean canAddEntries = fm.testAccess((folder), FolderOperation.addEntry );
 						boolean canAddFolders = bm.testAccess( folder,  BinderOperation.addFolder);
 						CanAddEntitiesRpcResponseData folderRights = new CanAddEntitiesRpcResponseData(canAddEntries, canAddFolders);
-						fTMap.get(folder.getId()).setCanAddFolderEntities(folderRights);
+						etiMap.get(folder.getId()).setCanAddFolderEntities(folderRights);
 					}
 				}
 				
 				finally {
-					SimpleProfiler.stop("GwtViewHelper.completeNestedFolderRights(Complete Rights)");
+					SimpleProfiler.stop("GwtViewHelper.completeNFRights(Complete Rights)");
 				}
 			}
 			
@@ -2207,6 +2205,74 @@ public class GwtViewHelper {
 					m_logger,
 					e,
 					"GwtViewHelper.getCanAddEntities( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
+	/**
+	 * Return a CanAddEntitiesRpcToBindersResponseData object
+	 * containing what the user has rights to add to the given
+	 * binders.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static CanAddEntitiesToBindersRpcResponseData getCanAddEntitiesToBinders(AllModulesInjected bs, HttpServletRequest request, List<Long> binderIds) throws GwtTeamingException {
+		try {
+			// Allocate a CanAddEntitiesToBindersRpcResponseData we can
+			// return.
+			CanAddEntitiesToBindersRpcResponseData reply = new CanAddEntitiesToBindersRpcResponseData();
+			
+			//  Were we given any binder IDs? 
+			if (MiscUtil.hasItems(binderIds)) {
+				// Yes!  Access the binders for them.
+				FolderModule fm      = bs.getFolderModule();
+				BinderModule bm      = bs.getBinderModule();
+				Set<Binder>  binders = bm.getBinders(binderIds);
+				
+				// Scan the binders.
+				for (Binder binder:  binders) {
+					// Is this binder a folder?
+					boolean canAddEntries = false;
+					boolean canAddFolders = false;
+					EntityType binderType = binder.getEntityType();
+					if (binderType.equals(EntityType.folder)) {
+						// Yes!  Check what they can add to it.
+						canAddEntries = fm.testAccess(((Folder) binder), FolderOperation.addEntry );
+						canAddFolders = bm.testAccess(          binder,  BinderOperation.addFolder);
+					}
+					
+					// No, it's not a folder!  Is it a Workspace?
+					else if (binderType.equals(EntityType.workspace)) {
+						// Yes!  If they can add anything, it would
+						// only be folders.
+						canAddFolders = bm.testAccess(binder, BinderOperation.addFolder);
+					}
+					
+					// Add the user's add rights for this binder to the
+					// reply.
+					reply.addCanAddEntities(binder.getId(), canAddEntries, canAddFolders);
+				}
+			}
+			
+			// If we get here, reply refers to a
+			// CanAddEntitiesToBindersRpcResponseData with the user's
+			// rights to add to the given binders.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getCanAddEntitiesToBinders( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -4167,10 +4233,10 @@ public class GwtViewHelper {
 			}
 
 			// Scan the entries we read.
-			boolean         addedAssignments   = false;
-			boolean         addedNestedFolders = false;
-			List<FolderRow> folderRows         = new ArrayList<FolderRow>();
-			List<Long>      contributorIds     = new ArrayList<Long>();
+			boolean         completeAIsRequired      = false;
+			boolean         completeNFRightsRequired = false;
+			List<FolderRow> folderRows               = new ArrayList<FolderRow>();
+			List<Long>      contributorIds           = new ArrayList<Long>();
 			for (Map entryMap:  searchEntries) {
 				// Initiate per row profiling.
 				String docIdS = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
@@ -4326,7 +4392,7 @@ public class GwtViewHelper {
 											     aiList = getAIListFromSharers(   smItem.getPerShareInfos());
 											else aiList = getAIListFromRecipients(smItem.getPerShareInfos());
 										}
-										addedAssignments = (!(aiList.isEmpty()));
+										completeAIsRequired = (!(aiList.isEmpty()));
 										fr.setColumnValue_AssignmentInfos(fc, aiList);
 			
 										// ...and continue with the next column.
@@ -4440,7 +4506,7 @@ public class GwtViewHelper {
 										}
 										
 										// Add the column data to the list.
-										addedAssignments = true;
+										completeAIsRequired = true;
 										fr.setColumnValue_AssignmentInfos(fc, assignmentList);
 									}
 									
@@ -4491,7 +4557,13 @@ public class GwtViewHelper {
 													eti.setDescriptionIsHtml(false      );
 												}
 												if (isEntityFolder) {
-													addedNestedFolders = true;
+													// - - - - -
+													// DRF:  Commented out as we always complete
+													//    the rights with another RPC call AFTER
+													//    the view has been populated.  See:
+													//    DataTableFolderViewBase.getNestedFolderRightsNow().
+													// - - - - -
+													// completeNFRightsRequired = true;
 												}
 											}
 											if (isEntityFolderEntry && GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
@@ -4673,8 +4745,9 @@ public class GwtViewHelper {
 				}
 			}
 
-			// Did we add any rows with assignment information?
-			if (addedAssignments) {
+			// Did we add any rows with assignment information that
+			// needs to be completed?
+			if (completeAIsRequired) {
 				// Yes!  We need to complete the definition of the
 				// AssignmentInfo objects.
 				//
@@ -4685,16 +4758,17 @@ public class GwtViewHelper {
 				completeAIs(bs, request, folderRows);
 			}
 
-			// Did we add any rows that were nested folders?
-			if (addedNestedFolders) {
+			// Did we add any rows that were nested folders whose
+			// rights needs to be completed?
+			if (completeNFRightsRequired) {
 				// Yes!  We need to complete the definition of the
 				// EntryTitleInfo objects with the user's rights to
 				// add to the nested folders.
 				//
 				// When initially built, the EntryTitleInfo's in the
-				// rows didn't contain that information.  We need it
+				// rows don't contain that information.  We need it
 				// to support drag and drop  into nested folders.
-				completeNestedFolderRights(bs, request, folderRows);
+				completeNFRights(bs, request, folderRows);
 			}
 			
 			// Walk the List<FolderRow>'s performing any remaining
