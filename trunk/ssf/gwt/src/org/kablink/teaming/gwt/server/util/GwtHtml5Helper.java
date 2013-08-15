@@ -170,7 +170,11 @@ public class GwtHtml5Helper {
 	 */
 	private static void debugTraceBlob(FileBlob fileBlob, String methodName, String traceHead, String traceTail, boolean lastBlob) {
 		if (GwtLogHelper.isDebugEnabled(m_logger)) {
-			String	dump  = (traceHead + ":  '" + fileBlob.getFileName() + "' (fSize:" + fileBlob.getFileSize() + ", bStart:" + fileBlob.getBlobStart() + ", bSize:" + fileBlob.getBlobSize() + ", last:" + lastBlob + ", md5Hash:" + fileBlob.getBlobMD5Hash() + ", uploadId:" + fileBlob.getUploadId() + ")");
+			String blobHash = fileBlob.getBlobMD5Hash();
+			if (null == blobHash) {
+				blobHash = "***";
+			}
+			String	dump  = (traceHead + ":  '" + fileBlob.getFileName() + "' (fSize:" + fileBlob.getFileSize() + ", bStart:" + fileBlob.getBlobStart() + ", bSize:" + fileBlob.getBlobSize() + ", last:" + lastBlob + ", md5Hash:" + blobHash + ", uploadId:" + fileBlob.getUploadId() + ")");
 			boolean hasTail = MiscUtil.hasString(traceTail);
 			dump = ("GwtHtml5Helper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
 			byte[] data = fileBlob.getBlobData();
@@ -201,12 +205,14 @@ public class GwtHtml5Helper {
 	 * @return
 	 */
 	public static Html5SpecsRpcResponseData getHtml5UploadSpecs(AllModulesInjected bs, HttpServletRequest request) {
-		boolean encode = Html5Helper.isHtml5UploadEncode();
+		boolean encode          = Html5Helper.isHtml5UploadEncode();
+		boolean md5HashValidate = Html5Helper.isHtml5UploadMd5HashValidate();
 		
 		Html5SpecsRpcResponseData reply;
 		if (Html5Helper.isHtml5UploadVariableBlobs()) {
 			reply = new Html5SpecsRpcResponseData(
 				encode,
+				md5HashValidate,
 				Html5Helper.getHtml5VariableBlobsPerFile(),
 				Html5Helper.getHtml5VariableBlobsMinBlobSize(),
 				Html5Helper.getHtml5VariableBlobsMaxBlobSize());
@@ -215,6 +221,7 @@ public class GwtHtml5Helper {
 		else {
 			reply = new Html5SpecsRpcResponseData(
 				encode,
+				md5HashValidate,
 				Html5Helper.getHtml5FixedBlobSize());
 		}
 		
@@ -319,9 +326,14 @@ public class GwtHtml5Helper {
 
 			// Does the MD5 hash calculated on the blob we just
 			// received match the MD5 hash that came with it? 
-			StringRpcResponseData	reply   = null;
-			String					md5Hash = MiscUtil.getMD5Hash(fileBlob.getBlobData());
-			if (!(md5Hash.equals(fileBlob.getBlobMD5Hash()))) {
+			StringRpcResponseData reply = null;
+			String blobHashReceived = fileBlob.getBlobMD5Hash();
+			boolean blobHashValid = (null == blobHashReceived);
+			if (!blobHashValid) {
+				String blobHashCalculated = MiscUtil.getMD5Hash(fileBlob.getBlobData());
+				blobHashValid = blobHashCalculated.equals(blobHashReceived);
+			}
+			if (!blobHashValid) {
 				// No!  Then the data is corrupt.  Return the error to
 				// the user.
 				reply = new StringRpcResponseData();

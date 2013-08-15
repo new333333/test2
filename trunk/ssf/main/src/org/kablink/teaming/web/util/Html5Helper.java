@@ -47,6 +47,7 @@ public class Html5Helper {
 
 	private static final boolean HTML5_UPLOAD_BLOBS_VARIABLE               = SPropsUtil.getString( "html5.upload.blob.mode",                    "variable").equalsIgnoreCase("variable");
 	private static final boolean HTML5_UPLOAD_ENCODE                       = SPropsUtil.getBoolean("html5.upload.encode",                       false     );
+	private static final boolean HTML5_UPLOAD_MD5_HASH_VALIDATE            = SPropsUtil.getBoolean("html5.upload.md5.hash.validate",            true      );
 	private static final long    HTML5_UPLOAD_FIXED_BLOB_SIZE              = SPropsUtil.getLong(   "html5.upload.fixed.blob.size",              16384l    );
 	private static final int     HTML5_UPLOAD_VARIABLE_BLOBS_PER_FILE      = SPropsUtil.getInt(    "html5.upload.variable.blobs.per.file",      25        );
 	private static final long    HTML5_UPLOAD_VARIABLE_BLOBS_MIN_BLOB_SIZE = SPropsUtil.getLong(   "html5.upload.variable.blobs.min.blob.size", 16384l    );
@@ -68,6 +69,16 @@ public class Html5Helper {
 	 */
 	public static boolean isHtml5UploadEncode() {
 		return HTML5_UPLOAD_ENCODE;
+	}
+	
+	/**
+	 * Returns true if blobs are MD5 hash validated during a transfer
+	 * to the server and false otherwise.
+	 * 
+	 * @return 
+	 */
+	public static boolean isHtml5UploadMd5HashValidate() {
+		return HTML5_UPLOAD_MD5_HASH_VALIDATE;
 	}
 	
 	/**
