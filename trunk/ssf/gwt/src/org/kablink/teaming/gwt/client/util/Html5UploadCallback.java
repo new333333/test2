@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.util;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 
 /**
@@ -117,8 +118,9 @@ public interface Html5UploadCallback {
 	 * Tells the caller that the upload has completed.
 	 * 
 	 * @param aborted
+	 * @param completeEvent
 	 */
-	public void uploadComplete(boolean aborted);
+	public void uploadComplete(boolean aborted, VibeEventBase<?> completeEvent);
 
 	/**
 	 * Tells the caller that we're now uploading the next file.

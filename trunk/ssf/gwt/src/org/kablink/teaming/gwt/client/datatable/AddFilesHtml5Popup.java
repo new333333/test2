@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -333,7 +334,8 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		Html5UploadHelper.uploadFiles(
 			m_uploadHelper,
 			m_folderInfo,
-			m_uploadButton.getFiles());
+			m_uploadButton.getFiles(),
+			new FullUIReloadEvent());
 	}
 	
 
@@ -438,7 +440,8 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			Html5UploadHelper.uploadFiles(
 				m_uploadHelper,
 				m_folderInfo,
-				event.getDataTransfer().<DataTransferExt>cast().getFiles());
+				event.getDataTransfer().<DataTransferExt>cast().getFiles(),
+				new FullUIReloadEvent());
 		}
 		event.stopPropagation();
 		event.preventDefault();
@@ -724,19 +727,23 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * The upload has completed.
 	 * 
 	 * @param aborted
+	 * @param completeEvent
 	 * 
 	 * Implements the Html5UploadCallback.uploadComplete() method.
 	 */
 	@Override
-	public void uploadComplete(boolean aborted) {
+	public void uploadComplete(boolean aborted, VibeEventBase<?> completeEvent) {
 		// If we're supposed...
 		if ((!aborted) && AUTOHIDE_ON_COMPLETE) {
 			// ...close the upload popup...
 			hide();
 		}
 		
-		// ...and force the folder to refresh.
-		GwtTeaming.fireEventAsync(new FullUIReloadEvent());
+		// ...and if we were given an event to fire upon completion...
+		if (null != completeEvent) {
+			// ...fire it.
+			GwtTeaming.fireEventAsync(completeEvent);
+		}
 	}
 
 	/**
