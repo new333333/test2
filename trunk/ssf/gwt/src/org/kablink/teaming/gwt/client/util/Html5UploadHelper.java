@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob.ReadType;
 import org.kablink.teaming.gwt.client.datatable.FileConflictsDlg;
 import org.kablink.teaming.gwt.client.datatable.FileConflictsDlg.FileConflictsDlgClient;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
@@ -103,7 +104,6 @@ public class Html5UploadHelper
 	private int							m_readTotal;		// Total number of files to upload during an upload request.
 	private List<File>					m_ignoredAsFolders;	// Tracks files that are dropped because they 'appear' to be folders and are hence, ignored.
 	private List<File>					m_readQueue;		// List of files queued for uploading.
-	private ReadType					m_readType;			// The method used to read files.
 	private VibeEventBase<?>			m_completeEvent;	// Event to fire on completion of an upload.
 
 	// The following is used to convert an Int8Array to a base64
@@ -124,27 +124,6 @@ public class Html5UploadHelper
 	private static boolean TRACE_BLOBS	= false;	//
 	
 	/*
-	 * Used to specify how to read files for streaming to the server.
-	 */
-	@SuppressWarnings("unused")
-	private enum ReadType {
-		ARRAY_BUFFER,
-		BINARY_STRING,
-		DATA_URL,
-		TEXT;
-
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public boolean isArrayBuffer()  {return this.equals(ARRAY_BUFFER );}
-		public boolean isBinaryString() {return this.equals(BINARY_STRING);}
-		public boolean isDataUrl()      {return this.equals(DATA_URL     );}
-		public boolean isText()         {return this.equals(TEXT         );}
-	}
-	
-	/*
 	 * Class constructor.
 	 * 
 	 * Note that the class constructor is private to facilitate code
@@ -161,7 +140,6 @@ public class Html5UploadHelper
 		// ...initialize the other data members...
 		m_messages = GwtTeaming.getMessages();
 
-		m_readType         = getReadType();
 		m_uploadState      = Html5UploadState.INACTIVE;
 		m_ignoredAsFolders = new ArrayList<File>();
 		m_readQueue        = new ArrayList<File>();
@@ -259,8 +237,16 @@ public class Html5UploadHelper
 			}
 			boolean hasTail = GwtClientHelper.hasString(traceTail);
 			dump = ("Html5UploadHelper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
-			byte[] data = m_fileBlob.getBlobData();
-			dump += ("\n\nData Read:  " + ((null == data) ? 0 : data.length) + (m_fileBlob.isBlobBase64Encoded() ? " base64 encoded" : "") + " bytes."); 
+			int dataLen;
+			if (m_fileBlob.getReadType().isArrayBuffer()) {
+				byte[] data = m_fileBlob.getBlobDataBytes(); 
+				dataLen =  ((null == data )? 0 : data.length);
+			}
+			else {
+				String data = m_fileBlob.getBlobDataString();
+				dataLen = ((null == data) ? 0 : data.length());
+			}
+			dump += ("\n\nData Read:  " + dataLen + (m_fileBlob.isBlobBase64() ? " base64 encoded" : "") + " bytes."); 
 			GwtClientHelper.debugAlert(dump);
 		}
 	}
@@ -282,18 +268,6 @@ public class Html5UploadHelper
 	}
 
 	/*
-	 * Defines the type of HTML5 file read used to upload files.
-	 * 
-	 * Note:  IE10 (the only version of IE that supports uploading
-	 *    files using HTML5) only supports ARRAY_BUFFER.  Setting this
-	 *    to anything else will break uploading files using this helper
-	 *    there.
-	 */
-	private ReadType getReadType() {
-		return ReadType.ARRAY_BUFFER;
-	}
-
-	/*
 	 * Returns the string to use for file's date.
 	 */
 	private String getFileUTC(File file) {
@@ -307,6 +281,22 @@ public class Html5UploadHelper
 	private Long getFileUTCMS(File file) {
 		JsDate fileDate = ((null == file) ? null : file.getLastModifiedDate());
 		return ((null == fileDate) ? null : new Long((long) fileDate.getTime()));
+	}
+
+	/*
+	 * Defines the type of HTML5 file read used to upload a file.
+	 * 
+	 * Note:  IE10 (the only version of IE that supports uploading
+	 *    files using HTML5) doesn't support BINARY_STRING.  Setting
+	 *    this to that will break uploading files using this helper
+	 *    there.
+	 */
+	private ReadType getInitialReadType() {
+		ReadType reply;
+		if (m_html5Specs.isMd5HashValidate())
+		     reply = ReadType.ARRAY_BUFFER;	// When we have to MD5 validate, ARRAY_BUFFER
+		else reply = ReadType.DATA_URL;		// ...faster.  When we don't DATA_URL is faster.
+		return reply;
 	}
 
 	/**
@@ -330,12 +320,17 @@ public class Html5UploadHelper
 	/*
 	 * Returns the MD5 hash key for the given string.
 	 */
-	private String getMD5Hash(byte[] bytes) {
+	private String getMd5Hash(byte[] bytes) {
 		MD5Digest	sd = new MD5Digest();
 		sd.update(bytes, 0, bytes.length);
 		byte[] result = new byte[sd.getDigestSize()];
 		sd.doFinal(result, 0);
 		return byteArrayToHexString(result);
+	}
+	
+	private String getMd5Hash(String string) {
+		// Always use the initial form of the method.
+		return getMd5Hash(string.getBytes());
 	}
 
 	/**
@@ -549,25 +544,41 @@ public class Html5UploadHelper
 	/*
 	 * Synchronously processes the next blob read from a file.
 	 */
+	
 	private void processBlobNow() {
 		// Extract the data for the blob we just read...
 		final boolean lastBlob = ((m_fileBlob.getBlobStart() + m_fileBlob.getBlobSize()) >= m_fileBlob.getFileSize());
-		byte[] blobData;
-		if (m_readType.isArrayBuffer()) {
+		byte[] blobDataBytes;
+		String blobDataString;
+		String blobMd5Hash;
+		boolean isMd5HashValidate = m_html5Specs.isMd5HashValidate();
+		ReadType readType = m_fileBlob.getReadType();
+		if (readType.isArrayBuffer()) {
+			blobDataString = null;
 			ArrayBuffer buffer = m_reader.getArrayBufferResult();
 			Int8Array   array  = Int8ArrayNative.create(buffer);
-			if (m_fileBlob.isBlobBase64Encoded())
-			     blobData = toBase64(array).getBytes();
-			else blobData = toBytes( array);
+			if (m_fileBlob.isBlobBase64())
+			     blobDataBytes = toBase64(array).getBytes();
+			else blobDataBytes = toBytes( array);
+			blobMd5Hash = (isMd5HashValidate ? getMd5Hash(blobDataBytes) : null);
 		}
 		else {
-			String blobString = m_reader.getStringResult();
-			if (m_fileBlob.isBlobBase64Encoded())
-			     blobData = FileUtils.base64encode(blobString).getBytes();
-			else blobData = blobString.getBytes();
+			blobDataBytes  = null;
+			blobDataString = m_reader.getStringResult();
+			if (readType.isDataUrl()) {
+				m_fileBlob.setBlobBase64(true);
+				if (isMd5HashValidate) {
+					blobDataString = FileBlob.fixDataUrlString(blobDataString);
+				}
+			}
+			else if (m_fileBlob.isBlobBase64()) {
+				blobDataString = FileUtils.base64encode(blobDataString);
+			}
+			blobMd5Hash = (isMd5HashValidate ? getMd5Hash(blobDataString) : null);
 		}
-		m_fileBlob.setBlobData(                                                 blobData        );
-		m_fileBlob.setBlobMD5Hash(m_html5Specs.isMd5HashValidate() ? getMD5Hash(blobData) : null);
+		m_fileBlob.setBlobDataBytes( blobDataBytes );
+		m_fileBlob.setBlobDataString(blobDataString);
+		m_fileBlob.setBlobMD5Hash(   blobMd5Hash   );
 		
 		// ...and trace it, if necessary.
 		debugTraceBlob("processBlobNow", true, "Just read");
@@ -707,18 +718,13 @@ public class Html5UploadHelper
 	/*
 	 * Synchronously initiates the reading of the given blob.
 	 */
-	private void readNextBlobNow(final ReadType readType, final Blob readBlob) {
-		switch (readType) {
+	private void readNextBlobNow(final Blob readBlob) {
+		switch (m_fileBlob.getReadType()) {
 		case ARRAY_BUFFER:   m_reader.readAsArrayBuffer( readBlob); break;
 		case BINARY_STRING:  m_reader.readAsBinaryString(readBlob); break;
 		case DATA_URL:       m_reader.readAsDataURL(     readBlob); break;
 		case TEXT:           m_reader.readAsText(        readBlob); break;
 		}
-	}
-	
-	private void readNextBlobNow(final Blob readBlob) {
-		// Always use the initial form of the method.
-		readNextBlobNow(m_readType, readBlob);
 	}
 	
 	/*
@@ -896,6 +902,7 @@ public class Html5UploadHelper
 				
 				// ...and upload it by blobs.
 				m_fileBlob = new FileBlob(
+					getInitialReadType(),
 					file.getName(),
 					getFileUTC(  file),
 					getFileUTCMS(file),

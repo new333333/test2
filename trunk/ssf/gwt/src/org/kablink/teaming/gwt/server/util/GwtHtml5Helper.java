@@ -62,6 +62,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob.ReadType;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.Html5SpecsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -103,7 +104,7 @@ public class GwtHtml5Helper {
 	
 	// Used in various file size calculations, ...
 	private final static long MEGABYTES = (1024l * 1024l);
-
+	
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
@@ -177,8 +178,16 @@ public class GwtHtml5Helper {
 			String	dump  = (traceHead + ":  '" + fileBlob.getFileName() + "' (fSize:" + fileBlob.getFileSize() + ", bStart:" + fileBlob.getBlobStart() + ", bSize:" + fileBlob.getBlobSize() + ", last:" + lastBlob + ", md5Hash:" + blobHash + ", uploadId:" + fileBlob.getUploadId() + ")");
 			boolean hasTail = MiscUtil.hasString(traceTail);
 			dump = ("GwtHtml5Helper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
-			byte[] data = fileBlob.getBlobData();
-			dump += ("\n\nData Uploaded:  " + ((null == data) ? 0 : data.length) + (fileBlob.isBlobBase64Encoded() ? " base64 encoded" : "") + " bytes."); 
+			int dataLen;
+			if (fileBlob.getReadType().isArrayBuffer()) {
+				byte[] data = fileBlob.getBlobDataBytes(); 
+				dataLen =  ((null == data )? 0 : data.length);
+			}
+			else {
+				String data = fileBlob.getBlobDataString();
+				dataLen = ((null == data) ? 0 : data.length());
+			}
+			dump += ("\n\nData Uploaded:  " + dataLen + (fileBlob.isBlobBase64() ? " base64 encoded" : "") + " bytes."); 
 			GwtLogHelper.debug(m_logger, dump);
 		}
 	}
@@ -324,13 +333,27 @@ public class GwtHtml5Helper {
 				}
 			}
 
+			// Get the data for the blob as a byte[].
+			byte[] blobDataBytes;
+			ReadType blobReadType = fileBlob.getReadType();
+			if (blobReadType.isArrayBuffer()) {
+				 blobDataBytes = fileBlob.getBlobDataBytes();
+			}
+			else {
+				String blobDataString = fileBlob.getBlobDataString();
+				if (blobReadType.isDataUrl()) {
+					blobDataString = FileBlob.fixDataUrlString(blobDataString);
+				}
+				blobDataBytes = blobDataString.getBytes();
+			}
+			
 			// Does the MD5 hash calculated on the blob we just
 			// received match the MD5 hash that came with it? 
 			StringRpcResponseData reply = null;
 			String blobHashReceived = fileBlob.getBlobMD5Hash();
 			boolean blobHashValid = (null == blobHashReceived);
 			if (!blobHashValid) {
-				String blobHashCalculated = MiscUtil.getMD5Hash(fileBlob.getBlobData());
+				String blobHashCalculated = MiscUtil.getMD5Hash(blobDataBytes);
 				blobHashValid = blobHashCalculated.equals(blobHashReceived);
 			}
 			if (!blobHashValid) {
@@ -341,18 +364,19 @@ public class GwtHtml5Helper {
 				try {tempFile.delete();}
 				catch (Throwable t) {/* Ignored. */}
 			}
-			
 			else {
 				FileOutputStream fo = null;
 				try {
-					// Yes!  The MD5 hashes match!  Can we write the
-					// data from this blob to the file?
-					fo = new FileOutputStream(tempFile, (!firstBlob));
-					byte[] blobData = fileBlob.getBlobData();
-					if (fileBlob.isBlobBase64Encoded()) {
-						blobData = Base64.decodeBase64(blobData);
+					// Yes!  The MD5 hashes match!  If the data is
+					// base64 encoded...
+					if (fileBlob.isBlobBase64()) {
+						// ...decode it...
+						blobDataBytes = Base64.decodeBase64(blobDataBytes);
 					}
-					fo.write(blobData);
+					
+					// ...and write it to the file.
+					fo = new FileOutputStream(tempFile, (!firstBlob));
+					fo.write(blobDataBytes);
 				}
 				
 				catch (Exception e) {
@@ -419,7 +443,7 @@ public class GwtHtml5Helper {
         	        	
         	        	// ...setup and input data map using the file's
         	        	// ...name as the title...
-    	        		Map entryNameOnly = new HashMap();
+						Map entryNameOnly = new HashMap();
 	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
 
