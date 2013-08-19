@@ -144,8 +144,10 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.SEARCH_CONTEXT_BINDER_ID, searchContextBinderId);
 		model.put(WebKeys.SEARCH_CONTEXT_ENTRY_ID, PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_ENTRY_ID, ""));
 		if (searchContextBinderId != null && !searchContextBinderId.equals("")) {
-			Binder searchContextBinder = getBinderModule().getBinder(Long.valueOf(searchContextBinderId));
-			model.put(WebKeys.SEARCH_CONTEXT_BINDER, searchContextBinder);
+			try {
+				Binder searchContextBinder = getBinderModule().getBinder(Long.valueOf(searchContextBinderId));
+				model.put(WebKeys.SEARCH_CONTEXT_BINDER, searchContextBinder);
+			} catch(Exception e) {}
 		}
 		
 		/** Vertical mode has been removed
