@@ -384,8 +384,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	@Override
 	public void onDragEnter(DragEnterEvent event) {
 		if (!(m_uploadHelper.uploadsPending())) {
-			           addStyleName("vibe-addFilesHtml5Popup-hover"        );
-			m_dndPanel.addStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
+			setDnDHighlight(true);
 		}
 		event.stopPropagation();
 		event.preventDefault();
@@ -402,8 +401,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	@Override
 	public void onDragLeave(DragLeaveEvent event) {
 		if (!(m_uploadHelper.uploadsPending())) {
-			           removeStyleName("vibe-addFilesHtml5Popup-hover"        );
-			m_dndPanel.removeStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
+			setDnDHighlight(false);
 		}
 		event.stopPropagation();
 		event.preventDefault();
@@ -412,6 +410,9 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	/**
 	 * Called when a something is being dragged over the drag and drop
 	 * popup.
+	 *
+	 * Mandatory handler, otherwise the default behavior will kick in
+	 * in and onDrop will never be called.
 	 * 
 	 * Implements the DragEnterHandler.onDragOver() method.
 	 * 
@@ -419,8 +420,9 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onDragOver(DragOverEvent event) {
-		// Mandatory handler, otherwise the default behavior will kick
-		// in and onDrop will never be called.
+		if (!(m_uploadHelper.uploadsPending())) {
+			setDnDHighlight(true);
+		}
 		event.stopPropagation();
 		event.preventDefault();
 	}
@@ -435,8 +437,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	@Override
 	public void onDrop(DropEvent event) {
 		if (!(m_uploadHelper.uploadsPending())) {
-	                   removeStyleName("vibe-addFilesHtml5Popup-hover"        );
-			m_dndPanel.removeStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
+			setDnDHighlight(false);
 			Html5UploadHelper.uploadFiles(
 				m_uploadHelper,
 				m_folderInfo,
@@ -594,6 +595,21 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		populatePopupAsync();
 	}
 
+	/*
+	 * Sets or clears the drag and drop highlighting on the popup.
+	 */
+	private void setDnDHighlight(boolean highlight) {
+		if (highlight) {
+			           addStyleName("vibe-addFilesHtml5Popup-hover"        );
+			m_dndPanel.addStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
+		}
+		
+		else {
+			           removeStyleName("vibe-addFilesHtml5Popup-hover"        );
+			m_dndPanel.removeStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
+		}
+	}
+	
 	/**
 	 * Sets the current files progress indicator.
 	 * 
