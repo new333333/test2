@@ -1534,6 +1534,28 @@ public class EntityIndexUtils {
 		doc.add(path);
     }
     
+    /**
+     * Adds a file time to the index for file folders.
+     */
+    public static void addFolderFileTime(Document doc, Folder folder, boolean fieldsOnly) {
+    	// Is the folder a file folder?
+    	org.dom4j.Document def = folder.getEntryDefDoc();
+    	String family = DefinitionUtils.getFamily(def);
+    	if (Validator.isNotNull(family) && family.equals(Definition.FAMILY_FILE)) {
+    		// Yes!  Does it have a modification timestamp?
+    		HistoryStamp stamp = folder.getModification();
+    		if (null != stamp) {
+    			// Yes!  Does that timestamp contain a date?
+    	    	Date modDate = stamp.getDate();
+    	     	if (null != modDate) {
+    	     		// Yes!  Use it to add a _fileTime field.
+    				Field path = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(modDate.getTime()));
+    				doc.add(path);
+    	     	}
+    		}
+    	}
+    }
+    
     private static ResourceDriverManager getResourceDriverManager() {
     	return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
     }
