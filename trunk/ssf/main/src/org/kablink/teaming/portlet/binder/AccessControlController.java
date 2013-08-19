@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -54,6 +55,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -451,6 +453,8 @@ public class AccessControlController extends AbstractBinderController {
 	public void setupSharedBeans(AllModulesInjected bs, WorkArea wArea, Map model) {
 		//Get the list of ShareItems that reference this workarea
 		if (wArea instanceof DefinableEntity) {
+			List sortedUsersAll = (List)model.get(WebKeys.ACCESS_SORTED_USERS_ALL);
+			List sortedGroupsAll = (List)model.get(WebKeys.ACCESS_SORTED_GROUPS_ALL);
 			ShareItemSelectSpec spec = new ShareItemSelectSpec();
 			spec.setSharedEntityIdentifier(((DefinableEntity)wArea).getEntityIdentifier());
 			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
@@ -462,6 +466,12 @@ public class AccessControlController extends AbstractBinderController {
 			for (ShareItem shareItem : shareItems) {
 				recipients.put(shareItem.getId(), getSharingModule().getSharedRecipient(shareItem));
 				deleteRights.put(shareItem.getId(), getSharingModule().testAccess(shareItem, SharingModule.SharingOperation.deleteShareItem));
+				Principal p = bs.getProfileModule().getEntry(shareItem.getRecipientId());
+				if (shareItem.getRecipientType().equals(ShareItem.RecipientType.user)) {
+					if (!sortedUsersAll.contains(p)) sortedUsersAll.add(p);
+				} else {
+					if (!sortedGroupsAll.contains(p)) sortedGroupsAll.add(p);
+				}
 			}
 			model.put(WebKeys.ACCESS_CONTROL_SHARE_ITEM_RECIPIENTS, recipients);
 			model.put(WebKeys.ACCESS_CONTROL_SHARE_ITEM_DELETE_RIGHTS, deleteRights);
