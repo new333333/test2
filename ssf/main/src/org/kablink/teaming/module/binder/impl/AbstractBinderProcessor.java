@@ -78,6 +78,7 @@ import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
@@ -166,7 +167,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	fieldsOnlyIndexArgs.put(DefinitionModule.INDEX_FIELDS_ONLY, Boolean.TRUE);
 	}
     
- 
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
@@ -2560,6 +2560,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	EntityIndexUtils.addBinderHasResourceDriver(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsTopFolder(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderCloudFolderInfo( indexDoc, (Binder) entity, fieldsOnly );
+        	if (entity instanceof Folder) {
+               	EntityIndexUtils.addFolderFileTime( indexDoc, (Folder) entity, fieldsOnly );
+        	}
         }
         
         // Add data fields driven by the entry's definition object. 

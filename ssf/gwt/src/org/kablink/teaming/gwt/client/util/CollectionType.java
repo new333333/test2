@@ -103,6 +103,16 @@ public enum CollectionType implements IsSerializable {
 	
 	/**
 	 * Returns true if this CollectionType value represents a
+	 * Net Folders collection and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isNetFolders() {
+		return (NET_FOLDERS.equals(this));
+	}
+	
+	/**
+	 * Returns true if this CollectionType value represents a
 	 * Shared by Me collection and false otherwise.
 	 * 
 	 * @return

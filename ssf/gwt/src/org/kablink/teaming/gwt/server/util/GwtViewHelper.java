@@ -2428,14 +2428,18 @@ public class GwtViewHelper {
 	 *    contain multiple parts was reverse engineered from that used
 	 *    by folder_view_common2.jsp or view_trash.jsp.
 	 */
-	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash, boolean isCollection) {
+	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash, boolean isCollection, CollectionType ct, boolean isFileFolder) {
 		// We need to handle the columns that were added for
 		// collections.
+		String dateCSK;
+		if (isFileFolder || (isCollection && (ct.isMyFiles() || ct.isNetFolders())))
+		     dateCSK = Constants.FILE_TIME_FIELD; 
+		else dateCSK = Constants.MODIFICATION_DATE_FIELD;
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
 			if      (colName.equals("author"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);}
 			else if (colName.equals("comments"))         {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                }
-			else if (colName.equals("date"))             {fc.setColumnSearchKey(Constants.MODIFICATION_DATE_FIELD);                                                              }
+			else if (colName.equals("date"))             {fc.setColumnSearchKey(dateCSK);                                                                                        }
 			else if (colName.equals("description"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
 			else if (colName.equals("descriptionHtml"))  {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
 			else if (colName.equals("download"))         {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                       }
@@ -3394,8 +3398,10 @@ public class GwtViewHelper {
 
 			// Are we showing the trash on this folder?
 			String baseNameKey;
-			boolean isCollection = folderInfo.isBinderCollection();
-			boolean isTrash      = folderInfo.isBinderTrash();
+			CollectionType collectionType = folderInfo.getCollectionType();
+			boolean        isFileFolder   = ((null != folder) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)));
+			boolean        isCollection   = folderInfo.isBinderCollection();
+			boolean        isTrash        = folderInfo.isBinderTrash();
 			if (isTrash) {
 				// Yes!  The columns in a trash view are not
 				// configurable.  Use the default trash columns.
@@ -3419,7 +3425,6 @@ public class GwtViewHelper {
 				// Yes!  Generate the base key to use for accessing
 				// column name in the string resource...
 				baseNameKey = "collections.column.";
-				CollectionType	collectionType = folderInfo.getCollectionType();
 				switch (collectionType) {
 				default:
 				case MY_FILES:        baseNameKey += "myfiles.";      break;
@@ -3585,7 +3590,7 @@ public class GwtViewHelper {
 
 			// Walk the List<FolderColumn>'s performing fixups on each
 			// as necessary.
-			fixupFCs(fcList, isTrash, isCollection);
+			fixupFCs(fcList, isTrash, isCollection, collectionType, isFileFolder);
 			
 
 			if (includeConfigurationInfo && (!isTrash) && (!isCollection)) {
@@ -4255,12 +4260,7 @@ public class GwtViewHelper {
 					String  entityType          = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
 					boolean isEntityFolder      = EntityType.folder.name().equals(     entityType);
 					boolean isEntityFolderEntry = EntityType.folderEntry.name().equals(entityType);
-					boolean isLibraryEntry;
-					if (isEntityFolderEntry)
-					     isLibraryEntry = GwtServerHelper.getBooleanFromEntryMap(entryMap, Constants.IS_LIBRARY_FIELD);
-					else isLibraryEntry = false;
-					
-					String locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
+					String  locationBinderId    = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
 					if (!(MiscUtil.hasString(locationBinderId))) {
 						locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDERS_PARENT_ID_FIELD);
 					}
@@ -4327,46 +4327,30 @@ public class GwtViewHelper {
 							
 							else {
 								// No, this isn't a custom column!
-								String	cn        = fc.getColumnName();
-								String	csk       = fc.getColumnSearchKey();
-								Object	emValue   = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
-								boolean	isModDate = csk.equals(Constants.MODIFICATION_DATE_FIELD);
-								
-								// Is it the modification date on a library entry?
-								if (isModDate && isLibraryEntry) {
-									// Yes!  Does the entry map have a file time?
-									Object ftValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.FILE_TIME_FIELD);
-									if (null != ftValue) {
-										// Yes!  Is it a single string value?
-										if (ftValue instanceof String) {
-											// Yes!  Then we use that as the modification time.
-											emValue   = new Date(Long.parseLong((String) ftValue));
-											csk       = Constants.FILE_TIME_FIELD;
-											isModDate = false;
-										}
-										
-										// No, it's not a single string value!  Is it a
-										// SearchFieldResult?
-										else if (ftValue instanceof SearchFieldResult) {
-											// Yes!  Then it's multi-valued (more than one file
-											// attachment.)  If we can get the file entry's primary
-											// attachment...
-											FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, entityId);
-											if (null != fa) {
-												// ...then we'll use it modification time.
-												emValue   = fa.getModification().getDate();
-												csk       = Constants.FILE_TIME_FIELD;
-												isModDate = false;
-											}
-		
-										}
+								String	cn      = fc.getColumnName();
+								String	csk     = fc.getColumnSearchKey();
+								Object	emValue = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
+
+								// Is it a file time column?
+								if (csk.equals(Constants.FILE_TIME_FIELD)) {
+									// Yes!  Does it have a string value?
+									if (emValue instanceof String) {
+										// Yes!  Then we use that as the modification time.
+										emValue   = new Date(Long.parseLong((String) emValue));
 									}
-								}
-								if ((null == emValue) && isModDate) {
-									emValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.CREATION_DATE_FIELD);
-									if (null != emValue) {
-										csk       = Constants.CREATION_DATE_FIELD;
-										isModDate = false;
+									
+									// No, it's not a single string value!  Is it a
+									// SearchFieldResult?
+									else if (emValue instanceof SearchFieldResult) {
+										// Yes!  Then it's multi-valued (more than one file
+										// attachment.)  If we can get the file entry's primary
+										// attachment...
+										FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, entityId);
+										if (null != fa) {
+											// ...then we'll use it modification time.
+											emValue   = fa.getModification().getDate();
+										}
+	
 									}
 								}
 								
