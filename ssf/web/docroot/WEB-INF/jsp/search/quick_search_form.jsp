@@ -116,14 +116,16 @@
 								>
 							  </td>
 							  <td>
-								<ssf:nlt tag="search.scope.current"/>&nbsp;
-								<a href="<ssf:url action="view_folder_listing" 
-									binderId="${ss_searchContextBinderId}" />"
-									title="${ss_searchContextBinder.pathName}"
-									onClick="ss_openUrlInWorkarea(this.href, '${ss_searchContextBinderId}', 'view_folder_listing');return false;"
-								>
-								  <span>${ss_searchContextBinder.title}</span>
-								</a>
+							    <c:if test="${!empty ss_searchContextBinder}">
+									<ssf:nlt tag="search.scope.current"/>&nbsp;
+									<a href="<ssf:url action="view_folder_listing" 
+										binderId="${ss_searchContextBinderId}" />"
+										title="${ss_searchContextBinder.pathName}"
+										onClick="ss_openUrlInWorkarea(this.href, '${ss_searchContextBinderId}', 'view_folder_listing');return false;"
+									>
+									  <span>${ss_searchContextBinder.title}</span>
+									</a>
+								</c:if>
 							  </td>
 							 </tr>
 							 <tr>
