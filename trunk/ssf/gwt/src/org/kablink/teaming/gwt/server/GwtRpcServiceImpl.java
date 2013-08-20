@@ -819,6 +819,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_ALL_NET_FOLDERS:
 		{
 			List<NetFolder> result;
+			int numNetFolders;
 			GetNetFoldersRpcResponseData responseData;
 			GetNetFoldersCmd gnfCmd;
 			NetFolderSelectSpec selectSpec;
@@ -828,8 +829,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			selectSpec.setFilter( gnfCmd.getFilter() );
 			selectSpec.setIncludeHomeDirNetFolders( gnfCmd.getIncludeHomeDirNetFolders() );
 			selectSpec.setRootName( gnfCmd.getRootName() );
+			selectSpec.setStartIndex( gnfCmd.getStartIndex() );
+			selectSpec.setPageSize( gnfCmd.getPageSize() );
 			result = GwtNetFolderHelper.getAllNetFolders( this, selectSpec, true );
+			numNetFolders = GwtNetFolderHelper.getNumberOfNetFolders( this, selectSpec );
 			responseData = new GetNetFoldersRpcResponseData( result );
+			responseData.setTotalCount( numNetFolders );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

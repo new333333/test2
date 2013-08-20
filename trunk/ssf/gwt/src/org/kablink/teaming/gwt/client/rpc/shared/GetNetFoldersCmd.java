@@ -46,6 +46,8 @@ public class GetNetFoldersCmd extends VibeRpcCmd
 	private boolean m_includeHomeDirNetFolders;
 	private String m_rootName;
 	private String m_filter;
+	private int m_startIndex;
+	private int m_pageSize;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -56,6 +58,8 @@ public class GetNetFoldersCmd extends VibeRpcCmd
 		m_includeHomeDirNetFolders = false;
 		m_rootName = null;
 		m_filter = null;
+		m_startIndex = -1;
+		m_pageSize = -1;
 	}
 	
 	/**
@@ -90,9 +94,25 @@ public class GetNetFoldersCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
+	public int getPageSize()
+	{
+		return m_pageSize;
+	}
+	
+	/**
+	 * 
+	 */
 	public String getRootName()
 	{
 		return m_rootName;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getStartIndex()
+	{
+		return m_startIndex;
 	}
 	
 	/**
@@ -114,8 +134,24 @@ public class GetNetFoldersCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
+	public void setPageSize( int pageSize )
+	{
+		m_pageSize = pageSize;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setRootName( String rootName )
 	{
 		m_rootName = rootName;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStartIndex( int startIndex )
+	{
+		m_startIndex = startIndex;
 	}
 }

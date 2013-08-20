@@ -173,4 +173,14 @@ public interface FolderDao {
 	 * @return
 	 */
 	public List<Folder> findNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId );
+
+	/**
+	 * Used to return the number of net folders that meet the specifications
+	 * 
+	 * @param selectSpec
+	 * @param zoneId
+	 * 
+	 * @return
+	 */
+	public int getNumberOfNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId );
 }
