@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,6 +39,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StopSyncNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StopSyncNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersCmd;
@@ -101,9 +102,11 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.Range;
 
 /**
  * ?
@@ -118,7 +121,7 @@ public class ManageNetFoldersDlg extends DlgBox
 {
 	private CellTable<NetFolder> m_netFoldersTable;
     private MultiSelectionModel<NetFolder> m_selectionModel;
-	private ListDataProvider<NetFolder> m_dataProvider;
+	private AsyncDataProvider<NetFolder> m_dataProvider;
 	private VibeSimplePager m_pager;
 	private QuickFilter m_quickFilter;
 	private PopupMenu m_filterPopupMenu;
@@ -127,11 +130,11 @@ public class ManageNetFoldersDlg extends DlgBox
 	private String m_currentFilterStr = null;
 	private SelectAllHeader m_selectAllHeader;
 	private List<NetFolder> m_listOfNetFolders;
-	private List<NetFolder> m_emptyList;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg;
 	private NetFolderSyncStatisticsDlg m_netFolderSyncStatisticsDlg;
 	private int m_width;
 	private Timer m_timer;
+	private boolean m_firstTime = true;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -185,29 +188,14 @@ public class ManageNetFoldersDlg extends DlgBox
 	/**
 	 * Add the given list of Net Folders to the dialog
 	 */
-	private void addNetFolders( List<NetFolder> listOfNetFolders )
+	private void addNetFolders( int startIndex, List<NetFolder> listOfNetFolders )
 	{
 		m_listOfNetFolders = listOfNetFolders;
-		
-		if ( m_dataProvider == null )
-		{
-			m_dataProvider = new ListDataProvider<NetFolder>( m_listOfNetFolders );
-			m_dataProvider.addDataDisplay( m_netFoldersTable );
-		}
-		else
-		{
-			m_dataProvider.setList( m_listOfNetFolders );
-			m_dataProvider.refresh();
-		}
 		
 		// Clear all selections.
 		m_selectionModel.clear();
 		
-		// Go to the first page
-		m_pager.firstPage();
-		
-		// Tell the table how many net folders we have.
-		m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
+		m_dataProvider.updateRowData( startIndex, listOfNetFolders );
 	}
 
 	/**
@@ -770,9 +758,6 @@ public class ManageNetFoldersDlg extends DlgBox
 
 							// Clear all selections.
 							m_selectionModel.clear();
-							
-							// Update the table to reflect the fact that we deleted a net folder.
-							m_dataProvider.refresh();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -788,6 +773,8 @@ public class ManageNetFoldersDlg extends DlgBox
 						@Override
 						public void execute()
 						{
+							int numDeleted = 0;
+
 							if ( response != null &&
 								 response.getResponseData() instanceof DeleteNetFolderRpcResponseData )
 							{
@@ -834,7 +821,10 @@ public class ManageNetFoldersDlg extends DlgBox
 												
 												netFolder = findNetFolderById( nextNetFolder.getId() );
 												if ( netFolder != null )
+												{
 													m_listOfNetFolders.remove( netFolder );
+													++numDeleted;
+												}
 												
 												break;
 											}
@@ -850,11 +840,11 @@ public class ManageNetFoldersDlg extends DlgBox
 							// Clear all selections.
 							m_selectionModel.clear();
 							
-							// Update the table to reflect the fact that we deleted a net folder.
-							m_dataProvider.refresh();
-
 							// Tell the table how many net folders we have.
-							m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
+							m_netFoldersTable.setRowCount( m_netFoldersTable.getRowCount()-numDeleted, true );
+
+							// Update the table to reflect the fact that we deleted a net folder.
+							refresh();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -862,7 +852,7 @@ public class ManageNetFoldersDlg extends DlgBox
 			};
 
 			// Update the table to reflect the fact that net folder deletion is in progress
-			m_dataProvider.refresh();
+			refresh();
 
 			// Issue an ajax request to delete the list of net folders.
 			cmd = new DeleteNetFoldersCmd( listOfNetFoldersToDelete );
@@ -889,22 +879,17 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 	
 	/**
-	 * Issue an ajax request to get a list of all the net folders.
+	 * Issue an ajax request to get a page of net folders.
 	 */
-	private void getAllNetFoldersFromServer( String filter, boolean includeHomeDirectories )
+	private void getPageOfNetFoldersFromServer(
+		String filter,
+		boolean includeHomeDirectories,
+		final int startIndex )
 	{
 		GetNetFoldersCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
 
 		m_currentFilterStr = filter;
-		
-		// Clear the current list we have displayed
-		{
-			if ( m_emptyList == null )
-				m_emptyList = new ArrayList<NetFolder>();
-			
-			addNetFolders( m_emptyList );
-		}
 		
 		// Create the callback that will be used when we issue an ajax call to get all the net folders.
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
@@ -937,9 +922,13 @@ public class ManageNetFoldersDlg extends DlgBox
 						if ( responseData != null )
 						{
 							List<NetFolder> listOfNetFolders;
-							
+							int count;
+
+							count = responseData.getTotalCount();
+							m_netFoldersTable.setRowCount( count, true );
+
 							listOfNetFolders = responseData.getListOfNetFolders();
-							addNetFolders( listOfNetFolders );
+							addNetFolders( startIndex, listOfNetFolders );
 						}
 					}
 				};
@@ -953,6 +942,8 @@ public class ManageNetFoldersDlg extends DlgBox
 		cmd = new GetNetFoldersCmd();
 		cmd.setIncludeHomeDirNetFolders( includeHomeDirectories );
 		cmd.setFilter( filter );
+		cmd.setPageSize( m_pager.getPageSize() );
+		cmd.setStartIndex( startIndex );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
@@ -992,11 +983,73 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 
 	/**
+	 * Issue an rpc request to get the page size from the user preferences.
+	 */
+	private void getPageSize()
+	{
+		GetPersonalPrefsCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+		
+		// Create a callback that will be called when we get the personal preferences.
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetPersonalPreferences() );
+				
+				m_pager.setPageSize( 125 );
+				init2();
+			}// end onFailure()
+	
+			/**
+			 * We successfully retrieved the user's personal preferences.  Now invoke the "edit personal preferences" dialog.
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				GwtPersonalPreferences personalPrefs;
+
+				personalPrefs = (GwtPersonalPreferences) response.getResponseData();
+				m_pager.setPageSize( personalPrefs.getNumEntriesPerPage() );
+				init2();
+			}// end onSuccess()
+		};
+
+		// Issue an ajax request to get the personal preferences from the db.
+		cmd = new GetPersonalPrefsCmd();
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
+	}
+	
+	/**
 	 * Return a list of selected net folders.
 	 */
 	public Set<NetFolder> getSelectedNetFolders()
 	{
 		return m_selectionModel.getSelectedSet();
+	}
+	
+	/**
+	 * Go to the first page and request a page of net folders.
+	 */
+	private void gotoFirstPage()
+	{
+		// Are we already on the first page?
+		if ( m_pager.getPage() == 0 )
+		{
+			// Yes
+			getPageOfNetFoldersFromServer( m_currentFilterStr, m_showHomeDirsMenuItem.isChecked(), 0 );
+		}
+		else
+		{
+			// Calling firstPage() will trigger onRangeChanged() to be called.
+			m_pager.firstPage();
+		}
 	}
 	
 	/**
@@ -1011,7 +1064,8 @@ public class ManageNetFoldersDlg extends DlgBox
 		currentState = m_showHomeDirsMenuItem.isChecked();
 		m_showHomeDirsMenuItem.setCheckedState( !currentState );
 		
-		getAllNetFoldersFromServer( m_currentFilterStr, !currentState );
+		// Go to the first page and request a page of net folders.
+		gotoFirstPage();
 	}
 	
 	/**
@@ -1020,10 +1074,57 @@ public class ManageNetFoldersDlg extends DlgBox
 	public void init()
 	{
 		hideErrorPanel();
-		
-		// Issue an ajax request to get a list of all the net folders
-		getAllNetFoldersFromServer( null, m_showHomeDirsMenuItem.isChecked() );
+		getPageSize();
+	}
+	
+	/**
+	 * 
+	 */
+	private void init2()
+	{
+		if ( m_dataProvider == null )
+		{
+			m_dataProvider = new AsyncDataProvider<NetFolder>()
+			{
+				@Override
+				protected void onRangeChanged( final HasData<NetFolder> display )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							// Is this the first time running this dialog?
+							if ( m_firstTime )
+							{
+								m_firstTime = false;
+								getPageOfNetFoldersFromServer( m_currentFilterStr, false, 0 );
+							}
+							else
+							{
+								int start;
+								boolean showHomeDir;
 
+								// No, get the next page.
+								start = display.getVisibleRange().getStart();
+								showHomeDir = m_showHomeDirsMenuItem.isChecked();
+								getPageOfNetFoldersFromServer( m_currentFilterStr, showHomeDir, start );
+							}
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			m_dataProvider.addDataDisplay( m_netFoldersTable );
+		}
+		else
+		{
+			// Go to the first page and request a page of net folders.
+			gotoFirstPage();
+		}
+		
 		// Check in the sync status every minute.
 		m_timer = new Timer()
 		{
@@ -1254,17 +1355,14 @@ public class ManageNetFoldersDlg extends DlgBox
 					// Add the net folder as the first item in the list.
 					m_listOfNetFolders.add( 0, netFolder );
 					
-					// Update the table to reflect the new folder we just created.
-					m_dataProvider.refresh();
-					
-					// Go to the first page.
-					m_pager.firstPage();
-					
 					// Select the newly created folder.
 					m_selectionModel.setSelected( netFolder, true );
 
 					// Tell the table how many folders we have.
-					m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
+					m_netFoldersTable.setRowCount( m_netFoldersTable.getRowCount()+1, true );
+					
+					// Update the table to reflect the new folder we just created.
+					refresh();
 					
 					// Ask the user if they want to sync the newly created net folder.
 					if ( Window.confirm( GwtTeaming.getMessages().manageNetFoldersDlg_PromptForSync() ) )
@@ -1308,7 +1406,7 @@ public class ManageNetFoldersDlg extends DlgBox
 				existingFolder.copy( netFolder );
 				
 				// Update the table to reflect the fact that this net folder has been modified.
-				m_dataProvider.refresh();
+				refresh();
 			} 
 		}
 	}
@@ -1326,21 +1424,38 @@ public class ManageNetFoldersDlg extends DlgBox
 		// Is this event meant for us?
 		if ( event.getFolderId().equals( MANAGE_NET_FOLDERS_ID ) )
 		{
-			final String filter;
 			Scheduler.ScheduledCommand cmd;
 			
 			// Yes.  Search for net folders using the filter entered by the user.
-			filter = event.getQuickFilter();
+			m_currentFilterStr = event.getQuickFilter();
 			
 			cmd = new Scheduler.ScheduledCommand()
 			{
 				@Override
 				public void execute()
 				{
-					getAllNetFoldersFromServer( filter, m_showHomeDirsMenuItem.isChecked() );
+					// Go to the first page and request a page of net folders.
+					gotoFirstPage();
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
+	 * Refresh the ui for the current list of net folders we are displaying
+	 */
+	private void refresh()
+	{
+		Range[] ranges;
+		
+		ranges = m_dataProvider.getRanges();
+		if ( ranges != null && ranges.length == 1 )
+		{
+			int start;
+			
+			start = ranges[0].getStart();
+			m_dataProvider.updateRowData( start, m_listOfNetFolders );
 		}
 	}
 
@@ -1405,7 +1520,7 @@ public class ManageNetFoldersDlg extends DlgBox
 								t,
 								GwtTeaming.getMessages().rpcFailure_StopSyncNetFolders() );
 
-						m_dataProvider.refresh();
+						refresh();
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -1482,7 +1597,7 @@ public class ManageNetFoldersDlg extends DlgBox
 								GwtTeaming.getMessages().rpcFailure_SyncNetFolders() );
 
 						// Update the table to reflect the fact that we sync'd a net folder.
-						m_dataProvider.refresh();
+						refresh();
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -1517,7 +1632,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		};
 
 		// Update the table to reflect the fact that net folder sync is in progress
-		m_dataProvider.refresh();
+		refresh();
 
 		// Issue an ajax request to sync the list of net folders.
 		cmd = new SyncNetFoldersCmd( selectedFolders );
@@ -1568,10 +1683,7 @@ public class ManageNetFoldersDlg extends DlgBox
 			}
 			
 			// Update the table to reflect the fact that we sync'd a net folder.
-			m_dataProvider.refresh();
-
-			// Tell the table how many net folders we have.
-			m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
+			refresh();
 		}
 	}
 	

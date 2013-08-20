@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.BinderState.FullSyncStatus;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -449,26 +450,26 @@ public class GwtNetFolderHelper
 		NetFolderSelectSpec selectSpec,
 		boolean getMinimalInfo )
 	{
-		List<Long> listOfNetFolderIds;
+		List<Folder> listOfFolders;
 		ArrayList<NetFolder> listOfNetFolders;
 		
 		listOfNetFolders = new ArrayList<NetFolder>();
 		
-		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
+		listOfFolders = NetFolderHelper.getAllNetFolders2(
 													ami.getBinderModule(),
 													ami.getWorkspaceModule(),
 													selectSpec );
 
-		if ( listOfNetFolderIds != null )
+		if ( listOfFolders != null )
 		{
-			for ( Long binderId:  listOfNetFolderIds )
+			for ( Folder nextFolder :  listOfFolders )
 			{
 				NetFolder netFolder;
 				
 				if ( getMinimalInfo )
-					netFolder = GwtNetFolderHelper.getNetFolderWithMinimalInfo( ami, binderId );
+					netFolder = GwtNetFolderHelper.getNetFolderWithMinimalInfo( ami, nextFolder );
 				else
-					netFolder = GwtNetFolderHelper.getNetFolder( ami, binderId );
+					netFolder = GwtNetFolderHelper.getNetFolder( ami, nextFolder.getId() );
 				
 				listOfNetFolders.add( netFolder );
 			}
@@ -787,15 +788,13 @@ public class GwtNetFolderHelper
 	 */
 	public static NetFolder getNetFolderWithMinimalInfo(
 		AllModulesInjected ami,
-		Long id )
+		Binder binder )
 	{
 		NetFolder netFolder;
-		Binder binder;
 		
 		netFolder = new NetFolder();
-		netFolder.setId( id );
+		netFolder.setId( binder.getId() );
 		
-		binder = ami.getBinderModule().getBinder( id );
 		netFolder.setName( binder.getTitle() );
 		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
 		netFolder.setRelativePath( binder.getResourcePath() );
@@ -819,10 +818,10 @@ public class GwtNetFolderHelper
 		NetFolderDataSyncSettings dataSyncSettings;
 		GwtJitsNetFolderConfig jitsSettings;
 		
-		netFolder = getNetFolderWithMinimalInfo( ami, id );
-		
 		binder = ami.getBinderModule().getBinder( id );
 
+		netFolder = getNetFolderWithMinimalInfo( ami, binder );
+		
 		// Get the net folder's sync schedule configuration.
 		{
 			GwtNetFolderSyncScheduleConfig config;
@@ -1116,6 +1115,23 @@ public class GwtNetFolderHelper
 		}
 		
 		return status;
+	}
+	
+	/**
+	 * Return the number of net folders that match the given criteria
+	 */
+	public static int getNumberOfNetFolders(
+		AllModulesInjected ami,
+		NetFolderSelectSpec selectSpec )
+	{
+		int numNetFolders;
+		
+		numNetFolders = NetFolderHelper.getNumberOfNetFolders(
+													ami.getBinderModule(),
+													ami.getWorkspaceModule(),
+													selectSpec );
+
+		return numNetFolders;
 	}
 	
 	/**

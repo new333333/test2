@@ -44,6 +44,8 @@ public class NetFolderSelectSpec {
 	private String m_filter;
 	private String m_rootName;
 	private boolean m_includeHomeDirNetFolders;
+	private int m_startIndex;	// Return the net folders starting at this index.
+	private int m_pageSize;
 	
 	/**
 	 * 
@@ -53,6 +55,8 @@ public class NetFolderSelectSpec {
 		m_filter = null;
 		m_rootName = null;
 		m_includeHomeDirNetFolders = false;
+		m_startIndex = -1;
+		m_pageSize = -1;
 	}
 	
 	/**
@@ -74,11 +78,27 @@ public class NetFolderSelectSpec {
 	/**
 	 * 
 	 */
+	public void setPageSize( int pageSize )
+	{
+		m_pageSize = pageSize;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setRootName( String rootName )
 	{
 		m_rootName = rootName;
 	}
 
+	/**
+	 * 
+	 */
+	public void setStartIndex( int startIndex )
+	{
+		m_startIndex = startIndex;
+	}
+	
 	/**
 	 * 
 	 */
@@ -98,8 +118,24 @@ public class NetFolderSelectSpec {
 	/**
 	 * 
 	 */
+	public int getPageSize()
+	{
+		return m_pageSize;
+	}
+	
+	/**
+	 * 
+	 */
 	public String getRootName()
 	{
 		return m_rootName;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getStartIndex()
+	{
+		return m_startIndex;
 	}
 }

@@ -43,6 +43,7 @@ import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
@@ -1178,6 +1179,12 @@ public void delete(final Folder folder) {
                 		server = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, filter, MatchMode.ANYWHERE );
                 		crit.add( Restrictions.or( server, Restrictions.or( title, path ) ) );
                 	}
+                	
+                	if ( selectSpec.getStartIndex() != -1 )
+                		crit.setFirstResult( selectSpec.getStartIndex() );
+                	
+                	if ( selectSpec.getPageSize() != -1 )
+                		crit.setMaxResults( selectSpec.getPageSize() );
 
                 	return crit.list();
                 }
@@ -1195,5 +1202,108 @@ public void delete(final Folder folder) {
     	}	              	
 
       	return result;   	
+	}
+
+    /**
+     * 
+     */
+ 	@Override
+	public int getNumberOfNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId )
+	{
+        Integer count = null;
+
+        long begin = System.nanoTime();
+		try
+		{
+			HibernateCallback callback;
+			
+			callback = new HibernateCallback() 
+            {
+                @Override
+				public Object doInHibernate( Session session ) throws HibernateException
+				{
+                	Criteria crit;
+                	String filter;
+                	String rootName;
+                	ScrollableResults results;
+                	Integer count;
+
+                	crit = session.createCriteria( Folder.class );
+                	
+                	// We only want net folders that have not been deleted
+                	crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE ) );
+                	
+                	// We only want mirrored folders
+                	crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE ) );
+                	
+                	// We only want top-level folders
+                	crit.add( Restrictions.isNull( "topFolder" ) );
+                	
+                	// Are we looking for a net folder that is associated with a specific net folder root?
+                	rootName = selectSpec.getRootName();
+                	if ( rootName != null && rootName.length() > 0 )
+                	{
+                		// Yes
+                		crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName ) );
+                	}
+                	
+        			// Are we including "home directory" net folders?
+        			if ( selectSpec.getIncludeHomeDirNetFolders() == false )
+        			{
+        				Binder parentBinder;
+        				
+        				// No
+        				crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.FALSE ) );
+        				
+        				// Get the binder where all non home dir net folders live.
+        				parentBinder = getCoreDao().loadReservedBinder(
+        														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+        														zoneId );
+        				if ( parentBinder != null )
+        				{
+        					crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder ) );
+        				}
+        			}
+                	
+                	// Do we have a filter?
+                	filter = selectSpec.getFilter();
+                	if ( filter != null && filter.length() > 0 )
+                	{
+                		Criterion title;
+                		Criterion path;
+                		Criterion server;
+                		
+                		// Yes
+                		// See if the filter is in the title or the relative path or the server name.
+                		title = Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE );
+                		path = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, filter, MatchMode.ANYWHERE );
+                		server = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, filter, MatchMode.ANYWHERE );
+                		crit.add( Restrictions.or( server, Restrictions.or( title, path ) ) );
+                	}
+                	
+                	results = crit.scroll();
+                	results.last();
+                	
+                	count = new Integer( results.getRowNumber()+1 );
+                	
+                	return count;
+                }
+            };
+ 
+            count = (Integer)getHibernateTemplate().execute( callback );
+    	}
+		catch ( Exception ex )
+		{
+			logger.error( "getNumberOfNetFolders() caught an exception: " + ex.toString() );
+		}
+    	finally 
+    	{
+    		end( begin, "getNumberOfNetFolders(NetFolderSelectSpec)");
+    	}	              	
+
+		if ( count != null )
+			return count.intValue();
+		
+      	return 0;   	
 	}
 }

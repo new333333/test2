@@ -728,6 +728,50 @@ public class NetFolderHelper
 		return listOfNetFolderIds;
 	}
 	
+
+	/**
+	 * Return all the net folders that are associated with the given net folder server
+	 */
+	public static List<Folder> getAllNetFolders2(
+		BinderModule binderModule,
+		WorkspaceModule workspaceModule,
+		NetFolderSelectSpec selectSpec )
+	{
+		List<Folder> results;
+		Workspace zone;
+		Long zoneId;
+		
+		zone = RequestContextHolder.getRequestContext().getZone();
+		zoneId = zone.getId();
+		
+		// Get the list of net folders for the given criteria.
+		results = getFolderDao().findNetFolders( selectSpec, zoneId );
+		
+		return results;
+	}
+	
+	/**
+	 * Return the number of net folders that match the given criteria
+	 */
+	public static int getNumberOfNetFolders(
+		BinderModule binderModule,
+		WorkspaceModule workspaceModule,
+		NetFolderSelectSpec selectSpec )
+	{
+		int count;
+		Workspace zone;
+		Long zoneId;
+		
+		zone = RequestContextHolder.getRequestContext().getZone();
+		zoneId = zone.getId();
+		
+		// Get the number of net folders for the given criteria.
+		count = getFolderDao().getNumberOfNetFolders( selectSpec, zoneId );
+		
+		return count;
+	}
+	
+
 	/**
 	 * Determine if the given net folder server is fully configured
 	 */
