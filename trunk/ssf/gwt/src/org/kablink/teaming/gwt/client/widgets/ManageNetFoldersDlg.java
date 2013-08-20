@@ -662,7 +662,17 @@ public class ManageNetFoldersDlg extends DlgBox
 		}
 
 		mainPanel.add( menuPanel );
-		mainPanel.add( m_netFoldersTable );
+		
+		// Put the table that holds the list of net folders into a scrollable div
+		{
+			FlowPanel panel;
+		
+			panel = new FlowPanel();
+			panel.addStyleName( "manageNetFoldersDlg_ListOfNetFoldersPanel" );
+			panel.add( m_netFoldersTable );
+			mainPanel.add( panel );
+		}
+		
 		mainPanel.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
 		mainPanel.add( m_pager );
 		mainPanel.setCellHeight( m_pager, "100%" );
@@ -1014,10 +1024,20 @@ public class ManageNetFoldersDlg extends DlgBox
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtPersonalPreferences personalPrefs;
+				ScheduledCommand cmd;
 
 				personalPrefs = (GwtPersonalPreferences) response.getResponseData();
 				m_pager.setPageSize( personalPrefs.getNumEntriesPerPage() );
-				init2();
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						init2();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}// end onSuccess()
 		};
 
@@ -1135,6 +1155,21 @@ public class ManageNetFoldersDlg extends DlgBox
 			}
 		};
 		m_timer.scheduleRepeating( 60000 );
+
+		// Set the height of the panel that holds the list of net folders
+		{
+			FlowPanel panel;
+			int height;
+			
+			panel = (FlowPanel)m_netFoldersTable.getParent();
+			
+			// Figure out how tall the panel should be.
+			height = getOffsetHeight();
+			height -= panel.getAbsoluteTop();
+			height -= m_pager.getOffsetHeight();
+			height += 10;
+			panel.getElement().getStyle().setHeight( height, Unit.PX );
+		}
 	}
 	
 	/**
