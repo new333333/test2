@@ -83,7 +83,7 @@ JSR 311 (JAX-RS) API 1.1.1 (from Jersey distribution)
 JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6
 JTA 1.0.1b
-JTDS 1.3.1 (SQL Server JDBC Driver)
+JTDS 1.2.8 (SQL Server JDBC Driver)
 JTidy r938
 juh.jar (from OpenOffice 2.0)
 jurt.jar (from OpenOffice 2.0)
