@@ -1725,15 +1725,15 @@ public class GwtViewHelper {
 
 		// Dump the contents of the SelectionDetails.
 		GwtLogHelper.debug(m_logger, "...dumpSelectionDetails():");
-		GwtLogHelper.debug(m_logger, "......Has AdHoc User Workspaces:                     " + sd.hasAdHocUserWorkspaces()                );
-		GwtLogHelper.debug(m_logger, "......Has AdHoc User Workspaces With Nested Remote:  " + sd.hasAdHocUserWorkspacesWithNestedRemote());
-		GwtLogHelper.debug(m_logger, "......Has Purge Confirmatiions:                      " + sd.hasPurgeConfirmations()                 );
-		GwtLogHelper.debug(m_logger, "......Has Remote Selections:                         " + sd.hasRemoteSelections()                   );
-		GwtLogHelper.debug(m_logger, "......Has Remote Workspaces:                         " + sd.hasRemoteWorkspaces()                   );
-		GwtLogHelper.debug(m_logger, "......Has Unclassified:                              " + sd.hasUnclassified()                       );
-		GwtLogHelper.debug(m_logger, "......Has User Workspaces:                           " + sd.hasUserWorkspaces()                     );
-		GwtLogHelper.debug(m_logger, "......User Workspace Count:                          " + sd.getUserWorkspaceCount()                 );
-		GwtLogHelper.debug(m_logger, "......Total Count:                                   " + sd.getTotalCount()                         );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc User Workspaces:               " + sd.hasAdHocUserWorkspaces()         );
+		GwtLogHelper.debug(m_logger, "......Has AdHoc User Workspaces (Purge Only):  " + sd.hasAdHocUserWorkspacesPurgeOnly());
+		GwtLogHelper.debug(m_logger, "......Has Purge Confirmatiions:                " + sd.hasPurgeConfirmations()          );
+		GwtLogHelper.debug(m_logger, "......Has Purge Only Selections:               " + sd.hasPurgeOnlySelections()         );
+		GwtLogHelper.debug(m_logger, "......Has Purge Only Workspaces:               " + sd.hasPurgeOnlyWorkspaces()         );
+		GwtLogHelper.debug(m_logger, "......Has Unclassified:                        " + sd.hasUnclassified()                );
+		GwtLogHelper.debug(m_logger, "......Has User Workspaces:                     " + sd.hasUserWorkspaces()              );
+		GwtLogHelper.debug(m_logger, "......User Workspace Count:                    " + sd.getUserWorkspaceCount()          );
+		GwtLogHelper.debug(m_logger, "......Total Count:                             " + sd.getTotalCount()                  );
 	}
 	
 	/*
@@ -1867,25 +1867,51 @@ public class GwtViewHelper {
 			// Were we given the IDs of any users to enable?
 			if (MiscUtil.hasItems(userIds)) {
 				// Yes!  Scan them.
-				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
+				FolderModule  fm                          = bs.getFolderModule();
+				ProfileModule pm                          = bs.getProfileModule();
+				boolean       isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
 				for (Long userId:  userIds) {
 					// Can we resolve the user being disabled?
-					User	user      = GwtServerHelper.getResolvedUser(userId);
-					String	userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
-					if (null != user) {
-						// Yes!  Was this user provisioned from an LDAP
-						// source?
-						if (user.getIdentityInfo().isFromLdap()) {
-							// Yes!  They can't be enabled this way.
-							// Ignore it.
-							reply.addError(NLT.get("enableUserError.fromLdap", new String[]{userTitle}));
-							continue;
-						}
-					}
+					User	user         = GwtServerHelper.getResolvedUser(userId);
+					boolean userResolved = (null != user);
+					String	userTitle    = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), (userResolved ? user.getTitle() : ""));
 					
 					try {
+						// Did we resolve the user?
+						if (userResolved) {
+							// Yes!  Was this user provisioned from an
+							// LDAP source?
+							if (user.getIdentityInfo().isFromLdap()) {
+								// Yes!  They can't be enabled this way.
+								// Ignore it.
+								reply.addError(NLT.get("enableUserError.fromLdap", new String[]{userTitle}));
+								continue;
+							}
+							
+							// Is this user's workspace in the trash?
+							if (pm.getUserWorkspacePreDeleted(userId)) {
+								// Yes!  Then they can't be enabled.
+								// Ignore it.
+								reply.addError(NLT.get("enableUserError.WorkspaceTrashed", new String[]{userTitle}));
+								continue;
+							}
+							
+							// Is this user's My Files Storage folder in
+							// the trash?
+							Long mfId = SearchUtils.getMyFilesFolderId(bs, user, false);
+							if (null != mfId) {
+								Folder mf = fm.getFolder(mfId);
+								if ((null != mf) && mf.isPreDeleted()) {
+									// Yes!  Then they can't be
+									// enabled.  Ignore it.
+									reply.addError(NLT.get("enableUserError.MyFilesTrashed", new String[]{userTitle}));
+									continue;
+								}
+							}
+						}
+
 						// Can we enable this user?
-						bs.getProfileModule().disableEntry(userId, false);	// false -> Enable.
+						pm.disableEntry(userId, false);	// false -> Enable.
 					}
 
 					catch (Exception e) {
@@ -5720,22 +5746,21 @@ public class GwtViewHelper {
 				if (MiscUtil.hasItems(resolvedList)) {
 					for (Object userO: resolvedList) {
 						// Does this user have a workspace?
-						User user     = ((User) userO);
-						Long userWSId = user.getWorkspaceId();
-						if (null != userWSId) {
-							// Yes!  Process whether contains only
-							// items from personal storage or not.
-							if (SearchUtils.binderHasNestedRemoteFolders(bs, userWSId)) {
-								reply.setHasAdHocUserWorkspacesWithNestedRemote(true);
+						User user = ((User) userO);
+						if (null != user.getWorkspaceId()) {
+							// Yes!  Process whether we can trash this
+							// user's workspace or not.
+							if (TrashHelper.canTrashUserWorkspace(bs, user)) {
+								reply.setHasAdHocUserWorkspaces(true);
+							}
+							else {
+								reply.setHasAdHocUserWorkspacesPurgeOnly(true);
 								reply.addPurgeConfirmation(
 									NLT.get(
 										"purgeConfirmation.user",
 										new String[] {
 											user.getTitle()
 										}));
-							}
-							else {
-								reply.setHasAdHocUserWorkspaces(true);
 							}
 							
 							// Increment the count of user workspaces.

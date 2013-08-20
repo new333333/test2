@@ -60,7 +60,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -200,9 +200,9 @@ public class GwtDeleteHelper {
 					for (Object userO: resolvedList) {
 						User user   = ((User) userO);
 						Long userId = user.getId();
-						if (SearchUtils.binderHasNestedRemoteFolders(bs, user.getWorkspaceId()))
-						     purgeIds.add(userId);
-						else trashIds.add(userId);
+						if (TrashHelper.canTrashUserWorkspace(bs, user))
+						     trashIds.add(userId);
+						else purgeIds.add(userId);
 						userIds.remove(userId);
 					}
 				}
@@ -330,7 +330,8 @@ public class GwtDeleteHelper {
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
 			if (MiscUtil.hasItems(userIds)) {
 				// Yes!  Scan them.
-				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
+				ProfileModule pm                          = bs.getProfileModule();
+				boolean       isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
 				for (Long userId:  userIds) {
 					// Can we resolve the user being delete?
 					User user = GwtServerHelper.getResolvedUser(userId);
@@ -344,10 +345,19 @@ public class GwtDeleteHelper {
 						}
 
 						// Is it a reserved user?
+						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
 						if (user.isReserved()) {
 							// Yes!  They can't do that.  Ignore it.
-							String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
 							reply.addError(NLT.get("deleteUserWorkspaceError.reserved", new String[]{userTitle}));
+							continue;
+						}
+						
+						// Was this user provisioned from an LDAP
+						// source?
+						if (user.getIdentityInfo().isFromLdap()) {
+							// Yes!  Their workspace can't be trashed.
+							// Ignore it.
+							reply.addError(NLT.get("deleteUserWorkspaceError.ldap", new String[]{userTitle}));
 							continue;
 						}
 					}
@@ -356,8 +366,10 @@ public class GwtDeleteHelper {
 						// Does this user have a workspace ID?
 						Long wsId = user.getWorkspaceId();
 						if (null != wsId) {
-							// Yes!  Delete the workspace.
+							// Yes!  Delete the workspace and disable
+							// the user.
 							TrashHelper.preDeleteBinder(bs, wsId);
+							pm.disableEntry(userId, true);	// true -> Disable.
 						}
 					}
 

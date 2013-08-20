@@ -2759,6 +2759,7 @@ public interface GwtTeamingMessages extends Messages
 	String deleteSelectedUsersDlgHeader();
 	String deleteSelectedUsersDlgLabel_Trash();
 	String deleteSelectedUsersDlgLabel_TrashAdHoc();
+	String deleteSelectedUsersDlgLabel_TrashDisabled();
 	String deleteSelectedUsersDlgLabel_Purge();
 	String deleteSelectedUsersDlgLabel_PurgeAll();
 	String deleteSelectedUsersDlgLabel_PurgeOnly();

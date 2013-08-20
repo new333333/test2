@@ -47,11 +47,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class SelectedUsersDetails implements IsSerializable, VibeRpcResponseData {
-	private boolean						m_hasAdHocUserWorkspaces;					// true -> Selections include user Workspaces.
-	private boolean						m_hasAdHocUserWorkspacesWithNestedRemote;	// true -> Selections include user Workspaces that contain nested remote (i.e., Mirrored, Net or Cloud) folders.
-	private ErrorListRpcResponseData	m_purgeConfirmations;						// Set containing information about the items that will be purged.
-	private int							m_totalCount;								// Total count of everything being tracked.
-	private int							m_userWorkspaceCount;						// Count of user's with workspaces selected.
+	private boolean						m_hasAdHocUserWorkspaces;			// true -> Selections include user Workspaces.
+	private boolean						m_hasAdHocUserWorkspacesPurgeOnly;	// true -> Selections include user Workspaces that can only be purged (i.e., LDAP users or their  workspaces contain Mirrored, Net or Cloud folders.)
+	private ErrorListRpcResponseData	m_purgeConfirmations;				// Set containing information about the items that will be purged.
+	private int							m_totalCount;						// Total count of everything being tracked.
+	private int							m_userWorkspaceCount;				// Count of user's with workspaces selected.
 	
 	/**
 	 * Constructor method.
@@ -73,27 +73,27 @@ public class SelectedUsersDetails implements IsSerializable, VibeRpcResponseData
 	 * 
 	 * @return
 	 */
-	public boolean         hasAdHocUserWorkspaces()                 {return m_hasAdHocUserWorkspaces;                }
-	public boolean         hasAdHocUserWorkspacesWithNestedRemote() {return m_hasAdHocUserWorkspacesWithNestedRemote;}
-	public boolean         hasPurgeConfirmations()                  {return m_purgeConfirmations.hasErrors();        }
-	public boolean         hasRemoteSelections()                    {return hasRemoteWorkspaces();                   }
-	public boolean         hasRemoteWorkspaces()                    {return m_hasAdHocUserWorkspacesWithNestedRemote;}
-	public boolean         hasUnclassified()                        {return (0 < getUnclassifiedCount());            }
-	public boolean         hasUserWorkspaces()                      {return (0 < m_userWorkspaceCount);              }
-	public int             getTotalCount()                          {return m_totalCount;                            }
-	public int             getUnclassifiedCount()                   {return (m_totalCount - getUserWorkspaceCount());}
-	public int             getUserWorkspaceCount()                  {return m_userWorkspaceCount;                    }
-	public List<ErrorInfo> getPurgeConfirmations()                  {return m_purgeConfirmations.getErrorList();     }
+	public boolean         hasAdHocUserWorkspaces()          {return m_hasAdHocUserWorkspaces;                }
+	public boolean         hasAdHocUserWorkspacesPurgeOnly() {return m_hasAdHocUserWorkspacesPurgeOnly;       }
+	public boolean         hasPurgeConfirmations()           {return m_purgeConfirmations.hasErrors();        }
+	public boolean         hasPurgeOnlySelections()          {return hasPurgeOnlyWorkspaces();                }
+	public boolean         hasPurgeOnlyWorkspaces()          {return m_hasAdHocUserWorkspacesPurgeOnly;       }
+	public boolean         hasUnclassified()                 {return (0 < getUnclassifiedCount());            }
+	public boolean         hasUserWorkspaces()               {return (0 < m_userWorkspaceCount);              }
+	public int             getTotalCount()                   {return m_totalCount;                            }
+	public int             getUnclassifiedCount()            {return (m_totalCount - getUserWorkspaceCount());}
+	public int             getUserWorkspaceCount()           {return m_userWorkspaceCount;                    }
+	public List<ErrorInfo> getPurgeConfirmations()           {return m_purgeConfirmations.getErrorList();     }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void addPurgeConfirmation(                     String  confirmation)                           {m_purgeConfirmations.addWarning(confirmation);                                    }
-	public void incrUserWorkspaceCount()                                                                  {m_userWorkspaceCount                    += 1;                                     }
-	public void setHasAdHocUserWorkspaces(                boolean hasAdHocUserWorkspaces)                 {m_hasAdHocUserWorkspaces                 = hasAdHocUserWorkspaces;                }
-	public void setHasAdHocUserWorkspacesWithNestedRemote(boolean hasAdHocUserWorkspacesWithNestedRemote) {m_hasAdHocUserWorkspacesWithNestedRemote = hasAdHocUserWorkspacesWithNestedRemote;}
-	public void setTotalCount(                            int     totalCount)                             {m_totalCount                             = totalCount;                            }
-	public void setUserWorkspaceCount(                    int     userWorkspaceCount)                     {m_userWorkspaceCount                     = userWorkspaceCount;                    }
+	public void addPurgeConfirmation(              String  confirmation)                    {m_purgeConfirmations.addWarning(confirmation);                      }
+	public void incrUserWorkspaceCount()                                                    {m_userWorkspaceCount             += 1;                              }
+	public void setHasAdHocUserWorkspaces(         boolean hasAdHocUserWorkspaces)          {m_hasAdHocUserWorkspaces          = hasAdHocUserWorkspaces;         }
+	public void setHasAdHocUserWorkspacesPurgeOnly(boolean hasAdHocUserWorkspacesPurgeOnly) {m_hasAdHocUserWorkspacesPurgeOnly = hasAdHocUserWorkspacesPurgeOnly;}
+	public void setTotalCount(                     int     totalCount)                      {m_totalCount                      = totalCount;                     }
+	public void setUserWorkspaceCount(             int     userWorkspaceCount)              {m_userWorkspaceCount              = userWorkspaceCount;             }
 }
