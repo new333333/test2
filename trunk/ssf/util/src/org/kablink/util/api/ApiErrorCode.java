@@ -52,6 +52,7 @@ public enum ApiErrorCode {
 	
 	// Binder errors
 	BINDER_NOT_FOUND, // No binder found with this name or id
+	BINDER_SIMPLE_NAME_EXISTS, //A simple name already exists
 	
 	// Definition errors
 	INVALID_DEFINITION, // Invalid definition

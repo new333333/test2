@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.module.binder.impl.SimpleNameAlreadyExistsException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -789,7 +790,7 @@ public interface BinderModule {
 	 * 
 	 * @param simpleName
 	 */
-	public void addSimpleName(String name, Long binderId, String binderType);
+	public void addSimpleName(String name, Long binderId, String binderType) throws SimpleNameAlreadyExistsException;
 	
 	/**
 	 * Delete the simple name.

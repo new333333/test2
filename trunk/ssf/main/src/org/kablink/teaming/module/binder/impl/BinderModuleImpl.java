@@ -2757,12 +2757,25 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	@Override
-	public void addSimpleName(String name, Long binderId, String binderType) {
+	public void addSimpleName(String name, Long binderId, String binderType) 
+			throws SimpleNameAlreadyExistsException {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageSimpleName);
 		SimpleName simpleName = new SimpleName(RequestContextHolder
 				.getRequestContext().getZoneId(), name.toLowerCase(), binderId,
 				binderType);
+
+		//Make sure this name doesn't map into an email address that is already in use
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		SimpleName testName = getCoreDao().loadSimpleNameByEmailAddress(simpleName.getEmailAddress(), zoneId);
+		if (testName != null) {
+			//A simple name with this email address already exists. Make sure it is the same as what we are trying to create
+			if (!testName.getId().equals(simpleName.getId())) {
+				//There is already a different simple name with the same email address. Reject this new one.
+				throw new SimpleNameAlreadyExistsException(testName.getName());
+			}
+		}
+		
 		getCoreDao().save(simpleName);
 	}
 
