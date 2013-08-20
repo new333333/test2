@@ -1784,6 +1784,8 @@ public class BinderHelper {
 			model.put(WebKeys.IS_SITE_ADMIN, true);
 		model.put(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, 
 				PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, ""));	
+		model.put(WebKeys.SIMPLE_URL_EMAIL_NAME_EXISTS_ERROR, 
+				PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_EMAIL_NAME_EXISTS_ERROR, ""));	
 		model.put(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, 
 				PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, ""));	
 

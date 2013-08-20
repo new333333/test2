@@ -1359,6 +1359,7 @@ public class WebKeys {
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SIMPLE_URL_NAME_EXISTS_ERROR="ss_simpleUrlNameExistsError";
+    public static final String SIMPLE_URL_EMAIL_NAME_EXISTS_ERROR="ss_simpleUrlEmailNameExistsError";
     public static final String SIMPLE_URL_INVALID_CHARACTERS="ss_simpleUrlInvalidCharactersError";
     public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
     public static final String SMPT_ENABLED="ssSMTPEnabled";
