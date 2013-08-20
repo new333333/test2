@@ -72,6 +72,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -1054,6 +1055,33 @@ public class TrashHelper {
 		return buildTrashTabs(request, binder, model, false);
 	}
 
+	/**
+	 * Returns true if the user has a workspace that can be trashed and
+	 * false otherwise.
+	 *
+	 * Note:  We can't trash LDAP users workspaces or workspaces that
+	 *        contain remote folders.
+	 *	
+     * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static boolean canTrashUserWorkspace(AllModulesInjected bs, User user) {
+		// Does the user have a workspace?
+		Long    userWSId = user.getWorkspaceId();
+		boolean reply    = (null != userWSId);
+		if (reply) {
+			// Yes!  It can be deleted if the user wasn't provisioned
+			// from LDAP and if their workspace doesn't contain any
+			// nested remote folders.
+			reply =
+				((!(user.getIdentityInfo().isFromLdap())) &&
+				 (!(SearchUtils.binderHasNestedRemoteFolders(bs, userWSId))));
+		}
+		return reply;
+	}
+	
 	/*
 	 * Writes logging information about a binder change. 
 	 */

@@ -406,17 +406,22 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}// end getGuestUser()
 	
 	
-	private User getUser(Long userId, boolean modify) {
+	private User getUser(Long userId, boolean modify, boolean checkActive) {
   		User currentUser = RequestContextHolder.getRequestContext().getUser();
    		User user;
 		if (userId == null) user = currentUser;
 		else if (userId.equals(currentUser.getId())) user = currentUser;
 		else {
-			user = getProfileDao().loadUser(userId, currentUser.getZoneId());
+			if (checkActive)
+			     user = getProfileDao().loadUser(           userId, currentUser.getZoneId());
+			else user = getProfileDao().loadUserDeadOrAlive(userId, currentUser.getZoneId());
 			if (modify) AccessUtils.modifyCheck(user);
 			else AccessUtils.readCheck(user);
 		}
 		return user;		
+	}
+	private User getUser(Long userId, boolean modify) {
+		return getUser(userId, modify, true);
 	}
 	private UserProperties getProperties(User user, Long binderId) {
 		UserProperties uProps=null;
@@ -2554,7 +2559,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     //RO transaction
     @Override
     public Boolean getUserWorkspacePreDeleted(Long userId) {
-   		User user = getUser(userId, true);
+   		User user = getUser(userId, true, false);
 		return user.isWorkspacePreDeleted();
     }
     
@@ -2567,7 +2572,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     //RW transaction
     @Override
     public void setUserWorkspacePreDeleted(Long userId, boolean userWorkspacePreDeleted) {
-   		User user = getUser(userId, true);
+   		User user = getUser(userId, true, false);
 		user.setWorkspacePreDeleted(userWorkspacePreDeleted);
     }
 }

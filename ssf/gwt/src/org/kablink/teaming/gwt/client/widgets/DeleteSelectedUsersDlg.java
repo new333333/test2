@@ -190,6 +190,7 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 	 */
 	private void doDeletesNow() {
 		// Determine how to perform the delete...
+		boolean workspacesTrashed;
 		DeleteSelectedUsersMode dsuMode;
 		switch (m_dialogMode) {
 		default:
@@ -197,18 +198,55 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 		case Situation3:
 			if (m_purgeRB.getValue()) {
 				dsuMode = DeleteSelectedUsersMode.PURGE_ALL_WORKSPACES;
+				workspacesTrashed = false;
 			}
 			
 			else {
 				if (DialogMode.Situation1.equals(m_dialogMode))
 				     dsuMode = DeleteSelectedUsersMode.TRASH_ALL_WORKSPACES;
 				else dsuMode = DeleteSelectedUsersMode.TRASH_ADHOC_WORKSPACES_PURGE_OTHERS;
+				workspacesTrashed = true;
 			}
 			break;
 			
 		case Situation2:
 			dsuMode = DeleteSelectedUsersMode.PURGE_ALL_WORKSPACES;
+			workspacesTrashed = false;
 			break;
+		}
+
+		// If we trashed any user workspaces, wrap the callback so that
+		// we can tell the user that we disabled the user's too. 
+		DeleteUsersCallback duCallbackWrapper;
+		if (workspacesTrashed) {
+			final String trashDisabledMsg = m_messages.deleteSelectedUsersDlgLabel_TrashDisabled();
+			duCallbackWrapper = new DeleteUsersCallback() {
+				@Override
+				public void operationCanceled() {
+					GwtClientHelper.deferredAlert(trashDisabledMsg);
+					if (null != m_duCallback) {
+						m_duCallback.operationCanceled();
+					}
+				}
+	
+				@Override
+				public void operationComplete() {
+					GwtClientHelper.deferredAlert(trashDisabledMsg);
+					if (null != m_duCallback) {
+						m_duCallback.operationComplete();
+					}
+				}
+	
+				@Override
+				public void operationFailed() {
+					if (null != m_duCallback) {
+						m_duCallback.operationFailed();
+					}
+				}
+			};
+		}
+		else {
+			duCallbackWrapper = m_duCallback;
 		}
 
 		// ...and do it.
@@ -218,7 +256,7 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 			((null == m_purgeWorkspaceCB) ?
 				false                     :
 				m_purgeWorkspaceCB.getValue()),
-			m_duCallback);
+			duCallbackWrapper);
 	}
 	
 	/**
@@ -580,8 +618,8 @@ public class DeleteSelectedUsersDlg extends DlgBox implements EditSuccessfulHand
 	 *     https://teaming.innerweb.novell.com/ssf/a/c/p_name/ss_forum/p_action/1/action/view_permalink/entityType/folderEntry/entryId/422728/vibeonprem_url/1
 	 */
 	private void setDialogMode() {
-		// Is anything remote selected?
-		if (m_selectedUsersDetails.hasRemoteSelections()) {
+		// Are there any purge only selections?
+		if (m_selectedUsersDetails.hasPurgeOnlySelections()) {
 			// Yes!  Are there any users from personal storage?
 			if (m_selectedUsersDetails.hasAdHocUserWorkspaces()) {
 				// Yes!  We have a mixture.  This is situation 3.
