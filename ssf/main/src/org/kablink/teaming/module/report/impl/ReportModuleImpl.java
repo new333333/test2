@@ -388,7 +388,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			} catch(Exception skipThis) {
 				continue;
 			}
-			if (entity == null || entity.isDeleted()) continue;
+			if (entity == null || entity.isDeleted() || 
+					(entity instanceof FolderEntry && ((FolderEntry)entity).isPreDeleted())) continue;
 			row.put(ReportModule.ENTITY, entity);
 			row.put(ReportModule.DATE, cols[2]);
 			row.put(ReportModule.FILE_ID, cols[3]);
