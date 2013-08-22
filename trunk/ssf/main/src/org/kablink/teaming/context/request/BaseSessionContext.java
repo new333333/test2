@@ -54,4 +54,9 @@ public class BaseSessionContext implements SessionContext {
     	}
     	return properties;
     }
+    
+	@Override
+	public Object getSessionObject() {
+		return null;
+	}
 }
