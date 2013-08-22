@@ -76,17 +76,20 @@ public class EntryDataErrors implements Serializable {
 		// Problem types
 		public static int GENERAL_PROBLEM = 0;
 		public static int INVALID_HTML = 1;
+		public static int INVALID_CAPTCHA_RESPONSE = 2;
 		
 		// Message codes corresponding to each problem type.
 		public static String[] typeCodes = {
 			"general.error.anErrorOccurred",
-			"general.error.invalidHTML"
+			"general.error.invalidHTML",
+			"captcha.error.invalidResponse"
 		};
 		
 		// API error codes corresponding to each problem type.
 		public static ApiErrorCode[] apiErrorCodes = {
 			ApiErrorCode.SERVER_ERROR,
-			ApiErrorCode.INVALID_HTML
+			ApiErrorCode.INVALID_HTML,
+			ApiErrorCode.INVALID_CAPTCHA_RESPONSE
 		};
 		
 		// HTTP status codes corresponding to each problem type.
