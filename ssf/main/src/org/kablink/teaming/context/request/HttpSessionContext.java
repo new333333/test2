@@ -60,4 +60,9 @@ public class HttpSessionContext extends BaseSessionContext {
     	}
     	return props;
     }
+    
+	@Override
+	public Object getSessionObject() {
+		return session;
+	}
 }

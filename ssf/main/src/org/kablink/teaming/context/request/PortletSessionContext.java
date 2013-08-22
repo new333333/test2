@@ -57,4 +57,9 @@ public class PortletSessionContext extends BaseSessionContext {
     	}
     	return props;
     }
+	
+	@Override
+	public Object getSessionObject() {
+		return session;
+	}
 }
