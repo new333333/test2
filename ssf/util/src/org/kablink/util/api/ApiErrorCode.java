@@ -93,6 +93,7 @@ public enum ApiErrorCode {
 	UNSUPPORTED_MEDIA_TYPE, // Unsupported media type
 	INVALID_ENTITY_TYPE, // Entity type is unknown or not supported by this method
 	INVALID_HTML, // Input HTML is invalid
+	INVALID_CAPTCHA_RESPONSE, // Captcha response invalid
 	ILLEGAL_CHARACTER, // Illegal character in the input
 	TITLE_EXISTS, // The title already exists
 	BAD_INPUT, // Bad input (catch-all category)

@@ -89,6 +89,13 @@ public class DefinitionUtils {
 		Utils.end(logger, startTime, "getPropertyValue(Element,String,String)", name, attribute);
 		return value;
    }
+   public static boolean getPropertyBooleanValue(Element element, String name) {
+		String value = getPropertyValue(element, name);
+		if (value != null) {
+			if (value.equals("true")) return true;
+		}
+		return false;
+   }
     public static List getPropertyValueList(Element element, String name) {
 		long startTime = System.nanoTime();
 		List resultElements = element.selectNodes("./properties/property[@name='" + name + "']");

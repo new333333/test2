@@ -44,7 +44,7 @@ import org.kablink.teaming.ObjectKeys;
  *
  */
 public class PortletSessionContext extends BaseSessionContext {
-	private PortletSession session;
+	public PortletSession session;
 	public PortletSessionContext(PortletSession session) {
 		this.session = session;
 	}

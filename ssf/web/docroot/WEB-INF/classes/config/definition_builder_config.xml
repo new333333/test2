@@ -3024,6 +3024,19 @@
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 	</item>
 	
+	<item name="captcha" caption="__captcha" multipleAllowed="false" type="data" dataType="text" 
+	    category="commonEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__captcha" />
+			<property name="name" caption="__name" type="text" value="_captcha" readonly="true" />
+			<property name="guestOnly" caption="__guestOnlyCaptcha" type="boolean" default="true"></property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/captcha.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/captcha.jsp" />
+		</jsps>
+	</item>
+		
 	<item name="graphic" caption="__graphic" type="data" dataType="graphic" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
