@@ -219,6 +219,35 @@ public class NetFolderHelper
 		HomeDirInfo homeDirInfo,
 		User user ) throws WriteFilesException, WriteEntryDataException
 	{
+		createHomeDirNetFolder(
+							profileModule,
+							templateModule,
+							binderModule,
+							folderModule,
+							adminModule,
+							resourceDriverModule,
+							asyncManager,
+							homeDirInfo,
+							user,
+							true );
+	}
+	
+	/**
+	 * Create a net folder and if needed a net folder root for the given home directory information
+	 */
+	@SuppressWarnings("unchecked")
+	public static void createHomeDirNetFolder(
+		ProfileModule profileModule,
+		TemplateModule templateModule,
+		BinderModule binderModule,
+		final FolderModule folderModule,
+		AdminModule adminModule,
+		ResourceDriverModule resourceDriverModule,
+		RunAsyncManager asyncManager,
+		HomeDirInfo homeDirInfo,
+		User user,
+		boolean updateExistingNetFolder ) throws WriteFilesException, WriteEntryDataException
+	{
 		Long workspaceId;
 		String serverAddr = null;
 		String volume = null;
@@ -331,46 +360,50 @@ public class NetFolderHelper
 			}
 			else
 			{
-				String currentServerUNC = null;
-				
 				// A home dir net folder already exists for this user.
-				
-				// Get the server unc path that is currently being used by the user's home dir net folder.
+				// Are we supposed to try and update an existing net folder?
+				if ( updateExistingNetFolder )
 				{
-					ResourceDriver driver;
+					String currentServerUNC = null;
 					
-					driver = netFolderBinder.getResourceDriver();
-					if ( driver != null )
-					{
-						ResourceDriverConfig currentRdConfig;
-						
-						currentRdConfig = driver.getConfig();
-						if ( currentRdConfig != null )
-							currentServerUNC = currentRdConfig.getRootPath();
-					}
-				}
-						
-				// Did any information about the home directory change?
-				if ( serverUNC.equalsIgnoreCase( currentServerUNC ) == false ||
-					 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
-				{
-					Set deleteAtts;
-					Map fileMap = null;
-					MapInputData mid;
-	   				Map formData = null;
-
 					// Yes
-					deleteAtts = new HashSet();
-					fileMap = new HashMap();
-	   				formData = new HashMap();
-			   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rdConfig.getName() );
-			   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
-	   				mid = new MapInputData( formData );
-
-	   				// Modify the existing net folder with the home directory information.
-		   			binderModule.modifyBinder( netFolderBinder.getId(), mid, fileMap, deleteAtts, null );
-		   			
-		   			syncNeeded = false;
+					// Get the server unc path that is currently being used by the user's home dir net folder.
+					{
+						ResourceDriver driver;
+						
+						driver = netFolderBinder.getResourceDriver();
+						if ( driver != null )
+						{
+							ResourceDriverConfig currentRdConfig;
+							
+							currentRdConfig = driver.getConfig();
+							if ( currentRdConfig != null )
+								currentServerUNC = currentRdConfig.getRootPath();
+						}
+					}
+							
+					// Did any information about the home directory change?
+					if ( serverUNC.equalsIgnoreCase( currentServerUNC ) == false ||
+						 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
+					{
+						Set deleteAtts;
+						Map fileMap = null;
+						MapInputData mid;
+		   				Map formData = null;
+	
+						// Yes
+						deleteAtts = new HashSet();
+						fileMap = new HashMap();
+		   				formData = new HashMap();
+				   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rdConfig.getName() );
+				   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
+		   				mid = new MapInputData( formData );
+	
+		   				// Modify the existing net folder with the home directory information.
+			   			binderModule.modifyBinder( netFolderBinder.getId(), mid, fileMap, deleteAtts, null );
+			   			
+			   			syncNeeded = false;
+					}
 				}
 			}
 			

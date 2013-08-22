@@ -429,11 +429,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			try
 			{
 				boolean logErrors = false;
+				boolean webClient = false;
 				
 				// We only want to log errors when the client is the browser.  Otherwise, we
 				// generate too many errors in the log.
 				if ( authenticatorName != null && authenticatorName.equalsIgnoreCase( "web" ) )
+				{
 					logErrors = true;
+					webClient = true;
+				}
 				
 				// Does this user have a home directory attribute in ldap?
 				homeDirInfo = ldapModule.readHomeDirInfoFromDirectory( user.getName(), userName, logErrors );
@@ -452,7 +456,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 															getResourceDriverModule(),
 															getRunAsyncManager(),
 															homeDirInfo,
-															user );
+															user,
+															webClient );
 					}
 					catch ( Exception ex )
 					{
@@ -461,25 +466,30 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				}
 				else
 				{
-					Binder netFolderBinder;
-					
-					// The user does not have a home directory attribute.
-					// Does the user already have a home dir net folder?
-					// Does a net folder already exist for this user's home directory
-					netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
-																		binderModule,
-																		user.getWorkspaceId() );
-					if ( netFolderBinder != null )
+					// We only want to delete the home dir net folder if the web client is the one
+					// making the request.
+					if ( webClient )
 					{
-						// Yes
-						// Delete the home net folder.
-						try
+						Binder netFolderBinder;
+						
+						// The user does not have a home directory attribute.
+						// Does the user already have a home dir net folder?
+						// Does a net folder already exist for this user's home directory
+						netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
+																			binderModule,
+																			user.getWorkspaceId() );
+						if ( netFolderBinder != null )
 						{
-							NetFolderHelper.deleteNetFolder( getFolderModule(), netFolderBinder.getId(), false );
-						}
-						catch ( Exception e )
-						{
-							logger.error( "Error deleting home net folder: " + netFolderBinder.getName(), e );
+							// Yes
+							// Delete the home net folder.
+							try
+							{
+								NetFolderHelper.deleteNetFolder( getFolderModule(), netFolderBinder.getId(), false );
+							}
+							catch ( Exception e )
+							{
+								logger.error( "Error deleting home net folder: " + netFolderBinder.getName(), e );
+							}
 						}
 					}
 				}
