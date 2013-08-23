@@ -113,6 +113,15 @@ public final class UpdateService
 			oldLocation = new File(tempDir + File.separator + "filrinstall/db/mysql-liquibase.properties");
 			newLocation = new File("/filrinstall/db/mysql-liquibase.properties");
 			FileUtils.copyFile(oldLocation, newLocation);
+			
+			//Keep old license
+			if(!overrideLicense)
+			{
+				oldLocation = new File(tempDir + File.separator + "filrinstall/license-key.xml");
+				newLocation = new File("/filrinstall/license-key.xml");
+				FileUtils.copyFile(oldLocation, newLocation);
+				
+			}
 
 			// Update the database
 			decryptMySqlLiquiBasePropertiesPassword();
