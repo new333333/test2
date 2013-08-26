@@ -689,7 +689,11 @@ public class MarkupUtil {
 			df3.setTimeZone(user.getTimeZone());
 			if (allDayEvent) {
 				//This is an all day event, just show the start date
-				result = df1GMT.format(startDate.getTime()) + " (" + NLT.get("event.allDay") + ")";
+				if (endDate == null || df1GMT.format(startDate.getTime()).equals(df1GMT.format(endDate.getTime()))) {
+					result = df1GMT.format(startDate.getTime()) + " (" + NLT.get("event.allDay") + ")";
+				} else {
+					result = NLT.get("event.fromTo", new String[] {df1GMT.format(startDate.getTime()), df1GMT.format(endDate.getTime())}) + " (" + NLT.get("event.allDay") + ")";
+				}
 			} else if (startDate.equals(endDate)) {
 				//This is just a date and time
 				result = df2.format(startDate.getTime());
