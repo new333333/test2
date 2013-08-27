@@ -401,7 +401,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource myWorkspace1();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_canceled.gif")
+	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_canceled.png")
 	public ImageResource netFolderSyncStatusCanceled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
