@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_guestbookEntry" caption="__definition_default_guestbook_entry" type="1" nextId="27" definitionType="1" databaseId="402883c6115753d8011157811ae1000e"> 
+<definition name="_guestbookEntry" caption="__definition_default_guestbook_entry" type="1" nextId="28" definitionType="1" databaseId="402883c6115753d8011157811ae1000e"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -25,6 +25,13 @@
           <property name="width" value=""/>  
           <property name="required" value="false"/> 
         </properties> 
+      </item>
+      <item name="captcha" caption="__captcha" multipleAllowed="false" type="data" dataType="text" category="commonEntryData" display="form" id="27">
+        <properties>
+          <property name="caption" value="__captcha"/>
+          <property name="name" value="_captcha"/>
+          <property name="guestOnly" value="true"/>
+        </properties>
       </item>  
       <item name="description" caption="__description" type="data" id="4"> 
         <properties> 
@@ -124,12 +131,12 @@
       </properties> 
     </item> 
   </item>  
-  <properties>
-    <property name="caption" value="__definition_default_guestbook_entry"/>
-    <property name="name" value="_guestbookEntry"/>
-    <property name="family" value="guestbook"/>
-    <property name="replyStyle" value="402883c6115753d801115777f284000b"/>
-  </properties>
+  <properties> 
+    <property name="caption" value="__definition_default_guestbook_entry"/>  
+    <property name="name" value="_guestbookEntry"/>  
+    <property name="family" value="guestbook"/>  
+    <property name="replyStyle" value="402883c6115753d801115777f284000b"/> 
+  </properties>  
   <export-mappings>
     <export definitionId="402883c6115753d801115777f284000b">_comment</export>
   </export-mappings>
