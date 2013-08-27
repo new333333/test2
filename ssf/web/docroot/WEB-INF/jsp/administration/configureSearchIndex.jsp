@@ -295,7 +295,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br>
 <br>
   <c:forEach var="node" items="${ssSearchNodes}">
-    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords || node.isReindexingInProgress}">disabled</c:if>>
+    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords || node.reindexingInProgress}">disabled</c:if>>
     ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
     <br/>
   </c:forEach>
@@ -370,10 +370,10 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br>
   <c:forEach var="node" items="${ssSearchNodes}">
     <input type="checkbox" name="searchNodeName" value="${node.nodeName}" 
-    <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords || node.isReindexingInProgress}">disabled</c:if><c:if test="${ssScheduleInfo.nodeSelectionMap[node.nodeName]}">checked</c:if>>
+    <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords || node.reindexingInProgress}">disabled</c:if><c:if test="${ssScheduleInfo.nodeSelectionMap[node.nodeName]}">checked</c:if>>
     ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
     <br/>
-    <c:if test="${node.isReindexingInProgress}">
+    <c:if test="${node.reindexingInProgress}">
 	    <span class="ss_smallprint ss_italic"><ssf:nlt tag="administration.configure.index.indexInProgressNode"/></span>
 	    <br/>
     </c:if>
