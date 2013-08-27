@@ -4408,7 +4408,7 @@ td.datePickerMonth {
 
 /* The following styles are used with the group management dialogs. */
 
-.groupManagementBtn, .manageNetFolderRootsDlg_Btn, .manageNetFoldersDlg_Btn
+.groupManagementBtn, .manageNetFolderRootsDlg_Btn, .manageNetFoldersDlg_Btn, .shareDlg_Btn
 {
 	cursor: pointer;
     text-decoration: none;    
@@ -4445,7 +4445,7 @@ td.datePickerMonth {
 
 }
 
-.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel
+.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel, .shareDlg_MenuPanel
 {
     background-color: #ededed;
     border-top-left-radius: 5px;

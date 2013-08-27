@@ -82,9 +82,8 @@ import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg.DeleteSelectedUsersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg.DeleteSelectionsDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -106,7 +105,7 @@ public class BinderViewsHelper {
 	private static DeleteSelectionsDlg		m_dsDlg;								// An instance of a delete selections dialog.
 	private static EmailNotificationDlg		m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
 	private static GwtTeamingMessages		m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
-	private static ShareThisDlg				m_shareDlg;								// An instance of a share this dialog.
+	private static ShareThisDlg2			m_shareDlg;								// An instance of a share this dialog.
 	private static WhoHasAccessDlg			m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
 
 	/*
@@ -757,7 +756,7 @@ public class BinderViewsHelper {
 		// Have we created a share dialog yet?
 		if (null == m_shareDlg) {
 			// No!  Create one now...
-			ShareThisDlg.createAsync(new ShareThisDlgClient() {
+			ShareThisDlg2.createAsync( false, true, new ShareThisDlg2Client() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in asynchronous
@@ -765,7 +764,7 @@ public class BinderViewsHelper {
 				}
 				
 				@Override
-				public void onSuccess(ShareThisDlg stDlg) {
+				public void onSuccess(ShareThisDlg2 stDlg) {
 					// ...and show it with the given entity IDs.
 					m_shareDlg = stDlg;
 					showManageSharesDlgAsync(entityIds);
@@ -1012,7 +1011,7 @@ public class BinderViewsHelper {
 		// Have we created a copy/move entries dialog yet?
 		if (null == m_shareDlg) {
 			// No!  Create one now...
-			ShareThisDlg.createAsync(new ShareThisDlgClient() {
+			ShareThisDlg2.createAsync( false, true, new ShareThisDlg2Client() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
@@ -1020,7 +1019,7 @@ public class BinderViewsHelper {
 				}
 				
 				@Override
-				public void onSuccess(ShareThisDlg stDlg) {
+				public void onSuccess(ShareThisDlg2 stDlg) {
 					// ...and show it with the given entity IDs.
 					m_shareDlg = stDlg;
 					showShareDlgAsync(entityIds);
@@ -1108,7 +1107,8 @@ public class BinderViewsHelper {
 	 */
 	private static void showManageSharesDlgNow(List<EntityId> entityIds) {
 		String caption = GwtClientHelper.patchMessage( m_messages.manageShares(), String.valueOf(entityIds.size()));
-		ShareThisDlg.initAndShow(m_shareDlg, null, caption, null, entityIds, ShareThisDlgMode.MANAGE_SELECTED);
+		m_shareDlg.init( caption, entityIds, ShareThisDlg2.ShareThisDlgMode.MANAGE_SELECTED );
+		m_shareDlg.showDlg( null );
 	}
 
 	/*
@@ -1128,7 +1128,8 @@ public class BinderViewsHelper {
 	 */
 	private static void showShareDlgNow(List<EntityId> entityIds) {
 		String caption = GwtClientHelper.patchMessage(m_messages.shareTheseItems(), String.valueOf(entityIds.size()));
-		ShareThisDlg.initAndShow(m_shareDlg, null, caption, null, entityIds);
+		m_shareDlg.init( caption, entityIds, ShareThisDlg2.ShareThisDlgMode.NORMAL );
+		m_shareDlg.showDlg( null );
 	}
 
 	/**
