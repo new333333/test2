@@ -32,13 +32,15 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.datatable.ShareItemCell;
+import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
+import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -55,21 +57,18 @@ import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtShareItemResult;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetDateStrCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSharingInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SendShareNotificationEmailCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
@@ -86,15 +85,14 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.util.UserType;
-import org.kablink.teaming.gwt.client.widgets.EditShareNoteDlg.EditShareNoteDlgClient;
-import org.kablink.teaming.gwt.client.widgets.EditShareRightsDlg.EditShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
-import org.kablink.teaming.gwt.client.widgets.ShareExpirationDlg.ShareExpirationDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
-import org.kablink.teaming.gwt.client.widgets.ShareWithPublicInfoDlg.ShareWithPublicInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareWithTeamsDlg.ShareWithTeamsDlgClient;
 
+import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
@@ -108,17 +106,14 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -132,6 +127,9 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.DefaultSelectionEventManager;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -145,11 +143,15 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ShareThisDlg2 extends DlgBox
 	implements EditSuccessfulHandler, EditCanceledHandler,
 	// Event handlers implemented by this class.
-		SearchFindResultsEvent.Handler,
-		InvokeEditShareRightsDlgEvent.Handler
+		SearchFindResultsEvent.Handler
 {
-	private int m_numCols = 0;
-	
+	private CellTable<GwtShareItem> m_shareTable;
+    private MultiSelectionModel<GwtShareItem> m_selectionModel;
+	private ListDataProvider<GwtShareItem> m_dataProvider;
+	private VibeSimplePager m_pager;
+	private SelectAllHeader m_selectAllHeader;
+	private ArrayList<GwtShareItem> m_listOfShares;
+
 	private ShareThisDlgMode m_mode;
 	private Image m_headerImg;
 	private Label m_headerNameLabel;
@@ -159,19 +161,13 @@ public class ShareThisDlg2 extends DlgBox
 	private CheckBox m_notifyCheckbox;
 	private Image m_addExternalUserImg;
 	private FlowPanel m_mainPanel;
-	private ImageResource m_deleteImgR;
-	private FlexTable m_shareTable;
 	private FlexTable m_addShareTable;
 	private InlineLabel m_shareWithTeamsLabel;
 	private InlineLabel m_manageSharesFindCtrlLabel;
-	private FlowPanel m_shareTablePanel;
 	private ShareSendToWidget m_sendToWidget;
 	private FlowPanel m_makePublicPanel;
 	private FlowPanel m_manageShareItemsPanel;
 	private ListBox m_findByListbox;
-	private FlexCellFormatter m_shareCellFormatter;
-	private HTMLTable.RowFormatter m_shareRowFormatter;
-	private int m_rightsCol;
 	private List<EntityId> m_entityIds;
 	private GwtSharingInfo m_sharingInfo;		// Holds all of the sharing info for the entities we are working with.
 	private List<TeamInfo> m_listOfTeams;
@@ -181,14 +177,8 @@ public class ShareThisDlg2 extends DlgBox
 	private AsyncCallback<VibeRpcResponse> m_getSharingInfoCallback;
 	private AsyncCallback<VibeRpcResponse> m_sendNotificationEmailCallback;
 	private ShareExpirationValue m_defaultShareExpirationValue;
-	private ShareExpirationDlg m_shareExpirationDlg;
-	private EditShareNoteDlg m_editShareNoteDlg;
 	private ShareWithTeamsDlg m_shareWithTeamsDlg;
-	private ShareWithPublicInfoDlg m_shareWithPublicInfoDlg=null;
-	private EditShareRightsDlg m_editShareRightsDlg = null;
 	private EditSuccessfulHandler m_editShareWithTeamsHandler;
-	private EditSuccessfulHandler m_editShareRightsHandler;
-	private GwtTeamingDataTableImageBundle m_dtImages;
 	
 	private static final String FIND_SHARES_BY_USER = "by-user";
 	private static final String FIND_SHARES_BY_FILE = "by-file";
@@ -202,7 +192,6 @@ public class ShareThisDlg2 extends DlgBox
 	private static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
     {
 		// Search events.
-		TeamingEvents.INVOKE_EDIT_SHARE_RIGHTS_DLG,
 		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
 
@@ -224,635 +213,6 @@ public class ShareThisDlg2 extends DlgBox
 		MANAGE_SELECTED
 	}
 	
-	/**
-	 * This widget is used to display a recipient's name.  If the recipient is a group
-	 * then the user can click on the name and see the members of the group.
-	 */
-	private class RecipientNameWidget extends Composite
-		implements ClickHandler, MouseOverHandler, MouseOutHandler
-	{
-		private GwtShareItem m_shareItem;
-		private InlineLabel m_nameLabel;
-		private GroupMembershipPopup m_groupMembershipPopup;
-		
-		/**
-		 * 
-		 */
-		public RecipientNameWidget( GwtShareItem shareItem )
-		{
-			FlowPanel panel;
-			
-			m_shareItem = shareItem;
-			
-			panel = new FlowPanel();
-			
-			m_nameLabel = new InlineLabel( shareItem.getRecipientName() );
-			m_nameLabel.setTitle( shareItem.getRecipientName() );
-			m_nameLabel.addStyleName( "shareThisDlg_RecipientNameLabel" );
-			panel.add( m_nameLabel );
-			
-			// Has the share expired?
-			if ( shareItem.isExpired() )
-			{
-				// Yes
-				m_nameLabel.addStyleName( "shareThisDlg_ShareExpired" );
-			}
-			else
-				m_nameLabel.removeStyleName( "shareThisDlg_ShareExpired" );
-			
-			// If we are dealing with a group, let the user click on the group.
-			if ( shareItem.getRecipientType() == GwtRecipientType.GROUP )
-			{
-				m_nameLabel.addClickHandler( this );
-				m_nameLabel.addMouseOverHandler( this );
-				m_nameLabel.addMouseOutHandler( this );
-			}
-			
-			// All composites must call initWidget() in their constructors.
-			initWidget( panel );
-		}
-		
-		/**
-		 * Close the group membership popup if it is open.
-		 */
-		public void closePopups()
-		{
-			if ( m_groupMembershipPopup != null )
-				m_groupMembershipPopup.closePopups();
-		}
-		
-		/**
-		 * This gets called when the user clicks on the recipient's name.  This will only
-		 * be called if the recipient is a group.
-		 */
-		@Override
-		public void onClick( ClickEvent event )
-		{
-			// Create a popup that will display the membership of this group.
-			if ( m_groupMembershipPopup == null )
-			{
-				m_groupMembershipPopup = new GroupMembershipPopup(
-															false,
-															false,
-															m_shareItem.getRecipientName(),
-															m_shareItem.getRecipientId().toString() );
-			}
-			
-			m_groupMembershipPopup.setPopupPosition( getAbsoluteLeft(), getAbsoluteTop() );
-			m_groupMembershipPopup.show();
-		}
-		
-		/**
-		 * Remove the mouse-over style from the name. 
-		 */
-		@Override
-		public void onMouseOut( MouseOutEvent event )
-		{
-			m_nameLabel.removeStyleName( "shareThisDlg_NameHover" );
-		}
-
-		
-		/**
-		 * Add the mouse-over style to the name.
-		 */
-		@Override
-		public void onMouseOver( MouseOverEvent event )
-		{
-			m_nameLabel.addStyleName( "shareThisDlg_NameHover" );
-		}
-	}
-	
-	/**
-	 * This widget is used to display a recipient's type.  If the recipient is Public
-	 * then the user can click on the name and see the url they can pass out for people
-	 * to access the given entity.
-	 */
-	private class RecipientTypeWidget extends Composite
-		implements ClickHandler
-	{
-		private GwtShareItem m_shareItem;
-		private Image m_typeImage;
-		
-		/**
-		 * 
-		 */
-		public RecipientTypeWidget( GwtShareItem shareItem )
-		{
-			FlowPanel panel;
-			
-			m_shareItem = shareItem;
-			
-			panel = new FlowPanel();
-			panel.addStyleName( "shareThisDlg_RecipientTypeImagePanel" );
-			
-			m_typeImage = buildRecipientImage( shareItem );
-			m_typeImage.setTitle( shareItem.getRecipientTypeAsString() );
-			m_typeImage.addStyleName( "shareThisDlg_RecipientTypeImage" );
-			panel.add( m_typeImage );
-			
-			// If we are dealing with a share with public, let the user click on the group.
-			if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
-			{
-				m_typeImage.addStyleName( "shareThisDlg_PublicRecipientTypeImage" );
-				m_typeImage.setTitle( GwtTeaming.getMessages().shareDlg_sharePublicTitle() );
-				m_typeImage.addClickHandler( this );
-			}
-			
-			// All composites must call initWidget() in their constructors.
-			initWidget( panel );
-		}
-		
-		/*
-		 * 
-		 */
-		private Image buildRecipientImage( GwtShareItem shareItem )
-		{
-			ImageResource ir;
-			switch ( shareItem.getRecipientType() )
-			{
-			case USER:
-			case EXTERNAL_USER:  ir = shareItem.getRecipientUserTypeImage(); break;
-			case GROUP:          ir = m_dtImages.groupType_Local();          break;
-			case TEAM:           ir = m_dtImages.team();                     break;
-			case PUBLIC_TYPE:    ir = m_dtImages.publicSharee();             break;
-			default:             ir = m_dtImages.userPhoto();                break;
-			}
-			return GwtClientHelper.buildImage(ir);
-		}
-		
-		/**
-		 * This gets called when the user clicks on the recipient's type.  This will only
-		 * be called if the recipient is public.
-		 */
-		@Override
-		public void onClick( ClickEvent event )
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					invokeShareWithPublicInfoDlg();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-		
-		/**
-		 * 
-		 */
-		private void invokeShareWithPublicInfoDlg()
-		{
-			if ( m_shareWithPublicInfoDlg == null )
-			{
-				ShareWithPublicInfoDlg.createAsync( new ShareWithPublicInfoDlgClient()
-				{
-					@Override
-					public void onUnavailable() 
-					{
-						// Nothing to do.  Error handled in asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess( ShareWithPublicInfoDlg swpiDlg )
-					{
-						m_shareWithPublicInfoDlg = swpiDlg;
-						invokeShareWithPublicInfoDlg();
-					}
-				} );
-			}
-			else
-			{
-				m_shareWithPublicInfoDlg.init( m_shareItem.getEntityId() );
-				m_shareWithPublicInfoDlg.showRelativeToTarget( m_typeImage );
-			}
-		}
-	}
-	
-	/**
-	 * This widget is used to display the expiration for a given share and allow the user
-	 * to change the expiration.
-	 */
-	private class ShareExpirationWidget extends Composite
-		implements ClickHandler
-	{
-		private GwtShareItem m_shareItem;
-		private InlineLabel m_expiresLabel;
-		private Image m_img;
-		private EditSuccessfulHandler m_editShareExpirationHandler;
-		private AsyncCallback<VibeRpcResponse> m_getDateStrCallback = null;
-
-		/**
-		 * 
-		 */
-		public ShareExpirationWidget( GwtShareItem shareItem )
-		{
-			ImageResource imageResource;
-			
-			m_shareItem = shareItem;
-
-			m_expiresLabel = new InlineLabel();
-			m_expiresLabel.addStyleName( "shareThisDlg_ExpiresLabel" );
-			m_expiresLabel.addClickHandler( this );
-			
-			// Has the share expired?
-			if ( shareItem.isExpired() )
-			{
-				// Yes
-				m_expiresLabel.addStyleName( "shareThisDlg_ShareExpired" );
-			}
-			else
-				m_expiresLabel.removeStyleName( "shareThisDlg_ShareExpired" );
-			
-			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
-			m_img = new Image( imageResource );
-			m_img.getElement().setAttribute( "align", "absmiddle" );
-			
-			updateExpirationLabel();
-			
-			initWidget( m_expiresLabel );
-		}
-		
-		/**
-		 * Invoke the "Share expiration" dialog
-		 */
-		private void editShareExpiration()
-		{
-			if ( m_shareExpirationDlg != null )
-			{
-				if ( m_editShareExpirationHandler == null )
-				{
-					m_editShareExpirationHandler = new EditSuccessfulHandler()
-					{
-						@Override
-						public boolean editSuccessful( Object obj )
-						{
-							if ( obj instanceof ShareExpirationValue )
-							{
-								ShareExpirationValue expirationValue;
-								
-								expirationValue = (ShareExpirationValue) obj;
-								m_shareItem.setShareExpirationValue( expirationValue );
-								m_shareItem.setIsDirty( true );
-								
-								updateExpirationLabel();
-							}
-							
-							return true;
-						}
-					};
-				}
-				
-				// Invoke the "share expiration" dialog.
-				m_shareExpirationDlg.init( m_shareItem.getShareExpirationValue(), m_editShareExpirationHandler );
-				m_shareExpirationDlg.showRelativeToTarget( m_expiresLabel );
-			}
-		}
-		
-		/**
-		 * 
-		 */
-		@Override
-		public void onClick( ClickEvent event )
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute() 
-				{
-					if ( m_shareExpirationDlg == null )
-					{
-						ShareExpirationDlg.createAsync( true, true, new ShareExpirationDlgClient()
-						{
-							@Override
-							public void onUnavailable() 
-							{
-								// Nothing to do.  Error handled in asynchronous provider.
-							}
-							
-							@Override
-							public void onSuccess( ShareExpirationDlg seDlg )
-							{
-								m_shareExpirationDlg = seDlg;
-								editShareExpiration();
-							}
-						} );
-					}
-					else
-						editShareExpiration();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-		
-		/**
-		 * Update the text that shows the value of the share expiration
-		 */
-		private void updateExpirationLabel()
-		{
-			if ( m_shareItem != null )
-			{
-				// Get the appropriate string that represents the expiration value
-				{
-					ShareExpirationValue expirationValue;
-					
-					expirationValue = m_shareItem.getShareExpirationValue();
-					if ( expirationValue != null )
-					{
-						String after;
-						Long value;
-						
-						value = expirationValue.getValue();
-						
-						switch ( expirationValue.getExpirationType() )
-						{
-						case NEVER:
-							m_expiresLabel.setText( GwtTeaming.getMessages().shareDlg_expiresNever() );
-							break;
-						
-						case AFTER_DAYS:
-							after = "";
-							if ( value != null )
-							{
-								if ( value < 0 )
-									value = Long.valueOf( 0 );
-								
-								after = value.toString();
-							}
-							
-							m_expiresLabel.setText( GwtTeaming.getMessages().shareDlg_expiresAfter( after ) );
-							break;
-						
-						case ON_DATE:
-							if ( value != null )
-								updateExpirationLabel( value );
-							else
-								m_expiresLabel.setText( GwtTeaming.getMessages().shareDlg_expiresOn( "" ) );
-							
-							break;
-							
-						case UNKNOWN:
-						default:
-							m_expiresLabel.setText( "Unknown expiration type" );
-							break;
-						}
-					}
-					else
-						m_expiresLabel.setText( "" );
-				}
-				
-				m_expiresLabel.getElement().appendChild( m_img.getElement() );
-			}
-		}
-		
-		/**
-		 * Issue an rpc request to get the date/time string for the given expiration value.
-		 * Then update the given label.
-		 */
-		private void updateExpirationLabel( Long value )
-		{
-			GetDateStrCmd cmd;
-			
-			if ( m_getDateStrCallback == null )
-			{
-				m_getDateStrCallback = new AsyncCallback<VibeRpcResponse>()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onFailure( Throwable t )
-					{
-						GwtClientHelper.handleGwtRPCFailure(
-													t,
-													GwtTeaming.getMessages().rpcFailure_GetDateStr() );
-					}
-			
-					/**
-					 * 
-					 * @param result
-					 */
-					@Override
-					public void onSuccess( VibeRpcResponse response )
-					{
-						StringRpcResponseData responseData = null;
-						
-						if ( response.getResponseData() instanceof StringRpcResponseData )
-							responseData = (StringRpcResponseData) response.getResponseData();
-						
-						if ( responseData != null )
-						{
-							String dateTimeStr;
-							
-							dateTimeStr = responseData.getStringValue();
-							if ( dateTimeStr != null )
-								m_expiresLabel.setText( dateTimeStr );
-						}
-					}
-				};
-			}
-			
-			// Issue an rpc request to get the date/time string.
-			cmd = new GetDateStrCmd( value, DateFormat.SHORT );
-			GwtClientHelper.executeCommand( cmd, m_getDateStrCallback );
-		}
-	}
-	
-	/**
-	 * This widget is used to remove a share from the list of shares
-	 */
-	private class RemoveShareWidget extends Composite
-		implements ClickHandler
-	{
-		private GwtShareItem m_shareItem;
-		
-		/**
-		 * 
-		 */
-		public RemoveShareWidget( GwtShareItem shareItem )
-		{
-			FlowPanel panel;
-			Image delImg;
-			
-			m_shareItem = shareItem;
-			
-			panel = new FlowPanel();
-			panel.addStyleName( "shareThisDlg_RemoveRecipientPanel" );
-			
-			delImg = new Image( m_deleteImgR );
-			delImg.addStyleName( "cursorPointer" );
-			delImg.getElement().setAttribute( "title", GwtTeaming.getMessages().removeShareHint() );
-			delImg.addClickHandler( this );
-			
-			panel.add( delImg );
-			
-			// All composites must call initWidget() in their constructors.
-			initWidget( panel );
-		}
-		
-		/**
-		 * 
-		 */
-		public GwtShareItem getShareItem()
-		{
-			return m_shareItem;
-		}
-
-		/**
-		 * This gets called when the user clicks on the remove share image.
-		 */
-		@Override
-		public void onClick( ClickEvent event )
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute() 
-				{
-					removeShare( m_shareItem );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-	}
-	
-	/**
-	 * This widget is used to allow the user to edit an existing note.
-	 */
-	private class NoteWidget extends Composite
-		implements ClickHandler
-	{
-		private GwtShareItem m_shareItem;
-		private InlineLabel m_noteLabel;
-		private EditSuccessfulHandler m_editNoteHandler;
-		
-		/**
-		 * 
-		 */
-		public NoteWidget( GwtShareItem shareItem )
-		{
-			m_shareItem = shareItem;
-			
-			m_noteLabel = new InlineLabel();
-			m_noteLabel.addStyleName( "shareThisDlg_NoteLabel" );
-			m_noteLabel.addClickHandler( this );
-			
-			updateNoteLabel();
-			
-			// All composites must call initWidget() in their constructors.
-			initWidget( m_noteLabel );
-		}
-		
-		/**
-		 * Invoke the "Edit Note" dialog
-		 */
-		private void invokeEditNoteDlg()
-		{
-			if ( m_editShareNoteDlg != null )
-			{
-				if ( m_editNoteHandler == null )
-				{
-					m_editNoteHandler = new EditSuccessfulHandler()
-					{
-						@Override
-						public boolean editSuccessful( Object obj )
-						{
-							if ( obj instanceof String )
-							{
-								String note;
-								
-								note = (String) obj;
-								m_shareItem.setComments( note );
-								m_shareItem.setIsDirty( true );
-								
-								updateNoteLabel();
-							}
-							
-							return true;
-						}
-					};
-				}
-				
-				// Invoke the "share expiration" dialog.
-				m_editShareNoteDlg.init( m_shareItem.getComments(), m_editNoteHandler );
-				m_editShareNoteDlg.showRelativeToTarget( m_noteLabel );
-			}
-		}
-		/**
-		 * This gets called when the user clicks on the note.
-		 */
-		@Override
-		public void onClick( ClickEvent event )
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute() 
-				{
-					if ( m_editShareNoteDlg == null )
-					{
-						EditShareNoteDlg.createAsync( true, true, new EditShareNoteDlgClient()
-						{
-							@Override
-							public void onUnavailable() 
-							{
-								// Nothing to do.  Error handled in asynchronous provider.
-							}
-							
-							@Override
-							public void onSuccess( EditShareNoteDlg esnDlg )
-							{
-								m_editShareNoteDlg = esnDlg;
-								invokeEditNoteDlg();
-							}
-						} );
-					}
-					else
-						invokeEditNoteDlg();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-		
-		/**
-		 * Update the contents of this note.
-		 */
-		public void updateNoteLabel()
-		{
-			String note;
-			String noteTitle;
-
-			note = m_shareItem.getComments();
-			noteTitle = note;
-
-			m_noteLabel.removeStyleName( "shareThisDlg_NoNote" );
-
-			if ( note != null && note.length() > 14 )
-			{
-				note = note.substring( 0, 14 );
-				note += "...";
-			}
-			else if ( note == null || note.length() == 0 )
-			{
-				note = GwtTeaming.getMessages().shareDlg_noNote();
-				noteTitle = GwtTeaming.getMessages().shareDlg_clickToAddNote();
-				m_noteLabel.addStyleName( "shareThisDlg_NoNote" );
-			}
-
-			m_noteLabel.setText( note );
-			m_noteLabel.setTitle( noteTitle );
-		}
-	}
-	
-
 
 	/*
 	 * Class constructor.
@@ -866,9 +226,6 @@ public class ShareThisDlg2 extends DlgBox
 		// Initialize the superclass.
 		super( autoHide, modal );
 
-		// Initialize other data members that need it.
-		m_dtImages = GwtTeaming.getDataTableImageBundle();
-		
 		// Create the dialog's content
 		createAllDlgContent(
 			"",		// // No caption yet.  It's set appropriately when the dialog runs.
@@ -878,22 +235,22 @@ public class ShareThisDlg2 extends DlgBox
 	}
 
 	/**
-	 * Add the "This item has not been shared" text to the table
-	 * that holds the list of shares.
+	 * Add the given share to the end of the table that holds the list of shares
 	 */
-	private void addNotSharedMessage()
+	private void addShare( GwtShareItem shareItem, boolean highlight )
 	{
-		int row;
-		
-		row = 1;
-		m_shareCellFormatter.setColSpan( row, 0, m_numCols );
-		m_shareCellFormatter.setWordWrap( row, 0, false );
-		m_shareCellFormatter.addStyleName( row, 0, "oltBorderLeft" );
-		m_shareCellFormatter.addStyleName( row, 0, "oltBorderRight" );
-		m_shareCellFormatter.addStyleName( row, 0, "oltContentPadding" );
-		m_shareCellFormatter.addStyleName( row, 0, "oltLastRowBorderBottom" );
+		if ( m_listOfShares == null )
+			m_listOfShares = new ArrayList<GwtShareItem>();
 
-		m_shareTable.setText( row, 0, GwtTeaming.getMessages().noShareRecipients() );
+		m_listOfShares.add( 0, shareItem );
+		
+		m_dataProvider.refresh();
+		
+		// Go to the first page
+		m_pager.firstPage();
+
+		// Tell the table how many groups we have.
+		m_shareTable.setRowCount( m_listOfShares.size(), true );
 	}
 	
 	/**
@@ -1027,7 +384,7 @@ public class ShareThisDlg2 extends DlgBox
 				shareItem.setEntityName( getEntityName( nextEntityId ) );
 				
 				// Has the item already been shared with the recipient
-				if ( findShareItem( shareItem ) == -1 )
+				if ( findShareItem( shareItem ) == null )
 				{
 					// No
 					shareItem.setShareRights( getDefaultShareRights() );
@@ -1057,168 +414,36 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
-	 * Add the given share to the end of the table that holds the list of shares
+	 * Add the given list of shares to the dialog
 	 */
-	private void addShare( GwtShareItem shareItem, boolean highlight )
+	private void addShares( ArrayList<GwtShareItem> listOfShares )
 	{
-		int row;
-		int col;
-		int i;
-		RemoveShareWidget removeWidget;
-		RecipientNameWidget recipientNameWidget;
-		RecipientTypeWidget recipientTypeWidget;
+		m_listOfShares = listOfShares;
+		if ( m_listOfShares == null )
+			m_listOfShares = new ArrayList<GwtShareItem>();
 		
-		row = m_shareTable.getRowCount();
-		
-		// Do we have any shares in the table?
-		if ( row == 2 )
+		if ( m_dataProvider == null )
 		{
-			String text;
-			
-			// Maybe
-			// The first row might be the message, "This item has not been shared"
-			// Get the text from the first row.
-			text = m_shareTable.getText( 1, 0 );
-			
-			// Does the first row contain a message?
-			if ( text != null && text.equalsIgnoreCase( GwtTeaming.getMessages().noShareRecipients() ) )
-			{
-				// Yes
-				m_shareTable.removeRow( 1 );
-			}
+			m_dataProvider = new ListDataProvider<GwtShareItem>( m_listOfShares );
+			m_dataProvider.addDataDisplay( m_shareTable );
 		}
-		
-		// Remove any highlight that may be on the first row.
-		unhighlightRecipient( 1 );
-		
-		// Add the share as the first share in the table.
-		row = 1;
-		m_shareTable.insertRow( row );
-		
-		// Should we highlight the row?
-		if ( highlight )
+		else
 		{
-			// Yes
-			highlightRecipient( row );
-		}
-		
-		col = 0;
-		
-		// Add the recipient name
-		m_shareCellFormatter.setColSpan( row, col, 1 );
-		m_shareCellFormatter.setWordWrap( row, col, false );
-		m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
-		recipientNameWidget = new RecipientNameWidget( shareItem );
-		m_shareTable.setWidget( row, col,  recipientNameWidget );
-		++col;
-
-		// Add the recipient type
-		m_shareCellFormatter.setWordWrap( row, col, false );
-		m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
-		recipientTypeWidget = new RecipientTypeWidget( shareItem );
-		m_shareTable.setWidget( row, col, recipientTypeWidget );
-		++col;
-		
-		// Are we in "administrative" mode?
-		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
-		{
-			String name;
-			InlineLabel label;
-
-			// Yes, add a field for "shared by"
-			m_shareCellFormatter.setWordWrap( row, col, false );
-			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
-			
-			label = new InlineLabel();
-			
-			// Only show the first 15 characters
-			name = shareItem.getSharedByName();
-			label.setText( name );
-			m_shareTable.setWidget( row, col, label );
-			++col;
-		}
-		
-		// Are we sharing more than 1 entity or are we in "manage all" mode?
-		if ( (m_entityIds != null && m_entityIds.size() > 1) || m_mode == ShareThisDlgMode.MANAGE_ALL )
-		{
-			String entityName;
-			InlineLabel label;
-			
-			// Yes
-			// Add the "Item name"
-			m_shareCellFormatter.setWordWrap( row, col, false );
-			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
-			
-			label = new InlineLabel();
-			
-			// Only show the first 15 characters
-			entityName = shareItem.getEntityName();
-			label.setTitle( entityName );
-			if ( entityName != null && entityName.length() > 15 )
-			{
-				entityName = entityName.substring( 0, 12 );
-				entityName += "...";
-			}
-			label.setText( entityName );
-			m_shareTable.setWidget( row, col, label );
-			++col;
-		}
-		
-		// Add the share rights
-		{
-			ShareRightsWidget rightsWidget;
-			
-			m_shareCellFormatter.setWordWrap( row, col, false );
-			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
-			rightsWidget = new ShareRightsWidget(
-											shareItem,
-											m_sharingInfo.getShareRights( shareItem.getEntityId() ) );
-			m_shareTable.setWidget( row, col, rightsWidget );
-			m_rightsCol = col;
-			++col;
-		}
-		
-		// Add the expires values
-		{
-			ShareExpirationWidget expirationWidget;
-			
-			m_shareCellFormatter.setWordWrap( row, col, false );
-			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
-			expirationWidget = new ShareExpirationWidget( shareItem );
-			m_shareTable.setWidget( row, col, expirationWidget );
-			++col;
-		}
-		
-		// Add the "Note" column
-		{
-			NoteWidget noteWidget;
-			
-			m_shareCellFormatter.setWordWrap( row, col, false );
-			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
-			noteWidget = new NoteWidget( shareItem );
-			m_shareTable.setWidget( row, col, noteWidget );
-			++col;
+			m_dataProvider.setList( m_listOfShares );
+			m_dataProvider.refresh();
 		}
 
-		// Add the "remove share" widget
-		{
-			removeWidget = new RemoveShareWidget( shareItem );
-			m_shareTable.setWidget( row, col, removeWidget );
-			++col;
-		}
-		
-		// Add the necessary styles to the cells in the row.
-		m_shareCellFormatter.addStyleName( row, 0, "oltBorderLeft" );
-		m_shareCellFormatter.addStyleName( row, m_numCols-1, "oltBorderRight" );
-		for (i = 0; i < m_numCols; ++i)
-		{
-			m_shareCellFormatter.addStyleName( row, i, "oltContentBorderBottom" );
-			m_shareCellFormatter.addStyleName( row, i, "oltContentPadding" );
-		}
-		
-		adjustShareTablePanelHeight();
+		// Clear all selections.
+		m_selectionModel.clear();
+
+		// Go to the first page
+		m_pager.firstPage();
+
+		// Tell the table how many groups we have.
+		m_shareTable.setRowCount( m_listOfShares.size(), true );
 	}
-	
+
+
 	/**
 	 * Add "Public" as a recipient.  Remove "all internal users", "all external users" and "guest"
 	 * if they have already been added as recipients.
@@ -1232,34 +457,6 @@ public class ShareThisDlg2 extends DlgBox
 		addShare( publicEntity );
 	}
 	
-	
-	/**
-	 * 
-	 */
-	private void adjustShareTablePanelHeight()
-	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				int height;
-				
-				// Get the height of the table that holds the list of shares.
-				height = m_shareTable.getOffsetHeight();
-				
-				// If the height is greater than 200 pixels put an overflow auto on the panel
-				// and give the panel a fixed height of 200 pixels.
-				if ( height >= 200 )
-					m_shareTablePanel.addStyleName( "shareThisDlg_RecipientTablePanelHeight" );
-				else
-					m_shareTablePanel.removeStyleName( "shareThisDlg_RecipientTablePanelHeight" );
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}
 	
 	/**
 	 * Look at each item in the list and return the highest rights possible
@@ -1376,6 +573,7 @@ public class ShareThisDlg2 extends DlgBox
 	private void createShareControls()
 	{
 		GwtTeamingMessages messages;
+		int tableWidth = 300;
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -1577,6 +775,7 @@ public class ShareThisDlg2 extends DlgBox
 			menuPanel = new FlowPanel();
 			menuPanel.addStyleName( "shareDlg_MenuPanel" );
 			menuPanel.addStyleName( "marginTop10px" );
+			menuPanel.getElement().getStyle().setWidth( tableWidth-6, Unit.PX );
 			
 			// Add an "Edit" button.
 			label = new InlineLabel( messages.shareDlg_editButton() );
@@ -1629,20 +828,141 @@ public class ShareThisDlg2 extends DlgBox
 		
 		// Create a table to hold the list of shares
 		{
-			m_shareTablePanel = new FlowPanel();
-			m_shareTablePanel.addStyleName( "shareThisDlg_RecipientTablePanel" );
+			CellTable.Resources cellTableResources;
+
+			// Create the CellTable that will display the list of Net Folders.
+			cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
+			m_shareTable = new CellTable<GwtShareItem>( 20, cellTableResources );
+			m_shareTable.setWidth( String.valueOf( tableWidth ) + "px" );
 			
-			m_shareTable = new FlexTable();
-			m_shareTable.addStyleName( "shareThisDlg_RecipientTable" );
-			m_shareTable.setCellSpacing( 0 );
+			// Set the widget that will be displayed when there are no shares
+			{
+				FlowPanel flowPanel;
+				InlineLabel noNetFoldersLabel;
+				
+				flowPanel = new FlowPanel();
+				flowPanel.addStyleName( "noObjectsFound" );
+				noNetFoldersLabel = new InlineLabel( GwtTeaming.getMessages().noShareRecipients() );
+				flowPanel.add( noNetFoldersLabel );
+				
+				m_shareTable.setEmptyTableWidget( flowPanel );
+			}
+			
+		    // Add a selection model so we can select shares.
+		    m_selectionModel = new MultiSelectionModel<GwtShareItem>();
+		    m_shareTable.setSelectionModel(
+		    							m_selectionModel,
+		    							DefaultSelectionEventManager.<GwtShareItem> createCheckboxManager() );
 
-			m_shareTablePanel.add( m_shareTable );
+			// Add a checkbox in the first column
+			{
+				Column<GwtShareItem, Boolean> ckboxColumn;
+				VibeCheckboxCell ckboxCell;
+				
+				// Create a checkbox that will be in the column header and will be used to select/deselect
+				// shares
+				{
+					CheckboxCell cbSelectAllCell;
 
-			m_mainPanel.add( m_shareTablePanel );
+					cbSelectAllCell = new CheckboxCell();
+					m_selectAllHeader = new SelectAllHeader( cbSelectAllCell );
+					m_selectAllHeader.setUpdater( new ValueUpdater<Boolean>()
+					{
+						@Override
+						public void update( Boolean checked )
+						{
+							List<GwtShareItem> shares;
+
+							shares = m_shareTable.getVisibleItems();
+							if ( shares != null )
+							{
+								for ( GwtShareItem nextShareItem : shares )
+								{
+									m_selectionModel.setSelected( nextShareItem, checked );
+								}
+							}
+						}
+					} );
+				}
+				
+	            ckboxCell = new VibeCheckboxCell();
+			    ckboxColumn = new Column<GwtShareItem, Boolean>( ckboxCell )
+	            {
+	            	@Override
+			        public Boolean getValue( GwtShareItem shareItem )
+			        {
+	            		// Get the value from the selection model.
+			            return m_selectionModel.isSelected( shareItem );
+			        }
+			    };
+			    
+			    // Add a field updater so when the user checks/unchecks the checkbox next to a
+			    // share item we will uncheck the "select all" checkbox that is in the header.
+			    {
+			    	ckboxColumn.setFieldUpdater( new FieldUpdater<GwtShareItem,Boolean>()
+			    	{
+			    		@Override
+			    		public void update( int index, GwtShareItem shareItem, Boolean checked )
+			    		{
+			    			m_selectionModel.setSelected( shareItem,  checked );
+			    			
+			    			if ( checked == false )
+			    			{
+			    				m_selectAllHeader.setValue( false );
+			    			}
+			    		}
+			    	} );
+			    }
+			    
+		        m_shareTable.addColumn( ckboxColumn, m_selectAllHeader );
+			    m_shareTable.setColumnWidth( ckboxColumn, 20, Unit.PX );			
+			}
+
+			// Add the "Shared with" column.  The user can click on the text in this column
+			// to edit the share.
+			{
+				ShareItemCell cell;
+				Column<GwtShareItem,GwtShareItem> sharedWithCol;
+
+				cell = new ShareItemCell();
+				sharedWithCol = new Column<GwtShareItem, GwtShareItem>( cell )
+				{
+					@Override
+					public GwtShareItem getValue( GwtShareItem shareItem )
+					{
+						return shareItem;
+					}
+				};
+			
+				sharedWithCol.setFieldUpdater( new FieldUpdater<GwtShareItem, GwtShareItem>()
+				{
+					@Override
+					public void update( int index, GwtShareItem shareItem, GwtShareItem value )
+					{
+						editShare( shareItem );
+					}
+				} );
+				m_shareTable.addColumn( sharedWithCol, messages.shareDlg_sharedWithCol() );
+			}
+
+			// Put the table that holds the list of net folders into a scrollable div
+			{
+				FlowPanel panel;
+			
+				panel = new FlowPanel();
+				panel.addStyleName( "shareThisDlg_ListOfSharesPanel" );
+				panel.add( m_shareTable );
+				m_mainPanel.add( panel );
+			}
+			
+			// Create a pager
+			{
+				m_pager = new VibeSimplePager();
+				m_pager.setDisplay( m_shareTable );
+			}
+
+			m_mainPanel.add( m_pager );
 		}
-
-		// Create an image resource for the delete image.
-		m_deleteImgR = GwtTeaming.getImageBundle().delete();
 	}
 	
 	/*
@@ -1798,6 +1118,8 @@ public class ShareThisDlg2 extends DlgBox
 	@Override
 	public boolean editCanceled()
 	{
+		Window.alert( "add code to close group popups" );
+	/*
 		int i;
 		
 		// Go through the list of shares and close any "Group Membership" popups that may be open.
@@ -1816,6 +1138,7 @@ public class ShareThisDlg2 extends DlgBox
 				}
 			}
 		}
+	*/
 		
 		// Simply return true to allow the dialog to close.
 		return true;
@@ -1825,6 +1148,14 @@ public class ShareThisDlg2 extends DlgBox
 	 * This method gets called to edit the selected shares.
 	 */
 	private void editSelectedShares()
+	{
+		Window.alert( "Not yet implemented" );
+	}
+	
+	/**
+	 * 
+	 */
+	private void editShare( GwtShareItem shareItem )
 	{
 		Window.alert( "Not yet implemented" );
 	}
@@ -1924,17 +1255,13 @@ public class ShareThisDlg2 extends DlgBox
 									// Create a list of the ids of the share items we need to send an email for.
 									for ( GwtShareItemResult nextSuccess : listOfSuccesses )
 									{
-										int row;
+										GwtShareItem shareItem;
 
 										// Find the recipient in the table.
-										row = findShareItem( nextSuccess.getGwtShareItem() );
-										if ( row >= 0 )
+										shareItem = findShareItem( nextSuccess.getGwtShareItem() );
+										if ( shareItem != null )
 										{
-											GwtShareItem shareItem;
-											
-											shareItem = getShareItem( row );
-											if ( shareItem != null )
-												shareItem.setIsDirty( false );
+											shareItem.setIsDirty( false );
 										}
 										
 										// Is an email needed?
@@ -2026,39 +1353,26 @@ public class ShareThisDlg2 extends DlgBox
 	/**
 	 * Find the given recipient in the table that holds the recipients.
 	 */
-	private int findShareItem( GwtShareItem shareItem )
+	private GwtShareItem findShareItem( GwtShareItem shareItem )
 	{
-		int i;
-
 		if ( shareItem == null )
-			return -1;
+			return null;
+
+		if ( m_listOfShares == null )
+			return null;
 		
-		// Look through the table for the given GwtShareItem.
-		// Recipients start in row 1.
-		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) == m_numCols; ++i)
+		// Look through our list of shares for the given GwtShareItem.
+		for ( GwtShareItem nextShareItem : m_listOfShares )
 		{
-			Widget widget;
-			
-			// Get the RemoveRecipientWidget from the last column.
-			widget = m_shareTable.getWidget( i, m_numCols-1 );
-			if ( widget != null && widget instanceof RemoveShareWidget )
+			if ( shareItem.equals( nextShareItem ) )
 			{
-				GwtShareItem nextShareItem;
-				
-				nextShareItem = ((RemoveShareWidget) widget).getShareItem();
-				if ( nextShareItem != null )
-				{
-					if ( shareItem.equals( nextShareItem ) )
-					{
-						// We found the recipient
-						return i;
-					}
-				}
+				// We found the recipient
+				return nextShareItem;
 			}
 		}// end for()
 		
 		// If we get here we did not find the recipient.
-		return -1;
+		return null;
 	}
 	
 
@@ -2348,28 +1662,7 @@ public class ShareThisDlg2 extends DlgBox
 	 */
 	private ArrayList<GwtShareItem> getListOfShareItemsFromDlg()
 	{
-		int i;
-		ArrayList<GwtShareItem> listOfShareItems;
-		
-		listOfShareItems = new ArrayList<GwtShareItem>();
-		
-		// Look through the table and add each GwtShareItem to the list.
-		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) == m_numCols; ++i)
-		{
-			Widget widget;
-			
-			// Get the RemoveRecipientWidget from the last column.
-			widget = m_shareTable.getWidget( i, m_numCols-1 );
-			if ( widget != null && widget instanceof RemoveShareWidget )
-			{
-				GwtShareItem nextShareItem;
-				
-				nextShareItem = ((RemoveShareWidget) widget).getShareItem();
-				listOfShareItems.add( nextShareItem );
-			}
-		}
-		
-		return listOfShareItems;
+		return m_listOfShares;
 	}
 	
 	/**
@@ -2406,7 +1699,7 @@ public class ShareThisDlg2 extends DlgBox
 					shareItem.setEntityName( getEntityName( nextEntityId ) );
 					
 					// Has this entity already been shared with this team?
-					if ( findShareItem( shareItem ) == -1 )
+					if ( findShareItem( shareItem ) == null )
 					{
 						// No
 						alreadySharedWithTeam = false;
@@ -2446,49 +1739,6 @@ public class ShareThisDlg2 extends DlgBox
 		shareRights.setAccessRights( getDefaultShareAccessRights() );
 		
 		return shareRights;
-	}
-	
-	/**
-	 * Return the GwtShareItem from the given row in the table that holds the recipients.
-	 */
-	private GwtShareItem getShareItem( int row )
-	{
-		GwtShareItem shareItem;
-
-		shareItem = null;
-		
-		if ( row >= 1 )
-		{
-			Widget widget;
-			
-			// Get the RemoveRecipientWidget from the last column.
-			widget = m_shareTable.getWidget( row, m_numCols-1 );
-			if ( widget != null && widget instanceof RemoveShareWidget )
-				shareItem = ((RemoveShareWidget) widget).getShareItem();
-		}
-		
-		return shareItem;
-	}
-	
-
-	/**
-	 * Return the ShareRightsWidget associated with the given share item.
-	 */
-	private ShareRightsWidget getShareRightsWidget( GwtShareItem shareItem )
-	{
-		int row;
-		
-		row = findShareItem( shareItem );
-		if ( row >= 0 )
-		{
-			Widget widget;
-			
-			widget = m_shareTable.getWidget( row, m_rightsCol );
-			if ( widget instanceof ShareRightsWidget )
-				return (ShareRightsWidget)widget;
-		}
-		
-		return null;
 	}
 	
 	/**
@@ -2632,15 +1882,6 @@ public class ShareThisDlg2 extends DlgBox
 	/**
 	 * 
 	 */
-	private void highlightRecipient( int row )
-	{
-		if ( row < m_shareTable.getRowCount() )
-			m_shareRowFormatter.addStyleName( row, "shareThisDlg_RecipientTable_highlightRow" );
-	}
-	
-	/**
-	 * 
-	 */
 	public void init(
 		String caption,
 		List<EntityId> entityIds,
@@ -2657,21 +1898,11 @@ public class ShareThisDlg2 extends DlgBox
 		
 		updateHeader();
 
-		// Set the column headers.  We do this now because the column headers vary
-		// depending on how many entities we are sharing.
-		setColumnHeaders();
-		
-		// Adjust the width of the table
-		if ( m_numCols > 7 )
-			m_shareTablePanel.getElement().getStyle().setWidth( 740, Unit.PX );
-		else if ( m_numCols == 7 )
-			m_shareTablePanel.getElement().getStyle().setWidth( 650, Unit.PX );
-		else
-			m_shareTablePanel.getElement().getStyle().setWidth( 610, Unit.PX );
-		
 		// Enable the Ok button.
 		hideStatusMsg();
 		setOkEnabled( true );
+
+		m_selectAllHeader.setValue( false );
 
 		if ( m_findCtrl != null )
 		{
@@ -2813,128 +2044,6 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
-	 * This method gets called when to invoke the "edit share rights" dialog.
-	 */
-	private void invokeEditShareRightsDlg( final ArrayList<GwtShareItem> listOfShareItems )
-	{
-		if ( listOfShareItems == null || listOfShareItems.size() == 0 )
-			return;
-		
-		if ( m_editShareRightsDlg != null )
-		{
-			if ( m_editShareRightsHandler == null )
-			{
-				m_editShareRightsHandler = new EditSuccessfulHandler()
-				{
-					@Override
-					public boolean editSuccessful( Object obj )
-					{
-						if ( obj instanceof Boolean )
-						{
-							Boolean retValue;
-							
-							// Did the "Edit Share Rights" dialog successfully update
-							// our GwtShareItem.
-							retValue = (Boolean) obj;
-							if ( retValue == true )
-							{
-								Scheduler.ScheduledCommand cmd;
-								
-								cmd = new Scheduler.ScheduledCommand()
-								{
-									@Override
-									public void execute() 
-									{
-										updateRightsLabel( m_editShareRightsDlg.getListOfShareItems() );
-									}
-								};
-								Scheduler.get().scheduleDeferred( cmd );
-							}
-						}
-
-						return true;
-					}
-				};
-			}
-			
-			// Invoke the "edit share rights" dialog.
-			{
-				ShareRights highestRightsPossible;
-				UIObject showRelativeTo = null;
-				GwtShareItem shareItem;
-				boolean recipientIsExternal = false;
-
-				shareItem = listOfShareItems.get( 0 );
-				
-				// Find the ShareRightsWidget for the first share item.
-				showRelativeTo = getShareRightsWidget( shareItem );
-
-				// Are we dealing with only 1 share item?
-				if ( listOfShareItems.size() == 1 )
-				{
-					// Yes
-					highestRightsPossible = m_sharingInfo.getShareRights( shareItem.getEntityId() );
-
-					// Is the recipient an external user?
-					if ( shareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
-					{
-						// Yes
-						recipientIsExternal = true;
-					}
-				}
-				else
-				{
-					// Look at each item being shared and return the highest rights possible
-					// that is available on all items being shared.
-					highestRightsPossible = calculateHighestRightsPossible( listOfShareItems );
-					
-					// Go through the list of share items and see if a recipient is an external user.
-					for ( GwtShareItem nextShareItem : listOfShareItems )
-					{
-						if ( nextShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
-						{
-							recipientIsExternal = true;
-							break;
-						}
-					}
-				}
-
-				// Is the recipient of the share an external user?
-				if ( recipientIsExternal )
-				{
-					// Yes, don't let the external user do any re-share
-					highestRightsPossible.setCanShareForward( false );
-					highestRightsPossible.setCanShareWithExternalUsers( false );
-					highestRightsPossible.setCanShareWithInternalUsers( false );
-					highestRightsPossible.setCanShareWithPublic( false );
-				}
-				
-				m_editShareRightsDlg.init( listOfShareItems, highestRightsPossible, m_editShareRightsHandler );
-				m_editShareRightsDlg.showRelativeToTarget( showRelativeTo );
-			}
-		}
-		else
-		{
-			EditShareRightsDlg.createAsync( true, true, new EditShareRightsDlgClient()
-			{
-				@Override
-				public void onUnavailable() 
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( EditShareRightsDlg esrDlg )
-				{
-					m_editShareRightsDlg = esrDlg;
-					invokeEditShareRightsDlg( listOfShareItems );
-				}
-			} );
-			
-		}
-	}
-	
-	/**
 	 * Invoke the "Share with teams" dialog
 	 */
 	private void invokeShareWithTeamsDlg()
@@ -2977,7 +2086,7 @@ public class ShareThisDlg2 extends DlgBox
 										shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 										
 										// Is this external user already in the list?
-										if ( findShareItem( shareItem ) == -1 )
+										if ( findShareItem( shareItem ) == null )
 										{
 											// No, add it
 											addShare( shareItem, true );
@@ -3043,50 +2152,19 @@ public class ShareThisDlg2 extends DlgBox
 	}
 
 	/**
-	 * Handles the InvokeEditShareRightsDlgEvent received by this class
-	 */
-	@Override
-	public void onInvokeEditShareRightsDlg( InvokeEditShareRightsDlgEvent event )
-	{
-		final ArrayList<GwtShareItem> listOfShareItems;
-		
-		// Get the list of GwtShareItems we will be editing the share rights for.
-		listOfShareItems = event.getListOfShareItems();
-		
-		// Is this event meant for this widget?
-		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					// Invoke the edit rights dialog.
-					invokeEditShareRightsDlg( listOfShareItems );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-	}
-	
-	/**
 	 * Remove all share items that may be in the table.
 	 */
 	private void removeAllShares()
 	{
-		// We start at row 1 so we don't delete the header.
-		while ( m_shareTable.getRowCount() > 1 )
+		if ( m_listOfShares != null )
 		{
-			// Remove the 1st row that holds share information.
-			m_shareTable.removeRow( 1 );
+			m_listOfShares.clear();
+	
+			m_dataProvider.refresh();
+	
+			// Tell the table how many groups we have.
+			m_shareTable.setRowCount( m_listOfShares.size(), true );
 		}
-		
-		// Add a message to the table telling the user this item has not been shared.
-		addNotSharedMessage();
-
-		adjustShareTablePanelHeight();
 	}
 	
 	/**
@@ -3094,31 +2172,16 @@ public class ShareThisDlg2 extends DlgBox
 	 */
 	public void removeShare( GwtShareItem shareItem )
 	{
-		int row;
-		
 		// Mark this share as "to be deleted"
 		m_sharingInfo.addToBeDeleted( shareItem );
 		
-		// Find the row this share lives in.
-		row = findShareItem( shareItem );
-		
-		// Did we find the share in the table?
-		if ( row > 0 )
-		{
-			// Yes
-			// Remove the share from the table.
-			m_shareTable.removeRow( row );
-			
-			// Did we remove the last share from the table?
-			if ( m_shareTable.getRowCount() == 1 )
-			{
-				// Yes
-				// Add the "no recipients..." message to the table.
-				addNotSharedMessage();
-			}
-			
-			adjustShareTablePanelHeight();
-		}
+		m_listOfShares.remove( shareItem );
+
+		// Update the table to reflect the fact that we deleted a share.
+		m_dataProvider.refresh();
+
+		// Tell the table how many groups we have.
+		m_shareTable.setRowCount( m_listOfShares.size(), true );
 	}
 	
 	/**
@@ -3330,25 +2393,6 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
-	 * For the given list of share items, update the ShareRightsWidget for each
-	 */
-	private void updateRightsLabel( ArrayList<GwtShareItem> listOfShareItems )
-	{
-		if ( listOfShareItems != null )
-		{
-			for ( GwtShareItem nextShareItem : listOfShareItems )
-			{
-				ShareRightsWidget rightsWidget;
-				
-				// Find the ShareRightsWidget for the this share item.
-				rightsWidget = getShareRightsWidget( nextShareItem );
-				if ( rightsWidget != null )
-					rightsWidget.updateRightsLabel();
-			}
-		}
-	}
-	
-	/**
 	 * Update the sharing information with the given information
 	 */
 	private void updateSharingInfo( GwtSharingInfo sharingInfo )
@@ -3384,16 +2428,13 @@ public class ShareThisDlg2 extends DlgBox
 			m_findCtrl.setSearchForInternalPrincipals( sharingInfo.getCanShareWithInternalUsers() );
 
 			listOfShareItems = sharingInfo.getListOfShareItems();
-			if ( listOfShareItems != null )
-			{
-				// Sort the list of share items.
-				sortShareItems( listOfShareItems );
-
-				for (GwtShareItem nextShareItem : listOfShareItems)
-				{
-					addShare( nextShareItem, false );
-				}
-			}
+			if ( listOfShareItems == null )
+				listOfShareItems = new ArrayList<GwtShareItem>();
+			
+			// Sort the list of share items.
+			sortShareItems( listOfShareItems );
+				
+			addShares( listOfShareItems );
 		}
 	}
 	
@@ -3542,104 +2583,6 @@ public class ShareThisDlg2 extends DlgBox
 		}
 	}
 
-	/**
-	 * Set the text in each of the header of each column.
-	 */
-	private void setColumnHeaders()
-	{
-		int col;
-		String text;
-		GwtTeamingMessages messages;
-
-		messages = GwtTeaming.getMessages();
-		
-		// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
-		// That is why we are calling DOM.setElementAttribute(...) instead.
-
-		m_shareRowFormatter = m_shareTable.getRowFormatter();
-		m_shareRowFormatter.addStyleName( 0, "oltHeader" );
-		m_shareRowFormatter.addStyleName( 0, "whitespace-normal" );
-
-		m_shareCellFormatter = m_shareTable.getFlexCellFormatter();
-
-		// Remove all the columns from the table.
-		if ( m_shareTable.getRowCount() > 0 )
-		{
-			while ( m_shareTable.getCellCount( 0 ) > 0 )
-			{
-				m_shareTable.removeCell( 0, 0 );
-			}
-		}
-		
-		col = 0;
-
-		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
-			text = messages.shareDlg_manageShares();
-		else
-			text = messages.shareName();
-		m_shareTable.setText( 0, col, text );
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
-		++col;
-		
-		m_shareTable.setText( 0, col, messages.shareRecipientType() );
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "45px" );
-		++col;
-		
-		// Are we in Administrative mode?
-		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
-		{
-			// Yes, add a "Shared By" column.
-			m_shareTable.setText( 0, col, messages.shareSharedBy() );
-			DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
-			++col;
-		}
-		
-		// Are we sharing more than 1 item?
-		if ( (m_entityIds != null && m_entityIds.size() > 1) || m_mode == ShareThisDlgMode.MANAGE_ALL )
-		{
-			// Yes, add the "Item Name" column header
-			m_shareTable.setText( 0, col, messages.shareEntityName() );
-			DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "80px" );
-			++col;
-		}
-		
-		m_shareTable.setText( 0, col, messages.shareAccess() );
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "85px" );
-		++col;
-		
-		m_shareTable.setText( 0, col, messages.shareExpires() );
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
-		++col;
-		
-		m_shareTable.setText( 0, col, messages.shareNote() );
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "100px" );
-		++col;
-		
-		m_shareTable.setHTML( 0, col, "&nbsp;" );	// The delete image will go in this column.
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "14px" );
-		++col;
-
-		m_numCols = col;
-		
-		m_shareCellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
-		for (col=0; col < m_numCols; ++col)
-		{
-			m_shareCellFormatter.addStyleName( 0, col, "oltHeaderBorderTop" );
-			m_shareCellFormatter.addStyleName( 0, col, "oltHeaderBorderBottom" );
-			m_shareCellFormatter.addStyleName( 0, col, "oltHeaderPadding" );
-		}
-		m_shareCellFormatter.addStyleName( 0, m_numCols-1, "oltBorderRight" );
-	}
-	
-	/**
-	 * Unlighlight the given row in the table that holds the list of recipients
-	 */
-	private void unhighlightRecipient( int row )
-	{
-		if ( row < m_shareTable.getRowCount() )
-			m_shareRowFormatter.removeStyleName( row, "shareThisDlg_RecipientTable_highlightRow" );
-	}
-	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
