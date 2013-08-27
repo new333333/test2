@@ -819,6 +819,18 @@
 	margin-top: 12px;
 }
 
+.shareThisDlg_ListOfSharesPanel
+{
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.shareItem_InfoPanel
+{
+	color: #135C8F;
+	cursor: pointer;
+}
+
 /* End of styles used with the Share dialog */
 
 
