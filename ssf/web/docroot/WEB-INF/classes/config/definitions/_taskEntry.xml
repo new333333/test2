@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_taskEntry" caption="__definition_default_task_entry" type="1" nextId="71" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50002"> 
+<definition name="_taskEntry" caption="__definition_default_task_entry" type="1" nextId="72" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50002"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -21,6 +21,13 @@
           <property name="width" value=""/>  
           <property name="required" value="false"/> 
         </properties> 
+      </item>
+      <item name="captcha" caption="__captcha" multipleAllowed="false" type="data" dataType="text" category="commonEntryData" display="form" id="71">
+        <properties>
+          <property name="caption" value="__captcha"/>
+          <property name="name" value="_captcha"/>
+          <property name="guestOnly" value="true"/>
+        </properties>
       </item>  
       <item name="description" caption="__description" type="data" id="4"> 
         <properties> 
@@ -428,16 +435,16 @@
         <property name="caption" value="__task_status"/> 
       </properties> 
     </item>  
-    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="69">
-      <properties>
-        <property name="caption" value="__entry_attachments"/>
-      </properties>
-    </item>
-    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="70">
-      <properties>
-        <property name="caption" value="__entry_comments"/>
-      </properties>
-    </item>
+    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="69"> 
+      <properties> 
+        <property name="caption" value="__entry_attachments"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="70"> 
+      <properties> 
+        <property name="caption" value="__entry_comments"/> 
+      </properties> 
+    </item> 
   </item>  
   <properties> 
     <property name="name" value="_taskEntry"/>  
