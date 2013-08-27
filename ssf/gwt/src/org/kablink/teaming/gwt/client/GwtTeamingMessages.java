@@ -1338,6 +1338,8 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_cantShareWithYourself();
 	String shareDlg_clickToAddNote();
 	String shareDlg_contributor();
+	String shareDlg_deleteButton();
+	String shareDlg_editButton();
 	String shareDlg_editor();
 	String shareDlg_emailAddressInvalidPrompt();
 	String shareDlg_expiresAfter( String after );
