@@ -44,6 +44,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 public class GetProfileAvatarsCmd extends VibeRpcCmd
 {
 	private String m_binderId;
+	private Long m_userId;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -60,6 +61,7 @@ public class GetProfileAvatarsCmd extends VibeRpcCmd
 	{
 		this();
 		m_binderId = binderId;
+		m_userId = null;
 	}
 	
 	/**
@@ -78,7 +80,24 @@ public class GetProfileAvatarsCmd extends VibeRpcCmd
 	 * @return
 	 */
 	@Override
-	public int getCmdType() {
+	public int getCmdType()
+	{
 		return VibeRpcCmdType.GET_PROFILE_AVATARS.ordinal();
+	}
+	
+	/**
+	 * 
+	 */
+	public Long getUserId()
+	{
+		return m_userId;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setUserId( Long userId )
+	{
+		m_userId = userId;
 	}
 }

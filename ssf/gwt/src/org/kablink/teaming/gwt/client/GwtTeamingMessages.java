@@ -1329,6 +1329,7 @@ public interface GwtTeamingMessages extends Messages
 	String removeShareHint();
 	String shareAccess();
 	String shareCaption();
+	String shareDlg_accessLabel();
 	String shareDlg_addExternalUserTitle();
 	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
 	String shareDlg_cantShareWithAllExternalUsersGroup();
@@ -1363,6 +1364,11 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_noteLabel();
 	String shareDlg_notifyLabel();
 	String shareDlg_readingShareInfo();
+	String shareDlg_reshareExternal();
+	String shareDlg_reshareInternal();
+	String shareDlg_reshareLabel();
+	String shareDlg_reshareNo();
+	String shareDlg_resharePublic();
 	String shareDlg_rightsLabel();
 	String shareDlg_savingShareInfo();
 	String shareDlg_sendingNotificationEmail();
