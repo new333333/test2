@@ -1393,6 +1393,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		String newTitle = (ctx==null)?null:(String)ctx.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE);
 		if(Validator.isNotNull(newTitle))
 			source.setTitle(newTitle);
+
+        source.copyInheritedDefinitions();
 		source.move(destination);
     	//now add name to new parent 
 		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	

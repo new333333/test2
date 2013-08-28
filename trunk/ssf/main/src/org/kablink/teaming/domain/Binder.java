@@ -567,6 +567,12 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
        	}
        	return result;
     }
+    public void copyInheritedDefinitions() {
+        if (isDefinitionsInherited()) {
+            setDefinitions(getDefinitions());
+            setDefinitionsInherited(false);
+        }
+    }
     /**
      * Return configured definitions.
      * @return
