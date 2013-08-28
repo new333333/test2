@@ -46,21 +46,33 @@ public class BinderState extends ZonedObject {
 		 */
 		ready,
 		/**
+		 * Full synchronization has been taken off the ready queue and is about to start its execution.
+		 */
+		taken,
+		/**
 		 * Full synchronization has started and is currently running. Only this status indicates running state.
 		 */
 		started,
 		/**
-		 * Full synchronization that was in started state has stopped due to explicit request to stop it.
+		 * Full synchronization that was in started state has stopped due to explicit request by admin to stop it.
 		 */
-		stopped,
+		stopped, // in idle because it was stopped
 		/**
 		 * Full synchronization has run its course and finished. This doesn't tell how successful the sync was though.
 		 */
-		finished,
+		finished, // in idle because it was finished
 		/**
-		 * Full synchronization that was in ready state has been canceled due to explicit request to cancel it.
+		 * Full synchronization that was in started or taken state has been interrupted due to system termination (gracious shutdown, abrupt termination, crash, etc.).
 		 */
-		canceled
+		interrupted, // in idle because it was interrupted
+		/**
+		 * Full synchronization that was in ready state has been canceled due to explicit request by admin to cancel it.
+		 */
+		canceled, // in idle because it was canceled
+		/**
+		 * The corresponding binder is being deleted. Unlike other status, this signals the end of life cycle for this object.
+		 */
+		deleting
 	}
 	
 	/*
@@ -265,7 +277,6 @@ public class BinderState extends ZonedObject {
 			return status;
 		}
 
-		// For use by Hibernate only
 		private void setStatus(FullSyncStatus status) {
 			this.status = status;
 		}

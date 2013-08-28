@@ -1098,6 +1098,7 @@ public class GwtNetFolderHelper
     						break;
     						
     					case ready:
+    					case taken:
     						status = NetFolderSyncStatus.WAITING_TO_BE_SYNCD;
     						break;
     						
@@ -1107,6 +1108,11 @@ public class GwtNetFolderHelper
     						
     					case stopped:
     						status = NetFolderSyncStatus.SYNC_STOPPED;
+    						break;
+    						
+    					case interrupted:
+    					case deleting:
+    						status = NetFolderSyncStatus.UNKNOWN;
     						break;
     					}
     				}
