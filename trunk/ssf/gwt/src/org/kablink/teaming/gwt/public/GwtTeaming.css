@@ -827,8 +827,29 @@
 
 .shareItem_InfoPanel
 {
-	color: #135C8F;
 	cursor: pointer;
+}
+
+.shareItem_mainPanel
+{
+	margin-left: 4px;
+}
+
+.shareItem_RecipientAvatar
+{
+	height: 40px;
+	width: 40px;
+}
+
+.shareItem_RecipientName
+{
+	color: #135C8F;
+	font-weight: bold;
+}
+
+.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights
+{
+	font-size: 0.8em;
 }
 
 /* End of styles used with the Share dialog */

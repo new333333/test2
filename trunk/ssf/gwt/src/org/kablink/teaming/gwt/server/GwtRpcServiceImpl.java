@@ -1867,9 +1867,44 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GetProfileAvatarsCmd gpaCmd;
 			ProfileAttribute result;
+			String binderId;
 			
 			gpaCmd = (GetProfileAvatarsCmd) cmd;
-			result = getProfileAvatars( ri, gpaCmd.getBinderId() );
+			
+			// Were we given the user's workspace id?
+			binderId = gpaCmd.getBinderId();
+			if ( binderId == null )
+			{
+				Long userId;
+				
+				// No
+				// Were we given the user's id?
+				userId = gpaCmd.getUserId();
+				if ( userId != null )
+				{
+					User user;
+					Long wsId;
+					
+					// Yes, get the user's workspace id.
+					try
+					{
+						user = (User) getProfileModule().getEntry( userId );
+						wsId = user.getWorkspaceId();
+						if ( wsId != null )
+							binderId = String.valueOf( wsId );
+					}
+					catch ( Exception ex )
+					{
+						m_logger.info( "Servicing GetProfileAvatarsCmd, ex: " + ex.toString() );
+					}
+				}
+			}
+			
+			if ( binderId != null )
+				result = getProfileAvatars( ri, binderId );
+			else
+				result = new ProfileAttribute();
+
 			response = new VibeRpcResponse( result );
 			return response;
 		}
