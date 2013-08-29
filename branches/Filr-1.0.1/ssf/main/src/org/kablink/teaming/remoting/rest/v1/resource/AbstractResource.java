@@ -1491,19 +1491,15 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         SharingPermission sharing = new SharingPermission();
         if (role != ShareItem.Role.NONE) {
             SharingModule sharingModule = getSharingModule();
-            if (sharingModule.testShareEntityForward(entity)) {
-                sharing.setInternal(sharingModule.testAddShareEntityInternal(entity));
-                sharing.setExternal(sharingModule.testAddShareEntityExternal(entity));
-                sharing.setPublic(sharingModule.testAddShareEntityPublic(entity));
-            } else {
-                sharing.setInternal(false);
-                sharing.setExternal(false);
-                sharing.setPublic(false);
-            }
+            sharing.setInternal(sharingModule.testAddShareEntityInternal(entity));
+            sharing.setExternal(sharingModule.testAddShareEntityExternal(entity));
+            sharing.setPublic(sharingModule.testAddShareEntityPublic(entity));
+            sharing.setGrantReshare(sharingModule.testShareEntityForward(entity));
         } else {
             sharing.setInternal(false);
             sharing.setExternal(false);
             sharing.setPublic(false);
+            sharing.setGrantReshare(false);
         }
         return sharing;
     }
