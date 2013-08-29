@@ -263,11 +263,23 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		String uidValue = uidField.stringValue();
 		if(uidValue != null && uidValue.startsWith("org.kablink.teaming.domain.Folder_")) {
 			Fieldable docTypeField = doc.getFieldable(Constants.DOC_TYPE_FIELD);
-			if(docTypeField != null && Constants.DOC_TYPE_BINDER.equals(docTypeField.stringValue())) {
+			if(docTypeField != null && Constants.DOC_TYPE_BINDER.equals(docTypeField.stringValue())) { // This is a binder
+				// First, purge duplicate based on the UID (i.e., enforce unique constraint on the internal id)
 				Term purgeTerm = new Term(Constants.UID_FIELD, uidValue);
 				getIndexingResource().getIndexWriter().deleteDocuments(purgeTerm);
 				if(logger.isTraceEnabled())
-					logTrace("Called purgeOldDocument on writer with term [" + purgeTerm.toString() + "]");
+					logTrace("Called purgeOldDocument on writer with uid term [" + purgeTerm.toString() + "]");
+				// Next, purge duplicate based on the path (i.e., enforce unique constraint on the path) 
+				Fieldable pathField = doc.getFieldable(Constants.SORT_ENTITY_PATH);
+				if(pathField != null) {
+					String path = pathField.stringValue();
+					if(Validator.isNotNull(path)) { 
+						Term purgeTerm2 = new Term(Constants.SORT_ENTITY_PATH, path);
+						getIndexingResource().getIndexWriter().deleteDocuments(purgeTerm2);
+						if(logger.isTraceEnabled())
+							logTrace("Called purgeOldDocument on writer with path term [" + purgeTerm2.toString() + "]");
+					}
+				}
 			}
 		}
 	}
