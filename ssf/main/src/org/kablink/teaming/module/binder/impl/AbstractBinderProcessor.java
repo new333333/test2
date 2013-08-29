@@ -1022,10 +1022,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if (binder.isReserved() && !binder.getRoot().isDeleted()) 
     		throw new NotSupportedException(
     				"errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()});
-    	SimpleProfiler.start("deleteBinder_preDelete");
+    	
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
      	deleteBinder_setCtx(binder, ctx);
+     	
+        SimpleProfiler.start("deleteBinder_indexDel");
+        deleteBinder_indexDel(binder, ctx);
+        SimpleProfiler.stop("deleteBinder_indexDel");
+     
+    	SimpleProfiler.start("deleteBinder_preDelete");
         deleteBinder_preDelete(binder,ctx, skipDbLog);
         SimpleProfiler.stop("deleteBinder_preDelete");
         
@@ -1051,10 +1057,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         SimpleProfiler.start("deleteBinder_postDelete");
         deleteBinder_postDelete(binder, ctx);
         SimpleProfiler.stop("deleteBinder_postDelete");
-        
-        SimpleProfiler.start("deleteBinder_indexDel");
-        deleteBinder_indexDel(binder, ctx);
-        SimpleProfiler.stop("deleteBinder_indexDel");
      
         SimpleProfiler.start("deleteBinder_deleteRssFeed");
         doRssDelete(binder);
@@ -1163,6 +1165,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void deleteBinder_indexDel(Binder binder, Map ctx) {
         // Delete the document that's currently in the index.
     	indexDeleteBinder(binder);
+    	// Flush out index changes immediately rather than waiting for the module interceptor to do it.
+    	IndexSynchronizationManager.applyChanges();
     }
     
     //***********************************************************************************************************
