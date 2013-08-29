@@ -659,17 +659,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			correctFilrRoles(zoneConfig);
 		}
 		
-		if (version.intValue() <= 13) {
-			if (Utils.checkIfFilr()) {
-				//In Filr, we must reset all of the definitions and templates and definitions automatically
-				//But this is only done when needed (i.e., update the version if another change is made)
-				getAdminModule().updateDefaultDefinitions(top.getId(), false);
-				getTemplateModule().updateDefaultTemplates(top.getId(), true);
-				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
-				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
-			}
-		}
-		
 		if (version.intValue() <= 14) {
 			Function function;
 			List<Function> functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
@@ -686,7 +675,17 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
 		}
 
-		
+		if (version.intValue() <= 15) {
+			if (Utils.checkIfFilr()) {
+				//In Filr, we must reset all of the definitions and templates and definitions automatically
+				//But this is only done when needed (i.e., update the version if another change is made)
+				getAdminModule().updateDefaultDefinitions(top.getId(), false);
+				getTemplateModule().updateDefaultTemplates(top.getId(), true);
+				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
+				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
+			}
+		}
+				
   	}
  	
  	private void correctFilrRoles(ZoneConfig zoneConfig) {
@@ -1918,7 +1917,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) {
-			function = new Function();
+			if (functionNames.containsKey(ObjectKeys.ROLE_ENABLE_SHARING_EXTERNAL)) {
+				function = (Function)functionNames.get(ObjectKeys.ROLE_ENABLE_SHARING_EXTERNAL);
+			} else {
+				function = new Function();
+			}
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_EXTERNAL);
 			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
@@ -1926,7 +1929,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function.addOperation(WorkAreaOperation.ENABLE_SHARING_EXTERNAL);
 			function.setZoneWide(true);
 			//generate functionId
-			getFunctionManager().addFunction(function);
+			if (functionNames.containsKey(ObjectKeys.ROLE_ENABLE_SHARING_EXTERNAL)) {
+				getFunctionManager().updateFunction(function);
+			} else {
+				getFunctionManager().addFunction(function);
+			}
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 
@@ -1982,14 +1989,22 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 		
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID)) {
-			function = new Function();
+			if (functionNames.containsKey(ObjectKeys.ROLE_ALLOW_SHARING_EXTERNAL)) {
+				function = (Function)functionNames.get(ObjectKeys.ROLE_ALLOW_SHARING_EXTERNAL);
+			} else {
+				function = new Function();
+			}
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ALLOW_SHARING_EXTERNAL);
 			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID);
 			function.addOperation(WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
 			//generate functionId
-			getFunctionManager().addFunction(function);
+			if (functionNames.containsKey(ObjectKeys.ROLE_ALLOW_SHARING_EXTERNAL)) {
+				getFunctionManager().updateFunction(function);
+			} else {
+				getFunctionManager().addFunction(function);
+			}
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
@@ -2033,7 +2048,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		if ((Utils.checkIfVibe() || Utils.checkIfKablink() || Utils.checkIfFilrAndVibe()) && 
 				!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID)) {
 			//Don't create this role in Filr
-			function = new Function();
+			if (functionNames.containsKey(ObjectKeys.ROLE_ENABLE_SHARING_ALL_EXTERNAL)) {
+				function = (Function)functionNames.get(ObjectKeys.ROLE_ENABLE_SHARING_ALL_EXTERNAL);
+			} else {
+				function = new Function();
+			}
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_ALL_EXTERNAL);
 			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
@@ -2041,7 +2060,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function.addOperation(WorkAreaOperation.ENABLE_SHARING_ALL_EXTERNAL);
 			function.setZoneWide(true);
 			//generate functionId
-			getFunctionManager().addFunction(function);
+			if (functionNames.containsKey(ObjectKeys.ROLE_ENABLE_SHARING_ALL_EXTERNAL)) {
+				getFunctionManager().updateFunction(function);
+			} else {
+				getFunctionManager().addFunction(function);
+			}
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
