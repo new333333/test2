@@ -624,6 +624,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DownloadPanel();
 	String codeSplitFailure_EditBrandingDlg();
 	String codeSplitFailure_EditNetFolderRightsDlg();
+	String codeSplitFailure_EditShareDlg();
 	String codeSplitFailure_EditShareNoteDlg();
 	String codeSplitFailure_EditShareRightsDlg();
 	String codeSplitFailure_EditUserZoneShareRightsDlg();
@@ -1371,6 +1372,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_resharePublic();
 	String shareDlg_rightsLabel();
 	String shareDlg_savingShareInfo();
+	String shareDlg_selectSharesToEdit();
 	String shareDlg_sendingNotificationEmail();
 	String shareDlg_sharedWithCol();
 	String shareDlg_shareLabel();
@@ -2297,6 +2299,10 @@ public interface GwtTeamingMessages extends Messages
 	String editShareRightsDlg_GrantRightsLabel();
 	String editShareRightsDlg_ViewerLabel();
 
+	// Strings used in the Edit Share dialog
+	String editShareDlg_captionEdit1( String recipientName );
+	String editShareDlg_captionEditMultiple( int numShares );
+
 	// Strings used in the User Actions Popup
 	String userActionsPanel_PersonalPreferences();
 	String userActionsPanel_ViewProfile();
@@ -2778,4 +2784,5 @@ public interface GwtTeamingMessages extends Messages
 	String deleteSelectedUsersDlgLabel_PurgeUsers3();
 	String deleteSelectedUsersDlgLabel_PurgeUsers4();
 	String deleteSelectedUsersDlgWarning_CantUndo();
+	
 }// end GwtTeamingMessages
