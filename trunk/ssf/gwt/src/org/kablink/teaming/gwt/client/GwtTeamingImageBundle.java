@@ -421,6 +421,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource netFolderSyncStatusStopped();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_status_unknown.png")
+	public ImageResource netFolderSyncStatusUnknown();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/NetFolders/waiting_to_be_syncd.png")
 	public ImageResource netFolderSyncStatusWaitingToBeSyncd();
 
