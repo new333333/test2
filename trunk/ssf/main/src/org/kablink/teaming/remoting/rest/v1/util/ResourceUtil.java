@@ -783,15 +783,10 @@ public class ResourceUtil {
         SharingPermission sharing = new SharingPermission();
         access.setSharing(sharing);
         WorkAreaOperation.RightSet rightSet = shareItem.getRightSet();
-        if (rightSet.isAllowSharingForward()) {
-            sharing.setInternal(rightSet.isAllowSharing());
-            sharing.setExternal(rightSet.isAllowSharingExternal());
-            sharing.setPublic(rightSet.isAllowSharingPublic());
-        } else {
-            sharing.setInternal(false);
-            sharing.setExternal(false);
-            sharing.setPublic(false);
-        }
+        sharing.setInternal(rightSet.isAllowSharing());
+        sharing.setExternal(rightSet.isAllowSharingExternal());
+        sharing.setPublic(rightSet.isAllowSharingPublic());
+        sharing.setGrantReshare(rightSet.isAllowSharingForward());
         model.setAccess(access);
         model.setRole(access.getRole());
         model.setCanShare(sharing.getPublic() || sharing.getExternal() || sharing.getInternal());
