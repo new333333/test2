@@ -34,7 +34,9 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
@@ -60,6 +62,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
@@ -85,6 +88,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.util.UserType;
+import org.kablink.teaming.gwt.client.widgets.EditShareDlg.EditShareDlgClient;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
@@ -119,13 +123,16 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
@@ -143,6 +150,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ShareThisDlg2 extends DlgBox
 	implements EditSuccessfulHandler, EditCanceledHandler,
 	// Event handlers implemented by this class.
+		InvokeEditShareRightsDlgEvent.Handler,
 		SearchFindResultsEvent.Handler
 {
 	private CellTable<GwtShareItem> m_shareTable;
@@ -161,6 +169,7 @@ public class ShareThisDlg2 extends DlgBox
 	private CheckBox m_notifyCheckbox;
 	private Image m_addExternalUserImg;
 	private FlowPanel m_mainPanel;
+	private FlowPanel m_editSharePanel;
 	private FlexTable m_addShareTable;
 	private InlineLabel m_shareWithTeamsLabel;
 	private InlineLabel m_manageSharesFindCtrlLabel;
@@ -178,6 +187,8 @@ public class ShareThisDlg2 extends DlgBox
 	private AsyncCallback<VibeRpcResponse> m_sendNotificationEmailCallback;
 	private ShareExpirationValue m_defaultShareExpirationValue;
 	private ShareWithTeamsDlg m_shareWithTeamsDlg;
+	private EditShareDlg m_editShareDlg;
+	private EditSuccessfulHandler m_editShareHandler;
 	private EditSuccessfulHandler m_editShareWithTeamsHandler;
 	
 	private static final String FIND_SHARES_BY_USER = "by-user";
@@ -192,6 +203,7 @@ public class ShareThisDlg2 extends DlgBox
 	private static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
     {
 		// Search events.
+		TeamingEvents.INVOKE_EDIT_SHARE_RIGHTS_DLG,
 		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
 
@@ -508,6 +520,9 @@ public class ShareThisDlg2 extends DlgBox
 				
 				case VIEWER:
 					// Nothing to do we are already at the lowest rights.
+					break;
+
+				default:
 					break;
 				}
 			}
@@ -939,29 +954,47 @@ public class ShareThisDlg2 extends DlgBox
 					@Override
 					public void update( int index, GwtShareItem shareItem, GwtShareItem value )
 					{
-						editShare( shareItem );
+						ArrayList<GwtShareItem> listOfShares;
+						
+						listOfShares = new ArrayList<GwtShareItem>();
+						listOfShares.add( shareItem );
+						invokeEditShareDlg( listOfShares );
 					}
 				} );
 				m_shareTable.addColumn( sharedWithCol, messages.shareDlg_sharedWithCol() );
 			}
 
-			// Put the table that holds the list of net folders into a scrollable div
+			// Add the list of recipients
 			{
-				FlowPanel panel;
+				VerticalPanel leftPanel;
+				HorizontalPanel hPanel;
+				FlowPanel leftSubPanel;
 			
-				panel = new FlowPanel();
-				panel.addStyleName( "shareThisDlg_ListOfSharesPanel" );
-				panel.add( m_shareTable );
-				m_mainPanel.add( panel );
-			}
-			
-			// Create a pager
-			{
+				leftPanel = new VerticalPanel();
+				
+				// Put the table that holds the list of recipients into a scrollable div
+				leftSubPanel = new FlowPanel();
+				leftSubPanel.addStyleName( "shareThisDlg_ListOfSharesPanel" );
+				leftSubPanel.add( m_shareTable );
+				leftPanel.add( leftSubPanel );
+
+				// Create a pager
 				m_pager = new VibeSimplePager();
 				m_pager.setDisplay( m_shareTable );
-			}
+				m_pager.setPageSize( 6 );
+				leftPanel.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
+				leftPanel.setCellHeight( m_pager, "100%" );
+				leftPanel.add( m_pager );
+				
+				// Create a panel where the "edit share" dialog will be placed.
+				m_editSharePanel = new FlowPanel();
 
-			m_mainPanel.add( m_pager );
+				hPanel = new HorizontalPanel();
+				hPanel.add( leftPanel );
+				hPanel.add( m_editSharePanel );
+				
+				m_mainPanel.add( hPanel );
+			}
 		}
 	}
 	
@@ -1149,15 +1182,28 @@ public class ShareThisDlg2 extends DlgBox
 	 */
 	private void editSelectedShares()
 	{
-		Window.alert( "Not yet implemented" );
-	}
-	
-	/**
-	 * 
-	 */
-	private void editShare( GwtShareItem shareItem )
-	{
-		Window.alert( "Not yet implemented" );
+		Set<GwtShareItem> selectedShares;
+		
+		selectedShares = getSelectedShares();
+		if ( selectedShares != null && selectedShares.size() > 0 )
+		{
+			InvokeEditShareRightsDlgEvent event;
+			ArrayList<GwtShareItem> listOfShares;
+
+			listOfShares = new ArrayList<GwtShareItem>();
+			for ( GwtShareItem nextShare : selectedShares )
+			{
+				listOfShares.add( nextShare );
+			}
+			
+			// Fire an event to invoke the "edit share rights" dialog.
+			event = new InvokeEditShareRightsDlgEvent( listOfShares );
+			GwtTeaming.fireEvent( event );
+		}
+		else
+		{
+			Window.alert( GwtTeaming.getMessages().shareDlg_selectSharesToEdit() );
+		}
 	}
 	
 	/**
@@ -1742,6 +1788,14 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
+	 * Return a list of selected shares.
+	 */
+	public Set<GwtShareItem> getSelectedShares()
+	{
+		return m_selectionModel.getSelectedSet();
+	}
+	
+	/**
 	 * 
 	 */
 	private void handleClickOnAddExternalUser()
@@ -2044,6 +2098,143 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private void invokeEditShareDlg( final ArrayList<GwtShareItem> listOfShareItems )
+	{
+		if ( listOfShareItems == null || listOfShareItems.size() == 0 )
+			return;
+		
+		if ( m_editShareHandler == null )
+		{
+			m_editShareHandler = new EditSuccessfulHandler()
+			{
+				@Override
+				public boolean editSuccessful( Object obj )
+				{
+					if ( obj instanceof Boolean )
+					{
+						Boolean retValue;
+						
+						// Did the "Edit Share Rights" dialog successfully update
+						// our GwtShareItem.
+						retValue = (Boolean) obj;
+						if ( retValue == true )
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute() 
+								{
+									refreshShareInfoUI( m_editShareDlg.getListOfShareItems() );
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					}
+
+					return true;
+				}
+			};
+		}
+
+		if ( m_editShareDlg == null )
+		{
+			int x;
+			int y;
+
+			// Get the position of where the "edit share" dialog needs to be.
+			x = m_editSharePanel.getAbsoluteLeft();
+			y = m_editSharePanel.getAbsoluteTop();
+			
+			EditShareDlg.createAsync(
+								true, 
+								true,
+								x, 
+								y,
+								new EditShareDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final EditShareDlg esDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_editShareDlg = esDlg;
+							
+							invokeEditShareDlg( listOfShareItems );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			ShareRights highestRightsPossible;
+			GwtShareItem shareItem;
+			boolean recipientIsExternal = false;
+
+			shareItem = listOfShareItems.get( 0 );
+			
+			// Are we dealing with only 1 share item?
+			if ( listOfShareItems.size() == 1 )
+			{
+				// Yes
+				highestRightsPossible = m_sharingInfo.getShareRights( shareItem.getEntityId() );
+
+				// Is the recipient an external user?
+				if ( shareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
+				{
+					// Yes
+					recipientIsExternal = true;
+				}
+			}
+			else
+			{
+				// Look at each item being shared and return the highest rights possible
+				// that is available on all items being shared.
+				highestRightsPossible = calculateHighestRightsPossible( listOfShareItems );
+				
+				// Go through the list of share items and see if a recipient is an external user.
+				for ( GwtShareItem nextShareItem : listOfShareItems )
+				{
+					if ( nextShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
+					{
+						recipientIsExternal = true;
+						break;
+					}
+				}
+			}
+
+			// Is the recipient of the share an external user?
+			if ( recipientIsExternal )
+			{
+				// Yes, don't let the external user do any re-share
+				highestRightsPossible.setCanShareForward( false );
+				highestRightsPossible.setCanShareWithExternalUsers( false );
+				highestRightsPossible.setCanShareWithInternalUsers( false );
+				highestRightsPossible.setCanShareWithPublic( false );
+			}
+			
+			m_editShareDlg.init( listOfShareItems, highestRightsPossible, m_editShareHandler );
+			m_editShareDlg.show();
+		}
+	}
+	
+	/**
 	 * Invoke the "Share with teams" dialog
 	 */
 	private void invokeShareWithTeamsDlg()
@@ -2151,6 +2342,17 @@ public class ShareThisDlg2 extends DlgBox
 		}
 	}
 
+	/**
+	 * Refresh the ui that displays the list of shares.
+	 */
+	private void refreshShareInfoUI( ArrayList<GwtShareItem> listOfShares )
+	{
+		if ( listOfShares != null && listOfShares.size() > 0 )
+		{
+			m_dataProvider.refresh();
+		}
+	}
+	
 	/**
 	 * Remove all share items that may be in the table.
 	 */
@@ -2463,6 +2665,34 @@ public class ShareThisDlg2 extends DlgBox
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
+	}
+	
+	/**
+	 * Handles the InvokeEditShareRightsDlgEvent received by this class
+	 */
+	@Override
+	public void onInvokeEditShareRightsDlg( InvokeEditShareRightsDlgEvent event )
+	{
+		final ArrayList<GwtShareItem> listOfShareItems;
+		
+		// Get the list of GwtShareItems we will be editing.
+		listOfShareItems = event.getListOfShareItems();
+		
+		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					// Invoke the edit rights dialog.
+					invokeEditShareDlg( listOfShareItems );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}
 	
 	/**
