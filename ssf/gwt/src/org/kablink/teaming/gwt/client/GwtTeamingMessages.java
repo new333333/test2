@@ -2230,6 +2230,7 @@ public interface GwtTeamingMessages extends Messages
 	String netFolderSyncStatusInProgress();
 	String netFolderSyncStatusNeverRun();
 	String netFolderSyncStatusStopped();
+	String netFolderSyncStatusUnknown();
 	String netFolderSyncStatusWaitingToBeSyncd();
 
 	// Strings used in the Modify Net Folder dialog

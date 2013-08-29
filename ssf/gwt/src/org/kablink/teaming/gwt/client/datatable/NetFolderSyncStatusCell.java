@@ -58,6 +58,7 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 	private static String m_syncStoppedImgHtml = null;
 	private static String m_syncCompletedImgHtml = null;
 	private static String m_syncNeverRunImgHtml = null;
+	private static String m_syncStatusUnknownImgHtml = null;
 
 	/**
 	 * 
@@ -138,6 +139,19 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 			img.addStyleName( "netFolder_syncStatusImg" );
 			m_syncNeverRunImgHtml = img.toString();
 		}
+
+
+		if ( m_syncStatusUnknownImgHtml == null )
+		{
+			ImageResource imgResource;
+			Image img;
+			
+			imgResource = GwtTeaming.getImageBundle().netFolderSyncStatusUnknown();
+			img = GwtClientHelper.buildImage( imgResource );
+			img.setTitle( GwtTeaming.getMessages().netFolderSyncStatusUnknown() );
+			img.addStyleName( "netFolder_syncStatusImg" );
+			m_syncStatusUnknownImgHtml = img.toString();
+		}
 	}
 
 	/**
@@ -214,7 +228,7 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 				break;
 				
 			default:
-				sb.appendHtmlConstant( "Unknown sync status" );
+				sb.appendHtmlConstant( m_syncStatusUnknownImgHtml );
 			}
 			
 			// Close the <div>
