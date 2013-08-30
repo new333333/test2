@@ -115,7 +115,7 @@ public final class UpdateService
 			FileUtils.copyFile(oldLocation, newLocation);
 			
 			//Keep old license
-			if(!overrideLicense)
+			if(overrideLicense)
 			{
 				oldLocation = new File(tempDir + File.separator + "filrinstall/license-key.xml");
 				newLocation = new File("/filrinstall/license-key.xml");
