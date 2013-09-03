@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
@@ -44,11 +45,14 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetDateStrCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetProfileAvatarsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
+import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlgMode;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
@@ -58,7 +62,6 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -200,7 +203,37 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 	 * 
 	 */
 	@Override
-	public void render( Context context, final GwtShareItem shareItem, SafeHtmlBuilder sb )
+	protected void onEnterKeyDown(
+		Context context,
+		Element parent,
+		GwtShareItem value,
+		NativeEvent event,
+		ValueUpdater<GwtShareItem> valueUpdater )
+	{
+		if ( valueUpdater != null )
+		{
+			valueUpdater.update( value );
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public void render( Context context, GwtShareItem value, SafeHtmlBuilder sb )
+	{
+		// This method is not used
+	}
+	
+	/**
+	 * 
+	 */
+	public void render(
+		Context context,
+		final GwtShareItem shareItem,
+		SafeHtmlBuilder sb,
+		GwtSharingInfo sharingInfo,
+		ShareThisDlgMode mode )
 	{
 		Scheduler.ScheduledCommand cmd;
 		GwtTeamingMessages messages;
@@ -254,6 +287,24 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		label.addStyleName( "shareItem_RecipientName" );
 		mainPanel.add( label );
 		
+		// Add the name of the file being shared if we are sharing more than 1 file
+		{
+			ArrayList<EntityId> listOfEntities;
+			
+			// Are we sharing more that 1 file?
+			listOfEntities = sharingInfo.getListOfEntities();
+			if ( (listOfEntities != null && listOfEntities.size() > 1) || mode == ShareThisDlgMode.MANAGE_ALL )
+			{
+				// Yes
+				if ( shareItem.getEntityId().isEntry() )
+					label = new Label( messages.shareDlg_fileLabel() + " " + shareItem.getEntityName() );
+				else
+					label = new Label( messages.shareDlg_folderLabel() + " " + shareItem.getEntityName() );
+				label.addStyleName( "shareItem_AccessRights" );
+				mainPanel.add( label );
+			}
+		}
+		
 		// Add the share expiration
 		{
 			InlineLabel expireLabel1;
@@ -262,8 +313,6 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 
 			expireLabel1 = new InlineLabel( messages.shareDlg_expiresLabel() + " " );
 			expireLabel1.addStyleName( "shareItem_Expiration" );
-			if ( shareItem.isExpired() )
-				expireLabel1.addStyleName( "shareThisDlg_ShareExpired" );
 
 			expireLabel2 = new InlineLabel( getExpirationText( shareItem ) );
 			expireLabel2.addStyleName( "shareItem_Expiration" );
@@ -274,7 +323,10 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 			expirationDateId = strBuff.toString();
 			expireLabel2.getElement().setId( expirationDateId );
 			if ( shareItem.isExpired() )
+			{
+				expireLabel1.addStyleName( "shareThisDlg_ShareExpired" );
 				expireLabel2.addStyleName( "shareThisDlg_ShareExpired" );
+			}
 
 			mainPanel.add( expireLabel1 );
 			mainPanel.add( expireLabel2 );
@@ -289,6 +341,28 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		label = new Label( messages.shareDlg_reshareLabel() + " " + getReshareRightsText( shareItem ) );
 		label.addStyleName( "shareItem_ReshareRights" );
 		mainPanel.add( label );
+		
+		// Add the note
+		{
+			String note;
+
+			note = shareItem.getComments();
+
+			if ( note != null && note.length() > 24 )
+			{
+				note = note.substring( 0, 24 );
+				note += "...";
+			}
+			else if ( note == null || note.length() == 0 )
+				note = "";
+
+			if ( note.length() > 0 )
+			{
+				label = new Label( messages.shareDlg_noteLabel() + " " + note );
+				label.addStyleName( "shareItem_Note" );
+				mainPanel.add( label );
+			}
+		}
 		
 		sb.append( SafeHtmlUtils.fromSafeConstant( topPanel.getElement().getInnerHTML() ) );
 		
@@ -308,23 +382,6 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		Scheduler.get().scheduleDeferred( cmd );
 	}
 
-	/**
-	 * 
-	 */
-	@Override
-	protected void onEnterKeyDown(
-		Context context,
-		Element parent,
-		GwtShareItem value,
-		NativeEvent event,
-		ValueUpdater<GwtShareItem> valueUpdater )
-	{
-		if ( valueUpdater != null )
-		{
-			valueUpdater.update( value );
-		}
-	}
-	
 	/**
 	 * Issue an rpc request to get the recipient's avatar.
 	 */

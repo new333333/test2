@@ -847,13 +847,21 @@
 	font-weight: bold;
 }
 
-.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights
+.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_Note
 {
 	font-size: 0.8em;
 }
 
 /* End of styles used with the Share dialog */
 
+
+/**
+ * Styles used with the Edit Share dialog
+ */
+.editShareDlg_expirationPanel
+{
+	margin-top: 8px;
+}
 
 
 .groupMembershipGroupNameLabel

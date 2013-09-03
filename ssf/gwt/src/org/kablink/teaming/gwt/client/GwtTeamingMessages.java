@@ -1348,6 +1348,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_expiresLabel();
 	String shareDlg_expiresNever();
 	String shareDlg_expiresOn( String on );
+	String shareDlg_fileLabel();
 	String shareDlg_findByFileLabel();
 	String shareDlg_findByFolderLabel();
 	String shareDlg_findByUserLabel();
@@ -1357,6 +1358,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_findSharesByFolder();
 	String shareDlg_findSharesByHint();
 	String shareDlg_findSharesByUser();
+	String shareDlg_folderLabel();
 	String shareDlg_makePublic();
 	String shareDlg_manageShares();
 	String shareDlg_manageMultipleItems( int numItems );
@@ -2300,8 +2302,16 @@ public interface GwtTeamingMessages extends Messages
 	String editShareRightsDlg_ViewerLabel();
 
 	// Strings used in the Edit Share dialog
+	String editShareDlg_accessRightsLabel();
 	String editShareDlg_captionEdit1( String recipientName );
 	String editShareDlg_captionEditMultiple( int numShares );
+	String editShareDlg_canReshareExternalLabel();
+	String editShareDlg_canReshareInternalLabel();
+	String editShareDlg_canResharePublicLabel();
+	String editShareDlg_no();
+	String editShareDlg_undefined();
+	String editShareDlg_undefinedNote();
+	String editShareDlg_yes();
 
 	// Strings used in the User Actions Popup
 	String userActionsPanel_PersonalPreferences();
