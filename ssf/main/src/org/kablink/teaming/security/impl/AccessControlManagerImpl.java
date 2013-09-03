@@ -551,7 +551,29 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			return testRightGrantedBySharing(user, workAreaStart, topEntry, workAreaOperation, userMembers);
     	}
     	
-    	return testRightGrantedBySharing(user, workArea, workAreaOperation, userMembers);
+    	if (testRightGrantedBySharing(user, workArea, workAreaOperation, userMembers)) {
+    		return true;
+    	} else {
+    		//Is this the guest user? If so, we are done.
+    		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+    			return false;
+    		}
+    		if (WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS.equals(workAreaOperation) || 
+    				WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS.equals(workAreaOperation)) {
+    			//Don't try to check further on these rights. It will loop. These operations can't be shared.
+    			return false;
+    		}
+    		//The user doesn't have direct access, see if guest has access (if guest is allowed in at all)
+    		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
+			if (!config.isAllowAnonymousAccess()) {
+				//Guest access is not enabled, disallow access to everything
+				return false;
+			} else {
+				User guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zoneId);
+				return testOperation(guest, workArea, workAreaOperation);
+			}
+    	}
     }
     
     private boolean testRightGrantedByDredgedAcl(User user, FolderEntry workArea, WorkAreaOperation workAreaOperation) {
