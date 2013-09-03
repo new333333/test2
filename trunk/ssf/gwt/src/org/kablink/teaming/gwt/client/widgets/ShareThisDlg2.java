@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -62,7 +61,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
@@ -94,6 +92,7 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 import org.kablink.teaming.gwt.client.widgets.ShareWithTeamsDlg.ShareWithTeamsDlgClient;
 
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.ValueUpdater;
@@ -101,6 +100,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -138,6 +138,8 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
+
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
 /**
  * This class is used to present a UI the user can use to share an item with
@@ -947,6 +949,15 @@ public class ShareThisDlg2 extends DlgBox
 					{
 						return shareItem;
 					}
+					
+					@Override
+					public void render( Cell.Context context, GwtShareItem shareItem, SafeHtmlBuilder sb )
+					{
+						ShareItemCell cell;
+						
+						cell = (ShareItemCell) getCell();
+						cell.render( context, shareItem, sb, m_sharingInfo, m_mode );
+					}
 				};
 			
 				sharedWithCol.setFieldUpdater( new FieldUpdater<GwtShareItem, GwtShareItem>()
@@ -988,6 +999,8 @@ public class ShareThisDlg2 extends DlgBox
 				
 				// Create a panel where the "edit share" dialog will be placed.
 				m_editSharePanel = new FlowPanel();
+				m_editSharePanel.setWidth( "350px" );
+				m_editSharePanel.setHeight( "400px" );
 
 				hPanel = new HorizontalPanel();
 				hPanel.add( leftPanel );
@@ -2231,6 +2244,26 @@ public class ShareThisDlg2 extends DlgBox
 			
 			m_editShareDlg.init( listOfShareItems, highestRightsPossible, m_editShareHandler );
 			m_editShareDlg.show();
+			
+			// Make the right-hand panel the same width as the Edit Share dialog
+			// and the same height as the table that holds the list of shares.
+			{
+				Scheduler.ScheduledCommand cmd;
+
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						Style style;
+						
+						style = m_editSharePanel.getElement().getStyle();
+						style.setWidth( m_editShareDlg.getOffsetWidth(), Unit.PX );
+						style.setHeight( m_shareTable.getOffsetHeight(), Unit.PX );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
 		}
 	}
 	

@@ -54,21 +54,24 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
 
@@ -80,24 +83,35 @@ import com.google.gwt.user.datepicker.client.DatePicker;
 public class EditShareDlg extends DlgBox
 	implements EditSuccessfulHandler, KeyPressHandler
 {
-	private RadioButton m_viewerRb;
-	private RadioButton m_editorRb;
-	private RadioButton m_contributorRb;
-	private Label m_canShareLabel;
-	private CheckBox m_canShareExternalCkbox;
-	private CheckBox m_canShareInternalCkbox;
-	private CheckBox m_canSharePublicCkbox;
+	// Data members used with access rights
+	private ListBox m_accessRightsListbox;
+
+	// Data members used with reshare
+	private VerticalPanel m_resharePanel;
+	private ListBox m_canReshareInternalListbox;
+	private ListBox m_canReshareExternalListbox;
+	private ListBox m_canResharePublicListbox;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
 	
 	// Data members used with share expiration
-	private ListBox m_listbox;
+	private ListBox m_expiresListbox;
 	private TextBox m_expiresAfterTextBox;
 	private TZDateBox m_dateBox;
 	private VibeFlowPanel m_expiresOnPanel;
 	private VibeFlowPanel m_expiresAfterPanel;
+	
+	// Data members used with share note
+	private TextArea m_noteTextArea;
 
-	private static long MILLISEC_IN_A_DAY = 86400000; 
+	
+	private static long MILLISEC_IN_A_DAY = 86400000;
+	private static String VIEWER = "viewer";
+	private static String EDITOR = "editor";
+	private static String CONTRIBUTOR = "contributor";
+	private static String UNDEFINED = "undefined";
+	private static String RESHARE_YES = "Reshare-Yes";
+	private static String RESHARE_NO = "Reshare-No";
 	
 
 
@@ -131,64 +145,6 @@ public class EditShareDlg extends DlgBox
 	}
 
 	/**
-	 * 
-	 */
-	public void createRightsContent( VibeFlowPanel panel )
-	{
-		GwtTeamingMessages messages;
-		VibeFlowPanel rbPanel;
-		VibeFlowPanel tmpPanel;
-		
-		messages = GwtTeaming.getMessages();
-		
-		// Create a panel for the radio buttons to live in.
-		rbPanel = new VibeFlowPanel();
-		rbPanel.addStyleName( "editShareRightsDlg_RbPanel" );
-		
-		m_viewerRb = new RadioButton( "shareRights", messages.editShareRightsDlg_ViewerLabel() );
-		tmpPanel = new VibeFlowPanel();
-		tmpPanel.add( m_viewerRb );
-		rbPanel.add( tmpPanel );
-
-		m_editorRb = new RadioButton( "shareRights", messages.editShareRightsDlg_EditorLabel() );
-		tmpPanel = new VibeFlowPanel();
-		tmpPanel.add( m_editorRb );
-		rbPanel.add( tmpPanel );
-		
-		m_contributorRb = new RadioButton( "shareRights", messages.editShareRightsDlg_ContributorLabel() );
-		tmpPanel = new VibeFlowPanel();
-		tmpPanel.add( m_contributorRb );
-		rbPanel.add( tmpPanel );
-		
-		m_canShareLabel = new Label( messages.editShareRightsDlg_CanShareLabel() );
-		m_canShareLabel.addStyleName( "margintop2" );
-		rbPanel.add( m_canShareLabel );
-		
-		// Add the "allow share internal checkbox.
-		m_canShareInternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareInternalLabel() );
-		tmpPanel = new VibeFlowPanel();
-		tmpPanel.addStyleName( "marginleft1" );
-		tmpPanel.add( m_canShareInternalCkbox );
-		rbPanel.add( tmpPanel );
-		
-		// Add the "allow share external" checkbox.
-		m_canShareExternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareExternalLabel() );
-		tmpPanel = new VibeFlowPanel();
-		tmpPanel.addStyleName( "marginleft1" );
-		tmpPanel.add( m_canShareExternalCkbox );
-		rbPanel.add( tmpPanel );
-		
-		// Add the "allow share public" checkbox.
-		m_canSharePublicCkbox = new CheckBox( messages.editShareRightsDlg_CanSharePublicLabel() );
-		tmpPanel = new VibeFlowPanel();
-		tmpPanel.addStyleName( "marginleft1" );
-		tmpPanel.add( m_canSharePublicCkbox );
-		rbPanel.add( tmpPanel );
-		
-		panel.add( rbPanel );
-	}
-	
-	/**
 	 * Create all the controls that make up the dialog box.
 	 */
 	@Override
@@ -201,8 +157,8 @@ public class EditShareDlg extends DlgBox
 		mainPanel.addStyleName( "editShareRightsDlg_MainPanel" );
 		
 		createRightsContent( mainPanel );
-		
 		createExpirationContent( mainPanel );
+		createNoteContent( mainPanel );
 		
 		return mainPanel;
 	}
@@ -218,6 +174,7 @@ public class EditShareDlg extends DlgBox
 		int col;
 
 		mainPanel = new VibeFlowPanel();
+		mainPanel.addStyleName( "editShareDlg_expirationPanel" );
 
 		// Give this panel a fixed width so the dialog doesn't resize after the user
 		// selects an expiration type.
@@ -236,22 +193,10 @@ public class EditShareDlg extends DlgBox
 		// Create a select control for specifying when the share expires
 		{
 			// Add the listbox where the user can select how the share expires, never, after or on
-			m_listbox = new ListBox( false );
-			m_listbox.setVisibleItemCount( 1 );
+			m_expiresListbox = new ListBox( false );
+			m_expiresListbox.setVisibleItemCount( 1 );
 			
-			m_listbox.addItem( 
-						GwtTeaming.getMessages().shareExpirationDlg_expiresNever(),
-						ShareExpirationType.NEVER.toString() );
-			m_listbox.addItem(
-						GwtTeaming.getMessages().shareExpirationDlg_expiresOn(),
-						ShareExpirationType.ON_DATE.toString() );
-			m_listbox.addItem(
-						GwtTeaming.getMessages().shareExpirationDlg_expiresAfter(),
-						ShareExpirationType.AFTER_DAYS.toString() );
-			
-			m_listbox.setSelectedIndex( 0 );
-
-			m_listbox.addChangeHandler( new ChangeHandler()
+			m_expiresListbox.addChangeHandler( new ChangeHandler()
 			{
 				@Override
 				public void onChange( ChangeEvent event )
@@ -269,7 +214,7 @@ public class EditShareDlg extends DlgBox
 					Scheduler.get().scheduleDeferred( cmd );
 				}
 			} );
-			mainTable.setWidget( 0, col, m_listbox );
+			mainTable.setWidget( 0, col, m_expiresListbox );
 			++col;
 		}
 		
@@ -351,13 +296,99 @@ public class EditShareDlg extends DlgBox
 	}
 	
 	/**
+	 * Create the controls needed for the share note.
+	 */
+	public void createNoteContent( VibeFlowPanel mainPanel )
+	{
+		FlexTable mainTable;
+		int col;
+		
+		mainTable = new FlexTable();
+		mainTable.addStyleName( "editShareNoteDlg_table" );
+		mainTable.getRowFormatter().setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
+		mainPanel.add( mainTable );
+		
+		col = 0;
+		
+		mainTable.setText( 0, col, GwtTeaming.getMessages().editShareNoteDlg_noteLabel() );
+		++col;
+		
+		m_noteTextArea = new TextArea();
+		m_noteTextArea.addStyleName( "editShareNoteDlg_TextArea" );
+		m_noteTextArea.addStyleName( "editShareNoteDlg_TextAreaBorder" );
+		mainTable.setWidget( 0, col, m_noteTextArea );
+	}
+	
+	/**
+	 * 
+	 */
+	public void createRightsContent( VibeFlowPanel panel )
+	{
+		GwtTeamingMessages messages;
+		HorizontalPanel hPanel;
+		Label label;
+		
+		messages = GwtTeaming.getMessages();
+		
+		hPanel = new HorizontalPanel();
+		hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+		hPanel.setSpacing( 4 );
+		
+		label = new Label( messages.editShareDlg_accessRightsLabel() );
+		hPanel.add( label );
+		m_accessRightsListbox = new ListBox( false );
+		m_accessRightsListbox.setVisibleItemCount( 1 );
+		hPanel.add( m_accessRightsListbox );
+		panel.add( hPanel );
+		
+		// Add the controls needed to define re-share rights
+		{
+			m_resharePanel = new VerticalPanel();
+			panel.add( m_resharePanel );
+			
+			// Add the "Reshare with internal users" listbox
+			hPanel = new HorizontalPanel();
+			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+			hPanel.setSpacing( 4 );
+			label = new Label( messages.editShareDlg_canReshareInternalLabel() );
+			hPanel.add( label );
+			m_canReshareInternalListbox = new ListBox( false );
+			m_canReshareInternalListbox.setVisibleItemCount( 1 );
+			hPanel.add( m_canReshareInternalListbox );
+			m_resharePanel.add( hPanel );
+			
+			// Add the "Reshare with external users" listbox
+			hPanel = new HorizontalPanel();
+			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+			hPanel.setSpacing( 4 );
+			label = new Label( messages.editShareDlg_canReshareExternalLabel() );
+			hPanel.add( label );
+			m_canReshareExternalListbox = new ListBox( false );
+			m_canReshareExternalListbox.setVisibleItemCount( 1 );
+			hPanel.add( m_canReshareExternalListbox );
+			m_resharePanel.add( hPanel );
+			
+			// Add the "Reshare with public" listbox
+			hPanel = new HorizontalPanel();
+			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+			hPanel.setSpacing( 4 );
+			label = new Label( messages.editShareDlg_canResharePublicLabel() );
+			hPanel.add( label );
+			m_canResharePublicListbox = new ListBox( false );
+			m_canResharePublicListbox.setVisibleItemCount( 1 );
+			hPanel.add( m_canResharePublicListbox );
+			m_resharePanel.add( hPanel );
+		}
+	}
+	
+	/**
 	 * Show/hide the appropriate controls based on the selected expiration type.
 	 */
 	private void danceDlg( boolean setFocus )
 	{
 		int selectedIndex;
 		
-		selectedIndex = m_listbox.getSelectedIndex();
+		selectedIndex = m_expiresListbox.getSelectedIndex();
 		if ( selectedIndex >= 0 )
 		{
 			ShareExpirationType type;
@@ -368,26 +399,29 @@ public class EditShareDlg extends DlgBox
 			m_expiresAfterPanel.setVisible( false );
 			m_expiresOnPanel.setVisible( false );
 
-			switch ( type )
+			if ( type != null )
 			{
-			case AFTER_DAYS:
-				m_expiresAfterPanel.setVisible( true );
-				if ( setFocus )
-					m_expiresAfterTextBox.setFocus( true );
-				
-				break;
-				
-			case ON_DATE:
-				m_expiresOnPanel.setVisible( true );
-				if ( setFocus )
-					invokeDatePicker();
-				
-				break;
-				
-			case NEVER:
-			case UNKNOWN:
-			default:
-				break;
+				switch ( type )
+				{
+				case AFTER_DAYS:
+					m_expiresAfterPanel.setVisible( true );
+					if ( setFocus )
+						m_expiresAfterTextBox.setFocus( true );
+					
+					break;
+					
+				case ON_DATE:
+					m_expiresOnPanel.setVisible( true );
+					if ( setFocus )
+						invokeDatePicker();
+					
+					break;
+					
+				case NEVER:
+				case UNKNOWN:
+				default:
+					break;
+				}
 			}
 		}
 	}
@@ -406,6 +440,7 @@ public class EditShareDlg extends DlgBox
 			{
 				saveExpirationValue( nextShareItem );
 				saveShareRights( nextShareItem );
+				saveNote( nextShareItem );
 				
 				nextShareItem.setIsDirty( true );
 			}
@@ -495,12 +530,12 @@ public class EditShareDlg extends DlgBox
 	{
 		int selectedIndex;
 		
-		selectedIndex = m_listbox.getSelectedIndex();
+		selectedIndex = m_expiresListbox.getSelectedIndex();
 		if ( selectedIndex >= 0 )
 		{
 			String value;
 
-			value = m_listbox.getValue( selectedIndex );
+			value = m_expiresListbox.getValue( selectedIndex );
 			if ( value != null )
 			{
 				if ( value.equalsIgnoreCase( ShareExpirationType.AFTER_DAYS.toString() ) )
@@ -514,7 +549,7 @@ public class EditShareDlg extends DlgBox
 			}
 		}
 		
-		return ShareExpirationType.UNKNOWN;
+		return null;
 	}
 
 	/**
@@ -573,6 +608,7 @@ public class EditShareDlg extends DlgBox
 
 		initExpirationControls( listOfShareItems );
 		initRightsControls( listOfShareItems, highestRightsPossible );
+		initNoteControls( listOfShareItems );
 
 		danceDlg( false );
 	}
@@ -582,36 +618,60 @@ public class EditShareDlg extends DlgBox
 	 */
 	private void initExpirationControls( ArrayList<GwtShareItem> listOfShares )
 	{
-		ShareExpirationValue expirationValue;
-		ShareExpirationType expirationType;
+		GwtTeamingMessages messages;
 		
 		if ( listOfShares == null || listOfShares.size() == 0 )
 			return;
 
-		expirationValue = listOfShares.get( 0 ).getShareExpirationValue();
-		expirationType = expirationValue.getExpirationType();
+		messages = GwtTeaming.getMessages();
 		
-		// Select the appropriate expiration type.
-		GwtClientHelper.selectListboxItemByValue( m_listbox, expirationType.toString() );
+		m_expiresListbox.clear();
 		
-		switch (expirationType)
+		m_expiresListbox.addItem( 
+							messages.shareExpirationDlg_expiresNever(),
+							ShareExpirationType.NEVER.toString() );
+		m_expiresListbox.addItem(
+							messages.shareExpirationDlg_expiresOn(),
+							ShareExpirationType.ON_DATE.toString() );
+		m_expiresListbox.addItem(
+							messages.shareExpirationDlg_expiresAfter(),
+							ShareExpirationType.AFTER_DAYS.toString() );
+	
+		if ( listOfShares.size() > 1 )
 		{
-		case AFTER_DAYS:
-			Long value;
+			m_expiresListbox.addItem( messages.editShareDlg_undefined(), UNDEFINED );
+			m_expiresListbox.setSelectedIndex( m_expiresListbox.getItemCount()-1 );
+		}
+		else
+		{
+			ShareExpirationValue expirationValue;
+			ShareExpirationType expirationType;
 			
-			value = expirationValue.getValue();
-			if ( value != null )
-				m_expiresAfterTextBox.setText( value.toString() );
-			break;
-		
-		case ON_DATE:
-			m_dateBox.setValue( expirationValue.getValue() );
-			break;
-		
-		case NEVER:
-		case UNKNOWN:
-		default:
-			break;
+			expirationValue = listOfShares.get( 0 ).getShareExpirationValue();
+			expirationType = expirationValue.getExpirationType();
+			
+			// Select the appropriate expiration type.
+			GwtClientHelper.selectListboxItemByValue( m_expiresListbox, expirationType.toString() );
+			
+			switch (expirationType)
+			{
+			case AFTER_DAYS:
+				Long value;
+				
+				value = expirationValue.getValue();
+				if ( value != null )
+					m_expiresAfterTextBox.setText( value.toString() );
+				break;
+			
+			case ON_DATE:
+				m_dateBox.setValue( expirationValue.getValue() );
+				break;
+			
+			case NEVER:
+			case UNKNOWN:
+			default:
+				break;
+			}
 		}
 	}
 	
@@ -622,20 +682,14 @@ public class EditShareDlg extends DlgBox
 		ArrayList<GwtShareItem> listOfShareItems,
 		ShareRights highestRightsPossible )
 	{
+		GwtTeamingMessages messages;
 		ShareRights shareRights;
 		boolean entityIsBinder;
-		boolean canShareForward;
 
+		messages = GwtTeaming.getMessages();
+		
 		if ( highestRightsPossible == null )
 			highestRightsPossible = new ShareRights();
-		
-		m_viewerRb.setVisible( false );
-		m_editorRb.setVisible( false );
-		m_contributorRb.setVisible( false );
-		
-		m_viewerRb.setValue( false );
-		m_editorRb.setValue( false );
-		m_contributorRb.setValue( false );
 		
 		// Are we only dealing with 1 share item?
 		if ( listOfShareItems.size() == 1 )
@@ -663,67 +717,166 @@ public class EditShareDlg extends DlgBox
 					break;
 			}
 		}
-		
-		switch ( shareRights.getAccessRights() )
+
+		// Add the appropriate options to the "access rights" listbox.
 		{
-		case CONTRIBUTOR:
-			m_contributorRb.setValue( true );
-			break;
-		
-		case EDITOR:
-			m_editorRb.setValue( true );
-			break;
 			
-		case VIEWER:
-			m_viewerRb.setValue( true );
-			break;
-		
-		default:
-			break;
+			m_accessRightsListbox.clear();
+			
+			switch ( highestRightsPossible.getAccessRights() )
+			{
+			case CONTRIBUTOR:
+				m_accessRightsListbox.addItem( messages.editShareRightsDlg_ViewerLabel(), VIEWER );
+				m_accessRightsListbox.addItem( messages.editShareRightsDlg_EditorLabel(), EDITOR );
+				
+				// Add "contributor" only if we are dealing with a binder.
+				if ( entityIsBinder )
+					m_accessRightsListbox.addItem( messages.editShareRightsDlg_ContributorLabel(), CONTRIBUTOR );
+	
+				break;
+				
+			case EDITOR:
+				m_accessRightsListbox.addItem( messages.editShareRightsDlg_ViewerLabel(), VIEWER );
+				m_accessRightsListbox.addItem( messages.editShareRightsDlg_EditorLabel(), EDITOR );
+				break;
+				
+			case VIEWER:
+				m_accessRightsListbox.addItem( messages.editShareRightsDlg_ViewerLabel(), VIEWER );
+				break;
+				
+			default:
+				break;
+			}
+	
+			// If we are dealing with more that one file/folder, add an "Undefined" option.
+			if ( listOfShareItems.size() > 1 )
+			{
+				m_accessRightsListbox.addItem( messages.editShareDlg_undefined(), UNDEFINED );
+				m_accessRightsListbox.setSelectedIndex( m_accessRightsListbox.getItemCount()-1 );
+			}
+			else
+			{
+				switch ( shareRights.getAccessRights() )
+				{
+				case CONTRIBUTOR:
+					GwtClientHelper.selectListboxItemByValue( m_accessRightsListbox, CONTRIBUTOR );
+					break;
+				
+				case EDITOR:
+					GwtClientHelper.selectListboxItemByValue( m_accessRightsListbox, EDITOR );
+					break;
+					
+				case VIEWER:
+					GwtClientHelper.selectListboxItemByValue( m_accessRightsListbox, VIEWER );
+					break;
+				
+				default:
+					break;
+				}
+			}
 		}
 		
-		// Hide/show the controls for the rights the user can/cannot give
-		switch ( highestRightsPossible.getAccessRights() )
+		// Update the controls dealing with re-share
 		{
-		case CONTRIBUTOR:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( true );
+			boolean canShareForward;
+
+			canShareForward = highestRightsPossible.getCanShareForward();
 			
-			// Show the "contributor" radio button only if we are dealing with a binder.
-			m_contributorRb.setVisible( entityIsBinder );
-			break;
+			m_resharePanel.setVisible( canShareForward );
 			
-		case EDITOR:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( true );
-			m_contributorRb.setVisible( false );
-			break;
-			
-		case VIEWER:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( false );
-			m_contributorRb.setVisible( false );
-			break;
-			
-		default:
-			break;
+			if ( canShareForward )
+			{
+				// Show/hide the "share internal" listbox depending on whether the user has "share internal" rights.
+				m_canReshareInternalListbox.setVisible( highestRightsPossible.getCanShareWithInternalUsers() );
+				if ( highestRightsPossible.getCanShareWithInternalUsers() )
+				{
+					m_canReshareInternalListbox.clear();
+					m_canReshareInternalListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
+					m_canReshareInternalListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
+					
+					if ( listOfShareItems.size() > 1 )
+					{
+						m_canReshareInternalListbox.addItem( messages.editShareDlg_undefined(), UNDEFINED );
+						m_canReshareInternalListbox.setSelectedIndex( m_canReshareInternalListbox.getItemCount()-1 );
+					}
+					else
+					{
+						if ( shareRights.getCanShareWithInternalUsers() )
+							m_canReshareInternalListbox.setSelectedIndex( 0 );
+						else
+							m_canReshareInternalListbox.setSelectedIndex( 1 );
+					}
+				}
+
+				// Show/hide the "share external" listbox depending on whether the user has "share external" rights.
+				m_canReshareExternalListbox.setVisible( highestRightsPossible.getCanShareWithExternalUsers() );
+				if ( highestRightsPossible.getCanShareWithExternalUsers() )
+				{
+					m_canReshareExternalListbox.clear();
+					m_canReshareExternalListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
+					m_canReshareExternalListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
+					
+					if ( listOfShareItems.size() > 1 )
+					{
+						m_canReshareExternalListbox.addItem( messages.editShareDlg_undefined(), UNDEFINED );
+						m_canReshareExternalListbox.setSelectedIndex( m_canReshareExternalListbox.getItemCount()-1 );
+					}
+					else
+					{
+						if ( shareRights.getCanShareWithExternalUsers() )
+							m_canReshareExternalListbox.setSelectedIndex( 0 );
+						else
+							m_canReshareExternalListbox.setSelectedIndex( 1 );
+					}
+				}
+
+				// Show/hide the "share public" listbox depending on whether the user has "share public" rights.
+				m_canResharePublicListbox.setVisible( highestRightsPossible.getCanShareWithPublic() );
+				if ( highestRightsPossible.getCanShareWithPublic() )
+				{
+					m_canResharePublicListbox.clear();
+					m_canResharePublicListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
+					m_canResharePublicListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
+					
+					if ( listOfShareItems.size() > 1 )
+					{
+						m_canResharePublicListbox.addItem( messages.editShareDlg_undefined(), UNDEFINED );
+						m_canResharePublicListbox.setSelectedIndex( m_canResharePublicListbox.getItemCount()-1 );
+					}
+					else
+					{
+						if ( shareRights.getCanShareWithPublic() )
+							m_canResharePublicListbox.setSelectedIndex( 0 );
+						else
+							m_canResharePublicListbox.setSelectedIndex( 1 );
+					}
+				}
+			}
 		}
+	}
+	
+	/**
+	 * Initialize the controls that deal with the share note.
+	 */
+	private void initNoteControls( ArrayList<GwtShareItem> listOfShareItems )
+	{
+		String note;
 		
-		canShareForward = highestRightsPossible.getCanShareForward();
-		
-		m_canShareLabel.setVisible( canShareForward );
-		
-		// Show/hide the "share internal" checkbox depending on whether the user has "share internal" rights.
-		m_canShareInternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithInternalUsers() );
-		m_canShareInternalCkbox.setValue( shareRights.getCanShareWithInternalUsers() );
-		
-		// Show/hide the "share external" checkbox depending on whether the user has "share external" rights.
-		m_canShareExternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithExternalUsers() );
-		m_canShareExternalCkbox.setValue( shareRights.getCanShareWithExternalUsers() );
-		
-		// Show/hide the "share public" checkbox depending on whether the user has "share public" rights.
-		m_canSharePublicCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithPublic() );
-		m_canSharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
+		// Are we only dealing with 1 share item?
+		if ( listOfShareItems.size() == 1 )
+		{
+			GwtShareItem shareItem;
+			
+			// Get the share rights from the one share item we are working with.
+			shareItem = listOfShareItems.get( 0 );
+			note = shareItem.getComments();
+		}
+		else
+		{
+			note = GwtTeaming.getMessages().editShareDlg_undefinedNote();
+		}
+
+		m_noteTextArea.setValue( note );
 	}
 	
 	/**
@@ -747,24 +900,46 @@ public class EditShareDlg extends DlgBox
     	
     	// Make sure we are dealing with a text box.
     	source = event.getSource();
-    	if ( source instanceof TextBox )
-    		txtBox = (TextBox) source;
-    	else
-    		txtBox = null;
 
-        // Get the key the user pressed
-        keyCode = event.getNativeEvent().getKeyCode();
-        
-        // Only let the user enter a valid digit.
-        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
-        {
-        	// Make sure we are dealing with a text box.
-        	if ( txtBox != null )
-        	{
-        		// Suppress the current keyboard event.
-        		txtBox.cancelKey();
-        	}
-        }
+    	if ( source instanceof TextArea && source == m_noteTextArea )
+    	{
+	        keyCode = event.getNativeEvent().getKeyCode();
+	        if ( (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+	             && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+	             && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+	             && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN) )
+	        {
+				String text;
+				
+				text = m_noteTextArea.getText(); 
+				if ( text != null && text.length() > 253 )
+				{
+	        		// Suppress the current keyboard event.
+	        		m_noteTextArea.cancelKey();
+				}
+	        }
+    	}
+    	else
+    	{
+	    	if ( source instanceof TextBox )
+	    		txtBox = (TextBox) source;
+	    	else
+	    		txtBox = null;
+	
+	        // Get the key the user pressed
+	        keyCode = event.getNativeEvent().getKeyCode();
+	        
+	        // Only let the user enter a valid digit.
+	        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
+	        {
+	        	// Make sure we are dealing with a text box.
+	        	if ( txtBox != null )
+	        	{
+	        		// Suppress the current keyboard event.
+	        		txtBox.cancelKey();
+	        	}
+	        }
+    	}
 	}
 
 	/**
@@ -773,83 +948,186 @@ public class EditShareDlg extends DlgBox
 	private void saveExpirationValue( GwtShareItem shareItem )
 	{
 		ShareExpirationType expirationType;
-		ShareExpirationValue value;
 
-		value = new ShareExpirationValue();
 		expirationType = getSelectedExpirationType();
 		
-		if ( expirationType == ShareExpirationType.AFTER_DAYS )
+		if ( expirationType != null )
 		{
-			Long days;
+			ShareExpirationValue value;
+
+			value = new ShareExpirationValue();
+
+			if ( expirationType == ShareExpirationType.AFTER_DAYS )
+			{
+				Long days;
+				
+				// The user selected "after days".
+				// Did they enter the number of days?
+				days = getDaysFromDlg();
+				value.setValue( days );
+			}
+			else if ( expirationType == ShareExpirationType.ON_DATE )
+			{
+				Long date;
+				
+				// The user selected "on date".
+				// Did they enter a date?
+				date = getExpirationDateFromDlg();
+				value.setValue( date );
+			}
 			
-			// The user selected "after days".
-			// Did they enter the number of days?
-			days = getDaysFromDlg();
-			value.setValue( days );
+			value.setType( expirationType );
+			shareItem.setShareExpirationValue( value );
 		}
-		else if ( expirationType == ShareExpirationType.ON_DATE )
-		{
-			Long date;
-			
-			// The user selected "on date".
-			// Did they enter a date?
-			date = getExpirationDateFromDlg();
-			value.setValue( date );
-		}
-		
-		value.setType( expirationType );
-		shareItem.setShareExpirationValue( value );
 	}
+		
 	
 	/**
 	 * Update the GwtShareItem with the share rights from the dialog
 	 */
 	private void saveShareRights( GwtShareItem shareItem )
 	{
-		AccessRights accessRights;
 		ShareRights shareRights;
 		
-		boolean canShareForward;
-		
 		shareRights = shareItem.getShareRights();
-		accessRights = ShareRights.AccessRights.UNKNOWN;
 		
-		if ( m_viewerRb.isVisible() && m_viewerRb.getValue() == true )
-			accessRights = ShareRights.AccessRights.VIEWER;
-		else if ( m_editorRb.isVisible() && m_editorRb.getValue() == true )
-			accessRights = ShareRights.AccessRights.EDITOR;
-		else if ( m_contributorRb.isVisible() && m_contributorRb.getValue() == true )
-			accessRights = ShareRights.AccessRights.CONTRIBUTOR;
+		// Save the access rights.
+		{
+			int selectedIndex;
+
+			selectedIndex = m_accessRightsListbox.getSelectedIndex();
+			if ( selectedIndex >= 0 )
+			{
+				String value;
+				
+				value = m_accessRightsListbox.getValue( selectedIndex );
+				if ( value != null && value.equalsIgnoreCase( UNDEFINED ) == false )
+				{
+					AccessRights accessRights;
+
+					accessRights = ShareRights.AccessRights.UNKNOWN;
+
+					if ( value.equalsIgnoreCase( VIEWER ) )
+						accessRights = ShareRights.AccessRights.VIEWER;
+					else if ( value.equalsIgnoreCase( EDITOR ) )
+						accessRights = ShareRights.AccessRights.EDITOR;
+					else if ( value.equalsIgnoreCase( CONTRIBUTOR ) )
+						accessRights = ShareRights.AccessRights.CONTRIBUTOR;
+
+					shareRights.setAccessRights( accessRights );
+				}
+			}
+		}
+
+		// Save the re-share rights
+		if ( m_resharePanel.isVisible() )
+		{
+			int selectedIndex;
+			boolean canShareForward;
+			boolean setCanShareForward;
+			
+			setCanShareForward = false;
+			canShareForward = false;
+			
+			if ( m_canReshareInternalListbox.isVisible() )
+			{
+				selectedIndex = m_canReshareInternalListbox.getSelectedIndex();
+				if ( selectedIndex >= 0 )
+				{
+					String value;
+					
+					value = m_canReshareInternalListbox.getValue( selectedIndex );
+					if ( value != null && value.equalsIgnoreCase( UNDEFINED ) == false )
+					{
+						setCanShareForward = true;
+
+						if ( value.equalsIgnoreCase( RESHARE_YES ) )
+						{
+							canShareForward = true;
+							shareRights.setCanShareWithInternalUsers( true );
+						}
+						else
+							shareRights.setCanShareWithInternalUsers( false );
+					}
+				}
+			}
+			else
+			{
+				shareRights.setCanShareWithInternalUsers( false );
+				setCanShareForward = true;
+			}
+	
+			if ( m_canReshareExternalListbox.isVisible() )
+			{
+				selectedIndex = m_canReshareExternalListbox.getSelectedIndex();
+				if ( selectedIndex >= 0 )
+				{
+					String value;
+					
+					value = m_canReshareExternalListbox.getValue( selectedIndex );
+					if ( value != null && value.equalsIgnoreCase( UNDEFINED ) == false )
+					{
+						setCanShareForward = true;
+
+						if ( value.equalsIgnoreCase( RESHARE_YES ) )
+						{
+							canShareForward = true;
+							shareRights.setCanShareWithExternalUsers( true );
+						}
+						else
+							shareRights.setCanShareWithExternalUsers( false );
+					}
+				}
+			}
+			else
+			{
+				shareRights.setCanShareWithExternalUsers( false );
+				setCanShareForward = true;
+			}
+	
+			if ( m_canResharePublicListbox.isVisible() )
+			{
+				selectedIndex = m_canResharePublicListbox.getSelectedIndex();
+				if ( selectedIndex >= 0 )
+				{
+					String value;
+					
+					value = m_canResharePublicListbox.getValue( selectedIndex );
+					if ( value != null && value.equalsIgnoreCase( UNDEFINED ) == false )
+					{
+						setCanShareForward = true;
+
+						if ( value.equalsIgnoreCase( RESHARE_YES ) )
+						{
+							canShareForward = true;
+							shareRights.setCanShareWithPublic( true );
+						}
+						else
+							shareRights.setCanShareWithPublic( false );
+					}
+				}
+			}
+			else
+			{
+				shareRights.setCanShareWithPublic( false );
+				setCanShareForward = true;
+			}
+	
+			if ( setCanShareForward )
+				shareRights.setCanShareForward( canShareForward );
+		}
+	}
+	
+	/**
+	 * Update the GwtShareItem with the note from the dialog
+	 */
+	private void saveNote( GwtShareItem shareItem )
+	{
+		String newNote;
 		
-		shareRights.setAccessRights( accessRights );
-
-		canShareForward = false;
-		
-		if ( m_canShareInternalCkbox.isVisible() && m_canShareInternalCkbox.getValue() == true )
-		{
-			canShareForward = true;
-			shareRights.setCanShareWithInternalUsers( true );
-		}
-		else
-			shareRights.setCanShareWithInternalUsers( false );
-
-		if ( m_canShareExternalCkbox.isVisible() && m_canShareExternalCkbox.getValue() == true )
-		{
-			canShareForward = true;
-			shareRights.setCanShareWithExternalUsers( true );
-		}
-		else
-			shareRights.setCanShareWithExternalUsers( false );
-
-		if ( m_canSharePublicCkbox.isVisible() && m_canSharePublicCkbox.getValue() == true )
-		{
-			canShareForward = true;
-			shareRights.setCanShareWithPublic( true );
-		}
-		else
-			shareRights.setCanShareWithPublic( false );
-
-		shareRights.setCanShareForward( canShareForward );
+		newNote = m_noteTextArea.getValue();
+		if ( newNote != null && newNote.equalsIgnoreCase( GwtTeaming.getMessages().editShareDlg_undefinedNote() ) == false )
+			shareItem.setComments( m_noteTextArea.getValue() );
 	}
 
 	/**
