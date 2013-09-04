@@ -2696,7 +2696,13 @@ public class ShareThisDlg extends DlgBox
 				// Is the recipient of the share an external user?
 				if ( recipientIsExternal )
 				{
+					AccessRights accessRights;
+					
+					accessRights = highestRightsPossible.getAccessRights();
+					
 					// Yes, don't let the external user do any re-share
+					highestRightsPossible = new ShareRights();
+					highestRightsPossible.setAccessRights( accessRights );
 					highestRightsPossible.setCanShareForward( false );
 					highestRightsPossible.setCanShareWithExternalUsers( false );
 					highestRightsPossible.setCanShareWithInternalUsers( false );
