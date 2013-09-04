@@ -472,8 +472,14 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	}
 	
 	public boolean isFileArchivingEnabled() {
-		if(fileArchivingEnabled == null)
-			return true;
+		if(fileArchivingEnabled == null) {
+			if (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe()) {
+				return true;
+			} else {
+				//Filr and iPrint (and kablink) do not archive anything
+				return false;
+			}
+		}
 		return fileArchivingEnabled;
 	}
 	public void setFileArchivingEnabled(boolean fileArchivingEnabled) {
@@ -484,7 +490,7 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 		if(auditTrailEnabled == null) {
 			//This has never bee set by the admin. So the default is different depending on the product
 			if (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe()) {
-				//Vibe installations do archiving by default
+				//Vibe installations do audit trailing by default
 				return true;
 			} else {
 				//Filr and iPrint systems don't do archiving by default.
@@ -509,7 +515,13 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 
 	public boolean isChangeLogEnabled() {
 		if(changeLogEnabled == null)
-			return true;
+			if (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe()) {
+				//Vibe installations do Change Logging by default
+				return true;
+			} else {
+				//Filr and iPrint systems don't do Change Logging by default.
+				return false;
+			}
 		return changeLogEnabled;
 	}
 	public void setChangeLogEnabled(boolean changeLogEnabled) {
