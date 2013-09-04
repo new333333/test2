@@ -317,7 +317,7 @@ public class ShareThisDlg2 extends DlgBox
 				}
 				
 				shareItem = new GwtShareItem();
-				shareItem.setRecipientName( user.getName() );
+				shareItem.setRecipientName( user.getTitle() );
 				if ( !user.isInternal() )
 					shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 				else
@@ -992,7 +992,7 @@ public class ShareThisDlg2 extends DlgBox
 				// Create a pager
 				m_pager = new VibeSimplePager();
 				m_pager.setDisplay( m_shareTable );
-				m_pager.setPageSize( 6 );
+				m_pager.setPageSize( 5 );
 				leftPanel.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
 				leftPanel.setCellHeight( m_pager, "100%" );
 				leftPanel.add( m_pager );
@@ -1149,7 +1149,28 @@ public class ShareThisDlg2 extends DlgBox
 	 */
 	private void deleteSelectedShares()
 	{
-		Window.alert( "Not yet implemented" );
+		Set<GwtShareItem> selectedShares;
+		
+		selectedShares = getSelectedShares();
+		if ( selectedShares != null && selectedShares.size() > 0 )
+		{
+			for ( GwtShareItem nextShare : selectedShares )
+			{
+				// Mark this share as "to be deleted"
+				m_sharingInfo.addToBeDeleted( nextShare );
+				
+				m_listOfShares.remove( nextShare );
+			}
+			
+			m_dataProvider.refresh();
+
+			// Tell the table how many shares we have.
+			m_shareTable.setRowCount( m_listOfShares.size(), true );
+		}
+		else
+		{
+			Window.alert( GwtTeaming.getMessages().shareDlg_selectSharesToDelete() );
+		}
 	}
 	
 	/**
@@ -1164,7 +1185,7 @@ public class ShareThisDlg2 extends DlgBox
 	@Override
 	public boolean editCanceled()
 	{
-		Window.alert( "add code to close group popups" );
+		//!!!
 	/*
 		int i;
 		
@@ -1803,7 +1824,7 @@ public class ShareThisDlg2 extends DlgBox
 	/**
 	 * Return a list of selected shares.
 	 */
-	public Set<GwtShareItem> getSelectedShares()
+	private Set<GwtShareItem> getSelectedShares()
 	{
 		return m_selectionModel.getSelectedSet();
 	}
@@ -2220,6 +2241,7 @@ public class ShareThisDlg2 extends DlgBox
 				// Look at each item being shared and return the highest rights possible
 				// that is available on all items being shared.
 				highestRightsPossible = calculateHighestRightsPossible( listOfShareItems );
+				Window.alert( "highestRightsPossible2: " + highestRightsPossible.getCanShareForward() );
 				
 				// Go through the list of share items and see if a recipient is an external user.
 				for ( GwtShareItem nextShareItem : listOfShareItems )
@@ -2235,7 +2257,13 @@ public class ShareThisDlg2 extends DlgBox
 			// Is the recipient of the share an external user?
 			if ( recipientIsExternal )
 			{
+				AccessRights accessRights;
+				
+				accessRights = highestRightsPossible.getAccessRights();
+				
 				// Yes, don't let the external user do any re-share
+				highestRightsPossible = new ShareRights();
+				highestRightsPossible.setAccessRights( accessRights );
 				highestRightsPossible.setCanShareForward( false );
 				highestRightsPossible.setCanShareWithExternalUsers( false );
 				highestRightsPossible.setCanShareWithInternalUsers( false );
@@ -2382,7 +2410,16 @@ public class ShareThisDlg2 extends DlgBox
 	{
 		if ( listOfShares != null && listOfShares.size() > 0 )
 		{
-			m_dataProvider.refresh();
+			for ( GwtShareItem nextShareItem : listOfShares )
+			{
+				int index;
+				
+				index = m_listOfShares.indexOf( nextShareItem );
+				if ( index != -1 )
+				{
+					m_dataProvider.getList().set( index, nextShareItem );
+				}
+			}
 		}
 	}
 	
@@ -2400,23 +2437,6 @@ public class ShareThisDlg2 extends DlgBox
 			// Tell the table how many groups we have.
 			m_shareTable.setRowCount( m_listOfShares.size(), true );
 		}
-	}
-	
-	/**
-	 * Remove the given share from the table
-	 */
-	public void removeShare( GwtShareItem shareItem )
-	{
-		// Mark this share as "to be deleted"
-		m_sharingInfo.addToBeDeleted( shareItem );
-		
-		m_listOfShares.remove( shareItem );
-
-		// Update the table to reflect the fact that we deleted a share.
-		m_dataProvider.refresh();
-
-		// Tell the table how many groups we have.
-		m_shareTable.setRowCount( m_listOfShares.size(), true );
 	}
 	
 	/**

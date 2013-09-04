@@ -54,7 +54,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -897,49 +896,28 @@ public class EditShareDlg extends DlgBox
     	final TextBox txtBox;
         int keyCode;
     	Object source;
-    	
+
     	// Make sure we are dealing with a text box.
     	source = event.getSource();
 
-    	if ( source instanceof TextArea && source == m_noteTextArea )
-    	{
-	        keyCode = event.getNativeEvent().getKeyCode();
-	        if ( (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
-	             && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
-	             && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
-	             && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN) )
-	        {
-				String text;
-				
-				text = m_noteTextArea.getText(); 
-				if ( text != null && text.length() > 253 )
-				{
-	        		// Suppress the current keyboard event.
-	        		m_noteTextArea.cancelKey();
-				}
-	        }
-    	}
+    	if ( source instanceof TextBox )
+    		txtBox = (TextBox) source;
     	else
-    	{
-	    	if ( source instanceof TextBox )
-	    		txtBox = (TextBox) source;
-	    	else
-	    		txtBox = null;
-	
-	        // Get the key the user pressed
-	        keyCode = event.getNativeEvent().getKeyCode();
-	        
-	        // Only let the user enter a valid digit.
-	        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
-	        {
-	        	// Make sure we are dealing with a text box.
-	        	if ( txtBox != null )
-	        	{
-	        		// Suppress the current keyboard event.
-	        		txtBox.cancelKey();
-	        	}
-	        }
-    	}
+    		txtBox = null;
+
+        // Get the key the user pressed
+        keyCode = event.getNativeEvent().getKeyCode();
+        
+        // Only let the user enter a valid digit.
+        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
+        {
+        	// Make sure we are dealing with a text box.
+        	if ( txtBox != null )
+        	{
+        		// Suppress the current keyboard event.
+        		txtBox.cancelKey();
+        	}
+        }
 	}
 
 	/**
