@@ -847,9 +847,14 @@
 	font-weight: bold;
 }
 
-.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_Note
+.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_Note, .shareItem_PublicUrl
 {
 	font-size: 0.8em;
+}
+
+.shareItem_PublicUrl:hover
+{
+	cursor: pointer;
 }
 
 /* End of styles used with the Share dialog */
