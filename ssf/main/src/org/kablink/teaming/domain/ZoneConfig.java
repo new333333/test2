@@ -463,9 +463,15 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	}
 	
 	public int getAuditTrailKeepDays() {
-		if(auditTrailKeepDays == null)
-			return SPropsUtil.getInt("default.table.purge.keep.days.audittrail", 183);
-		return auditTrailKeepDays;
+		if (auditTrailKeepDays == null) {
+			if (Utils.checkIfFilr() || Utils.checkIfIPrint()) {
+				return SPropsUtil.getInt("default.table.purge.keep.days.audittrail.filr", 183);
+			} else {
+				return SPropsUtil.getInt("default.table.purge.keep.days.audittrail", 0);
+			}
+		} else {
+			return auditTrailKeepDays;
+		}
 	}
 	public void setAuditTrailKeepDays(int auditTrailKeepDays) {
 		this.auditTrailKeepDays = auditTrailKeepDays;
@@ -505,9 +511,15 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	}
 	
 	public int getChangeLogsKeepDays() {
-		if(changeLogsKeepDays == null)
-			return SPropsUtil.getInt("default.table.purge.keep.days.changelogs", 183);
-		return changeLogsKeepDays;
+		if (changeLogsKeepDays == null) {
+			if (Utils.checkIfFilr() || Utils.checkIfIPrint()) {
+				return SPropsUtil.getInt("default.table.purge.keep.days.changelogs.filr", 183);
+			} else {
+				return SPropsUtil.getInt("default.table.purge.keep.days.changelogs", 0);
+			}
+		} else {
+			return changeLogsKeepDays;
+		}
 	}
 	public void setChangeLogsKeepDays(int changeLogsKeepDays) {
 		this.changeLogsKeepDays = changeLogsKeepDays;
