@@ -1665,6 +1665,11 @@ public Map getUsers() {
 		return getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
+	@Override
+	public User getReservedUser(String internalId) throws NoUserByTheNameException {
+		return getProfileDao().getReservedUser(internalId, RequestContextHolder.getRequestContext().getZoneId());
+	}
+	
 	/**
 	 * Find the User with the given ldap guid
 	 */

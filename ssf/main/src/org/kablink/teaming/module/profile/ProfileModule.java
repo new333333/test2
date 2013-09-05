@@ -408,6 +408,7 @@ public interface ProfileModule {
 	 */
     public SortedSet<User> getUsers(Collection<Long> userIds);
     public User findUserByName(String username) throws NoUserByTheNameException;
+    public User getReservedUser(String internalId) throws NoUserByTheNameException;
    
     /**
      * 

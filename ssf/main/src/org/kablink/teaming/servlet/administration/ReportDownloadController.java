@@ -65,6 +65,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
@@ -282,7 +283,11 @@ public class ReportDownloadController extends  SAbstractController {
 			} else if ("activityByUser".equals(reportType)) {
 				hasUsers = true;
 				String type = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, ReportModule.REPORT_TYPE_SUMMARY);
-				report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, type);
+				//Skip the file sync agent since this could contain millions of entries
+				Set userIdsToSkip = new HashSet();
+				User fsa = getProfileModule().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID);
+				if (fsa != null) userIdsToSkip.add(fsa.getId());
+				report = getReportModule().generateActivityReportByUser(memberIds, userIdsToSkip, startDate, endDate, type);
 				if (type.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 					columns = new String[] {ReportModule.USER_ID, 
 							AuditTrail.AuditType.view.name(), 
@@ -319,6 +324,12 @@ public class ReportDownloadController extends  SAbstractController {
 	
 	protected void printReport(OutputStream out, List<Map<String, Object>> report, String[] columns, boolean hasUsers)
 	{
+		//Set a maximum size for reports
+		int maxRows = SPropsUtil.getInt("reports.max.size", 10000);
+		if (report.size() > maxRows) {
+			//Trim the list to show the last entries in the list
+			report = report.subList(report.size()-maxRows, report.size());
+		}
 		HashMap<Long,Principal> userMap = new HashMap<Long,Principal>();
 		HashMap<String,Definition> definitionMap = new HashMap<String, Definition>();
 		HashMap<Long,Binder> binderMap = new HashMap<Long, Binder>();
