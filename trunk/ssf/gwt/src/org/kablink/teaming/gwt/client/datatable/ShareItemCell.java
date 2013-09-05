@@ -52,12 +52,15 @@ import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
+import org.kablink.teaming.gwt.client.widgets.ShareWithPublicInfoDlg;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlgMode;
+import org.kablink.teaming.gwt.client.widgets.ShareWithPublicInfoDlg.ShareWithPublicInfoDlgClient;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -68,6 +71,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.UIObject;
 
 
 /**
@@ -75,6 +79,19 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class ShareItemCell extends AbstractCell<GwtShareItem>
 {
+	private ShareWithPublicInfoDlg m_shareWithPublicInfoDlg=null;
+
+	/**
+	 * 
+	 */
+	class ElementWrapper extends UIObject
+	{
+		public ElementWrapper( Element e )
+		{
+			setElement( e ); // setElement() is protected, so we have to subclass and call here
+		}
+	}
+	
 	/**
 	 * 
 	 */
@@ -181,11 +198,43 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 	/**
 	 * 
 	 */
+	private void invokeShareWithPublicInfoDlg(
+		final GwtShareItem shareItem,
+		final UIObject target )
+	{
+		if ( m_shareWithPublicInfoDlg == null )
+		{
+			ShareWithPublicInfoDlg.createAsync( new ShareWithPublicInfoDlgClient()
+			{
+				@Override
+				public void onUnavailable() 
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ShareWithPublicInfoDlg swpiDlg )
+				{
+					m_shareWithPublicInfoDlg = swpiDlg;
+					invokeShareWithPublicInfoDlg( shareItem, target );
+				}
+			} );
+		}
+		else
+		{
+			m_shareWithPublicInfoDlg.init( shareItem.getEntityId() );
+			m_shareWithPublicInfoDlg.showRelativeToTarget( target );
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	@Override
 	public void onBrowserEvent(
 		Context context,
 		Element parent,
-		GwtShareItem value,
+		final GwtShareItem value,
 		NativeEvent event,
 		ValueUpdater<GwtShareItem> valueUpdater )
 	{
@@ -195,7 +244,37 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		// Handle the click event.
 		if ( "click".equals( event.getType() ) )
 		{
-			valueUpdater.update( value );
+			EventTarget eventTarget;
+			final Element element;
+			String value1;
+			
+			// Did the user click on the "public url" link?
+			eventTarget = event.getEventTarget();
+			element = Element.as( eventTarget );
+			value1 = element.getAttribute( "public-url-div" );
+			if ( value1 != null && value1.equalsIgnoreCase( "true" ) )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				// Yes
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						ElementWrapper wrapper;
+						
+						wrapper = new ElementWrapper( element );
+						invokeShareWithPublicInfoDlg( value, wrapper );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+			else
+			{
+				// No
+				valueUpdater.update( value );
+			}
 		}
 	}
 
@@ -341,6 +420,16 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		label = new Label( messages.shareDlg_reshareLabel() + " " + getReshareRightsText( shareItem ) );
 		label.addStyleName( "shareItem_ReshareRights" );
 		mainPanel.add( label );
+
+		// Are we dealing with a public share?
+		if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
+		{
+			// Yes, add a link that the user can click on to get the public url
+			label = new Label( messages.shareDlg_publicUrlLabel() );
+			label.addStyleName( "shareItem_PublicUrl" );
+			label.getElement().setAttribute( "public-url-div", "true" );
+			mainPanel.add( label );
+		}
 		
 		// Add the note
 		{

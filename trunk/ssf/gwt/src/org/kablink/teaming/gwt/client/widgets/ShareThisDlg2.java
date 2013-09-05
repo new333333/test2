@@ -2220,6 +2220,7 @@ public class ShareThisDlg2 extends DlgBox
 			ShareRights highestRightsPossible;
 			GwtShareItem shareItem;
 			boolean recipientIsExternal = false;
+			boolean recipientIsPublic = false;
 
 			shareItem = listOfShareItems.get( 0 );
 			
@@ -2235,27 +2236,45 @@ public class ShareThisDlg2 extends DlgBox
 					// Yes
 					recipientIsExternal = true;
 				}
+				else if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
+				{
+					recipientIsPublic = true;
+				}
 			}
 			else
 			{
 				// Look at each item being shared and return the highest rights possible
 				// that is available on all items being shared.
 				highestRightsPossible = calculateHighestRightsPossible( listOfShareItems );
-				Window.alert( "highestRightsPossible2: " + highestRightsPossible.getCanShareForward() );
 				
-				// Go through the list of share items and see if a recipient is an external user.
+				// Go through the list of share items and see if a recipient is an external user
+				// or a public user.
 				for ( GwtShareItem nextShareItem : listOfShareItems )
 				{
 					if ( nextShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
 					{
 						recipientIsExternal = true;
-						break;
+					}
+					else if ( nextShareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
+					{
+						recipientIsPublic = true;
 					}
 				}
 			}
 
+			// Is the recipient the public user?
+			if ( recipientIsPublic )
+			{
+				// Yes, the public can only have "Viewer" rights.
+				highestRightsPossible = new ShareRights();
+				highestRightsPossible.setAccessRights( AccessRights.VIEWER );
+				highestRightsPossible.setCanShareForward( false );
+				highestRightsPossible.setCanShareWithExternalUsers( false );
+				highestRightsPossible.setCanShareWithInternalUsers( false );
+				highestRightsPossible.setCanShareWithPublic( false );
+			}
 			// Is the recipient of the share an external user?
-			if ( recipientIsExternal )
+			else if ( recipientIsExternal )
 			{
 				AccessRights accessRights;
 				
