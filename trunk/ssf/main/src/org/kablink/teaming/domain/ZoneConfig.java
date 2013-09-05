@@ -493,8 +493,8 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 				//Vibe installations do audit trailing by default
 				return true;
 			} else {
-				//Filr and iPrint systems don't do archiving by default.
-				return false;
+				//Filr and iPrint systems will do audit trails by default but they get pruned to 183 days.
+				return true;
 			}
 		}
 		//Once this value has been set by the administrator, use that value from then on
