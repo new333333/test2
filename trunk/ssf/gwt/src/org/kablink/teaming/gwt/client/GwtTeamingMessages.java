@@ -2498,6 +2498,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used by the 'Run a Report' dialog.
 	String runAReportDlgCaption();
 	String runAReportDlgChoose();
+	String runAReportDlgMaxSize();
 	String runAReportDlgInternalError_UnknownReport(String unknownReport);
 	String runAReportDlgSelect();
 

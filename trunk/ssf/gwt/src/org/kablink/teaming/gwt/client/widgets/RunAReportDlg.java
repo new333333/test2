@@ -64,7 +64,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -522,7 +525,18 @@ public class RunAReportDlg extends DlgBox
 				handleReportActionAsync(selectedReport);
 			}
 		});
+
+		HorizontalPanel hPanel;
+		Label warningLabel;
 		
+		hPanel = new HorizontalPanel();
+		hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+		hPanel.setSpacing( 6 );
+		hPanel.addStyleName("vibe-runAReportDlg-reportMaxSizePanel");
+		warningLabel = new Label( m_messages.runAReportDlgMaxSize() );
+		hPanel.add( warningLabel );
+		m_rootPanel.add( hPanel );
+
 		// Create the panels to hold the selected report.
 		m_reportScrollPanel = new ScrollPanel();
 		m_reportScrollPanel.addStyleName("vibe-runAReportDlg-reportScrollPanel");

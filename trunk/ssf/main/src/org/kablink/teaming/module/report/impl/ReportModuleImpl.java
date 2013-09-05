@@ -811,7 +811,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 
 	public List<Map<String,Object>> generateActivityReportByUser(final Set<Long> userIdsToReport,
-			final Date startDate, final Date endDate, final String reportType) {
+			final Set<Long> userIdsToSkip, final Date startDate, final Date endDate, final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
         getAdminModule().checkAccess(AdminOperation.report);
 
@@ -837,6 +837,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.add(Restrictions.in("transactionType", activityTypes))
 						.add(Restrictions.ge("startDate", startDate))
 						.add(Restrictions.lt("startDate", endDate));
+					if (!userIdsToSkip.isEmpty()) {
+						crit.add(Restrictions.not(Restrictions.in("startBy", userIdsToSkip)));
+					}
 					if (!userIdsToReport.isEmpty()) crit.add(Restrictions.in("startBy", userIdsToReport));
 					crit.addOrder(Order.asc("startDate"));
 					auditTrail = crit.list();
