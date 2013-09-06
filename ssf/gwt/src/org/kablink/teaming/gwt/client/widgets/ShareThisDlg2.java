@@ -235,10 +235,16 @@ public class ShareThisDlg2 extends DlgBox
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ShareThisDlg2( boolean autoHide, boolean modal )
+	private ShareThisDlg2(
+		boolean autoHide,
+		boolean modal,
+		int x,
+		int y,
+		Integer width,
+		Integer height )
 	{
 		// Initialize the superclass.
-		super( autoHide, modal );
+		super( autoHide, modal, x, y, width, height, DlgButtonMode.OkCancel );
 
 		// Create the dialog's content
 		createAllDlgContent(
@@ -2574,9 +2580,21 @@ public class ShareThisDlg2 extends DlgBox
 		createFooterButtons( DlgBox.DlgButtonMode.OkCancel );
 
 		if ( target == null )
-			show( true );	// true -> Show centered when not given a target.
+			show( true );
 		else
 			showRelativeToTarget( target );
+	}
+	
+	/**
+	 * 
+	 */
+	public void showDlg()
+	{
+		hideErrorPanel();
+		showContentPanel();
+		createFooterButtons( DlgBox.DlgButtonMode.OkCancel );
+
+		show();
 	}
 	
 	/**
@@ -3109,13 +3127,30 @@ public class ShareThisDlg2 extends DlgBox
 	}
 
 	/**
-	 * Loads the ManageNetFolderDlg split point and returns an instance
+	 * Loads the ShareThisDlg2 split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 */
 	public static void createAsync(
 		final boolean autoHide,
 		final boolean modal,
+		final ShareThisDlg2Client stDlgClient )
+	{
+		createAsync( autoHide, modal, 0, 0, null, null, stDlgClient );
+	}
+
+	/**
+	 * Loads the ShareThisDlg2 split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 */
+	public static void createAsync(
+		final boolean autoHide,
+		final boolean modal,
+		final int x,
+		final int y,
+		final Integer width,
+		final Integer height,
 		final ShareThisDlg2Client stDlgClient )
 	{
 		GWT.runAsync( ShareThisDlg2.class, new RunAsyncCallback()
@@ -3136,7 +3171,7 @@ public class ShareThisDlg2 extends DlgBox
 				final ShareThisDlg2 stDlg;
 				final LoadAsyncControlsCallback callback;
 				
-				stDlg = new ShareThisDlg2( autoHide, modal );
+				stDlg = new ShareThisDlg2( autoHide, modal, x, y, width, height );
 				
 				// createControlsAsync() will call callback.onSuccess() after it finishes creating
 				// the controls that need to be created via GWT.runAsync(...)
