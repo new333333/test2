@@ -43,6 +43,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
@@ -346,6 +347,17 @@ public class NetFolderHelper
 															true,
 															false );
 
+				// As the fix for bug 831849 we must call getCoreDao().clear() before we call
+				// NetFolderHelper.saveJitsSettings().  If we don't, saveJitsSettings() throws
+				// a DuplicateKeyException.
+				{
+					CoreDao coreDao;
+					
+					coreDao = getCoreDao();
+					if ( coreDao != null )
+						coreDao.clear();
+				}
+				
 				// Save the jits settings
 				{
 					NetFolderHelper.saveJitsSettings(
@@ -702,7 +714,16 @@ public class NetFolderHelper
 		// If we get here we did not find a net folder root with the given name.
 		return null;
 	}
+
+	/**
+	 * 
+	 */
+	private static CoreDao getCoreDao()
+	{
+		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
+	}
 	
+
 	/**
 	 * 
 	 */
