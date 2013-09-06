@@ -1339,7 +1339,14 @@ public class AdminControl extends TeamingPopupPanel
 					invokeManageSharesDlg();
 				}
 			};
-			ShareThisDlg2.createAsync( false, true, client );
+			ShareThisDlg2.createAsync(
+									true,
+									false,
+									m_contentControlX,
+									m_contentControlY,
+									new Integer( m_dlgWidth ),
+									new Integer( m_dlgHeight ),
+									client );
 		}
 		else
 		{
@@ -1351,11 +1358,13 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void execute() 
 				{
+					m_shareDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 					m_shareDlg.init(
 								GwtTeaming.getMessages().shareDlg_manageShares(),
 								null,
 								ShareThisDlg2.ShareThisDlgMode.MANAGE_ALL );
-					m_shareDlg.showDlg( null );
+					m_shareDlg.setPopupPosition( m_contentControlX, m_contentControlY );
+					m_shareDlg.showDlg();
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
