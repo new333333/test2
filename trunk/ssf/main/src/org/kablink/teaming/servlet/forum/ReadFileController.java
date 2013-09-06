@@ -40,6 +40,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -463,6 +464,22 @@ public class ReadFileController extends AbstractReadFileController {
 			} catch(Exception e) {
 				//Bad format of url; Tell user that
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
+
+				// Don't cache the response to this request
+				{
+					Date now;
+					
+					// Yes
+					now = new Date();
+					
+					response.setDateHeader( "Date", now.getTime() );
+
+					// Set the expiration date to yesterday.
+					response.setDateHeader( "Expires", now.getTime() - 86400000L );
+					
+					// Tell the browser to never cache this file.
+					response.setHeader( "Cache-control", "must-revalidate" );
+				}
 			}
 		}
 		
