@@ -852,19 +852,6 @@ public class ShareThisDlg2 extends DlgBox
 			m_shareTable = new CellTable<GwtShareItem>( 20, cellTableResources );
 			m_shareTable.setWidth( String.valueOf( tableWidth ) + "px" );
 			
-			// Set the widget that will be displayed when there are no shares
-			{
-				FlowPanel flowPanel;
-				InlineLabel noNetFoldersLabel;
-				
-				flowPanel = new FlowPanel();
-				flowPanel.addStyleName( "noObjectsFound" );
-				noNetFoldersLabel = new InlineLabel( GwtTeaming.getMessages().noShareRecipients() );
-				flowPanel.add( noNetFoldersLabel );
-				
-				m_shareTable.setEmptyTableWidget( flowPanel );
-			}
-			
 		    // Add a selection model so we can select shares.
 		    m_selectionModel = new MultiSelectionModel<GwtShareItem>();
 		    m_shareTable.setSelectionModel(
@@ -1992,6 +1979,24 @@ public class ShareThisDlg2 extends DlgBox
 
 		m_selectAllHeader.setValue( false );
 
+		// Set the widget that will be displayed when there are no shares
+		{
+			FlowPanel flowPanel;
+			InlineLabel noNetFoldersLabel;
+			
+			flowPanel = new FlowPanel();
+			flowPanel.addStyleName( "noObjectsFound" );
+			if ( mode == ShareThisDlgMode.MANAGE_ALL )
+				noNetFoldersLabel = new InlineLabel( GwtTeaming.getMessages().shareDlg_selectMethodToFindShares() );
+			else
+				noNetFoldersLabel = new InlineLabel( GwtTeaming.getMessages().noShareRecipients() );
+			
+			flowPanel.add( noNetFoldersLabel );
+			
+			m_shareTable.setEmptyTableWidget( flowPanel );
+		}
+		
+
 		if ( m_findCtrl != null )
 		{
 			m_findCtrl.setInitialSearchString( "" );
@@ -2113,6 +2118,14 @@ public class ShareThisDlg2 extends DlgBox
 		{
 			// No
 			rpcCmd1 = new GetSharingInfoCmd( m_entityIds, GwtTeaming.m_requestInfo.getUserId() );
+		}
+		else if ( m_mode == ShareThisDlgMode.MANAGE_ALL )
+		{
+			ArrayList<GwtShareItem> listOfShares;
+			
+			// Initialize the list with an empty list.
+			listOfShares = new ArrayList<GwtShareItem>();
+			addShares( listOfShares );
 		}
 
 		if ( rpcCmd1 != null )

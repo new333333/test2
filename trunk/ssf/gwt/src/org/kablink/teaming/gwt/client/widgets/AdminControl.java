@@ -98,8 +98,7 @@ import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFolde
 import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg.ManageUsersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.RunAReportDlg.RunAReportDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -181,7 +180,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
 	private EditZoneShareRightsDlg m_editZoneShareRightsDlg = null;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg = null;
-	private ShareThisDlg m_shareDlg = null;
+	private ShareThisDlg2 m_shareDlg = null;
 	private JitsZoneConfigDlg m_jitsDlg = null;
 	private EditBrandingDlg m_editSiteBrandingDlg = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
@@ -1321,10 +1320,10 @@ public class AdminControl extends TeamingPopupPanel
 		// Have we created a share dialog yet?
 		if ( m_shareDlg == null )
 		{
-			ShareThisDlgClient client;
+			ShareThisDlg2Client client;
 			
 			// No!  Create one now...
-			client = new ShareThisDlgClient()
+			client = new ShareThisDlg2Client()
 			{
 				@Override
 				public void onUnavailable() 
@@ -1333,14 +1332,14 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				
 				@Override
-				public void onSuccess( ShareThisDlg stDlg )
+				public void onSuccess( ShareThisDlg2 stDlg )
 				{
 					// ...and show it with the given entity IDs.
 					m_shareDlg = stDlg;
 					invokeManageSharesDlg();
 				}
 			};
-			ShareThisDlg.createAsync( client, true, false ); 
+			ShareThisDlg2.createAsync( false, true, client );
 		}
 		else
 		{
@@ -1352,13 +1351,11 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void execute() 
 				{
-					ShareThisDlg.initAndShow(
-										m_shareDlg,
-										null,
-										GwtTeaming.getMessages().shareDlg_manageShares(),
-										null,
-										null,
-										ShareThisDlgMode.MANAGE_ALL );
+					m_shareDlg.init(
+								GwtTeaming.getMessages().shareDlg_manageShares(),
+								null,
+								ShareThisDlg2.ShareThisDlgMode.MANAGE_ALL );
+					m_shareDlg.showDlg( null );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
