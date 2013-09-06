@@ -1375,6 +1375,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_resharePublic();
 	String shareDlg_rightsLabel();
 	String shareDlg_savingShareInfo();
+	String shareDlg_selectMethodToFindShares();
 	String shareDlg_selectSharesToDelete();
 	String shareDlg_selectSharesToEdit();
 	String shareDlg_sendingNotificationEmail();
