@@ -35,6 +35,7 @@ package org.kablink.teaming.servlet.forum;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Set;
 
 import javax.activation.FileTypeMap;
@@ -277,6 +278,22 @@ public class ReadFileController extends AbstractReadFileController {
 			} catch(Exception e) {
 				//Bad format of url; just return null
 				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
+				
+				// Don't cache the response to this request
+				{
+					Date now;
+					
+					// Yes
+					now = new Date();
+					
+					response.setDateHeader( "Date", now.getTime() );
+
+					// Set the expiration date to yesterday.
+					response.setDateHeader( "Expires", now.getTime() - 86400000L );
+					
+					// Tell the browser to never cache this file.
+					response.setHeader( "Cache-control", "must-revalidate" );
+				}
 			}
 		}
 		
