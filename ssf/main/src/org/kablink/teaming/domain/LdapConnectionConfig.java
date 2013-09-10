@@ -166,6 +166,132 @@ public class LdapConnectionConfig extends ZonedObject {
 		this.position = position;
 	}
 
+	
+	/**
+	 * 
+	 */
+	public enum HomeDirCreationOption
+	{
+		USE_CUSTOM_CONFIG,
+		USE_HOME_DIRECTORY_ATTRIBUTE,
+		USE_CUSTOM_ATTRIBUTE,
+		DONT_CREATE_HOME_DIR_NET_FOLDER,
+		UNKNOWN
+	}
+	
+	/**
+	 * This class holds all of the information needed to know how to create home directory
+	 * net folders. 
+	 */
+	public static class HomeDirConfig implements Serializable
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		private HomeDirCreationOption m_creationOption;
+		
+		// The following data members are relevant when the creation option is "formula"
+		private String m_netFolderServerName;
+		private String m_path;
+		
+		// The following data members are relevant when the creation option is "custom attribute"
+		private String m_attributeName;
+		
+		/**
+		 * 
+		 */
+		public HomeDirConfig()
+		{
+			m_creationOption = HomeDirCreationOption.UNKNOWN;
+		}
+		
+		/**
+		 * 
+		 */
+		public HomeDirConfig copy()
+		{
+			HomeDirConfig copy;
+			
+			copy = new HomeDirConfig();
+			copy.setAttributeName( getAttributeName() );
+			copy.setCreationOption( getCreationOption() );
+			copy.setNetFolderServerName( getNetFolderServerName() );
+			copy.setPath( getPath() );
+			
+			return copy;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getAttributeName()
+		{
+			return m_attributeName;
+		}
+		
+		/**
+		 * 
+		 */
+		public HomeDirCreationOption getCreationOption()
+		{
+			return m_creationOption;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getNetFolderServerName()
+		{
+			return m_netFolderServerName;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getPath()
+		{
+			return m_path;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setAttributeName( String attributeName )
+		{
+			m_attributeName = attributeName;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setCreationOption( HomeDirCreationOption creationOption )
+		{
+			m_creationOption = creationOption;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setNetFolderServerName( String name )
+		{
+			m_netFolderServerName = name;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setPath( String path )
+		{
+			m_path = path;
+		}
+	}
+	
+
+	/**
+	 * 
+	 */
 	public static class SearchInfo implements Serializable {
 		private String baseDn;
 
@@ -175,6 +301,8 @@ public class LdapConnectionConfig extends ZonedObject {
 		private String m_filterWithoutCRLF;
 
 		private boolean searchSubtree;
+		
+		private HomeDirConfig m_homeDirConfig;
 
 		public SearchInfo(String baseDn, String filter, boolean searchSubtree) {
 			setBaseDn(baseDn);
@@ -218,6 +346,22 @@ public class LdapConnectionConfig extends ZonedObject {
 
 		public void setSearchSubtree(boolean searchSubtree) {
 			this.searchSubtree = searchSubtree;
+		}
+		
+		/**
+		 * 
+		 */
+		public HomeDirConfig getHomeDirConfig()
+		{
+			return m_homeDirConfig;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setHomeDirConfig( HomeDirConfig config )
+		{
+			m_homeDirConfig = config.copy();
 		}
 	}
 

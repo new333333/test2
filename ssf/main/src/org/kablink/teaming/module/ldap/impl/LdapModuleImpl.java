@@ -89,6 +89,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.Membership;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
@@ -103,9 +104,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.jobs.LdapSynchronization;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
-import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -120,7 +119,6 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
-import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -525,6 +523,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapContext ldapContext,
 		LdapDirType dirType,
 		String userDn,
+		HomeDirConfig homeDirConfig,
 		boolean logErrors )
 	{
 		HomeDirInfo homeDirInfo = null;
@@ -1917,7 +1916,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					// Get the home directory info for this user
 					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn, logErrors );
+					homeDirInfo = readHomeDirInfoFromLdap(
+														ctx,
+														dirType,
+														dn,
+														searchInfo.getHomeDirConfig(),
+														logErrors );
 				}
 				finally
 				{
@@ -2400,7 +2404,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					// Get the home directory info for this user
 					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn, false );
+					homeDirInfo = readHomeDirInfoFromLdap(
+														ctx,
+														dirType,
+														dn,
+														searchInfo.getHomeDirConfig(),
+														false );
 
 					m_containerCoordinator.clear();
 					// Read the list of all containers from the db.

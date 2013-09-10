@@ -44,6 +44,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.hibernate.HibernateException;
+import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirCreationOption;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.orm.hibernate3.support.ClobStringType;
@@ -62,11 +63,99 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     		try {
     			Document doc = DocumentHelper.parseText(searches);
     			for(Object o : doc.selectNodes("//search")) {
+    				LdapConnectionConfig.SearchInfo searchInfo;
+    				Node homeDirConfigNode;
     				Node node = (Node) o;
+    				
     				String baseDn = node.selectSingleNode("baseDn").getText();
     				String filter = node.selectSingleNode("filter").getText();
     				boolean searchSubtree = "true".equals(node.selectSingleNode("@searchSubtree").getText());
-    				result.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, searchSubtree));
+    				searchInfo = new LdapConnectionConfig.SearchInfo(baseDn, filter, searchSubtree);
+
+    				// Is there a <homeDirConfig> node?
+    				homeDirConfigNode = node.selectSingleNode( "homeDirConfig" );
+    				if ( homeDirConfigNode != null )
+    				{
+    					LdapConnectionConfig.HomeDirConfig homeDirConfig;
+    					Node creationOptionNode;
+    					
+    					// Yes
+    					homeDirConfig = new LdapConnectionConfig.HomeDirConfig();
+    					
+    					// Get the "creationOption" attribute.
+    					creationOptionNode = homeDirConfigNode.selectSingleNode( "@creationOption" );
+    					if ( creationOptionNode != null )
+    					{
+    						String value;
+    						
+    						value = creationOptionNode.getText();
+    						if ( value != null )
+    						{
+    							if ( value.equalsIgnoreCase( "customConfig" ) )
+    							{
+    								Node customConfigNode;
+
+    								// Get the <customConfig> element
+    								customConfigNode = homeDirConfigNode.selectSingleNode( "customConfig" );
+    								if ( customConfigNode != null )
+    								{
+    									String netFolderServerName = null;
+    									String path = null;
+    									Node attribNode;
+    									
+    									attribNode = customConfigNode.selectSingleNode( "@netFolderServerName" );
+    									if ( attribNode != null )
+    										netFolderServerName = attribNode.getText();
+    									
+    									attribNode = customConfigNode.selectSingleNode( "@path" );
+    									if ( attribNode != null )
+    										path = attribNode.getText();
+    									
+    									if ( netFolderServerName != null && path != null )
+    									{
+    	    								homeDirConfig.setCreationOption( HomeDirCreationOption.USE_CUSTOM_CONFIG );
+    										homeDirConfig.setNetFolderServerName( netFolderServerName );
+    										homeDirConfig.setPath( path );
+    									}
+    								}
+    							}
+    							else if ( value.equalsIgnoreCase( "homeDirAttribute" ) )
+    							{
+    								homeDirConfig.setCreationOption( HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
+    							}
+    							else if ( value.equalsIgnoreCase( "customAttribute" ) )
+    							{
+    								Node customAttribNode;
+    								
+    								// Get the <customAttribute> element
+    								customAttribNode = homeDirConfigNode.selectSingleNode( "customAttribute" );
+    								if ( customAttribNode != null )
+    								{
+    									String attribName = null;
+    									Node attribNode;
+    									
+    									attribNode = customAttribNode.selectSingleNode( "@attributeName" );
+    									if ( attribNode != null )
+    										attribName = attribNode.getText();
+    									
+    									if ( attribName != null )
+    									{
+    										homeDirConfig.setAttributeName( attribName );
+    	    								homeDirConfig.setCreationOption( HomeDirCreationOption.USE_CUSTOM_ATTRIBUTE );
+    									}
+    								}
+    							}
+    							else if ( value.equalsIgnoreCase( "dontCreate" ) )
+    							{
+    								homeDirConfig.setCreationOption( HomeDirCreationOption.DONT_CREATE_HOME_DIR_NET_FOLDER );
+    							}
+    						}
+    					}
+    					
+    					searchInfo.setHomeDirConfig( homeDirConfig );
+    				}
+    				
+    				result.add( searchInfo );
     			}
     		} catch(Exception e) {
     			logger.warn("Unable to parse searches: " + searches);
@@ -91,6 +180,10 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
 				// If the filter has a '&', '<', or '>' in it, the xml will not parse when we read it from the db
 				// and try to create an xml document.  Wrap the filter with <![CDATA[]]>.
     			xml.append( "<filter>" + wrapWithCDATA( us.getFilter() ) + "</filter>");
+    			
+    			// Add the HomeDirConfig info
+    			xml.append( "<homeDirConfig creationOption=\"customConfig\" ><customConfig netFolderServerName=\"some name\" path=\"some path\" /></homeDirConfig>" );
+
     			xml.append("</search>");
     		}
     		xml.append("</searches>");
