@@ -297,6 +297,7 @@ public class ShareThisDlg2 extends DlgBox
 				GwtUser user;
 				String userId;
 				String recipientId;
+				String title;
 				
 				// Yes
 				user = (GwtUser) gwtTeamingItem;
@@ -323,7 +324,10 @@ public class ShareThisDlg2 extends DlgBox
 				}
 				
 				shareItem = new GwtShareItem();
-				shareItem.setRecipientName( user.getTitle() );
+				title = user.getTitle();
+				if ( title == null || title.length() == 0 )
+					title = user.getName();
+				shareItem.setRecipientName( title );
 				if ( !user.isInternal() )
 					shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 				else

@@ -2286,6 +2286,37 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_USER_AVATAR:
+		{
+			GetUserAvatarCmd guaCmd;
+			StringRpcResponseData responseData;
+			String url = null;
+			Long userId;
+			
+			guaCmd = (GetUserAvatarCmd) cmd;
+			userId = guaCmd.getUserId();
+			if ( userId != null )
+			{
+				try
+				{
+					User user;
+					
+					// Yes, get the user object
+					user = (User) getProfileModule().getEntry( userId );
+
+					url = GwtServerHelper.getUserAvatarUrl( this, req, user );
+				}
+				catch ( Exception ex )
+				{
+					m_logger.info( "Servicing GetUserAvatarCmd, ex: " + ex.toString() );
+				}
+			}
+
+			responseData = new StringRpcResponseData( url );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_USER_FILE_SYNC_APP_CONFIG:
 		{
 			GwtUserFileSyncAppConfig config;

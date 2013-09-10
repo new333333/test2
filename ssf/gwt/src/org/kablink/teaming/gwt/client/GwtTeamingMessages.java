@@ -472,6 +472,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetTree();
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_GetUserAccessInfo();
+	String rpcFailure_GetUserAvatar();
 	String rpcFailure_GetUserFileSyncAppConfig();
 	String rpcFailure_GetUserMobileAppsConfiguration();
 	String rpcFailure_GetUserPermalink();
