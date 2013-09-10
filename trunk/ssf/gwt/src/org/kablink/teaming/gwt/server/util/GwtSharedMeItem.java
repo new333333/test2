@@ -173,8 +173,8 @@ public class GwtSharedMeItem {
 		 * Returns an integer from a string in an entry map.
 		 */
 		private static int getSafeIntFromEntryMap(Map map, String key) {
-			String reply = GwtServerHelper.getStringFromEntryMap(map, key);
-			if (null == reply) {
+			String reply = getSafeStringFromEntryMap(map, key);
+			if (0 == reply.length()) {
 				reply = "-1";
 			}
 			return Integer.parseInt(reply);
