@@ -34,15 +34,12 @@ package org.kablink.teaming.gwt.client.datatable;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
-import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDateStrCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetProfileAvatarsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserAvatarCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -320,6 +317,7 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		HorizontalPanel hPanel;
 		FlowPanel mainPanel;;
 		Label label;
+		String name;
 		final String expirationDateId;
 		final String avatarId;
 		
@@ -362,7 +360,8 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		hPanel.add( mainPanel );
 		
 		// Add the recipients name
-		label = new Label( shareItem.getRecipientName() );
+		name = shareItem.getRecipientName();
+		label = new Label( name );
 		label.addStyleName( "shareItem_RecipientName" );
 		mainPanel.add( label );
 		
@@ -476,7 +475,7 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 	 */
 	private void updateAvatar( final GwtShareItem shareItem, final String elementId )
 	{
-		GetProfileAvatarsCmd cmd;
+		GetUserAvatarCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
 		
 		// Is the recipient "public"?
@@ -495,11 +494,10 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 				// display error
 				GwtClientHelper.handleGwtRPCFailure(
 												t,
-												GwtTeaming.getMessages().rpcFailure_GetProfileAvatars(),
+												GwtTeaming.getMessages().rpcFailure_GetUserAvatar(),
 												shareItem.getRecipientId() );
 			}
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public void onSuccess( final VibeRpcResponse response )
 			{
@@ -510,32 +508,27 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 					@Override
 					public void execute()
 					{
-						ProfileAttribute attr;
-						List<ProfileAttributeListElement> value;
-						String url = null;
 						
-						attr = (ProfileAttribute) response.getResponseData();
-						
-						value = (List<ProfileAttributeListElement>)attr.getValue();
-						if ( value != null && value.size() > 0 )
+						if ( response.getResponseData() != null )
 						{
-							ProfileAttributeListElement valItem;
+							StringRpcResponseData responseData;
+							String url = null;
 
-							valItem = value.get( 0 );
-							url = valItem.getValue().toString();
+							responseData = (StringRpcResponseData) response.getResponseData();
+							url = responseData.getStringValue();
+
+							if ( url == null || url.length() == 0 )
+								url = GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png";
+
+							updateAvatarUrl( elementId, url );
 						}
-						
-						if ( url == null || url.length() == 0 )
-							url = GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png";
-
-						updateAvatarUrl( elementId, url );
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 
-		cmd = new GetProfileAvatarsCmd();
+		cmd = new GetUserAvatarCmd();
 		cmd.setUserId( shareItem.getRecipientId() );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
