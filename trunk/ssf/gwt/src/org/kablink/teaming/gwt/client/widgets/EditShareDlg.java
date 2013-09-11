@@ -60,6 +60,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -68,6 +69,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -82,14 +84,27 @@ import com.google.gwt.user.datepicker.client.DatePicker;
 public class EditShareDlg extends DlgBox
 	implements EditSuccessfulHandler, KeyPressHandler
 {
+	private VibeFlowPanel m_rightsPanelForMultiEdit;
+	private VibeFlowPanel m_rightsPanelForSingleEdit;
+	
 	// Data members used with access rights
 	private ListBox m_accessRightsListbox;
+	private RadioButton m_viewerRb;
+	private RadioButton m_editorRb;
+	private RadioButton m_contributorRb;
 
 	// Data members used with reshare
-	private VerticalPanel m_resharePanel;
+	private VerticalPanel m_resharePanelForMultiEdit;
 	private ListBox m_canReshareInternalListbox;
 	private ListBox m_canReshareExternalListbox;
 	private ListBox m_canResharePublicListbox;
+	private Label m_canShareLabel;
+	private CheckBox m_canShareExternalCkbox;
+	private CheckBox m_canShareInternalCkbox;
+	private CheckBox m_canSharePublicCkbox;
+	private Label m_canReshareInternalLabel;
+	private Label m_canReshareExternalLabel;
+	private Label m_canResharePublicLabel;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
 	
@@ -108,7 +123,7 @@ public class EditShareDlg extends DlgBox
 	private static String VIEWER = "viewer";
 	private static String EDITOR = "editor";
 	private static String CONTRIBUTOR = "contributor";
-	private static String UNDEFINED = "undefined";
+	private static String LEAVE_UNCHANGED = "leave-unchanged";
 	private static String RESHARE_YES = "Reshare-Yes";
 	private static String RESHARE_NO = "Reshare-No";
 	
@@ -319,15 +334,18 @@ public class EditShareDlg extends DlgBox
 	}
 	
 	/**
-	 * 
+	 * Create the ui controls needed to edit rights for multiple shares
 	 */
-	public void createRightsContent( VibeFlowPanel panel )
+	private VibeFlowPanel createRightsContentForMultiEdit()
 	{
 		GwtTeamingMessages messages;
 		HorizontalPanel hPanel;
 		Label label;
+		VibeFlowPanel panel;
 		
 		messages = GwtTeaming.getMessages();
+		
+		panel = new VibeFlowPanel();
 		
 		hPanel = new HorizontalPanel();
 		hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
@@ -342,42 +360,151 @@ public class EditShareDlg extends DlgBox
 		
 		// Add the controls needed to define re-share rights
 		{
-			m_resharePanel = new VerticalPanel();
-			panel.add( m_resharePanel );
+			m_resharePanelForMultiEdit = new VerticalPanel();
+			m_resharePanelForMultiEdit.addStyleName( "margintop2" );
+			panel.add( m_resharePanelForMultiEdit );
+			
+			// Add a "Allow the recipient to re-share this item with:" label
+			hPanel = new HorizontalPanel();
+			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+			hPanel.setSpacing( 4 );
+			label = new Label( messages.editShareRightsDlg_CanShareLabel() );
+			hPanel.add( label );
+			m_resharePanelForMultiEdit.add( hPanel );
 			
 			// Add the "Reshare with internal users" listbox
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 4 );
-			label = new Label( messages.editShareDlg_canReshareInternalLabel() );
-			hPanel.add( label );
+			hPanel.addStyleName( "marginleft1" );
+			m_canReshareInternalLabel = new Label( messages.editShareDlg_canReshareInternalLabel() );
+			hPanel.add( m_canReshareInternalLabel );
 			m_canReshareInternalListbox = new ListBox( false );
 			m_canReshareInternalListbox.setVisibleItemCount( 1 );
+			m_canReshareInternalListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
+			m_canReshareInternalListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
+			m_canReshareInternalListbox.addItem( messages.editShareDlg_leaveUnchanged(), LEAVE_UNCHANGED );
 			hPanel.add( m_canReshareInternalListbox );
-			m_resharePanel.add( hPanel );
+			m_resharePanelForMultiEdit.add( hPanel );
 			
 			// Add the "Reshare with external users" listbox
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 4 );
-			label = new Label( messages.editShareDlg_canReshareExternalLabel() );
-			hPanel.add( label );
+			hPanel.addStyleName( "marginleft1" );
+			m_canReshareExternalLabel = new Label( messages.editShareDlg_canReshareExternalLabel() );
+			hPanel.add( m_canReshareExternalLabel );
 			m_canReshareExternalListbox = new ListBox( false );
 			m_canReshareExternalListbox.setVisibleItemCount( 1 );
+			m_canReshareExternalListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
+			m_canReshareExternalListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
+			m_canReshareExternalListbox.addItem( messages.editShareDlg_leaveUnchanged(), LEAVE_UNCHANGED );
 			hPanel.add( m_canReshareExternalListbox );
-			m_resharePanel.add( hPanel );
+			m_resharePanelForMultiEdit.add( hPanel );
 			
 			// Add the "Reshare with public" listbox
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 4 );
-			label = new Label( messages.editShareDlg_canResharePublicLabel() );
-			hPanel.add( label );
+			hPanel.addStyleName( "marginleft1" );
+			m_canResharePublicLabel = new Label( messages.editShareDlg_canResharePublicLabel() );
+			hPanel.add( m_canResharePublicLabel );
 			m_canResharePublicListbox = new ListBox( false );
 			m_canResharePublicListbox.setVisibleItemCount( 1 );
+			m_canResharePublicListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
+			m_canResharePublicListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
+			m_canResharePublicListbox.addItem( messages.editShareDlg_leaveUnchanged(), LEAVE_UNCHANGED );
 			hPanel.add( m_canResharePublicListbox );
-			m_resharePanel.add( hPanel );
+			m_resharePanelForMultiEdit.add( hPanel );
 		}
+		
+		return panel;
+	}
+	
+	/**
+	 * Create the ui controls needed to edit rights for a single share
+	 */
+	private VibeFlowPanel createRightsContentForSingleEdit()
+	{
+		GwtTeamingMessages messages;
+		VibeFlowPanel mainPanel;
+		VibeFlowPanel rbPanel;
+		VibeFlowPanel tmpPanel;
+		Label label;
+		
+		messages = GwtTeaming.getMessages();
+		
+		mainPanel = new VibeFlowPanel();
+		
+		// Add an "Access Rights" heading
+		label = new Label( messages.editShareDlg_accessRightsLabel() );
+		label.addStyleName( "smalltext" );
+		mainPanel.add( label );
+		
+		// Create a panel for the radio buttons to live in.
+		rbPanel = new VibeFlowPanel();
+		rbPanel.addStyleName( "editShareRightsDlg_RbPanel" );
+		
+		m_viewerRb = new RadioButton( "shareRights", messages.editShareRightsDlg_ViewerLabel() );
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.add( m_viewerRb );
+		rbPanel.add( tmpPanel );
+
+		m_editorRb = new RadioButton( "shareRights", messages.editShareRightsDlg_EditorLabel() );
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.add( m_editorRb );
+		rbPanel.add( tmpPanel );
+		
+		m_contributorRb = new RadioButton( "shareRights", messages.editShareRightsDlg_ContributorLabel() );
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.add( m_contributorRb );
+		rbPanel.add( tmpPanel );
+		
+		mainPanel.add( rbPanel );
+		
+		rbPanel = new VibeFlowPanel();
+		rbPanel.addStyleName( "editShareRightsDlg_RbPanel" );
+		
+		// Add the "Allow the recipient to re-share this item with:"
+		m_canShareLabel = new Label( messages.editShareRightsDlg_CanShareLabel() );
+		m_canShareLabel.addStyleName( "margintop2" );
+		m_canShareLabel.addStyleName( "smalltext" );
+		mainPanel.add( m_canShareLabel );
+		
+		// Add the "allow share internal checkbox.
+		m_canShareInternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareInternalLabel() );
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.add( m_canShareInternalCkbox );
+		rbPanel.add( tmpPanel );
+		
+		// Add the "allow share external" checkbox.
+		m_canShareExternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareExternalLabel() );
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.add( m_canShareExternalCkbox );
+		rbPanel.add( tmpPanel );
+		
+		// Add the "allow share public" checkbox.
+		m_canSharePublicCkbox = new CheckBox( messages.editShareRightsDlg_CanSharePublicLabel() );
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.add( m_canSharePublicCkbox );
+		rbPanel.add( tmpPanel );
+		
+		mainPanel.add( rbPanel );
+		
+		return mainPanel;
+	}
+	
+	/**
+	 * 
+	 */
+	public void createRightsContent( VibeFlowPanel panel )
+	{
+		m_rightsPanelForMultiEdit = createRightsContentForMultiEdit();
+		m_rightsPanelForMultiEdit.setVisible( false );
+		panel.add( m_rightsPanelForMultiEdit );
+		
+		m_rightsPanelForSingleEdit = createRightsContentForSingleEdit();
+		panel.add( m_rightsPanelForSingleEdit );
 	}
 	
 	/**
@@ -437,8 +564,8 @@ public class EditShareDlg extends DlgBox
 			// Yes
 			for ( GwtShareItem nextShareItem : m_listOfShareItems )
 			{
-				saveExpirationValue( nextShareItem );
 				saveShareRights( nextShareItem );
+				saveExpirationValue( nextShareItem );
 				saveNote( nextShareItem );
 				
 				nextShareItem.setIsDirty( true );
@@ -605,8 +732,8 @@ public class EditShareDlg extends DlgBox
 		m_listOfShareItems = listOfShareItems;
 		m_editSuccessfulHandler = editSuccessfulHandler;
 
-		initExpirationControls( listOfShareItems );
 		initRightsControls( listOfShareItems, highestRightsPossible );
+		initExpirationControls( listOfShareItems );
 		initNoteControls( listOfShareItems );
 
 		danceDlg( false );
@@ -638,7 +765,7 @@ public class EditShareDlg extends DlgBox
 	
 		if ( listOfShares.size() > 1 )
 		{
-			m_expiresListbox.addItem( messages.editShareDlg_undefined(), UNDEFINED );
+			m_expiresListbox.addItem( messages.editShareDlg_leaveUnchanged(), LEAVE_UNCHANGED );
 			m_expiresListbox.setSelectedIndex( m_expiresListbox.getItemCount()-1 );
 		}
 		else
@@ -681,8 +808,32 @@ public class EditShareDlg extends DlgBox
 		ArrayList<GwtShareItem> listOfShareItems,
 		ShareRights highestRightsPossible )
 	{
+		if ( highestRightsPossible == null )
+			highestRightsPossible = new ShareRights();
+		
+		// Are we only dealing with 1 share item?
+		if ( listOfShareItems.size() == 1 )
+		{
+			m_rightsPanelForMultiEdit.setVisible( false );
+			m_rightsPanelForSingleEdit.setVisible( true );
+			initRightsControlsForSingleEdit( listOfShareItems.get( 0 ), highestRightsPossible );
+		}
+		else
+		{
+			m_rightsPanelForSingleEdit.setVisible( false );
+			m_rightsPanelForMultiEdit.setVisible( true );
+			initRightsControlsForMultiEdit( listOfShareItems, highestRightsPossible );
+		}
+	}
+	
+	/**
+	 * Initialize the controls dealing with rights for multiple shares
+	 */
+	private void initRightsControlsForMultiEdit(
+		ArrayList<GwtShareItem> listOfShareItems,
+		ShareRights highestRightsPossible )
+	{
 		GwtTeamingMessages messages;
-		ShareRights shareRights;
 		boolean entityIsBinder;
 
 		messages = GwtTeaming.getMessages();
@@ -690,31 +841,14 @@ public class EditShareDlg extends DlgBox
 		if ( highestRightsPossible == null )
 			highestRightsPossible = new ShareRights();
 		
-		// Are we only dealing with 1 share item?
-		if ( listOfShareItems.size() == 1 )
+		entityIsBinder = true;
+		
+		// See if every entity is a binder
+		for ( GwtShareItem nextShareItem : listOfShareItems )
 		{
-			GwtShareItem shareItem;
-			
-			// Get the share rights from the one share item we are working with.
-			shareItem = listOfShareItems.get( 0 );
-			shareRights = shareItem.getShareRights();
-			entityIsBinder = shareItem.getEntityId().isBinder();
-		}
-		else
-		{
-			// We are working with multiple share items.  Default to Viewer.
-			shareRights = new ShareRights();
-			shareRights.setAccessRights( AccessRights.VIEWER );
-			
-			entityIsBinder = true;
-			
-			// See if every entity is a binder
-			for ( GwtShareItem nextShareItem : listOfShareItems )
-			{
-				entityIsBinder = nextShareItem.getEntityId().isBinder();
-				if ( entityIsBinder == false )
-					break;
-			}
+			entityIsBinder = nextShareItem.getEntityId().isBinder();
+			if ( entityIsBinder == false )
+				break;
 		}
 
 		// Add the appropriate options to the "access rights" listbox.
@@ -747,32 +881,9 @@ public class EditShareDlg extends DlgBox
 				break;
 			}
 	
-			// If we are dealing with more that one file/folder, add an "Undefined" option.
-			if ( listOfShareItems.size() > 1 )
-			{
-				m_accessRightsListbox.addItem( messages.editShareDlg_undefined(), UNDEFINED );
-				m_accessRightsListbox.setSelectedIndex( m_accessRightsListbox.getItemCount()-1 );
-			}
-			else
-			{
-				switch ( shareRights.getAccessRights() )
-				{
-				case CONTRIBUTOR:
-					GwtClientHelper.selectListboxItemByValue( m_accessRightsListbox, CONTRIBUTOR );
-					break;
-				
-				case EDITOR:
-					GwtClientHelper.selectListboxItemByValue( m_accessRightsListbox, EDITOR );
-					break;
-					
-				case VIEWER:
-					GwtClientHelper.selectListboxItemByValue( m_accessRightsListbox, VIEWER );
-					break;
-				
-				default:
-					break;
-				}
-			}
+			// Add an "Leave unchanged" option.
+			m_accessRightsListbox.addItem( messages.editShareDlg_leaveUnchanged(), LEAVE_UNCHANGED );
+			GwtClientHelper.selectListboxItemByValue( m_accessRightsListbox, LEAVE_UNCHANGED );
 		}
 		
 		// Update the controls dealing with re-share
@@ -781,77 +892,118 @@ public class EditShareDlg extends DlgBox
 
 			canShareForward = highestRightsPossible.getCanShareForward();
 			
-			m_resharePanel.setVisible( canShareForward );
+			m_resharePanelForMultiEdit.setVisible( canShareForward );
 			
 			if ( canShareForward )
 			{
+				boolean canShare;
+				
 				// Show/hide the "share internal" listbox depending on whether the user has "share internal" rights.
-				m_canReshareInternalListbox.setVisible( highestRightsPossible.getCanShareWithInternalUsers() );
-				if ( highestRightsPossible.getCanShareWithInternalUsers() )
-				{
-					m_canReshareInternalListbox.clear();
-					m_canReshareInternalListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
-					m_canReshareInternalListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
-					
-					if ( listOfShareItems.size() > 1 )
-					{
-						m_canReshareInternalListbox.addItem( messages.editShareDlg_undefined(), UNDEFINED );
-						m_canReshareInternalListbox.setSelectedIndex( m_canReshareInternalListbox.getItemCount()-1 );
-					}
-					else
-					{
-						if ( shareRights.getCanShareWithInternalUsers() )
-							m_canReshareInternalListbox.setSelectedIndex( 0 );
-						else
-							m_canReshareInternalListbox.setSelectedIndex( 1 );
-					}
-				}
+				canShare = highestRightsPossible.getCanShareWithInternalUsers();
+				m_canReshareInternalLabel.setVisible( canShare );
+				m_canReshareInternalListbox.setVisible( canShare );
+				if ( canShare )
+					GwtClientHelper.selectListboxItemByValue( m_canReshareInternalListbox, LEAVE_UNCHANGED );
 
 				// Show/hide the "share external" listbox depending on whether the user has "share external" rights.
-				m_canReshareExternalListbox.setVisible( highestRightsPossible.getCanShareWithExternalUsers() );
-				if ( highestRightsPossible.getCanShareWithExternalUsers() )
-				{
-					m_canReshareExternalListbox.clear();
-					m_canReshareExternalListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
-					m_canReshareExternalListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
-					
-					if ( listOfShareItems.size() > 1 )
-					{
-						m_canReshareExternalListbox.addItem( messages.editShareDlg_undefined(), UNDEFINED );
-						m_canReshareExternalListbox.setSelectedIndex( m_canReshareExternalListbox.getItemCount()-1 );
-					}
-					else
-					{
-						if ( shareRights.getCanShareWithExternalUsers() )
-							m_canReshareExternalListbox.setSelectedIndex( 0 );
-						else
-							m_canReshareExternalListbox.setSelectedIndex( 1 );
-					}
-				}
+				canShare = highestRightsPossible.getCanShareWithExternalUsers();
+				m_canReshareExternalLabel.setVisible( canShare );
+				m_canReshareExternalListbox.setVisible( canShare );
+				if ( canShare )
+					GwtClientHelper.selectListboxItemByValue( m_canReshareExternalListbox, LEAVE_UNCHANGED );
 
 				// Show/hide the "share public" listbox depending on whether the user has "share public" rights.
-				m_canResharePublicListbox.setVisible( highestRightsPossible.getCanShareWithPublic() );
-				if ( highestRightsPossible.getCanShareWithPublic() )
-				{
-					m_canResharePublicListbox.clear();
-					m_canResharePublicListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
-					m_canResharePublicListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
-					
-					if ( listOfShareItems.size() > 1 )
-					{
-						m_canResharePublicListbox.addItem( messages.editShareDlg_undefined(), UNDEFINED );
-						m_canResharePublicListbox.setSelectedIndex( m_canResharePublicListbox.getItemCount()-1 );
-					}
-					else
-					{
-						if ( shareRights.getCanShareWithPublic() )
-							m_canResharePublicListbox.setSelectedIndex( 0 );
-						else
-							m_canResharePublicListbox.setSelectedIndex( 1 );
-					}
-				}
+				canShare = highestRightsPossible.getCanShareWithPublic();
+				m_canResharePublicLabel.setVisible( canShare );
+				m_canResharePublicListbox.setVisible( canShare );
+				if ( canShare )
+					GwtClientHelper.selectListboxItemByValue( m_canResharePublicListbox, LEAVE_UNCHANGED );
 			}
 		}
+	}
+	
+	/**
+	 * Initialize the controls dealing with rights for a single share
+	 */
+	private void initRightsControlsForSingleEdit(
+		GwtShareItem shareItem,
+		ShareRights highestRightsPossible )
+	{
+		ShareRights shareRights;
+		boolean entityIsBinder;
+		boolean canShareForward;
+
+		if ( highestRightsPossible == null )
+			highestRightsPossible = new ShareRights();
+		
+		// Get the share rights from the one share item we are working with.
+		shareRights = shareItem.getShareRights();
+		entityIsBinder = shareItem.getEntityId().isBinder();
+
+		m_viewerRb.setVisible( false );
+		m_editorRb.setVisible( false );
+		m_contributorRb.setVisible( false );
+		
+		m_viewerRb.setValue( false );
+		m_editorRb.setValue( false );
+		m_contributorRb.setValue( false );
+		
+		switch ( shareRights.getAccessRights() )
+		{
+		case CONTRIBUTOR:
+			m_contributorRb.setValue( true );
+			break;
+		
+		case EDITOR:
+			m_editorRb.setValue( true );
+			break;
+			
+		case VIEWER:
+		default:
+			m_viewerRb.setValue( true );
+			break;
+		}
+		
+		// Hide/show the controls for the rights the user can/cannot give
+		switch ( highestRightsPossible.getAccessRights() )
+		{
+		case CONTRIBUTOR:
+			m_viewerRb.setVisible( true );
+			m_editorRb.setVisible( true );
+			
+			// Show the "contributor" radio button only if we are dealing with a binder.
+			m_contributorRb.setVisible( entityIsBinder );
+			break;
+			
+		case EDITOR:
+			m_viewerRb.setVisible( true );
+			m_editorRb.setVisible( true );
+			m_contributorRb.setVisible( false );
+			break;
+			
+		case VIEWER:
+		default:
+			m_viewerRb.setVisible( true );
+			m_editorRb.setVisible( false );
+			m_contributorRb.setVisible( false );
+			break;
+		}
+		
+		canShareForward = highestRightsPossible.getCanShareForward();
+		
+		m_canShareLabel.setVisible( canShareForward );
+		
+		// Show/hide the "share internal" checkbox depending on whether the user has "share internal" rights.
+		m_canShareInternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithInternalUsers() );
+		m_canShareInternalCkbox.setValue( shareRights.getCanShareWithInternalUsers() );
+		
+		// Show/hide the "share external" checkbox depending on whether the user has "share external" rights.
+		m_canShareExternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithExternalUsers() );
+		m_canShareExternalCkbox.setValue( shareRights.getCanShareWithExternalUsers() );
+		
+		// Show/hide the "share public" checkbox depending on whether the user has "share public" rights.
+		m_canSharePublicCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithPublic() );
+		m_canSharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
 	}
 	
 	/**
@@ -965,6 +1117,24 @@ public class EditShareDlg extends DlgBox
 	 */
 	private void saveShareRights( GwtShareItem shareItem )
 	{
+		// Are the multi-edit controls visible?
+		if ( m_rightsPanelForMultiEdit.isVisible() )
+		{
+			// Yes
+			saveShareRightsForMultiEdit( shareItem );
+		}
+		else
+		{
+			// No
+			saveShareRightsForSingleEdit( shareItem );
+		}
+	}
+	
+	/**
+	 * Update the GwtShareItem with the share rights from multi-edit controls
+	 */
+	private void saveShareRightsForMultiEdit( GwtShareItem shareItem )
+	{
 		ShareRights shareRights;
 		
 		shareRights = shareItem.getShareRights();
@@ -979,7 +1149,7 @@ public class EditShareDlg extends DlgBox
 				String value;
 				
 				value = m_accessRightsListbox.getValue( selectedIndex );
-				if ( value != null && value.equalsIgnoreCase( UNDEFINED ) == false )
+				if ( value != null && value.equalsIgnoreCase( LEAVE_UNCHANGED ) == false )
 				{
 					AccessRights accessRights;
 
@@ -998,7 +1168,7 @@ public class EditShareDlg extends DlgBox
 		}
 
 		// Save the re-share rights
-		if ( m_resharePanel.isVisible() )
+		if ( m_resharePanelForMultiEdit.isVisible() )
 		{
 			int selectedIndex;
 			boolean canShareForward;
@@ -1015,7 +1185,7 @@ public class EditShareDlg extends DlgBox
 					String value;
 					
 					value = m_canReshareInternalListbox.getValue( selectedIndex );
-					if ( value != null && value.equalsIgnoreCase( UNDEFINED ) == false )
+					if ( value != null && value.equalsIgnoreCase( LEAVE_UNCHANGED ) == false )
 					{
 						setCanShareForward = true;
 
@@ -1029,11 +1199,6 @@ public class EditShareDlg extends DlgBox
 					}
 				}
 			}
-			else
-			{
-				shareRights.setCanShareWithInternalUsers( false );
-				setCanShareForward = true;
-			}
 	
 			if ( m_canReshareExternalListbox.isVisible() )
 			{
@@ -1043,7 +1208,7 @@ public class EditShareDlg extends DlgBox
 					String value;
 					
 					value = m_canReshareExternalListbox.getValue( selectedIndex );
-					if ( value != null && value.equalsIgnoreCase( UNDEFINED ) == false )
+					if ( value != null && value.equalsIgnoreCase( LEAVE_UNCHANGED ) == false )
 					{
 						setCanShareForward = true;
 
@@ -1057,11 +1222,6 @@ public class EditShareDlg extends DlgBox
 					}
 				}
 			}
-			else
-			{
-				shareRights.setCanShareWithExternalUsers( false );
-				setCanShareForward = true;
-			}
 	
 			if ( m_canResharePublicListbox.isVisible() )
 			{
@@ -1071,7 +1231,7 @@ public class EditShareDlg extends DlgBox
 					String value;
 					
 					value = m_canResharePublicListbox.getValue( selectedIndex );
-					if ( value != null && value.equalsIgnoreCase( UNDEFINED ) == false )
+					if ( value != null && value.equalsIgnoreCase( LEAVE_UNCHANGED ) == false )
 					{
 						setCanShareForward = true;
 
@@ -1085,15 +1245,62 @@ public class EditShareDlg extends DlgBox
 					}
 				}
 			}
-			else
-			{
-				shareRights.setCanShareWithPublic( false );
-				setCanShareForward = true;
-			}
 	
 			if ( setCanShareForward )
 				shareRights.setCanShareForward( canShareForward );
 		}
+	}
+	
+	/**
+	 * Update the GwtShareItem with the share rights from single-edit controls
+	 */
+	private void saveShareRightsForSingleEdit( GwtShareItem shareItem )
+	{
+		AccessRights accessRights;
+		ShareRights shareRights;
+		boolean canShareForward;
+		
+		shareRights = shareItem.getShareRights();
+		accessRights = ShareRights.AccessRights.UNKNOWN;
+		
+		if ( m_viewerRb.isVisible() && m_viewerRb.getValue() == true )
+			accessRights = ShareRights.AccessRights.VIEWER;
+		else if ( m_editorRb.isVisible() && m_editorRb.getValue() == true )
+			accessRights = ShareRights.AccessRights.EDITOR;
+		else if ( m_contributorRb.isVisible() && m_contributorRb.getValue() == true )
+			accessRights = ShareRights.AccessRights.CONTRIBUTOR;
+		
+		shareRights.setAccessRights( accessRights );
+
+		canShareForward = false;
+		
+		if ( m_canShareInternalCkbox.isVisible() && m_canShareInternalCkbox.getValue() == true )
+		{
+			canShareForward = true;
+			shareRights.setCanShareWithInternalUsers( true );
+		}
+		else
+			shareRights.setCanShareWithInternalUsers( false );
+
+		if ( m_canShareExternalCkbox.isVisible() && m_canShareExternalCkbox.getValue() == true )
+		{
+			canShareForward = true;
+			shareRights.setCanShareWithExternalUsers( true );
+		}
+		else
+			shareRights.setCanShareWithExternalUsers( false );
+
+		if ( m_canSharePublicCkbox.isVisible() && m_canSharePublicCkbox.getValue() == true )
+		{
+			canShareForward = true;
+			shareRights.setCanShareWithPublic( true );
+		}
+		else
+			shareRights.setCanShareWithPublic( false );
+
+		shareRights.setCanShareForward( canShareForward );
+		
+		shareItem.setIsDirty( true );
 	}
 	
 	/**
