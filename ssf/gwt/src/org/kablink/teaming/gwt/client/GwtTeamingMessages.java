@@ -2312,8 +2312,8 @@ public interface GwtTeamingMessages extends Messages
 	String editShareDlg_canReshareExternalLabel();
 	String editShareDlg_canReshareInternalLabel();
 	String editShareDlg_canResharePublicLabel();
+	String editShareDlg_leaveUnchanged();
 	String editShareDlg_no();
-	String editShareDlg_undefined();
 	String editShareDlg_undefinedNote();
 	String editShareDlg_yes();
 
