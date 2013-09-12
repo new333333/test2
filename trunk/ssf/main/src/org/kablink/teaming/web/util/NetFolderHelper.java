@@ -250,11 +250,13 @@ public class NetFolderHelper
 		boolean updateExistingNetFolder ) throws WriteFilesException, WriteEntryDataException
 	{
 		Long workspaceId;
+		String netFolderServerName = null;
 		String serverAddr = null;
 		String volume = null;
 		String path = null;
-		String serverUNC;
+		String serverUNC = null;
 		ResourceDriverConfig rdConfig;
+		boolean notEnoughInfo = false;
 		boolean canSyncNetFolder = false;
 
 		// Are we running Filr?
@@ -266,18 +268,27 @@ public class NetFolderHelper
 		
 		if ( homeDirInfo != null )
 		{
+			netFolderServerName = homeDirInfo.getNetFolderServerName();
 			serverAddr = homeDirInfo.getServerAddr();
 			volume = homeDirInfo.getVolume();
 			path = homeDirInfo.getPath();
 		}
 		
 		// Do we have all the information we need?
-		if ( serverAddr == null || serverAddr.length() == 0 ||
-			 volume == null || volume.length() == 0 ||
-			 path == null || path.length() == 0 )
+		if ( path == null || path.length() == 0 )
+			notEnoughInfo = true;
+		
+		if ( (netFolderServerName == null || netFolderServerName.length() == 0) &&
+			 (serverAddr == null || serverAddr.length() == 0 ||
+			 volume == null || volume.length() == 0) )
+		{
+			notEnoughInfo = true;
+		}
+		
+		if ( notEnoughInfo )
 		{
 			// No
-			m_logger.debug( "In NetFolderHelper.createHomeDirNetFolder(), invalid server information" );
+			m_logger.debug( "In NetFolderHelper.createHomeDirNetFolder(), not enough information to create home dir net folder" );
 			return;
 		}
 		
@@ -292,25 +303,38 @@ public class NetFolderHelper
 			workspaceId = workspace.getId();
 		}
 		
-		// Does a net folder root exists with a unc path to the given server address / volume?
-		serverUNC = "\\\\" + serverAddr + "\\" + volume;
-		rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
-		if ( rdConfig == null )
+		// Are we looking for a specific net folder server that should already exists
+		if ( netFolderServerName != null && netFolderServerName.length() > 0 )
 		{
-			// No, create one
-			rdConfig = NetFolderHelper.createHomeDirNetFolderServer(
-																profileModule,
-																adminModule,
-																resourceDriverModule,
-																homeDirInfo );
+			// Yes, find the net folder server being referenced.
+			rdConfig = NetFolderHelper.findNetFolderRootByName(
+															adminModule,
+															resourceDriverModule,
+															netFolderServerName );
+			serverUNC = rdConfig.getRootPath();
 		}
 		else
 		{
-			// A net folder server already exists.  Is it fully configured?
-			if ( isNetFolderServerConfigured( rdConfig ) )
+			// Does a net folder root exists with a unc path to the given server address / volume?
+			serverUNC = "\\\\" + serverAddr + "\\" + volume;
+			rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
+			if ( rdConfig == null )
 			{
-				// Yes, this means we can sync the home directory net folder if we need to.
-				canSyncNetFolder = true;
+				// No, create one
+				rdConfig = NetFolderHelper.createHomeDirNetFolderServer(
+																	profileModule,
+																	adminModule,
+																	resourceDriverModule,
+																	homeDirInfo );
+			}
+			else
+			{
+				// A net folder server already exists.  Is it fully configured?
+				if ( isNetFolderServerConfigured( rdConfig ) )
+				{
+					// Yes, this means we can sync the home directory net folder if we need to.
+					canSyncNetFolder = true;
+				}
 			}
 		}
 		
@@ -395,7 +419,7 @@ public class NetFolderHelper
 					}
 							
 					// Did any information about the home directory change?
-					if ( serverUNC.equalsIgnoreCase( currentServerUNC ) == false ||
+					if ( (serverUNC != null && serverUNC.equalsIgnoreCase( currentServerUNC ) == false) ||
 						 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
 					{
 						Set deleteAtts;
