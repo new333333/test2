@@ -564,6 +564,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			return null;
 			
 		case USE_CUSTOM_ATTRIBUTE:
+			homeDirInfo = getHomeDirInfoFromCustomAttribute(
+														ldapContext,
+														dirType,
+														userDn,
+														homeDirConfig,
+														logErrors );
 			break;
 			
 		case USE_CUSTOM_CONFIG:
@@ -709,9 +715,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				Object value;
 				String homeDrive;
 				String uncPath;
-				String server = null;
-				String share = null;
-			    Matcher matcher;
 				
 				// Read the "homeDrive" and "homeDirectory" attributes from the given user
 				attrs = ldapContext.getAttributes( userDn, attributeNames );
@@ -750,55 +753,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				logger.debug( "\t\t\tfound home directory info for the user, uncPath: " + uncPath );
 				
-			    matcher = m_pattern_uncPath.matcher( uncPath );
-			    if ( matcher.find() && matcher.groupCount() == 2 )
-			    {
-					String path = null;
-					
-		    		server = matcher.group( 1 );
-		    		share = matcher.replaceFirst( "" );
-		    		
-		    		if ( share != null )
-		    		{
-						int slashIndex;
-
-			    		// Does the share have a '\' in it.
-						slashIndex = share.indexOf( '\\' );
-			    		if ( slashIndex > 0 )
-			    		{
-			    			// Yes
-			    			path = share.substring( slashIndex+1 );
-			    			share = share.substring( 0, slashIndex );
-			    		}
-		    		}
-
-		    		if ( path != null && path.length() > 0 )
-		    		{
-		    			if ( path.charAt( 0 ) == '\\' )
-		    				path = path.substring( 1 );
-		    		}
-
-		    		// There may be a case that the unc is \\server\share with no path.
-		    		// In that case set path to \
-		    		if ( path == null || path.length() == 0 )
-		    			path = "\\";
-
-		    		logger.debug( "\t\t\tserver: '" + server + "' volume: '" + share + "' path: '" + path + "'" );
-		    		
-					if ( server != null && server.length() > 0 && share != null && share.length() > 0 && 
-						 path != null && path.length() > 0 )
-					{
-						homeDirInfo = new HomeDirInfo();
-						homeDirInfo.setServerAddr( server );
-						homeDirInfo.setVolume( share );
-						homeDirInfo.setPath( path );
-					}
-				}
-			    else
-			    {
-			    	if ( logErrors || logger.isDebugEnabled() )
-			    		logger.error( "\t\t\tCould not parse the home directory unc" );
-			    }
+				// Parse the unc path into its components, server, volume, path
+				homeDirInfo = parseUncPath( uncPath, logErrors );
 			}
 			catch ( Exception ex )
 			{
@@ -811,8 +767,52 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 
 	/**
-	 * Read all of the information about the given user's home directory; server
-	 * address, volume and path using the information found in HomeDirConfig
+	 * Read the value of the custom attribute defined in HomeDirConfig and extract the server,
+	 * volume (or share) and path.
+	 */
+	private HomeDirInfo getHomeDirInfoFromCustomAttribute(
+		LdapContext ldapContext,
+		LdapDirType dirType,
+		String userDn,
+		HomeDirConfig homeDirConfig,
+		boolean logErrors )
+	{
+		String attributeName;
+		String attributeValue;
+		HomeDirInfo homeDirInfo;
+		
+		if ( homeDirConfig == null )
+			return null;
+		
+		attributeName = homeDirConfig.getAttributeName();
+		attributeName = "fullName";
+		if ( attributeName == null || attributeName.length() == 0 )
+		{
+			if ( logErrors )
+				logger.error( "In getHomeDirInfoFromCustomAttribute(), attribute name is null" );
+			
+			return null;
+		}
+		
+		// Read the value of the given attribute.
+		attributeValue = readStringAttribute( ldapContext, userDn, attributeName, logErrors );
+		if ( attributeValue == null || attributeValue.length() == 0 )
+		{
+			if ( logErrors )
+				logger.error( "In getHomeDirInfoFromCustomAttribute(), attribute value is null" );
+			
+			return null;
+		}
+		
+		// Parse the unc path into its components, server, volume, path
+		homeDirInfo = parseUncPath( attributeValue, logErrors );
+		
+		return homeDirInfo;
+	}
+	
+	/**
+	 * Construct the information needed to create a user's home dir net folder from
+	 * the information found in HomeDirConfig.
 	 */
 	private HomeDirInfo getHomeDirInfoFromCustomConfig(
 		LdapContext ldapContext,
@@ -4137,6 +4137,69 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 
 		return (cookie == null) ? new byte[0] : cookie;
+	}
+	
+	/**
+	 * Parse the given unc path into a server, volume, path 
+	 */
+	private HomeDirInfo parseUncPath( String uncPath, boolean logErrors )
+	{
+		Matcher matcher;
+		HomeDirInfo homeDirInfo = null;
+		
+	    matcher = m_pattern_uncPath.matcher( uncPath );
+	    if ( matcher.find() && matcher.groupCount() == 2 )
+	    {
+	    	String server;
+	    	String share;
+			String path = null;
+			
+    		server = matcher.group( 1 );
+    		share = matcher.replaceFirst( "" );
+    		
+    		if ( share != null )
+    		{
+				int slashIndex;
+
+	    		// Does the share have a '\' in it.
+				slashIndex = share.indexOf( '\\' );
+	    		if ( slashIndex > 0 )
+	    		{
+	    			// Yes
+	    			path = share.substring( slashIndex+1 );
+	    			share = share.substring( 0, slashIndex );
+	    		}
+    		}
+
+    		if ( path != null && path.length() > 0 )
+    		{
+    			if ( path.charAt( 0 ) == '\\' )
+    				path = path.substring( 1 );
+    		}
+
+    		// There may be a case that the unc is \\server\share with no path.
+    		// In that case set path to \
+    		if ( path == null || path.length() == 0 )
+    			path = "\\";
+
+    		logger.debug( "\t\t\tserver: '" + server + "' volume: '" + share + "' path: '" + path + "'" );
+    		
+			if ( server != null && server.length() > 0 && share != null && share.length() > 0 && 
+				 path != null && path.length() > 0 )
+			{
+				homeDirInfo = new HomeDirInfo();
+				homeDirInfo.setServerAddr( server );
+				homeDirInfo.setVolume( share );
+				homeDirInfo.setPath( path );
+			}
+		}
+	    else
+	    {
+	    	if ( logErrors || logger.isDebugEnabled() )
+	    		logger.error( "\t\t\tCould not parse the home directory unc" );
+	    }
+	    
+	    return homeDirInfo;
 	}
 
 	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
