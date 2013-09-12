@@ -79,7 +79,7 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	 * 
 	 */
 	@Override
-	public HomeDirInfo readHomeDirInfoFromDirectory( String teamingUserName, String ldapUserName, boolean logErrors ) throws NamingException
+	public HomeDirInfo getHomeDirInfo( String teamingUserName, String ldapUserName, boolean logErrors ) throws NamingException
 	{
 		return null;
 	}

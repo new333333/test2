@@ -90,6 +90,7 @@ import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirConfig;
+import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirCreationOption;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.Membership;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
@@ -191,6 +192,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 	private static Pattern m_pattern_uncPath = Pattern.compile( "^\\\\\\\\(.*?)\\\\(.*?)", Pattern.CASE_INSENSITIVE );
 
+	private static Pattern m_pattern_homeDirPath = Pattern.compile( "%[^%]+%", Pattern.CASE_INSENSITIVE );
+
 	protected String [] principalAttrs = new String[]{
 												ObjectKeys.FIELD_PRINCIPAL_NAME,
 												ObjectKeys.FIELD_ID,
@@ -251,6 +254,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * 
 	 */
 	public class HomeDirInfo {
+		// If m_netFolderServerName has a value then we use that value to get the net folder server
+		// that should be used for the home directory net folder.  Otherwise, use m_serverAddr and
+		// m_volume
+		private String m_netFolderServerName;
 		private String m_serverAddr;
 		private String m_volume;
 		private String m_path;
@@ -259,11 +266,20 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 * 
 		 */
 		public HomeDirInfo() {
+			m_netFolderServerName = null;
 			m_serverAddr = null;
 			m_volume = null;
 			m_path = null;
 		}
 
+		/**
+		 * 
+		 */
+		public String getNetFolderServerName()
+		{
+			return m_netFolderServerName;
+		}
+		
 		/**
 		 * 
 		 */
@@ -285,6 +301,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			return m_volume;
 		}
 
+		/**
+		 * 
+		 */
+		public void setNetFolderServerName( String name )
+		{
+			m_netFolderServerName = name;
+		}
+		
 		/**
 		 * 
 		 */
@@ -519,7 +543,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Read all of the information about the given user's home directory; server
 	 * address, volume and path from the ldap directory
 	 */
-	private HomeDirInfo readHomeDirInfoFromLdap(
+	private HomeDirInfo getHomeDirInfoFromConfig(
 		LdapContext ldapContext,
 		LdapDirType dirType,
 		String userDn,
@@ -527,7 +551,53 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		boolean logErrors )
 	{
 		HomeDirInfo homeDirInfo = null;
+		HomeDirCreationOption creationOption = HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE;
 		
+		// Figure out how we are suppose to get home directory information.
+		if ( homeDirConfig != null )
+			creationOption = homeDirConfig.getCreationOption();
+		
+		creationOption = HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE;
+		switch ( creationOption )
+		{
+		case DONT_CREATE_HOME_DIR_NET_FOLDER:
+			return null;
+			
+		case USE_CUSTOM_ATTRIBUTE:
+			break;
+			
+		case USE_CUSTOM_CONFIG:
+			homeDirInfo = getHomeDirInfoFromCustomConfig(
+														ldapContext,
+														dirType,
+														userDn,
+														homeDirConfig,
+														logErrors );
+			break;
+			
+		case USE_HOME_DIRECTORY_ATTRIBUTE:
+		case UNKNOWN:
+		default:
+			homeDirInfo = getHomeDirInfoFromHomeDirAttribute( ldapContext, dirType, userDn, logErrors );
+			break;
+		}
+		
+		return homeDirInfo;
+	}
+
+	/**
+	 * Read all of the information about the given user's home directory; server
+	 * address, volume and path from the either the ndsHomeDirectory attribute (eDir)
+	 * or homeDirectory attribute (Active Directory) in ldap directory.
+	 */
+	private HomeDirInfo getHomeDirInfoFromHomeDirAttribute(
+		LdapContext ldapContext,
+		LdapDirType dirType,
+		String userDn,
+		boolean logErrors )
+	{
+		HomeDirInfo homeDirInfo = null;
+
 		if ( dirType == LdapDirType.EDIR )
 		{
 			try
@@ -741,6 +811,105 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 
 	/**
+	 * Read all of the information about the given user's home directory; server
+	 * address, volume and path using the information found in HomeDirConfig
+	 */
+	private HomeDirInfo getHomeDirInfoFromCustomConfig(
+		LdapContext ldapContext,
+		LdapDirType dirType,
+		String userDn,
+		HomeDirConfig homeDirConfig,
+		boolean logErrors )
+	{
+		String netFolderServerName;
+		String path;
+		HomeDirInfo homeDirInfo;
+		
+		if ( homeDirConfig == null )
+			return null;
+		
+		netFolderServerName = homeDirConfig.getNetFolderServerName();
+		path = homeDirConfig.getPath();
+//!!!		netFolderServerName = "net-folder-server-2";
+//!!!		path = "Language\\%Language%\\Cn\\%cn%\\Mail\\%mail%\\Cn\\%cn%";
+		
+		if ( netFolderServerName == null || netFolderServerName.length() == 0 )
+		{
+			if ( logErrors )
+				logger.error( "In getHomeDirInfoFromCustomConfig(), netFolderServerName is null" );
+			
+			return null;
+		}
+
+		if ( path == null || path.length() == 0 )
+		{
+			if ( logErrors )
+				logger.error( "In getHomeDirInfoFromCustomConfig(), path is null" );
+			
+			return null;
+		}
+		
+		homeDirInfo = new HomeDirInfo();
+		
+		// Find the net folder server we are supposed to use.
+		{
+			ResourceDriverConfig netFolderServer;
+			
+			netFolderServer = NetFolderHelper.findNetFolderRootByName(
+																getAdminModule(),
+																getResourceDriverModule(),
+																netFolderServerName );
+			if ( netFolderServer == null )
+			{
+				if ( logErrors )
+					logger.error( "In readHomeDirInfoUsingCustomConfig(), net folder server not found by the name: " + netFolderServerName );
+				
+				return null;
+			}
+			
+			homeDirInfo.setNetFolderServerName( netFolderServerName );
+		}
+		
+		// Generate the path that will be used by the home dir net folder.
+		{
+			Matcher matcher;
+			
+			// The path can contain a construct like, foo/%ldapAttributeName%/bar
+			// We need to read the value of the "ldapAttributeName" and replace "ldapAttributeName"
+			// with the value we read from the directory.
+		    matcher = m_pattern_homeDirPath.matcher( path );
+		    while ( matcher.find() )
+		    {
+	    		String token;
+	    		
+	    		token = matcher.group();
+	    		if ( token != null )
+	    		{
+	    			String attribValue;
+	    			String attribName;
+	    			
+	    			// Remove the % from the token to get the attribute name.
+	    			attribName = token.replaceAll( "%", "" );
+	    			
+	    			// Read the value of the attribute from ldap.
+	    			attribValue = readStringAttribute( ldapContext, userDn, attribName, logErrors );
+
+	    			if ( attribValue == null )
+	    				attribValue = "";
+	    			
+    				path = path.replaceAll( token, attribValue );
+	    			
+	    			matcher = m_pattern_homeDirPath.matcher( path );
+	    		}
+			}
+		    
+		    homeDirInfo.setPath( path );
+		}
+		
+		return homeDirInfo;
+	}
+	
+	/**
 	 * Read the information from the given Server dn
 	 */
 	@SuppressWarnings("rawtypes")
@@ -866,6 +1035,53 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		homeDirInfo.setServerAddr( serverAddr );
 	}
+	
+	/**
+	 * Read the value of the given string attribute from the given user 
+	 */
+	private String readStringAttribute(
+		LdapContext ldapContext,
+		String userDn,
+		String attribName,
+		boolean logErrors )
+	{
+		String attribValue = null;
+		
+		try
+		{
+			Object value;
+			String[] attributeNames;
+			Attributes attrs;
+			Attribute attrib;
+
+			attributeNames = new String[1];
+			attributeNames[0] = attribName;
+			
+			// Read the given attribute from the given user
+			attrs = ldapContext.getAttributes( userDn, attributeNames );
+			if ( attrs == null )
+				return null;
+	
+			// Get the attribute.
+			attrib = attrs.get( attribName );
+			if ( attrib == null )
+				return null;
+			
+			value = attrib.get();
+			if ( value == null || (value instanceof String) == false )
+				return null;
+			
+			attribValue = (String) value;
+		}
+		catch ( Exception ex )
+		{
+			if ( logErrors )
+				logger.error( "In readStringAttribute(), exception: " + ex.toString() );
+		}
+		
+		return attribValue;
+	}
+	
 
 	/**
 	 * Read the information from the given Volume object
@@ -1845,11 +2061,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 	
 	/**
-	 * Read the "home directory" attribute from the directory for the given user.
+	 * Create a HomeDirInfo object based on the HomeDirConfig defined in the ldap configuration.
 	 * @throws NamingException 
 	 */
     @Override
-	public HomeDirInfo readHomeDirInfoFromDirectory(
+	public HomeDirInfo getHomeDirInfo(
 		String teamingUserName,
 		String ldapUserName,
 		boolean logErrors ) throws NamingException 
@@ -1916,7 +2132,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					// Get the home directory info for this user
 					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = readHomeDirInfoFromLdap(
+					homeDirInfo = getHomeDirInfoFromConfig(
 														ctx,
 														dirType,
 														dn,
@@ -2404,7 +2620,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					// Get the home directory info for this user
 					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = readHomeDirInfoFromLdap(
+					homeDirInfo = getHomeDirInfoFromConfig(
 														ctx,
 														dirType,
 														dn,
@@ -3635,7 +3851,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					{
 						HomeDirInfo homeDirInfo;
 						
-						homeDirInfo = readHomeDirInfoFromDirectory( dn, dn, true );
+						homeDirInfo = getHomeDirInfo( dn, dn, true );
 						ldap_existing_homeDirInfo.put( (Long)row[PRINCIPAL_ID], homeDirInfo );
 					}
 				}
@@ -3690,7 +3906,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					{
 						HomeDirInfo homeDirInfo;
 						
-						homeDirInfo = readHomeDirInfoFromDirectory( ssName, ssName, true );
+						homeDirInfo = getHomeDirInfo( ssName, ssName, true );
 						ldap_new_homeDirInfo.put( ssName.toLowerCase(), homeDirInfo );
 					}
 				}

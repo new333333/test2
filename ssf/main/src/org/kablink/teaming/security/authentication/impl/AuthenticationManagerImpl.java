@@ -440,7 +440,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				}
 				
 				// Does this user have a home directory attribute in ldap?
-				homeDirInfo = ldapModule.readHomeDirInfoFromDirectory( user.getName(), userName, logErrors );
+				homeDirInfo = ldapModule.getHomeDirInfo( user.getName(), userName, logErrors );
 				if ( homeDirInfo != null )
 				{
 					// Yes
