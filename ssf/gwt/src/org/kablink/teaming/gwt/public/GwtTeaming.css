@@ -847,7 +847,7 @@
 	font-weight: bold;
 }
 
-.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_Note, .shareItem_PublicUrl
+.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_Note, .shareItem_PublicUrl, .shareItem_SharedByName
 {
 	font-size: 0.8em;
 }

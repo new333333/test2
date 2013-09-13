@@ -365,6 +365,16 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		label.addStyleName( "shareItem_RecipientName" );
 		mainPanel.add( label );
 		
+		// Are we in administrative mode?
+		if ( mode == ShareThisDlgMode.MANAGE_SELECTED || mode == ShareThisDlgMode.MANAGE_ALL )
+		{
+			// Yes, add a line for "shared by"
+			name = shareItem.getSharedByName();
+			label = new Label( messages.shareDlg_sharedByLabel() + " " + name );
+			label.addStyleName( "shareItem_SharedByName" );
+			mainPanel.add( label );
+		}
+		
 		// Add the name of the file being shared if we are sharing more than 1 file
 		{
 			ArrayList<EntityId> listOfEntities;

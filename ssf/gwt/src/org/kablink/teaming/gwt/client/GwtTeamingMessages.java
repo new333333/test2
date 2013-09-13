@@ -1380,6 +1380,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_selectSharesToDelete();
 	String shareDlg_selectSharesToEdit();
 	String shareDlg_sendingNotificationEmail();
+	String shareDlg_sharedByLabel();
 	String shareDlg_sharedWithCol();
 	String shareDlg_shareLabel();
 	String shareDlg_sharingLabel();
