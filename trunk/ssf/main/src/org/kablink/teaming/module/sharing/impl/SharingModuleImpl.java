@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -62,8 +62,10 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.api.ApiErrorCode;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -768,7 +770,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		}
 	}
 
-    public void hideSharedEntitiesForCurrentUser(Collection<EntityIdentifier> ids, boolean recipient) {
+    @Override
+	public void hideSharedEntitiesForCurrentUser(Collection<EntityIdentifier> ids, boolean recipient) {
         String tagName;
         if (recipient) {
             tagName = ObjectKeys.HIDDEN_SHARED_WITH_TAG;
@@ -818,7 +821,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
         updateUserHiddenShareModTime(recipient);
     }
 
-    public Date getHiddenShareModTimeForCurrentUser(boolean recipient) {
+    @Override
+	public Date getHiddenShareModTimeForCurrentUser(boolean recipient) {
         String tagName;
         if (recipient) {
             tagName = ObjectKeys.HIDDEN_SHARED_WITH_TAG;
@@ -1041,5 +1045,88 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
             this.folderOperation = folderOperation;
             this.binderOperation = binderOperation;
         }
+    }
+    
+    /**
+     * Returns true if the given email address is valid for sharing
+     * with based on the current sharing blacklist/whitelist.
+     * 
+     * @param ema
+     * 
+     * @return
+     */
+    @Override
+    public boolean isExternalAddressValid(String ema) {
+    	return getExternalAddressStatus(ema).isValid();
+    }
+    
+    /**
+     * Returns an ExternalAddressStatus value for the status of sharing
+     * with the given email address based on the current sharing
+     * blacklist/whitelist.
+     * 
+     * @param ema
+     * 
+     * @return
+     */
+    @Override
+    public ExternalAddressStatus getExternalAddressStatus(String ema) {
+    	// Do we have a sharing blacklist/whitelist stored in the
+    	// ZoneConfig with list validation enabled?
+        Long		zoneId    = RequestContextHolder.getRequestContext().getZoneId();
+        ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+        ShareLists shareLists = zoneConfig.getShareLists();
+        if ((null == shareLists) || shareLists.isDisable()) {
+        	// No!  Then the address is considered valid.
+        	return ExternalAddressStatus.valid;
+        }
+
+    	// Do we have any email addresses to validate against?
+    	boolean      isWhitelist = shareLists.isWhitelist();
+    	List<String> list = shareLists.getEmailAddresses();
+    	if (MiscUtil.hasItems(list)) {
+    		// Yes!  Scan them.
+	    	for (String emaScan:  list) {
+        		// Does the email address we were given match this one?
+	    		if (emaScan.equalsIgnoreCase(ema)) {
+	    			// Yes!  If we're validating a whitelist, the email
+	    			// address is valid.  Otherwise, it failed the
+	    			// blacklist check.
+        			if (isWhitelist)
+       			         return ExternalAddressStatus.valid;
+        			else return ExternalAddressStatus.failsBlacklistEMA;
+	    		}
+	    	}
+    	}
+    	
+    	// Do we have any domains to validate against?
+    	list = shareLists.getDomains();
+    	if (MiscUtil.hasItems(list)) {
+    		// Yes!  Extract the domain from the email address we were
+    		// given.
+        	int    atPos  = ema.indexOf('@');
+       		String domain = ema.substring(atPos + 1);
+        	
+        	// Scan the domains.
+        	for (String domainScan:  list) {
+        		// Does the email address contain this domain?
+        		if (domainScan.equalsIgnoreCase(domain)) {
+        			// Yes!  If we're validating a whitelist, the email
+        			// address is valid.  Otherwise, it failed the
+        			// blacklist check.
+        			if (isWhitelist)
+        			     return ExternalAddressStatus.valid;
+        			else return ExternalAddressStatus.failsBlacklistDomain;
+        		}
+        	}
+    	}
+    	
+    	// If we get here and are doing a whitelist validation, the
+    	// email address is invalid because we didn't match it above.
+    	// Otherwise, it's valid because it didn't fail the blacklist
+    	// validation above.
+    	if (isWhitelist)
+             return ExternalAddressStatus.failsWhitelist;
+    	else return ExternalAddressStatus.valid;
     }
 }

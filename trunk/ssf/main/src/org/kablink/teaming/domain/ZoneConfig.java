@@ -38,6 +38,7 @@ import java.util.HashSet;
 
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 
@@ -87,6 +88,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Boolean jitsEnabled = Boolean.TRUE;
 	// This setting exists only on zones, not on individual binders.
     private Long jitsWaitTimeout; // in milliseconds
+    private String shareListsBlob;
 
 	public ZoneConfig()
 	{
@@ -577,5 +579,23 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	}
 	public void setJitsWaitTimeout(long jitsWaitTimeout) {
 		this.jitsWaitTimeout = Long.valueOf(jitsWaitTimeout);
+	}
+	
+	/**
+	 * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType"
+	 * @return
+	 */
+	public String getShareListsBlob() {
+		return shareListsBlob;
+	}
+	protected void setShareListsBlob(String shareListsBlob) {
+		this.shareListsBlob = shareListsBlob;
+	}
+	
+	public ShareLists getShareLists() {
+		return ShareLists.parseShareListsBlob(getShareListsBlob());
+	}
+	public void setShareLists(ShareLists shareLists) {
+		setShareListsBlob(shareLists.getShareListsBlob());
 	}
 }
