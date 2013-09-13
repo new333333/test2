@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeEditLdapConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeJitsZoneConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
@@ -85,6 +86,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.Configure
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
+import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.EditLdapConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditZoneShareRightsDlg.EditZoneShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
@@ -142,6 +144,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureMobileAppsDlgEvent.Handler,
 		InvokeConfigureShareSettingsDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
+		InvokeEditLdapConfigDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
 		InvokeJitsZoneConfigDlgEvent.Handler,
 		InvokeManageDatabasePruneDlgEvent.Handler,
@@ -183,6 +186,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ShareThisDlg2 m_shareDlg = null;
 	private JitsZoneConfigDlg m_jitsDlg = null;
 	private EditBrandingDlg m_editSiteBrandingDlg = null;
+	private EditLdapConfigDlg m_editLdapConfigDlg = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -197,6 +201,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_MOBILE_APPS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
+		TeamingEvents.INVOKE_EDIT_LDAP_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
 		TeamingEvents.INVOKE_JITS_ZONE_CONFIG_DLG,
 		TeamingEvents.INVOKE_MANAGE_DATABASE_PRUNE_DLG,
@@ -869,6 +874,11 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Configure Jits" dialog.
 			InvokeJitsZoneConfigDlgEvent.fireOne();
 		}
+		else if ( adminAction.getActionType() == AdminAction.LDAP_CONFIG && Window.confirm( "Show new ldap dialog?" ) )
+		{
+			// Fire the event to invoke the "Edit ldap configuration" dialog.
+			InvokeEditLdapConfigDlgEvent.fireOne();
+		}
 		else
 		{
 			String url;
@@ -1053,6 +1063,70 @@ public class AdminControl extends TeamingPopupPanel
 	}// end hideTreeControl()
 	
 	
+	/**
+	 * 
+	 */
+	private void invokeEditLdapConfigDlg()
+	{
+		int x;
+		int y;
+		
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
+		
+		if ( m_editLdapConfigDlg == null )
+		{
+			Integer width;
+			Integer height;
+			
+			height = new Integer( m_dlgHeight );
+			width = new Integer( m_dlgWidth );
+
+			EditLdapConfigDlg.createAsync(
+										true, 
+										false,
+										x, 
+										y,
+										width,
+										height,
+										new EditLdapConfigDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final EditLdapConfigDlg elcDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_editLdapConfigDlg = elcDlg;
+							
+							m_editLdapConfigDlg.init();
+							m_editLdapConfigDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_editLdapConfigDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
+			m_editLdapConfigDlg.init();
+			m_editLdapConfigDlg.setPopupPosition( x, y );
+			m_editLdapConfigDlg.show();
+		}
+	}
+
 	/**
 	 * 
 	 */
@@ -2030,6 +2104,30 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}
 	
+	/**
+	 * Handles InvokeEditLdapConfigDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeEditLdapConfigDlgEvent.Handler.onInvokeEditLdapConfigDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeEditLdapConfigDlg( InvokeEditLdapConfigDlgEvent event )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				invokeEditLdapConfigDlg();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+
 	/**
 	 * Handle the InvokeEditNetFolderDlgEvent received by this class
 	 * 
