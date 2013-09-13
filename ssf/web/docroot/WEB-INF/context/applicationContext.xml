@@ -956,6 +956,7 @@
 		<!-- Transaction is managed using transactionTemplate -->
 		<property name="transactionAttributes">
 			<props>
+				<prop key="setShareLists">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>			

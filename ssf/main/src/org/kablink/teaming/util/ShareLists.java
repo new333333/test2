@@ -71,10 +71,10 @@ public class ShareLists {
 		public boolean isWhitelist() {return WHITELIST.equals(this);}
 	}
 	
-	/*
+	/**
 	 * Constructor method.
 	 */
-	private ShareLists() {
+	public ShareLists() {
 		// Initialize the super class...
 		super();
 		
