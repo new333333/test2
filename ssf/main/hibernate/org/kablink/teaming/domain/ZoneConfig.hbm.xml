@@ -35,6 +35,7 @@
 	<property name="changeLogEnabled" access="field"/>
 	<property name="jitsEnabled" access="field"/>
 	<property name="jitsWaitTimeout" access="field"/>
+    <property name="shareListsBlob" length="2000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <component name="mailConfig" class="org.kablink.teaming.domain.MailConfig">
 		<property name="postingEnabled"/>
 		<property name="simpleUrlPostingEnabled"/>
