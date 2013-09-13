@@ -43,6 +43,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.jobs.ExpiredShareHandler;
 import org.kablink.teaming.jobs.ZoneSchedule;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
@@ -1073,9 +1074,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     public ExternalAddressStatus getExternalAddressStatus(String ema) {
     	// Do we have a sharing blacklist/whitelist stored in the
     	// ZoneConfig with list validation enabled?
-        Long		zoneId    = RequestContextHolder.getRequestContext().getZoneId();
-        ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-        ShareLists shareLists = zoneConfig.getShareLists();
+        ShareLists shareLists = getShareLists();
         if ((null == shareLists) || shareLists.isDisable()) {
         	// No!  Then the address is considered valid.
         	return ExternalAddressStatus.valid;
@@ -1128,5 +1127,35 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     	if (isWhitelist)
              return ExternalAddressStatus.failsWhitelist;
     	else return ExternalAddressStatus.valid;
+    }
+    
+    /**
+     * Returns the ShareLists object stored in the ZoneConfig.
+     * 
+     * @return
+     */
+    @Override
+	public ShareLists getShareLists() {
+        Long		zoneId    = RequestContextHolder.getRequestContext().getZoneId();
+        ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+        ShareLists shareLists = zoneConfig.getShareLists();
+        if (null == shareLists) {
+        	shareLists = new ShareLists();
+        }
+        return shareLists;
+    }
+
+    /**
+     * Stores/updates a ShareLists object in the ZoneConfig.
+     * 
+     * @param shareLists
+     */
+    @Override
+	public void setShareLists(ShareLists shareLists) {
+   		Binder top = RequestContextHolder.getRequestContext().getZone();
+   		getBinderModule().checkAccess(top, BinderOperation.manageConfiguration);
+		
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setShareLists(shareLists);
     }
 }
