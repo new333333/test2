@@ -1001,6 +1001,17 @@ public class EventHelper {
 				}
 				break;
 
+			case INVOKE_EDIT_LDAP_CONFIG_DLG:
+				// An InvokeEditLdapConfigDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeEditLdapConfigDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeEditLdapConfigDlgEvent.registerEvent(
+																				eventBus,
+																				((InvokeEditLdapConfigDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_EDIT_NET_FOLDER_DLG:
 				// An InvokeEditNetFolderDlgEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof InvokeEditNetFolderDlgEvent.Handler)
@@ -2508,6 +2519,7 @@ public class EventHelper {
 			case INVOKE_DOWNLOAD_DESKTOP_APP:                  hasHandler = (eventHandler instanceof InvokeDownloadDesktopAppEvent.Handler);               break;
 			case INVOKE_DROPBOX:						       hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                          break;
 			case INVOKE_EDIT_IN_PLACE:					       hasHandler = (eventHandler instanceof InvokeEditInPlaceEvent.Handler);                      break;
+			case INVOKE_EDIT_LDAP_CONFIG_DLG:			   	   hasHandler = (eventHandler instanceof InvokeEditLdapConfigDlgEvent.Handler); 	       	   break;
 			case INVOKE_EDIT_NET_FOLDER_DLG:			   	   hasHandler = (eventHandler instanceof InvokeEditNetFolderDlgEvent.Handler); 	       		   break;
 			case INVOKE_EDIT_NET_FOLDER_RIGHTS_DLG:			   hasHandler = (eventHandler instanceof InvokeEditNetFolderRightsDlgEvent.Handler); 	       break;
 			case INVOKE_EDIT_SHARE_RIGHTS_DLG:			   	   hasHandler = (eventHandler instanceof InvokeEditShareRightsDlgEvent.Handler); 	       	   break;

@@ -77,6 +77,7 @@ import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
+import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.NetFolderSyncStatistics;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
@@ -170,6 +171,7 @@ import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtDeleteHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
 import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
+import org.kablink.teaming.gwt.server.util.GwtLdapHelper;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
@@ -1658,6 +1660,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			glpdCmd = (GetLandingPageDataCmd) cmd;
 			lpConfigData = GwtServerHelper.getLandingPageData( req, this, glpdCmd.getBinderId() );
 			response = new VibeRpcResponse( lpConfigData );
+			return response;
+		}
+		
+		case GET_LDAP_CONFIG:
+		{
+			GwtLdapConfig ldapConfig;
+			
+			ldapConfig = GwtLdapHelper.getLdapConfig( this );
+			response = new VibeRpcResponse( ldapConfig );
 			return response;
 		}
 		

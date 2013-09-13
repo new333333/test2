@@ -114,6 +114,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_DOWNLOAD_DESKTOP_APP,					// Invokes the desktop application download page.
 	INVOKE_DROPBOX,									// Invokes the files drop box (i.e., the file drag&drop applet.)
 	INVOKE_EDIT_IN_PLACE,							// Invokes the edit-in-place on the specified file.
+	INVOKE_EDIT_LDAP_CONFIG_DLG,					// Invokes the edit ldap config dialog.
 	INVOKE_EDIT_NET_FOLDER_DLG,						// Invokes the edit net folder dialog
 	INVOKE_EMAIL_NOTIFICATION,						// Invokes the Email Notification dialog.
 	INVOKE_MANAGE_NET_FOLDERS_DLG,					// Invokes the Manage Net Folders dialog

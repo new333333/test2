@@ -388,6 +388,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetHtml5Specs();
 	String rpcFailure_GetJitsZoneConfig();
 	String rpcFailure_GetLandingPageData();
+	String rpcFailure_GetLdapConfig();
 	String rpcFailure_GetListOfAttachments();
 	String rpcFailure_GetBinderAccessories();
 	String rpcFailure_GetBinderAccessory();
@@ -624,6 +625,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DiscussionWSView();
 	String codeSplitFailure_DownloadPanel();
 	String codeSplitFailure_EditBrandingDlg();
+	String codeSplitFailure_EditLdapConfigDlg();
 	String codeSplitFailure_EditNetFolderRightsDlg();
 	String codeSplitFailure_EditShareDlg();
 	String codeSplitFailure_EditShareNoteDlg();
@@ -2800,5 +2802,11 @@ public interface GwtTeamingMessages extends Messages
 	String deleteSelectedUsersDlgLabel_PurgeUsers3();
 	String deleteSelectedUsersDlgLabel_PurgeUsers4();
 	String deleteSelectedUsersDlgWarning_CantUndo();
+
+	// Strings used in the Edit Ldap Configuration dialog
+	String editLdapConfigDlg_Header();
+	String editLdapConfigDlg_ReadingLdapConfig();
+	String editLdapConfigDlg_RegisterUserProfilesAutomatically();
+	String editLdapConfigDlg_SyncUserProfiles();
 	
 }// end GwtTeamingMessages
