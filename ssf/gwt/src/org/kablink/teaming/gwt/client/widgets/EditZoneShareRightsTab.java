@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,11 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
@@ -46,36 +44,28 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetZoneShareRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveZoneShareRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ZoneShareRightsSelectPrincipalsWidget.ZoneShareRightsSelectPrincipalsWidgetClient;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-
 /**
- * This dialog is used to set the zone share rights, ie who can share internal/external/public etc
+ * This composite is used to set the zone share rights, ie who can share internal/external/public etc
+ * 
  * @author jwootton
- *
  */
-public class EditZoneShareRightsDlg extends DlgBox
-	implements
-		EditSuccessfulHandler
+public class EditZoneShareRightsTab extends EditZoneShareTabBase
 {
+	private EditZoneShareSettingsDlg m_shareDlg;
 	private ZoneShareRights m_zoneShareRights;
 	private ZoneShareRightsSelectPrincipalsWidget m_selectPrincipalsWidget;
 	private List<HandlerRegistration> m_registeredEventHandlers;
@@ -89,43 +79,39 @@ public class EditZoneShareRightsDlg extends DlgBox
 
 	
 	/**
-	 * Callback interface to interact with the "edit zone share rights" dialog
-	 * asynchronously after it loads. 
+	 * Constructor method. 
 	 */
-	public interface EditZoneShareRightsDlgClient
-	{
-		void onSuccess( EditZoneShareRightsDlg cssDlg );
-		void onUnavailable();
+	public EditZoneShareRightsTab(EditZoneShareSettingsDlg shareDlg) {
+		// Initialize the super class...
+		super();
+		
+		// ...save the parameter...
+		m_shareDlg = shareDlg;
+		
+		// ...and create the of the tab.
+		initWidget(createContent());
 	}
 
 	/**
+	 * Called if the user cancels the dialog.
 	 * 
-	 */
-	private EditZoneShareRightsDlg(
-		boolean autoHide,
-		boolean modal,
-		int xPos,
-		int yPos,
-		int width,
-		int height )
-	{
-		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
-
-		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().editZoneShareRightsDlg_Header(), this, null, null ); 
-	}
-
-	
-	/**
-	 * Create all the controls that make up the dialog box.
+	 * Implements the EditZoneShareTabBase.cancel() method.
 	 */
 	@Override
-	public Panel createContent( Object props )
+	public void cancel(EditZoneShareTabCallback callback) {
+		// We always allow the tab to be canceled.
+		callback.success();
+	}
+
+	/**
+	 * Create all the controls that make up the tab.
+	 */
+	public Panel createContent()
 	{
 		FlowPanel mainPanel;
 		
 		mainPanel = new FlowPanel();
-		mainPanel.setStyleName( "teamingDlgBoxContent" );
+		mainPanel.setStyleName( "editZoneShareRightsTab_Content" );
 		
 		// Create the panel that will hold the controls for access rights
 		{
@@ -159,8 +145,8 @@ public class EditZoneShareRightsDlg extends DlgBox
 		// Add a hint
 		cellFormatter.setColSpan( nextRow, 0, 2 );
 		cellFormatter.setWordWrap( nextRow, 0, false );
-		cellFormatter.addStyleName( nextRow, 0, "editZoneShareRightsDlg_SelectPrincipalsHint" );
-		label = new InlineLabel( GwtTeaming.getMessages().editZoneShareRightsDlg_SelectPrincipalsHint() );
+		cellFormatter.addStyleName( nextRow, 0, "editZoneShareRightsTab_SelectPrincipalsHint" );
+		label = new InlineLabel( GwtTeaming.getMessages().editZoneShareRightsTab_SelectPrincipalsHint() );
 		table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 		++nextRow;
 		
@@ -189,65 +175,6 @@ public class EditZoneShareRightsDlg extends DlgBox
 	}
 	
 	/**
-	 * This gets called when the user presses ok.  If we are editing an existing net folder
-	 * we will issue an rpc request to save the net folder and then throw a "net folder modified"
-	 * event.
-	 * If we are creating a new net folder we will issue an rpc request to create the new net folder
-	 * and then throw a "net folder created" event.
-	 */
-	@Override
-	public boolean editSuccessful( Object obj )
-	{
-		clearErrorPanel();
-		hideErrorPanel();
-
-		// Disable the Ok button.
-		setOkEnabled( false );
-
-		// Issue an rpc request to save the share rights.  If the rpc request is successful,
-		// close this dialog.
-		saveShareRightsAndClose();
-		
-		// Returning false will prevent the dialog from closing.  We will close the dialog
-		// after we successfully create/modify a net folder.
-		return false;
-	}
-	
-	/**
-	 * Get the data from the controls in the dialog box.
-	 */
-	@Override
-	public Object getDataFromDlg()
-	{
-		// Return something.  Doesn't matter what because editSuccessful() does the work.
-		return Boolean.TRUE;
-	}
-	
-	/**
-	 * Return the widget that should get the focus when the dialog is shown. 
-	 */
-	@Override
-	public FocusWidget getFocusWidget()
-	{
-		return null;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public HelpData getHelpData()
-	{
-		HelpData helpData;
-		
-		helpData = new HelpData();
-		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "share" );
-		
-		return helpData;
-	}
-
-	/**
 	 * Return the roles (rights) the user defined on this net folder
 	 */
 	private ArrayList<GwtRole> getRoles()
@@ -267,7 +194,7 @@ public class EditZoneShareRightsDlg extends DlgBox
 			@Override
 			public void onFailure( Throwable caught )
 			{
-				hideStatusMsg();
+				m_shareDlg.hideStatusMsg();
 				
 				GwtClientHelper.handleGwtRPCFailure(
 												caught,
@@ -297,8 +224,8 @@ public class EditZoneShareRightsDlg extends DlgBox
 				};
 				Scheduler.get().scheduleDeferred( cmd );
 				
-				hideStatusMsg();
-				setOkEnabled( true );
+				m_shareDlg.hideStatusMsg();
+				m_shareDlg.setOkEnabled( true );
 			}						
 		};
 		
@@ -306,8 +233,8 @@ public class EditZoneShareRightsDlg extends DlgBox
 		{
 			GetZoneShareRightsCmd cmd;
 
-			showStatusMsg( GwtTeaming.getMessages().editZoneShareRightsDlg_ReadingRights() );
-			setOkEnabled( false );
+			m_shareDlg.showStatusMsg( GwtTeaming.getMessages().editZoneShareRightsTab_ReadingRights() );
+			m_shareDlg.setOkEnabled( false );
 
 			cmd = new GetZoneShareRightsCmd();
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
@@ -317,14 +244,15 @@ public class EditZoneShareRightsDlg extends DlgBox
 	/**
 	 * 
 	 */
+	@Override
 	public void init()
 	{
-		hideErrorPanel();
+		m_shareDlg.hideErrorPanel();
 		
-		clearErrorPanel();
-		hideErrorPanel();
-		hideStatusMsg();
-		setOkEnabled( true );
+		m_shareDlg.clearErrorPanel();
+		m_shareDlg.hideErrorPanel();
+		m_shareDlg.hideStatusMsg();
+		m_shareDlg.setOkEnabled( true );
 		
 		m_zoneShareRights = null;
 		
@@ -425,9 +353,28 @@ public class EditZoneShareRightsDlg extends DlgBox
 	}
 	
 	/**
+	 * Called if the user OKs the dialog.
+	 * 
+	 * Implements the EditZoneShareTabBase.save() method.
+	 */
+	@Override
+	public void save( EditZoneShareTabCallback callback )
+	{
+		m_shareDlg.clearErrorPanel();
+		m_shareDlg.hideErrorPanel();
+
+		// Disable the Ok button.
+		m_shareDlg.setOkEnabled( false );
+
+		// Issue an rpc request to save the share rights.  If the rpc request is successful,
+		// close this dialog.
+		saveShareRightsAndClose( callback );
+	}
+	
+	/**
 	 * Issue an rpc request to save the share rights.  If the save was successful, close the dialog
 	 */
-	private void saveShareRightsAndClose()
+	private void saveShareRightsAndClose( final EditZoneShareTabCallback callback )
 	{
 		AsyncCallback<VibeRpcResponse> rpcCallback;
 		
@@ -436,22 +383,23 @@ public class EditZoneShareRightsDlg extends DlgBox
 			@Override
 			public void onFailure( Throwable caught )
 			{
-				hideStatusMsg();
-				setOkEnabled( true );
+				m_shareDlg.hideStatusMsg();
+				m_shareDlg.setOkEnabled( true );
 				
 				GwtClientHelper.handleGwtRPCFailure(
 												caught,
 												GwtTeaming.getMessages().rpcFailure_SaveZoneShareRights() );
+				
+				callback.failure();
 			}
 
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				hideStatusMsg();
-				setOkEnabled( true );
+				m_shareDlg.hideStatusMsg();
+				m_shareDlg.setOkEnabled( true );
 				
-				// Close this dialog
-				hide();
+				callback.success();
 			}						
 		};
 		
@@ -461,8 +409,8 @@ public class EditZoneShareRightsDlg extends DlgBox
 			ArrayList<GwtRole> roles;
 			ZoneShareRights zoneShareRights;
 
-			showStatusMsg( GwtTeaming.getMessages().editZoneShareRightsDlg_SavingRights() );
-			setOkEnabled( false );
+			m_shareDlg.showStatusMsg( GwtTeaming.getMessages().editZoneShareRightsTab_SavingRights() );
+			m_shareDlg.setOkEnabled( false );
 
 			// Get the share rights the user entered.
 			roles = getRoles();
@@ -486,48 +434,5 @@ public class EditZoneShareRightsDlg extends DlgBox
 			// ...unregister them.  (Note that this will also empty the list.)
 			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
 		}
-	}
-
-	/**
-	 * Loads the EditZoneShareRightsDlg split point and returns an instance
-	 * of it via the callback.
-	 * 
-	 */
-	public static void createAsync(
-							final boolean autoHide,
-							final boolean modal,
-							final int left,
-							final int top,
-							final int width,
-							final int height,
-							final EditZoneShareRightsDlgClient ezsrDlgClient )
-	{
-		GWT.runAsync( EditZoneShareRightsDlg.class, new RunAsyncCallback()
-		{
-			@Override
-			public void onFailure(Throwable reason)
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EditZoneShareRightsDlg() );
-				if ( ezsrDlgClient != null )
-				{
-					ezsrDlgClient.onUnavailable();
-				}
-			}
-
-			@Override
-			public void onSuccess()
-			{
-				EditZoneShareRightsDlg cssDlg;
-				
-				cssDlg = new EditZoneShareRightsDlg(
-													autoHide,
-													modal,
-													left,
-													top,
-													width,
-													height );
-				ezsrDlgClient.onSuccess( cssDlg );
-			}
-		});
 	}
 }

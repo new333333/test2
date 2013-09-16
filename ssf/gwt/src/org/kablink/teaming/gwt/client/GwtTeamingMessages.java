@@ -631,7 +631,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_EditShareNoteDlg();
 	String codeSplitFailure_EditShareRightsDlg();
 	String codeSplitFailure_EditUserZoneShareRightsDlg();
-	String codeSplitFailure_EditZoneShareRightsDlg();
+	String codeSplitFailure_EditZoneShareSettingsDlg();
 	String codeSplitFailure_EmailNotificationDlg();
 	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
@@ -2670,11 +2670,17 @@ public interface GwtTeamingMessages extends Messages
 	String userPropertiesDlgUnknown();
 	String userPropertiesDlgYes();
 
-	// Strings used in the "Edit Zone Share Rights" dialog.
-	String editZoneShareRightsDlg_Header();
-	String editZoneShareRightsDlg_ReadingRights();
-	String editZoneShareRightsDlg_SavingRights();
-	String editZoneShareRightsDlg_SelectPrincipalsHint();
+	// Strings used in the "Edit Zone Share Settings" dialog.
+	String editZoneShareSettingsDlg_Header();
+	String editZoneShareSettingsDlg_Lists();
+	String editZoneShareSettingsDlg_Rights();
+	
+	// Strings used in the "Edit Zone Share Rights" tab.
+	String editZoneShareRightsTab_ReadingRights();
+	String editZoneShareRightsTab_SavingRights();
+	String editZoneShareRightsTab_SelectPrincipalsHint();
+	
+	// Strings used in the "Edit Zone Share Lists" tab.
 
 	// Strings used in the "Edit Zone Share Rights" dialog
 	String editUserZoneShareRightsDlg_Caption();
