@@ -4613,7 +4613,7 @@ td.datePickerMonth {
 	border-bottom: 1px solid #c4c4c4;
 }
 
-.vibt-tabPanel .gwt-TabBarItem-wrapper
+.vibe-tabPanel .gwt-TabBarItem-wrapper
 {
 	padding-bottom: 3px;
 }
@@ -5493,19 +5493,14 @@ td.datePickerMonth {
 
 
 /**
- * Styles used in the "Edit Zone Share Rights" dialog
+ * Styles used in the "Edit Zone Share" dialogs
  */
 
 .editZoneShareRightsDlg_Instructions 	{color: 353838; font-size: 14px; padding-bottom: 10px;}
 .editZoneShareRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}
 
-.editZoneShareRightsDlg_SelectPrincipalsHint
-{
-	display: inline-block;
-	color: #505354;
-	font-size: 14px;
-	margin-bottom: 15px;
-}
+.editZoneShareRightsTab_Content              {}
+.editZoneShareRightsTab_SelectPrincipalsHint {display: inline-block; color: #505354; font-size: 14px; margin-bottom: 15px;}
 
 .zoneShareRightsSelectPrincipalsWidget_PrincipalsTablePanelHeight
 {
