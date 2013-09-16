@@ -56,10 +56,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -147,8 +149,10 @@ import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
+import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtRole;
+import org.kablink.teaming.gwt.client.GwtTimeZones;
 import org.kablink.teaming.gwt.client.GwtUser.ExtUserProvState;
 import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
 import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
@@ -6297,6 +6301,38 @@ public class GwtServerHelper {
 		return listOfChildBinders;
 	}
 	
+	/**
+	 * Return a list of all the locales
+	 */
+	public static GwtLocales getLocales()
+	{
+		GwtLocales locales;
+		TreeMap<String,Locale> localeMap;
+		TreeMap<String,String> localeMap2;
+		
+		locales = new GwtLocales();
+		
+		localeMap2 = new TreeMap<String,String>();
+		
+		localeMap = NLT.getSortedLocaleList( getCurrentUser() );
+		
+		if ( localeMap != null )
+		{
+			for ( Map.Entry<String,Locale> mapEntry: localeMap.entrySet() )
+			{
+				Locale locale;
+				
+				locale = mapEntry.getValue();
+				
+				localeMap2.put( mapEntry.getKey(), locale.toString() );
+			}
+		}
+		
+		locales.setListOfLocales( localeMap2 );
+		
+		return locales;
+	}
+	
 	
 	/**
 	 * Return login information such as self registration and auto complete.
@@ -7729,6 +7765,19 @@ public class GwtServerHelper {
 		// If we get here, reply refers to the List<Long> of the teams
 		// the user is a member of.  Return it.
 		return reply;
+	}
+	
+	/**
+	 * Return a list of all the time zones
+	 */
+	public static GwtTimeZones getTimeZones( HttpServletRequest request )
+	{
+		GwtTimeZones timeZones;
+		
+		timeZones = new GwtTimeZones();
+		timeZones.setListOfTimeZones( TimeZoneHelper.getTimeZoneIdDisplayStrings( getCurrentUser() ) );
+		
+		return timeZones;
 	}
 	
 	/**
@@ -9438,6 +9487,7 @@ public class GwtServerHelper {
 		case GET_LDAP_CONFIG:
 		case GET_LIST_OF_CHILD_BINDERS:
 		case GET_LIST_OF_FILES:
+		case GET_LOCALES:
 		case GET_LOGGED_IN_USER_PERMALINK:
 		case GET_LOGIN_INFO:
 		case GET_MAIN_PAGE_INFO:
@@ -9490,6 +9540,7 @@ public class GwtServerHelper {
 		case GET_TASK_DISPLAY_DATA:
 		case GET_TASK_LINKAGE:
 		case GET_TASK_LIST:
+		case GET_TIME_ZONES:
 		case GET_TOOLBAR_ITEMS:
 		case GET_TOP_RANKED:
 		case GET_TRASH_URL:

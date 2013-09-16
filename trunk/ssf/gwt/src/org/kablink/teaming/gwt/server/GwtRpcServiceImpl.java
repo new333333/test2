@@ -78,7 +78,9 @@ import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
+import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
+import org.kablink.teaming.gwt.client.GwtTimeZones;
 import org.kablink.teaming.gwt.client.NetFolderSyncStatistics;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
@@ -1699,7 +1701,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 	
-
+		case GET_LOCALES:
+		{
+			GwtLocales responseData;
+			
+			responseData = GwtServerHelper.getLocales();
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_LOGIN_INFO:
 		{
 			GwtLoginInfo loginInfo;
@@ -2250,6 +2260,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gtCmd = (GetTeamsCmd) cmd;
 			result = getTeams( ri, gtCmd.getBinderId() );
 			responseData = new GetMyTeamsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_TIME_ZONES:
+		{
+			GwtTimeZones responseData;
+			
+			responseData = GwtServerHelper.getTimeZones( getRequest( ri ) );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
