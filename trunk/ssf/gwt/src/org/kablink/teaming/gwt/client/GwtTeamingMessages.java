@@ -452,6 +452,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetShareBinderPageUrl();
 	String rpcFailure_GetSharedViewState();
 	String rpcFailure_GetSharingInfo();
+	String rpcFailure_GetShareLists();
 	String rpcFailure_GetSignGuestbookUrl();
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
@@ -532,6 +533,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSharedFilesState();
+	String rpcFailure_SaveShareLists();
 	String rpcFailure_SaveSharedViewState();
 	String rpcFailure_SaveSubscriptionData();
 	String rpcFailure_SaveTags();
