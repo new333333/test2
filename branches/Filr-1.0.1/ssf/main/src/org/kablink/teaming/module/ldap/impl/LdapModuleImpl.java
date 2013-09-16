@@ -32,6 +32,7 @@
  */
 
 package org.kablink.teaming.module.ldap.impl;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,8 +64,11 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.PagedResultsControl;
+import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -3788,13 +3792,36 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		return hasMore;
 	}
 
+	/**
+	 * 
+	 */
+	private byte[] parseControls( Control[] controls ) throws NamingException
+	{
+		byte[] cookie = null;
+
+		if ( controls != null )
+		{
+			for (int i = 0; i < controls.length; i++)
+			{
+				if ( controls[i] instanceof PagedResultsResponseControl )
+				{
+					PagedResultsResponseControl prrc = (PagedResultsResponseControl) controls[i];
+
+					cookie = prrc.getCookie();
+				}
+			}
+		}
+
+		return (cookie == null) ? new byte[0] : cookie;
+	}
+
 	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
 		throws NamingException {
 		String ssName;
-		String [] sample = new String[0];
 		String[] attributesToRead;
 		String ldapGuidAttribute;
 		String domainName = null;
+		int pageSize = 1500;
 
 		logger.info( "Starting to sync users, syncUsers()" );
 
@@ -3823,63 +3850,117 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			domainName = getDomainName( config );
 		}
 		
-		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
-			if(Validator.isNotNull(searchInfo.getFilterWithoutCRLF())) {
+		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) 
+		{
+			String filter;
+			
+			filter = searchInfo.getFilterWithoutCRLF();
+			if ( Validator.isNotNull( filter ) )
+			{
+				byte[] cookie = null;
+
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
-				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
+				SearchControls sch = new SearchControls(
+													scope,
+													0,
+													0,
+													attributesToRead,
+													false,
+													false);
 	
 				logger.info( "\tSearching for users in base dn: " + searchInfo.getBaseDn() );
-				
-				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
-				while (hasMore( ctxSearch )) {
-					String	userName;
-					String	fixedUpUserName;
-					Attributes lAttrs = null;
-					
-					Binding bd = (Binding)ctxSearch.next();
-					userName = bd.getNameInNamespace();
-					
-					// Fixup the  by replacing all "/" with "\/".
-					fixedUpUserName = fixupName( userName );
-					fixedUpUserName = fixedUpUserName.trim();
 
-					// Read the necessary attributes for this user from the ldap directory.
-					lAttrs = ctx.getAttributes( fixedUpUserName, attributesToRead );
-					
-					Attribute id=null;
-					id = lAttrs.get(userIdAttribute);
-					if (id == null) continue;
-
-					//map ldap id to sitescapeName
-					ssName = idToName((String)id.get());
-					if (ssName == null) continue;
-
-					// Is the name of this user a name that is used for a Teaming system user account?
-					// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
-					// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
-					if ( MiscUtil.isSystemUserAccount( ssName ) )
-					{
-						// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
-						continue;
-					}
-					
-					String relativeName = userName.trim();
-					String dn;
-					if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
-						dn = relativeName + "," + ctx.getNameInNamespace().trim();
-					} else {
-						dn = relativeName;
-					}
-					
-					//!!! How do we want to determine if a user is a duplicate?
-					if (userCoordinator.isDuplicate(dn)) {
-						logger.error( NLT.get( "errorcode.ldap.userAlreadyProcessed", new Object[] {ssName, dn} ) );
-						continue;
-					}
-					
-					userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute, domainName );
+				// Request the paged results control
+				try
+				{
+					Control[] ctls = new Control[]{ new PagedResultsControl( pageSize, true ) };
+					ctx.setRequestControls( ctls );
 				}
+				catch ( IOException ex )
+				{
+					logger.error( "Call to new PagedResultsControl() threw an exception: " + ex.toString() );
+				}
+
+				do
+				{
+					NamingEnumeration results;
+
+					// Issue an ldap search for users in the given base dn.
+					results = ctx.search( searchInfo.getBaseDn(), filter, sch );
+					
+					// loop through the results in each page
+					while ( hasMore( results ) )
+					{
+						String	userName;
+						String	fixedUpUserName;
+						Attributes lAttrs = null;
+						SearchResult sr;
+						
+						sr = (SearchResult)results.next();
+						userName = sr.getNameInNamespace();
+						
+						// Fixup the  by replacing all "/" with "\/".
+						fixedUpUserName = fixupName( userName );
+						fixedUpUserName = fixedUpUserName.trim();
+
+						// Read the necessary attributes for this user from the ldap directory.
+						lAttrs = sr.getAttributes();
+						
+						Attribute id=null;
+						id = lAttrs.get(userIdAttribute);
+						if (id == null) continue;
+
+						//map ldap id to sitescapeName
+						ssName = idToName((String)id.get());
+						if (ssName == null) continue;
+
+						// Is the name of this user a name that is used for a Teaming system user account?
+						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
+						// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
+						if ( MiscUtil.isSystemUserAccount( ssName ) )
+						{
+							// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
+							continue;
+						}
+						
+						String relativeName = userName.trim();
+						String dn;
+						if (sr.isRelative() && !"".equals(ctx.getNameInNamespace())) {
+							dn = relativeName + "," + ctx.getNameInNamespace().trim();
+						} else {
+							dn = relativeName;
+						}
+						
+						//!!! How do we want to determine if a user is a duplicate?
+						if (userCoordinator.isDuplicate(dn)) {
+							logger.error( NLT.get( "errorcode.ldap.userAlreadyProcessed", new Object[] {ssName, dn} ) );
+							continue;
+						}
+						
+						userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute, domainName );
+					}
+	     
+					// examine the response controls
+					cookie = parseControls( ctx.getResponseControls() );
+
+					try
+					{
+						// pass the cookie back to the server for the next page
+						PagedResultsControl prCtrl;
+						
+						prCtrl = new PagedResultsControl( pageSize, cookie, Control.CRITICAL );
+						ctx.setRequestControls( new Control[]{ prCtrl } );
+					}
+					catch ( IOException ex )
+					{
+						cookie = null;
+						logger.error( "Call to PagedResultsControl() threw an exception: " + ex.toString() );
+					}
+
+				} while ( (cookie != null) && (cookie.length != 0) );
 			}
+			else
+				logger.warn( "In syncUsers(), a user filter was not specified.  This can result in existing users being disabled or deleted." );
 		}
 		logger.info( "Finished syncUsers()" );
 	}
