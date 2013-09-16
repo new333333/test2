@@ -390,6 +390,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetLdapConfig();
 	String rpcFailure_GetListOfAttachments();
+	String rpcFailure_GetLocales();
 	String rpcFailure_GetBinderAccessories();
 	String rpcFailure_GetBinderAccessory();
 	String rpcFailure_GetBinderInfo();
@@ -465,6 +466,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetTeamManagement();
 	String rpcFailure_GetTeamMembership();
 	String rpcFailure_GetTeams();
+	String rpcFailure_GetTimeZones();
 	String rpcFailure_GetToolbarItems();
 	String rpcFailure_GetTopRanked();
 	String rpcFailure_GetTrackedPeople();
@@ -2810,9 +2812,25 @@ public interface GwtTeamingMessages extends Messages
 	String deleteSelectedUsersDlgWarning_CantUndo();
 
 	// Strings used in the Edit Ldap Configuration dialog
+	String editLdapConfigDlg_AllowLocalLoginLabel();
+	String editLdapConfigDlg_DefaultLocaleLabel();
+	String editLdapConfigDlg_DefaultTimeZoneLabel();
+	String editLdapConfigDlg_DeleteGroupsLabel();
+	String editLdapConfigDlg_DeleteUserLabel();
+	String editLdapConfigDlg_DeleteUsersWarning();
+	String editLdapConfigDlg_DeleteWorkspaceLabel();
+	String editLdapConfigDlg_DisableUserLabel();
+	String editLdapConfigDlg_EnableSyncScheduleLabel();
+	String editLdapConfigDlg_GroupsTab();
 	String editLdapConfigDlg_Header();
+	String editLdapConfigDlg_LocalUserAccountsTab();
 	String editLdapConfigDlg_ReadingLdapConfig();
+	String editLdapConfigDlg_RegisterGroupProfilesAutomatically();
 	String editLdapConfigDlg_RegisterUserProfilesAutomatically();
+	String editLdapConfigDlg_ScheduleTab();
+	String editLdapConfigDlg_SyncGroupMembership();
+	String editLdapConfigDlg_SyncGroupProfiles();
 	String editLdapConfigDlg_SyncUserProfiles();
+	String editLdapConfigDlg_UsersTab();
 	
 }// end GwtTeamingMessages
