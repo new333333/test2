@@ -285,4 +285,12 @@ public class NullReportModule implements ReportModule {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public List<Map<String, Object>> generateActivityReportByUser(
+			Set<Long> userIds, Set<Long> userIdsToSkip, Date startDate,
+			Date endDate, String reportType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
