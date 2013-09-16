@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -69,13 +71,16 @@ import org.kablink.teaming.gwt.client.GwtPublic;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtPublicShareItem;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
+import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
@@ -94,6 +99,7 @@ import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.EmailHelper;
@@ -2171,5 +2177,151 @@ public class GwtShareHelper
 		}
 		
 		return Boolean.TRUE;
+	}
+
+	/*
+	 * Converts a ShareList to a GwtShareList.
+	 */
+	private static GwtShareLists shareListsToGwtShareLists( ShareLists shareLists )
+	{
+		GwtShareLists reply = new GwtShareLists();
+		
+		switch ( shareLists.getShareListMode() )
+		{
+		case BLACKLIST:  reply.setShareListMode( GwtShareLists.ShareListMode.BLACKLIST ); break;
+		case DISABLED:   reply.setShareListMode( GwtShareLists.ShareListMode.DISABLED  ); break;
+		case WHITELIST:  reply.setShareListMode( GwtShareLists.ShareListMode.WHITELIST ); break;
+		}
+		
+		List<String> list = shareLists.getEmailAddresses();
+		if ( MiscUtil.hasItems( list ) )
+		{
+			for (String ema:  list)
+			{
+				reply.addEmailAddress( ema );
+			}
+		}
+		
+		list = shareLists.getDomains();
+		if ( MiscUtil.hasItems( list ) )
+		{
+			for ( String domain:  list )
+			{
+				reply.addDomain( domain );
+			}
+		}
+		
+		return reply;
+	}
+	
+	/*
+	 * Converts a GwtShareList to a ShareList.
+	 */
+	private static ShareLists gwtShareListsToShareLists( GwtShareLists gwtShareLists )
+	{
+		ShareLists reply = new ShareLists();
+		
+		switch ( gwtShareLists.getShareListMode() )
+		{
+		case BLACKLIST:  reply.setShareListMode( ShareLists.ShareListMode.BLACKLIST ); break;
+		case DISABLED:   reply.setShareListMode( ShareLists.ShareListMode.DISABLED  ); break;
+		case WHITELIST:  reply.setShareListMode( ShareLists.ShareListMode.WHITELIST ); break;
+		}
+		
+		List<String> list = gwtShareLists.getEmailAddresses();
+		if ( MiscUtil.hasItems( list ) )
+		{
+			for ( String ema:  list )
+			{
+				reply.addEmailAddress( ema );
+			}
+		}
+		
+		list = gwtShareLists.getDomains();
+		if ( MiscUtil.hasItems( list ) )
+		{
+			for ( String domain:  list )
+			{
+				reply.addDomain( domain );
+			}
+		}
+		
+		return reply;
+	}
+
+	/**
+	 * Returns a GwtShareLists object that represents the current state
+	 * of the share whitelist/blacklist.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static GwtShareLists getShareLists( AllModulesInjected bs, HttpServletRequest request ) throws GwtTeamingException
+	{
+		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.getShareLists()" );
+		try
+		{
+			ShareLists shareLists = bs.getSharingModule().getShareLists();
+			GwtShareLists reply = ( ( null == shareLists ) ? new GwtShareLists() : shareListsToGwtShareLists( shareLists ) );
+			return reply;
+		}
+		
+		catch ( Exception e )
+		{
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtShareHelper.getShareLists( SOURCE EXCEPTION ):  " );
+		}
+		
+		finally
+		{
+			gsp.stop();
+		}
+	}
+
+	/**
+	 * Saves the current state of the share whitelist/blacklist.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param gwtShareLists
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData saveShareLists( AllModulesInjected bs, HttpServletRequest request, GwtShareLists gwtShareLists ) throws GwtTeamingException
+	{
+		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.saveShareLists()" );
+		try
+		{
+			ShareLists shareLists = ((null == gwtShareLists) ? new ShareLists() : gwtShareListsToShareLists(gwtShareLists));
+			bs.getSharingModule().setShareLists(shareLists);
+			return new BooleanRpcResponseData( true );
+		}
+		
+		catch ( Exception e )
+		{
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtShareHelper.saveShareLists( SOURCE EXCEPTION ):  " );
+		}
+		
+		finally
+		{
+			gsp.stop();
+		}
 	}
 }

@@ -38,7 +38,15 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetShareListsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveShareListsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ShareListsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.GwtShareLists;
 
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
@@ -54,6 +62,7 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 	@SuppressWarnings("unused")
 	private EditZoneShareSettingsDlg	m_shareDlg;					//
 	private List<HandlerRegistration>	m_registeredEventHandlers;	//
+	private GwtShareLists				m_shareLists;				//
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -83,6 +92,63 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 	 */
 	@Override
 	public void init() {
+		// Simply continue loading the tab.
+		loadPart1Async();
+	}
+
+	/*
+	 * Asynchronously loads the next part of the tab.
+	 */
+	private void loadPart1Async() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the next part of the tab.
+	 * 
+	 * Sends an RPC request to the server for a GwtShareLists object
+	 * and uses it to complete the initialization of the tab.
+	 */
+	private void loadPart1Now() {
+		GwtClientHelper.executeCommand(new GetShareListsCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_GetShareLists() );
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				m_shareLists = ((ShareListsRpcResponseData) result.getResponseData()).getShareLists();
+				initFromShareListsAsync();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously initializes the dialog's contents from a
+	 * GwtShareLists object.
+	 */
+	private void initFromShareListsAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				initFromShareListsNow();
+			}
+		});
+	}
+
+	/*
+	 * Synchronously initializes the dialog's contents from a
+	 * GwtShareLists object.
+	 */
+	private void initFromShareListsNow() {
 //!		...this needs to be implemented...
 	}
 
@@ -160,8 +226,42 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 	 */
 	@Override
 	public void save(EditZoneShareTabCallback callback) {
-//!		...this needs to be implemented...
-		callback.success();
+		// Save the share lists.  This will call the appropriate
+		// callback method when the request completes.
+		saveShareListsAsync(callback);
+	}
+	
+	/*
+	 * Asynchronously saves the share lists via a GWT RPC.
+	 */
+	private void saveShareListsAsync(final EditZoneShareTabCallback callback) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				saveShareListsNow(callback);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously saves the share lists via a GWT RPC.
+	 */
+	private void saveShareListsNow(final EditZoneShareTabCallback callback) {
+		GwtClientHelper.executeCommand(new SaveShareListsCmd(m_shareLists), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_SaveShareLists() );
+				
+				callback.failure();
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				callback.success();
+			}
+		});
 	}
 	
 	/*

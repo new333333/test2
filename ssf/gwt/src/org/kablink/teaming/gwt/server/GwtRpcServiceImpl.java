@@ -140,6 +140,7 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
+import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
@@ -2078,6 +2079,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_SHARE_LISTS:
+		{
+			@SuppressWarnings( "unused" )
+			GetShareListsCmd gslCmd = ((GetShareListsCmd) cmd);
+			GwtShareLists shareLists = GwtShareHelper.getShareLists( this, getRequest( ri ));
+			ShareListsRpcResponseData result = new ShareListsRpcResponseData( shareLists );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_SHARED_VIEW_STATE:
 		{
 			GetSharedViewStateCmd gsvsCmd = ((GetSharedViewStateCmd) cmd);
@@ -2964,6 +2975,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Boolean result = GwtUIHelper.saveMultipleAdHocFolderSettings( this, smafsCmd.getUserIds(), smafsCmd.getAllowAdHocFolders() );
 			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_SHARE_LISTS:
+		{
+			SaveShareListsCmd sslCmd = ((SaveShareListsCmd) cmd);
+			BooleanRpcResponseData result = GwtShareHelper.saveShareLists( this, getRequest( ri ), sslCmd.getShareLists());
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		

@@ -39,7 +39,6 @@ import java.util.List;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.MobileAppsConfig;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.security.AccessControlException;
