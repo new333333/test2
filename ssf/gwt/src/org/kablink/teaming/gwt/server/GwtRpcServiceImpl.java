@@ -2950,6 +2950,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_LDAP_CONFIG:
+		{
+			SaveLdapConfigCmd slcCmd;
+			SaveLdapConfigRpcResponseData responseData;
+			
+			slcCmd = (SaveLdapConfigCmd) cmd;
+			responseData = GwtLdapHelper.saveLdapConfig( this, slcCmd.getLdapConfig() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case SAVE_MANAGE_USERS_STATE:
 		{
 			SaveManageUsersStateCmd smusCmd = ((SaveManageUsersStateCmd) cmd);

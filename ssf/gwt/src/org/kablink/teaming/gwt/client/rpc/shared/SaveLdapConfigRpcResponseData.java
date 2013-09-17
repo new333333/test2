@@ -30,93 +30,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
+
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class is used to represent the data used in an ldap search.  This class should mirror
- * the data found in SearchInfo
+ * This class holds the response data for the "save ldap config" rpc command
  * @author jwootton
  *
  */
-public class GwtLdapSearchInfo implements IsSerializable
+public class SaveLdapConfigRpcResponseData
+	implements IsSerializable, VibeRpcResponseData
 {
-	private String m_baseDn;
-	private String m_filter;
-	private boolean m_searchSubtree;
-	private GwtHomeDirConfig m_homeDirConfig;
-	
-	/**
-	 * Constructor method. 
-	 * 
-	 * No parameters as per GWT serialization requirements.
-	 */
-	public GwtLdapSearchInfo()
-	{
-	}
-
 	/**
 	 * 
 	 */
-	public String getBaseDn()
+	public SaveLdapConfigRpcResponseData()
 	{
-		return m_baseDn;
-	}
-
-	/**
-	 * 
-	 */
-	public String getFilter()
-	{
-		return m_filter;
-	}
-
-	/**
-	 * 
-	 */
-	public GwtHomeDirConfig getHomeDirConfig()
-	{
-		return m_homeDirConfig;
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getSearchSubtree()
-	{
-		return m_searchSubtree;
-	}
-
-	/**
-	 * 
-	 */
-	public void setBaseDn( String baseDn )
-	{
-		m_baseDn = baseDn;
-	}
-
-	/**
-	 * 
-	 */
-	public void setFilter( String filter )
-	{
-		m_filter = filter;
-	}
-
-	/**
-	 * 
-	 */
-	public void setHomeDirConfig( GwtHomeDirConfig homeDirConfig )
-	{
-		m_homeDirConfig = homeDirConfig;
-	}
-	/**
-	 * 
-	 */
-	public void setSearchSubtree( boolean searchSubtree )
-	{
-		m_searchSubtree = searchSubtree;
 	}
 }
