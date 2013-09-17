@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,93 +30,57 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
+import org.kablink.teaming.gwt.client.GwtLdapConfig;
 
 /**
- * This class is used to represent the data used in an ldap search.  This class should mirror
- * the data found in SearchInfo
- * @author jwootton
- *
+ * This class holds all of the information necessary to execute the
+ * 'save ldap configuration' command.
+ * 
+ * @author jwootton@novell.com
  */
-public class GwtLdapSearchInfo implements IsSerializable
+public class SaveLdapConfigCmd extends VibeRpcCmd
 {
-	private String m_baseDn;
-	private String m_filter;
-	private boolean m_searchSubtree;
-	private GwtHomeDirConfig m_homeDirConfig;
+	private GwtLdapConfig m_ldapConfig = null;
 	
 	/**
-	 * Constructor method. 
+	 * Constructor method.
 	 * 
-	 * No parameters as per GWT serialization requirements.
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public GwtLdapSearchInfo()
+	public SaveLdapConfigCmd()
 	{
+		// Initialize the super class.
+		super();
 	}
-
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() 
+	{
+		return VibeRpcCmdType.SAVE_LDAP_CONFIG.ordinal();
+	}
+	
 	/**
 	 * 
 	 */
-	public String getBaseDn()
+	public GwtLdapConfig getLdapConfig()
 	{
-		return m_baseDn;
+		return m_ldapConfig;
 	}
-
+	
 	/**
 	 * 
 	 */
-	public String getFilter()
+	public void setLdapConfig( GwtLdapConfig ldapConfig )
 	{
-		return m_filter;
-	}
-
-	/**
-	 * 
-	 */
-	public GwtHomeDirConfig getHomeDirConfig()
-	{
-		return m_homeDirConfig;
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getSearchSubtree()
-	{
-		return m_searchSubtree;
-	}
-
-	/**
-	 * 
-	 */
-	public void setBaseDn( String baseDn )
-	{
-		m_baseDn = baseDn;
-	}
-
-	/**
-	 * 
-	 */
-	public void setFilter( String filter )
-	{
-		m_filter = filter;
-	}
-
-	/**
-	 * 
-	 */
-	public void setHomeDirConfig( GwtHomeDirConfig homeDirConfig )
-	{
-		m_homeDirConfig = homeDirConfig;
-	}
-	/**
-	 * 
-	 */
-	public void setSearchSubtree( boolean searchSubtree )
-	{
-		m_searchSubtree = searchSubtree;
+		m_ldapConfig = ldapConfig;
 	}
 }

@@ -529,6 +529,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveFolderEntryDlgPosition();
 	String rpcFailure_SaveFolderPinningState();
 	String rpcFailure_SaveFolderSort();
+	String rpcFailure_SaveLdapConfig();
 	String rpcFailure_SaveManageUsersState();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
@@ -2814,10 +2815,13 @@ public interface GwtTeamingMessages extends Messages
 	String deleteSelectedUsersDlgWarning_CantUndo();
 
 	// Strings used in the Edit Ldap Configuration dialog
+	String editLdapConfigDlg_AddLdapServerLabel();
 	String editLdapConfigDlg_AllowLocalLoginLabel();
+	String editLdapConfigDlg_ConfirmDelete( String msg );
 	String editLdapConfigDlg_DefaultLocaleLabel();
 	String editLdapConfigDlg_DefaultTimeZoneLabel();
 	String editLdapConfigDlg_DeleteGroupsLabel();
+	String editLdapConfigDlg_DeleteLdapServerLabel();
 	String editLdapConfigDlg_DeleteUserLabel();
 	String editLdapConfigDlg_DeleteUsersWarning();
 	String editLdapConfigDlg_DeleteWorkspaceLabel();
@@ -2825,11 +2829,15 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapConfigDlg_EnableSyncScheduleLabel();
 	String editLdapConfigDlg_GroupsTab();
 	String editLdapConfigDlg_Header();
+	String editLdapConfigDlg_LdapServersTab();
 	String editLdapConfigDlg_LocalUserAccountsTab();
+	String editLdapConfigDlg_NoLdapServersLabel();
 	String editLdapConfigDlg_ReadingLdapConfig();
 	String editLdapConfigDlg_RegisterGroupProfilesAutomatically();
 	String editLdapConfigDlg_RegisterUserProfilesAutomatically();
 	String editLdapConfigDlg_ScheduleTab();
+	String editLdapConfigDlg_SelectLdapServersToDelete();
+	String editLdapConfigDlg_ServerUrlCol();
 	String editLdapConfigDlg_SyncGroupMembership();
 	String editLdapConfigDlg_SyncGroupProfiles();
 	String editLdapConfigDlg_SyncUserProfiles();

@@ -33,39 +33,59 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
+import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTimeZones;
+import org.kablink.teaming.gwt.client.datatable.LdapServerUrlCell;
+import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLdapConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLocalesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTimeZonesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveLdapConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveLdapConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.view.client.DefaultSelectionEventManager;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.MultiSelectionModel;
 
 
 /**
@@ -76,6 +96,12 @@ import com.google.gwt.user.client.ui.TabPanel;
 public class EditLdapConfigDlg extends DlgBox
 	implements EditSuccessfulHandler
 {
+	private CellTable<GwtLdapConnectionConfig> m_ldapServersTable;
+    private MultiSelectionModel<GwtLdapConnectionConfig> m_selectionModel;
+	private ListDataProvider<GwtLdapConnectionConfig> m_dataProvider;
+	private VibeSimplePager m_pager;
+	private List<GwtLdapConnectionConfig> m_listOfLdapServers;
+
 	private CheckBox m_syncUserProfilesCheckBox;
 	private CheckBox m_registerUserProfilesAutomaticallyCheckBox;
 	private RadioButton m_disableUsersRB;
@@ -122,6 +148,35 @@ public class EditLdapConfigDlg extends DlgBox
 	}
 
 	/**
+	 * Add the given list of ldap servers to the dialog
+	 */
+	private void addLdapServers( List<GwtLdapConnectionConfig> listOfLdapServers )
+	{
+		m_listOfLdapServers = listOfLdapServers;
+		
+		if ( m_dataProvider == null )
+		{
+			m_dataProvider = new ListDataProvider<GwtLdapConnectionConfig>( m_listOfLdapServers );
+			m_dataProvider.addDataDisplay( m_ldapServersTable );
+		}
+		else
+		{
+			m_dataProvider.setList( m_listOfLdapServers );
+			m_dataProvider.refresh();
+		}
+		
+		// Clear all selections.
+		m_selectionModel.clear();
+		
+		// Go to the first page
+		m_pager.firstPage();
+		
+		// Tell the table how many net folder roots we have.
+		m_ldapServersTable.setRowCount( m_listOfLdapServers.size(), true );
+	}
+
+
+	/**
 	 * Create all the controls that make up the dialog box.
 	 */
 	@Override
@@ -141,6 +196,14 @@ public class EditLdapConfigDlg extends DlgBox
 
 		mainPanel.add( tabPanel );
 
+		// Create a panel to hold the list of ldap servers
+		{
+			Panel serversPanel;
+			
+			serversPanel = createLdapServersPanel( messages );
+			tabPanel.add( serversPanel, messages.editLdapConfigDlg_LdapServersTab() );
+		}
+		
 		// Create a panel to hold the user configuration
 		{
 			Panel userPanel;
@@ -209,6 +272,155 @@ public class EditLdapConfigDlg extends DlgBox
 		groupPanel.add( tmpPanel );
 		
 		return groupPanel;
+	}
+	
+	/**
+	 * 
+	 */
+	private Panel createLdapServersPanel( GwtTeamingMessages messages )
+	{
+		VerticalPanel serversPanel;
+		CellTable.Resources cellTableResources;
+		FlowPanel menuPanel;
+		
+		serversPanel = new VerticalPanel();
+
+		// Create a menu
+		{
+			InlineLabel label;
+			
+			menuPanel = new FlowPanel();
+			menuPanel.addStyleName( "editLdapConfigDlg_MenuPanel" );
+			
+			// Add an "Add" button.
+			label = new InlineLabel( messages.editLdapConfigDlg_AddLdapServerLabel() );
+			label.addStyleName( "editLdapConfigDlg_Btn" );
+			label.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							invokeAddLdapServerDlg();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			menuPanel.add( label );
+			
+			// Add a "Delete" button.
+			label = new InlineLabel( messages.editLdapConfigDlg_DeleteLdapServerLabel() );
+			label.addStyleName( "editLdapConfigDlg_Btn" );
+			label.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							deleteSelectedLdapServers();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			menuPanel.add( label );
+		}
+		
+		// Create the CellTable that will display the list of Net Folder Roots.
+		cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
+		m_ldapServersTable = new CellTable<GwtLdapConnectionConfig>( 20, cellTableResources );
+		
+		// Set the widget that will be displayed when there are no ldap servers
+		{
+			FlowPanel flowPanel;
+			InlineLabel noServersLabel;
+			
+			flowPanel = new FlowPanel();
+			flowPanel.addStyleName( "noObjectsFound" );
+			noServersLabel = new InlineLabel( messages.editLdapConfigDlg_NoLdapServersLabel() );
+			flowPanel.add( noServersLabel );
+			
+			m_ldapServersTable.setEmptyTableWidget( flowPanel );
+		}
+		
+	    // Add a selection model so we can select ldap servers.
+	    m_selectionModel = new MultiSelectionModel<GwtLdapConnectionConfig>();
+	    m_ldapServersTable.setSelectionModel(
+	    									m_selectionModel,
+	    									DefaultSelectionEventManager.<GwtLdapConnectionConfig> createCheckboxManager() );
+
+		// Add a checkbox in the first column
+		{
+			Column<GwtLdapConnectionConfig, Boolean> ckboxColumn;
+			CheckboxCell ckboxCell;
+			
+            ckboxCell = new CheckboxCell( true, false );
+		    ckboxColumn = new Column<GwtLdapConnectionConfig, Boolean>( ckboxCell )
+            {
+            	@Override
+		        public Boolean getValue( GwtLdapConnectionConfig ldapServer )
+		        {
+            		// Get the value from the selection model.
+		            return m_selectionModel.isSelected( ldapServer );
+		        }
+		    };
+	        m_ldapServersTable.addColumn( ckboxColumn, SafeHtmlUtils.fromSafeConstant( "<br/>" ) );
+		    m_ldapServersTable.setColumnWidth( ckboxColumn, 20, Unit.PX );			
+		}
+		
+		// Add the "Server URL" column.  The user can click on the text in this column
+		// to edit the ldap server.
+		{
+			LdapServerUrlCell cell;
+			Column<GwtLdapConnectionConfig,GwtLdapConnectionConfig> serverUrlCol;
+
+			cell = new LdapServerUrlCell();
+			serverUrlCol = new Column<GwtLdapConnectionConfig, GwtLdapConnectionConfig>( cell )
+			{
+				@Override
+				public GwtLdapConnectionConfig getValue( GwtLdapConnectionConfig ldapServer )
+				{
+					return ldapServer;
+				}
+			};
+		
+			serverUrlCol.setFieldUpdater( new FieldUpdater<GwtLdapConnectionConfig, GwtLdapConnectionConfig>()
+			{
+				@Override
+				public void update( int index, GwtLdapConnectionConfig ldapServer, GwtLdapConnectionConfig value )
+				{
+					invokeModifyLdapServerDlg( ldapServer );
+				}
+			} );
+			m_ldapServersTable.addColumn( serverUrlCol, messages.editLdapConfigDlg_ServerUrlCol() );
+		}
+
+		// Create a pager
+		{
+			m_pager = new VibeSimplePager();
+			m_pager.setDisplay( m_ldapServersTable );
+		}
+
+		serversPanel.add( menuPanel );
+		serversPanel.add( m_ldapServersTable );
+		serversPanel.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
+		serversPanel.add( m_pager );
+		serversPanel.setCellHeight( m_pager, "100%" );
+
+		return serversPanel;
 	}
 
 	/**
@@ -359,17 +571,82 @@ public class EditLdapConfigDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private void deleteSelectedLdapServers()
+	{
+		Set<GwtLdapConnectionConfig> selectedServers;
+		Iterator<GwtLdapConnectionConfig> serverIterator;
+		String serverUrls;
+		int count = 0;
+		
+		serverUrls = "";
+		
+		selectedServers = getSelectedLdapServers();
+		if ( selectedServers != null )
+		{
+			// Get a list of all the selected ldap server urls
+			serverIterator = selectedServers.iterator();
+			while ( serverIterator.hasNext() )
+			{
+				GwtLdapConnectionConfig nextServer;
+				String text;
+				
+				nextServer = serverIterator.next();
+				
+				text = nextServer.getServerUrl();
+				serverUrls += "\t" + text + "\n";
+				
+				++count;
+			}
+		}
+		
+		// Do we have any servers to delete?
+		if ( count > 0 )
+		{
+			String msg;
+			
+			// Yes, ask the user if they want to delete the selected ldap servers?
+			msg = GwtTeaming.getMessages().editLdapConfigDlg_ConfirmDelete( serverUrls );
+			if ( Window.confirm( msg ) )
+			{
+				// Remove the selected ldap servers from our list.
+				for ( GwtLdapConnectionConfig nextLdapServer : selectedServers )
+				{
+					m_listOfLdapServers.remove( nextLdapServer );
+				}
+				
+				// Unselect the selected ldap servers.
+				m_selectionModel.clear();
+				
+				// Update the table to reflect the fact that we deleted a net folder root.
+				m_dataProvider.refresh();
+
+				// Tell the table how many ldap servers we have left.
+				m_ldapServersTable.setRowCount( m_listOfLdapServers.size(), true );
+			}
+		}
+		else
+		{
+			Window.alert( GwtTeaming.getMessages().editLdapConfigDlg_SelectLdapServersToDelete() );
+		}
+	}
+	
+	/**
 	 * This gets called when the user presses ok.  Issue an rpc request to save the
 	 * "allow adhoc folders" setting
 	 */
 	@Override
 	public boolean editSuccessful( Object obj )
 	{
-/**
-		SaveAdhocFolderSettingCmd cmd;
+		SaveLdapConfigCmd cmd;
 
-		// Execute a GWT RPC command to save the user access configuration
-		cmd = new SaveAdhocFolderSettingCmd( m_userId, (Boolean) obj );
+		if ( (obj instanceof GwtLdapConfig) == false )
+			return false;
+		
+		// Execute a GWT RPC command to save the ldap configuration
+		cmd = new SaveLdapConfigCmd();
+		cmd.setLdapConfig( (GwtLdapConfig) obj );
 		
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
@@ -378,23 +655,25 @@ public class EditLdapConfigDlg extends DlgBox
 			{
 				GwtClientHelper.handleGwtRPCFailure(
 											t,
-											GwtTeaming.getMessages().rpcFailure_SaveAdhocFolderSetting() );
+											GwtTeaming.getMessages().rpcFailure_SaveLdapConfig() );
 			}
 			
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				if ( response.getResponseData() != null && response.getResponseData() instanceof BooleanRpcResponseData )
+				if ( response.getResponseData() != null &&
+					 response.getResponseData() instanceof SaveLdapConfigRpcResponseData )
 				{
-					BooleanRpcResponseData responseData;
+					SaveLdapConfigRpcResponseData responseData;
 					
-					responseData = (BooleanRpcResponseData) response.getResponseData();
-					if ( responseData.getBooleanValue() == true )
-						hide();
+					responseData = (SaveLdapConfigRpcResponseData) response.getResponseData();
+					//!!! Finish
+					Window.alert( "finish onSuccess()" );
+					hide();
 				}
 			}
 		});
-**/		
+
 		// Returning false will prevent the dialog from closing.  We will close the dialog
 		// after we successfully save the user access configuration.
 		return false;
@@ -406,7 +685,36 @@ public class EditLdapConfigDlg extends DlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		return Boolean.TRUE;
+		GwtLdapConfig ldapConfig;
+		
+		ldapConfig = new GwtLdapConfig();
+		
+		// Get the user configuration
+		{
+			ldapConfig.setRegisterUserProfilesAutomatically( m_registerUserProfilesAutomaticallyCheckBox.getValue() );
+			ldapConfig.setSyncUserProfiles( m_syncUserProfilesCheckBox.getValue() );
+			ldapConfig.setDeleteLdapUsers( m_deleteUsersRB.getValue() );
+			ldapConfig.setDeleteUserWorkspace( m_deleteWorkspaceCheckBox.getValue() );
+			
+			ldapConfig.setTimeZone( getSelectedTimeZone() );
+			ldapConfig.setLocale( getSelectedLocale() );
+		}
+		
+		// Get the group configuration
+		{
+			ldapConfig.setRegisterGroupProfilesAutomatically( m_registerGroupProfilesAutomaticallyCheckBox.getValue() );
+			ldapConfig.setSyncGroupProfiles( m_syncGroupProfilesCheckBox.getValue() );
+			ldapConfig.setSyncGroupMembership( m_syncGroupMembershipCheckBox.getValue() );
+			ldapConfig.setDeleteNonLdapGroups( m_deleteGroupsCheckBox.getValue() );
+		}
+		
+		// Get the sync schedule
+		ldapConfig.setSchedule( m_scheduleWidget.getSchedule() );
+
+		// Get the local user accounts configuration
+		ldapConfig.setAllowLocalLogin( m_allowLocalLoginCheckBox.getValue() );
+		
+		return ldapConfig;
 	}
 	
 	
@@ -545,6 +853,48 @@ public class EditLdapConfigDlg extends DlgBox
 	}
 	
 	/**
+	 * Return a list of selected ldap servers.
+	 */
+	public Set<GwtLdapConnectionConfig> getSelectedLdapServers()
+	{
+		return m_selectionModel.getSelectedSet();
+	}
+	
+	/**
+	 * 
+	 */
+	private String getSelectedLocale()
+	{
+		int selectedIndex;
+		String localeId;
+		
+		selectedIndex = m_localesListbox.getSelectedIndex();
+		if ( selectedIndex == -1 )
+			selectedIndex = 0;
+		
+		localeId = m_localesListbox.getValue( selectedIndex );
+		
+		return localeId;
+	}
+	
+	/**
+	 * 
+	 */
+	private String getSelectedTimeZone()
+	{
+		int selectedIndex;
+		String timeZoneId;
+		
+		selectedIndex = m_timeZonesListbox.getSelectedIndex();
+		if ( selectedIndex == -1 )
+			selectedIndex = 0;
+		
+		timeZoneId = m_timeZonesListbox.getValue( selectedIndex );
+		
+		return timeZoneId;
+	}
+	
+	/**
 	 * Issue an rpc request to get a list of time zones from the server.
 	 */
 	private void getTimeZonesFromServer( final GwtLdapConfig ldapConfig )
@@ -615,6 +965,8 @@ public class EditLdapConfigDlg extends DlgBox
 		if ( ldapConfig == null )
 			return;
 		
+		addLdapServers( ldapConfig.getListOfLdapConnections() );
+		
 		m_syncUserProfilesCheckBox.setValue( ldapConfig.getSyncUserProfiles() );
 		m_registerUserProfilesAutomaticallyCheckBox.setValue( ldapConfig.getRegisterUserProfilesAutomatically() );
 		
@@ -654,6 +1006,8 @@ public class EditLdapConfigDlg extends DlgBox
 			defaultLocale = ldapConfig.getLocale();
 			GwtClientHelper.selectListboxItemByValue( m_localesListbox, defaultLocale );
 		}
+		
+		m_scheduleWidget.init( ldapConfig.getSchedule() );
 		
 		danceDlg();
 	}
@@ -721,6 +1075,22 @@ public class EditLdapConfigDlg extends DlgBox
 		// Get the default time zone
 		defaultTimeZone = ldapConfig.getTimeZone();
 		GwtClientHelper.selectListboxItemByValue( m_timeZonesListbox, defaultTimeZone );
+	}
+	
+	/**
+	 * 
+	 */
+	private void invokeAddLdapServerDlg()
+	{
+		Window.alert( "Not yet implemented" );
+	}
+	
+	/**
+	 * 
+	 */
+	private void invokeModifyLdapServerDlg( GwtLdapConnectionConfig ldapServer )
+	{
+		Window.alert( "Not yet implemented" );
 	}
 	
 	/**

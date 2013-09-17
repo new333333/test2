@@ -50,7 +50,7 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	private String m_serverUrl;
 	private String m_proxyDn;
 	private String m_proxyPwd;
-	private String m_ldapGuildAttribute;
+	private String m_ldapGuidAttribute;
 	private String m_userIdAttribute;
 	
 	// User attribute mappings
@@ -69,5 +69,155 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	 */
 	public GwtLdapConnectionConfig()
 	{
+	}
+	
+	/**
+	 * 
+	 */
+	public void addGroupSearchCriteria( GwtLdapSearchInfo searchCriteria )
+	{
+		if ( m_listOfGroupSearchCriteria == null )
+			m_listOfGroupSearchCriteria = new ArrayList<GwtLdapSearchInfo>();
+		
+		m_listOfGroupSearchCriteria.add( searchCriteria );
+	}
+	
+	/**
+	 * 
+	 */
+	public void addUserSearchCriteria( GwtLdapSearchInfo searchCriteria )
+	{
+		if ( m_listOfUserSearchCriteria == null )
+			m_listOfUserSearchCriteria = new ArrayList<GwtLdapSearchInfo>();
+		
+		m_listOfUserSearchCriteria.add( searchCriteria );
+	}
+	
+	/**
+	 * 
+	 */
+	public String getId()
+	{
+		return m_id;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getLdapGuidAttribute()
+	{
+		return m_ldapGuidAttribute;
+	}
+	
+	/**
+	 * 
+	 */
+	public ArrayList<GwtLdapSearchInfo> getListOfGroupSearchCriteria()
+	{
+		return m_listOfGroupSearchCriteria;
+	}
+	
+	/**
+	 * 
+	 */
+	public ArrayList<GwtLdapSearchInfo> getListOfUserSearchCriteria()
+	{
+		return m_listOfUserSearchCriteria;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getProxyDn()
+	{
+		return m_proxyDn;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getProxyPwd()
+	{
+		return m_proxyPwd;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getServerUrl()
+	{
+		return m_serverUrl;
+	}
+	
+	/**
+	 * 
+	 */
+	public Map<String,String> getUserAttributeMappings()
+	{
+		return m_userAttributeMappings;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getUserIdAttribute()
+	{
+		return m_userIdAttribute;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setId( String id )
+	{
+		m_id = id;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setLdapGuidAttribute( String attrib )
+	{
+		m_ldapGuidAttribute = attrib;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setProxyDn( String proxyDn )
+	{
+		m_proxyDn = proxyDn;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setProxyPwd( String proxyPwd )
+	{
+		m_proxyPwd = proxyPwd;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setServerUrl( String serverUrl )
+	{
+		m_serverUrl = serverUrl;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setUserAttributeMappings( Map<String,String> mappings )
+	{
+		m_userAttributeMappings = mappings;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setUserIdAttribute( String attrib )
+	{
+		m_userIdAttribute = attrib;
 	}
 }

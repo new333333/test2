@@ -40,8 +40,15 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.LdapConnectionConfig.SearchInfo;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
+import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
+import org.kablink.teaming.gwt.client.GwtLdapSearchInfo;
+import org.kablink.teaming.gwt.client.GwtSchedule;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveLdapConfigRpcResponseData;
+import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -126,7 +133,7 @@ public class GwtLdapHelper
 
 		ldapConfig = new GwtLdapConfig();
 		
-    	// Get the user attribute mappings
+    	// Get the default user attribute mappings
     	{
         	List defaultMappings;
         	int i;
@@ -159,6 +166,9 @@ public class GwtLdapHelper
     		
     		if ( ldapSchedule != null )
     		{
+    			ScheduleInfo scheduleInfo;
+    			GwtSchedule gwtSchedule;
+    			
 	    		// Get the user information
 	    		ldapConfig.setSyncUserProfiles( ldapSchedule.isUserSync() );
 	    		ldapConfig.setRegisterUserProfilesAutomatically( ldapSchedule.isUserRegister() );
@@ -170,10 +180,81 @@ public class GwtLdapHelper
 	    		ldapConfig.setRegisterGroupProfilesAutomatically( ldapSchedule.isGroupRegister() );
 	    		ldapConfig.setSyncGroupMembership( ldapSchedule.isMembershipSync() );
 	    		ldapConfig.setDeleteNonLdapGroups( ldapSchedule.isGroupDelete() );
+	    		
+	    		// Get the ldap sync schedule
+	    		scheduleInfo = ldapSchedule.getScheduleInfo();
+	    		gwtSchedule = GwtServerHelper.getGwtSyncSchedule( scheduleInfo );
+	    		ldapConfig.setSchedule( gwtSchedule );
     		}
     	}
     	
-//		model.put(WebKeys.LDAP_CONNECTION_CONFIGS, getAuthenticationModule().getLdapConnectionConfigs());
+    	// Add the ldap servers
+    	{
+    		List<LdapConnectionConfig> listOfLdapServers;
+    		
+    		listOfLdapServers = ami.getAuthenticationModule().getLdapConnectionConfigs();
+    		if ( listOfLdapServers != null )
+    		{
+    			for ( LdapConnectionConfig config : listOfLdapServers )
+    			{
+    				GwtLdapConnectionConfig gwtConfig;
+    				
+    				gwtConfig = new GwtLdapConnectionConfig();
+    				gwtConfig.setId( config.getId() );
+    				gwtConfig.setServerUrl( config.getUrl() );
+    				gwtConfig.setProxyDn( config.getPrincipal() );
+    				gwtConfig.setProxyPwd( config.getCredentials() );
+    				gwtConfig.setLdapGuidAttribute( config.getLdapGuidAttribute() );
+    				gwtConfig.setUserIdAttribute( config.getUserIdAttribute() );
+    				gwtConfig.setUserAttributeMappings( config.getMappings() );
+    				
+    				// Add the user search info
+    				{
+    					List<SearchInfo> listOfSearches;
+    					
+    					listOfSearches = config.getUserSearches();
+    					if ( listOfSearches != null )
+    					{
+    						for ( SearchInfo searchInfo : listOfSearches )
+    						{
+    							GwtLdapSearchInfo gwtSearchInfo;
+    							
+    							gwtSearchInfo = new GwtLdapSearchInfo();
+    							gwtSearchInfo.setBaseDn( searchInfo.getBaseDn() );
+    							gwtSearchInfo.setFilter( searchInfo.getFilter() );
+    							//!!!gwtSearchInfo.setHomeDirConfig( homeDirConfig );
+    							gwtSearchInfo.setSearchSubtree( searchInfo.isSearchSubtree() );
+    							
+    							gwtConfig.addUserSearchCriteria( gwtSearchInfo );
+    						}
+    					}
+    				}
+    				
+    				// Add the group search info
+    				{
+    					List<SearchInfo> listOfSearches;
+    					
+    					listOfSearches = config.getGroupSearches();
+    					if ( listOfSearches != null )
+    					{
+    						for ( SearchInfo searchInfo : listOfSearches )
+    						{
+    							GwtLdapSearchInfo gwtSearchInfo;
+    							
+    							gwtSearchInfo = new GwtLdapSearchInfo();
+    							gwtSearchInfo.setBaseDn( searchInfo.getBaseDn() );
+    							gwtSearchInfo.setFilter( searchInfo.getFilter() );
+    							gwtSearchInfo.setSearchSubtree( searchInfo.isSearchSubtree() );
+    							
+    							gwtConfig.addGroupSearchCriteria( gwtSearchInfo );
+    						}
+    					}
+    				}
+    				
+    				ldapConfig.addLdapConnectionConfig( gwtConfig );
+    			}
+    		}
+    	}
 
     	// Get the "allow local login" setting
     	{
@@ -196,5 +277,239 @@ public class GwtLdapHelper
 		ldapConfig.setLocale( defaultLocaleId );
 
 		return ldapConfig;
+	}
+
+	/**
+	 * Set the default locale setting.  This setting is used to set the locale  on a user when
+	 * the user is created from an ldap sync.
+	 */
+	private static void saveDefaultLocale(
+		AllModulesInjected ami,
+		String localeId )
+	{
+		Workspace	topWorkspace;
+		
+		if ( localeId == null || localeId.length() == 0 )
+			return;
+		
+		// Get the top workspace.  That is where global properties are stored.
+		topWorkspace = ami.getWorkspaceModule().getTopWorkspace();
+		
+		// Save the default locale id as a global property
+		topWorkspace.setProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_LOCALE, localeId );
+	}
+	
+
+	/**
+	 * Set the default time zone setting.  This setting is used to set the time zone on a user when
+	 * the user is created from an ldap sync.
+	 */
+	private static void saveDefaultTimeZone(
+		AllModulesInjected ami,
+		String timeZoneId )
+	{
+		Workspace	topWorkspace;
+		
+		if ( timeZoneId == null || timeZoneId.length() == 0 )
+			return;
+		
+		// Get the top workspace.  That is where global properties are stored.
+		topWorkspace = ami.getWorkspaceModule().getTopWorkspace();
+		
+		// Save the default time zone as a global property
+		topWorkspace.setProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_TIME_ZONE, timeZoneId );
+	}
+
+	/**
+	 * 
+	 */
+	public static SaveLdapConfigRpcResponseData saveLdapConfig(
+		AllModulesInjected ami,
+		GwtLdapConfig ldapConfig )
+	{
+		SaveLdapConfigRpcResponseData responseData;
+		LdapSchedule schedule;
+		
+		responseData = new SaveLdapConfigRpcResponseData();
+		
+		schedule = ami.getLdapModule().getLdapSchedule();
+		if ( schedule != null )
+		{
+			boolean syncAllUsersAndGroups;
+			String listOfLdapConfigsToSyncGuid;
+			
+			// Get the user configuration
+			{
+				schedule.setUserRegister( ldapConfig.getRegisterUserProfilesAutomatically() );
+				schedule.setUserSync( ldapConfig.getSyncUserProfiles() );
+				schedule.setUserDelete( ldapConfig.getDeleteLdapUsers() );
+				schedule.setUserWorkspaceDelete( ldapConfig.getDeleteUserWorkspace() );
+			}
+
+			// Get the group configuration
+			{
+				schedule.setGroupRegister( ldapConfig.getRegisterGroupProfilesAutomatically() );
+				schedule.setGroupSync( ldapConfig.getSyncGroupProfiles() );
+				schedule.setMembershipSync( ldapConfig.getSyncGroupMembership() );
+				schedule.setGroupDelete( ldapConfig.getDeleteNonLdapGroups() );
+			}
+			
+			// Get the sync schedule
+			{
+				ScheduleInfo scheduleInfo;
+				
+				scheduleInfo = GwtServerHelper.getScheduleInfoFromGwtSchedule( ldapConfig.getSchedule() );
+				schedule.getScheduleInfo().setSchedule( scheduleInfo.getSchedule() );
+				schedule.getScheduleInfo().setEnabled( scheduleInfo.isEnabled() );	
+			}
+			
+			// Get the local user account configuration
+			{
+				AuthenticationConfig authConfig;
+
+				authConfig = ami.getAuthenticationModule().getAuthenticationConfig();
+				authConfig.setAllowLocalLogin( ldapConfig.getAllowLocalLogin() );
+				ami.getAuthenticationModule().setAuthenticationConfig( authConfig );
+			}
+
+			// Save the ldap configuration.
+			ami.getLdapModule().setLdapSchedule( schedule );
+
+		/**
+			LinkedList<LdapConnectionConfig> configList = new LinkedList<LdapConnectionConfig>();
+			try {
+				Document doc = DocumentHelper.parseText(PortletRequestUtils.getStringParameter(request, "ldapConfigDoc", "<doc/>"));
+				for(Object o : doc.selectNodes("//ldapConfig")) {
+					Node cNode = (Node) o;
+					String ldapGuidAttribute = null;
+					
+					// Get the ldap attribute that uniquely identifies a user or group.
+					ldapGuidAttribute = cNode.selectSingleNode( "ldapGuidAttribute" ).getText();
+					
+					String principal = cNode.selectSingleNode("principal").getText();
+					String credentials = cNode.selectSingleNode("credentials").getText();
+					String url = cNode.selectSingleNode("url").getText();
+					// If the protocol is uppercase, users can't log in.  See bug 823936.
+					if ( url != null )
+						url = url.toLowerCase();
+					String userIdAttribute = cNode.selectSingleNode("userIdAttribute").getText();
+					String[] mappings = StringUtil.split(cNode.selectSingleNode("mappings").getText(), "\n");
+					LinkedList<LdapConnectionConfig.SearchInfo> userQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
+					List foo = cNode.selectNodes("userSearches/search");
+					for(Object o2 : foo) {
+						Node sNode = (Node) o2;
+						Node someNode;
+						String baseDn;
+						String filter;
+						String ss;
+
+						baseDn = "";
+						filter = "";
+						ss = "";
+
+						// Get the <baseDn> element.
+						someNode = sNode.selectSingleNode("baseDn");
+						if ( someNode != null )
+							baseDn = someNode.getText();
+						
+						// Get the <filter> element.
+						someNode = sNode.selectSingleNode("filter");
+						if ( someNode != null )
+							filter = someNode.getText();
+						
+						// Get the <searchSubtree> element.
+						someNode = sNode.selectSingleNode("searchSubtree");
+						if ( someNode != null )
+							ss = someNode.getText();
+
+						userQueries.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, ss.equals("true")));
+					}
+					LinkedList<LdapConnectionConfig.SearchInfo> groupQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
+					foo = cNode.selectNodes("groupSearches/search");
+					for(Object o2 : foo) {
+						Node sNode = (Node) o2;
+						Node someNode;
+						String baseDn;
+						String filter;
+						String ss;
+
+						baseDn = "";
+						filter = "";
+						ss = "";
+						
+						// Get the <baseDn> element.
+						someNode = sNode.selectSingleNode("baseDn");
+						if ( someNode != null )
+							baseDn = someNode.getText();
+						
+						// Get the <filter> element.
+						someNode = sNode.selectSingleNode("filter");
+						if ( someNode != null )
+							filter = someNode.getText();
+						
+						// Get the <searchSubtree> element.
+						someNode = sNode.selectSingleNode("searchSubtree");
+						if ( someNode != null )
+							ss = someNode.getText();
+
+						groupQueries.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, ss.equals("true")));
+					}
+					HashMap<String, String> maps = new HashMap<String, String>();
+					for (int i=0; i<mappings.length; ++i) {
+						String m = mappings[i];
+						if (Validator.isNull(m)) continue;
+						String[] vals = StringUtil.split(m, "=");
+						if (vals.length != 2) continue;
+						maps.put(vals[1].trim(), vals[0].trim());
+					}
+					LdapConnectionConfig c =
+						new LdapConnectionConfig(url, userIdAttribute, maps, userQueries, groupQueries, principal, credentials, ldapGuidAttribute );
+					Node idNode = cNode.selectSingleNode("id");
+					if(idNode != null) {
+						c.setId(idNode.getText());
+					}
+					configList.add(c);
+				}
+			} catch(DocumentException e) {
+				String	msg;
+				
+				// Hmm.  What to do here?
+				// This should never happen.  Tell the user there is something wrong with the ldap filter.
+				msg = e.getMessage();
+				response.setRenderParameter( WebKeys.EXCEPTION, msg );
+			}
+			getAuthenticationModule().setLdapConnectionConfigs(configList);
+		**/
+			
+			// Get the time zone
+			saveDefaultTimeZone( ami, ldapConfig.getTimeZone() );
+			
+			// Save the selected locale
+			saveDefaultLocale( ami, ldapConfig.getLocale() );
+			
+		//!!! Finish
+		/**
+			// Does the user want to sync all users and groups?
+			syncAllUsersAndGroups = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
+
+			// Get the list of ldap configs that we need to sync the guid
+			listOfLdapConfigsToSyncGuid = PortletRequestUtils.getStringParameter( request, "listOfLdapConfigsToSyncGuid", "" );
+			
+			// Do we need to start a sync?
+			if ( (listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length() > 0 ) ||
+				  syncAllUsersAndGroups == true )
+			{
+				// Yes
+				// Pass this fact back to the page.  When the page loads it will issue an ajax
+				// request to start the sync.
+				response.setRenderParameter( "startLdapSync", "true" );
+				response.setRenderParameter( "syncAllUsersAndGroups", Boolean.toString( syncAllUsersAndGroups ) );
+				if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length() > 0 )
+					response.setRenderParameter( "listOfLdapConfigsToSyncGuid", listOfLdapConfigsToSyncGuid );
+			}
+		**/
+		}
+		
+		return responseData;
 	}
 }

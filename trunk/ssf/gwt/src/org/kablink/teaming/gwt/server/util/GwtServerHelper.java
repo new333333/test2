@@ -58,6 +58,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TimeZone;
@@ -152,6 +153,7 @@ import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtRole;
+import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtTimeZones;
 import org.kablink.teaming.gwt.client.GwtUser.ExtUserProvState;
 import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
@@ -161,6 +163,8 @@ import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtSchedule.DayFrequency;
+import org.kablink.teaming.gwt.client.GwtSchedule.TimeFrequency;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
@@ -246,6 +250,8 @@ import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
+import org.kablink.teaming.jobs.Schedule;
+import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -7231,6 +7237,155 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * For the given ScheduleInfo object return a a GwtSchedule object that represents the data in
+	 * the ScheduleInfo object.
+	 */
+	public static GwtSchedule getGwtSyncSchedule( ScheduleInfo scheduleInfo )
+	{
+		GwtSchedule gwtSchedule;
+
+		if ( scheduleInfo == null )
+			return null;
+		
+		gwtSchedule = new GwtSchedule();
+
+		Schedule schedule;
+
+		gwtSchedule.setEnabled( scheduleInfo.isEnabled() );
+		
+		schedule = scheduleInfo.getSchedule();
+		if ( schedule != null )
+		{
+			if ( schedule.isDaily() )
+			{
+				gwtSchedule.setDayFrequency( DayFrequency.EVERY_DAY );
+			}
+			else
+			{
+				gwtSchedule.setDayFrequency( DayFrequency.ON_SELECTED_DAYS );
+				gwtSchedule.setOnMonday( schedule.isOnMonday() );
+				gwtSchedule.setOnTuesday( schedule.isOnTuesday() );
+				gwtSchedule.setOnWednesday( schedule.isOnWednesday() );
+				gwtSchedule.setOnThursday( schedule.isOnThursday() );
+				gwtSchedule.setOnFriday( schedule.isOnFriday() );
+				gwtSchedule.setOnSaturday( schedule.isOnSaturday() );
+				gwtSchedule.setOnSunday( schedule.isOnSunday() );
+			}
+			
+			if ( schedule.isRepeatMinutes() )
+			{
+				int minutes;
+				
+				gwtSchedule.setTimeFrequency( TimeFrequency.REPEAT_EVERY_MINUTE );
+				minutes = Integer.valueOf( schedule.getMinutesRepeat() );
+				gwtSchedule.setRepeatEveryValue( minutes );
+			}
+			else if ( schedule.isRepeatHours() )
+			{
+				int hours;
+				
+				gwtSchedule.setTimeFrequency( TimeFrequency.REPEAT_EVERY_HOUR );
+				hours = Integer.valueOf( schedule.getHoursRepeat() );
+				gwtSchedule.setRepeatEveryValue( hours );
+			}
+			else
+			{
+				int minutes;
+				int hours;
+				
+				gwtSchedule.setTimeFrequency( TimeFrequency.AT_SPECIFIC_TIME );
+				
+				minutes = Integer.valueOf( schedule.getMinutes() );
+				gwtSchedule.setAtMinutes( minutes );
+				
+				hours = Integer.valueOf( schedule.getHours() );
+				gwtSchedule.setAtHours( hours );
+			}
+		}
+
+		return gwtSchedule;
+	}
+
+	/**
+	 * For the given GwtSchedule, return a ScheduleInfo that represents the GwtSchedule.
+	 * This code is patterned after the code in ScheduleHelper.getSchedule()
+	 */
+	public static ScheduleInfo getScheduleInfoFromGwtSchedule( GwtSchedule gwtSchedule )
+	{
+		Long zoneId;
+		ScheduleInfo scheduleInfo;
+		
+		// Get the ScheduleInfo for this net folder.
+		zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		scheduleInfo = new ScheduleInfo( zoneId );
+		scheduleInfo.setSchedule( new Schedule( "" ) );
+		
+		// Do we have a GwtSchedule that we need to take data from and
+		// update the ScheduleInfo?
+		if ( gwtSchedule != null )
+		{
+			Schedule schedule;
+			DayFrequency dayFrequency;
+			TimeFrequency timeFrequency;
+			Random randomMinutes;
+			
+			// Yes
+			randomMinutes = new Random();
+			
+			scheduleInfo.setEnabled( gwtSchedule.getEnabled() );
+			
+			schedule = scheduleInfo.getSchedule();
+			
+			dayFrequency = gwtSchedule.getDayFrequency(); 
+			if (  dayFrequency == DayFrequency.EVERY_DAY )
+			{
+				schedule.setDaily( true );
+			}
+			else if ( dayFrequency == DayFrequency.ON_SELECTED_DAYS )
+			{
+				schedule.setDaily( false );
+				schedule.setOnMonday( gwtSchedule.getOnMonday() );
+				schedule.setOnTuesday( gwtSchedule.getOnTuesdy() );
+				schedule.setOnWednesday( gwtSchedule.getOnWednesday() );
+				schedule.setOnThursday( gwtSchedule.getOnThursday() );
+				schedule.setOnFriday( gwtSchedule.getOnFriday() );
+				schedule.setOnSaturday( gwtSchedule.getOnSaturday() );
+				schedule.setOnSunday( gwtSchedule.getOnSunday() );
+			}
+			
+			timeFrequency = gwtSchedule.getTimeFrequency(); 
+			if ( timeFrequency == TimeFrequency.AT_SPECIFIC_TIME )
+			{
+				schedule.setHours( gwtSchedule.getAtHoursAsString() );
+				schedule.setMinutes( gwtSchedule.getAtMinutesAsString() );
+			}
+			else if ( timeFrequency == TimeFrequency.REPEAT_EVERY_MINUTE )
+			{
+				int repeatValue;
+				
+				schedule.setHours( "*" );
+				
+				repeatValue = gwtSchedule.getRepeatEveryValue();
+				if ( repeatValue == 15 || repeatValue == 30 )
+				{
+					schedule.setMinutes( randomMinutes.nextInt( repeatValue ) + "/" + repeatValue );
+				}
+				else if ( repeatValue == 45 )
+				{
+					schedule.setMinutes( "0/45" );
+				}
+			}
+			else if ( timeFrequency == TimeFrequency.REPEAT_EVERY_HOUR )
+			{
+				schedule.setMinutes( Integer.toString( randomMinutes.nextInt( 60 ) ) );
+				schedule.setHours( "0/" + gwtSchedule.getRepeatEveryValue() );
+			}
+		}
+		
+		return scheduleInfo;
+	}
+	
+	/**
 	 * Return a GwtPersonalPreferences object that holds the personal
 	 * preferences for the logged in user.
 	 * 
@@ -9599,6 +9754,7 @@ public class GwtServerHelper {
 		case SAVE_FOLDER_PINNING_STATE:
 		case SAVE_FOLDER_SORT:
 		case SAVE_JITS_ZONE_CONFIG:
+		case SAVE_LDAP_CONFIG:
 		case SAVE_MANAGE_USERS_STATE:
 		case SAVE_MOBILE_APPS_CONFIGURATION:
 		case SAVE_MULTIPLE_ADHOC_FOLDER_SETTINGS:
