@@ -76,6 +76,8 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateShareListsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtPublicShareItem;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
@@ -2293,18 +2295,23 @@ public class GwtShareHelper
 	 * @param bs
 	 * @param request
 	 * @param gwtShareLists
+	 * @param deleteShareIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static BooleanRpcResponseData saveShareLists( AllModulesInjected bs, HttpServletRequest request, GwtShareLists gwtShareLists ) throws GwtTeamingException
+	public static BooleanRpcResponseData saveShareLists( AllModulesInjected bs, HttpServletRequest request, GwtShareLists gwtShareLists, List<Long> deleteShareIds ) throws GwtTeamingException
 	{
 		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.saveShareLists()" );
 		try
 		{
 			ShareLists shareLists = ((null == gwtShareLists) ? new ShareLists() : gwtShareListsToShareLists(gwtShareLists));
 			bs.getSharingModule().setShareLists(shareLists);
+			if ( MiscUtil.hasItems( deleteShareIds ) )
+			{
+//!				...this needs to be implemented...
+			}
 			return new BooleanRpcResponseData( true );
 		}
 		
@@ -2317,6 +2324,53 @@ public class GwtShareHelper
 					m_logger,
 					e,
 					"GwtShareHelper.saveShareLists( SOURCE EXCEPTION ):  " );
+		}
+		
+		finally
+		{
+			gsp.stop();
+		}
+	}
+	
+	/**
+	 * Saves the current state of the share whitelist/blacklist.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param gwtShareLists
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ValidateShareListsRpcResponseData validateShareLists( AllModulesInjected bs, HttpServletRequest request, GwtShareLists gwtShareLists ) throws GwtTeamingException
+	{
+		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.validateShareLists()" );
+		try
+		{
+			// Allocate an error list response we can return.
+			ValidateShareListsRpcResponseData reply = new ValidateShareListsRpcResponseData(new ArrayList<ErrorInfo>());
+			
+			@SuppressWarnings("unused")
+			ShareLists shareLists = ((null == gwtShareLists) ? new ShareLists() : gwtShareListsToShareLists(gwtShareLists));
+			
+//!			...this needs to be implemented...
+			
+			// If we get here, reply refers to an
+			// ValidateShareListsRpcResponseData containing the
+			// validation results.  Return it.
+			return reply;
+		}
+		
+		catch ( Exception e )
+		{
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtShareHelper.validateShareLists( SOURCE EXCEPTION ):  " );
 		}
 		
 		finally

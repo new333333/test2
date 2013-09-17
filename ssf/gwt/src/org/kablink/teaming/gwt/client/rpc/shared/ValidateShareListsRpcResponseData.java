@@ -32,70 +32,67 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.GwtShareLists;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'save share lists' command.
+ * This class holds the response data for RPC commands that return
+ * validation information for share lists.
  * 
  * @author drfoster@novell.com
  */
-public class SaveShareListsCmd extends VibeRpcCmd {
-	private GwtShareLists	m_shareLists;			//
-	private List<Long>		m_deleteShareIds;		//
+public class ValidateShareListsRpcResponseData extends ErrorListRpcResponseData implements IsSerializable {
+	private List<Long>	m_invalidShareIds;	//
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
 	 */
-	public SaveShareListsCmd() {
-		// Initialize the super class.
+	public ValidateShareListsRpcResponseData() {
+		// Initialize the super class...
 		super();
+		
+		// ...and initialize anything else that requires it.
+		m_invalidShareIds = new ArrayList<Long>();
 	}
-	
+
 	/**
 	 * Constructor method.
 	 * 
-	 * @param shareLists
-	 * @param deleteSharesIds
+	 * @param errorList
 	 */
-	public SaveShareListsCmd(GwtShareLists shareLists, List<Long> deleteShareIds) {
+	public ValidateShareListsRpcResponseData(List<ErrorInfo> errorList) {
 		// Initialize this object...
 		this();
-		
-		// ...and store the parameters.
-		setShareLists(    shareLists    );
-		setDeleteShareIds(deleteShareIds);
+
+		// ...and store the parameter.
+		setErrorList(errorList);
 	}
+
+	/**
+	 * Add'er methods.
+	 * 
+	 * @param
+	 */
+	public void addInvalidShareId(Long invalidShareId) {m_invalidShareIds.add(invalidShareId);}
 	
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public GwtShareLists getShareLists()     {return m_shareLists;    }
-	public List<Long>    getDeleteShareIds() {return m_deleteShareIds;}
+	public boolean    hasInvalidShares()     {return (0 < getInvalidShareCount());                                }
+	public int        getInvalidShareCount() {return ((null == m_invalidShareIds) ? 0 : m_invalidShareIds.size());}
+	public List<Long> getInvalidShareIds()   {return m_invalidShareIds;                                           }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setShareLists(    GwtShareLists shareLists)     {m_shareLists     = shareLists;    }
-	public void setDeleteShareIds(List<Long>    deleteShareIds) {m_deleteShareIds = deleteShareIds;}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.SAVE_SHARE_LISTS.ordinal();
-	}
+	public void setInvalidShareIds(List<Long> invalidShareIds) {m_invalidShareIds = invalidShareIds;}
 }
