@@ -41,7 +41,8 @@ import com.google.gwt.user.client.ui.Composite;
  * @author drfoster@novell.com
  */
 public abstract class EditZoneShareTabBase extends Composite {
-	public abstract void cancel(EditZoneShareTabCallback callback);
+	public abstract void cancel(  EditZoneShareTabCallback callback);
 	public abstract void init();
-	public abstract void save(  EditZoneShareTabCallback callback);
+	public abstract void save(    EditZoneShareTabCallback callback);
+	public abstract void validate(EditZoneShareTabCallback callback);
 }

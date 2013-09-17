@@ -81,7 +81,8 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 	/**
 	 * Constructor method. 
 	 */
-	public EditZoneShareRightsTab(EditZoneShareSettingsDlg shareDlg) {
+	public EditZoneShareRightsTab(EditZoneShareSettingsDlg shareDlg)
+	{
 		// Initialize the super class...
 		super();
 		
@@ -89,7 +90,7 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 		m_shareDlg = shareDlg;
 		
 		// ...and create the of the tab.
-		initWidget(createContent());
+		initWidget( createContent() );
 	}
 
 	/**
@@ -103,10 +104,10 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 		callback.success();
 	}
 
-	/**
+	/*
 	 * Create all the controls that make up the tab.
 	 */
-	public Panel createContent()
+	private Panel createContent()
 	{
 		FlowPanel mainPanel;
 		
@@ -434,5 +435,16 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 			// ...unregister them.  (Note that this will also empty the list.)
 			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
 		}
+	}
+	
+	/**
+	 * Called to validate the contents of the tab.
+	 * 
+	 * Implements the EditZoneShareTabBase.validate() method.
+	 */
+	@Override
+	public void validate(EditZoneShareTabCallback callback) {
+		// The rights tab is always considered valid.
+		callback.success();
 	}
 }

@@ -9808,6 +9808,7 @@ public class GwtServerHelper {
 		case UPLOAD_FILE_BLOB:
 		case VALIDATE_EMAIL_ADDRESS:
 		case VALIDATE_ENTRY_EVENTS:
+		case VALIDATE_SHARE_LISTS:
 		case VALIDATE_UPLOADS:
 			break;
 			

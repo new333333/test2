@@ -1160,6 +1160,7 @@ body, table td, select
 .margintop4      {margin-top:    1.5em;}
 .margintop5      {margin-top:    2em;}
 .margintop3px    {margin-top:    3px;}
+.margintop3pxb   {margin-top:    3px !important;}
 .marginTop5px	 {margin-top: 	 5px;}
 .marginTop10px	 {margin-top: 10px;}
 
@@ -5499,8 +5500,26 @@ td.datePickerMonth {
 .editZoneShareRightsDlg_Instructions 	{color: 353838; font-size: 14px; padding-bottom: 10px;}
 .editZoneShareRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}
 
-.editZoneShareRightsTab_Content              {}
+.editZoneShareRightsTab_Content              {padding: 5px;}
 .editZoneShareRightsTab_SelectPrincipalsHint {display: inline-block; color: #505354; font-size: 14px; margin-bottom: 15px;}
+
+.editZoneShareListsTab_CleanupPanel      {display: block; padding-top: 10px;}
+.editZoneShareListsTab_CleanupCB label   {font-size: 14px !important; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+.editZoneShareListsTab_Content           {padding: 5px; display: block;}
+.editZoneShareListsTab_DomainPanel       {display: block; padding-top: 10px;}
+.editZoneShareListsTab_EmailAddressPanel {display: block; padding-top: 10px;}
+.editZoneShareListsTab_Header            {font-size: 15px; color: #505354;}
+.editZoneShareListsTab_HeaderPanel       {display: block; width: 400px; white-space: normal;}
+.editZoneShareListsTab_List              {width: 250px;}
+.editZoneShareListsTab_ListButton        {min-width: 60px;}
+.editZoneShareListsTab_ListButtons       {margin-left: 5px;}
+.editZoneShareListsTab_ListHeader        {}
+.editZoneShareListsTab_ListPanel         {padding-top: 3px;}
+.editZoneShareListsTab_ModeHeader        {}
+.editZoneShareListsTab_ModePanel         {display: block; padding-top: 10px;}
+.editZoneShareListsTab_ModeRadio         {margin-left: 10px;}
+.editZoneShareListsTab_ModeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+.editZoneShareListsTab_SectionHeader     {font-size: 1.1em; font-weight: bold;}
 
 .zoneShareRightsSelectPrincipalsWidget_PrincipalsTablePanelHeight
 {

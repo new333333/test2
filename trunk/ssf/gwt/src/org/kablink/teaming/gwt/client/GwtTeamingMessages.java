@@ -586,6 +586,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UploadFileBlob();
 	String rpcFailure_SetUserSharingRightsInfo();
 	String rpcFailure_ValidateEmailAddress();
+	String rpcFailure_ValidateShareLists();
 	String rpcFailure_ValidateUploads();
 
 	// Strings used to describe various split point load failures.
@@ -2686,6 +2687,21 @@ public interface GwtTeamingMessages extends Messages
 	String editZoneShareRightsTab_SelectPrincipalsHint();
 	
 	// Strings used in the "Edit Zone Share Lists" tab.
+	String editZoneShareListsTab_Add();
+	String editZoneShareListsTab_Cleanup();
+	String editZoneShareListsTab_Confirm_DeleteShares();
+	String editZoneShareListsTab_Delete();
+	String editZoneShareListsTab_Domains();
+	String editZoneShareListsTab_Domains_AddPrompt();
+	String editZoneShareListsTab_EMAs();
+	String editZoneShareListsTab_EMA_AddPrompt();
+	String editZoneShareListsTab_Error_InvalidDomain();
+	String editZoneShareListsTab_Error_InvalidEMA();
+	String editZoneShareListsTab_Header();
+	String editZoneShareListsTab_Mode();
+	String editZoneShareListsTab_ModeBlacklist();
+	String editZoneShareListsTab_ModeDisabled();
+	String editZoneShareListsTab_ModeWhitelist();
 
 	// Strings used in the "Edit Zone Share Rights" dialog
 	String editUserZoneShareRightsDlg_Caption();

@@ -60,9 +60,10 @@ public class EditZoneShareSettingsDlg extends DlgBox
 	implements
 		EditSuccessfulHandler
 {
-	private EditZoneShareListsTab		m_listsTab;
-	private EditZoneShareRightsTab		m_rightsTab;
+	private EditZoneShareTabBase		m_listsTab;
+	private EditZoneShareTabBase		m_rightsTab;
 	private List<HandlerRegistration>	m_registeredEventHandlers;
+	private TabPanel					m_tabs;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -106,39 +107,28 @@ public class EditZoneShareSettingsDlg extends DlgBox
 	@Override
 	public Panel createContent( Object props )
 	{
-		TabPanel tabs = new TabPanel();
-		tabs.addStyleName( "vibe-tabPanel" );
+		m_tabs = new TabPanel();
+		m_tabs.addStyleName( "vibe-tabPanel" );
 		
 		m_rightsTab = new EditZoneShareRightsTab(this);
-		tabs.add( m_rightsTab, GwtTeaming.getMessages().editZoneShareSettingsDlg_Rights() );
+		m_tabs.add( m_rightsTab, GwtTeaming.getMessages().editZoneShareSettingsDlg_Rights() );
 		
 		m_listsTab = new EditZoneShareListsTab(this);
-		tabs.add( m_listsTab, GwtTeaming.getMessages().editZoneShareSettingsDlg_Lists() );
+		m_tabs.add( m_listsTab, GwtTeaming.getMessages().editZoneShareSettingsDlg_Lists() );
 		
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
-		mainPanel.add( tabs );
+		mainPanel.add( m_tabs );
 		
-		tabs.selectTab(0);
+		m_tabs.selectTab(0);
 		return mainPanel;
 	}
 
-	/**
-	 * This gets called when the user presses ok.  If we are editing an existing net folder
-	 * we will issue an rpc request to save the net folder and then throw a "net folder modified"
-	 * event.
-	 * If we are creating a new net folder we will issue an rpc request to create the new net folder
-	 * and then throw a "net folder created" event.
+	/*
+	 * Called to save the contents of the dialog.
 	 */
-	@Override
-	public boolean editSuccessful( Object obj )
+	private void doSave()
 	{
-		clearErrorPanel();
-		hideErrorPanel();
-
-		// Disable the Ok button.
-		setOkEnabled( false );
-
 		// Ask the tabs to save.  If they're successful, close the
 		// dialog.
 		m_rightsTab.save(
@@ -172,9 +162,71 @@ public class EditZoneShareSettingsDlg extends DlgBox
 					// user about the error.
 				}
 			} );
+	}
+	
+	/*
+	 * Called to validate and save the contents of the dialog.
+	 */
+	private void doValidateAndSave()
+	{
+		// Ask the tabs to validate their content.  If they're valid,
+		// ask them to save their contents.
+		m_rightsTab.validate(
+			new EditZoneShareTabCallback()
+			{
+				@Override
+				public void success()
+				{
+					m_listsTab.validate(
+						new EditZoneShareTabCallback()
+						{
+							@Override
+							public void success()
+							{
+								// The tabs contents are valid.  Ask
+								// them to save.
+								doSave();
+							}
+
+							@Override
+							public void failure()
+							{
+								// Nothing to do.  The lists tab will
+								// have told user about the error.
+							}
+						} );
+				}
+
+				@Override
+				public void failure()
+				{
+					// Nothing to do.  The rights tab will have told
+					// user about the error.
+				}
+			} );
+	}
+
+	/**
+	 * This gets called when the user presses ok.  If we are editing an existing net folder
+	 * we will issue an rpc request to save the net folder and then throw a "net folder modified"
+	 * event.
+	 * If we are creating a new net folder we will issue an rpc request to create the new net folder
+	 * and then throw a "net folder created" event.
+	 */
+	@Override
+	public boolean editSuccessful( Object obj )
+	{
+		clearErrorPanel();
+		hideErrorPanel();
+
+		// Disable the Ok button.
+		setOkEnabled( false );
+
+		// Validate and save the contents of the dialog.
+		doValidateAndSave();
 		
 		// Returning false will prevent the dialog from closing.  We will close the dialog
-		// after we successfully create/modify a net folder.
+		// after we successfully create/modify the share settings.
 		return false;
 	}
 	
@@ -224,6 +276,7 @@ public class EditZoneShareSettingsDlg extends DlgBox
 		hideStatusMsg();
 		setOkEnabled( true );
 
+		m_tabs.selectTab(0);
 		m_rightsTab.init();
 		m_listsTab.init();
 	}

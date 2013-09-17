@@ -2992,7 +2992,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_SHARE_LISTS:
 		{
 			SaveShareListsCmd sslCmd = ((SaveShareListsCmd) cmd);
-			BooleanRpcResponseData result = GwtShareHelper.saveShareLists( this, getRequest( ri ), sslCmd.getShareLists());
+			BooleanRpcResponseData result = GwtShareHelper.saveShareLists( this, getRequest( ri ), sslCmd.getShareLists(), sslCmd.getDeleteShareIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3525,6 +3525,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			List<EventValidation> results = validateEntryEvents( ri, eventValidations, entryId );
 			EventValidationListRpcResponseData responseData = new EventValidationListRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case VALIDATE_SHARE_LISTS:
+		{
+			ValidateShareListsCmd vslCmd = ((ValidateShareListsCmd) cmd);
+			ValidateShareListsRpcResponseData result = GwtShareHelper.validateShareLists( this, getRequest( ri ), vslCmd.getShareLists() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		

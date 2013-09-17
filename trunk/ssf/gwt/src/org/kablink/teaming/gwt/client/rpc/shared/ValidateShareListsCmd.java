@@ -32,26 +32,23 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.List;
-
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'save share lists' command.
+ * 'validate share lists' command.
  * 
  * @author drfoster@novell.com
  */
-public class SaveShareListsCmd extends VibeRpcCmd {
-	private GwtShareLists	m_shareLists;			//
-	private List<Long>		m_deleteShareIds;		//
+public class ValidateShareListsCmd extends VibeRpcCmd {
+	private GwtShareLists	m_shareLists;	//
 	
 	/**
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public SaveShareListsCmd() {
+	public ValidateShareListsCmd() {
 		// Initialize the super class.
 		super();
 	}
@@ -60,15 +57,13 @@ public class SaveShareListsCmd extends VibeRpcCmd {
 	 * Constructor method.
 	 * 
 	 * @param shareLists
-	 * @param deleteSharesIds
 	 */
-	public SaveShareListsCmd(GwtShareLists shareLists, List<Long> deleteShareIds) {
+	public ValidateShareListsCmd(GwtShareLists shareLists) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
-		setShareLists(    shareLists    );
-		setDeleteShareIds(deleteShareIds);
+		// ...and store the parameter.
+		setShareLists(shareLists);
 	}
 	
 	/**
@@ -76,16 +71,14 @@ public class SaveShareListsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public GwtShareLists getShareLists()     {return m_shareLists;    }
-	public List<Long>    getDeleteShareIds() {return m_deleteShareIds;}
+	public GwtShareLists getShareLists() {return m_shareLists;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setShareLists(    GwtShareLists shareLists)     {m_shareLists     = shareLists;    }
-	public void setDeleteShareIds(List<Long>    deleteShareIds) {m_deleteShareIds = deleteShareIds;}
+	public void setShareLists(GwtShareLists shareLists) {m_shareLists = shareLists;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -96,6 +89,6 @@ public class SaveShareListsCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.SAVE_SHARE_LISTS.ordinal();
+		return VibeRpcCmdType.VALIDATE_SHARE_LISTS.ordinal();
 	}
 }
