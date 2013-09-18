@@ -4922,7 +4922,7 @@ td.datePickerMonth {
  * Styles used in the "Modify Net Folder Root" dialog
  */
 
-.modifyNetFolderRootDlg_SelectPrivelegedUsersHint, .modifyNetFolderDlg_SelectPrincipalsHint
+.modifyNetFolderRootDlg_SelectPrivelegedUsersHint, .modifyNetFolderDlg_SelectPrincipalsHint, .editLdapServerConfigDlg_ServerUrlHint
 {
 	color: #4D6D8B;
 	font-size: 1em;
