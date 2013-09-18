@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -96,6 +97,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -2306,12 +2308,24 @@ public class GwtShareHelper
 		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.saveShareLists()" );
 		try
 		{
+			// Save the ShareLists.
 			ShareLists shareLists = ((null == gwtShareLists) ? new ShareLists() : gwtShareListsToShareLists(gwtShareLists));
-			bs.getSharingModule().setShareLists(shareLists);
+			SharingModule sm = bs.getSharingModule();
+			sm.setShareLists(shareLists);
+			
+			// Do we have any the IDs of any shares that have to be
+			// deleted?
 			if ( MiscUtil.hasItems( deleteShareIds ) )
 			{
-//!				...this needs to be implemented...
+				// Yes!  Scan them...
+				for ( Long deleteShareId:  deleteShareIds ) {
+					// ...and delete the corresponding share.
+					sm.deleteShareItem( deleteShareId );
+				}
 			}
+			
+			// Finally, return a BooleanRpcResponseData containing
+			// true.
 			return new BooleanRpcResponseData( true );
 		}
 		
@@ -2350,11 +2364,113 @@ public class GwtShareHelper
 		{
 			// Allocate an error list response we can return.
 			ValidateShareListsRpcResponseData reply = new ValidateShareListsRpcResponseData(new ArrayList<ErrorInfo>());
-			
-			@SuppressWarnings("unused")
-			ShareLists shareLists = ((null == gwtShareLists) ? new ShareLists() : gwtShareListsToShareLists(gwtShareLists));
-			
-//!			...this needs to be implemented...
+
+			// Convert the GwtShareLists to a ShareLists that can be
+			// used outside the GWT code.
+			ShareLists shareLists = (
+				( null == gwtShareLists) ?
+					new ShareLists()     :
+					gwtShareListsToShareLists( gwtShareLists ) );
+
+			// Can we get find any external users?
+			ProfileModule    pm             = bs.getProfileModule();
+			SharingModule    sm             = bs.getSharingModule();
+			List<Long>       invalidUserIds = new ArrayList<Long>();
+			Collection<User> extUsers       = pm.getAllExternalUsers();
+			if ( MiscUtil.hasItems( extUsers ) )
+			{
+				// Yes!  Scan them.
+				for ( User extUser:  extUsers )
+				{
+					// Is this external user's email address bogus,
+					// given the ShareLists?
+					String ema = extUser.getEmailAddress();
+					if ( MiscUtil.hasString( ema ) && ( ! ( sm.isExternalAddressValid( ema, shareLists ) ) ) )
+					{
+						// Yes!  Track their user ID.
+						invalidUserIds.add( extUser.getId() );
+					}
+				}
+			}
+
+			// Are we tracking the user IDs of external users that
+			// can't be shared with, given the ShareLists?
+			if ( ! ( invalidUserIds.isEmpty() ) )
+			{
+				// Yes!  Can we find any shares with those users?
+				ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+				spec.setRecipients( invalidUserIds, null, null );	// nulls -> No groups or teams.
+				List<ShareItem> shareItems = sm.getShareItems( spec );
+				if ( MiscUtil.hasItems( shareItems ) )
+				{
+					// Yes!  Scan the shares.
+					for ( ShareItem si:  shareItems )
+					{
+						// If this share has already been deleted...
+						if ( si.isDeleted() )
+						{
+							// ...skip it.
+							continue;
+						}
+						
+						// Add the share's ID to the reply's invalid
+						// share IDs list.
+						reply.addInvalidShareId( si.getId() );
+						
+						// We also need to add an indication of the
+						// invalid share to the reply's error list.
+						// This will be used to confirm with the user
+						// that this share will be deleted if the
+						// ShareList is saved.
+						
+						// Get the title for the share...
+						String shareTitle = null;
+						try
+						{
+							DefinableEntity	siEntity = sm.getSharedEntity( si );
+							if ( null != siEntity )
+							{
+								shareTitle = siEntity.getTitle();
+							}
+						}
+						catch (Exception e) {}
+						if ( ! ( MiscUtil.hasString( shareTitle ) ) )
+						{
+							shareTitle = ( "ID:  " + si.getSharedEntityIdentifier().getEntityId() );
+						}
+						
+						// ...get the sharer's title...
+						User sharer = GwtServerHelper.getResolvedUser( si.getSharerId() );
+						String sharerTitle = ( ( null == sharer ) ? "" : Utils.getUserTitle( sharer ) );
+						
+						// ...and generate the error message.
+						String   key;
+						String   keyTail;
+						String[] patches;
+						if ( si.getSharedEntityIdentifier().getEntityType().equals( EntityType.folder ) )
+						{
+							keyTail = "folder";
+						}
+						else
+						{
+							if ( Utils.checkIfFilr() )
+							     keyTail = "entry.filr";
+							else keyTail = "entry.vibe";
+						}
+						if ( MiscUtil.hasString( sharerTitle ) )
+						{
+							patches = new String[]{ shareTitle, sharerTitle };
+							key     = "shareWillBeDeleted.hasUser";
+						}
+						else
+						{
+							patches = new String[]{ shareTitle };
+							key     = "shareWillBeDeleted.noUser";
+						}
+						reply.addError( NLT.get( ( key + "." + keyTail ), patches ) );
+					}
+				}
+			}
 			
 			// If we get here, reply refers to an
 			// ValidateShareListsRpcResponseData containing the

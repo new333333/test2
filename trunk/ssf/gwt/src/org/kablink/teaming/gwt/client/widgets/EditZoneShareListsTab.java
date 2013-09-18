@@ -77,8 +77,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class EditZoneShareListsTab extends EditZoneShareTabBase {
-	private final static boolean	ALLOW_CLEANUP	= false;	//! DRF (20130917):  Set false on checkin until it all works.
-	
 	private CheckBox					m_cleanupCB;				//
 	private List<HandlerRegistration>	m_registeredEventHandlers;	//
 	private GwtShareLists				m_shareLists;				//
@@ -263,10 +261,6 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 		m_cleanupCB.setValue(false);
 		fp.add(m_cleanupCB);
 		
-		if (!ALLOW_CLEANUP) {
-			fp.setVisible(false);
-		}
-
 		// ...and return the panel. 
 		return fp;
 	}

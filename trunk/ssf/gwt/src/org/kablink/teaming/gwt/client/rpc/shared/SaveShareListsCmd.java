@@ -43,8 +43,8 @@ import org.kablink.teaming.gwt.client.util.GwtShareLists;
  * @author drfoster@novell.com
  */
 public class SaveShareListsCmd extends VibeRpcCmd {
-	private GwtShareLists	m_shareLists;			//
-	private List<Long>		m_deleteShareIds;		//
+	private GwtShareLists	m_shareLists;		//
+	private List<Long>		m_deleteShareIds;	//
 	
 	/**
 	 * Constructor method.
