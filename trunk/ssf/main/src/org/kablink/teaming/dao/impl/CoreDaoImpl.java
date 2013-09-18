@@ -63,6 +63,7 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.exception.ConstraintViolationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -563,10 +564,29 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		   				.setLong("binder", binder.getId())
 		   				.executeUpdate();
 	    	   			
-			   			//do ourselves or hibernate will flsuh
-			   			session.createQuery("Delete  org.kablink.teaming.domain.Binder where id=:id")
+	    	   			try {
+				   			//do ourselves or hibernate will flsuh
+				   			session.createQuery("Delete org.kablink.teaming.domain.Binder where id=:id")
+				   		    	.setLong("id", binder.getId().longValue())
+				   		    	.executeUpdate();
+	    	   			}
+	    	   			catch(ConstraintViolationException e) {
+	    	   				// This almost surely means that the table still contains one or more child rows that still point to the binder as parent.
+	    	   				// We need to clear the association in order to be able to delete the binder. Also, it doesn't make any sense to
+	    	   				// delete the parent alone while leaving the child as orphan in a tree hierarchy. So we mark the child appropriately
+	    	   				// so that they can also be garbage collected by the system in subsequent cycles.
+	    	   				if(logger.isDebugEnabled())
+	    	   					logger.debug("Error deleting binder " + binder.getId(), e);
+	    	   				logger.info("Encountered constraint violation while deleting binder " + binder.getId() + ": Will clear references from children and give it another try");
+	    	   				session.createQuery("update org.kablink.teaming.domain.Binder set parentBinder=null, topFolder=null, deleted=:delete where parentBinder=:binder")
+	    	   			    .setBoolean("delete", Boolean.TRUE)
+			   				.setLong("binder", binder.getId())	   				
+	    	   				.executeUpdate();
+	    	   				// Now that we cleared the association, let's try it again.
+				   			session.createQuery("Delete org.kablink.teaming.domain.Binder where id=:id")
 			   		    	.setLong("id", binder.getId().longValue())
 			   		    	.executeUpdate();
+	    	   			}
 			   			
 			   			if (!binder.isRoot()) {
 			   				session.getSessionFactory().evictCollection("org.kablink.teaming.domain.Binder.binders", binder.getParentBinder().getId());
