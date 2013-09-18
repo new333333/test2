@@ -632,6 +632,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DownloadPanel();
 	String codeSplitFailure_EditBrandingDlg();
 	String codeSplitFailure_EditLdapConfigDlg();
+	String codeSplitFailure_EditLdapServerConfigDlg();
 	String codeSplitFailure_EditNetFolderRightsDlg();
 	String codeSplitFailure_EditShareDlg();
 	String codeSplitFailure_EditShareNoteDlg();
@@ -2857,6 +2858,18 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapConfigDlg_SyncGroupMembership();
 	String editLdapConfigDlg_SyncGroupProfiles();
 	String editLdapConfigDlg_SyncUserProfiles();
+	String editLdapConfigDlg_UserDNCol();
 	String editLdapConfigDlg_UsersTab();
+
+	// Strings used in the Edit ldap server configuration dialog
+	String editLdapServerConfigDlg_GroupsTab();
+	String editLdapServerConfigDlg_Header();
+	String editLdapServerConfigDlg_NameAttributeLabel();
+	String editLdapServerConfigDlg_ProxyDNLabel();
+	String editLdapServerConfigDlg_ProxyPasswordLabel();
+	String editLdapServerConfigDlg_ServerTab();
+	String editLdapServerConfigDlg_ServerUrlHint();
+	String editLdapServerConfigDlg_ServerUrlLabel();
+	String editLdapServerConfigDlg_UsersTab();
 	
 }// end GwtTeamingMessages

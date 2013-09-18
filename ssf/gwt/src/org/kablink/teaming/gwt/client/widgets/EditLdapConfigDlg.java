@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.EditLdapServerConfigDlg.EditLdapServerConfigDlgClient;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -70,6 +71,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -118,6 +120,9 @@ public class EditLdapConfigDlg extends DlgBox
 	private ScheduleWidget m_scheduleWidget;
 	
 	private CheckBox m_allowLocalLoginCheckBox;
+
+	private EditLdapServerConfigDlg m_editLdapServerDlg = null;
+	
 	
 	/**
 	 * Callback interface to interact with the "edit ldap config" dialog
@@ -171,7 +176,7 @@ public class EditLdapConfigDlg extends DlgBox
 		// Go to the first page
 		m_pager.firstPage();
 		
-		// Tell the table how many net folder roots we have.
+		// Tell the table how many ldap servers we have.
 		m_ldapServersTable.setRowCount( m_listOfLdapServers.size(), true );
 	}
 
@@ -339,7 +344,7 @@ public class EditLdapConfigDlg extends DlgBox
 			menuPanel.add( label );
 		}
 		
-		// Create the CellTable that will display the list of Net Folder Roots.
+		// Create the CellTable that will display the list of ldap servers.
 		cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
 		m_ldapServersTable = new CellTable<GwtLdapConnectionConfig>( 20, cellTableResources );
 		
@@ -400,12 +405,43 @@ public class EditLdapConfigDlg extends DlgBox
 			serverUrlCol.setFieldUpdater( new FieldUpdater<GwtLdapConnectionConfig, GwtLdapConnectionConfig>()
 			{
 				@Override
-				public void update( int index, GwtLdapConnectionConfig ldapServer, GwtLdapConnectionConfig value )
+				public void update( int index, final GwtLdapConnectionConfig ldapServer, GwtLdapConnectionConfig value )
 				{
-					invokeModifyLdapServerDlg( ldapServer );
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							invokeModifyLdapServerDlg( ldapServer );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			} );
 			m_ldapServersTable.addColumn( serverUrlCol, messages.editLdapConfigDlg_ServerUrlCol() );
+		}
+
+		// Add the "User DN" column
+		{
+			TextColumn<GwtLdapConnectionConfig> userDNCol;
+
+			userDNCol = new TextColumn<GwtLdapConnectionConfig>()
+			{
+				@Override
+				public String getValue( GwtLdapConnectionConfig ldapServer )
+				{
+					String userDN;
+					
+					userDN = ldapServer.getProxyDn();
+					if ( userDN == null )
+						userDN = "";
+					
+					return userDN;
+				}
+			};
+			m_ldapServersTable.addColumn( userDNCol, messages.editLdapConfigDlg_UserDNCol() );
 		}
 
 		// Create a pager
@@ -619,7 +655,7 @@ public class EditLdapConfigDlg extends DlgBox
 				// Unselect the selected ldap servers.
 				m_selectionModel.clear();
 				
-				// Update the table to reflect the fact that we deleted a net folder root.
+				// Update the table to reflect the fact that we deleted an ldap server.
 				m_dataProvider.refresh();
 
 				// Tell the table how many ldap servers we have left.
@@ -1088,9 +1124,75 @@ public class EditLdapConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void invokeModifyLdapServerDlg( GwtLdapConnectionConfig ldapServer )
+	private void invokeModifyLdapServerDlg( final GwtLdapConnectionConfig ldapServer )
 	{
-		Window.alert( "Not yet implemented" );
+		if ( m_editLdapServerDlg == null )
+		{
+			int x;
+			int y;
+			EditSuccessfulHandler editSuccessfulHandler;
+			
+			x = m_ldapServersTable.getAbsoluteLeft();
+			y = m_ldapServersTable.getAbsoluteTop();
+			
+			editSuccessfulHandler = new EditSuccessfulHandler()
+			{
+				@Override
+				public boolean editSuccessful( Object obj )
+				{
+					if ( obj instanceof GwtLdapConnectionConfig )
+					{
+						int index;
+						
+						index = m_listOfLdapServers.indexOf( obj );
+						if ( index != -1 )
+						{
+							m_dataProvider.getList().set( index, (GwtLdapConnectionConfig) obj );
+						}
+					}
+					
+					return true;
+				}
+			};
+			
+			EditLdapServerConfigDlg.createAsync(
+											true, 
+											false,
+											x, 
+											y,
+											editSuccessfulHandler,
+											new EditLdapServerConfigDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final EditLdapServerConfigDlg elscDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_editLdapServerDlg = elscDlg;
+							
+							invokeModifyLdapServerDlg( ldapServer );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_editLdapServerDlg.init( ldapServer );
+			m_editLdapServerDlg.show();
+		}
 	}
 	
 	/**
