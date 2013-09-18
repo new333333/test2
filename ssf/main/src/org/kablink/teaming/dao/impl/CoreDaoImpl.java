@@ -577,7 +577,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	    	   				// so that they can also be garbage collected by the system in subsequent cycles.
 	    	   				if(logger.isDebugEnabled())
 	    	   					logger.debug("Error deleting binder " + binder.getId(), e);
-	    	   				logger.info("Encountered constraint violation while deleting binder " + binder.getId() + ": Will clear references from children and give it another try");
+	    	   				logger.warn("Encountered constraint violation while deleting binder " + binder.getId() + ": Will clear references from children and give it another try");
 	    	   				session.createQuery("update org.kablink.teaming.domain.Binder set parentBinder=null, topFolder=null, deleted=:delete where parentBinder=:binder")
 	    	   			    .setBoolean("delete", Boolean.TRUE)
 			   				.setLong("binder", binder.getId())	   				
