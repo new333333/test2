@@ -160,6 +160,28 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	/**
 	 * 
 	 */
+	public String getUserAttributeMappingsAsString()
+	{
+		StringBuffer strBuff;
+		
+		strBuff = new StringBuffer();
+		if ( m_userAttributeMappings != null )
+		{
+			for ( Map.Entry<String, String> nextMapping : m_userAttributeMappings.entrySet() )
+			{
+				strBuff.append( nextMapping.getValue() );
+				strBuff.append( "=" );
+				strBuff.append( nextMapping.getKey() );
+				strBuff.append( "\n" );
+			}
+		}
+		
+		return strBuff.toString();
+	}
+	
+	/**
+	 * 
+	 */
 	public String getUserIdAttribute()
 	{
 		return m_userIdAttribute;

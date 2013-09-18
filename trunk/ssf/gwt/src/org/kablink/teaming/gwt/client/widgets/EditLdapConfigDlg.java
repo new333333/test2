@@ -98,6 +98,8 @@ import com.google.gwt.view.client.MultiSelectionModel;
 public class EditLdapConfigDlg extends DlgBox
 	implements EditSuccessfulHandler
 {
+	private GwtLdapConfig m_ldapConfig;
+	
 	private CellTable<GwtLdapConnectionConfig> m_ldapServersTable;
     private MultiSelectionModel<GwtLdapConnectionConfig> m_selectionModel;
 	private ListDataProvider<GwtLdapConnectionConfig> m_dataProvider;
@@ -414,7 +416,7 @@ public class EditLdapConfigDlg extends DlgBox
 						@Override
 						public void execute()
 						{
-							invokeModifyLdapServerDlg( ldapServer );
+							invokeModifyExistingLdapServerDlg( ldapServer );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1001,6 +1003,8 @@ public class EditLdapConfigDlg extends DlgBox
 		if ( ldapConfig == null )
 			return;
 		
+		m_ldapConfig = ldapConfig;
+		
 		addLdapServers( ldapConfig.getListOfLdapConnections() );
 		
 		m_syncUserProfilesCheckBox.setValue( ldapConfig.getSyncUserProfiles() );
@@ -1118,49 +1122,86 @@ public class EditLdapConfigDlg extends DlgBox
 	 */
 	private void invokeAddLdapServerDlg()
 	{
-		Window.alert( "Not yet implemented" );
+		GwtLdapConnectionConfig ldapServer;
+		EditSuccessfulHandler editSuccessfulHandler;
+		
+		ldapServer = new GwtLdapConnectionConfig();
+		ldapServer.setUserAttributeMappings( m_ldapConfig.getDefaultUserAttributeMappings() );
+		
+		editSuccessfulHandler = new EditSuccessfulHandler()
+		{
+			@Override
+			public boolean editSuccessful( Object obj )
+			{
+				if ( obj instanceof GwtLdapConnectionConfig )
+				{
+					// Add the new ldap server to our list
+					m_listOfLdapServers.add( (GwtLdapConnectionConfig) obj );
+					
+					// Tell the table how many ldap servers we have.
+					m_ldapServersTable.setRowCount( m_listOfLdapServers.size(), true );
+					
+					m_dataProvider.refresh();
+				}
+				
+				return true;
+			}
+		};
+		
+		invokeModifyLdapServerDlg( ldapServer, editSuccessfulHandler );
 	}
 	
 	/**
 	 * 
 	 */
-	private void invokeModifyLdapServerDlg( final GwtLdapConnectionConfig ldapServer )
+	private void invokeModifyExistingLdapServerDlg( GwtLdapConnectionConfig ldapServer )
+	{
+		EditSuccessfulHandler editSuccessfulHandler;
+		
+		editSuccessfulHandler = new EditSuccessfulHandler()
+		{
+			@Override
+			public boolean editSuccessful( Object obj )
+			{
+				if ( obj instanceof GwtLdapConnectionConfig )
+				{
+					int index;
+					
+					index = m_listOfLdapServers.indexOf( obj );
+					if ( index != -1 )
+					{
+						m_dataProvider.getList().set( index, (GwtLdapConnectionConfig) obj );
+					}
+				}
+				
+				return true;
+			}
+		};
+		
+		invokeModifyLdapServerDlg( ldapServer, editSuccessfulHandler );
+	}
+	
+	/**
+	 * 
+	 */
+	private void invokeModifyLdapServerDlg(
+		final GwtLdapConnectionConfig ldapServer,
+		final EditSuccessfulHandler editSuccessfulHandler )
 	{
 		if ( m_editLdapServerDlg == null )
 		{
 			int x;
 			int y;
-			EditSuccessfulHandler editSuccessfulHandler;
 			
 			x = m_ldapServersTable.getAbsoluteLeft();
 			y = m_ldapServersTable.getAbsoluteTop();
-			
-			editSuccessfulHandler = new EditSuccessfulHandler()
-			{
-				@Override
-				public boolean editSuccessful( Object obj )
-				{
-					if ( obj instanceof GwtLdapConnectionConfig )
-					{
-						int index;
-						
-						index = m_listOfLdapServers.indexOf( obj );
-						if ( index != -1 )
-						{
-							m_dataProvider.getList().set( index, (GwtLdapConnectionConfig) obj );
-						}
-					}
-					
-					return true;
-				}
-			};
 			
 			EditLdapServerConfigDlg.createAsync(
 											true, 
 											false,
 											x, 
 											y,
-											editSuccessfulHandler,
+											null,
 											new EditLdapServerConfigDlgClient()
 			{			
 				@Override
@@ -1181,7 +1222,7 @@ public class EditLdapConfigDlg extends DlgBox
 						{
 							m_editLdapServerDlg = elscDlg;
 							
-							invokeModifyLdapServerDlg( ldapServer );
+							invokeModifyLdapServerDlg( ldapServer, editSuccessfulHandler );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1191,6 +1232,7 @@ public class EditLdapConfigDlg extends DlgBox
 		else
 		{
 			m_editLdapServerDlg.init( ldapServer );
+			m_editLdapServerDlg.initHandlers( editSuccessfulHandler, null );
 			m_editLdapServerDlg.show();
 		}
 	}

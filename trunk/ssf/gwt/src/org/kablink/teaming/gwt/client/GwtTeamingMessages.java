@@ -2863,13 +2863,18 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Edit ldap server configuration dialog
 	String editLdapServerConfigDlg_GroupsTab();
+	String editLdapServerConfigDlg_GuidAttributeHint1();
+	String editLdapServerConfigDlg_GuidAttributeHint2();
+	String editLdapServerConfigDlg_GuidAttributeLabel();
 	String editLdapServerConfigDlg_Header();
-	String editLdapServerConfigDlg_NameAttributeLabel();
+	String editLdapServerConfigDlg_NameAttributeHint( String productName );
+	String editLdapServerConfigDlg_NameAttributeLabel( String productName );
 	String editLdapServerConfigDlg_ProxyDNLabel();
 	String editLdapServerConfigDlg_ProxyPasswordLabel();
 	String editLdapServerConfigDlg_ServerTab();
 	String editLdapServerConfigDlg_ServerUrlHint();
 	String editLdapServerConfigDlg_ServerUrlLabel();
+	String editLdapServerConfigDlg_UserAttributeMappingHint();
 	String editLdapServerConfigDlg_UsersTab();
 	
 }// end GwtTeamingMessages
