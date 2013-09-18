@@ -33,17 +33,21 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
 import org.kablink.teaming.gwt.client.GwtLdapSearchInfo;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -73,6 +77,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private PasswordTextBox m_proxyPwdTextBox;
 	private TextBox m_guidAttribTextBox;
 	private TextBox m_nameAttribTextBox;
+	private TextArea m_userAttribMappingsTextArea;
 
 	private TextArea m_userFilterTextArea;
 	private CellTable<GwtLdapSearchInfo> m_userSearchesTable;
@@ -210,6 +215,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 	{
 		FlowPanel serverPanel;
 		FlexTable table;
+		FlexTable.FlexCellFormatter cellFormatter; 
 		Label label;
 		FlowPanel tmpPanel;
 		int row = 0;
@@ -217,19 +223,24 @@ public class EditLdapServerConfigDlg extends DlgBox
 		serverPanel = new FlowPanel();
 		
 		table = new FlexTable();
+		cellFormatter = table.getFlexCellFormatter();
+		table.setCellSpacing( 4 );
 		
 		// Add the server url controls
 		{
 			// Add a hint for the server url
 			tmpPanel = new FlowPanel();
 			label = new Label( messages.editLdapServerConfigDlg_ServerUrlHint() );
-			label.addStyleName( "editLdapServerConfigDlg_ServerUrlHint" );
+			label.addStyleName( "editLdapServerConfigDlg_Hint" );
 			tmpPanel.add( label );
-			table.setHTML( row, 1, tmpPanel.getElement().getInnerHTML() );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+			cellFormatter.setColSpan( row, 0, 2 );
 			++row;
 			
+			tmpPanel = new FlowPanel();
 			label = new Label( messages.editLdapServerConfigDlg_ServerUrlLabel() );
-			table.setHTML( row, 0, label.getElement().getInnerHTML()  );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
 		
 			m_serverUrlTextBox = new TextBox();
 			m_serverUrlTextBox.setVisibleLength( 40 );
@@ -239,8 +250,10 @@ public class EditLdapServerConfigDlg extends DlgBox
 		
 		// Add the proxy dn controls
 		{
+			tmpPanel = new FlowPanel();
 			label = new Label( messages.editLdapServerConfigDlg_ProxyDNLabel() );
-			table.setHTML( row, 0, label.getElement().getInnerHTML()  );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
 			
 			m_proxyDnTextBox = new TextBox();
 			m_proxyDnTextBox.setVisibleLength( 40 );
@@ -250,8 +263,10 @@ public class EditLdapServerConfigDlg extends DlgBox
 		
 		// Add the proxy password controls
 		{
+			tmpPanel = new FlowPanel();
 			label = new Label( messages.editLdapServerConfigDlg_ProxyPasswordLabel() );
-			table.setHTML( row, 0, label.getElement().getInnerHTML()  );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
 			
 			m_proxyPwdTextBox = new PasswordTextBox();
 			m_proxyPwdTextBox.setVisibleLength( 20 );
@@ -259,19 +274,98 @@ public class EditLdapServerConfigDlg extends DlgBox
 			++row;
 		}
 		
+		// Add a little space
+		{
+			tmpPanel = new FlowPanel();
+			tmpPanel.getElement().getStyle().setMarginTop( 5, Unit.PX );
+			table.setWidget( row, 0, tmpPanel );
+			++row;
+		}
+		
 		// Add the ldap guid attribute controls
 		{
+			// Add a hint for the guid attribute
+			tmpPanel = new FlowPanel();
+			label = new Label( messages.editLdapServerConfigDlg_GuidAttributeHint1() );
+			label.addStyleName( "editLdapServerConfigDlg_Hint" );
+			tmpPanel.add( label );
+			label = new Label( messages.editLdapServerConfigDlg_GuidAttributeHint2() );
+			label.addStyleName( "editLdapServerConfigDlg_Hint" );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+			cellFormatter.setColSpan( row, 0, 2 );
+			++row;
 			
+			tmpPanel = new FlowPanel();
+			label = new Label( messages.editLdapServerConfigDlg_GuidAttributeLabel() );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
+			
+			m_guidAttribTextBox = new TextBox();
+			m_guidAttribTextBox.setVisibleLength( 20 );
+			table.setWidget( row, 1, m_guidAttribTextBox );
+			++row;
+		}
+		
+		// Add a little space
+		{
+			tmpPanel = new FlowPanel();
+			tmpPanel.getElement().getStyle().setMarginTop( 5, Unit.PX );
+			table.setWidget( row, 0, tmpPanel );
+			++row;
 		}
 		
 		// Add the name attribute controls
 		{
-			label = new Label( messages.editLdapServerConfigDlg_NameAttributeLabel() );
-			table.setHTML( row, 0, label.getElement().getInnerHTML()  );
+			String productName;
+			
+			productName = GwtClientHelper.getRequestInfo().getProductName();
+			
+			// Add a hint for the name attribute
+			tmpPanel = new FlowPanel();
+			label = new Label( messages.editLdapServerConfigDlg_NameAttributeHint( productName ) );
+			label.addStyleName( "editLdapServerConfigDlg_Hint" );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+			cellFormatter.setColSpan( row, 0, 2 );
+			++row;
+			
+			tmpPanel = new FlowPanel();
+			label = new Label( messages.editLdapServerConfigDlg_NameAttributeLabel( productName ) );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
 			
 			m_nameAttribTextBox = new TextBox();
 			m_nameAttribTextBox.setVisibleLength( 20 );
 			table.setWidget( row, 1, m_nameAttribTextBox );
+			++row;
+		}
+		
+		// Add a little space
+		{
+			tmpPanel = new FlowPanel();
+			tmpPanel.getElement().getStyle().setMarginTop( 5, Unit.PX );
+			table.setWidget( row, 0, tmpPanel );
+			++row;
+		}
+		
+		// Add the user attribute mappings controls
+		{
+			// Add a hint.
+			tmpPanel = new FlowPanel();
+			label = new Label( messages.editLdapServerConfigDlg_UserAttributeMappingHint() );
+			label.getElement().getStyle().setWidth( 600, Unit.PX );
+			label.addStyleName( "editLdapServerConfigDlg_Hint" );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+			cellFormatter.setColSpan( row, 0, 2 );
+			++row;
+			
+			m_userAttribMappingsTextArea = new TextArea();
+			m_userAttribMappingsTextArea.setVisibleLines( 8 );
+			m_userAttribMappingsTextArea.setWidth( "350px" );
+			table.setWidget( row, 0, m_userAttribMappingsTextArea );
+			cellFormatter.setColSpan( row, 0, 2 );
 			++row;
 		}
 		
@@ -304,7 +398,46 @@ public class EditLdapServerConfigDlg extends DlgBox
 			m_serverConfig.setServerUrl( m_serverUrlTextBox.getValue() );
 			m_serverConfig.setProxyDn( m_proxyDnTextBox.getValue() );
 			m_serverConfig.setProxyPwd( m_proxyPwdTextBox.getValue() );
+			m_serverConfig.setLdapGuidAttribute( m_guidAttribTextBox.getValue() );
 			m_serverConfig.setUserIdAttribute( m_nameAttribTextBox.getValue() );
+			
+			// Get the user attribute mappings
+			{
+				String text;
+				Map<String,String> mappings;
+				
+				mappings = new HashMap<String,String>();
+				
+				text = m_userAttribMappingsTextArea.getValue();
+				if ( text != null && text.length() > 0 )
+				{
+					String[] lines;
+					
+					// Get each line of the mappsings.
+					lines = GwtClientHelper.split( text, "\n" );
+					
+					if ( lines != null && lines.length > 0 )
+					{
+						for ( int i=0; i < lines.length; ++i )
+						{
+							String line;
+
+							line = lines[i];
+							Window.alert( "line: " + line );
+							if ( line != null && line.length() > 0 )
+							{
+								String[] values;
+
+								values = GwtClientHelper.split( line, "=" );
+								if ( values.length == 2 && values[0] != null && values[1] != null )
+									mappings.put( values[1].trim(), values[0].trim() );
+							}
+						}
+					}
+				}
+				
+				m_serverConfig.setUserAttributeMappings( mappings );
+			}
 		}
 		
 		return m_serverConfig;
@@ -330,7 +463,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 		m_serverUrlTextBox.setValue( "" );
 		m_proxyDnTextBox.setValue( "" );
 		m_proxyPwdTextBox.setValue( "" );
+		m_guidAttribTextBox.setValue( "" );
 		m_nameAttribTextBox.setValue( "" );
+		m_userAttribMappingsTextArea.setValue( "" );
 		
 		if ( config == null )
 			return;
@@ -338,7 +473,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 		m_serverUrlTextBox.setValue( config.getServerUrl() );
 		m_proxyDnTextBox.setValue( config.getProxyDn() );
 		m_proxyPwdTextBox.setValue( config.getProxyPwd() );
+		m_guidAttribTextBox.setValue( config.getLdapGuidAttribute() );
 		m_nameAttribTextBox.setValue( config.getUserIdAttribute() );
+		m_userAttribMappingsTextArea.setValue( config.getUserAttributeMappingsAsString() );
 	}
 	
 	/**

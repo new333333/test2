@@ -1873,7 +1873,50 @@ public class GwtClientHelper {
 		NativeEvent clickEvent = Document.get().createClickEvent(1, 0, 0, 0, 0, false, false, false, false);
 		e.dispatchEvent(clickEvent);
 	}
-	
+
+	/**
+	 * 
+	 * @param s
+	 * @param delimiter
+	 */
+	public static String[] split( String s, String delimiter )
+	{
+		List<String> nodeValues;
+		int offset = 0;
+		int pos;
+
+		if ( s == null || delimiter == null )
+		{
+			return new String[0];
+		}
+
+		s = s.trim();
+
+		if ( !s.endsWith( delimiter ) )
+		{
+			s += delimiter;
+		}
+
+		if ( s.equals( delimiter ) )
+		{
+			return new String[0];
+		}
+
+		nodeValues = new ArrayList<String>();
+
+		pos = s.indexOf( delimiter, offset );
+		while ( pos != -1 )
+		{
+			nodeValues.add( s.substring( offset, pos ) );
+
+			offset = pos + delimiter.length();
+			pos = s.indexOf( delimiter, offset );
+		}
+
+		return (String[])nodeValues.toArray(new String[0]);
+	}
+
+
 	/**
 	 * Validates we have a URL in an OnSelectBinderInfo object.
 	 * 

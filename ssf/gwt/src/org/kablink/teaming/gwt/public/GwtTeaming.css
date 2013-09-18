@@ -5711,6 +5711,17 @@ td.datePickerMonth {
 .filrSyncAppDlg_Radio
 {
 }
+
+/**
+ * Styles used in the Edit Ldap Server Config dialog
+ */
+.editLdapServerConfigDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: .9em;
 }
+
+/* End */
+
  
 /* End */
