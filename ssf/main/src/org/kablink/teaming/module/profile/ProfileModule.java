@@ -832,4 +832,12 @@ public interface ProfileModule {
      */
     public Boolean getUserWorkspacePreDeleted(Long userId);
     public void    setUserWorkspacePreDeleted(Long userId, boolean userWorkspacePreDeleted);
+
+    /**
+     * Returns a Collection<User> of all the external user's the
+     * current user has rights to see.
+     * 
+     * @return
+     */
+    public Collection<User> getAllExternalUsers();
 }

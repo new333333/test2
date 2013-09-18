@@ -125,6 +125,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
@@ -2579,5 +2580,58 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     public void setUserWorkspacePreDeleted(Long userId, boolean userWorkspacePreDeleted) {
    		User user = getUser(userId, true, false);
 		user.setWorkspacePreDeleted(userWorkspacePreDeleted);
+    }
+
+    /**
+     * Returns a Collection<User> of all the external user's the
+     * current user has rights to see.
+     * 
+     * @return
+     */
+    @Override
+    public Collection<User> getAllExternalUsers() {
+    	// Allocate a collection we can return.
+		List<User> reply = new ArrayList<User>();
+
+		// Can we access the ID of the all external users group?
+    	ProfileDao pd            = getProfileDao();
+    	Long       zoneId        = RequestContextHolder.getRequestContext().getZoneId();
+    	Long       allExtUsersId = pd.getReservedGroupId(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zoneId);
+    	if (null == allExtUsersId) {
+    		// No!  Bail.
+    		return reply;
+    	}
+    	
+		// Can we get the members of the group?
+    	List<Long> allExtUsersIds = new ArrayList<Long>();
+    	allExtUsersIds.add(allExtUsersId);
+    	Set<Long> extIds = pd.explodeGroups(allExtUsersIds, zoneId);
+    	if (!(MiscUtil.hasItems(extIds))) {
+    		// No!  Bail.
+    		return reply;
+    	}
+    	
+		// Resolve the members.  We call ResolveIDs.getPrincipals()
+		// because it handles deleted users and users the logged-in
+    	// user has rights to see.  Does the groups members resolve
+    	// to any users?
+		List<Principal> extUsers = ResolveIds.getPrincipals(extIds);
+		if (!(MiscUtil.hasItems(extUsers))) {
+			// No!  Bail.
+			return reply;
+		}
+
+		// Scan the group members.
+		for (Principal p:  extUsers) {
+			// Is this member a non reserved User?
+			if ((p instanceof UserPrincipal) && (!(p.isReserved()))) {
+				// Yes!  Add it to the reply collection.
+				reply.add((User) p);
+			}
+		}
+
+		// If we get here, reply refers to a Collection<User> of the
+		// external users.  Return it.
+    	return reply;
     }
 }

@@ -151,6 +151,7 @@ public class EditZoneShareSettingsDlg extends DlgBox
 							{
 								// Nothing to do.  The lists tab will
 								// have told user about the error.
+								setOkEnabled( true );
 							}
 						} );
 				}
@@ -160,6 +161,7 @@ public class EditZoneShareSettingsDlg extends DlgBox
 				{
 					// Nothing to do.  The rights tab will have told
 					// user about the error.
+					setOkEnabled( true );
 				}
 			} );
 	}
@@ -193,6 +195,7 @@ public class EditZoneShareSettingsDlg extends DlgBox
 							{
 								// Nothing to do.  The lists tab will
 								// have told user about the error.
+								setOkEnabled( true );
 							}
 						} );
 				}
@@ -202,6 +205,7 @@ public class EditZoneShareSettingsDlg extends DlgBox
 				{
 					// Nothing to do.  The rights tab will have told
 					// user about the error.
+					setOkEnabled( true );
 				}
 			} );
 	}

@@ -202,6 +202,7 @@ public interface SharingModule {
      * @return
      */
     public boolean isExternalAddressValid(String ema);
+    public boolean isExternalAddressValid(String ema, ShareLists shareLists);
     
     /**
      * Returns an ExternalAddressStatus value for the status of sharing
@@ -213,6 +214,7 @@ public interface SharingModule {
      * @return
      */
     public ExternalAddressStatus getExternalAddressStatus(String ema);
+    public ExternalAddressStatus getExternalAddressStatus(String ema, ShareLists shareLists);
 
     /**
      * Returns the ShareLists object stored in the ZoneConfig.

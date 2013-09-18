@@ -1056,8 +1056,14 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      * @return
      */
     @Override
+    public boolean isExternalAddressValid(String ema, ShareLists shareLists) {
+    	return getExternalAddressStatus(ema, shareLists).isValid();
+    }
+    
+    @Override
     public boolean isExternalAddressValid(String ema) {
-    	return getExternalAddressStatus(ema).isValid();
+    	// Always use the initial form of the method.
+    	return isExternalAddressValid(ema, getShareLists());
     }
     
     /**
@@ -1070,15 +1076,14 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      * @return
      */
     @Override
-    public ExternalAddressStatus getExternalAddressStatus(String ema) {
-    	// Do we have a sharing blacklist/whitelist stored in the
-    	// ZoneConfig with list validation enabled?
-        ShareLists shareLists = getShareLists();
+    public ExternalAddressStatus getExternalAddressStatus(String ema, ShareLists shareLists) {
+    	// Do we have a sharing blacklist/whitelist with list
+    	// validation enabled?
         if ((null == shareLists) || shareLists.isDisable()) {
         	// No!  Then the address is considered valid.
         	return ExternalAddressStatus.valid;
         }
-
+        
     	// Do we have any email addresses to validate against?
     	boolean      isWhitelist = shareLists.isWhitelist();
     	List<String> list = shareLists.getEmailAddresses();
@@ -1126,6 +1131,12 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     	if (isWhitelist)
              return ExternalAddressStatus.failsWhitelist;
     	else return ExternalAddressStatus.valid;
+    }
+    
+    @Override
+    public ExternalAddressStatus getExternalAddressStatus(String ema) {
+        // Always use the initial form of the method.
+        return getExternalAddressStatus(ema, getShareLists());
     }
     
     /**
