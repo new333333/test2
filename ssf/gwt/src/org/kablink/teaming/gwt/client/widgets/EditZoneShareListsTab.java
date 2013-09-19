@@ -39,6 +39,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteSharesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetShareListsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveShareListsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareListsRpcResponseData;
@@ -77,16 +79,16 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class EditZoneShareListsTab extends EditZoneShareTabBase {
-	private CheckBox					m_cleanupCB;				//
-	private List<HandlerRegistration>	m_registeredEventHandlers;	//
-	private GwtShareLists				m_shareLists;				//
-	private GwtTeamingMessages			m_messages;					//
-	private List<Long>					m_invalidShareIds;			//
-	private ListBox						m_domainsLB;				//
-	private ListBox						m_emailAddressesLB;			//
-	private RadioButton					m_blacklistRB;				//
-	private RadioButton					m_disabledRB;				//
-	private RadioButton					m_whitelistRB;				//
+	private CheckBox					m_cleanupCB;				// The checkbox used to indicate that invalid shares should be deleted.
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Events registered for notification by this tab.
+	private GwtShareLists				m_shareLists;				// The share lists being edited.
+	private GwtTeamingMessages			m_messages;					// Access to the GWT localized string resources.
+	private List<Long>					m_invalidShareIds;			// A List<Long> of the share IDs to be deleted because they're invalid.  Setup in validate().
+	private ListBox						m_domainsLB;				// The list of domains.
+	private ListBox						m_emailAddressesLB;			// The list of email addresses.
+	private RadioButton					m_blacklistRB;				// The radio button specifying the lists are part of a blacklist.
+	private RadioButton					m_disabledRB;				// The radio button specifying the lists are to be ignored.
+	private RadioButton					m_whitelistRB;				// The radio button specifying the lists are part of a whitelist.
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -106,131 +108,7 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 		m_messages = GwtTeaming.getMessages();
 		
 		// ...and create the of the tab.
-		initWidget(createContent());
-	}
-
-	/*
-	 * Returns a ShareListMode enumeration value based on the radio
-	 * button selected in the tab.
-	 */
-	private ShareListMode getShareListModeFromTab() {
-		ShareListMode reply;
-		if      (m_blacklistRB.getValue()) reply = ShareListMode.BLACKLIST;
-		else if (m_whitelistRB.getValue()) reply = ShareListMode.WHITELIST;
-		else                               reply = ShareListMode.DISABLED;
-		return reply;
-	}
-	
-	/*
-	 * Returns a GwtShareLists object based on contents of the tab.
-	 */
-	public GwtShareLists getShareListsFromTab() {
-		GwtShareLists reply = new GwtShareLists();
-		reply.setShareListMode(getShareListModeFromTab());
-		int c = m_emailAddressesLB.getItemCount();
-		for (int i = 0; i < c; i += 1) {
-			reply.addEmailAddress(m_emailAddressesLB.getItemText(i));
-		}
-		c = m_domainsLB.getItemCount();
-		for (int i = 0; i < c; i += 1) {
-			reply.addDomain(m_domainsLB.getItemText(i));
-		}
-		return reply;
-	}
-	
-	/**
-	 * Called to allow the tab to initialize.
-	 * 
-	 * Implements the EditZoneShareTabBase.init() method.
-	 */
-	@Override
-	public void init() {
-		// Simply continue loading the tab.
-		loadPart1Async();
-	}
-
-	/*
-	 * Asynchronously loads the next part of the tab.
-	 */
-	private void loadPart1Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart1Now();
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously loads the next part of the tab.
-	 * 
-	 * Sends an RPC request to the server for a GwtShareLists object
-	 * and uses it to complete the initialization of the tab.
-	 */
-	private void loadPart1Now() {
-		GwtClientHelper.executeCommand(new GetShareListsCmd(), new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_GetShareLists() );
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse result) {
-				m_shareLists = ((ShareListsRpcResponseData) result.getResponseData()).getShareLists();
-				initFromShareListsAsync();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously initializes the dialog's contents from a
-	 * GwtShareLists object.
-	 */
-	private void initFromShareListsAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				initFromShareListsNow();
-			}
-		});
-	}
-
-	/*
-	 * Synchronously initializes the dialog's contents from a
-	 * GwtShareLists object.
-	 */
-	private void initFromShareListsNow() {
-		// Select the appropriate mode button for how the lists are to
-		// be interpreted (i.e., as a whitelist or blacklist.)
-		switch (m_shareLists.getShareListMode()) {
-		case BLACKLIST:  m_blacklistRB.setValue(true); break;
-		case DISABLED:   m_disabledRB.setValue( true); break;
-		case WHITELIST:  m_whitelistRB.setValue(true); break;
-		}
-
-		// Populate the email address list.
-		m_emailAddressesLB.clear();
-		List<String> list = m_shareLists.getEmailAddresses();
-		if (GwtClientHelper.hasItems(list)) {
-			for (String ema:  list) {
-				m_emailAddressesLB.addItem(ema);
-			}
-		}
-		
-		// Populate the domains list.
-		m_domainsLB.clear();
-		list = m_shareLists.getDomains();
-		if (GwtClientHelper.hasItems(list)) {
-			for (String domain:  list) {
-				m_domainsLB.addItem(domain);
-			}
-		}
-		
-		// By default, we won't delete shares that don't meet the
-		// criteria.
-		m_cleanupCB.setValue(false);
+		initWidget(createTabContent());
 	}
 
 	/**
@@ -266,32 +144,13 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 	}
 	
 	/*
-	 * Create all the controls that make up the tab.
-	 */
-	private Panel createContent() {
-		// Create the main content panel...
-		FlowPanel mainPanel = new FlowPanel();
-		mainPanel.setStyleName("editZoneShareListsTab_Content");
-		
-		// ...create its contents...
-		mainPanel.add(createHeader()          );
-		mainPanel.add(createModeWidgets()     );
-		mainPanel.add(createEmailAddressList());
-		mainPanel.add(createDomainList()      );
-		mainPanel.add(createCleanupCheckbox() );
-
-		// ...and return it.
-		return mainPanel;
-	}
-	
-	/*
-	 * Creates the widgets for entering domains
+	 * Creates the widgets for entering domains.
 	 */
 	private Widget createDomainList() {
 		FlowPanel fp = new FlowPanel();
 		fp.addStyleName("editZoneShareListsTab_DomainPanel");
 
-		// Note that the list will be added to the FlowPanel within
+		// Note that the list will be added to the FlowPanel by
 		// createList().
 		m_domainsLB = createList(
 			fp,
@@ -309,7 +168,7 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 		FlowPanel fp = new FlowPanel();
 		fp.addStyleName("editZoneShareListsTab_EmailAddressPanel");
 		
-		// Note that the list will be added to the FlowPanel within
+		// Note that the list will be added to the FlowPanel by
 		// createList().
 		m_emailAddressesLB = createList(
 			fp,
@@ -474,7 +333,8 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 	}
 	
 	/*
-	 * Creates the widgets used for determine whitelist vs. blacklist.
+	 * Creates the widgets used for determining whether the lists are a
+	 * whitelist or blacklist.
 	 */
 	private Widget createModeWidgets() {
 		VerticalPanel vt = new VerticalPanel();
@@ -503,6 +363,204 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 	}
 
 	/*
+	 * Create all the controls that make up the tab.
+	 */
+	private Panel createTabContent() {
+		// Create the main content panel...
+		FlowPanel mainPanel = new FlowPanel();
+		mainPanel.setStyleName("editZoneShareListsTab_Content");
+		
+		// ...create its contents...
+		mainPanel.add(createHeader()          );
+		mainPanel.add(createModeWidgets()     );
+		mainPanel.add(createEmailAddressList());
+		mainPanel.add(createDomainList()      );
+		mainPanel.add(createCleanupCheckbox() );
+
+		// ...and return it.
+		return mainPanel;
+	}
+	
+	/*
+	 * Asynchronously deletes the invalid shares.
+	 */
+	private void doCleanupAsync(final EditZoneShareTabCallback callback) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				doCleanupNow(callback);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously deletes the invalid shares.
+	 */
+	private void doCleanupNow(final EditZoneShareTabCallback callback) {
+		// Send the request for the invalid shares to be deleted.
+		DeleteSharesCmd cmd = new DeleteSharesCmd(m_invalidShareIds);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_DeleteShares() );
+				
+				callback.failure();
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Did all the invalid shares get deleted?
+				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) result.getResponseData());
+				if (responseData.hasErrors()) {
+					// No!  Tell the user about the problem.
+					GwtClientHelper.displayMultipleErrors(
+						m_messages.editZoneShareListsTab_Error_DeleteSharesFailed(),
+						responseData.getErrorList());
+					callback.failure();
+				}
+
+				else {
+					// Yes, all the invalid shares got deleted!
+					callback.success();
+				}
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously saves the share lists and deletes any invalid
+	 * shares.
+	 */
+	private void doSaveAndCleanupAsync(final EditZoneShareTabCallback callback) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				doSaveAndCleanupNow(callback);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously saves the share lists via a GWT RPC.
+	 */
+	private void doSaveAndCleanupNow(final EditZoneShareTabCallback callback) {
+		// Construct a GwtShareLists containing the tab's content...
+		GwtShareLists saveThis = getShareListsFromTab();
+		
+		// ...and save it via a GWT RPC request.
+		final boolean needsCleanup = (m_cleanupCB.getValue() && GwtClientHelper.hasItems(m_invalidShareIds)); 
+		SaveShareListsCmd cmd = new SaveShareListsCmd(saveThis);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_SaveShareLists() );
+				
+				callback.failure();
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				if (needsCleanup)
+				     doCleanupAsync(callback);
+				else callback.success();
+			}
+		});
+	}
+	
+	/*
+	 * Returns a ShareListMode enumeration value based on the radio
+	 * button selected in the tab.
+	 */
+	private ShareListMode getShareListModeFromTab() {
+		ShareListMode reply;
+		if      (m_blacklistRB.getValue()) reply = ShareListMode.BLACKLIST;
+		else if (m_whitelistRB.getValue()) reply = ShareListMode.WHITELIST;
+		else                               reply = ShareListMode.DISABLED;
+		return reply;
+	}
+	
+	/*
+	 * Returns a GwtShareLists object based on contents of the tab.
+	 */
+	public GwtShareLists getShareListsFromTab() {
+		GwtShareLists reply = new GwtShareLists();
+		reply.setShareListMode(getShareListModeFromTab());
+		int c = m_emailAddressesLB.getItemCount();
+		for (int i = 0; i < c; i += 1) {
+			reply.addEmailAddress(m_emailAddressesLB.getItemText(i));
+		}
+		c = m_domainsLB.getItemCount();
+		for (int i = 0; i < c; i += 1) {
+			reply.addDomain(m_domainsLB.getItemText(i));
+		}
+		return reply;
+	}
+	
+	/**
+	 * Called to allow the tab to initialize.
+	 * 
+	 * Implements the EditZoneShareTabBase.init() method.
+	 */
+	@Override
+	public void init() {
+		// Simply continue loading the tab.
+		loadPart1Async();
+	}
+
+	/*
+	 * Asynchronously initializes the dialog's contents from a
+	 * GwtShareLists object.
+	 */
+	private void initFromShareListsAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				initFromShareListsNow();
+			}
+		});
+	}
+
+	/*
+	 * Synchronously initializes the dialog's contents from a
+	 * GwtShareLists object.
+	 */
+	private void initFromShareListsNow() {
+		// Select the appropriate mode button for how the lists are to
+		// be interpreted (i.e., as a whitelist or blacklist.)
+		switch (m_shareLists.getShareListMode()) {
+		case BLACKLIST:  m_blacklistRB.setValue(true); break;
+		case DISABLED:   m_disabledRB.setValue( true); break;
+		case WHITELIST:  m_whitelistRB.setValue(true); break;
+		}
+
+		// Populate the email address list.
+		m_emailAddressesLB.clear();
+		List<String> list = m_shareLists.getEmailAddresses();
+		if (GwtClientHelper.hasItems(list)) {
+			for (String ema:  list) {
+				m_emailAddressesLB.addItem(ema);
+			}
+		}
+		
+		// Populate the domains list.
+		m_domainsLB.clear();
+		list = m_shareLists.getDomains();
+		if (GwtClientHelper.hasItems(list)) {
+			for (String domain:  list) {
+				m_domainsLB.addItem(domain);
+			}
+		}
+		
+		// By default, we won't delete shares that don't meet the
+		// criteria.
+		m_cleanupCB.setValue(false);
+	}
+
+	/*
 	 * Returns true if a ListBox contains a string and false otherwise.
 	 */
 	private static boolean listContains(ListBox lb, String s) {
@@ -519,6 +577,41 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 			}
 		}
 		return false;
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the tab.
+	 */
+	private void loadPart1Async() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the next part of the tab.
+	 * 
+	 * Sends an RPC request to the server for a GwtShareLists object
+	 * and uses it to complete the initialization of the tab.
+	 */
+	private void loadPart1Now() {
+		GwtClientHelper.executeCommand(new GetShareListsCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetShareLists() );
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				m_shareLists = ((ShareListsRpcResponseData) result.getResponseData()).getShareLists();
+				initFromShareListsAsync();
+			}
+		});
 	}
 	
 	/**
@@ -575,49 +668,7 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 	public void save(EditZoneShareTabCallback callback) {
 		// Save the share lists.  This will call the appropriate
 		// callback method when the request completes.
-		saveShareListsAsync(callback);
-	}
-	
-	/*
-	 * Asynchronously saves the share lists via a GWT RPC.
-	 */
-	private void saveShareListsAsync(final EditZoneShareTabCallback callback) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				saveShareListsNow(callback);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously saves the share lists via a GWT RPC.
-	 */
-	private void saveShareListsNow(final EditZoneShareTabCallback callback) {
-		// Construct a GwtShareLists containing the tab's content...
-		GwtShareLists saveThis = getShareListsFromTab();
-		
-		// ...and save it via a GWT RPC request.
-		List<Long> invalidShareIds;
-		if (m_cleanupCB.getValue())
-		     invalidShareIds = m_invalidShareIds;
-		else invalidShareIds = null;
-		SaveShareListsCmd cmd = new SaveShareListsCmd(saveThis, invalidShareIds);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_SaveShareLists() );
-				
-				callback.failure();
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse result) {
-				callback.success();
-			}
-		});
+		doSaveAndCleanupAsync(callback);
 	}
 	
 	/*

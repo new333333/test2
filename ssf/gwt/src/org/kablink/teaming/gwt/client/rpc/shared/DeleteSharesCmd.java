@@ -32,23 +32,23 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.GwtShareLists;
+import java.util.List;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'save share lists' command.
+ * 'delete shares' command.
  * 
  * @author drfoster@novell.com
  */
-public class SaveShareListsCmd extends VibeRpcCmd {
-	private GwtShareLists	m_shareLists;	//
+public class DeleteSharesCmd extends VibeRpcCmd {
+	private List<Long>	m_shareIds;	//
 	
 	/**
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public SaveShareListsCmd() {
+	public DeleteSharesCmd() {
 		// Initialize the super class.
 		super();
 	}
@@ -56,14 +56,14 @@ public class SaveShareListsCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param shareLists
+	 * @param shareIds
 	 */
-	public SaveShareListsCmd(GwtShareLists shareLists) {
+	public DeleteSharesCmd(List<Long> shareIds) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameter.
-		setShareLists(shareLists);
+		setShareIds(shareIds);
 	}
 	
 	/**
@@ -71,14 +71,14 @@ public class SaveShareListsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public GwtShareLists getShareLists() {return m_shareLists;}
+	public List<Long> getShareIds() {return m_shareIds;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setShareLists(GwtShareLists shareLists) {m_shareLists = shareLists;}
+	public void setShareIds(List<Long> shareIds) {m_shareIds = shareIds;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -89,6 +89,6 @@ public class SaveShareListsCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.SAVE_SHARE_LISTS.ordinal();
+		return VibeRpcCmdType.DELETE_SHARES.ordinal();
 	}
 }

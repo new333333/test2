@@ -9549,6 +9549,7 @@ public class GwtServerHelper {
 		case DELETE_GROUPS:
 		case DELETE_SELECTED_USERS:
 		case DELETE_SELECTIONS:
+		case DELETE_SHARES:
 		case DELETE_TASKS:
 		case DISABLE_USERS:
 		case ENABLE_USERS:

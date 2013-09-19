@@ -328,6 +328,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_DeleteGroups();
 	String rpcFailure_DeleteSelectedUsers();
 	String rpcFailure_DeleteSelections();
+	String rpcFailure_DeleteShares();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_DisableUsers();
 	String rpcFailure_DisableUsersAdHocFolders();
@@ -2696,6 +2697,7 @@ public interface GwtTeamingMessages extends Messages
 	String editZoneShareListsTab_Domains_AddPrompt();
 	String editZoneShareListsTab_EMAs();
 	String editZoneShareListsTab_EMA_AddPrompt();
+	String editZoneShareListsTab_Error_DeleteSharesFailed();
 	String editZoneShareListsTab_Error_InvalidDomain();
 	String editZoneShareListsTab_Error_InvalidEMA();
 	String editZoneShareListsTab_Header();
