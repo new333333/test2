@@ -77,6 +77,7 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateShareListsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -2297,35 +2298,22 @@ public class GwtShareHelper
 	 * @param bs
 	 * @param request
 	 * @param gwtShareLists
-	 * @param deleteShareIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static BooleanRpcResponseData saveShareLists( AllModulesInjected bs, HttpServletRequest request, GwtShareLists gwtShareLists, List<Long> deleteShareIds ) throws GwtTeamingException
+	public static BooleanRpcResponseData saveShareLists( AllModulesInjected bs, HttpServletRequest request, GwtShareLists gwtShareLists ) throws GwtTeamingException
 	{
 		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.saveShareLists()" );
 		try
 		{
-			// Save the ShareLists.
+			// Save the ShareLists...
 			ShareLists shareLists = ((null == gwtShareLists) ? new ShareLists() : gwtShareListsToShareLists(gwtShareLists));
 			SharingModule sm = bs.getSharingModule();
-			sm.setShareLists(shareLists);
+			sm.setShareLists( shareLists );
 			
-			// Do we have any the IDs of any shares that have to be
-			// deleted?
-			if ( MiscUtil.hasItems( deleteShareIds ) )
-			{
-				// Yes!  Scan them...
-				for ( Long deleteShareId:  deleteShareIds ) {
-					// ...and delete the corresponding share.
-					sm.deleteShareItem( deleteShareId );
-				}
-			}
-			
-			// Finally, return a BooleanRpcResponseData containing
-			// true.
+			// ...and return a BooleanRpcResponseData containing true.
 			return new BooleanRpcResponseData( true );
 		}
 		
@@ -2362,14 +2350,14 @@ public class GwtShareHelper
 		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.validateShareLists()" );
 		try
 		{
-			// Allocate an error list response we can return.
+			// Allocate response object we can return.
 			ValidateShareListsRpcResponseData reply = new ValidateShareListsRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Convert the GwtShareLists to a ShareLists that can be
 			// used outside the GWT code.
 			ShareLists shareLists = (
-				( null == gwtShareLists) ?
-					new ShareLists()     :
+				( null == gwtShareLists ) ?
+					new ShareLists()      :
 					gwtShareListsToShareLists( gwtShareLists ) );
 
 			// Can we get find any external users?
@@ -2454,8 +2442,8 @@ public class GwtShareHelper
 						else
 						{
 							if ( Utils.checkIfFilr() )
-							     keyTail = "entry.filr";
-							else keyTail = "entry.vibe";
+							     keyTail = "entry.filr";	// Wording uses 'file'.
+							else keyTail = "entry.vibe";	// Wording uses 'entry'.
 						}
 						if ( MiscUtil.hasString( sharerTitle ) )
 						{
@@ -2472,7 +2460,7 @@ public class GwtShareHelper
 				}
 			}
 			
-			// If we get here, reply refers to an
+			// If we get here, reply refers to a
 			// ValidateShareListsRpcResponseData containing the
 			// validation results.  Return it.
 			return reply;
@@ -2492,6 +2480,125 @@ public class GwtShareHelper
 		finally
 		{
 			gsp.stop();
+		}
+	}
+	
+	/**
+	 * Deletes shares with the specified IDs.
+	 * 
+	 * @param bs
+	 * @param shareIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData deleteShares( AllModulesInjected bs, HttpServletRequest request, List<Long> shareIds ) throws GwtTeamingException
+	{
+		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.deleteShares()" );
+		try
+		{
+			// Allocate response object we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+			
+			// Do we have any the IDs of any shares that have to be
+			// deleted?
+			if ( MiscUtil.hasItems( shareIds ) )
+			{
+				// Yes!  Scan them...
+				SharingModule sm = bs.getSharingModule();
+				for ( Long shareId:  shareIds ) {
+					try
+					{
+						// ...and delete the corresponding share.
+						sm.deleteShareItem( shareId );
+					}
+					catch (Exception e)
+					{
+						addDeleteShareErrorToErrorList( bs, e, reply, shareId );
+						GwtLogHelper.error( m_logger, "GwtShareHelper.deleteShares( EXCEPTION ):  ", e );
+					}
+				}
+			}
+			
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing the results of the
+			// delete.  Return it.
+			return reply;
+		}
+		
+		catch ( Exception e )
+		{
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtShareHelper.deleteShares( SOURCE EXCEPTION ):  " );
+		}
+		
+		finally
+		{
+			gsp.stop();
+		}
+	}
+
+	/*
+	 * Given an exception deleting a share, adds information about the
+	 * error to an ErrorListRpcResponseData.
+	 */
+	private static void addDeleteShareErrorToErrorList( AllModulesInjected bs, Exception deleteEx, ErrorListRpcResponseData reply, Long shareId )
+	{
+		// Can we access the share?
+		SharingModule sm = bs.getSharingModule();
+		ShareItem share;
+		try
+		{
+			share = sm.getShareItem( shareId );
+		}
+		catch (Exception e)
+		{
+			share = null;
+		}
+		if ( null == share )
+		{
+			// No!  Generate an error that it couldn't be deleted.
+			reply.addError( NLT.get( "deleteShareError.UnknownShare", new String[]{ String.valueOf( shareId ) } ) );
+		}
+		
+		else
+		{
+			// Yes, we have access to the share!  Get the title for
+			// the share...
+			String shareTitle = null;
+			try
+			{
+				DefinableEntity	siEntity = sm.getSharedEntity( share );
+				if ( null != siEntity )
+				{
+					shareTitle = siEntity.getTitle();
+				}
+			}
+			catch (Exception e) {}
+			if ( ! ( MiscUtil.hasString( shareTitle ) ) )
+			{
+				shareTitle = ( "ID:  " + share.getSharedEntityIdentifier().getEntityId() );
+			}
+			
+			// ...get the sharer's title...
+			User sharer = GwtServerHelper.getResolvedUser( share.getSharerId() );
+			String sharerTitle = ( ( null == sharer ) ? "" : Utils.getUserTitle( sharer ) );
+			if ( ! ( MiscUtil.hasString( sharerTitle )))
+			{
+				shareTitle = NLT.get("deleteShareError.UnknownUser");
+			}
+			
+			// ...and generate the error message.
+			String key;
+			if ( deleteEx instanceof AccessControlException ) key = "deleteShareError.AccssControlException";
+			else                                              key = "deleteShareError.OtherException";
+			reply.addError( NLT.get( key, new String[]{ shareTitle, sharerTitle } ) );
 		}
 	}
 }

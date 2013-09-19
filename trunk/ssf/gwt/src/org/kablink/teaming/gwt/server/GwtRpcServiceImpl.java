@@ -553,6 +553,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case DELETE_SHARES:
+		{
+			DeleteSharesCmd dslCmd = ((DeleteSharesCmd) cmd);
+			ErrorListRpcResponseData result = GwtShareHelper.deleteShares( this, getRequest( ri ), dslCmd.getShareIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case DELETE_TASKS:
 		{
 			DeleteTasksCmd dtCmd = ((DeleteTasksCmd) cmd);
@@ -2992,7 +3000,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_SHARE_LISTS:
 		{
 			SaveShareListsCmd sslCmd = ((SaveShareListsCmd) cmd);
-			BooleanRpcResponseData result = GwtShareHelper.saveShareLists( this, getRequest( ri ), sslCmd.getShareLists(), sslCmd.getDeleteShareIds() );
+			BooleanRpcResponseData result = GwtShareHelper.saveShareLists( this, getRequest( ri ), sslCmd.getShareLists() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
