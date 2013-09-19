@@ -96,6 +96,24 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	/**
 	 * 
 	 */
+	public void emptyListOfGroupSearchCriteria()
+	{
+		if ( m_listOfGroupSearchCriteria != null )
+			m_listOfGroupSearchCriteria.clear();
+	}
+	
+	/**
+	 * 
+	 */
+	public void emptyListOfUserSearchCriteria()
+	{
+		if ( m_listOfUserSearchCriteria != null )
+			m_listOfUserSearchCriteria.clear();
+	}
+	
+	/**
+	 * 
+	 */
 	public String getId()
 	{
 		return m_id;

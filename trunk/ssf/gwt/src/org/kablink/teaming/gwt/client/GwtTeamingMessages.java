@@ -633,6 +633,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DownloadPanel();
 	String codeSplitFailure_EditBrandingDlg();
 	String codeSplitFailure_EditLdapConfigDlg();
+	String codeSplitFailure_EditLdapSearchDlg();
 	String codeSplitFailure_EditLdapServerConfigDlg();
 	String codeSplitFailure_EditNetFolderRightsDlg();
 	String codeSplitFailure_EditShareDlg();
@@ -2864,6 +2865,10 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapConfigDlg_UsersTab();
 
 	// Strings used in the Edit ldap server configuration dialog
+	String editLdapServerConfigDlg_AddSearchLabel();
+	String editLdapServerConfigDlg_BaseDnCol();
+	String editLdapServerConfigDlg_DeleteSearchLabel();
+	String editLdapServerConfigDlg_FilterCol();
 	String editLdapServerConfigDlg_GroupsTab();
 	String editLdapServerConfigDlg_GuidAttributeHint1();
 	String editLdapServerConfigDlg_GuidAttributeHint2();
@@ -2871,12 +2876,20 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapServerConfigDlg_Header();
 	String editLdapServerConfigDlg_NameAttributeHint( String productName );
 	String editLdapServerConfigDlg_NameAttributeLabel( String productName );
+	String editLdapServerConfigDlg_NoSearchesLabel();
 	String editLdapServerConfigDlg_ProxyDNLabel();
 	String editLdapServerConfigDlg_ProxyPasswordLabel();
+	String editLdapServerConfigDlg_SelectSearchesToDelete();
 	String editLdapServerConfigDlg_ServerTab();
 	String editLdapServerConfigDlg_ServerUrlHint();
 	String editLdapServerConfigDlg_ServerUrlLabel();
 	String editLdapServerConfigDlg_UserAttributeMappingHint();
 	String editLdapServerConfigDlg_UsersTab();
+
+	// Strings used in the Edit Ldap Search dialog
+	String editLdapSearchDlg_BaseDnLabel();
+	String editLdapSearchDlg_FilterLabel();
+	String editLdapSearchDlg_Header();
+	String editLdapSearchDlg_SearchSubtreeLabel();
 	
 }// end GwtTeamingMessages
