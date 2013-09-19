@@ -1197,8 +1197,8 @@ public class EditLdapConfigDlg extends DlgBox
 			y = m_ldapServersTable.getAbsoluteTop();
 			
 			EditLdapServerConfigDlg.createAsync(
-											true, 
-											false,
+											false, 
+											true,
 											x, 
 											y,
 											null,
@@ -1231,7 +1231,10 @@ public class EditLdapConfigDlg extends DlgBox
 		}
 		else
 		{
-			m_editLdapServerDlg.init( ldapServer );
+			m_editLdapServerDlg.init(
+									ldapServer,
+									m_ldapConfig.getDefaultUserFilter(),
+									m_ldapConfig.getDefaultGroupFilter() );
 			m_editLdapServerDlg.initHandlers( editSuccessfulHandler, null );
 			m_editLdapServerDlg.show();
 		}

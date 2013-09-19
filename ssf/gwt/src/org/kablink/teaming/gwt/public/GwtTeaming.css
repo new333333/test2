@@ -4492,7 +4492,7 @@ td.datePickerMonth {
 
 }
 
-.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel, .shareDlg_MenuPanel, .editLdapConfigDlg_MenuPanel
+.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel, .shareDlg_MenuPanel, .editLdapConfigDlg_MenuPanel, .editLdapServerConfigDlg_MenuPanel
 {
     background-color: #ededed;
     border-top-left-radius: 5px;
@@ -4505,13 +4505,13 @@ td.datePickerMonth {
     white-space: nowrap;
 }
 
-.groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel, .ldapSource_ServerUrlPanel
+.groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel, .ldapSource_ServerUrlPanel, .ldapSearch_BaseDnPanel
 {
 	font-size: 14px;
 	vertical-align: middle;
 }
 
-.groupTitle, .netFolderRoot_Name, .netFolder_Name, .ldapSource_ServerUrl
+.groupTitle, .netFolderRoot_Name, .netFolder_Name, .ldapSource_ServerUrl, .ldapSearch_BaseDn
 {
 	color: #135C8F;
 	cursor: pointer;
