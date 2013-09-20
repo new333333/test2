@@ -264,4 +264,30 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="address_email"/>
+        </preConditions>
+        <comment>Drop old address_email index, if exists, from SS_EmailAddresses table</comment>
+        <dropIndex indexName="address_email" tableName="SS_EmailAddresses"/>        
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
+        <comment>Create address_email index with smaller index prefix length in SS_EmailAddresses table</comment>
+    	<sql>create index address_email on SS_EmailAddresses (address(32));</sql>       
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="email_postings"/>
+        </preConditions>
+        <comment>Drop old email_postings index, if exists, from SS_Postings table</comment>
+        <dropIndex indexName="email_postings" tableName="SS_Postings"/>        
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <comment>Create email_postings index with smaller index prefix length in SS_Postings table</comment>
+    	<sql>create index email_postings on SS_Postings (zoneId, emailAddress(32));</sql>     
+    </changeSet>
+    
 </databaseChangeLog>
