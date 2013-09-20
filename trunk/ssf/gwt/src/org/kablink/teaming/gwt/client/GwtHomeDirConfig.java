@@ -47,7 +47,7 @@ public class GwtHomeDirConfig implements IsSerializable
 	 * This class represents the different options available for creating a home dir net folder.
 	 * This class should mirror the data found in HomeDirCreationOption
 	 */
-	public enum GwtHomeDirCreationOption
+	public enum GwtHomeDirCreationOption implements IsSerializable
 	{
 		USE_CUSTOM_CONFIG,
 		USE_HOME_DIRECTORY_ATTRIBUTE,
@@ -60,7 +60,7 @@ public class GwtHomeDirConfig implements IsSerializable
 	
 	// The following data members are relevant when the creation option is "custom config"
 	private String m_netFolderServerName;
-	private String m_path;
+	private String m_netFolderPath;
 
 	// The following data members are relevant when the creation option is "custom attribute"
 	private String m_attributeName;
@@ -73,5 +73,73 @@ public class GwtHomeDirConfig implements IsSerializable
 	 */
 	public GwtHomeDirConfig()
 	{
+	}
+
+	/**
+	 * 
+	 */
+	public GwtHomeDirCreationOption getCreationOption()
+	{
+		return m_creationOption;
+	}
+
+	/**
+	 * 
+	 */
+	public String getAttributeName()
+	{
+		return m_attributeName;
+	}
+
+	/**
+	 * 
+	 */
+	public String getNetFolderPath()
+	{
+		return m_netFolderPath;
+	}
+
+	/**
+	 * 
+	 */
+	public String getNetFolderServerName()
+	{
+		return m_netFolderServerName;
+	}
+
+	/**
+	 * 
+	 * @param attributeName
+	 */
+	public void setAttributeName( String attributeName )
+	{
+		m_attributeName = attributeName;
+	}
+
+	/**
+	 * 
+	 * @param m_creationOption
+	 */
+	public void setCreationOption( GwtHomeDirCreationOption creationOption )
+	{
+		m_creationOption = creationOption;
+	}
+
+	/**
+	 * 
+	 * @param netFolderPath
+	 */
+	public void setNetFolderPath( String netFolderPath )
+	{
+		m_netFolderPath = netFolderPath;
+	}
+
+	/**
+	 * 
+	 * @param netFolderServerName
+	 */
+	public void setNetFolderServerName( String netFolderServerName )
+	{
+		m_netFolderServerName = netFolderServerName;
 	}
 }

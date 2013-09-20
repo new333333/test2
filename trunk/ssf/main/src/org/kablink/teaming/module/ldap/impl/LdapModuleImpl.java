@@ -557,7 +557,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		if ( homeDirConfig != null )
 			creationOption = homeDirConfig.getCreationOption();
 		
-		creationOption = HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE;
 		switch ( creationOption )
 		{
 		case DONT_CREATE_HOME_DIR_NET_FOLDER:

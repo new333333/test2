@@ -1170,8 +1170,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 			}
 			
 			EditLdapSearchDlg.createAsync(
-										true, 
-										false,
+										false, 
+										true,
 										x, 
 										y,
 										null,
