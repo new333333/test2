@@ -5715,7 +5715,7 @@ td.datePickerMonth {
 /**
  * Styles used in the Edit Ldap Server Config dialog
  */
-.editLdapServerConfigDlg_Hint
+.editLdapServerConfigDlg_Hint, .editLdapSearchDlg_Hint
 {
 	color: #4D6D8B;
 	font-size: .9em;

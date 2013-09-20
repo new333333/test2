@@ -43,8 +43,12 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirConfig;
+import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirCreationOption;
 import org.kablink.teaming.domain.LdapConnectionConfig.SearchInfo;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.gwt.client.GwtHomeDirConfig;
+import org.kablink.teaming.gwt.client.GwtHomeDirConfig.GwtHomeDirCreationOption;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
 import org.kablink.teaming.gwt.client.GwtLdapSearchInfo;
@@ -224,7 +228,46 @@ public class GwtLdapHelper
     							gwtSearchInfo = new GwtLdapSearchInfo();
     							gwtSearchInfo.setBaseDn( searchInfo.getBaseDn() );
     							gwtSearchInfo.setFilter( searchInfo.getFilter() );
-    							//!!!gwtSearchInfo.setHomeDirConfig( homeDirConfig );
+    							
+    							// Get the home directory net folder creation configuration
+    							{
+    								HomeDirConfig homeDirConfig;
+    								GwtHomeDirConfig gwtHomeDirConfig;
+
+    								gwtHomeDirConfig = new GwtHomeDirConfig();
+    								gwtHomeDirConfig.setCreationOption( GwtHomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
+    								
+    								homeDirConfig = searchInfo.getHomeDirConfig();
+    								if ( homeDirConfig != null )
+    								{
+        								switch( homeDirConfig.getCreationOption() )
+        								{
+        								case USE_CUSTOM_CONFIG:
+            								gwtHomeDirConfig.setCreationOption( GwtHomeDirCreationOption.USE_CUSTOM_CONFIG );
+            								gwtHomeDirConfig.setNetFolderPath( homeDirConfig.getPath() );
+            								gwtHomeDirConfig.setNetFolderServerName( homeDirConfig.getNetFolderServerName() );
+        									break;
+        								
+        								case USE_CUSTOM_ATTRIBUTE:
+            								gwtHomeDirConfig.setCreationOption( GwtHomeDirCreationOption.USE_CUSTOM_ATTRIBUTE );
+            								gwtHomeDirConfig.setAttributeName( homeDirConfig.getAttributeName() );
+        									break;
+        								
+        								case DONT_CREATE_HOME_DIR_NET_FOLDER:
+            								gwtHomeDirConfig.setCreationOption( GwtHomeDirCreationOption.DONT_CREATE_HOME_DIR_NET_FOLDER );
+            								break;
+            								
+        								case USE_HOME_DIRECTORY_ATTRIBUTE:
+        								case UNKNOWN:
+        								default:
+            								gwtHomeDirConfig.setCreationOption( GwtHomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
+        									break;
+        								}
+    								}
+
+    								gwtSearchInfo.setHomeDirConfig( gwtHomeDirConfig );
+    							}
+    							
     							gwtSearchInfo.setSearchSubtree( searchInfo.isSearchSubtree() );
     							
     							gwtConfig.addUserSearchCriteria( gwtSearchInfo );
@@ -412,11 +455,49 @@ public class GwtLdapHelper
 								for ( GwtLdapSearchInfo nextSearch : listOfGwtUserQueries )
 								{
 									LdapConnectionConfig.SearchInfo searchInfo;
+									GwtHomeDirConfig gwtHomeDirConfig;
 									
 									searchInfo = new LdapConnectionConfig.SearchInfo(
 																				nextSearch.getBaseDn(),
 																				nextSearch.getFilter(),
 																				nextSearch.getSearchSubtree() );
+									
+									// Do we have home dir configuration?
+									gwtHomeDirConfig = nextSearch.getHomeDirConfig();
+									if ( gwtHomeDirConfig != null )
+									{
+										HomeDirConfig homeDirConfig;
+
+										// Yes
+										homeDirConfig = new HomeDirConfig();
+										
+										switch ( gwtHomeDirConfig.getCreationOption() )
+										{
+										case USE_CUSTOM_CONFIG:
+											homeDirConfig.setCreationOption( HomeDirCreationOption.USE_CUSTOM_CONFIG );
+											homeDirConfig.setNetFolderServerName( gwtHomeDirConfig.getNetFolderServerName() );
+											homeDirConfig.setPath( gwtHomeDirConfig.getNetFolderPath() );
+											break;
+										
+										case USE_CUSTOM_ATTRIBUTE:
+											homeDirConfig.setCreationOption( HomeDirCreationOption.USE_CUSTOM_ATTRIBUTE );
+											homeDirConfig.setAttributeName( gwtHomeDirConfig.getAttributeName() );
+											break;
+											
+										case DONT_CREATE_HOME_DIR_NET_FOLDER:
+											homeDirConfig.setCreationOption( HomeDirCreationOption.DONT_CREATE_HOME_DIR_NET_FOLDER );
+											break;
+											
+										case USE_HOME_DIRECTORY_ATTRIBUTE:
+										case UNKNOWN:
+										default:
+											homeDirConfig.setCreationOption( HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
+											break;
+										}
+										
+										searchInfo.setHomeDirConfig( homeDirConfig );
+									}
+									
 									userQueries.add( searchInfo );
 								}
 							}

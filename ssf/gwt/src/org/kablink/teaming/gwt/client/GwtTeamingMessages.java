@@ -2887,9 +2887,18 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapServerConfigDlg_UsersTab();
 
 	// Strings used in the Edit Ldap Search dialog
+	String editLdapSearchDlg_AttributeNameLabel();
 	String editLdapSearchDlg_BaseDnLabel();
+	String editLdapSearchDlg_CustomCriteriaRB();
+	String editLdapSearchDlg_DontCreateNetFolderRB();
 	String editLdapSearchDlg_FilterLabel();
 	String editLdapSearchDlg_Header();
+	String editLdapSearchDlg_HomeDirAttribRB();
+	String editLdapSearchDlg_HomeDirNetFolderHeader();
+	String editLdapSearchDlg_HomeDirNetFolderHint();
+	String editLdapSearchDlg_NetFolderPathLabel();
+	String editLdapSearchDlg_NetFolderServerLabel();
 	String editLdapSearchDlg_SearchSubtreeLabel();
+	String editLdapSearchDlg_SpecifiedAttribRB();
 	
 }// end GwtTeamingMessages

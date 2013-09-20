@@ -51,6 +51,20 @@ import org.springframework.orm.hibernate3.support.ClobStringType;
 
 public class AuthenticationSearchInfoUserType extends ClobStringType { 
 
+	private final static String CUSTOM_CONFIG_OPTION = "customConfig";
+	private final static String HOME_DIR_ATTRIBUTE_OPTION = "homeDirAttribute";
+	private final static String CUSTOM_ATTRIBUTE_OPTION = "customAttribute";
+	private final static String DONT_CREATE_OPTION = "dontCreate";
+	
+	private final static String HOME_DIR_CONFIG_TAG_NAME = "homeDirConfig";
+	private final static String CUSTOM_CONFIG_TAG_NAME = "customConfig";
+	private final static String CUSTOM_ATTRIBUTE_TAG_NAME = "customAttribute";
+	
+	private final static String CREATION_OPTION_ATTRIBUTE_NAME = "creationOption";
+	private final static String NET_FOLDER_SERVER_NAME_ATTRIBUTE_NAME = "netFolderServerName";
+	private final static String NET_FOLDER_PATH_ATTRIBUTE_NAME = "netFolderPath";
+	private final static String CUSTOM_ATTRIBUTE_ATTRIBUTE_NAME = "attributeName";
+	
     @Override
 	public Class returnedClass() { 
         return List.class; 
@@ -74,7 +88,7 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     				searchInfo = new LdapConnectionConfig.SearchInfo(baseDn, filter, searchSubtree);
 
     				// Is there a <homeDirConfig> node?
-    				homeDirConfigNode = node.selectSingleNode( "homeDirConfig" );
+    				homeDirConfigNode = node.selectSingleNode( HOME_DIR_CONFIG_TAG_NAME );
     				if ( homeDirConfigNode != null )
     				{
     					LdapConnectionConfig.HomeDirConfig homeDirConfig;
@@ -82,9 +96,10 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     					
     					// Yes
     					homeDirConfig = new LdapConnectionConfig.HomeDirConfig();
+    					homeDirConfig.setCreationOption( HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
     					
     					// Get the "creationOption" attribute.
-    					creationOptionNode = homeDirConfigNode.selectSingleNode( "@creationOption" );
+    					creationOptionNode = homeDirConfigNode.selectSingleNode( "@" + CREATION_OPTION_ATTRIBUTE_NAME );
     					if ( creationOptionNode != null )
     					{
     						String value;
@@ -92,23 +107,25 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     						value = creationOptionNode.getText();
     						if ( value != null )
     						{
-    							if ( value.equalsIgnoreCase( "customConfig" ) )
+    							if ( value.equalsIgnoreCase( CUSTOM_CONFIG_OPTION ) )
     							{
     								Node customConfigNode;
 
     								// Get the <customConfig> element
-    								customConfigNode = homeDirConfigNode.selectSingleNode( "customConfig" );
+    								customConfigNode = homeDirConfigNode.selectSingleNode( CUSTOM_CONFIG_TAG_NAME );
     								if ( customConfigNode != null )
     								{
     									String netFolderServerName = null;
     									String path = null;
     									Node attribNode;
     									
-    									attribNode = customConfigNode.selectSingleNode( "@netFolderServerName" );
+    									// Get the "netFolderServerName" attribute
+    									attribNode = customConfigNode.selectSingleNode( "@" + NET_FOLDER_SERVER_NAME_ATTRIBUTE_NAME );
     									if ( attribNode != null )
     										netFolderServerName = attribNode.getText();
     									
-    									attribNode = customConfigNode.selectSingleNode( "@path" );
+    									// Get the "netFolderPath" attribute
+    									attribNode = customConfigNode.selectSingleNode( "@" + NET_FOLDER_PATH_ATTRIBUTE_NAME );
     									if ( attribNode != null )
     										path = attribNode.getText();
     									
@@ -120,22 +137,23 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     									}
     								}
     							}
-    							else if ( value.equalsIgnoreCase( "homeDirAttribute" ) )
+    							else if ( value.equalsIgnoreCase( HOME_DIR_ATTRIBUTE_OPTION ) )
     							{
     								homeDirConfig.setCreationOption( HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
     							}
-    							else if ( value.equalsIgnoreCase( "customAttribute" ) )
+    							else if ( value.equalsIgnoreCase( CUSTOM_ATTRIBUTE_OPTION ) )
     							{
     								Node customAttribNode;
     								
     								// Get the <customAttribute> element
-    								customAttribNode = homeDirConfigNode.selectSingleNode( "customAttribute" );
+    								customAttribNode = homeDirConfigNode.selectSingleNode( CUSTOM_ATTRIBUTE_TAG_NAME );
     								if ( customAttribNode != null )
     								{
     									String attribName = null;
     									Node attribNode;
     									
-    									attribNode = customAttribNode.selectSingleNode( "@attributeName" );
+    									// Get the "attributeName" attribute
+    									attribNode = customAttribNode.selectSingleNode( "@" + CUSTOM_ATTRIBUTE_ATTRIBUTE_NAME );
     									if ( attribNode != null )
     										attribName = attribNode.getText();
     									
@@ -146,9 +164,13 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     									}
     								}
     							}
-    							else if ( value.equalsIgnoreCase( "dontCreate" ) )
+    							else if ( value.equalsIgnoreCase( DONT_CREATE_OPTION ) )
     							{
     								homeDirConfig.setCreationOption( HomeDirCreationOption.DONT_CREATE_HOME_DIR_NET_FOLDER );
+    							}
+    							else
+    							{
+    								homeDirConfig.setCreationOption( HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
     							}
     						}
     					}
@@ -184,7 +206,99 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     			xml.append( "<filter>" + wrapWithCDATA( us.getFilter() ) + "</filter>");
     			
     			// Add the HomeDirConfig info
-    			xml.append( "<homeDirConfig creationOption=\"dontCreate\" ><customAttribute attributeName=\"some name\" /><customConfig netFolderServerName=\"some name\" path=\"some path\" /></homeDirConfig>" );
+    			{
+    				LdapConnectionConfig.HomeDirConfig homeDirConfig;
+    				
+    				homeDirConfig = us.getHomeDirConfig();
+    				if ( homeDirConfig != null )
+    				{
+    					StringBuffer tmpXml;
+    					
+    					tmpXml = new StringBuffer( "" );
+    					
+        				switch ( homeDirConfig.getCreationOption() )
+        				{
+        				case USE_CUSTOM_CONFIG:
+        					String netFolderServerName = null;
+        					String netFolderPath = null;
+
+        					netFolderServerName = homeDirConfig.getNetFolderServerName();
+        					netFolderPath = homeDirConfig.getPath();
+            				if ( netFolderServerName != null && netFolderServerName.length() > 0 &&
+              						 netFolderPath != null && netFolderPath.length() > 0 )
+          					{
+                				// Add "<homeDirConfig"
+                				tmpXml.append( "<" + HOME_DIR_CONFIG_TAG_NAME + " " );
+
+   	        					// Add creationOption="customConfig"
+   	            				tmpXml.append( CREATION_OPTION_ATTRIBUTE_NAME + "=\"" + CUSTOM_CONFIG_OPTION + "\" >" );
+   	            				
+   	            				// Add "<customConfig"
+   	            				tmpXml.append( "<" + CUSTOM_CONFIG_TAG_NAME + " " );
+   	            				
+   	            				// Add netFolderServerName="some value"
+   	            				tmpXml.append( NET_FOLDER_SERVER_NAME_ATTRIBUTE_NAME + "=\"" + netFolderServerName + "\" " );
+   	            				
+   	            				// Add netFolderPath="some value"
+   	            				tmpXml.append( NET_FOLDER_PATH_ATTRIBUTE_NAME + "=\"" + netFolderPath + "\" />" );
+   	            				
+   	            				// Add </homeDirConfig>
+   	            				tmpXml.append( "</" + HOME_DIR_CONFIG_TAG_NAME + ">" );
+   	            				
+   	            				xml.append( tmpXml );
+          					}
+        					break;
+        				
+        				case USE_CUSTOM_ATTRIBUTE:
+        					String customAttribName = null;
+        					
+        					customAttribName = homeDirConfig.getAttributeName();
+        					
+        					if ( customAttribName != null && customAttribName.length() > 0 )
+        					{
+                				// Add "<homeDirConfig"
+        						tmpXml.append( "<" + HOME_DIR_CONFIG_TAG_NAME + " " );
+
+                				// Add creationOption="customAttribute"
+        						tmpXml.append( CREATION_OPTION_ATTRIBUTE_NAME + "=\"" + CUSTOM_ATTRIBUTE_OPTION + "\" >" );
+	            				
+	            				// Add "<customAttribute"
+        						tmpXml.append( "<" + CUSTOM_ATTRIBUTE_TAG_NAME + " ");
+	            				
+	            				// Add customAttributeName="some value"
+        						tmpXml.append( CUSTOM_ATTRIBUTE_ATTRIBUTE_NAME + "=\"" + customAttribName + "\" />" );
+        						
+   	            				// Add </homeDirConfig>
+   	            				tmpXml.append( "</" + HOME_DIR_CONFIG_TAG_NAME + ">" );
+
+   	            				xml.append( tmpXml );
+        					}
+        					break;
+        				
+        				case DONT_CREATE_HOME_DIR_NET_FOLDER:
+            				// Add "<homeDirConfig"
+            				tmpXml.append( "<" + HOME_DIR_CONFIG_TAG_NAME + " " );
+
+        					// Add creationOption="dontCreate"
+            				tmpXml.append( CREATION_OPTION_ATTRIBUTE_NAME + "=\"" + DONT_CREATE_OPTION + "\" />" );
+            				
+            				xml.append( tmpXml );
+        					break;
+
+        				case USE_HOME_DIRECTORY_ATTRIBUTE:
+        				case UNKNOWN:
+        				default:
+            				// Add "<homeDirConfig"
+        					tmpXml.append( "<" + HOME_DIR_CONFIG_TAG_NAME + " " );
+
+            				// Add creationOption="homeDirAttribute"
+        					tmpXml.append( CREATION_OPTION_ATTRIBUTE_NAME + "=\"" + HOME_DIR_ATTRIBUTE_OPTION + "\" />" );
+        					
+        					xml.append( tmpXml );
+        					break;
+        				}
+    				}
+    			}
 
     			xml.append("</search>");
     		}
