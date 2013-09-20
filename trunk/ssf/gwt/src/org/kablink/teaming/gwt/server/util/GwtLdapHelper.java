@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -372,114 +374,93 @@ public class GwtLdapHelper
 				ami.getAuthenticationModule().setAuthenticationConfig( authConfig );
 			}
 
-			// Save the ldap configuration.
+			// Save the ldap configuration info that is stored in the schedule
 			ami.getLdapModule().setLdapSchedule( schedule );
 
-		/**
-			LinkedList<LdapConnectionConfig> configList = new LinkedList<LdapConnectionConfig>();
-			try {
-				Document doc = DocumentHelper.parseText(PortletRequestUtils.getStringParameter(request, "ldapConfigDoc", "<doc/>"));
-				for(Object o : doc.selectNodes("//ldapConfig")) {
-					Node cNode = (Node) o;
-					String ldapGuidAttribute = null;
-					
-					// Get the ldap attribute that uniquely identifies a user or group.
-					ldapGuidAttribute = cNode.selectSingleNode( "ldapGuidAttribute" ).getText();
-					
-					String principal = cNode.selectSingleNode("principal").getText();
-					String credentials = cNode.selectSingleNode("credentials").getText();
-					String url = cNode.selectSingleNode("url").getText();
-					// If the protocol is uppercase, users can't log in.  See bug 823936.
-					if ( url != null )
-						url = url.toLowerCase();
-					String userIdAttribute = cNode.selectSingleNode("userIdAttribute").getText();
-					String[] mappings = StringUtil.split(cNode.selectSingleNode("mappings").getText(), "\n");
-					LinkedList<LdapConnectionConfig.SearchInfo> userQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
-					List foo = cNode.selectNodes("userSearches/search");
-					for(Object o2 : foo) {
-						Node sNode = (Node) o2;
-						Node someNode;
-						String baseDn;
-						String filter;
-						String ss;
+			// Gather all the ldap server configurations into one list
+			{
+				ArrayList<GwtLdapConnectionConfig> listOfGwtLdapConnections;
+				LinkedList<LdapConnectionConfig> listOfLdapConnections;
 
-						baseDn = "";
-						filter = "";
-						ss = "";
-
-						// Get the <baseDn> element.
-						someNode = sNode.selectSingleNode("baseDn");
-						if ( someNode != null )
-							baseDn = someNode.getText();
-						
-						// Get the <filter> element.
-						someNode = sNode.selectSingleNode("filter");
-						if ( someNode != null )
-							filter = someNode.getText();
-						
-						// Get the <searchSubtree> element.
-						someNode = sNode.selectSingleNode("searchSubtree");
-						if ( someNode != null )
-							ss = someNode.getText();
-
-						userQueries.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, ss.equals("true")));
-					}
-					LinkedList<LdapConnectionConfig.SearchInfo> groupQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
-					foo = cNode.selectNodes("groupSearches/search");
-					for(Object o2 : foo) {
-						Node sNode = (Node) o2;
-						Node someNode;
-						String baseDn;
-						String filter;
-						String ss;
-
-						baseDn = "";
-						filter = "";
-						ss = "";
-						
-						// Get the <baseDn> element.
-						someNode = sNode.selectSingleNode("baseDn");
-						if ( someNode != null )
-							baseDn = someNode.getText();
-						
-						// Get the <filter> element.
-						someNode = sNode.selectSingleNode("filter");
-						if ( someNode != null )
-							filter = someNode.getText();
-						
-						// Get the <searchSubtree> element.
-						someNode = sNode.selectSingleNode("searchSubtree");
-						if ( someNode != null )
-							ss = someNode.getText();
-
-						groupQueries.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, ss.equals("true")));
-					}
-					HashMap<String, String> maps = new HashMap<String, String>();
-					for (int i=0; i<mappings.length; ++i) {
-						String m = mappings[i];
-						if (Validator.isNull(m)) continue;
-						String[] vals = StringUtil.split(m, "=");
-						if (vals.length != 2) continue;
-						maps.put(vals[1].trim(), vals[0].trim());
-					}
-					LdapConnectionConfig c =
-						new LdapConnectionConfig(url, userIdAttribute, maps, userQueries, groupQueries, principal, credentials, ldapGuidAttribute );
-					Node idNode = cNode.selectSingleNode("id");
-					if(idNode != null) {
-						c.setId(idNode.getText());
-					}
-					configList.add(c);
-				}
-			} catch(DocumentException e) {
-				String	msg;
+				listOfLdapConnections = new LinkedList<LdapConnectionConfig>();
 				
-				// Hmm.  What to do here?
-				// This should never happen.  Tell the user there is something wrong with the ldap filter.
-				msg = e.getMessage();
-				response.setRenderParameter( WebKeys.EXCEPTION, msg );
+				// Get the list of ldap connections
+				listOfGwtLdapConnections = ldapConfig.getListOfLdapConnections();
+				if ( listOfGwtLdapConnections != null )
+				{
+					for ( GwtLdapConnectionConfig nextGwtLdapConnection : listOfGwtLdapConnections )
+					{
+						LdapConnectionConfig ldapConnection;
+						LinkedList<LdapConnectionConfig.SearchInfo> userQueries;
+						LinkedList<LdapConnectionConfig.SearchInfo> groupQueries;
+						String url;
+						
+						// If the protocol is uppercase, users can't log in.  See bug 823936.
+						url = nextGwtLdapConnection.getServerUrl();
+						if ( url != null )
+							url = url.toLowerCase();
+
+						// Gather all the user queries into one list
+						{
+							ArrayList<GwtLdapSearchInfo> listOfGwtUserQueries;
+
+							userQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
+
+							listOfGwtUserQueries = nextGwtLdapConnection.getListOfUserSearchCriteria();
+							if ( listOfGwtUserQueries != null )
+							{
+								for ( GwtLdapSearchInfo nextSearch : listOfGwtUserQueries )
+								{
+									LdapConnectionConfig.SearchInfo searchInfo;
+									
+									searchInfo = new LdapConnectionConfig.SearchInfo(
+																				nextSearch.getBaseDn(),
+																				nextSearch.getFilter(),
+																				nextSearch.getSearchSubtree() );
+									userQueries.add( searchInfo );
+								}
+							}
+						}
+						
+						// Gather all the group queries into one list
+						{
+							ArrayList<GwtLdapSearchInfo> listOfGwtGroupQueries;
+
+							groupQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
+
+							listOfGwtGroupQueries = nextGwtLdapConnection.getListOfGroupSearchCriteria();
+							if ( listOfGwtGroupQueries != null )
+							{
+								for ( GwtLdapSearchInfo nextSearch : listOfGwtGroupQueries )
+								{
+									LdapConnectionConfig.SearchInfo searchInfo;
+									
+									searchInfo = new LdapConnectionConfig.SearchInfo(
+																				nextSearch.getBaseDn(),
+																				nextSearch.getFilter(),
+																				nextSearch.getSearchSubtree() );
+									groupQueries.add( searchInfo );
+								}
+							}
+						}
+
+						ldapConnection = new LdapConnectionConfig(
+																url,
+																nextGwtLdapConnection.getUserIdAttribute(),
+																nextGwtLdapConnection.getUserAttributeMappings(),
+																userQueries,
+																groupQueries,
+																nextGwtLdapConnection.getProxyDn(),
+																nextGwtLdapConnection.getProxyPwd(),
+																nextGwtLdapConnection.getLdapGuidAttribute() );
+						ldapConnection.setId( nextGwtLdapConnection.getId() );
+						listOfLdapConnections.add( ldapConnection );
+					}
+				}
+
+				// Save the ldap server configurations
+				ami.getAuthenticationModule().setLdapConnectionConfigs( listOfLdapConnections );
 			}
-			getAuthenticationModule().setLdapConnectionConfigs(configList);
-		**/
 			
 			// Get the time zone
 			saveDefaultTimeZone( ami, ldapConfig.getTimeZone() );

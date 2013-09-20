@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -159,7 +160,19 @@ public class EditLdapConfigDlg extends DlgBox
 	 */
 	private void addLdapServers( List<GwtLdapConnectionConfig> listOfLdapServers )
 	{
-		m_listOfLdapServers = listOfLdapServers;
+		if ( m_listOfLdapServers == null )
+			m_listOfLdapServers = new ArrayList<GwtLdapConnectionConfig>();
+		else
+			m_listOfLdapServers.clear();
+		
+		if ( listOfLdapServers != null )
+		{
+			// Make a copy of the list
+			for ( GwtLdapConnectionConfig nextServerConfig : listOfLdapServers )
+			{
+				m_listOfLdapServers.add( nextServerConfig );
+			}
+		}
 		
 		if ( m_dataProvider == null )
 		{
@@ -169,7 +182,6 @@ public class EditLdapConfigDlg extends DlgBox
 		else
 		{
 			m_dataProvider.setList( m_listOfLdapServers );
-			m_dataProvider.refresh();
 		}
 		
 		// Clear all selections.
@@ -180,6 +192,7 @@ public class EditLdapConfigDlg extends DlgBox
 		
 		// Tell the table how many ldap servers we have.
 		m_ldapServersTable.setRowCount( m_listOfLdapServers.size(), true );
+		m_dataProvider.refresh();
 	}
 
 
@@ -751,6 +764,15 @@ public class EditLdapConfigDlg extends DlgBox
 
 		// Get the local user accounts configuration
 		ldapConfig.setAllowLocalLogin( m_allowLocalLoginCheckBox.getValue() );
+		
+		// Get the list of ldap servers
+		if ( m_listOfLdapServers != null )
+		{
+			for ( GwtLdapConnectionConfig nextServer : m_listOfLdapServers )
+			{
+				ldapConfig.addLdapConnectionConfig( nextServer );
+			}
+		}
 		
 		return ldapConfig;
 	}
