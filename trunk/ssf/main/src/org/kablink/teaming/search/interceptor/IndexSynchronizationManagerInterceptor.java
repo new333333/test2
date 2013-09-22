@@ -54,7 +54,8 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
     
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		if(getDepth() == 0) {
-			logger.debug("Begin index-synchronization session for the thread");
+			if(logger.isTraceEnabled())
+				logger.trace("Begin index-synchronization session for the thread");
 			
 			IndexSynchronizationManager.begin();
 		}
@@ -84,12 +85,14 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 			
 			if(getDepth() == 0) {
 				if(successful) {
-					logger.debug("Commit index-synchronization session for the thread");
+					if(logger.isTraceEnabled())
+						logger.trace("Commit index-synchronization session for the thread");
 			
 					IndexSynchronizationManager.applyChanges();
 				}
 				else {
-					logger.debug("Discard index-synchronization session for the thread");
+					if(logger.isTraceEnabled())
+						logger.trace("Discard index-synchronization session for the thread");
 					
 					IndexSynchronizationManager.discardChanges();					
 				}
