@@ -91,7 +91,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private GwtLdapConnectionConfig m_serverConfig;
 	private String m_defaultGroupFilter = null;
 	private String m_defaultUserFilter = null;
-	
+
+	private TabPanel m_tabPanel;
+
 	// Controls used in the Server Information tab
 	private TextBox m_serverUrlTextBox;
 	private TextBox m_proxyDnTextBox;
@@ -238,24 +240,23 @@ public class EditLdapServerConfigDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel = null;
-		TabPanel tabPanel;
 		
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		tabPanel = new TabPanel();
-		tabPanel.addStyleName( "vibe-tabPanel" );
+		m_tabPanel = new TabPanel();
+		m_tabPanel.addStyleName( "vibe-tabPanel" );
 
-		mainPanel.add( tabPanel );
+		mainPanel.add( m_tabPanel );
 
 		// Create a panel to hold the ldap server information
 		{
 			Panel serverPanel;
 			
 			serverPanel = createServerPanel( messages );
-			tabPanel.add( serverPanel, messages.editLdapServerConfigDlg_ServerTab() );
+			m_tabPanel.add( serverPanel, messages.editLdapServerConfigDlg_ServerTab() );
 		}
 		
 		// Create a panel to hold the user search criteria
@@ -263,7 +264,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			Panel usersPanel;
 			
 			usersPanel = createUsersPanel( messages );
-			tabPanel.add( usersPanel, messages.editLdapServerConfigDlg_UsersTab() );
+			m_tabPanel.add( usersPanel, messages.editLdapServerConfigDlg_UsersTab() );
 		}
 		
 		// Create a panel to hold the group search criteria
@@ -271,10 +272,10 @@ public class EditLdapServerConfigDlg extends DlgBox
 			Panel groupsPanel;
 			
 			groupsPanel = createGroupsPanel( messages );
-			tabPanel.add( groupsPanel, messages.editLdapServerConfigDlg_GroupsTab() );
+			m_tabPanel.add( groupsPanel, messages.editLdapServerConfigDlg_GroupsTab() );
 		}
 
-		tabPanel.selectTab( 0 );
+		m_tabPanel.selectTab( 0 );
 		
 		return mainPanel;
 	}
@@ -577,7 +578,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 		{
 			String productName;
 			
-			productName = GwtClientHelper.getRequestInfo().getProductName();
+			productName = getProductName();
 			
 			// Add a hint for the name attribute
 			tmpPanel = new FlowPanel();
@@ -893,26 +894,80 @@ public class EditLdapServerConfigDlg extends DlgBox
 	{
 		if ( m_serverConfig != null )
 		{
-			m_serverConfig.setServerUrl( m_serverUrlTextBox.getValue() );
-			m_serverConfig.setProxyDn( m_proxyDnTextBox.getValue() );
-			m_serverConfig.setProxyPwd( m_proxyPwdTextBox.getValue() );
+			String serverUrl;
+			String proxyDn;
+			String pwd;
+			String userIdAttrib;
+			String userAttribMappings;
+
+			// Validate what the admin entered
+			{
+				GwtTeamingMessages messages;
+				
+				messages = GwtTeaming.getMessages();
+				
+				serverUrl = m_serverUrlTextBox.getValue();
+				proxyDn = m_proxyDnTextBox.getValue();
+				pwd = m_proxyPwdTextBox.getValue();
+				userIdAttrib = m_nameAttribTextBox.getValue();
+				userAttribMappings = m_userAttribMappingsTextArea.getValue();
+
+				if ( isFieldValid( serverUrl, m_serverUrlTextBox, messages.editLdapServerConfigDlg_ErrorNoServerUrl() ) == false )
+					return null;
+
+				if ( isFieldValid( proxyDn, m_proxyDnTextBox, messages.editLdapServerConfigDlg_ErrorNoProxyDn() ) == false )
+					return null;
+
+				if ( isFieldValid( pwd, m_proxyPwdTextBox, messages.editLdapServerConfigDlg_ErrorNoPwd() ) == false )
+					return null;
+				
+				if ( isFieldValid( userIdAttrib, m_nameAttribTextBox, messages.editLdapServerConfigDlg_ErrorNoUserIdAttrib( getProductName() ) ) == false )
+					return null;
+
+				if ( isFieldValid( userAttribMappings, m_userAttribMappingsTextArea, messages.editLdapServerConfigDlg_ErrorNoUserAttribMappings() ) == false )
+					return null;
+				
+				// Did the admin define any user or group base dns?
+				if ( (m_listOfUserSearches == null || m_listOfUserSearches.size() == 0) &&
+					 (m_listOfGroupSearches == null || m_listOfGroupSearches.size() == 0) )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					// No
+					Window.alert( messages.editLdapServerConfigDlg_ErrorNoBaseDn() );
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							m_tabPanel.selectTab( 1 );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+					
+					return null;
+				}
+			}
+			
+			m_serverConfig.setServerUrl( serverUrl );
+			m_serverConfig.setProxyDn( proxyDn );
+			m_serverConfig.setProxyPwd( pwd );
 			m_serverConfig.setLdapGuidAttribute( m_guidAttribTextBox.getValue() );
-			m_serverConfig.setUserIdAttribute( m_nameAttribTextBox.getValue() );
+			m_serverConfig.setUserIdAttribute( userIdAttrib );
 			
 			// Get the user attribute mappings
 			{
-				String text;
 				Map<String,String> mappings;
 				
 				mappings = new HashMap<String,String>();
 				
-				text = m_userAttribMappingsTextArea.getValue();
-				if ( text != null && text.length() > 0 )
+				if ( userAttribMappings != null && userAttribMappings.length() > 0 )
 				{
 					String[] lines;
 					
 					// Get each line of the mappsings.
-					lines = GwtClientHelper.split( text, "\n" );
+					lines = GwtClientHelper.split( userAttribMappings, "\n" );
 					
 					if ( lines != null && lines.length > 0 )
 					{
@@ -971,6 +1026,17 @@ public class EditLdapServerConfigDlg extends DlgBox
 	}
 	
 	/**
+	 * Return the product name
+	 */
+	private String getProductName()
+	{
+		if ( GwtClientHelper.isLicenseFilr() )
+			return "Filr";
+		
+		return GwtClientHelper.getRequestInfo().getProductName();
+	}
+	
+	/**
 	 * Return a list of selected group searches.
 	 */
 	public Set<GwtLdapSearchInfo> getSelectedGroupSearches()
@@ -984,6 +1050,31 @@ public class EditLdapServerConfigDlg extends DlgBox
 	public Set<GwtLdapSearchInfo> getSelectedUserSearches()
 	{
 		return m_userSearchesSelectionModel.getSelectedSet();
+	}
+	
+	/**
+	 * See if the user provided a String value for the given field.
+	 */
+	private boolean isFieldValid( String value, final FocusWidget inputWidget, String errMsg )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		if ( value != null && value.length() > 0 )
+			return true;
+		
+		Window.alert( errMsg );
+
+		cmd = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				inputWidget.setFocus( true );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+		
+		return false;
 	}
 	
 	/**
