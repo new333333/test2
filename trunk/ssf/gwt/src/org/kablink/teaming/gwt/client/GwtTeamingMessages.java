@@ -2868,6 +2868,12 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapServerConfigDlg_AddSearchLabel();
 	String editLdapServerConfigDlg_BaseDnCol();
 	String editLdapServerConfigDlg_DeleteSearchLabel();
+	String editLdapServerConfigDlg_ErrorNoBaseDn();
+	String editLdapServerConfigDlg_ErrorNoPwd();
+	String editLdapServerConfigDlg_ErrorNoProxyDn();
+	String editLdapServerConfigDlg_ErrorNoServerUrl();
+	String editLdapServerConfigDlg_ErrorNoUserAttribMappings();
+	String editLdapServerConfigDlg_ErrorNoUserIdAttrib( String productName );
 	String editLdapServerConfigDlg_FilterCol();
 	String editLdapServerConfigDlg_GroupsTab();
 	String editLdapServerConfigDlg_GuidAttributeHint1();
@@ -2891,6 +2897,11 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapSearchDlg_BaseDnLabel();
 	String editLdapSearchDlg_CustomCriteriaRB();
 	String editLdapSearchDlg_DontCreateNetFolderRB();
+	String editLdapSearchDlg_ErrorNoAttributeName();
+	String editLdapSearchDlg_ErrorNoBaseDn();
+	String editLdapSearchDlg_ErrorNoFilter();
+	String editLdapSearchDlg_ErrorNoNetFolderPath();
+	String editLdapSearchDlg_ErrorNoNetFolderServer();
 	String editLdapSearchDlg_FilterLabel();
 	String editLdapSearchDlg_Header();
 	String editLdapSearchDlg_HomeDirAttribRB();

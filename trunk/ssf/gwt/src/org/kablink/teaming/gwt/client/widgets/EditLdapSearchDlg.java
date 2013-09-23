@@ -383,46 +383,72 @@ public class EditLdapSearchDlg extends DlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		if ( m_ldapSearch != null )
-		{
-			m_ldapSearch.setBaseDn( m_baseDnTextBox.getValue() );
-			m_ldapSearch.setFilter( m_filterTextArea.getValue() );
-			m_ldapSearch.setSearchSubtree( m_searchSubtreeCheckBox.getValue() );
-		}
+		GwtTeamingMessages messages;
+		String baseDn;
+		String filter;
+		
+		messages = GwtTeaming.getMessages();
+		
+		baseDn = m_baseDnTextBox.getValue();
+		filter = m_filterTextArea.getValue();
+		
+		if ( isFieldValid( baseDn, m_baseDnTextBox, messages.editLdapSearchDlg_ErrorNoBaseDn() ) == false )
+			return null;
+					
+		if ( isFieldValid( filter, m_filterTextArea, messages.editLdapSearchDlg_ErrorNoFilter() ) == false )
+			return null;
 		
 		// Is the home dir panel visible?
 		if ( m_homeDirInfoPanel.isVisible() )
 		{
-			GwtHomeDirConfig homeDirConfig;
-			
+			GwtHomeDirConfig homeDirConfig = null;
+
 			// Yes, get the information from the controls.
-			
 			homeDirConfig = new GwtHomeDirConfig();
 			
 			if ( m_useCustomCriteriaRB.getValue() )
 			{
 				String netFolderServerName;
+				String netFolderPath;
+				
+				netFolderServerName = getSelectedNetFolderServerName();
+				netFolderPath = m_netFolderPathTextBox.getValue();
+				
+				if ( isFieldValid( netFolderServerName, m_netFolderServersListBox, messages.editLdapSearchDlg_ErrorNoNetFolderServer() ) == false )
+					return null;
+
+				if ( isFieldValid( netFolderPath, m_netFolderPathTextBox, messages.editLdapSearchDlg_ErrorNoNetFolderPath() ) == false )
+					return null;
 				
 				homeDirConfig.setCreationOption( GwtHomeDirCreationOption.USE_CUSTOM_CONFIG );
-				netFolderServerName = getSelectedNetFolderServerName();
 				homeDirConfig.setNetFolderServerName( netFolderServerName );
-				homeDirConfig.setNetFolderPath( m_netFolderPathTextBox.getValue() );
+				homeDirConfig.setNetFolderPath( netFolderPath );
 			}
 			else if ( m_useHomeDirAttribRB.getValue() )
 				homeDirConfig.setCreationOption( GwtHomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
 			else if ( m_useSpecifiedAttribRB.getValue() )
 			{
+				String attribName;
+				
+				attribName = m_specifiedAttribTextBox.getValue();
+				if ( isFieldValid( attribName, m_specifiedAttribTextBox, messages.editLdapSearchDlg_ErrorNoAttributeName() ) == false )
+					return null;
+				
 				homeDirConfig.setCreationOption( GwtHomeDirCreationOption.USE_CUSTOM_ATTRIBUTE );
-				homeDirConfig.setAttributeName( m_specifiedAttribTextBox.getValue() );
+				homeDirConfig.setAttributeName( attribName );
 			}
 			else if ( m_dontCreateNetFolderRB.getValue() )
 				homeDirConfig.setCreationOption( GwtHomeDirCreationOption.DONT_CREATE_HOME_DIR_NET_FOLDER );
 			else
 				homeDirConfig.setCreationOption( GwtHomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
-			
+
 			m_ldapSearch.setHomeDirConfig( homeDirConfig );
 		}
-		
+
+		m_ldapSearch.setBaseDn( baseDn );
+		m_ldapSearch.setFilter( filter );
+		m_ldapSearch.setSearchSubtree( m_searchSubtreeCheckBox.getValue() );
+
 		return m_ldapSearch;
 	}
 	
@@ -584,7 +610,7 @@ public class EditLdapSearchDlg extends DlgBox
 				}
 			}
 			else
-				m_useHomeDirAttribRB.setValue( false );
+				m_useHomeDirAttribRB.setValue( true );
 
 			// Issue an ajax request to get the list of net folder servers this user has
 			// permission to use.
@@ -645,6 +671,34 @@ public class EditLdapSearchDlg extends DlgBox
 			m_modifyNetFolderServerDlg.setPopupPosition( x, y );
 			m_modifyNetFolderServerDlg.show();
 		}
+	}
+	
+	/**
+	 * See if the user provided a String value for the given field.
+	 */
+	private boolean isFieldValid( String value, final FocusWidget inputWidget, String errMsg )
+	{
+		if ( value != null && value.length() > 0 )
+			return true;
+		
+		Window.alert( errMsg );
+
+		if ( inputWidget != null )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					inputWidget.setFocus( true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+		
+		return false;
 	}
 	
 	/**
