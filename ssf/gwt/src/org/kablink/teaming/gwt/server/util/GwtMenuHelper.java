@@ -60,7 +60,6 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
@@ -814,51 +813,131 @@ public class GwtMenuHelper {
 		markTBITitle(manageUserTBI, "toolbar.details.userProperties");
 		markTBIEvent(manageUserTBI, TeamingEvents.INVOKE_USER_PROPERTIES_DLG);
 		entryToolbar.addNestedItem(manageUserTBI);
+
+		// If we're dealing with a non-person user (e.g., E-Mail
+		// Posting Agent, ...)...
+		User user = ((User) bs.getProfileModule().getEntry(userId));
+		if (!(user.isPerson())) {
+			// ...there are no other options.  Bail.
+			return;
+		}
+		
+		UserPropertiesRpcResponseData	upData;
+		try {
+			// Yes!  Can we determine the user's current adHoc folder
+			// access?
+			upData = GwtViewHelper.getUserProperties(bs, request, userId);
+		}
+		catch (Exception ex) {
+			// If we can't access the user properties information,
+			// we simply don't add options that require it.
+			return;
+		}
+		AccountInfo ai = upData.getAccountInfo();
 		
 		// Are we dealing with an internal user in filr mode?
-		User			user   = ((User) bs.getProfileModule().getEntry(userId));
-		IdentityInfo	userII = user.getIdentityInfo();
-		if (userII.isInternal() && Utils.checkIfFilr()) {
-			try {
-				// Yes!  Can we determine the user's current adHoc folder
-				// access?
-				UserPropertiesRpcResponseData	upData = GwtViewHelper.getUserProperties(bs, request, userId);
-				AccountInfo						ai     = upData.getAccountInfo();
-				
-				// Add a separator after the user properties item...
-				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+		if (Utils.checkIfFilr() && user.getIdentityInfo().isInternal()) {
+			// Yes!  Add a separator after the user properties item...
+			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 
-				// ...and if they have adHoc folders...
-				if (ai.hasAdHocFolders()) {
-					// ...add the disable users adHoc folders item...
-					manageUserTBI = new ToolbarItem("1_disableSelectedAdHoc");
-					markTBITitle(manageUserTBI, "toolbar.disable.user.adHoc.perUser");
-					markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS);
+			// ...and if they have adHoc folders...
+			if (ai.hasAdHocFolders()) {
+				// ...add the disable users adHoc folders item...
+				manageUserTBI = new ToolbarItem("1_disableSelectedAdHoc");
+				markTBITitle(manageUserTBI, "toolbar.disable.user.adHoc.perUser");
+				markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS);
+				entryToolbar.addNestedItem(manageUserTBI);
+			}
+			
+			else {
+				// ...otherwise, if they don't have adHoc folders, add
+				// ...the enable users adHoc folders item...
+				manageUserTBI = new ToolbarItem("1_enableSelectedAdHoc");
+				markTBITitle(manageUserTBI, "toolbar.enable.user.adHoc.perUser");
+				markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS);
+				entryToolbar.addNestedItem(manageUserTBI);
+			}
+
+			// ...if they currently have a per user adHoc folder
+			// ...setting...
+			if (ai.isPerUserAdHoc()) {
+				// ...and add the clear users adHoc folders item.
+				manageUserTBI = new ToolbarItem("1_clearSelectedAdHoc");
+				markTBITitle(manageUserTBI, "toolbar.clear.user.adHoc");
+				markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS);
+				entryToolbar.addNestedItem(manageUserTBI);
+			}
+		}
+
+		// Is this other than the built-in admin user?
+		if (!(user.isSuper())) {
+if (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING) {	//! ...temporary... 
+			// Yes!  Add a separator after the previous item...
+			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+	
+			// ...and if they have download access...
+			if (ai.canDownload()) {
+				// ...add the disable download item...
+				manageUserTBI = new ToolbarItem("1_disableSelectedDownload");
+				markTBITitle(manageUserTBI, "toolbar.disable.user.download.perUser");
+				markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD);
+				entryToolbar.addNestedItem(manageUserTBI);
+			}
+			
+			else {
+				// ...otherwise, if they can't download, add
+				// ...the enable download item...
+				manageUserTBI = new ToolbarItem("1_enableSelectedDownload");
+				markTBITitle(manageUserTBI, "toolbar.enable.user.download.perUser");
+				markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
+				entryToolbar.addNestedItem(manageUserTBI);
+			}
+	
+			// ...if they currently have a per user download
+			// ...setting...
+			if (ai.isPerUserDownload()) {
+				// ...and add the clear users download item.
+				manageUserTBI = new ToolbarItem("1_clearSelectedDownload");
+				markTBITitle(manageUserTBI, "toolbar.clear.user.download");
+				markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
+				entryToolbar.addNestedItem(manageUserTBI);
+			}
+}
+
+			// Is this other than the guest user?
+			if (!(user.isShared())) {
+if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary...
+				// Yes!  Add a separator after the previous item...
+				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+		
+				// ...and if they have web access...
+				if (ai.hasWebAccess()) {
+					// ...add the disable web access item...
+					manageUserTBI = new ToolbarItem("1_disableSelectedWebAccess");
+					markTBITitle(manageUserTBI, "toolbar.disable.user.webAccess.perUser");
+					markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS);
 					entryToolbar.addNestedItem(manageUserTBI);
 				}
 				
 				else {
-					// ...otherwise, if they don't have adHoc folders,
-					// ...add the enable users adHoc folders item...
-					manageUserTBI = new ToolbarItem("1_enableSelectedAdHoc");
-					markTBITitle(manageUserTBI, "toolbar.enable.user.adHoc.perUser");
-					markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS);
+					// ...otherwise, if they can't use web access, add
+					// ...the enable web access item...
+					manageUserTBI = new ToolbarItem("1_enableSelectedWebAccess");
+					markTBITitle(manageUserTBI, "toolbar.enable.user.webAccess.perUser");
+					markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS);
 					entryToolbar.addNestedItem(manageUserTBI);
 				}
-
-				// ...if they currently have a per user adHoc folder setting...
-				if (ai.isPerUserAdHoc()) {
-					// ...and add the clear users adHoc folders item.
-					manageUserTBI = new ToolbarItem("1_clearSelectedAdHoc");
-					markTBITitle(manageUserTBI, "toolbar.clear.user.adHoc");
-					markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS);
+		
+				// ...if they currently have a per user web access
+				// ...setting...
+				if (ai.isPerUserWebAccess()) {
+					// ...and add the clear users web access item.
+					manageUserTBI = new ToolbarItem("1_clearSelectedWebAccess");
+					markTBITitle(manageUserTBI, "toolbar.clear.user.webAccess");
+					markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
 					entryToolbar.addNestedItem(manageUserTBI);
 				}
-			}
-			catch (Exception ex) {
-				// If we can't access the user properties information,
-				// we simply don't add options to adjust their adHoc
-				// folder access.
+}
 			}
 		}
 	}
@@ -1108,6 +1187,48 @@ public class GwtMenuHelper {
 				moreTBI.addNestedItem(tbi);
 			}
 			
+if (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING) {	//! ...temporary...
+			// ...add the disable users download files item...
+			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			tbi = new ToolbarItem("1_disableSelectedDownload");
+			markTBITitle(tbi, "toolbar.disable.user.download");
+			markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD);
+			moreTBI.addNestedItem(tbi);
+			
+			// ...add the enable users download files item...
+			tbi = new ToolbarItem("1_enableSelectedDownload");
+			markTBITitle(tbi, "toolbar.enable.user.download");
+			markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
+			moreTBI.addNestedItem(tbi);
+			
+			// ...and add the clear users download files item.
+			tbi = new ToolbarItem("1_clearSelectedDownload");
+			markTBITitle(tbi, "toolbar.clear.user.download");
+			markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
+			moreTBI.addNestedItem(tbi);
+}
+			
+if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary...
+			// ...add the disable users web access item...
+			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			tbi = new ToolbarItem("1_disableSelectedWebAccess");
+			markTBITitle(tbi, "toolbar.disable.user.webAccess");
+			markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS);
+			moreTBI.addNestedItem(tbi);
+			
+			// ...add the enable users web access item...
+			tbi = new ToolbarItem("1_enableSelectedWebAccess");
+			markTBITitle(tbi, "toolbar.enable.user.webAccess");
+			markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS);
+			moreTBI.addNestedItem(tbi);
+			
+			// ...and add the clear users web access item.
+			tbi = new ToolbarItem("1_clearSelectedWebAccess");
+			markTBITitle(tbi, "toolbar.clear.user.webAccess");
+			markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
+			moreTBI.addNestedItem(tbi);
+}
+	
 			needSeparator = true;
 		}
 		

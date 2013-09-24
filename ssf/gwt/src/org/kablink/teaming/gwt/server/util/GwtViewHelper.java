@@ -6240,6 +6240,26 @@ public class GwtViewHelper {
 			ai.setHasAdHocFolders(hasAdHocFolders);
 			ai.setPerUserAdHoc(   perUserAdHoc   );
 
+			// ...add whether the user can download files...
+			boolean canDownload     = user.isPerson();
+			boolean perUserDownload = false;
+			if (canDownload) {
+				canDownload     = GwtUIHelper.getEffectiveDownloadSetting(bs, user);
+				perUserDownload = (null != pm.getDownloadEnabled(userId));
+			}
+			ai.setCanDownload(    canDownload    );
+			ai.setPerUserDownload(perUserDownload);
+
+			// ...add whether the user can use web access...
+			boolean hasWebAccess = user.isPerson();
+			boolean perUserWebAccess = false;
+			if (hasWebAccess) {
+				hasWebAccess     = GwtUIHelper.getEffectiveWebAccessSetting(bs, user);
+				perUserWebAccess = (null != pm.getWebAccessEnabled(userId));
+			}
+			ai.setHasWebAccess(    hasWebAccess    );
+			ai.setPerUserWebAccess(perUserWebAccess);
+
 			// ...add the user's current workspace sharing rights...
 			List<Long> userIds = new ArrayList<Long>();
 			userIds.add(userId);

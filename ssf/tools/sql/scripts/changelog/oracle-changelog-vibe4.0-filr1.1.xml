@@ -267,4 +267,32 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="dennis" context="schema" failOnError="true" id="19">
+        <comment>Enable users to download files</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="DOWNLOADENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="DOWNLOADENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="20">
+        <comment>Enable users to use web access</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="WEBACCESSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="WEBACCESSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

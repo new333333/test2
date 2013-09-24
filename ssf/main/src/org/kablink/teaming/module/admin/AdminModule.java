@@ -186,6 +186,10 @@ public interface AdminModule {
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
     public boolean isAdHocFoldersEnabled();
     public void setAdHocFoldersEnabled( boolean enabled );
+    public boolean isDownloadEnabled();
+    public void setDownloadEnabled( boolean enabled );
+    public boolean isWebAccessEnabled();
+    public void setWebAccessEnabled( boolean enabled );
     public boolean isFileArchivingEnabled();
     public void setFileArchivingEnabled(boolean fileArchivingEnabled);
     public int getAuditTrailKeepDays();

@@ -834,6 +834,18 @@ public interface ProfileModule {
     public void    setUserWorkspacePreDeleted(Long userId, boolean userWorkspacePreDeleted);
 
     /**
+     * Interacts with a user's download enabled flag.
+     */
+    public Boolean getDownloadEnabled(Long userId);
+    public void    setDownloadEnabled(Long userId, Boolean downloadEnabled);
+
+    /**
+     * Interacts with a user's web access enabled flag.
+     */
+    public Boolean getWebAccessEnabled(Long userId);
+    public void    setWebAccessEnabled(Long userId, Boolean webAccessEnabled);
+
+    /**
      * Returns a Collection<User> of all the external user's the
      * current user has rights to see.
      * 

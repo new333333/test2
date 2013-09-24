@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -563,6 +562,54 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
   		zoneConfig.setAdHocFoldersEnabled( enabled );
+  	}
+
+  	/**
+  	 * 
+  	 */
+  	@Override
+	public boolean isDownloadEnabled()
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		return zoneConfig.isDownloadEnabled(); 		
+  	}
+  	
+  	/**
+  	 * 
+  	 */
+  	@Override
+	public void setDownloadEnabled( boolean enabled ) 
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		zoneConfig.setDownloadEnabled( enabled );
+  	}
+
+  	/**
+  	 * 
+  	 */
+  	@Override
+	public boolean isWebAccessEnabled()
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		return zoneConfig.isWebAccessEnabled(); 		
+  	}
+  	
+  	/**
+  	 * 
+  	 */
+  	@Override
+	public void setWebAccessEnabled( boolean enabled ) 
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		zoneConfig.setWebAccessEnabled( enabled );
   	}
 
   	@Override
@@ -3148,7 +3195,8 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	return info;
     }
     
-    public void purgeLogTablesImmediate() {
+    @Override
+	public void purgeLogTablesImmediate() {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
   		Date now = new Date();
@@ -3214,7 +3262,8 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	}
 
     //Routine to append AuditTrail entries to a log file before they get deleted
-    public boolean writeAuditTrailLogFile(List<AuditTrail> entriesToBeDeleted) {
+    @Override
+	public boolean writeAuditTrailLogFile(List<AuditTrail> entriesToBeDeleted) {
     	if (!SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.auditTrail", false)) {
     		//We are not saving the deleted records
     		return true;
@@ -3222,9 +3271,8 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	if (entriesToBeDeleted.isEmpty()) return true;
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 	    User user = RequestContextHolder.getRequestContext().getUser();
-		Calendar now = new GregorianCalendar();
-		String month = String.valueOf(now.MONTH);
-		String year = String.valueOf(now.YEAR);
+		String month = String.valueOf(Calendar.MONTH);
+		String year = String.valueOf(Calendar.YEAR);
 
     	FileStore logFileStore = new FileStore(SPropsUtil.getString("data.databaselogs.dir"), "");
 		File logDir = new File(logFileStore.getRootPath() + File.separator + Utils.getZoneKey());
@@ -3286,16 +3334,16 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     }
 
     //Routine to append ChangeLog entries to a log file before they get deleted
-    public boolean writeChangeLogLogFile(List<ChangeLog> entriesToBeDeleted) {
+    @Override
+	public boolean writeChangeLogLogFile(List<ChangeLog> entriesToBeDeleted) {
     	if (!SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.changeLog", false)) {
     		//We are not saving the deleted records
     		return true;
     	}
     	if (entriesToBeDeleted.isEmpty()) return true;
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		Calendar now = new GregorianCalendar();
-		String month = String.valueOf(now.MONTH);
-		String year = String.valueOf(now.YEAR);
+		String month = String.valueOf(Calendar.MONTH);
+		String year = String.valueOf(Calendar.YEAR);
     	FileStore logFileStore = new FileStore(SPropsUtil.getString("data.databaselogs.dir"), "");
 		File logDir = new File(logFileStore.getRootPath() + File.separator + Utils.getZoneKey());
 		if (!logDir.exists() && !logDir.mkdirs()) {
@@ -3386,6 +3434,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		}
 		else {
 			getTransactionTemplate().execute(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					indexNode.setReindexingStartDate(null);
 					indexNode.setReindexingEndDate(null);
@@ -3406,6 +3455,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 			indexNodeRef.setReindexingStartDateAndAddress(now);
 			indexNodeRef.setReindexingEndDate(null);
 			getTransactionTemplate().execute(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					getCoreDao().save(indexNodeRef);
 					return null;
@@ -3424,6 +3474,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 				final IndexNode indexNodeRef = indexNode;
 				final Date now = new Date();
 				getTransactionTemplate().execute(new TransactionCallback<Object>() {
+					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						indexNodeRef.setReindexingStartDateAndAddress(now);
 						indexNodeRef.setReindexingEndDate(null);
@@ -3444,6 +3495,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		else {
 			final Date now = new Date();
 			getTransactionTemplate().execute(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					indexNode.setReindexingEndDate(now);
 					return null;
@@ -3454,7 +3506,8 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		}
     }
 
-    public IndexNode loadNonHAIndexNode() {
+    @Override
+	public IndexNode loadNonHAIndexNode() {
     	FilterControls filter = new FilterControls();
     	filter.addIsNull("name.nodeName");
     	List<IndexNode> nodes = getCoreDao().loadObjects(IndexNode.class, filter, RequestContextHolder.getRequestContext().getZoneId());
@@ -3468,7 +3521,8 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	return (ProfileModule) SpringContextUtil.getBean("profileModule");
     }
 
-    public boolean isUnsafeReindexingInProgress() {
+    @Override
+	public boolean isUnsafeReindexingInProgress() {
 		final IndexNode indexNode = loadNonHAIndexNode();
 		if(indexNode == null)
 			return false;

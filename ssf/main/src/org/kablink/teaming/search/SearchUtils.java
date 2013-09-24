@@ -1419,6 +1419,62 @@ public class SearchUtils {
 	}
 	
 	/**
+	 * Return the effective 'Download' setting for the given user.
+	 * We will look in the User object first for a value.  If one
+	 * is not found we will get the setting from the zone.
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Boolean getEffectiveDownloadSetting(AllModulesInjected bs, User user) {
+		// ! Check the user's setting.  
+		Boolean result;
+		if (null !=  user)
+		     result = getDownloadSettingFromUser(bs, user.getId());
+		else result = null;
+	
+		// Did we find a setting for the user?
+		if (null == result) {
+			// No!  Read the global setting.
+			result = getDownloadSettingFromZone(bs);
+		}
+
+		// If we get here, reply contains true if downloads are
+		// enabled and false otherwise.  Return it.
+		return result;
+	}
+	
+	/**
+	 * Return the effective 'WebAccess' setting for the given user.
+	 * We will look in the User object first for a value.  If one
+	 * is not found we will get the setting from the zone.
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Boolean getEffectiveWebAccessSetting(AllModulesInjected bs, User user) {
+		// ! Check the user's setting.  
+		Boolean result;
+		if (null !=  user)
+		     result = getWebAccessSettingFromUser(bs, user.getId());
+		else result = null;
+	
+		// Did we find a setting for the user?
+		if (null == result) {
+			// No!  Read the global setting.
+			result = getWebAccessSettingFromZone(bs);
+		}
+
+		// If we get here, reply contains true if web access is
+		// enabled and false otherwise.  Return it.
+		return result;
+	}
+	
+	/**
 	 * Return the 'AdHoc folder' setting from the given user's
 	 * properties.
 	 * 
@@ -1450,6 +1506,42 @@ public class SearchUtils {
 	}
 
 	/**
+	 * Return the 'download' setting from the given User object.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static Boolean getDownloadSettingFromUser(AllModulesInjected bs, Long userId) {
+		// If we have a user ID...
+		if (null != userId) {
+			// ...read the 'download' setting from the
+			// ...User object...
+			return bs.getProfileModule().getDownloadEnabled(userId);
+		}
+		return null;
+	}
+
+	/**
+	 * Return the 'web access' setting from the given User object.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static Boolean getWebAccessSettingFromUser(AllModulesInjected bs, Long userId) {
+		// If we have a user ID...
+		if (null != userId) {
+			// ...read the 'web access' setting from the
+			// ...User object...
+			return bs.getProfileModule().getWebAccessEnabled(userId);
+		}
+		return null;
+	}
+
+	/**
 	 * Return the 'AdHoc folder' setting from the zone.
 	 * 
 	 * @param ami,
@@ -1464,6 +1556,28 @@ public class SearchUtils {
 		     reply = new Boolean(ami.getAdminModule().isAdHocFoldersEnabled());
 		else reply = Boolean.TRUE;
 		return reply;
+	}
+
+	/**
+	 * Return the 'Download' setting from the zone.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static Boolean getDownloadSettingFromZone(AllModulesInjected bs) {
+	    return new Boolean(bs.getAdminModule().isDownloadEnabled());
+	}
+
+	/**
+	 * Return the 'WebAccess' setting from the zone.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static Boolean getWebAccessSettingFromZone(AllModulesInjected bs) {
+	    return new Boolean(bs.getAdminModule().isWebAccessEnabled());
 	}
 
     public static Document buildExcludeUniversalAndContainerGroupFilter(boolean excludeAllInternal) {

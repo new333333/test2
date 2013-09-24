@@ -523,6 +523,24 @@ public class EventHelper {
 				}
 				break;
 			
+			case CLEAR_SELECTED_USERS_DOWNLOAD:
+				// A ClearSelectedUsersDownloadEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof ClearSelectedUsersDownloadEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ClearSelectedUsersDownloadEvent.registerEvent(eventBus, ((ClearSelectedUsersDownloadEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CLEAR_SELECTED_USERS_WEBACCESS:
+				// A ClearSelectedUsersWebAccessEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof ClearSelectedUsersWebAccessEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ClearSelectedUsersWebAccessEvent.registerEvent(eventBus, ((ClearSelectedUsersWebAccessEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case CONTENT_CHANGED:
 				// A ContentChangedEvent!  Can the event handler we
 				// were given handle that?
@@ -622,6 +640,24 @@ public class EventHelper {
 				}
 				break;
 			
+			case DISABLE_SELECTED_USERS_DOWNLOAD:
+				// A DisableSelectedUsersDownloadEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof DisableSelectedUsersDownloadEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DisableSelectedUsersDownloadEvent.registerEvent(eventBus, ((DisableSelectedUsersDownloadEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case DISABLE_SELECTED_USERS_WEBACCESS:
+				// A DisableSelectedUsersWebAccessEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof DisableSelectedUsersWebAccessEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DisableSelectedUsersWebAccessEvent.registerEvent(eventBus, ((DisableSelectedUsersWebAccessEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case EDIT_CURRENT_BINDER_BRANDING:
 				// A EditCurrentBinderBrandingEvent!  Can the event
 				// handler we were given handle that?
@@ -673,6 +709,24 @@ public class EventHelper {
 				if (eventHandler instanceof EnableSelectedUsersAdHocFoldersEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = EnableSelectedUsersAdHocFoldersEvent.registerEvent(eventBus, ((EnableSelectedUsersAdHocFoldersEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case ENABLE_SELECTED_USERS_DOWNLOAD:
+				// A EnableSelectedUsersDownloadEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof EnableSelectedUsersDownloadEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EnableSelectedUsersDownloadEvent.registerEvent(eventBus, ((EnableSelectedUsersDownloadEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case ENABLE_SELECTED_USERS_WEBACCESS:
+				// A EnableSelectedUsersWebAccessEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof EnableSelectedUsersWebAccessEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EnableSelectedUsersWebAccessEvent.registerEvent(eventBus, ((EnableSelectedUsersWebAccessEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2664,13 +2718,19 @@ public class EventHelper {
 			case CHANGE_FAVORITE_STATE:                        hasHandler = (eventHandler instanceof ChangeFavoriteStateEvent.Handler);                    break;
 			case CHECK_MANAGE_USERS_ACTIVE:                    hasHandler = (eventHandler instanceof CheckManageUsersActiveEvent.Handler);                 break;
 			case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:           hasHandler = (eventHandler instanceof ClearSelectedUsersAdHocFoldersEvent.Handler);         break;
+			case CLEAR_SELECTED_USERS_DOWNLOAD:                hasHandler = (eventHandler instanceof ClearSelectedUsersDownloadEvent.Handler);             break;
+			case CLEAR_SELECTED_USERS_WEBACCESS:               hasHandler = (eventHandler instanceof ClearSelectedUsersWebAccessEvent.Handler);            break;
 			case COPY_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof CopySelectedEntitiesEvent.Handler);                   break;
 			case DELETE_SELECTED_ENTITIES:                     hasHandler = (eventHandler instanceof DeleteSelectedEntitiesEvent.Handler);                 break;
 			case DELETE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof DeleteSelectedUsersEvent.Handler);                    break;
 			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;
 			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
+			case DISABLE_SELECTED_USERS_DOWNLOAD:              hasHandler = (eventHandler instanceof DisableSelectedUsersDownloadEvent.Handler);           break;
+			case DISABLE_SELECTED_USERS_WEBACCESS:             hasHandler = (eventHandler instanceof DisableSelectedUsersWebAccessEvent.Handler);          break;
 			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;
 			case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:          hasHandler = (eventHandler instanceof EnableSelectedUsersAdHocFoldersEvent.Handler);        break;
+			case ENABLE_SELECTED_USERS_DOWNLOAD:               hasHandler = (eventHandler instanceof EnableSelectedUsersDownloadEvent.Handler);            break;
+			case ENABLE_SELECTED_USERS_WEBACCESS:              hasHandler = (eventHandler instanceof EnableSelectedUsersWebAccessEvent.Handler);           break;
 			case FIND_CONTROL_BROWSE:                          hasHandler = (eventHandler instanceof FindControlBrowseEvent.Handler);                      break;
 			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;
 			case GET_MANAGE_USERS_TITLE:                       hasHandler = (eventHandler instanceof GetManageUsersTitleEvent.Handler);                    break;

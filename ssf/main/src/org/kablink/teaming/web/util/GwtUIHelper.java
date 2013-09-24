@@ -637,6 +637,34 @@ public class GwtUIHelper {
 	}
 	
 	/**
+	 * Return the effective 'Download' setting from the given user.  We
+	 * will look in the user's properties first for a value.  If one is
+	 * not found we will get the setting from the zone.
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Boolean getEffectiveDownloadSetting(AllModulesInjected bs, User user) {
+		return SearchUtils.getEffectiveDownloadSetting(bs, user);
+	}
+	
+	/**
+	 * Return the effective 'WebAccess' setting from the given user.
+	 * We will look in the user's properties first for a value.  If one
+	 * is not found we will get the setting from the zone.
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Boolean getEffectiveWebAccessSetting(AllModulesInjected bs, User user) {
+		return SearchUtils.getEffectiveWebAccessSetting(bs, user);
+	}
+	
+	/**
 	 * Returns a Binder from it's ID guarding against any exceptions.
 	 * If an exception is caught, null is returned. 
 	 * 
@@ -703,6 +731,29 @@ public class GwtUIHelper {
 	public static Binder getBinderSafely2(BinderModule bm, String binderId) throws AccessControlException, NoBinderByTheIdException {
 		// Always use the initial form of this method.
 		return getBinderSafely2(bm, Long.parseLong(binderId));
+	}
+	
+	/**
+	 * Return the 'Download' setting from the given user's properties.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static Boolean getDownloadSettingFromUser(AllModulesInjected bs, Long userId) {
+		return SearchUtils.getDownloadSettingFromUser(bs, userId);
+	}
+
+	/**
+	 * Return the 'Download' setting from the zone.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static Boolean getDownloadSettingFromZone(AllModulesInjected bs) {
+		return SearchUtils.getDownloadSettingFromZone(bs);
 	}
 	
 	/**
@@ -1009,6 +1060,29 @@ public class GwtUIHelper {
 		return reply;
 	}
 
+	/**
+	 * Return the 'WebAccess' setting from the given user's properties.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static Boolean getWebAccessSettingFromUser(AllModulesInjected bs, Long userId) {
+		return SearchUtils.getWebAccessSettingFromUser(bs, userId);
+	}
+
+	/**
+	 * Return the 'WebAccess' setting from the zone.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static Boolean getWebAccessSettingFromZone(AllModulesInjected bs) {
+		return SearchUtils.getWebAccessSettingFromZone(bs);
+	}
+	
 	/*
 	 * Returns true if the current user has access to the root
 	 * workspace and false otherwise.
@@ -1340,30 +1414,72 @@ public class GwtUIHelper {
 	 * the value in the user's properties.  Otherwise, saves the
 	 * setting in the zone.
 	 * 
-	 * @param ami
+	 * @param bs
 	 * @param userId
 	 * @param allow
 	 * 
 	 * @return
 	 */
-	public static Boolean saveAdhocFolderSetting(AllModulesInjected ami, Long userId, Boolean allow) {
+	public static Boolean saveAdhocFolderSetting(AllModulesInjected bs, Long userId, Boolean allow) {
 		// Are we dealing with a user?
 		if (null != userId) {
 			// Yes!  Save the setting to their properties.
-			ami.getProfileModule().setUserProperty(
-				userId,
-				ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS,
-				((null == allow) ?
-					null         :				//     null -> Remove the setting and revert to the zone's setting.
-					String.valueOf(allow)));	// non-null -> Specific value to set.
+			User user = ((User) bs.getProfileModule().getEntry(userId));
+			if (user.isPerson() && (!(user.isSuper())) && (!(user.isShared())) && user.getIdentityInfo().isInternal()) {
+				// We don't allow this to be set for non-person users
+				// (e.g., E-Mail Posting Agent), admin, guest or
+				// external users.
+				bs.getProfileModule().setUserProperty(
+					userId,
+					ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS,
+					((null == allow) ?
+						null         :				//     null -> Remove the setting and revert to the zone's setting.
+						String.valueOf(allow)));	// non-null -> Specific value to set.
+			}
 		}
 		else {
 			// No, we aren't running with a user!  Save as a zone
 			// setting.
-			ami.getAdminModule().setAdHocFoldersEnabled(
+			bs.getAdminModule().setAdHocFoldersEnabled(
 				((null == allow) ?
 					Boolean.FALSE :	//     null -> Default to false.
 					allow));		// non-null -> Store value directly.
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Save the 'Download' setting.  If userId is not null saves the
+	 * value in the user's properties.  Otherwise, saves the setting
+	 * in the zone.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param allowDownload
+	 * 
+	 * @return
+	 */
+	public static Boolean saveDownloadSetting(AllModulesInjected bs, Long userId, Boolean allowDownload) {
+		// Are we dealing with a user?
+		if (null != userId) {
+			// Yes!  Save the setting to their properties.
+			//     null -> Remove the setting and revert to the zone's setting.
+			// non-null -> Specific value to set.
+			User user = ((User) bs.getProfileModule().getEntry(userId));
+			if (user.isPerson() && (!(user.isSuper()))) {
+				// We don't allow this to be set for non-person users
+				// (e.g., E-Mail Posting Agent) or admin.
+				bs.getProfileModule().setDownloadEnabled(userId, allowDownload);
+			}
+		}
+		else {
+			// No, we aren't running with a user!  Save as a zone
+			// setting.
+			bs.getAdminModule().setDownloadEnabled(
+				((null == allowDownload) ?
+					Boolean.TRUE         :	//     null -> Default to true.
+					allowDownload));		// non-null -> Store value directly.
 		}
 		
 		return Boolean.TRUE;
@@ -1386,6 +1502,86 @@ public class GwtUIHelper {
 				// ...saving the allow flag for each.
 				saveAdhocFolderSetting(bs, userId, allow);
 			}
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Saves the 'Download' settings for multiple users.
+	 * 
+	 * @param bs
+	 * @param userIds
+	 * @param allowDownload
+	 * 
+	 * @return
+	 */
+	public static Boolean saveMultipleDownloadSettings(AllModulesInjected bs, List<Long> userIds, Boolean allowDownload) {
+		// Do we have any user IDs to save from?
+		if (MiscUtil.hasItems(userIds)) {
+			// Yes!  Scan them...
+			for (Long userId:  userIds) {
+				// ...saving the allow flag for each.
+				saveDownloadSetting(bs, userId, allowDownload);
+			}
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Saves the 'WebAccess' settings for multiple users.
+	 * 
+	 * @param bs
+	 * @param userIds
+	 * @param allowDownload
+	 * 
+	 * @return
+	 */
+	public static Boolean saveMultipleWebAccessSettings(AllModulesInjected bs, List<Long> userIds, Boolean allowDownload) {
+		// Do we have any user IDs to save from?
+		if (MiscUtil.hasItems(userIds)) {
+			// Yes!  Scan them...
+			for (Long userId:  userIds) {
+				// ...saving the allow flag for each.
+				saveWebAccessSetting(bs, userId, allowDownload);
+			}
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Save the 'WebAccess' setting.  If userId is not null saves the
+	 * value in the user's properties.  Otherwise, saves the setting
+	 * in the zone.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param allowWebAccess
+	 * 
+	 * @return
+	 */
+	public static Boolean saveWebAccessSetting(AllModulesInjected bs, Long userId, Boolean allowWebAccess) {
+		// Are we dealing with a user?
+		if (null != userId) {
+			// Yes!  Save the setting to their properties.
+			//     null -> Remove the setting and revert to the zone's setting.
+			// non-null -> Specific value to set.
+			User user = ((User) bs.getProfileModule().getEntry(userId));
+			if (user.isPerson() && (!(user.isSuper())) && (!(user.isShared()))) {
+				// We don't allow this to be set for non-person users
+				// (e.g., E-Mail Posting Agent), admin or guest.
+				bs.getProfileModule().setWebAccessEnabled(userId, allowWebAccess);
+			}
+		}
+		else {
+			// No, we aren't running with a user!  Save as a zone
+			// setting.
+			bs.getAdminModule().setWebAccessEnabled(
+				((null == allowWebAccess) ?
+					Boolean.TRUE          :	//     null -> Default to true.
+					allowWebAccess));		// non-null -> Store value directly.
 		}
 		
 		return Boolean.TRUE;

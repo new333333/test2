@@ -1211,6 +1211,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_DOWNLOAD_SETTING:
+		{
+			GetDownloadSettingCmd gdsCmd = ((GetDownloadSettingCmd) cmd);
+			Long                  userId = gdsCmd.getUserId();
+			Boolean               result;
+			if (null != userId)
+			     result = GwtUIHelper.getDownloadSettingFromUser( this, userId );
+			else result = GwtUIHelper.getDownloadSettingFromZone( this         );
+			if (null == result) {
+				result = Boolean.FALSE;
+			}
+			
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case GET_DYNAMIC_MEMBERSHIP_CRITERIA:
 		{
 			GetDynamicMembershipCriteriaCmd gglqCmd;
@@ -2487,6 +2503,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case GET_WEBACCESS_SETTING:
+		{
+			GetWebAccessSettingCmd gwasCmd = ((GetWebAccessSettingCmd) cmd);
+			Long                   userId  = gwasCmd.getUserId();
+			Boolean                result;
+			if (null != userId)
+			     result = GwtUIHelper.getWebAccessSettingFromUser( this, userId );
+			else result = GwtUIHelper.getWebAccessSettingFromZone( this         );
+			if (null == result) {
+				result = Boolean.FALSE;
+			}
+			
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case GET_WHO_HAS_ACCESS:
 		{
 			GetWhoHasAccessCmd gwhaCmd = ((GetWhoHasAccessCmd) cmd);
@@ -2876,6 +2908,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_DOWNLOAD_SETTING:
+		{
+			SaveDownloadSettingCmd sdsCmd = ((SaveDownloadSettingCmd) cmd);
+			Boolean result = GwtUIHelper.saveDownloadSetting( this, sdsCmd.getUserId(), sdsCmd.isAllowDownload() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case SAVE_EMAIL_NOTIFICATION_INFORMATION:
 		{
 			SaveEmailNotificationInfoCmd seniCmd = ((SaveEmailNotificationInfoCmd) cmd);
@@ -2992,6 +3033,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			SaveMultipleAdhocFolderSettingsCmd smafsCmd = ((SaveMultipleAdhocFolderSettingsCmd) cmd);
 			Boolean result = GwtUIHelper.saveMultipleAdHocFolderSettings( this, smafsCmd.getUserIds(), smafsCmd.getAllowAdHocFolders() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_MULTIPLE_DOWNLOAD_SETTINGS:
+		{
+			SaveMultipleDownloadSettingsCmd smdsCmd = ((SaveMultipleDownloadSettingsCmd) cmd);
+			Boolean result = GwtUIHelper.saveMultipleDownloadSettings( this, smdsCmd.getUserIds(), smdsCmd.getAllowDownload() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_MULTIPLE_WEBACCESS_SETTINGS:
+		{
+			SaveMultipleWebAccessSettingsCmd smwasCmd = ((SaveMultipleWebAccessSettingsCmd) cmd);
+			Boolean result = GwtUIHelper.saveMultipleWebAccessSettings( this, smwasCmd.getUserIds(), smwasCmd.getAllowWebAccess() );
 			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -3165,6 +3224,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			susCmd = ((SaveUserStatusCmd) cmd);
 			responseData = saveUserStatus( ri, susCmd.getStatus() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_WEBACCESS_SETTING:
+		{
+			SaveWebAccessSettingCmd swasCmd = ((SaveWebAccessSettingCmd) cmd);
+			Boolean result = GwtUIHelper.saveWebAccessSetting( this, swasCmd.getUserId(), swasCmd.isAllowWebAccess() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

@@ -310,6 +310,9 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CheckNetFoldersStatus();
 	String rpcFailure_CheckNetFolderRootsStatus();
+	String rpcFailure_ClearUsersAdHocFolders();
+	String rpcFailure_ClearUsersDownload();
+	String rpcFailure_ClearUsersWebAccess();
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();
 	String rpcFailure_CreateApplicationAlreadyExists();
@@ -332,8 +335,12 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_DisableUsers();
 	String rpcFailure_DisableUsersAdHocFolders();
+	String rpcFailure_DisableUsersDownload();
+	String rpcFailure_DisableUsersWebAccess();
 	String rpcFailure_EnableUsers();
 	String rpcFailure_EnableUsersAdHocFolders();
+	String rpcFailure_EnableUsersDownload();
+	String rpcFailure_EnableUsersWebAccess();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_executeCustomJsp();
 	String rpcFailure_executeEnhancedViewJsp();
