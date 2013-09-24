@@ -477,7 +477,8 @@ public class UserPropertiesDlg extends DlgBox
 
 		// Can the user's personal storage setting be changed?
 		int row = getSectionRow(grid, rf, addSectionHeader);
-		if (!(account.isInternal())) {
+		boolean isLdap = account.isFromLdap();
+		if (!isLdap) {
 			// No!  Add a simple label for the section.
 			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgPersonalStorage());
 			il.addStyleName("vibe-userPropertiesDlg-buttonNoAct vibe-userPropertiesDlg-buttonLook");
@@ -540,17 +541,30 @@ public class UserPropertiesDlg extends DlgBox
 			grid.setWidget(           row, 0, button);
 			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
 		}
-		
-		// Add information about the user's current personal
-		// storage setting.
-		boolean perUserAdHoc = account.isPerUserAdHoc();
-		addLabeledText(
-			grid,
-			row,
-			m_messages.userPropertiesDlgLabel_PersonalStorage(),
-			(account.hasAdHocFolders() ?
-				(perUserAdHoc ? m_messages.userPropertiesDlgPersonalStorage_YesPerUser() : m_messages.userPropertiesDlgPersonalStorage_YesGlobal()) :
-				(perUserAdHoc ? m_messages.userPropertiesDlgPersonalStorage_NoPerUser()  : m_messages.userPropertiesDlgPersonalStorage_NoGlobal())));
+
+		if (isLdap) {
+			// Add information about the user's current personal
+			// storage setting.
+			boolean perUserAdHoc = account.isPerUserAdHoc();
+			addLabeledText(
+				grid,
+				row,
+				m_messages.userPropertiesDlgLabel_PersonalStorage(),
+				(account.hasAdHocFolders() ?
+					(perUserAdHoc ? m_messages.userPropertiesDlgPersonalStorage_YesPerUser() : m_messages.userPropertiesDlgPersonalStorage_YesGlobal()) :
+					(perUserAdHoc ? m_messages.userPropertiesDlgPersonalStorage_NoPerUser()  : m_messages.userPropertiesDlgPersonalStorage_NoGlobal())));
+		}
+		else {
+			boolean isExternal = account.getUserType().isExternal();
+			boolean isGuest    = account.getUserType().isGuest();
+			addLabeledText(
+				grid,
+				row,
+				m_messages.userPropertiesDlgLabel_PersonalStorage(),
+				(isExternal  ?
+					(isGuest ? m_messages.userPropertiesDlgPersonalStorage_NoGuest() : m_messages.userPropertiesDlgPersonalStorage_NoExternal()) :
+					m_messages.userPropertiesDlgPersonalStorage_YesLocal()));
+		}
 	}
 	
 	/*

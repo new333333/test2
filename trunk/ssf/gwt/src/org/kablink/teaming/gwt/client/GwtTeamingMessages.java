@@ -2672,9 +2672,12 @@ public interface GwtTeamingMessages extends Messages
 	String userPropertiesDlgPersonalStorage_Clear();
 	String userPropertiesDlgPersonalStorage_Disable();
 	String userPropertiesDlgPersonalStorage_Enable();
+	String userPropertiesDlgPersonalStorage_NoExternal();
 	String userPropertiesDlgPersonalStorage_NoGlobal();
+	String userPropertiesDlgPersonalStorage_NoGuest();
 	String userPropertiesDlgPersonalStorage_NoPerUser();
 	String userPropertiesDlgPersonalStorage_YesGlobal();
+	String userPropertiesDlgPersonalStorage_YesLocal();
 	String userPropertiesDlgPersonalStorage_YesPerUser();
 	String userPropertiesDlgProfile();
 	String userPropertiesDlgQuota();
