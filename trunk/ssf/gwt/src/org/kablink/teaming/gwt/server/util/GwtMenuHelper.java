@@ -60,6 +60,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
@@ -821,6 +822,11 @@ public class GwtMenuHelper {
 			// ...there are no other options.  Bail.
 			return;
 		}
+		IdentityInfo userII     = user.getIdentityInfo();
+		boolean      isAdmin    = user.isSuper();
+		boolean      isInternal =                userII.isInternal();
+		boolean      isLdap     = (isInternal && userII.isFromLdap());
+		boolean      isGuest    = user.isShared();
 		
 		UserPropertiesRpcResponseData	upData;
 		try {
@@ -835,8 +841,8 @@ public class GwtMenuHelper {
 		}
 		AccountInfo ai = upData.getAccountInfo();
 		
-		// Are we dealing with an internal user in filr mode?
-		if (Utils.checkIfFilr() && user.getIdentityInfo().isInternal()) {
+		// Are we dealing with an LDAP user in filr mode?
+		if (Utils.checkIfFilr() && isLdap) {
 			// Yes!  Add a separator after the user properties item...
 			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 
@@ -870,7 +876,7 @@ public class GwtMenuHelper {
 		}
 
 		// Is this other than the built-in admin user?
-		if (!(user.isSuper())) {
+		if (!isAdmin) {
 if (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING) {	//! ...temporary... 
 			// Yes!  Add a separator after the previous item...
 			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
@@ -905,7 +911,7 @@ if (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING) {	//! ...temporary...
 }
 
 			// Is this other than the guest user?
-			if (!(user.isShared())) {
+			if (!isGuest) {
 if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary...
 				// Yes!  Add a separator after the previous item...
 				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());

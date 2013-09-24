@@ -2820,7 +2820,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			BooleanRpcResponseData responseData;
 			
 			safsCmd = (SaveAdhocFolderSettingCmd) cmd;
-			result = GwtUIHelper.saveAdhocFolderSetting( this, safsCmd.getUserId(), safsCmd.getAllowAdhocFolders() );
+			result = GwtServerHelper.saveAdhocFolderSetting( this, safsCmd.getUserId(), safsCmd.getAllowAdhocFolders() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2911,7 +2911,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_DOWNLOAD_SETTING:
 		{
 			SaveDownloadSettingCmd sdsCmd = ((SaveDownloadSettingCmd) cmd);
-			Boolean result = GwtUIHelper.saveDownloadSetting( this, sdsCmd.getUserId(), sdsCmd.isAllowDownload() );
+			Boolean result = GwtServerHelper.saveDownloadSetting( this, sdsCmd.getUserId(), sdsCmd.isAllowDownload() );
 			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -3032,27 +3032,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_MULTIPLE_ADHOC_FOLDER_SETTINGS:
 		{
 			SaveMultipleAdhocFolderSettingsCmd smafsCmd = ((SaveMultipleAdhocFolderSettingsCmd) cmd);
-			Boolean result = GwtUIHelper.saveMultipleAdHocFolderSettings( this, smafsCmd.getUserIds(), smafsCmd.getAllowAdHocFolders() );
-			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
+			ErrorListRpcResponseData result = GwtServerHelper.saveMultipleAdHocFolderSettings( this, smafsCmd.getUserIds(), smafsCmd.getAllowAdHocFolders() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
 		case SAVE_MULTIPLE_DOWNLOAD_SETTINGS:
 		{
 			SaveMultipleDownloadSettingsCmd smdsCmd = ((SaveMultipleDownloadSettingsCmd) cmd);
-			Boolean result = GwtUIHelper.saveMultipleDownloadSettings( this, smdsCmd.getUserIds(), smdsCmd.getAllowDownload() );
-			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
+			ErrorListRpcResponseData result = GwtServerHelper.saveMultipleDownloadSettings( this, smdsCmd.getUserIds(), smdsCmd.getAllowDownload() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
 		case SAVE_MULTIPLE_WEBACCESS_SETTINGS:
 		{
 			SaveMultipleWebAccessSettingsCmd smwasCmd = ((SaveMultipleWebAccessSettingsCmd) cmd);
-			Boolean result = GwtUIHelper.saveMultipleWebAccessSettings( this, smwasCmd.getUserIds(), smwasCmd.getAllowWebAccess() );
-			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
+			ErrorListRpcResponseData result = GwtServerHelper.saveMultipleWebAccessSettings( this, smwasCmd.getUserIds(), smwasCmd.getAllowWebAccess() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -3231,7 +3228,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_WEBACCESS_SETTING:
 		{
 			SaveWebAccessSettingCmd swasCmd = ((SaveWebAccessSettingCmd) cmd);
-			Boolean result = GwtUIHelper.saveWebAccessSetting( this, swasCmd.getUserId(), swasCmd.isAllowWebAccess() );
+			Boolean result = GwtServerHelper.saveWebAccessSetting( this, swasCmd.getUserId(), swasCmd.isAllowWebAccess() );
 			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
