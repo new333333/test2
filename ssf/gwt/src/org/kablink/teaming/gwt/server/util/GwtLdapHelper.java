@@ -380,9 +380,6 @@ public class GwtLdapHelper
 		schedule = ami.getLdapModule().getLdapSchedule();
 		if ( schedule != null )
 		{
-			boolean syncAllUsersAndGroups;
-			String listOfLdapConfigsToSyncGuid;
-			
 			// Get the user configuration
 			{
 				schedule.setUserRegister( ldapConfig.getRegisterUserProfilesAutomatically() );
@@ -548,28 +545,6 @@ public class GwtLdapHelper
 			
 			// Save the selected locale
 			saveDefaultLocale( ami, ldapConfig.getLocale() );
-			
-		//!!! Finish
-		/**
-			// Does the user want to sync all users and groups?
-			syncAllUsersAndGroups = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
-
-			// Get the list of ldap configs that we need to sync the guid
-			listOfLdapConfigsToSyncGuid = PortletRequestUtils.getStringParameter( request, "listOfLdapConfigsToSyncGuid", "" );
-			
-			// Do we need to start a sync?
-			if ( (listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length() > 0 ) ||
-				  syncAllUsersAndGroups == true )
-			{
-				// Yes
-				// Pass this fact back to the page.  When the page loads it will issue an ajax
-				// request to start the sync.
-				response.setRenderParameter( "startLdapSync", "true" );
-				response.setRenderParameter( "syncAllUsersAndGroups", Boolean.toString( syncAllUsersAndGroups ) );
-				if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length() > 0 )
-					response.setRenderParameter( "listOfLdapConfigsToSyncGuid", listOfLdapConfigsToSyncGuid );
-			}
-		**/
 		}
 		
 		return responseData;

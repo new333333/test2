@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
+import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig.GwtLdapSyncStatus;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -40,9 +42,11 @@ import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.Image;
 
 
 /**
@@ -50,6 +54,8 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
  */
 public class LdapServerUrlCell extends AbstractCell<GwtLdapConnectionConfig>
 {
+	private static String m_imgHtml;
+	
 	/**
 	 * 
 	 */
@@ -57,6 +63,16 @@ public class LdapServerUrlCell extends AbstractCell<GwtLdapConnectionConfig>
 	{
 		// We care about click and keydown action
 		super( "click", "keydown" );
+
+		if ( m_imgHtml == null )
+		{
+			ImageResource imgResource;
+			Image img;
+			
+			imgResource = GwtTeaming.getImageBundle().spinner16();
+			img = GwtClientHelper.buildImage( imgResource );
+			m_imgHtml = img.toString();
+		}
 	}
 
 	/**
@@ -101,6 +117,7 @@ public class LdapServerUrlCell extends AbstractCell<GwtLdapConnectionConfig>
 		
 		{
 			SafeHtml safeValue;
+			GwtLdapSyncStatus status;
 
 			// Wrap everything in a <div>
 			sb.appendHtmlConstant( "<div class=\"ldapSource_ServerUrlPanel\">" );
@@ -111,6 +128,23 @@ public class LdapServerUrlCell extends AbstractCell<GwtLdapConnectionConfig>
 			sb.append( safeValue );
 			sb.appendHtmlConstant( "</span>" );
 			
+			status = value.getSyncStatus();
+			if ( status == GwtLdapSyncStatus.SYNC_IN_PROGRESS )
+			{
+				String statusMsg;
+				
+				// Add the spinner
+				sb.appendHtmlConstant( m_imgHtml );
+
+				// Get the appropriate status message.
+				statusMsg = GwtTeaming.getMessages().editLdapConfigDlg_Syncing();
+					
+				// Add a status message
+				sb.appendHtmlConstant( "<span class=\"ldapSyncStatus\">" );
+				sb.appendEscaped( statusMsg );
+				sb.appendHtmlConstant( "</span>" );
+			}
+
 			// Close the <div>
 			sb.appendHtmlConstant( "</div>" );
 		}

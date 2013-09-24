@@ -386,6 +386,7 @@ public class EditLdapSearchDlg extends DlgBox
 		GwtTeamingMessages messages;
 		String baseDn;
 		String filter;
+		GwtHomeDirConfig homeDirConfig = null;
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -401,8 +402,6 @@ public class EditLdapSearchDlg extends DlgBox
 		// Is the home dir panel visible?
 		if ( m_homeDirInfoPanel.isVisible() )
 		{
-			GwtHomeDirConfig homeDirConfig = null;
-
 			// Yes, get the information from the controls.
 			homeDirConfig = new GwtHomeDirConfig();
 			
@@ -441,10 +440,27 @@ public class EditLdapSearchDlg extends DlgBox
 				homeDirConfig.setCreationOption( GwtHomeDirCreationOption.DONT_CREATE_HOME_DIR_NET_FOLDER );
 			else
 				homeDirConfig.setCreationOption( GwtHomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
-
-			m_ldapSearch.setHomeDirConfig( homeDirConfig );
 		}
 
+		// Has anything changed?
+		{
+			boolean isDirty = false;
+			
+			if ( GwtClientHelper.areStringsEqual( baseDn, m_ldapSearch.getBaseDn() ) == false )
+				isDirty = true;
+			else if ( GwtClientHelper.areStringsEqual( filter, m_ldapSearch.getFilter() ) == false )
+				isDirty = true;
+			else if ( m_searchSubtreeCheckBox.getValue() != m_ldapSearch.getSearchSubtree() )
+				isDirty = true;
+			else if ( homeDirConfig != null && homeDirConfig.isEqualTo( m_ldapSearch.getHomeDirConfig() ) == false )
+				isDirty = true;
+			
+			m_ldapSearch.setIsDirty( isDirty );
+		}
+
+		if ( homeDirConfig != null )
+			m_ldapSearch.setHomeDirConfig( homeDirConfig );
+			
 		m_ldapSearch.setBaseDn( baseDn );
 		m_ldapSearch.setFilter( filter );
 		m_ldapSearch.setSearchSubtree( m_searchSubtreeCheckBox.getValue() );

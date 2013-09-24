@@ -4518,7 +4518,7 @@ td.datePickerMonth {
 	padding-right: 10px;
 }
 
-.groupStatus
+.groupStatus, .ldapSyncStatus
 {
 	color: #949494;
 	font-family: Arial,sans-serif;

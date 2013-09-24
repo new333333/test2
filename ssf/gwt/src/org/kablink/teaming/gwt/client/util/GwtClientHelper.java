@@ -198,6 +198,23 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Determine if the two string are equal
+	 */
+	public static boolean areStringsEqual( String s1, String s2 )
+	{
+		if ( s1 != null && s2 == null )
+			return false;
+		
+		if ( s1 == null && s2 != null )
+			return false;
+		
+		if ( s1 != null && s1.equalsIgnoreCase( s2 ) == false )
+			return false;
+		
+		return true;
+	}
+	
+	/**
 	 * Returns the boolean value stored in a string.
 	 * 
 	 * @param s

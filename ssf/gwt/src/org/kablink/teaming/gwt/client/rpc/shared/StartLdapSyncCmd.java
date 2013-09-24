@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,113 +30,65 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import java.util.ArrayList;
+
+import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
 
 
 /**
- * This class is used to represent the data used in an ldap search.  This class should mirror
- * the data found in SearchInfo
- * @author jwootton
- *
+ * This class holds all of the information necessary to execute the
+ * 'start ldap sync' command.
+ * 
+ * @author jwootton@novell.com
  */
-public class GwtLdapSearchInfo implements IsSerializable
+public class StartLdapSyncCmd extends VibeRpcCmd
 {
-	private String m_baseDn;
-	private String m_filter;
-	private boolean m_searchSubtree;
-	private GwtHomeDirConfig m_homeDirConfig;
-	
-	private boolean m_isDirty;
+	private ArrayList<GwtLdapConnectionConfig> m_listOfLdapServersToSync;
 	
 	/**
-	 * Constructor method. 
+	 * Constructor method.
 	 * 
-	 * No parameters as per GWT serialization requirements.
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public GwtLdapSearchInfo()
+	public StartLdapSyncCmd()
 	{
-		m_isDirty = false;
+		// Initialize the super class.
+		super();
+		
+		m_listOfLdapServersToSync = null;
 	}
 
 	/**
-	 * 
+	 * Add an ldap server to sync.
 	 */
-	public String getBaseDn()
+	public void addLdapServerToSync( GwtLdapConnectionConfig ldapServer )
 	{
-		return m_baseDn;
+		if ( m_listOfLdapServersToSync == null )
+			m_listOfLdapServersToSync = new ArrayList<GwtLdapConnectionConfig>();
+		
+		m_listOfLdapServersToSync.add( ldapServer );
 	}
-
+	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
-	 */
-	public String getFilter()
-	{
-		return m_filter;
-	}
-
-	/**
+	 * Implements VibeRpcCmd.getCmdType()
 	 * 
+	 * @return
 	 */
-	public GwtHomeDirConfig getHomeDirConfig()
+	@Override
+	public int getCmdType() 
 	{
-		return m_homeDirConfig;
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getSearchSubtree()
-	{
-		return m_searchSubtree;
-	}
-
-	/**
-	 * 
-	 */
-	public boolean isDirty()
-	{
-		return m_isDirty;
+		return VibeRpcCmdType.START_LDAP_SYNC.ordinal();
 	}
 	
 	/**
 	 * 
 	 */
-	public void setBaseDn( String baseDn )
+	public ArrayList<GwtLdapConnectionConfig> getListOfLdapServersToSync()
 	{
-		m_baseDn = baseDn;
-	}
-
-	/**
-	 * 
-	 */
-	public void setFilter( String filter )
-	{
-		m_filter = filter;
-	}
-
-	/**
-	 * 
-	 */
-	public void setHomeDirConfig( GwtHomeDirConfig homeDirConfig )
-	{
-		m_homeDirConfig = homeDirConfig;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setIsDirty( boolean isDirty )
-	{
-		m_isDirty = isDirty;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setSearchSubtree( boolean searchSubtree )
-	{
-		m_searchSubtree = searchSubtree;
+		return m_listOfLdapServersToSync;
 	}
 }
