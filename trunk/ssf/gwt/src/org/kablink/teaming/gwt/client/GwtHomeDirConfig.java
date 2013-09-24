@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client;
 
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -107,6 +109,43 @@ public class GwtHomeDirConfig implements IsSerializable
 		return m_netFolderServerName;
 	}
 
+	/**
+	 * 
+	 */
+	public boolean isEqualTo( GwtHomeDirConfig homeDirConfig )
+	{
+		if ( homeDirConfig == null )
+			return false;
+		
+		if ( getCreationOption() != homeDirConfig.getCreationOption() )
+			return false;
+		
+		switch ( getCreationOption() )
+		{
+		case USE_CUSTOM_CONFIG:
+			if ( GwtClientHelper.areStringsEqual( m_netFolderServerName, homeDirConfig.getNetFolderServerName() ) == false )
+				return false;
+			
+			if ( GwtClientHelper.areStringsEqual( m_netFolderPath, homeDirConfig.getNetFolderPath() ) == false )
+				return false;
+			
+			break;
+			
+		case USE_CUSTOM_ATTRIBUTE:
+			if ( GwtClientHelper.areStringsEqual( m_attributeName, homeDirConfig.getAttributeName() ) == false )
+				return false;
+			
+			break;
+		
+		default:
+			// Nothing to do
+			break;
+		}
+		
+		// If we get here everything is equal
+		return true;
+	}
+	
 	/**
 	 * 
 	 * @param attributeName

@@ -832,6 +832,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 		// Do we have any searches to delete?
 		if ( selectedSearchInfo != null && selectedSearchInfo.isEmpty() == false )
 		{
+			if ( m_serverConfig != null )
+				m_serverConfig.setIsDirty( true );
+			
 			// Remove the selected group searches from our list.
 			for ( GwtLdapSearchInfo nextSearchInfo : selectedSearchInfo )
 			{
@@ -865,6 +868,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 		// Do we have any searches to delete?
 		if ( selectedSearchInfo != null && selectedSearchInfo.isEmpty() == false )
 		{
+			if ( m_serverConfig != null )
+				m_serverConfig.setIsDirty( true );
+			
 			// Remove the selected user searches from our list.
 			for ( GwtLdapSearchInfo nextSearchInfo : selectedSearchInfo )
 			{
@@ -897,6 +903,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			String serverUrl;
 			String proxyDn;
 			String pwd;
+			String guidAttrib;
 			String userIdAttrib;
 			String userAttribMappings;
 
@@ -909,6 +916,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 				serverUrl = m_serverUrlTextBox.getValue();
 				proxyDn = m_proxyDnTextBox.getValue();
 				pwd = m_proxyPwdTextBox.getValue();
+				guidAttrib = m_guidAttribTextBox.getValue();
 				userIdAttrib = m_nameAttribTextBox.getValue();
 				userAttribMappings = m_userAttribMappingsTextArea.getValue();
 
@@ -948,6 +956,26 @@ public class EditLdapServerConfigDlg extends DlgBox
 					
 					return null;
 				}
+			}
+			
+			// Did anything change?
+			{
+				boolean isDirty = false;
+				
+				if ( GwtClientHelper.areStringsEqual( serverUrl, m_serverConfig.getServerUrl() ) == false )
+					isDirty = true;
+				else if ( GwtClientHelper.areStringsEqual( proxyDn, m_serverConfig.getProxyDn() ) == false )
+					isDirty = true;
+				else if ( GwtClientHelper.areStringsEqual( pwd, m_serverConfig.getProxyPwd() ) == false )
+					isDirty = true;
+				else if ( GwtClientHelper.areStringsEqual( guidAttrib, m_serverConfig.getLdapGuidAttribute() ) == false )
+					isDirty = true;
+				else if ( GwtClientHelper.areStringsEqual( userIdAttrib, m_serverConfig.getUserIdAttribute() ) == false )
+					isDirty = true;
+				else if ( GwtClientHelper.areStringsEqual( userAttribMappings, m_serverConfig.getUserAttributeMappingsAsString() ) == false )
+					isDirty = true;
+				
+				m_serverConfig.setIsDirty( isDirty );
 			}
 			
 			m_serverConfig.setServerUrl( serverUrl );
@@ -997,7 +1025,11 @@ public class EditLdapServerConfigDlg extends DlgBox
 				if ( m_listOfUserSearches != null )
 				{
 					for ( GwtLdapSearchInfo nextSearch : m_listOfUserSearches )
+					{
 						m_serverConfig.addUserSearchCriteria( nextSearch );
+						if ( nextSearch.isDirty() )
+							m_serverConfig.setIsDirty( true );
+					}
 				}
 			}
 			
@@ -1007,7 +1039,11 @@ public class EditLdapServerConfigDlg extends DlgBox
 				if ( m_listOfGroupSearches != null )
 				{
 					for ( GwtLdapSearchInfo nextSearch : m_listOfGroupSearches )
+					{
 						m_serverConfig.addGroupSearchCriteria( nextSearch );
+						if ( nextSearch.isDirty() )
+							m_serverConfig.setIsDirty( true );
+					}
 				}
 			}
 		}
@@ -1106,6 +1142,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 		addUserSearches( config.getListOfUserSearchCriteria() );
 		
 		addGroupSearches( config.getListOfGroupSearchCriteria() );
+
+		if ( m_serverConfig.isDirty() == false )
+			m_serverConfig.setIsDirtySearchInfo( false );
 	}
 
 	/**
@@ -1126,6 +1165,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 			{
 				if ( obj instanceof GwtLdapSearchInfo )
 				{
+					if ( m_serverConfig != null )
+						m_serverConfig.setIsDirty( true );
+					
 					// Add the new search to our list
 					m_listOfGroupSearches.add( (GwtLdapSearchInfo) obj );
 					
@@ -1160,6 +1202,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 			{
 				if ( obj instanceof GwtLdapSearchInfo )
 				{
+					if ( m_serverConfig != null )
+						m_serverConfig.setIsDirty( true );
+					
 					// Add the new search to our list
 					m_listOfUserSearches.add( (GwtLdapSearchInfo) obj );
 					

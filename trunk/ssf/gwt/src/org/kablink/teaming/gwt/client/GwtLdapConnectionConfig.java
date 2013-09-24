@@ -62,6 +62,21 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	// Group search criteria
 	private ArrayList< GwtLdapSearchInfo> m_listOfGroupSearchCriteria;
 	
+	private boolean m_isDirty;
+	private GwtLdapSyncStatus m_syncStatus; 
+	
+
+	/**
+	 * This class represents the different ldap sync status
+	 */
+	public enum GwtLdapSyncStatus implements IsSerializable
+	{
+		SYNC_IN_PROGRESS,
+		SYNC_CANCELED,
+		SYNC_COMPLETED,
+		UNKNOWN
+	}
+
 	/**
 	 * Constructor method. 
 	 * 
@@ -69,6 +84,8 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	 */
 	public GwtLdapConnectionConfig()
 	{
+		m_isDirty = false;
+		m_syncStatus = GwtLdapSyncStatus.UNKNOWN;
 	}
 	
 	/**
@@ -170,6 +187,14 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	/**
 	 * 
 	 */
+	public GwtLdapSyncStatus getSyncStatus()
+	{
+		return m_syncStatus;
+	}
+	
+	/**
+	 * 
+	 */
 	public Map<String,String> getUserAttributeMappings()
 	{
 		return m_userAttributeMappings;
@@ -208,9 +233,50 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	/**
 	 * 
 	 */
+	public boolean isDirty()
+	{
+		return m_isDirty;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setId( String id )
 	{
 		m_id = id;
+	}
+
+	/**
+	 * 
+	 */
+	public void setIsDirty( boolean isDirty )
+	{
+		m_isDirty = isDirty;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsDirtySearchInfo( boolean isDirty )
+	{
+		if ( isDirty == false )
+		{
+			if ( m_listOfGroupSearchCriteria != null )
+			{
+				for ( GwtLdapSearchInfo nextSearchInfo : m_listOfGroupSearchCriteria )
+				{
+					nextSearchInfo.setIsDirty( false );
+				}
+			}
+
+			if ( m_listOfUserSearchCriteria != null )
+			{
+				for ( GwtLdapSearchInfo nextSearchInfo : m_listOfUserSearchCriteria )
+				{
+					nextSearchInfo.setIsDirty( false );
+				}
+			}
+		}
 	}
 	
 	/**
@@ -243,6 +309,14 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	public void setServerUrl( String serverUrl )
 	{
 		m_serverUrl = serverUrl;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setSyncStatus( GwtLdapSyncStatus syncStatus )
+	{
+		m_syncStatus = syncStatus;
 	}
 	
 	/**

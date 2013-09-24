@@ -9799,6 +9799,7 @@ public class GwtServerHelper {
 		case SET_USER_SHARING_RIGHTS_INFO:
 		case SHARE_ENTRY:
 		case SHOW_SHARES:
+		case START_LDAP_SYNC:
 		case STOP_SYNC_NET_FOLDERS:
 		case SYNC_NET_FOLDERS:
 		case SYNC_NET_FOLDER_SERVER:
