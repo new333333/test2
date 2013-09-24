@@ -227,7 +227,14 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  Simply hide the busy spinner.
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingAdHocFolders(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -283,7 +290,14 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  Simply hide the busy spinner.
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingDownload(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -339,7 +353,14 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  Simply hide the busy spinner.
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingWebAccess(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -567,7 +588,14 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  Simply hide the busy spinner.
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingAdHocFolders(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -623,7 +651,14 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  Simply hide the busy spinner.
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingDownload(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -679,7 +714,14 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  Simply hide the busy spinner.
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingWebAccess(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -785,7 +827,14 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  Simply hide the busy spinner.
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingAdHocFolders(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -842,7 +891,14 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  Simply hide the busy spinner.
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingDownload(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -899,7 +955,14 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  Simply hide the busy spinner.
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingWebAccess(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -1446,9 +1509,9 @@ public class BinderViewsHelper {
 	 * Synchronously shows the share dialog in administrative mode.
 	 */
 	private static void showManageSharesDlgNow(List<EntityId> entityIds) {
-		String caption = GwtClientHelper.patchMessage( m_messages.manageShares(), String.valueOf(entityIds.size()));
-		m_shareDlg.init( caption, entityIds, ShareThisDlg2.ShareThisDlgMode.MANAGE_SELECTED );
-		m_shareDlg.showDlg( null );
+		String caption = GwtClientHelper.patchMessage(m_messages.manageShares(), String.valueOf(entityIds.size()));
+		m_shareDlg.init(caption, entityIds, ShareThisDlg2.ShareThisDlgMode.MANAGE_SELECTED);
+		m_shareDlg.showDlg(null);
 	}
 
 	/*
@@ -1468,8 +1531,8 @@ public class BinderViewsHelper {
 	 */
 	private static void showShareDlgNow(List<EntityId> entityIds) {
 		String caption = GwtClientHelper.patchMessage(m_messages.shareTheseItems(), String.valueOf(entityIds.size()));
-		m_shareDlg.init( caption, entityIds, ShareThisDlg2.ShareThisDlgMode.NORMAL );
-		m_shareDlg.showDlg( null );
+		m_shareDlg.init(caption, entityIds, ShareThisDlg2.ShareThisDlgMode.NORMAL);
+		m_shareDlg.showDlg(null);
 	}
 
 	/**

@@ -8120,6 +8120,7 @@ public class GwtServerHelper {
 	{
 		UserAccessConfig config;
 		AuthenticationConfig authConfig;
+		AdminModule adminModule;
 		
 		authConfig = ami.getAuthenticationModule().getAuthenticationConfig();
 
@@ -8128,6 +8129,11 @@ public class GwtServerHelper {
 		// Check for guest access
 		config.setAllowGuestAccess( authConfig.isAllowAnonymousAccess() );
 		config.setGuestReadOnly( authConfig.isAnonymousReadOnly() );
+
+		// Check for download and web access
+		adminModule = ami.getAdminModule();
+		config.setAllowDownload( adminModule.isDownloadEnabled() );
+		config.setAllowWebAccess( adminModule.isWebAccessEnabled() );
 		
 		if ( ReleaseInfo.isLicenseRequiredEdition() )
 		{
@@ -10486,6 +10492,7 @@ public class GwtServerHelper {
 		AllModulesInjected ami,
 		UserAccessConfig config )
 	{
+		AdminModule adminModule;
 		AuthenticationConfig authConfig;
 		
 		authConfig = ami.getAuthenticationModule().getAuthenticationConfig();
@@ -10496,14 +10503,17 @@ public class GwtServerHelper {
 		// Set "guest read only"
 		authConfig.setAnonymousReadOnly( config.getGuestReadOnly() );
 		
+		// Set "download" and "web access"
+		adminModule = ami.getAdminModule();
+		adminModule.setDownloadEnabled( config.getAllowDownload() );
+		adminModule.setWebAccessEnabled( config.getAllowWebAccess() );
+		
 		if ( ReleaseInfo.isLicenseRequiredEdition() )
 		{
 			OpenIDConfig openIdConfig;
 			ZoneConfig zoneConfig;
 			ZoneModule zoneModule;
-			AdminModule adminModule;
 			
-			adminModule = ami.getAdminModule();
 			zoneModule = ami.getZoneModule();
 			zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
 			
@@ -10706,6 +10716,209 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 
+	/**
+	 * Save the 'AdHoc folder' setting.  If userId is not null saves
+	 * the value in the user's properties.  Otherwise, saves the
+	 * setting in the zone.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param allowAdHoc
+	 * @param errList
+	 * 
+	 * @return
+	 */
+	public static Boolean saveAdhocFolderSetting(AllModulesInjected bs, Long userId, Boolean allowAdHoc, ErrorListRpcResponseData errList) {
+		// Are we dealing with a user?
+		if (null != userId) {
+			// Yes!  Save the setting to their properties.
+			User user = ((User) bs.getProfileModule().getEntry(userId));
+			if (user.getIdentityInfo().isFromLdap()) {
+				// We don't allow this to be set for non-LDAP users.
+				bs.getProfileModule().setUserProperty(
+					userId,
+					ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS,
+					((null == allowAdHoc) ?
+						null              :				//     null -> Remove the setting and revert to the zone's setting.
+						String.valueOf(allowAdHoc)));	// non-null -> Specific value to set.
+			}
+			else if (null != errList) {
+				errList.addError(NLT.get("saveAdHocFolderSetting.invalidUser", new String[]{user.getTitle()}));
+			}
+		}
+		else {
+			// No, we aren't running with a user!  Save as a zone
+			// setting.
+			bs.getAdminModule().setAdHocFoldersEnabled(
+				((null == allowAdHoc) ?
+					Boolean.FALSE     :	//     null -> Default to false.
+					allowAdHoc));		// non-null -> Store value directly.
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	public static Boolean saveAdhocFolderSetting(AllModulesInjected bs, Long userId, Boolean allow) {
+		// Always use the initial form of the method.
+		return saveAdhocFolderSetting(bs, userId, allow, null);
+	}
+	
+	/**
+	 * Save the 'Download' setting.  If userId is not null saves the
+	 * value in the user's properties.  Otherwise, saves the setting
+	 * in the zone.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param allowDownload
+	 * @param errList
+	 * 
+	 * @return
+	 */
+	public static Boolean saveDownloadSetting(AllModulesInjected bs, Long userId, Boolean allowDownload, ErrorListRpcResponseData errList) {
+		// Are we dealing with a user?
+		if (null != userId) {
+			// Yes!  Save the setting to their properties.
+			//     null -> Remove the setting and revert to the zone's setting.
+			// non-null -> Specific value to set.
+			User user = ((User) bs.getProfileModule().getEntry(userId));
+			if (user.isPerson() && (!(user.isSuper()))) {
+				// We don't allow this to be set for non-person users
+				// (e.g., E-Mail Posting Agent) or admin.
+				bs.getProfileModule().setDownloadEnabled(userId, allowDownload);
+			}
+			else if (null != errList) {
+				errList.addError(NLT.get("saveDownloadSetting.invalidUser", new String[]{user.getTitle()}));
+			}
+		}
+		else {
+			// No, we aren't running with a user!  Save as a zone
+			// setting.
+			bs.getAdminModule().setDownloadEnabled(
+				((null == allowDownload) ?
+					Boolean.TRUE         :	//     null -> Default to true.
+					allowDownload));		// non-null -> Store value directly.
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	public static Boolean saveDownloadSetting(AllModulesInjected bs, Long userId, Boolean allowDownload) {
+		// Always use the initial form of the method.
+		return saveDownloadSetting(bs, userId, allowDownload, null);
+	}
+	
+	/**
+	 * Saves the 'AdHoc folder' settings for multiple users.
+	 * 
+	 * @param bs
+	 * @param userIds
+	 * @param allow
+	 * 
+	 * @return
+	 */
+	public static ErrorListRpcResponseData saveMultipleAdHocFolderSettings(AllModulesInjected bs, List<Long> userIds, Boolean allow) {
+		// Do we have any user IDs to save from?
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		if (MiscUtil.hasItems(userIds)) {
+			// Yes!  Scan them...
+			for (Long userId:  userIds) {
+				// ...saving the allow flag for each.
+				saveAdhocFolderSetting(bs, userId, allow, reply);
+			}
+		}
+		return reply;
+	}
+	
+	/**
+	 * Saves the 'Download' settings for multiple users.
+	 * 
+	 * @param bs
+	 * @param userIds
+	 * @param allowDownload
+	 * 
+	 * @return
+	 */
+	public static ErrorListRpcResponseData saveMultipleDownloadSettings(AllModulesInjected bs, List<Long> userIds, Boolean allowDownload) {
+		// Do we have any user IDs to save from?
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		if (MiscUtil.hasItems(userIds)) {
+			// Yes!  Scan them...
+			for (Long userId:  userIds) {
+				// ...saving the allow flag for each.
+				saveDownloadSetting(bs, userId, allowDownload, reply);
+			}
+		}
+		return reply;
+	}
+	
+	/**
+	 * Saves the 'WebAccess' settings for multiple users.
+	 * 
+	 * @param bs
+	 * @param userIds
+	 * @param allowDownload
+	 * 
+	 * @return
+	 */
+	public static ErrorListRpcResponseData saveMultipleWebAccessSettings(AllModulesInjected bs, List<Long> userIds, Boolean allowDownload) {
+		// Do we have any user IDs to save from?
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		if (MiscUtil.hasItems(userIds)) {
+			// Yes!  Scan them...
+			for (Long userId:  userIds) {
+				// ...saving the allow flag for each.
+				saveWebAccessSetting(bs, userId, allowDownload, reply);
+			}
+		}
+		return reply;
+	}
+	
+	/**
+	 * Save the 'WebAccess' setting.  If userId is not null saves the
+	 * value in the user's properties.  Otherwise, saves the setting
+	 * in the zone.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param allowWebAccess
+	 * @param errList
+	 * 
+	 * @return
+	 */
+	public static Boolean saveWebAccessSetting(AllModulesInjected bs, Long userId, Boolean allowWebAccess, ErrorListRpcResponseData errList) {
+		// Are we dealing with a user?
+		if (null != userId) {
+			// Yes!  Save the setting to their properties.
+			//     null -> Remove the setting and revert to the zone's setting.
+			// non-null -> Specific value to set.
+			User user = ((User) bs.getProfileModule().getEntry(userId));
+			if (user.isPerson() && (!(user.isSuper())) && (!(user.isShared()))) {
+				// We don't allow this to be set for non-person users
+				// (e.g., E-Mail Posting Agent), admin or guest.
+				bs.getProfileModule().setWebAccessEnabled(userId, allowWebAccess);
+			}
+			else if (null != errList) {
+				errList.addError(NLT.get("saveWebAccessSetting.invalidUser", new String[]{user.getTitle()}));
+			}
+		}
+		else {
+			// No, we aren't running with a user!  Save as a zone
+			// setting.
+			bs.getAdminModule().setWebAccessEnabled(
+				((null == allowWebAccess) ?
+					Boolean.TRUE          :	//     null -> Default to true.
+					allowWebAccess));		// non-null -> Store value directly.
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	public static Boolean saveWebAccessSetting(AllModulesInjected bs, Long userId, Boolean allowWebAccess) {
+		// Always use the initial form of the method.
+		return saveWebAccessSetting(bs, userId, allowWebAccess, null);
+	}
+	
 	/**
 	 * Sets the visibility state of the desktop application download
 	 * control for the current user.

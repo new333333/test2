@@ -1962,6 +1962,11 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used by the zip and download selected files facility.
 	String zipDownloadUrlError();
 	
+	// String used within BinderViewsHelper.
+	String binderViewsHelper_failureSettingAdHocFolders();
+	String binderViewsHelper_failureSettingDownload();
+	String binderViewsHelper_failureSettingWebAccess();
+	
 	// Strings used by ChangeEntryTypesDlg.
 	String changeEntryTypesDlgCurrent();
 	String changeEntryTypesDlgErrorChangeFailures();
@@ -2355,6 +2360,8 @@ public interface GwtTeamingMessages extends Messages
 	String configureUserAccessDlg_AllowSelfRegInternalUserAccountLabel();
 	String configureUserAccessDlg_AllowExternalUserAccessLabel();
 	String configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel();
+	String configureUserAccessDlg_DisableDownloadLabel();
+	String configureUserAccessDlg_DisableWebAccessLabel();
 	
 	// Strings used by the GWT based Folder Entry viewer.
 	String folderEntry_Alt_Close();
