@@ -290,4 +290,32 @@
     	<sql>create index email_postings on SS_Postings (zoneId, emailAddress(32));</sql>     
     </changeSet>
     
+    <changeSet author="dennis" context="schema" failOnError="true" id="23">
+        <comment>Enable users to download files</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="downloadEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_Principals">
+            <column name="downloadEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="24">
+        <comment>Enable users to use web access</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="webAccessEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_Principals">
+            <column name="webAccessEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

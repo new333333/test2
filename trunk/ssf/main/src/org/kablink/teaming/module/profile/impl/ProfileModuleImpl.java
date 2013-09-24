@@ -2583,6 +2583,56 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     }
 
     /**
+     * Returns a User's download enabled flag.
+     * 
+     * @param userId
+     */
+    //RO transaction
+    @Override
+    public Boolean getDownloadEnabled(Long userId) {
+   		User user = getUser(userId, true, false);
+		return user.isDownloadEnabled();
+    }
+    
+    /**
+     * Sets a User's downloadEnabled flag.
+     * 
+     * @param userId
+     * @param downloadEnabled
+     */
+    //RW transaction
+    @Override
+    public void setDownloadEnabled(Long userId, Boolean downloadEnabled) {
+   		User user = getUser(userId, true, false);
+		user.setDownloadEnabled(downloadEnabled);
+    }
+
+    /**
+     * Returns a User's web access enabled flag.
+     * 
+     * @param userId
+     */
+    //RO transaction
+    @Override
+    public Boolean getWebAccessEnabled(Long userId) {
+   		User user = getUser(userId, true, false);
+		return user.isWebAccessEnabled();
+    }
+    
+    /**
+     * Sets a User's downloadEnabled flag.
+     * 
+     * @param userId
+     * @param webAccessEnabled
+     */
+    //RW transaction
+    @Override
+    public void setWebAccessEnabled(Long userId, Boolean webAccessEnabled) {
+   		User user = getUser(userId, true, false);
+		user.setWebAccessEnabled(webAccessEnabled);
+    }
+
+    /**
      * Returns a Collection<User> of all the external user's the
      * current user has rights to see.
      * 

@@ -79,6 +79,8 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private String localeCountry;
 	private Boolean adHocFoldersEnabled;
 	private Boolean fileArchivingEnabled;
+	private Boolean downloadEnabled;
+	private Boolean webAccessEnabled;
 	private Integer auditTrailKeepDays;
 	private Integer changeLogsKeepDays;
 	private Boolean auditTrailEnabled;
@@ -462,6 +464,44 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	public void setAdHocFoldersEnabled( boolean enabled )
 	{
 		adHocFoldersEnabled = Boolean.valueOf( enabled );
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean isDownloadEnabled()
+	{
+		if ( downloadEnabled == null )
+			return true;
+		
+		return downloadEnabled.booleanValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setDownloadEnabled( boolean enabled )
+	{
+		downloadEnabled = Boolean.valueOf( enabled );
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean isWebAccessEnabled()
+	{
+		if ( webAccessEnabled == null )
+			return true;
+		
+		return webAccessEnabled.booleanValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWebAccessEnabled( boolean enabled )
+	{
+		webAccessEnabled = Boolean.valueOf( enabled );
 	}
 	
 	public int getAuditTrailKeepDays() {

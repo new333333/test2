@@ -130,6 +130,8 @@
 		  <property name="extProvState" access="field" type="short"/>
 		  <property name="extProvSeed"/>
 		  <property name="workspacePreDeleted" access="field"/>
+		  <property name="downloadEnabled" access="field"/>
+		  <property name="webAccessEnabled" access="field"/>
 	    </subclass>
   	</subclass>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.ApplicationPrincipal">

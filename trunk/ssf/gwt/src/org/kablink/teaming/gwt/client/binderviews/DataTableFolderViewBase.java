@@ -80,6 +80,8 @@ import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
+import org.kablink.teaming.gwt.client.event.ClearSelectedUsersDownloadEvent;
+import org.kablink.teaming.gwt.client.event.ClearSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
@@ -89,8 +91,12 @@ import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
+import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
+import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
+import org.kablink.teaming.gwt.client.event.EnableSelectedUsersDownloadEvent;
+import org.kablink.teaming.gwt.client.event.EnableSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
@@ -207,6 +213,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntitiesEvent.Handler,
 		ClearSelectedUsersAdHocFoldersEvent.Handler,
+		ClearSelectedUsersDownloadEvent.Handler,
+		ClearSelectedUsersWebAccessEvent.Handler,
 		ContentChangedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		CopySelectedEntitiesEvent.Handler,
@@ -214,8 +222,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		DeleteSelectedUsersEvent.Handler,
 		DisableSelectedUsersEvent.Handler,
 		DisableSelectedUsersAdHocFoldersEvent.Handler,
+		DisableSelectedUsersDownloadEvent.Handler,
+		DisableSelectedUsersWebAccessEvent.Handler,
 		EnableSelectedUsersEvent.Handler,
 		EnableSelectedUsersAdHocFoldersEvent.Handler,
+		EnableSelectedUsersDownloadEvent.Handler,
+		EnableSelectedUsersWebAccessEvent.Handler,
 		HideSelectedSharesEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
 		InvokeDropBoxEvent.Handler,
@@ -293,6 +305,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS,
+		TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD,
+		TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS,
 		TeamingEvents.CONTENT_CHANGED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTITIES,
@@ -300,8 +314,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.DELETE_SELECTED_USERS,
 		TeamingEvents.DISABLE_SELECTED_USERS,
 		TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS,
+		TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD,
+		TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS,
 		TeamingEvents.ENABLE_SELECTED_USERS,
 		TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS,
+		TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD,
+		TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS,
 		TeamingEvents.HIDE_SELECTED_SHARES,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_DROPBOX,
@@ -1752,9 +1770,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles ClearSelectedUsersAdHocFoldersAdHocFoldersEvent's received by this class.
+	 * Handles ClearSelectedUsersAdHocFoldersEvent's received by this class.
 	 * 
-	 * Implements the ClearSelectedUsersAdHocFoldersAdHocFoldersEvent.Handler.onClearSelectedUsersAdHocFolders() method.
+	 * Implements the ClearSelectedUsersAdHocFoldersEvent.Handler.onClearSelectedUsersAdHocFolders() method.
 	 * 
 	 * @param event
 	 */
@@ -1769,6 +1787,52 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.clearUsersAdHocFolders(
+				EntityId.getLongsFromEntityIds(selectedEntityIds),
+				new FullUIReloadEvent());
+		}
+	}
+	
+	/**
+	 * Handles ClearSelectedUsersDownloadEvent's received by this class.
+	 * 
+	 * Implements the ClearSelectedUsersDownloadEvent.Handler.onClearSelectedUsersDownload() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onClearSelectedUsersDownload(ClearSelectedUsersDownloadEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the clear.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.clearUsersDownload(
+				EntityId.getLongsFromEntityIds(selectedEntityIds),
+				new FullUIReloadEvent());
+		}
+	}
+	
+	/**
+	 * Handles ClearSelectedUsersWebAccessEvent's received by this class.
+	 * 
+	 * Implements the ClearSelectedUsersWebAccessEvent.Handler.onClearSelectedUsersWebAccess() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onClearSelectedUsersWebAccess(ClearSelectedUsersWebAccessEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the clear.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.clearUsersWebAccess(
 				EntityId.getLongsFromEntityIds(selectedEntityIds),
 				new FullUIReloadEvent());
 		}
@@ -1967,9 +2031,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles DisableSelectedUsersAdHocFoldersAdHocFoldersEvent's received by this class.
+	 * Handles DisableSelectedUsersAdHocFoldersEvent's received by this class.
 	 * 
-	 * Implements the DisableSelectedUsersAdHocFoldersAdHocFoldersEvent.Handler.onDisableSelectedUsersAdHocFolders() method.
+	 * Implements the DisableSelectedUsersAdHocFoldersEvent.Handler.onDisableSelectedUsersAdHocFolders() method.
 	 * 
 	 * @param event
 	 */
@@ -1984,6 +2048,52 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.disableUsersAdHocFolders(
+				EntityId.getLongsFromEntityIds(selectedEntityIds),
+				new FullUIReloadEvent());
+		}
+	}
+	
+	/**
+	 * Handles DisableSelectedUsersDownloadEvent's received by this class.
+	 * 
+	 * Implements the DisableSelectedUsersDownloadEvent.Handler.onDisableSelectedUsersDownload() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDisableSelectedUsersDownload(DisableSelectedUsersDownloadEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the disable.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.disableUsersDownload(
+				EntityId.getLongsFromEntityIds(selectedEntityIds),
+				new FullUIReloadEvent());
+		}
+	}
+	
+	/**
+	 * Handles DisableSelectedUsersWebAccessEvent's received by this class.
+	 * 
+	 * Implements the DisableSelectedUsersWebAccessEvent.Handler.onDisableSelectedUsersWebAccess() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDisableSelectedUsersWebAccess(DisableSelectedUsersWebAccessEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the disable.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.disableUsersWebAccess(
 				EntityId.getLongsFromEntityIds(selectedEntityIds),
 				new FullUIReloadEvent());
 		}
@@ -2026,6 +2136,52 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.enableUsersAdHocFolders(
+				EntityId.getLongsFromEntityIds(selectedEntityIds),
+				new FullUIReloadEvent());
+		}
+	}
+	
+	/**
+	 * Handles EnableSelectedUsersDownloadEvent's received by this class.
+	 * 
+	 * Implements the EnableSelectedUsersDownloadEvent.Handler.onEnableSelectedUsersDownload() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEnableSelectedUsersDownload(EnableSelectedUsersDownloadEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the enable.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.enableUsersDownload(
+				EntityId.getLongsFromEntityIds(selectedEntityIds),
+				new FullUIReloadEvent());
+		}
+	}
+	
+	/**
+	 * Handles EnableSelectedUsersWebAccessEvent's received by this class.
+	 * 
+	 * Implements the EnableSelectedUsersWebAccessEvent.Handler.onEnableSelectedUsersWebAccess() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEnableSelectedUsersWebAccess(EnableSelectedUsersWebAccessEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the enable.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.enableUsersWebAccess(
 				EntityId.getLongsFromEntityIds(selectedEntityIds),
 				new FullUIReloadEvent());
 		}

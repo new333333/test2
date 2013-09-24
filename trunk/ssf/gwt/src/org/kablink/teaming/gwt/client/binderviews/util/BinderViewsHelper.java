@@ -65,6 +65,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFolderUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HideSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleAdhocFolderSettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleDownloadSettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleWebAccessSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShowSharesCmd;
@@ -220,7 +222,7 @@ public class BinderViewsHelper {
 				busy.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					m_messages.rpcFailure_DisableUsersAdHocFolders());
+					m_messages.rpcFailure_ClearUsersAdHocFolders());
 			}
 
 			@Override
@@ -249,6 +251,118 @@ public class BinderViewsHelper {
 	public static void clearUsersAdHocFolders(final Long userId) {
 		// Always use the previous form of the method.
 		clearUsersAdHocFolders(userId, null);
+	}
+
+	/**
+	 * Clears the user's download files setting based on a List<Long>
+	 * of their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void clearUsersDownload(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any user IDs to be cleared...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we clear the download settings.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to clear the download setting.
+		SaveMultipleDownloadSettingsCmd cmd = new SaveMultipleDownloadSettingsCmd(userIds, null);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_ClearUsersDownload());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  Simply hide the busy spinner.
+				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
+			}
+		});
+	}
+	
+	public static void clearUsersDownload(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		clearUsersDownload(userIds, null);
+	}
+	
+	public static void clearUsersDownload(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		clearUsersDownload(userIds, reloadEvent);
+	}
+
+	public static void clearUsersDownload(final Long userId) {
+		// Always use the previous form of the method.
+		clearUsersDownload(userId, null);
+	}
+
+	/**
+	 * Clears the user's web access setting based on a List<Long>
+	 * of their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void clearUsersWebAccess(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any user IDs to be cleared...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we clear the web access settings.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to clear the web access setting.
+		SaveMultipleWebAccessSettingsCmd cmd = new SaveMultipleWebAccessSettingsCmd(userIds, null);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_ClearUsersWebAccess());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  Simply hide the busy spinner.
+				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
+			}
+		});
+	}
+	
+	public static void clearUsersWebAccess(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		clearUsersWebAccess(userIds, null);
+	}
+	
+	public static void clearUsersWebAccess(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		clearUsersWebAccess(userIds, reloadEvent);
+	}
+
+	public static void clearUsersWebAccess(final Long userId) {
+		// Always use the previous form of the method.
+		clearUsersWebAccess(userId, null);
 	}
 
 	/**
@@ -480,6 +594,118 @@ public class BinderViewsHelper {
 	}
 
 	/**
+	 * Disables the user's download files ability based on a List<Long>
+	 * of their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void disableUsersDownload(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any user IDs to be disabled...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we disable the download setting.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to disable the download setting.
+		SaveMultipleDownloadSettingsCmd cmd = new SaveMultipleDownloadSettingsCmd(userIds, false);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_DisableUsersDownload());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  Simply hide the busy spinner.
+				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
+			}
+		});
+	}
+	
+	public static void disableUsersDownload(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		disableUsersDownload(userIds, null);
+	}
+	
+	public static void disableUsersDownload(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		disableUsersDownload(userIds, reloadEvent);
+	}
+
+	public static void disableUsersDownload(final Long userId) {
+		// Always use the previous form of the method.
+		disableUsersDownload(userId, null);
+	}
+
+	/**
+	 * Disables the user's web access based on a List<Long>
+	 * of their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void disableUsersWebAccess(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any user IDs to be disabled...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we disable the web access setting.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to disable the web access setting.
+		SaveMultipleWebAccessSettingsCmd cmd = new SaveMultipleWebAccessSettingsCmd(userIds, false);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_DisableUsersWebAccess());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  Simply hide the busy spinner.
+				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
+			}
+		});
+	}
+	
+	public static void disableUsersWebAccess(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		disableUsersWebAccess(userIds, null);
+	}
+	
+	public static void disableUsersWebAccess(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		disableUsersWebAccess(userIds, reloadEvent);
+	}
+
+	public static void disableUsersWebAccess(final Long userId) {
+		// Always use the previous form of the method.
+		disableUsersWebAccess(userId, null);
+	}
+
+	/**
 	 * Enables the users based on a List<Long> of their user IDs.
 	 *
 	 * @param userIds
@@ -583,6 +809,120 @@ public class BinderViewsHelper {
 	public static void enableUsersAdHocFolders(final Long userId) {
 		// Always use the previous form of the method.
 		enableUsersAdHocFolders(userId, null);
+	}
+
+	/**
+	 * Enables download files for the users based on a List<Long> of
+	 * their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void enableUsersDownload(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any user IDs to be enable downloads
+		// on...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we enable the download setting.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to enable the download setting.
+		SaveMultipleDownloadSettingsCmd cmd = new SaveMultipleDownloadSettingsCmd(userIds, true);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_EnableUsersDownload());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  Simply hide the busy spinner.
+				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
+			}
+		});
+	}
+	
+	public static void enableUsersDownload(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		enableUsersDownload(userIds, null);
+	}
+	
+	public static void enableUsersDownload(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		enableUsersDownload(userIds, reloadEvent);
+	}
+	
+	public static void enableUsersDownload(final Long userId) {
+		// Always use the previous form of the method.
+		enableUsersDownload(userId, null);
+	}
+
+	/**
+	 * Enables web access for the users based on a List<Long> of
+	 * their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void enableUsersWebAccess(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any user IDs to be enable web access
+		// on...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we enable the web access setting.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to enable web access setting.
+		SaveMultipleWebAccessSettingsCmd cmd = new SaveMultipleWebAccessSettingsCmd(userIds, true);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_EnableUsersWebAccess());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  Simply hide the busy spinner.
+				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
+			}
+		});
+	}
+	
+	public static void enableUsersWebAccess(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		enableUsersWebAccess(userIds, null);
+	}
+	
+	public static void enableUsersWebAccess(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		enableUsersWebAccess(userIds, reloadEvent);
+	}
+	
+	public static void enableUsersWebAccess(final Long userId) {
+		// Always use the previous form of the method.
+		enableUsersWebAccess(userId, null);
 	}
 
 	/**
