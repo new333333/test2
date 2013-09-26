@@ -162,8 +162,8 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
-import org.kablink.teaming.gwt.client.util.FileLinkAction;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
+import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
@@ -3762,12 +3762,10 @@ public class GwtViewHelper {
 			catch (Exception ex) {pageSize = 25;                                                       }
 			
 			// What's the action to take when a file link is activated?
-			String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
-			FileLinkAction fla = FileLinkAction.DOWNLOAD;
-			if (MiscUtil.hasString(flaS)) {
-				try                               {fla = FileLinkAction.getEnum(Integer.parseInt(flaS));}
-				catch (NumberFormatException nfe) {fla = FileLinkAction.DOWNLOAD;                       }
-			}
+			GwtFileLinkAction fla  = GwtServerHelper.gwtFileLinkActionFromFileLinkAction(
+				GwtUIHelper.getEffectiveFileLinkAction(
+					bs,
+					user));
 			
 			// Has the user defined any column widths on this folder?
 			ColumnWidthsRpcResponseData cwData = getColumnWidths(bs, request, folderInfo);

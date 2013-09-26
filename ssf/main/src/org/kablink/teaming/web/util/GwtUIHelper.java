@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -67,6 +68,7 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
@@ -648,6 +650,64 @@ public class GwtUIHelper {
 	 */
 	public static Boolean getEffectiveDownloadSetting(AllModulesInjected bs, User user) {
 		return SearchUtils.getEffectiveDownloadSetting(bs, user);
+	}
+	
+	/**
+	 * Return the effective 'File Link Action' setting from the given
+	 * user.
+	 * 
+	 * If the user has a value stored in their preferences, that value
+	 * will be validated against their effective download setting an the
+	 * appropriate enumeration will be returned.
+	 * 
+	 * If the user does NOT have a value stored in their preferences,
+	 * an appropriate default enumeration will be returned.
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user) {
+		boolean        canDownload = getEffectiveDownloadSetting(bs, user);
+		FileLinkAction defaultFLA  = (canDownload ? FileLinkAction.DOWNLOAD : FileLinkAction.VIEW_HTML_ELSE_DETAILS);
+		FileLinkAction reply       = null;
+		if (!(user.isShared())) {
+			UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+			String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
+			if (!(MiscUtil.hasString(flaS))) {
+				flaS = String.valueOf(FileLinkAction.DOWNLOAD.ordinal());
+			}
+			try {
+				int flaI = Integer.parseInt(      flaS);
+				reply    = FileLinkAction.getEnum(flaI);
+				if (!canDownload) {
+					switch (reply) {
+					case DOWNLOAD:
+					case VIEW_HTML_ELSE_DOWNLOAD:
+						reply = FileLinkAction.VIEW_HTML_ELSE_DETAILS;
+						break;
+						
+					default:
+						break;
+					}
+				}
+			}
+			catch (NumberFormatException nfe) {
+				m_logger.warn("GwtUIHelper.getEffectiveFileLinkAction():  file link action is not an integer.", nfe);
+			}
+		}
+		return ((null == reply) ? defaultFLA : reply);
+	}
+	
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, Long userId) {
+		// Always use the initial form of the method.
+		return getEffectiveFileLinkAction(bs, getUserSafely(bs.getProfileModule(), userId));
+	}
+	
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return getEffectiveFileLinkAction(bs, RequestContextHolder.getRequestContext().getUser());
 	}
 	
 	/**

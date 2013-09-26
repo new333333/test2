@@ -877,7 +877,6 @@ public class GwtMenuHelper {
 
 		// Is this other than the built-in admin user?
 		if (!isAdmin) {
-if (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING) {	//! ...temporary... 
 			// Yes!  Add a separator after the previous item...
 			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 	
@@ -908,7 +907,6 @@ if (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING) {	//! ...temporary...
 				markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
 				entryToolbar.addNestedItem(manageUserTBI);
 			}
-}
 
 			// Is this other than the guest user?
 			if (!isGuest) {
@@ -973,7 +971,8 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 	 */
 	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws, CollectionType ct) {
 		boolean isFilr              = Utils.checkIfFilr();
-		boolean isGuest             = GwtServerHelper.getCurrentUser().isShared();
+		User    user                = GwtServerHelper.getCurrentUser();
+		boolean isGuest             = user.isShared();
 		boolean isFolder            = (null != folder);
 		boolean isMyFilesCollection = CollectionType.MY_FILES.equals(ct);
 		boolean isSharedCollection  = ct.isSharedCollection();
@@ -999,7 +998,8 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 		}
 		
 		// ...for My Files, Shared by/with Me lists and file folders...
-		if (isEntryContainer && (isMyFilesCollection || isSharedCollection || GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)))) {
+		boolean canDownload = GwtUIHelper.getEffectiveDownloadSetting(bs, user);
+		if (canDownload && isEntryContainer && (isMyFilesCollection || isSharedCollection || GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)))) {
 			// ...allow the user to zip and download the selected
 			// ...files...
 			tbi = new ToolbarItem("1_zipAndDownloadSelected");
@@ -1193,7 +1193,6 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 				moreTBI.addNestedItem(tbi);
 			}
 			
-if (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING) {	//! ...temporary...
 			// ...add the disable users download files item...
 			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
 			tbi = new ToolbarItem("1_disableSelectedDownload");
@@ -1212,7 +1211,6 @@ if (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING) {	//! ...temporary...
 			markTBITitle(tbi, "toolbar.clear.user.download");
 			markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
 			moreTBI.addNestedItem(tbi);
-}
 			
 if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary...
 			// ...add the disable users web access item...
@@ -1637,7 +1635,8 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 	 * Constructs a ToolbarItem for zipping and downloading a file.
 	 */
 	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
-		if (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true)) {
+		boolean canDownload = GwtUIHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
+		if (canDownload && (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true))) {
 			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload"              );
 			markTBITitle(   zipAndDownloadTBI, "toolbar.zipAndDownload"                     );
 			markTBIEvent(   zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
@@ -1650,7 +1649,8 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 	 * Constructs a ToolbarItem for zipping and downloading a folder.
 	 */
 	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder))) {
+		boolean canDownload = GwtUIHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
+		if (canDownload && bs.getBinderModule().testAccess(folder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder))) {
 			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload");
 			markTBITitle(         zipAndDownloadTBI, "toolbar.menu.zipAndDownloadFolder"  );
 			markTBIEvent(         zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
@@ -1740,6 +1740,7 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 		
 		// Is the binder a folder or workspace other than a reserved
 		// workspace?
+		User user = GwtServerHelper.getCurrentUser();
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved)) {			
 			// Yes!  Can the user potentially copy or move this binder?
 			boolean allowCopyMove;
@@ -1784,7 +1785,8 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 			}
 			
 			// Is this a folder whose entries can be read by the user?
-			if (isFolder && bm.testAccess(binder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, binder))) {
+			boolean canDownload = GwtUIHelper.getEffectiveDownloadSetting(bs, user);
+			if (canDownload && isFolder && bm.testAccess(binder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, binder))) {
 				// Yes!  Add a ToolbarItem for for zipping and
 				// downloading its files.
 				adminMenuCreated  =
@@ -2045,7 +2047,7 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 		
 		// Does the user have rights to view who has access to this
 		// binder?
-		if (!(GwtServerHelper.getCurrentUser().isShared())) {
+		if (!(user.isShared())) {
 			// Yes!  Add the ToolbarItem for it.
 			url = createActionUrl(request);
 			url.setParameter(WebKeys.ACTION,            WebKeys.ACTION_ACCESS_CONTROL         );
@@ -3413,7 +3415,8 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 			}
 			
 			// Is this a file entry?
-			if (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true)) {
+			boolean canDownload = GwtUIHelper.getEffectiveDownloadSetting(bs, user);
+			if (canDownload && (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true))) {
 				// Yes!  Allow the user to zip and download it.
 				actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD                            );
 				markTBITitle(   actionTBI, "toolbar.zipAndDownload"                     );
