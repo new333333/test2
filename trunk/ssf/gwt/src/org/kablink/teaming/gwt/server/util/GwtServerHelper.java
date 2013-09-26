@@ -228,9 +228,9 @@ import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.FileLinkAction;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
@@ -296,6 +296,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -7419,18 +7420,12 @@ public class GwtServerHelper {
 				}
 				personalPrefs.setNumEntriesPerPage(numEntriesPerPage);
 
+				// Set whether the user can download files.
+				personalPrefs.setCanDownload(GwtUIHelper.getEffectiveDownloadSetting(bs, user));
+				
 				// Get the action to take when a file link is
 				// activated.
-				String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
-				if (MiscUtil.hasString(flaS)) {
-					try {
-						int flaI = Integer.parseInt(flaS);
-						personalPrefs.setFileLinkAction(FileLinkAction.getEnum(flaI));
-					}
-					catch (NumberFormatException nfe) {
-						GwtLogHelper.warn(m_logger, "GwtServerHelper.getPersonalPreferences():  file link action is not an integer.", nfe);
-					}
-				}
+				personalPrefs.setFileLinkAction(gwtFileLinkActionFromFileLinkAction(GwtUIHelper.getEffectiveFileLinkAction(bs, user)));
 				
 				// Set the flag that indicates whether 'editor
 				// overrides; are supported.
@@ -11610,5 +11605,45 @@ public class GwtServerHelper {
 	 */
 	public static int getDaysSinceInstallation() {
 		return getCoreDao().daysSinceInstallation();
+	}
+
+	/**
+	 * Converts a FileLinkAction (ssf/main enumeration) to a
+	 * GwtFileLinkAction (GWT UI enumeration.)
+	 * 
+	 * @param fla
+	 * 
+	 * @return
+	 */
+	public static GwtFileLinkAction gwtFileLinkActionFromFileLinkAction(FileLinkAction fla) {
+		GwtFileLinkAction reply;
+		switch (fla) {
+		default:
+		case DOWNLOAD:                 reply = GwtFileLinkAction.DOWNLOAD;                break;
+		case VIEW_DETAILS:             reply = GwtFileLinkAction.VIEW_DETAILS;            break;
+		case VIEW_HTML_ELSE_DETAILS:   reply = GwtFileLinkAction.VIEW_HTML_ELSE_DETAILS;  break;
+		case VIEW_HTML_ELSE_DOWNLOAD:  reply = GwtFileLinkAction.VIEW_HTML_ELSE_DOWNLOAD; break;
+		}
+		return reply;
+	}
+	
+	/**
+	 * Converts a GwtFileLinkAction (GWT UI enumeration) to a
+	 * FileLinkAction (ssf/main enumeration.)
+	 * 
+	 * @param fla
+	 * 
+	 * @return
+	 */
+	public static FileLinkAction fileLinkActionFromGwtFileLinkAction(GwtFileLinkAction fla) {
+		FileLinkAction reply;
+		switch (fla) {
+		default:
+		case DOWNLOAD:                 reply = FileLinkAction.DOWNLOAD;                break;
+		case VIEW_DETAILS:             reply = FileLinkAction.VIEW_DETAILS;            break;
+		case VIEW_HTML_ELSE_DETAILS:   reply = FileLinkAction.VIEW_HTML_ELSE_DETAILS;  break;
+		case VIEW_HTML_ELSE_DOWNLOAD:  reply = FileLinkAction.VIEW_HTML_ELSE_DOWNLOAD; break;
+		}
+		return reply;
 	}
 }

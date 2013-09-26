@@ -38,13 +38,22 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * Enumeration used to communicate the action to take when a file link
  * is activated.
  * 
+ * Note:
+ *    FileLinkAction.java:     The ssf/main version of this enumeration.
+ *    GwtFileLinkAction.java:  The GWT UI version of this enumeration.
+ * See the warnings below.
+ * 
  * @author drfoster@novell.com
  */
-public enum FileLinkAction implements IsSerializable {
+public enum GwtFileLinkAction implements IsSerializable {
 	// *** WARNING *** WARNING *** WARNING *** WARNING ***
 	// ***
-	// *** An ordinal value from this is stored in the user's
-	// *** preferences.  The values should not be changed.
+	// *** 1. An ordinal value from this is stored in the user's
+	// ***    preferences.  The values should not be changed.
+	// *** 2. This the GWT UI version of this enumeration.  There
+	// ***    is an equivalent version in the ssf/main side of the
+	// ***    fence.  The two version of this enumeration MUST BE KEPT
+	// ***    IN SYNC.
 	// ***
 	// *** WARNING *** WARNING *** WARNING *** WARNING ***
 	
@@ -58,23 +67,23 @@ public enum FileLinkAction implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean isDownload()             {return FileLinkAction.DOWNLOAD.equals(               this);}
-	public boolean isViewDetails()          {return FileLinkAction.VIEW_DETAILS.equals(           this);}
-	public boolean isViewHtmlElseDetails()  {return FileLinkAction.VIEW_HTML_ELSE_DETAILS.equals( this);}
-	public boolean isViewHtmlElseDownload() {return FileLinkAction.VIEW_HTML_ELSE_DOWNLOAD.equals(this);}
+	public boolean isDownload()             {return GwtFileLinkAction.DOWNLOAD.equals(               this);}
+	public boolean isViewDetails()          {return GwtFileLinkAction.VIEW_DETAILS.equals(           this);}
+	public boolean isViewHtmlElseDetails()  {return GwtFileLinkAction.VIEW_HTML_ELSE_DETAILS.equals( this);}
+	public boolean isViewHtmlElseDownload() {return GwtFileLinkAction.VIEW_HTML_ELSE_DOWNLOAD.equals(this);}
 	
 	/**
-	 * Converts the ordinal value of a FileLinkAction to its
+	 * Converts the ordinal value of a GwtFileLinkAction to its
 	 * enumeration equivalent.
 	 * 
 	 * @param ordinal
 	 * 
 	 * @return
 	 */
-	public static FileLinkAction getEnum(int ordinal) {
-		FileLinkAction reply;
-		try                                      {reply = FileLinkAction.values()[ordinal];}
-		catch (ArrayIndexOutOfBoundsException e) {reply = FileLinkAction.DOWNLOAD;         }
+	public static GwtFileLinkAction getEnum(int ordinal) {
+		GwtFileLinkAction reply;
+		try                                      {reply = GwtFileLinkAction.values()[ordinal];}
+		catch (ArrayIndexOutOfBoundsException e) {reply = GwtFileLinkAction.DOWNLOAD;         }
 		return reply;
 	}
 }

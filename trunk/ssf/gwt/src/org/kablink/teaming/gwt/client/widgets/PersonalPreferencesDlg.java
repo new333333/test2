@@ -37,7 +37,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.util.FileLinkAction;
+import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -145,10 +145,6 @@ public class PersonalPreferencesDlg extends DlgBox
 			// Create a select widget the user can select the options from.
 			m_fileLinkActionListbox = new ListBox();
 			m_fileLinkActionListbox.setVisibleItemCount( 1 );
-			m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_Download(),             String.valueOf( FileLinkAction.DOWNLOAD.ordinal()                ) );
-			m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewDetails(),          String.valueOf( FileLinkAction.VIEW_DETAILS.ordinal()            ) );
-			m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDetails(),  String.valueOf( FileLinkAction.VIEW_HTML_ELSE_DETAILS.ordinal()  ) );
-			m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDownload(), String.valueOf( FileLinkAction.VIEW_HTML_ELSE_DOWNLOAD.ordinal() ) );
 
 			table.setWidget( nextRow, 1, m_fileLinkActionListbox );
 			++nextRow;
@@ -240,7 +236,7 @@ public class PersonalPreferencesDlg extends DlgBox
 	{
 		GwtPersonalPreferences personalPrefs;
 		String displayStyle;
-		FileLinkAction fla;
+		GwtFileLinkAction fla;
 		
 		personalPrefs = new GwtPersonalPreferences();
 		
@@ -316,16 +312,16 @@ public class PersonalPreferencesDlg extends DlgBox
 	/**
 	 * Get the selected value for "file link action"
 	 */
-	private FileLinkAction getFileLinkActionFromDlg()
+	private GwtFileLinkAction getFileLinkActionFromDlg()
 	{
 		int index;
-		FileLinkAction reply;
+		GwtFileLinkAction reply;
 		
 		index = m_fileLinkActionListbox.getSelectedIndex();
 		if ( index == -1 )
 			index = 0;
 		
-		reply = FileLinkAction.getEnum( Integer.parseInt( m_fileLinkActionListbox.getValue( index ) ) );
+		reply = GwtFileLinkAction.getEnum( Integer.parseInt( m_fileLinkActionListbox.getValue( index ) ) );
 		return reply;
 	}// end getEntryDisplayStyleFromDlg()
 	
@@ -383,12 +379,18 @@ public class PersonalPreferencesDlg extends DlgBox
 	 */
 	private void initFileLinkActionControls( GwtPersonalPreferences personalPrefs )
 	{
-		int index;
+		m_fileLinkActionListbox.clear();
+		GwtTeamingMessages messages = GwtTeaming.getMessages();
+		boolean canDownload = personalPrefs.canDownload();
+		if (canDownload) m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_Download(),             String.valueOf( GwtFileLinkAction.DOWNLOAD.ordinal()                ) );
+		                 m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewDetails(),          String.valueOf( GwtFileLinkAction.VIEW_DETAILS.ordinal()            ) );
+		                 m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDetails(),  String.valueOf( GwtFileLinkAction.VIEW_HTML_ELSE_DETAILS.ordinal()  ) );
+		if (canDownload) m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDownload(), String.valueOf( GwtFileLinkAction.VIEW_HTML_ELSE_DOWNLOAD.ordinal() ) );
 		
 		m_fileLinkActionListbox.setSelectedIndex( -1 );
 		
 		// Select the appropriate item in the "file link action" listbox.
-		index = GwtClientHelper.selectListboxItemByValue( m_fileLinkActionListbox, String.valueOf( personalPrefs.getFileLinkAction().ordinal() ) );
+		int index = GwtClientHelper.selectListboxItemByValue( m_fileLinkActionListbox, String.valueOf( personalPrefs.getFileLinkAction().ordinal() ) );
 		
 		// Did we select an item in the listbox?
 		if ( index == -1 )

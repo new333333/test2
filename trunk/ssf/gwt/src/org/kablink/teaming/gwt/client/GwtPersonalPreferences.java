@@ -33,7 +33,7 @@
 package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-import org.kablink.teaming.gwt.client.util.FileLinkAction;
+import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -46,9 +46,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtPersonalPreferences
 	implements IsSerializable, VibeRpcResponseData
 {
+	private boolean m_canDownload = true;
 	private String m_displayStyle = null;
 	private int m_numEntriesPerPage = 0;
-	private FileLinkAction m_fileLinkAction = FileLinkAction.DOWNLOAD;
+	private GwtFileLinkAction m_fileLinkAction = GwtFileLinkAction.DOWNLOAD;
 	
 	// m_editorOverridesSupported is not actually a personal preference.  It is a system-wide
 	// setting that lets us know if we should allow the user to define editor overrides.
@@ -61,6 +62,14 @@ public class GwtPersonalPreferences
 	{
 	}// end PersonalPreferences()
 	
+
+	/**
+	 * 
+	 */
+	public boolean canDownload()
+	{
+		return m_canDownload;
+	}//end getCanDownload()
 	
 	/**
 	 * 
@@ -83,7 +92,7 @@ public class GwtPersonalPreferences
 	/**
 	 * 
 	 */
-	public FileLinkAction getFileLinkAction()
+	public GwtFileLinkAction getFileLinkAction()
 	{
 		return m_fileLinkAction;
 	}// end getFileLinkAction()
@@ -97,6 +106,14 @@ public class GwtPersonalPreferences
 		return m_editorOverridesSupported;
 	}// end isEditorOverrideSupported()
 	
+
+	/**
+	 * 
+	 */
+	public void setCanDownload( boolean canDownload )
+	{
+		m_canDownload = canDownload;
+	}// end setCanDownload()
 	
 	/**
 	 * 
@@ -128,7 +145,7 @@ public class GwtPersonalPreferences
 	/**
 	 * 
 	 */
-	public void setFileLinkAction( FileLinkAction fla )
+	public void setFileLinkAction( GwtFileLinkAction fla )
 	{
 		m_fileLinkAction = fla;
 	}// end setFileLinkAction()

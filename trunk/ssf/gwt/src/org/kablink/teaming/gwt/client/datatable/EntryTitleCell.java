@@ -45,7 +45,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
-import org.kablink.teaming.gwt.client.util.FileLinkAction;
+import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.Html5UploadHelper;
 import org.kablink.teaming.gwt.client.util.Html5UploadHost;
@@ -80,9 +80,9 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
-	private FileLinkAction	m_fileLinkAction;	// The action to take when the cell's link is activated.
-	private Html5UploadHost	m_uploadHost;		// An HTML5 host we can use for uploading files into the folder represented by this cell.
-	private HoverHintPopup	m_hoverHintPopup;	// A hint popup that gets displayed when the user mouses over this cell.
+	private GwtFileLinkAction	m_fileLinkAction;	// The action to take when the cell's link is activated.
+	private Html5UploadHost		m_uploadHost;		// An HTML5 host we can use for uploading files into the folder represented by this cell.
+	private HoverHintPopup		m_hoverHintPopup;	// A hint popup that gets displayed when the user mouses over this cell.
 
 	// The following is used as the class name on the root <DIV>
 	// containing this cell.
@@ -94,7 +94,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 * @param fla
 	 * @param uploadHost
 	 */
-	public EntryTitleCell(FileLinkAction fla, Html5UploadHost uploadHost) {
+	public EntryTitleCell(GwtFileLinkAction fla, Html5UploadHost uploadHost) {
 		// Sink the events we need to process an entry title...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,

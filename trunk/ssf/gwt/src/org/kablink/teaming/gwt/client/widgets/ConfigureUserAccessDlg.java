@@ -207,7 +207,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 		}
 		
 		// Add the "Disable Download" checkbox;
-if (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING)	//! ...temporary...
 		{
 			FlowPanel panel;
 			
@@ -340,8 +339,7 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING)	//! ...temporary...
 	 */
 	private boolean getDisableDownload()
 	{
-		//! ...temporary...
-		return (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING ? m_disableDownloadCkbox.getValue() : false);
+		return (m_disableDownloadCkbox.getValue());
 	}
 	
 	/**
@@ -349,8 +347,8 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING)	//! ...temporary...
 	 */
 	private boolean getDisableWebAccess()
 	{
-		//! ...temporary...
-		return (UserPropertiesRpcResponseData.ENABLE_DOWNLOAD_SETTING ? m_disableWebAccessCkbox.getValue() : false);
+//! 	...temporary...
+		return (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING? m_disableWebAccessCkbox.getValue() : false);
 	}
 	
 	/**

@@ -34,7 +34,7 @@ package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
-import org.kablink.teaming.gwt.client.util.FileLinkAction;
+import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.Html5UploadHost;
 
 /**
@@ -48,7 +48,7 @@ public abstract class EntryTitleColumn<T> extends VibeColumn<T, EntryTitleInfo> 
   /**
    * Constructor method.
    */
-  public EntryTitleColumn(FolderColumn fc, FileLinkAction fla, Html5UploadHost uploadHost) {
+  public EntryTitleColumn(FolderColumn fc, GwtFileLinkAction fla, Html5UploadHost uploadHost) {
 	  super(fc, new EntryTitleCell(fla, uploadHost));
   }
 }
