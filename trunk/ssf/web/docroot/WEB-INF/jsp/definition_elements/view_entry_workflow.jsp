@@ -353,4 +353,29 @@ function ss_checkForWorkflowStateSelection(obj) {
   <a class="ss_linkButton" href="javascript: ;" onClick="ss_showHide('ss_workflowResponsesDiv');return false;" 
   ><ssf:nlt tag="button.close"/></a>
 </div>
+
+<c:set var="workflowStateColumnText" value=""/>
+<c:forEach var="workflow" items="${ssDefinitionEntry.workflowStates}">
+  <c:if test="${!empty workflowStateColumnText}">
+    <c:set var="workflowStateColumnText">${workflowStateColumnText}, ${ssWorkflowCaptions[workflow.id]}</c:set>
+  </c:if>
+  <c:if test="${empty workflowStateColumnText}">
+    <c:set var="workflowStateColumnText">${ssWorkflowCaptions[workflow.id]}</c:set>
+  </c:if>
+</c:forEach>
+<script type="text/javascript">
+ss_createOnLoadObj("ss_resetFolderWorkflowStateColumn", ss_resetFolderWorkflowStateColumn);
+function ss_resetFolderWorkflowStateColumn() {
+	var spanObj = document.getElementById("ss_workflowState${ssBinder.id}_${ssDefinitionEntry.id}");
+	if (spanObj == null) {
+		var folderIframe = self.parent.document.getElementById("contentControl")
+		if (folderIframe != null) {
+			spanObj = folderIframe.contentDocument.getElementById("ss_workflowState${ssBinder.id}_${ssDefinitionEntry.id}");
+		}
+	}
+	if (spanObj != null) {
+		spanObj.innerHTML = "${workflowStateColumnText}";
+	}
+}
+</script>
 </c:if>
