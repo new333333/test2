@@ -1620,11 +1620,15 @@ public class GwtMenuHelper {
 	 * on the selected entity.
 	 */
 	private static void constructEntryViewWhoHasAccess(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
-		// Add a who has access item.
-		ToolbarItem whoHasAccessTBI = new ToolbarItem("1_whoHasAccess");
-		markTBITitle(whoHasAccessTBI, "toolbar.menu.who_has_access");
-		markTBIEvent(whoHasAccessTBI, TeamingEvents.VIEW_WHO_HAS_ACCESS);
-		entryToolbar.addNestedItem(whoHasAccessTBI);
+		// Is other than guest or an external user logged in?
+		User user = GwtServerHelper.getCurrentUser();
+		if ((!(user.isShared())) && user.getIdentityInfo().isInternal()) {
+			// Yes!  Add the who has access item.
+			ToolbarItem whoHasAccessTBI = new ToolbarItem("1_whoHasAccess");
+			markTBITitle(whoHasAccessTBI, "toolbar.menu.who_has_access");
+			markTBIEvent(whoHasAccessTBI, TeamingEvents.VIEW_WHO_HAS_ACCESS);
+			entryToolbar.addNestedItem(whoHasAccessTBI);
+		}
 	}
 	
 	/*
