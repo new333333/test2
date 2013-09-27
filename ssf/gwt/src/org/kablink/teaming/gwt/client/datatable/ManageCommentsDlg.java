@@ -231,6 +231,10 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 	 * dialog.
 	 */
 	private void runDlgNow(CommentsInfo commentsInfo, UIObject showRelativeTo, CommentAddedCallback addedCallback) {
+		// Set the style this dialog needs on the caption label.
+		Label hcl = getHeaderCaptionLabel();
+		hcl.setStyleName("vibe-manageCommentsDlg-headerCaption");
+		
 		// Set the dialog's caption and caption image...
 		setCaption(             commentsInfo.getEntityTitle()    );
 		setCaptionImage((Image) commentsInfo.getClientItemImage());

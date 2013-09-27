@@ -488,6 +488,7 @@
 		font-size: 13px;
 	}
 	.vibe-manageCommentsDlg-panel         {}
+	.vibe-manageCommentsDlg-headerCaption {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 420px;}
 /* End:  Manage comments dialog styles. */
 
 /* Start:  Size columns dialog styles. */

@@ -591,6 +591,17 @@ public abstract class DlgBox extends TeamingPopupPanel
 	
 	
 	/**
+	 * Returns the dialog's header caption label.
+	 * 
+	 * @return
+	 */
+	public Label getHeaderCaptionLabel()
+	{
+		return m_caption;
+	}
+	
+	
+	/**
 	 * Returns the dialog's footer panel.
 	 * 
 	 * @return
