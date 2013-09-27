@@ -1895,6 +1895,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used by Html5FileUploadClientHelper.java.
 	String html5Uploader_InternalError_NoBrowserSupport();
 	String html5Uploader_InternalError_UploaderAlreadyActive();
+	String html5Uploader_Warning_NoFiles();
 	
 	// Strings used in the "Child binders widget"
 	String workspacesHeader();

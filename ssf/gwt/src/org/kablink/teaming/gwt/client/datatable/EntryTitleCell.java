@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.file.File;
+import org.vectomatic.file.FileList;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
@@ -81,6 +82,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	private GwtFileLinkAction	m_fileLinkAction;	// The action to take when the cell's link is activated.
+	private GwtTeamingMessages  m_messages;			// 
 	private Html5UploadHost		m_uploadHost;		// An HTML5 host we can use for uploading files into the folder represented by this cell.
 	private HoverHintPopup		m_hoverHintPopup;	// A hint popup that gets displayed when the user mouses over this cell.
 
@@ -106,9 +108,12 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 		
-		// ...and store the parameters.
+		// ...store the parameters...
 		m_fileLinkAction = fla;
 		m_uploadHost     = uploadHost;
+		
+		// ...and initialize anything else that requires it.
+		m_messages = GwtTeaming.getMessages(); 
 	}
 
 	/*
@@ -196,7 +201,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 					// No!  Tell the user about the problem.
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
-						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+						m_messages.rpcFailure_GetBinderPermalink(),
 						folderId);
 				}
 				
@@ -222,7 +227,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
-						GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
+						m_messages.rpcFailure_GetViewFolderEntryUrl(),
 						String.valueOf(eti.getEntityId().getEntityId()));
 				}
 				
@@ -247,7 +252,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_SetSeen(),
+					m_messages.rpcFailure_SetSeen(),
 					String.valueOf(entryId));
 			}
 
@@ -478,12 +483,20 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
 			// ...turn off the drag and drop highlighting...
 			setDnDHighlight(dndTarget, false);
-			
-			// ...process the files that were dropped...
-			processFilesAsync(
-				eti.getEntityId().buildBaseBinderInfo(),
-				Html5UploadHelper.getListFromFileList(
-					event.getDataTransfer().<DataTransferExt>cast().getFiles()));
+
+			// ...if the drop data doesn't contain any files...
+			FileList fileList = event.getDataTransfer().<DataTransferExt>cast().getFiles();
+			int files = ((null == fileList) ? 0 : fileList.getLength());
+			if (0 == files) {
+				// ...tell the user about the problem...
+				GwtClientHelper.deferredAlert(m_messages.html5Uploader_Warning_NoFiles());
+			}
+			else {
+				// ...otherwise, process the files that were dropped...
+				processFilesAsync(
+					eti.getEntityId().buildBaseBinderInfo(),
+					Html5UploadHelper.getListFromFileList(fileList));
+				}
 		}
 		
 		// ...and stop the event propagation since this is a valid drop
@@ -585,14 +598,13 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			// ...and we know what type of item it is...
 			if (null != entityType) {
 				// ...we need to display an image next to it...
-				GwtTeamingMessages                 messages = GwtTeaming.getMessages(); 
-				GwtTeamingWorkspaceTreeImageBundle images   = GwtTeaming.getWorkspaceTreeImageBundle();
+				GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
 				String                             entityImage;
 				String                             entityAlt;
-				if      (isEntry)                        {entityImage = getEntryImage(eti, images);                        entityAlt = messages.treeAltEntry();    }
-				else if (entityType.equals("folder"))    {entityImage = images.folder().getSafeUri().asString();           entityAlt = messages.treeAltFolder();   }
-				else if (entityType.equals("workspace")) {entityImage = images.folder_workspace().getSafeUri().asString(); entityAlt = messages.treeAltWorkspace();}
-				else                                     {entityImage = null;                                              entityAlt = null;                       }
+				if      (isEntry)                        {entityImage = getEntryImage(eti, images);                        entityAlt = m_messages.treeAltEntry();    }
+				else if (entityType.equals("folder"))    {entityImage = images.folder().getSafeUri().asString();           entityAlt = m_messages.treeAltFolder();   }
+				else if (entityType.equals("workspace")) {entityImage = images.folder_workspace().getSafeUri().asString(); entityAlt = m_messages.treeAltWorkspace();}
+				else                                     {entityImage = null;                                              entityAlt = null;                         }
 				if (hasBinderImg || (null != entityImage)) {
 					Image i = (hasBinderImg ? binderImg : GwtClientHelper.buildImage(entityImage));
 					i.setTitle(entityAlt);
@@ -607,7 +619,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			// ...add a widget so the user can mark it so.  (Note that
 			// ...we don't mess with the unread bubble when viewing the
 			// ...trash)...
-			Image i = GwtClientHelper.buildImage(GwtTeaming.getDataTableImageBundle().unread(), GwtTeaming.getMessages().vibeDataTable_Alt_Unread());
+			Image i = GwtClientHelper.buildImage(GwtTeaming.getDataTableImageBundle().unread(), m_messages.vibeDataTable_Alt_Unread());
 			i.addStyleName("vibe-dataTableEntry-unseenMarker");
 			Element iE = i.getElement();
 			iE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE);
