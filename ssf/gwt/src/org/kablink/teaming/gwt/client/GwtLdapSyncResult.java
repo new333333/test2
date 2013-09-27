@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,83 +30,102 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client;
 
-import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class holds all of the information necessary to execute the
- * 'start ldap sync' command.
- * 
- * @author jwootton@novell.com
+ * This class is used to represent a single ldap sync result
+ * @author jwootton
+ *
  */
-public class StartLdapSyncCmd extends VibeRpcCmd
+public class GwtLdapSyncResult implements IsSerializable, VibeRpcResponseData
 {
-	private String m_syncId;
-	private ArrayList<GwtLdapConnectionConfig> m_listOfLdapServersToSync;
+	private String m_entityName;
+	private GwtEntityType m_entityType;
+	private GwtLdapSyncAction m_syncAction;
+	
 	
 	/**
-	 * Constructor method.
 	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public StartLdapSyncCmd()
+	public enum GwtEntityType implements IsSerializable
 	{
-		// Initialize the super class.
-		super();
-		
-		m_syncId = null;
-		m_listOfLdapServersToSync = null;
+		USER,
+		GROUP
 	}
 
 	/**
-	 * Add an ldap server to sync.
+	 * 
 	 */
-	public void addLdapServerToSync( GwtLdapConnectionConfig ldapServer )
+	public enum GwtLdapSyncAction implements IsSerializable
 	{
-		if ( m_listOfLdapServersToSync == null )
-			m_listOfLdapServersToSync = new ArrayList<GwtLdapConnectionConfig>();
-		
-		m_listOfLdapServersToSync.add( ldapServer );
+		ADDED_ENTITY,
+		MODIFIED_ENTITY,
+		DELETED_ENTITY
 	}
-	
+
 	/**
-	 * Returns the command's enumeration value.
+	 * Constructor method. 
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
+	 * No parameters as per GWT serialization requirements.
 	 */
-	@Override
-	public int getCmdType() 
+	public GwtLdapSyncResult()
 	{
-		return VibeRpcCmdType.START_LDAP_SYNC.ordinal();
-	}
-	
-	/**
-	 * 
-	 */
-	public ArrayList<GwtLdapConnectionConfig> getListOfLdapServersToSync()
-	{
-		return m_listOfLdapServersToSync;
+		m_entityName = null;
+		m_entityType = null;
+		m_syncAction = null;
 	}
 	
 	/**
 	 * 
 	 */
-	public String getSyncId()
+	public String getEntityName()
 	{
-		return m_syncId;
+		return m_entityName;
 	}
 	
 	/**
 	 * 
 	 */
-	public void setSyncId( String syncId )
+	public GwtEntityType getEntityType()
 	{
-		m_syncId = syncId;
+		return m_entityType;
+	}
+	
+	/**
+	 * 
+	 */
+	public GwtLdapSyncAction getSyncAction()
+	{
+		return m_syncAction;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setEntityName( String name )
+	{
+		m_entityName = name;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setEntityType( GwtEntityType type )
+	{
+		m_entityType = type;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setSyncAction( GwtLdapSyncAction action )
+	{
+		m_syncAction = action;
 	}
 }

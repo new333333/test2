@@ -4492,7 +4492,7 @@ td.datePickerMonth {
 
 }
 
-.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel, .shareDlg_MenuPanel, .editLdapConfigDlg_MenuPanel, .editLdapServerConfigDlg_MenuPanel
+.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel, .shareDlg_MenuPanel, .editLdapConfigDlg_MenuPanel, .editLdapServerConfigDlg_MenuPanel, .ldapSyncResultsDlg_MenuPanel
 {
     background-color: #ededed;
     border-top-left-radius: 5px;

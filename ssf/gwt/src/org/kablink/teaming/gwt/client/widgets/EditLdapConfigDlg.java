@@ -43,13 +43,17 @@ import java.util.TreeMap;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
-import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig.GwtLdapSyncStatus;
+import org.kablink.teaming.gwt.client.GwtLdapSyncResults.GwtLdapSyncStatus;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTimeZones;
 import org.kablink.teaming.gwt.client.datatable.LdapServerUrlCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeLdapSyncResultsDlgEvent;
+import org.kablink.teaming.gwt.client.event.LdapSyncStatusEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLdapConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLocalesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTimeZonesCmd;
@@ -61,6 +65,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditLdapServerConfigDlg.EditLdapServerConfigDlgClient;
+import org.kablink.teaming.gwt.client.widgets.LdapSyncResultsDlg.LdapSyncResultsDlgClient;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -91,6 +96,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -99,7 +105,10 @@ import com.google.gwt.view.client.MultiSelectionModel;
  *
  */
 public class EditLdapConfigDlg extends DlgBox
-	implements EditSuccessfulHandler
+	implements
+		EditSuccessfulHandler,
+		LdapSyncStatusEvent.Handler,
+		InvokeLdapSyncResultsDlgEvent.Handler
 {
 	private GwtLdapConfig m_ldapConfig;
 	
@@ -127,10 +136,24 @@ public class EditLdapConfigDlg extends DlgBox
 	private CheckBox m_allowLocalLoginCheckBox;
 
 	private EditLdapServerConfigDlg m_editLdapServerDlg = null;
+	private LdapSyncResultsDlg m_ldapSyncResultsDlg = null;
 	
 	private boolean m_isDirty;
+	private String m_ldapSyncId;
+	private GwtLdapSyncStatus m_ldapSyncStatus;
+
+	private List<HandlerRegistration> m_registeredEventHandlers;
+
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] 
+	{
+		TeamingEvents.LDAP_SYNC_STATUS,
+		TeamingEvents.INVOKE_LDAP_SYNC_RESULTS_DLG
+	};
 	
-	
+
 	/**
 	 * Callback interface to interact with the "edit ldap config" dialog
 	 * asynchronously after it loads. 
@@ -1191,9 +1214,53 @@ public class EditLdapConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void invokeLdapSyncResultsDlg()
+	private void invokeLdapSyncResultsDlg( final boolean clearResults )
 	{
-		Window.alert( "Finish invokeLdapSyncResultsDlg()" );
+		if ( m_ldapSyncResultsDlg == null )
+		{
+			int x;
+			int y;
+			
+			x = m_ldapServersTable.getAbsoluteLeft();
+			y = m_ldapServersTable.getAbsoluteTop() - 50;
+			
+			LdapSyncResultsDlg.createAsync(
+										true, 
+										false,
+										x, 
+										y,
+										new LdapSyncResultsDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final LdapSyncResultsDlg lsrDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_ldapSyncResultsDlg = lsrDlg;
+							
+							invokeLdapSyncResultsDlg( clearResults );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_ldapSyncResultsDlg.init( m_ldapSyncId, clearResults );
+			m_ldapSyncResultsDlg.show();
+		}
 	}
 	
 	/**
@@ -1349,10 +1416,116 @@ public class EditLdapConfigDlg extends DlgBox
 	 */
 	private boolean isLdapSyncInProgress()
 	{
-		//!!!
+		if ( m_ldapSyncId != null && m_ldapSyncId.length() > 0 )
+			return true;
+		
 		return false;
 	}
 	
+	/**
+	 * Called when the dialog is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach()
+	{
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the dialog is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach and then unregister our event handlers.
+		super.onDetach();
+		
+		unregisterEvents();
+	}
+	
+	/**
+	 * Called to invoke the "ldap sync results" dialog
+	 */
+	@Override
+	public void onInvokeLdapSyncResultsDlg( InvokeLdapSyncResultsDlgEvent event )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				invokeLdapSyncResultsDlg( false );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
+	 * Called when the ldap sync status changes
+	 */
+	@Override
+	public void onLdapSyncStatusChanged( LdapSyncStatusEvent event )
+	{
+		if ( event != null )
+		{
+			m_ldapSyncStatus = event.getLdapSyncStatus();
+			switch ( m_ldapSyncStatus )
+			{
+			case STATUS_ABORTED_BY_ERROR:
+			case STATUS_COMPLETED:
+				m_ldapSyncId = null;
+				if ( m_listOfLdapServers != null && m_listOfLdapServers.size() > 0 )
+				{
+					for ( GwtLdapConnectionConfig nextLdapServer : m_listOfLdapServers )
+					{
+						nextLdapServer.setLdapSyncStatus( m_ldapSyncStatus );
+					}
+				}
+				m_dataProvider.refresh();
+				break;
+				
+			case STATUS_IN_PROGRESS:
+			case STATUS_STOP_COLLECTING_RESULTS:
+			case STATUS_SYNC_ALREADY_IN_PROGRESS:
+				break;
+			}
+		}
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents()
+	{
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if ( null == m_registeredEventHandlers )
+		{
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if ( m_registeredEventHandlers.isEmpty() )
+		{
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+										GwtTeaming.getEventBus(),
+										m_registeredEvents,
+										this,
+										m_registeredEventHandlers );
+		}
+	}
+
 	/**
 	 * Issue an rpc request to save the ldap configuration.
 	 */
@@ -1418,14 +1591,6 @@ public class EditLdapConfigDlg extends DlgBox
 
 		messages = GwtTeaming.getMessages();
 		
-		// Are there any ldap servers to sync?
-		if ( m_listOfLdapServers == null || m_listOfLdapServers.size() == 0 )
-		{
-			// No
-			Window.alert( messages.editLdapConfigDlg_NoLdapServersToSync() );
-			return;
-		}
-		
 		// Is an ldap sync currently in progress?
 		if ( isLdapSyncInProgress() )
 		{
@@ -1433,7 +1598,7 @@ public class EditLdapConfigDlg extends DlgBox
 			Window.alert( messages.editLdapConfigDlg_LdapSyncInProgressCantStartAnother() );
 			
 			// Invoke the LDAP Sync Results dialog
-			invokeLdapSyncResultsDlg();
+			invokeLdapSyncResultsDlg( false );
 			
 			return;
 		}
@@ -1526,6 +1691,8 @@ public class EditLdapConfigDlg extends DlgBox
 			}; 
 
 			cmd = new StartLdapSyncCmd();
+			m_ldapSyncId = String.valueOf( Math.random() );
+			cmd.setSyncId( m_ldapSyncId );
 			
 			// Get the list of selected ldap servers
 			{
@@ -1545,14 +1712,14 @@ public class EditLdapConfigDlg extends DlgBox
 						nextServer = serverIterator.next();
 						cmd.addLdapServerToSync( nextServer );
 						
-						nextServer.setSyncStatus( GwtLdapSyncStatus.SYNC_IN_PROGRESS );
+						nextServer.setLdapSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
 					}
 				}
 				else if ( m_listOfLdapServers != null && m_listOfLdapServers.size() > 0 )
 				{
 					for ( GwtLdapConnectionConfig nextLdapServer : m_listOfLdapServers )
 					{
-						nextLdapServer.setSyncStatus( GwtLdapSyncStatus.SYNC_IN_PROGRESS );
+						nextLdapServer.setLdapSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
 					}
 				}
 
@@ -1562,8 +1729,27 @@ public class EditLdapConfigDlg extends DlgBox
 			
 			// Execute a GWT RPC command to start an ldap sync
 			GwtClientHelper.executeCommand( cmd, callback );
+
+			// Invoke the LDAP Sync Results dialog
+			invokeLdapSyncResultsDlg( true );
 		}
 	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents()
+	{
+		// If we have a non-empty list of registered events...
+		if ( ( null != m_registeredEventHandlers ) && ( ! ( m_registeredEventHandlers.isEmpty() ) ) )
+		{
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
+		}
+	}
+	
+
 	
 	/**
 	 * Loads the EditLdapConfigDlg split point and returns an instance

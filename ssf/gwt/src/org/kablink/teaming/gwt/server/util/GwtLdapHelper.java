@@ -37,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -52,10 +54,20 @@ import org.kablink.teaming.gwt.client.GwtHomeDirConfig.GwtHomeDirCreationOption;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
 import org.kablink.teaming.gwt.client.GwtLdapSearchInfo;
+import org.kablink.teaming.gwt.client.GwtLdapSyncResult.GwtEntityType;
+import org.kablink.teaming.gwt.client.GwtLdapSyncResult.GwtLdapSyncAction;
+import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
+import org.kablink.teaming.gwt.client.GwtLdapSyncResults.GwtLdapSyncError;
+import org.kablink.teaming.gwt.client.GwtLdapSyncResults.GwtLdapSyncStatus;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveLdapConfigRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.StartLdapSyncRpcResponseData;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
+import org.kablink.teaming.module.ldap.LdapSyncResults;
+import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
+import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
@@ -323,6 +335,100 @@ public class GwtLdapHelper
 
 		return ldapConfig;
 	}
+	
+	/**
+	 * Get the ldap sync results that have happened since we last retrieved the results.
+	 */
+	public static GwtLdapSyncResults getLdapSyncResults(
+		HttpServletRequest request,
+		String syncId )
+	{
+		GwtLdapSyncResults gwtSyncResults;
+		LdapSyncResults syncResults;
+		PartialLdapSyncResults partialSyncResults;
+		
+		gwtSyncResults = new GwtLdapSyncResults();
+		if ( syncId == null || syncId.length() == 0 )
+		{
+			gwtSyncResults.setSyncError( GwtLdapSyncError.SYNC_ID_IS_NULL );
+			return gwtSyncResults;
+		}
+		
+		// Get the ldap sync results.
+		syncResults = LdapSyncThread.getLdapSyncResults( request, syncId );
+		
+		if ( syncResults == null )
+		{
+			gwtSyncResults.setSyncError( GwtLdapSyncError.INVALID_SYNC_ID );
+			return gwtSyncResults;
+		}
+		
+		partialSyncResults = syncResults.getAddedGroups();
+		gwtSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.ADDED_ENTITY,
+									GwtEntityType.GROUP,
+									partialSyncResults.getResults() );
+		
+		partialSyncResults = syncResults.getAddedUsers();
+		gwtSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.ADDED_ENTITY,
+									GwtEntityType.USER,
+									partialSyncResults.getResults() );
+		
+		partialSyncResults = syncResults.getDeletedGroups();
+		gwtSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.DELETED_ENTITY,
+									GwtEntityType.GROUP,
+									partialSyncResults.getResults() );
+		
+		partialSyncResults = syncResults.getDeletedUsers();
+		gwtSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.DELETED_ENTITY,
+									GwtEntityType.USER,
+									partialSyncResults.getResults() );
+		
+		partialSyncResults = syncResults.getModifiedGroups();
+		gwtSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.MODIFIED_ENTITY,
+									GwtEntityType.GROUP,
+									partialSyncResults.getResults() );
+		
+		partialSyncResults = syncResults.getModifiedUsers();
+		gwtSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.MODIFIED_ENTITY,
+									GwtEntityType.USER,
+									partialSyncResults.getResults() );
+		
+		switch ( syncResults.getStatus() )
+		{
+		case STATUS_ABORTED_BY_ERROR:
+			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_ABORTED_BY_ERROR );
+			gwtSyncResults.setErrorDesc( syncResults.getErrorDesc() );
+			gwtSyncResults.setErrorLdapServerId( syncResults.getErrorLdapConfigId() );
+			break;
+			
+		case STATUS_COLLECT_RESULTS:
+			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
+			break;
+			
+		case STATUS_COMPLETED:
+			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_COMPLETED );
+			break;
+			
+		case STATUS_STOP_COLLECTING_RESULTS:
+			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_STOP_COLLECTING_RESULTS );
+			break;
+			
+		case STATUS_SYNC_ALREADY_IN_PROGRESS:
+			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS );
+			break;
+		}
+		
+		// Clear the results so we start fresh.
+		syncResults.clearResults();
+		
+		return gwtSyncResults;
+	}
 
 	/**
 	 * Set the default locale setting.  This setting is used to set the locale  on a user when
@@ -548,5 +654,41 @@ public class GwtLdapHelper
 		}
 		
 		return responseData;
+	}
+	
+	/**
+	 * Start an ldap sync
+	 */
+	public static StartLdapSyncRpcResponseData startLdapSync(
+		AllModulesInjected ami,
+		HttpServletRequest request,
+		String syncId,
+		boolean syncUsersAndGroups,
+		ArrayList<GwtLdapConnectionConfig> listOfLdapServers )
+	{
+		StartLdapSyncRpcResponseData response;
+		LdapSyncThread	ldapSyncThread;
+		LdapModule		ldapModule;
+		String[] listOfLdapConfigsToSyncGuid = null;
+		
+		response = new StartLdapSyncRpcResponseData();
+
+		ldapModule = ami.getLdapModule();
+
+		// Create an LdapSyncThread object that will do the sync work.
+		// Currently doing the sync on a separate thread does not work.  When doing work on a separate thread
+		// works, replace the call to doLdapSync() with start().
+		ldapSyncThread = LdapSyncThread.createLdapSyncThread(
+														request,
+														syncId,
+														ldapModule,
+														syncUsersAndGroups,
+														listOfLdapConfigsToSyncGuid );
+		if ( ldapSyncThread != null )
+		{
+			ldapSyncThread.doLdapSync();
+		}
+		
+		return response;
 	}
 }

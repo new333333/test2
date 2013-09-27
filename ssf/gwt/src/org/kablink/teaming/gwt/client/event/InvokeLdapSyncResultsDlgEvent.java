@@ -30,83 +30,90 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client.event;
 
-import java.util.ArrayList;
+import org.kablink.teaming.gwt.client.GwtLdapSyncResults.GwtLdapSyncStatus;
 
-import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
-
+import com.google.gwt.event.shared.EventHandler;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'start ldap sync' command.
+ * The InvokeLdapSyncResultsDlgEvent is used to invoke the "ldap sync results" dialog.
  * 
  * @author jwootton@novell.com
  */
-public class StartLdapSyncCmd extends VibeRpcCmd
+public class InvokeLdapSyncResultsDlgEvent extends VibeEventBase<InvokeLdapSyncResultsDlgEvent.Handler>
 {
-	private String m_syncId;
-	private ArrayList<GwtLdapConnectionConfig> m_listOfLdapServersToSync;
+    public static Type<Handler> TYPE = new Type<Handler>();
+    
+	/**
+	 * Handler interface for this event.
+	 */
+	public interface Handler extends EventHandler
+	{
+		void onInvokeLdapSyncResultsDlg( InvokeLdapSyncResultsDlgEvent event );
+	}
 	
 	/**
-	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * Class constructor.
 	 */
-	public StartLdapSyncCmd()
+	public InvokeLdapSyncResultsDlgEvent()
 	{
-		// Initialize the super class.
 		super();
-		
-		m_syncId = null;
-		m_listOfLdapServersToSync = null;
-	}
-
-	/**
-	 * Add an ldap server to sync.
-	 */
-	public void addLdapServerToSync( GwtLdapConnectionConfig ldapServer )
-	{
-		if ( m_listOfLdapServersToSync == null )
-			m_listOfLdapServersToSync = new ArrayList<GwtLdapConnectionConfig>();
-		
-		m_listOfLdapServersToSync.add( ldapServer );
 	}
 	
 	/**
-	 * Returns the command's enumeration value.
+	 * Dispatches this event when one is triggered.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
+	 * Implements the VibeEventBase.doDispatch() method.
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void doDispatch( Handler handler )
+    {
+        handler.onInvokeLdapSyncResultsDlg( this );
+    }
+	
+	/**
+	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
+	 * 
+	 * @return
+	 */
+    @Override
+    public Type<Handler> getAssociatedType()
+    {
+        return TYPE;
+    }
+    
+	/**
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
+	 * 
+	 * Implements VibeBaseEvent.getEventEnum()
 	 * 
 	 * @return
 	 */
 	@Override
-	public int getCmdType() 
+	public TeamingEvents getEventEnum()
 	{
-		return VibeRpcCmdType.START_LDAP_SYNC.ordinal();
+		return TeamingEvents.INVOKE_LDAP_SYNC_RESULTS_DLG;
 	}
-	
+
 	/**
+	 * Registers this event on the given event bus and returns its
+	 * HandlerRegistration.
 	 * 
-	 */
-	public ArrayList<GwtLdapConnectionConfig> getListOfLdapServersToSync()
-	{
-		return m_listOfLdapServersToSync;
-	}
-	
-	/**
+	 * @param eventBus
+	 * @param handler
 	 * 
+	 * @return
 	 */
-	public String getSyncId()
+	public static HandlerRegistration registerEvent( SimpleEventBus eventBus, Handler handler )
 	{
-		return m_syncId;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setSyncId( String syncId )
-	{
-		m_syncId = syncId;
+		return eventBus.addHandler( TYPE, handler );
 	}
 }

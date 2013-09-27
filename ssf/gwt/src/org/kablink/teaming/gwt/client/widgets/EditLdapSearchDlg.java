@@ -475,7 +475,7 @@ public class EditLdapSearchDlg extends DlgBox
 	@Override
 	public FocusWidget getFocusWidget()
 	{
-		return null;
+		return m_baseDnTextBox;
 	}
 	
 	/**

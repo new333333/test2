@@ -78,6 +78,8 @@ import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
+import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
+import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.GwtTimeZones;
@@ -1696,6 +1698,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			ldapConfig = GwtLdapHelper.getLdapConfig( this );
 			response = new VibeRpcResponse( ldapConfig );
+			return response;
+		}
+		
+		case GET_LDAP_SYNC_RESULTS:
+		{
+			GetLdapSyncResultsCmd glsrCmd;
+			GwtLdapSyncResults ldapSyncResults;
+			
+			glsrCmd = (GetLdapSyncResultsCmd) cmd;
+			ldapSyncResults = GwtLdapHelper.getLdapSyncResults( getRequest( ri ), glsrCmd.getSyncId() );
+			response = new VibeRpcResponse( ldapSyncResults );
 			return response;
 		}
 		
@@ -3341,6 +3354,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ShowSharesCmd ssCmd = ((ShowSharesCmd) cmd);
 			Boolean result = GwtViewHelper.showShares( this, getRequest( ri ), ssCmd.getCollectionType(), ssCmd.getEntityIds() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case START_LDAP_SYNC:
+		{
+			StartLdapSyncCmd slsCmd;
+			StartLdapSyncRpcResponseData responseData;
+			
+			slsCmd = (StartLdapSyncCmd) cmd;
+			responseData = GwtLdapHelper.startLdapSync(
+													this,
+													getRequest( ri ),
+													slsCmd.getSyncId(),
+													true,
+													null );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
