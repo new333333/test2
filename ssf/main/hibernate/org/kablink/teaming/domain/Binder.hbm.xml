@@ -32,7 +32,7 @@
     <property name="fullSyncDirOnly" access="field"/>
     <property name="syncScheduleOption" access="field" type="short" />
     <many-to-one name="parentBinder">
-          <column name="parentBinder" index="owningBinder_Binder"/>
+          <column name="parentBinder" index="subBinder_Binder" unique="true"/>
     </many-to-one>
     <many-to-one name="owner" access="field"/>
     <!-- exclude evict, refresh, delete-orphan-->    
@@ -108,7 +108,7 @@
 <!-- use length to force medium blog in mysql -->
    	<property name="branding"  length="2000000" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
 	<property name="brandingExt" length="2000000" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
-    <property name="title" length="255" access="field"/>
+    <property name="title" length="255" access="field" index="subBinder_Binder" unique="true"/>
     <property name="normalTitle" length="255"/>
     <property name="iconName" length="64"/>    
     <property name="internalId" length="32" index="internal_Binder"/>
