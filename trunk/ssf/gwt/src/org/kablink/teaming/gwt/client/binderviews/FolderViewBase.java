@@ -1278,7 +1278,18 @@ public abstract class FolderViewBase extends ViewBase
 	public void onDrop(DropEvent event) {
 		if (!(m_uploadHelper.uploadsPending())) {
 			setDnDHighlight(false);
-			processFiles(event.getDataTransfer().<DataTransferExt>cast().getFiles());
+			
+			// If the drop data doesn't contain any files...
+			FileList fileList = event.getDataTransfer().<DataTransferExt>cast().getFiles();
+			int files = ((null == fileList) ? 0 : fileList.getLength());
+			if (0 == files) {
+				// ...tell the user about the problem...
+				GwtClientHelper.deferredAlert(m_messages.html5Uploader_Warning_NoFiles());
+			}
+			else {
+				// ...otherwise, process the files that were dropped...
+				processFiles(fileList);
+			}
 		}
 		event.stopPropagation();
 		event.preventDefault();

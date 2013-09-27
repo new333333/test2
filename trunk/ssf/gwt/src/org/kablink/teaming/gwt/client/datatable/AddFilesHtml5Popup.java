@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.dnd.DropPanel;
+import org.vectomatic.file.FileList;
 import org.vectomatic.file.FileUploadExt;
 
 import com.google.gwt.core.client.GWT;
@@ -438,11 +439,22 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	public void onDrop(DropEvent event) {
 		if (!(m_uploadHelper.uploadsPending())) {
 			setDnDHighlight(false);
-			Html5UploadHelper.uploadFiles(
-				m_uploadHelper,
-				m_folderInfo,
-				event.getDataTransfer().<DataTransferExt>cast().getFiles(),
-				new FullUIReloadEvent());
+			
+			// If the drop data doesn't contain any files...
+			FileList fileList = event.getDataTransfer().<DataTransferExt>cast().getFiles();
+			int files = ((null == fileList) ? 0 : fileList.getLength());
+			if (0 == files) {
+				// ...tell the user about the problem...
+				GwtClientHelper.deferredAlert(m_messages.html5Uploader_Warning_NoFiles());
+			}
+			else {
+				// ...otherwise, upload the files that were dropped...
+				Html5UploadHelper.uploadFiles(
+					m_uploadHelper,
+					m_folderInfo,
+					fileList,
+					new FullUIReloadEvent());
+			}
 		}
 		event.stopPropagation();
 		event.preventDefault();
