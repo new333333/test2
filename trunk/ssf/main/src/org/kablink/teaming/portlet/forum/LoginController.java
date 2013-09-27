@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -58,6 +58,7 @@ import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetVerificationException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToVerificationException;
 import org.kablink.teaming.extuser.ExternalUserUtil;
+import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.runas.RunasCallback;
@@ -76,16 +77,19 @@ import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
+import org.kablink.util.api.ApiErrorCode;
+
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
 
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
 public class LoginController  extends SAbstractControllerRetry {
-
+	private static final String LOGIN_STATUS_WEBACCESS_RESTRICTED = "webAccessRestricted";
 	private static final String LOGIN_STATUS_AUTHENTICATION_FAILED = "authenticationFailed";
 	private static final String LOGIN_STATUS_REGISTRATION_REQUIRED = "registrationRequired";
 	private static final String LOGIN_STATUS_PROMPT_FOR_LOGIN = "promptForLogin";
@@ -333,8 +337,13 @@ public class LoginController  extends SAbstractControllerRetry {
 
         		// Authentication failed.
         		ex = (AuthenticationException) sessionObj;
-        		model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_AUTHENTICATION_FAILED );
-        		model.put( WebKeys.LOGIN_ERROR, ex.getMessage() );
+        		String exStatus;
+        		if ((ex instanceof UserIdNotActiveException) &&
+        				(ApiErrorCode.USERACCOUNT_WEBACCESS_BLOCKED.equals(((UserIdNotActiveException) ex).getApiErrorCode())))
+        		     exStatus = LOGIN_STATUS_WEBACCESS_RESTRICTED;
+        		else exStatus = LOGIN_STATUS_AUTHENTICATION_FAILED;
+        		model.put( WebKeys.LOGIN_STATUS, exStatus        );
+        		model.put( WebKeys.LOGIN_ERROR,  ex.getMessage() );
 
         		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
         		if(BrowserSniffer.is_wap_xhtml(req) || 

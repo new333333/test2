@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -67,6 +67,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.runasync.RunAsyncManager;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
@@ -83,11 +84,17 @@ import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
+import org.kablink.util.api.ApiErrorCode;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.liferay.util.Validator;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked","unused"})
 public class AuthenticationManagerImpl implements AuthenticationManager,InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -256,11 +263,12 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	/**
      * Called after bean is initialized.  
      */
- 	public void afterPropertiesSet() {
+ 	@Override
+	public void afterPropertiesSet() {
 		userModify = SPropsUtil.getStringArray("portal.user.auto.synchronize", ",");
  	}
  	
- 	@Override
+	@Override
 	public User authenticate(AuthenticationServiceProvider authenticationServiceProvider, 
 			String zoneName, String userName, String password,
 			boolean createUser, boolean updateUser, boolean passwordAutoSynch, boolean ignorePassword, 
@@ -279,6 +287,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		syncUser = false;
 		
 		Long zoneId = getCoreDao().findTopWorkspace(zoneName).getZoneId();
+		boolean webClient = ( authenticatorName != null && authenticatorName.equalsIgnoreCase( "web" ) );
 		
 		try
 		{
@@ -319,6 +328,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if (!user.isActive() && !MiscUtil.isSystemUserAccount( userName )) {
 				//This account is not active
 				throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
+			}
+
+			// If this authentication is from the web client for a user
+			// that's restricted from using the web client...
+			if (webClient && (!(SearchUtils.getEffectiveWebAccessSetting(adminModule, profileModule, user)))) {
+				// ...don't allow things to proceed.
+				UserAccountNotActiveException uaEx = new UserAccountNotActiveException(NLT.get("error.webAccessRestricted"));
+				uaEx.setApiErrorCode(ApiErrorCode.USERACCOUNT_WEBACCESS_BLOCKED);
+				throw uaEx;
 			}
 			
 			// Again, the user account already exists, so we can safely rule out creation situation.
@@ -391,7 +409,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  			}
 		} 
 		catch (UserAccountNotActiveException nu) {
- 			throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
+ 			throw nu;
 		} finally {
 			if (!hadSession) SessionUtil.sessionStop();			
 		}
@@ -429,14 +447,12 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			try
 			{
 				boolean logErrors = false;
-				boolean webClient = false;
 				
 				// We only want to log errors when the client is the browser.  Otherwise, we
 				// generate too many errors in the log.
-				if ( authenticatorName != null && authenticatorName.equalsIgnoreCase( "web" ) )
+				if ( webClient )
 				{
 					logErrors = true;
-					webClient = true;
 				}
 				
 				// Does this user have a home directory attribute in ldap?
@@ -722,6 +738,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		getProfileModule().modifyUserFromPortal(user.getId(), updates, null);
 	}
 	
+	@Override
 	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
 		validateZone(zoneName);

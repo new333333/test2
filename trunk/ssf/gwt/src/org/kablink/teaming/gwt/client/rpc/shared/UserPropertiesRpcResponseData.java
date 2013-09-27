@@ -48,8 +48,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	public final static boolean ENABLE_WEBACCESS_SETTING	= false;	//! DRF (20130923):  Leave false on checkin until it's all working.
-	
 	private AccountInfo						m_accountInfo;		//
 	private HomeInfo						m_homeInfo;			//
 	private NetFoldersInfo					m_netFoldersInfo;	//
