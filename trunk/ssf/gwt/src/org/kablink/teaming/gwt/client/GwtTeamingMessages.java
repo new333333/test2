@@ -429,6 +429,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetImUrl();
 	String rpcFailure_GetInheritedLandingPageProperties();
 	String rpcFailure_GetIsDynamicGroupMembershipAllowed();
+	String rpcFailure_GetLdapSyncResults();
 	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMainPageInfo();
@@ -674,6 +675,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
 	String codeSplitFailure_LandingPageWidget();
+	String codeSplitFailure_LdapSyncResultsDlg();
 	String codeSplitFailure_LoginDlg();
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();
@@ -2938,5 +2940,30 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapSearchDlg_NetFolderServerLabel();
 	String editLdapSearchDlg_SearchSubtreeLabel();
 	String editLdapSearchDlg_SpecifiedAttribRB();
+
+	// Strings used in the Ldap Sync Results dialog
+	String ldapSyncResultsDlg_ActionCol();
+	String ldapSyncResultsDlg_AddedAction();
+	String ldapSyncResultsDlg_AddedGroupsLabel();
+	String ldapSyncResultsDlg_AddedUsersLabel();
+	String ldapSyncResultsDlg_DeletedAction();
+	String ldapSyncResultsDlg_DeletedGroupsLabel();
+	String ldapSyncResultsDlg_DeletedUsersLabel();
+	String ldapSyncResultsDlg_GroupType();
+	String ldapSyncResultsDlg_Header();
+	String ldapSyncResultsDlg_ModifiedAction();
+	String ldapSyncResultsDlg_ModifiedGroupsLabel();
+	String ldapSyncResultsDlg_ModifiedUsersLabel();
+	String ldapSyncResultsDlg_NameCol();
+	String ldapSyncResultsDlg_NoLdapSyncResults();
+	String ldapSyncResultsDlg_RequestingLdapSyncResults();
+	String ldapSyncResultsDlg_SyncStatusLabel();
+	String ldapSyncResultsDlg_SyncStatus_Completed();
+	String ldapSyncResultsDlg_SyncStatus_Error();
+	String ldapSyncResultsDlg_SyncStatus_InProgress();
+	String ldapSyncResultsDlg_SyncStatus_NotCollectingResults();
+	String ldapSyncResultsDlg_SyncStatus_SyncAlreadyInProgress();
+	String ldapSyncResultsDlg_TypeCol();
+	String ldapSyncResultsDlg_UserType();
 	
 }// end GwtTeamingMessages

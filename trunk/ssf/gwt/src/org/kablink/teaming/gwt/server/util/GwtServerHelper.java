@@ -9643,6 +9643,7 @@ public class GwtServerHelper {
 		case GET_JITS_ZONE_CONFIG:
 		case GET_LANDING_PAGE_DATA:
 		case GET_LDAP_CONFIG:
+		case GET_LDAP_SYNC_RESULTS:
 		case GET_LIST_OF_CHILD_BINDERS:
 		case GET_LIST_OF_FILES:
 		case GET_LOCALES:

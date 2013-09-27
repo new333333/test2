@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.GwtLdapSyncResults.GwtLdapSyncStatus;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -63,19 +65,9 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	private ArrayList< GwtLdapSearchInfo> m_listOfGroupSearchCriteria;
 	
 	private boolean m_isDirty;
-	private GwtLdapSyncStatus m_syncStatus; 
 	
-
-	/**
-	 * This class represents the different ldap sync status
-	 */
-	public enum GwtLdapSyncStatus implements IsSerializable
-	{
-		SYNC_IN_PROGRESS,
-		SYNC_CANCELED,
-		SYNC_COMPLETED,
-		UNKNOWN
-	}
+	private GwtLdapSyncStatus m_syncStatus;
+	
 
 	/**
 	 * Constructor method. 
@@ -85,7 +77,6 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	public GwtLdapConnectionConfig()
 	{
 		m_isDirty = false;
-		m_syncStatus = GwtLdapSyncStatus.UNKNOWN;
 	}
 	
 	/**
@@ -147,6 +138,14 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	/**
 	 * 
 	 */
+	public GwtLdapSyncStatus getLdapSyncStatus()
+	{
+		return m_syncStatus;
+	}
+	
+	/**
+	 * 
+	 */
 	public ArrayList<GwtLdapSearchInfo> getListOfGroupSearchCriteria()
 	{
 		return m_listOfGroupSearchCriteria;
@@ -182,14 +181,6 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	public String getServerUrl()
 	{
 		return m_serverUrl;
-	}
-	
-	/**
-	 * 
-	 */
-	public GwtLdapSyncStatus getSyncStatus()
-	{
-		return m_syncStatus;
 	}
 	
 	/**
@@ -290,6 +281,14 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	/**
 	 * 
 	 */
+	public void setLdapSyncStatus( GwtLdapSyncStatus status )
+	{
+		m_syncStatus = status;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setProxyDn( String proxyDn )
 	{
 		m_proxyDn = proxyDn;
@@ -309,14 +308,6 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	public void setServerUrl( String serverUrl )
 	{
 		m_serverUrl = serverUrl;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setSyncStatus( GwtLdapSyncStatus syncStatus )
-	{
-		m_syncStatus = syncStatus;
 	}
 	
 	/**

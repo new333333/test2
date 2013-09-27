@@ -124,6 +124,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_IMPORT_ICAL_URL,							// Invokes the dialog to import an iCal by specifying a URL.
 	INVOKE_IMPORT_PROFILES_DLG,						// Invokes the "Import Profiles" dialog.
 	INVOKE_JITS_ZONE_CONFIG_DLG,					// Invokes the "Jits zone configuration" dialog.
+	INVOKE_LDAP_SYNC_RESULTS_DLG,					// Invokes the "Ldap sync results" dialog.
 	INVOKE_MANAGE_DATABASE_PRUNE_DLG,				// Invokes the "Manage database prune" dialog.
 	INVOKE_MANAGE_GROUPS_DLG,						// Invokes the "Manage groups" dialog.
 	INVOKE_MANAGE_USERS_DLG,						// Invokes the "Manage users" dialog.
@@ -162,6 +163,7 @@ public enum TeamingEvents implements IsSerializable {
 	
 	GET_MANAGE_MENU_POPUP,							// Returns the manage menu (Workspace or Folder) currently loaded in the main menu bar.
 	HIDE_MANAGE_MENU,								// Hides the manage menu loaded in the main menu bar.
+	LDAP_SYNC_STATUS,								// Fired when the ldap sync status changes.
 	MANAGE_USERS_FILTER,							// Set or clears a filter in the manage users dialog.
 	MENU_HIDE,										// Hides the main menu
 	MENU_LOADED,									// Fired when each item on the main menu bar has loaded.
