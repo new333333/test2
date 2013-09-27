@@ -295,4 +295,20 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="OWNINGBINDER_BINDER"/>
+        </preConditions>
+        <comment>Drop old OWNINGBINDER_BINDER index, if exists, from SS_FORUMS table</comment>
+        <dropIndex indexName="OWNINGBINDER_BINDER" tableName="SS_FORUMS"/>        
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <comment>Create SUBBINDER_BINDER index in SS_FORUMS table</comment>
+        <createIndex indexName="SUBBINDER_BINDER" tableName="SS_FORUMS" unique="true">
+            <column name="PARENTBINDER"/>
+            <column name="TITLE"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>
