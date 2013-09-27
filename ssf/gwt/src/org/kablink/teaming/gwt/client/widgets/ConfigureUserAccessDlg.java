@@ -41,7 +41,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserAccessConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserAccessConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
-import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
@@ -218,7 +217,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 		}
 		
 		// Add the "Disable WebAccess" checkbox;
-if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING)	//! ...temporary...
 		{
 			FlowPanel panel;
 			
@@ -339,7 +337,7 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING)	//! ...temporary...
 	 */
 	private boolean getDisableDownload()
 	{
-		return (m_disableDownloadCkbox.getValue());
+		return m_disableDownloadCkbox.getValue();
 	}
 	
 	/**
@@ -347,8 +345,7 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING)	//! ...temporary...
 	 */
 	private boolean getDisableWebAccess()
 	{
-//! 	...temporary...
-		return (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING? m_disableWebAccessCkbox.getValue() : false);
+		return m_disableWebAccessCkbox.getValue();
 	}
 	
 	/**

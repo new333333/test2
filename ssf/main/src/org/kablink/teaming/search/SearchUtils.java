@@ -63,6 +63,7 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -1451,27 +1452,38 @@ public class SearchUtils {
 	 * We will look in the User object first for a value.  If one
 	 * is not found we will get the setting from the zone.
 	 * 
-	 * @param bs
+	 * @param am
+	 * @param pm
 	 * @param user
 	 * 
 	 * @return
 	 */
-	public static Boolean getEffectiveWebAccessSetting(AllModulesInjected bs, User user) {
+	public static Boolean getEffectiveWebAccessSetting(AdminModule am, ProfileModule pm, User user) {
 		// ! Check the user's setting.  
 		Boolean result;
-		if (null !=  user)
-		     result = getWebAccessSettingFromUser(bs, user.getId());
-		else result = null;
+		if (null !=  user) {
+			if (user.isSuper())
+			     result = Boolean.TRUE;	// Admin is ALWAYS allowed to use the WebAccess client.
+			else result = getWebAccessSettingFromUser(pm, user.getId());
+		}
+		else {
+			result = null;
+		}
 	
 		// Did we find a setting for the user?
 		if (null == result) {
 			// No!  Read the global setting.
-			result = getWebAccessSettingFromZone(bs);
+			result = getWebAccessSettingFromZone(am);
 		}
 
 		// If we get here, reply contains true if web access is
 		// enabled and false otherwise.  Return it.
 		return result;
+	}
+	
+	public static Boolean getEffectiveWebAccessSetting(AllModulesInjected bs, User user) {
+		// Always use the initial form of the method.
+		return getEffectiveWebAccessSetting(bs.getAdminModule(), bs.getProfileModule(), user);
 	}
 	
 	/**
@@ -1526,19 +1538,24 @@ public class SearchUtils {
 	/**
 	 * Return the 'web access' setting from the given User object.
 	 * 
-	 * @param bs
+	 * @param pm
 	 * @param userId
 	 * 
 	 * @return
 	 */
-	public static Boolean getWebAccessSettingFromUser(AllModulesInjected bs, Long userId) {
+	public static Boolean getWebAccessSettingFromUser(ProfileModule pm, Long userId) {
 		// If we have a user ID...
 		if (null != userId) {
 			// ...read the 'web access' setting from the
 			// ...User object...
-			return bs.getProfileModule().getWebAccessEnabled(userId);
+			return pm.getWebAccessEnabled(userId);
 		}
 		return null;
+	}
+	
+	public static Boolean getWebAccessSettingFromUser(AllModulesInjected bs, Long userId) {
+		// Always use the initial form of the method.
+		return getWebAccessSettingFromUser(bs.getProfileModule(), userId);
 	}
 
 	/**
@@ -1572,12 +1589,17 @@ public class SearchUtils {
 	/**
 	 * Return the 'WebAccess' setting from the zone.
 	 * 
-	 * @param bs
+	 * @param am
 	 * 
 	 * @return
 	 */
+	public static Boolean getWebAccessSettingFromZone(AdminModule am) {
+	    return new Boolean(am.isWebAccessEnabled());
+	}
+	
 	public static Boolean getWebAccessSettingFromZone(AllModulesInjected bs) {
-	    return new Boolean(bs.getAdminModule().isWebAccessEnabled());
+		// Always use the initial form of the method.
+		return getWebAccessSettingFromZone(bs.getAdminModule());
 	}
 
     public static Document buildExcludeUniversalAndContainerGroupFilter(boolean excludeAllInternal) {

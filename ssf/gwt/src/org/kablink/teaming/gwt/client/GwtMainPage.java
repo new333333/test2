@@ -1684,6 +1684,8 @@ public class GwtMainPage extends ResizeComposite
 		{
 			if ( status.equalsIgnoreCase( "authenticationFailed" ) )
 				loginStatus = LoginStatus.AuthenticationFailed;
+			else if ( status.equalsIgnoreCase( "webAccessRestricted" ) )
+				loginStatus = LoginStatus.WebAccessRestricted;
 			else if ( status.equalsIgnoreCase( "registrationRequired" ) )
 				loginStatus = LoginStatus.RegistrationRequired;
 			else if ( status.equalsIgnoreCase( "promptForLogin" ) )

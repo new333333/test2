@@ -166,6 +166,7 @@ public class LoginDlg extends DlgBox
 		PromptForLogin,
 		PromptForPwdReset,
 		PwdResetVerified,
+		WebAccessRestricted,
 	}
 	
 	// The following defines the TeamingEvents that are handled by
@@ -728,6 +729,7 @@ public class LoginDlg extends DlgBox
 		case AuthenticationFailed:
 		case PromptForLogin:
 		case PwdResetVerified:
+		case WebAccessRestricted:
 			// Hide or show the self registration controls.
 			updateSelfRegistrationControls( m_selfRegInfo );
 
@@ -1271,9 +1273,10 @@ public class LoginDlg extends DlgBox
 
 		switch ( loginStatus )
 		{
+		case WebAccessRestricted:
 		case AuthenticationFailed:
 			showRegularLoginUI();
-		    showLoginFailedMsg();
+		    showLoginFailedMsg( loginStatus );
 		    break;
 			
 		case RegistrationRequired:
@@ -1980,8 +1983,15 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void showLoginFailedMsg()
+	private void showLoginFailedMsg( LoginStatus loginStatus )
 	{
+		String msg;
+		switch ( loginStatus )
+		{
+		case WebAccessRestricted:  msg = GwtTeaming.getMessages().loginDlgLoginWebAccessRestricted(); break;
+		default:                   msg = GwtTeaming.getMessages().loginDlgLoginFailed();              break;
+		}
+		m_loginFailedMsg.setText(    msg  );
 		m_loginFailedMsg.setVisible( true );
 	}// end hideLoginFailedMsg()
 	

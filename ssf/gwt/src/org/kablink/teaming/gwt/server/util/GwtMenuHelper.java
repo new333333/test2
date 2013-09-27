@@ -910,7 +910,6 @@ public class GwtMenuHelper {
 
 			// Is this other than the guest user?
 			if (!isGuest) {
-if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary...
 				// Yes!  Add a separator after the previous item...
 				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 		
@@ -941,7 +940,6 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 					markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
 					entryToolbar.addNestedItem(manageUserTBI);
 				}
-}
 			}
 		}
 	}
@@ -1212,7 +1210,6 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 			markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
 			moreTBI.addNestedItem(tbi);
 			
-if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary...
 			// ...add the disable users web access item...
 			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
 			tbi = new ToolbarItem("1_disableSelectedWebAccess");
@@ -1231,7 +1228,6 @@ if (UserPropertiesRpcResponseData.ENABLE_WEBACCESS_SETTING) {	//! ...temporary..
 			markTBITitle(tbi, "toolbar.clear.user.webAccess");
 			markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
 			moreTBI.addNestedItem(tbi);
-}
 	
 			needSeparator = true;
 		}
