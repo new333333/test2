@@ -1367,6 +1367,9 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_editButton();
 	String shareDlg_editor();
 	String shareDlg_emailAddressInvalidPrompt();
+	String shareDlg_emailAddressInvalid_blDomain();
+	String shareDlg_emailAddressInvalid_blEMA();
+	String shareDlg_emailAddressInvalid_wl();
 	String shareDlg_expiresAfter( String after );
 	String shareDlg_expiresLabel();
 	String shareDlg_expiresNever();

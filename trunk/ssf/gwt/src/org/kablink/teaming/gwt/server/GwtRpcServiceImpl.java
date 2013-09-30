@@ -78,7 +78,6 @@ import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
-import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
@@ -722,8 +721,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				public Object doAs()
 				{
 					GwtUser gwtUser;
+					String ema;
 
-					gwtUser = GwtSearchHelper.findUserByEmailAddress( ami, request, fuCmd.getEmailAddress() );
+					ema = fuCmd.getEmailAddress();
+					gwtUser = GwtSearchHelper.findUserByEmailAddress( ami, request, ema );
+					if ( fuCmd.isValidateExternalEMA() && ( null != gwtUser ) && gwtUser.getUserType().isExternal() )
+					{
+						if ( ! getSharingModule().isExternalAddressValid( ema ))
+						{
+							gwtUser = null;
+						}
+					}
 					
 					return new VibeRpcResponse( gwtUser );
 				}
@@ -3609,13 +3617,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case VALIDATE_EMAIL_ADDRESS:
 		{
 			ValidateEmailAddressCmd vemCmd;
-			Boolean result;
-			BooleanRpcResponseData responseData;
+			ValidateEmailRpcResponseData result;
 			
 			vemCmd = (ValidateEmailAddressCmd) cmd;
-			result = GwtServerHelper.validateEmailAddress( vemCmd.getEmailAddress(), vemCmd.getAddressField() );
-			responseData = new BooleanRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
+			result = GwtServerHelper.validateEmailAddress( this, vemCmd.getEmailAddress(), vemCmd.isExternalEmailAddress(), vemCmd.getAddressField() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		

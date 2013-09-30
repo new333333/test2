@@ -35,86 +35,76 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'validate email address' command.
+ * This class holds the response data for the for the 'validate email
+ * address' RPC command.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public class ValidateEmailAddressCmd extends VibeRpcCmd 
-{
-	public enum AddressField implements IsSerializable
-	{
-		MAIL_TO,
-		MAIL_CC,
-		MAIL_BC,
-		UNKNOWN
-	}
-	
-	private String m_emailAddress;
-	private AddressField m_addressField;
-	private boolean m_externalEMA;
-	
+public class ValidateEmailRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private EmailAddressStatus	m_emaStatus;	//
 	
 	/**
-	 * Class constructor.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * Enumeration value to specify the validity of an email address. 
 	 */
-	public ValidateEmailAddressCmd() 
-	{
-		super();		
-	}
+	public enum EmailAddressStatus implements IsSerializable {
+		failsBlacklistDomain,
+		failsBlacklistEMA,
+		failsWhitelist,
+		
+		failsFormat,
 
+		valid;
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean failsBlackListDomain() {return failsBlacklistDomain.equals(this);                        }
+		public boolean failsBlackListEMA()    {return failsBlacklistEMA.equals(   this);                        }
+		public boolean failsBlackList()       {return (this.failsBlackListDomain() || this.failsBlackListEMA());}
+		public boolean failsWhitelist()       {return failsWhitelist.equals(      this);                        }
+		public boolean failsFormat()          {return failsFormat.equals(         this);                        }
+		public boolean isInvalid()            {return (!(isValid()));                                           }
+		public boolean isValid()              {return valid.equals(               this);                        }
+	}
+	
 	/**
-	 * Class constructor.
+	 * Constructor method.
 	 * 
-	 * @param emailAddress
-	 * @param externalEMA
-	 * @param addressField
+	 * Zero parameter constructor method as per GWT serialization
+	 * requirements.
 	 */
-	public ValidateEmailAddressCmd( String emailAddress, boolean externalEMA, AddressField addressField )
-	{
+	public ValidateEmailRpcResponseData() {
+		// Initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param emaStatus
+	 */
+	public ValidateEmailRpcResponseData(EmailAddressStatus emaStatus) {
+		// Initialize this object...
 		this();
 		
-		m_emailAddress = emailAddress;
-		m_addressField = addressField;
-		m_externalEMA  = externalEMA;
+		// ...and store the parameter.
+		setEmailAddressStatus(emaStatus);
 	}
 	
 	/**
-	 * 
-	 */
-	public AddressField getAddressField()
-	{
-		return m_addressField;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getEmailAddress()
-	{
-		return m_emailAddress;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean isExternalEmailAddress()
-	{
-		return m_externalEMA;
-	}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	@Override
-	public int getCmdType() 
-	{
-		return VibeRpcCmdType.VALIDATE_EMAIL_ADDRESS.ordinal();
-	}
+	public EmailAddressStatus getEmailAddressStatus() {return m_emaStatus;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @return
+	 * @param emaStatus
+	 */
+	public void setEmailAddressStatus(EmailAddressStatus emaStatus) {m_emaStatus = emaStatus;}
 }
