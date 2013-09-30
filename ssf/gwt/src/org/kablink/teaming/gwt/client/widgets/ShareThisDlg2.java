@@ -62,7 +62,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
@@ -71,6 +70,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSharingInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SendShareNotificationEmailCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData.EmailAddressStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
@@ -1916,7 +1917,7 @@ public class ShareThisDlg2 extends DlgBox
 
 			// Issue an ajax request to see if the email address that was entered is associated
 			// with an internal user.
-			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( emailAddress );
+			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( emailAddress, true );
 			GwtClientHelper.executeCommand( cmd, findUserCallback );
 		}
 	}
@@ -2965,24 +2966,45 @@ public class ShareThisDlg2 extends DlgBox
 						
 						if ( vibeResult.getResponseData() != null )
 						{
-							BooleanRpcResponseData responseData;
+							EmailAddressStatus emaStatus;
+							ValidateEmailRpcResponseData responseData;
 							
 							// Is the email valid?
-							responseData = (BooleanRpcResponseData) vibeResult.getResponseData();
-							if ( responseData.getBooleanValue() == true )
+							responseData = (ValidateEmailRpcResponseData) vibeResult.getResponseData();
+							emaStatus = responseData.getEmailAddressStatus();
+							if ( emaStatus.isValid() )
 							{
 								// Yes
 								addToRecipientList = true;
 							}
 							else
 							{
-								// No, ask the user if they still want to share with this email address.
-								if ( Window.confirm( GwtTeaming.getMessages().shareDlg_emailAddressInvalidPrompt() ) == true )
-									addToRecipientList = true;
-								else
+								GwtTeamingMessages messages = GwtTeaming.getMessages();
+								switch ( emaStatus )
 								{
-									// Put the email address back in the find control
+								case failsBlacklistDomain:
+								case failsBlacklistEMA:
+								case failsWhitelist:
+									String msg = null;
+									switch ( emaStatus )
+									{
+									case failsBlacklistDomain:  msg = messages.shareDlg_emailAddressInvalid_blDomain(); break;
+									case failsBlacklistEMA:     msg = messages.shareDlg_emailAddressInvalid_blEMA();    break;
+									case failsWhitelist:        msg = messages.shareDlg_emailAddressInvalid_wl();       break;
+									}
+									// Tell the user about the problem...
+									GwtClientHelper.deferredAlert( msg );
+									
+									// ...and put the email address back in the find control
 									m_findCtrl.setInitialSearchString( emailAddress );
+									break;
+									
+								default:
+								case failsFormat:
+									// No, ask the user if they still want to share with this email address.
+									if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt() ) == true )
+										addToRecipientList = true;
+									break;
 								}
 							}
 						}
@@ -3021,6 +3043,7 @@ public class ShareThisDlg2 extends DlgBox
 		// Issue an ajax request to validate the email address.
 		ValidateEmailAddressCmd cmd = new ValidateEmailAddressCmd(
 															emailAddress,
+															true,	// true -> Validate as an external email address.
 															ValidateEmailAddressCmd.AddressField.MAIL_TO );
 		GwtClientHelper.executeCommand( cmd, validationCallback );
 	}

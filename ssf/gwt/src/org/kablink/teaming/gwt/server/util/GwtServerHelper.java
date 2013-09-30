@@ -214,6 +214,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData.EmailAddressStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -274,6 +276,7 @@ import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.sharing.SharingModule.ExternalAddressStatus;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -11441,21 +11444,41 @@ public class GwtServerHelper {
 	 * Validate the given email address.
 	 * 
 	 * @param emailAddress
+	 * @param externalEMA
 	 * @param addressField
 	 * 
 	 * @return
 	 */
-	public static Boolean validateEmailAddress(String emailAddress, ValidateEmailAddressCmd.AddressField addressField) {
-		String usedAs;
-		
-		switch (addressField) {
-		default:
-		case MAIL_TO:  usedAs = MailModule.TO;  break;
-		case MAIL_BC:  usedAs = MailModule.BCC; break;
-		case MAIL_CC:  usedAs = MailModule.CC;  break;
+	public static ValidateEmailRpcResponseData validateEmailAddress(AllModulesInjected bs, String emailAddress, boolean externalEMA, ValidateEmailAddressCmd.AddressField addressField) {
+		EmailAddressStatus emaStatus = null;
+		if (externalEMA) {
+			ExternalAddressStatus extEMAStatus = bs.getSharingModule().getExternalAddressStatus(emailAddress);
+			switch (extEMAStatus) {
+			case failsBlacklistDomain: emaStatus = EmailAddressStatus.failsBlacklistDomain; break;
+			case failsBlacklistEMA:    emaStatus = EmailAddressStatus.failsBlacklistEMA;    break;
+			case failsWhitelist:       emaStatus = EmailAddressStatus.failsWhitelist;       break;
+				
+			default:
+			case valid:
+				break;
+			}
+		}
+
+		if (null == emaStatus) {
+			String usedAs;
+			switch (addressField) {
+			default:
+			case MAIL_TO:  usedAs = MailModule.TO;  break;
+			case MAIL_BC:  usedAs = MailModule.BCC; break;
+			case MAIL_CC:  usedAs = MailModule.CC;  break;
+			}
+			
+			if (MiscUtil.isEmailAddressValid(usedAs, emailAddress))
+			     emaStatus = EmailAddressStatus.valid;
+			else emaStatus = EmailAddressStatus.failsFormat;
 		}
 		
-		return MiscUtil.isEmailAddressValid(usedAs, emailAddress);
+		return new ValidateEmailRpcResponseData(emaStatus);
 	}
 	
 	/**
