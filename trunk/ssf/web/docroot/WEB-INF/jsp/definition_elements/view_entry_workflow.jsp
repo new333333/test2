@@ -363,6 +363,7 @@ function ss_checkForWorkflowStateSelection(obj) {
     <c:set var="workflowStateColumnText">${ssWorkflowCaptions[workflow.id]}</c:set>
   </c:if>
 </c:forEach>
+</c:if>
 <script type="text/javascript">
 ss_createOnLoadObj("ss_resetFolderWorkflowStateColumn", ss_resetFolderWorkflowStateColumn);
 function ss_resetFolderWorkflowStateColumn() {
@@ -378,4 +379,3 @@ function ss_resetFolderWorkflowStateColumn() {
 	}
 }
 </script>
-</c:if>
