@@ -49,6 +49,8 @@ if (isIECheck) strBrowserType = "ie";
 </c:if>
 
 <script type="text/javascript">
+var ss_folderPageUrl = self.location.href
+
 var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 		binderId="${ssBinder.id}"><ssf:param 
 		name="operation" value="save_folder_columns"/></ssf:url>";
