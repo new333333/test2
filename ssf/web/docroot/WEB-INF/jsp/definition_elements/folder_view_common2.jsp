@@ -928,6 +928,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   
 <c:if test="${columnName == 'state' && !empty ssFolderColumns['state']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
+    <c:if test="${empty entry1._workflowStateCaption}">
+    <span id="ss_workflowState${ssBinder.id}_${entry1._docId}" <%= seenStyle %>></span>
+    </c:if>
     <c:if test="${!empty entry1._workflowStateCaption}">
     <a href="<ssf:url     
     adapter="<%= useAdaptor %>" 

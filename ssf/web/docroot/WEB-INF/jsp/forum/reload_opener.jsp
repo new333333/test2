@@ -86,6 +86,23 @@ function ss_doReload() {
 		url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)
 		self.parent.location.href = url;
 		self.parent.focus();
+		if (typeof window.top.gwtContentIframe.ss_folderPageUrl != "undefined") {
+			url = window.top.gwtContentIframe.ss_folderPageUrl;
+			url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
+			if (url.indexOf("&entryId=") == -1) {
+				url = ss_replaceSubStr(url, "&binderId=", "&entryId=${ssEntryId}&binderId=")
+			}
+			window.top.gwtContentIframe.location.href = url;
+			window.top.gwtContentIframe.ss_hideHoverOver('ss_folderEntryTitle_${ssEntryId}');
+		}
+	} else if (typeof window.top.gwtContentIframe.ss_folderPageUrl != "undefined") {
+		url = window.top.gwtContentIframe.ss_folderPageUrl;
+		url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
+		if (url.indexOf("&entryId=") == -1) {
+			url = ss_replaceSubStr(url, "&binderId=", "&entryId=${ssEntryId}&binderId=")
+		}
+		window.top.gwtContentIframe.location.href = url;
+		window.top.gwtContentIframe.ss_hideHoverOver('ss_folderEntryTitle_${ssEntryId}');
 	}
 	
 	setTimeout("ss_cancelButtonCloseWindow();", 500);
