@@ -960,7 +960,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 			
 			// Did anything change?
 			{
-				boolean isDirty = false;
+				boolean isDirty;
+				
+				isDirty = m_serverConfig.isDirty();
 				
 				if ( GwtClientHelper.areStringsEqual( serverUrl, m_serverConfig.getServerUrl() ) == false )
 					isDirty = true;

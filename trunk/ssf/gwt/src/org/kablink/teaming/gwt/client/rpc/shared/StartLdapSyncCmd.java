@@ -46,6 +46,8 @@ import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
 public class StartLdapSyncCmd extends VibeRpcCmd
 {
 	private String m_syncId;
+	private boolean m_syncAll;
+	private String[] m_listOfLdapConfigsToSyncGuid;
 	private ArrayList<GwtLdapConnectionConfig> m_listOfLdapServersToSync;
 	
 	/**
@@ -60,6 +62,7 @@ public class StartLdapSyncCmd extends VibeRpcCmd
 		
 		m_syncId = null;
 		m_listOfLdapServersToSync = null;
+		m_listOfLdapConfigsToSyncGuid = null;
 	}
 
 	/**
@@ -97,9 +100,33 @@ public class StartLdapSyncCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
+	public String[] getListOfLdapConfigsToSyncGuid()
+	{
+		return m_listOfLdapConfigsToSyncGuid;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getSyncAll()
+	{
+		return m_syncAll;
+	}
+	
+	/**
+	 * 
+	 */
 	public String getSyncId()
 	{
 		return m_syncId;
+	}
+
+	/**
+	 * 
+	 */
+	public void setSyncAll( boolean syncAll )
+	{
+		m_syncAll = syncAll;
 	}
 	
 	/**
@@ -108,5 +135,13 @@ public class StartLdapSyncCmd extends VibeRpcCmd
 	public void setSyncId( String syncId )
 	{
 		m_syncId = syncId;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setListOfLdapConfigsToSyncGuid( String[] listOfLdapConfigsToSyncGuid )
+	{
+		m_listOfLdapConfigsToSyncGuid = listOfLdapConfigsToSyncGuid;
 	}
 }

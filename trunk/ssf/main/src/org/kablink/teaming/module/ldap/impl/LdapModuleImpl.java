@@ -1854,7 +1854,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			// See if we should sync the guid for this ldap source.
 			for ( String nextUrl : listOfLdapConfigsToSyncGuid )
 			{
-				if ( nextUrl.equalsIgnoreCase( url ) )
+				if ( nextUrl != null && nextUrl.equalsIgnoreCase( url ) )
 				{
 					syncThis = true;
 					break;
@@ -6274,7 +6274,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 			// Do we have anything to reindex?
 			if ( principalsToIndex.size() > 0 )
-				Utils.reIndexPrincipals( getProfileModule(), principalsToIndex );
+			{
+				try
+				{
+					Utils.reIndexPrincipals( getProfileModule(), principalsToIndex );
+				}
+				catch ( Exception ex )
+				{
+					logError( "In updateMembership(), Utils.reIndexPrincipals() threw an exception: ", ex );
+				}
+			}
         }
     }
 

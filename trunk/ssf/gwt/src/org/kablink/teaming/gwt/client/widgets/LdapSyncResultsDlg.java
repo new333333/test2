@@ -32,8 +32,12 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResult;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResult.GwtEntityType;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
@@ -42,7 +46,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.event.LdapSyncStatusEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDateTimeStrCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLdapSyncResultsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -112,6 +118,7 @@ public class LdapSyncResultsDlg extends DlgBox
 	private boolean m_showAddedGroups = true;
 	private boolean m_showModifiedGroups = true;
 	private boolean m_showDeletedGroups = true;
+	private List<GwtLdapConnectionConfig> m_listOfLdapServers;
 
 	/**
 	 * Callback interface to interact with the "ldap sync results" dialog
@@ -536,6 +543,11 @@ public class LdapSyncResultsDlg extends DlgBox
 		if ( m_syncId == null || m_syncId.length() == 0 )
 			return;
 		
+		m_syncStatus = GwtLdapSyncStatus.STATUS_IN_PROGRESS;
+		updateSyncStatusLabel();
+		
+		hideErrorPanel();
+		
 		// Create the callback that will be used when we issue an ajax call
 		// to get the ldap sync results.
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
@@ -629,7 +641,7 @@ public class LdapSyncResultsDlg extends DlgBox
 		switch ( m_syncStatus )
 		{
 		case STATUS_ABORTED_BY_ERROR:
-			showSyncError( ldapSyncResults.getErrorDesc() );
+			showSyncError( ldapSyncResults.getErrorLdapServerId(), ldapSyncResults.getErrorDesc() );
 			break;
 			
 		case STATUS_IN_PROGRESS:
@@ -682,15 +694,15 @@ public class LdapSyncResultsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init( String syncId, boolean clearExistingResults )
+	public void init(
+		List<GwtLdapConnectionConfig> listOfLdapServers,
+		String syncId,
+		boolean clearExistingResults )
 	{
+		m_listOfLdapServers = listOfLdapServers;
+		
 		// The sync id is what we use to find the sync results in the session.
 		m_syncId = syncId;
-		
-		m_syncStatus = GwtLdapSyncStatus.STATUS_IN_PROGRESS;
-		updateSyncStatusLabel();
-		
-		hideErrorPanel();
 		
 		// Should we start fresh?
 		if ( clearExistingResults )
@@ -718,7 +730,7 @@ public class LdapSyncResultsDlg extends DlgBox
 	/**
 	 * Show the following sync error
 	 */
-	private void showSyncError( String errorMsg )
+	private void showSyncError( String ldapServerId, String errorMsg )
 	{
 		FlowPanel errorPanel;
 		Label label;
@@ -727,6 +739,22 @@ public class LdapSyncResultsDlg extends DlgBox
 
 		errorPanel = getErrorPanel();
 	
+		if ( ldapServerId != null && ldapServerId.length() > 0 && m_listOfLdapServers != null )
+		{
+			// Find the ldap server that had the problem.
+			for ( GwtLdapConnectionConfig nextLdapServer : m_listOfLdapServers )
+			{
+				if ( ldapServerId.equalsIgnoreCase( nextLdapServer.getId() ) )
+				{
+					label = new Label( GwtTeaming.getMessages().ldapSyncResultsDlg_ServerLabel() + " " + nextLdapServer.getServerUrl() );
+					label.addStyleName( "dlgErrorLabel" );
+					errorPanel.add( label );
+					
+					break;
+				}
+			}
+		}
+		
 		label = new Label( errorMsg );
 		label.addStyleName( "dlgErrorLabel" );
 		errorPanel.add( label );
@@ -759,9 +787,67 @@ public class LdapSyncResultsDlg extends DlgBox
 			break;
 		
 		case STATUS_COMPLETED:
+		{
+			// Add the current date/time to the status message
+			Date now;
+			GetDateTimeStrCmd cmd;
+			AsyncCallback<VibeRpcResponse> getDateStrCallback = null;
+			
 			m_syncStatusImg.setVisible( false );
-			statusTxt = messages.ldapSyncResultsDlg_SyncStatus_Completed();
+			statusTxt = null;
+
+			getDateStrCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					String txt;
+					
+					txt = GwtTeaming.getMessages().ldapSyncResultsDlg_SyncStatus_Completed();
+					m_syncStatusLabel.setText( txt );
+
+					GwtClientHelper.handleGwtRPCFailure(
+												t,
+												GwtTeaming.getMessages().rpcFailure_GetDateStr() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					StringRpcResponseData responseData = null;
+					String txt;
+					
+					if ( response.getResponseData() instanceof StringRpcResponseData )
+						responseData = (StringRpcResponseData) response.getResponseData();
+					
+					txt = GwtTeaming.getMessages().ldapSyncResultsDlg_SyncStatus_Completed();
+
+					if ( responseData != null )
+					{
+						String dateTimeStr;
+
+						dateTimeStr = responseData.getStringValue();
+						if ( dateTimeStr != null )
+							txt += " (" + dateTimeStr + ")";
+					}
+
+					m_syncStatusLabel.setText( txt );
+				}
+			};
+			
+			// Issue an rpc request to get the date/time string.
+			now = new Date();
+			cmd = new GetDateTimeStrCmd( now.getTime(), DateFormat.LONG, DateFormat.LONG );
+			GwtClientHelper.executeCommand( cmd, getDateStrCallback );
 			break;
+		}
 		
 		case STATUS_STOP_COLLECTING_RESULTS:
 			m_syncStatusImg.setVisible( false );
@@ -774,7 +860,8 @@ public class LdapSyncResultsDlg extends DlgBox
 			break;
 		}
 
-		m_syncStatusLabel.setText( statusTxt );
+		if ( statusTxt != null )
+			m_syncStatusLabel.setText( statusTxt );
 	}
 	
 	/**
