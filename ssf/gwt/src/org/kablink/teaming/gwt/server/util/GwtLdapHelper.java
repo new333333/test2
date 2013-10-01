@@ -222,6 +222,7 @@ public class GwtLdapHelper
     				gwtConfig.setServerUrl( config.getUrl() );
     				gwtConfig.setProxyDn( config.getPrincipal() );
     				gwtConfig.setProxyPwd( config.getCredentials() );
+    				gwtConfig.setOrigLdapGuidAttribute( config.getLdapGuidAttribute() );
     				gwtConfig.setLdapGuidAttribute( config.getLdapGuidAttribute() );
     				gwtConfig.setUserIdAttribute( config.getUserIdAttribute() );
     				gwtConfig.setUserAttributeMappings( config.getMappings() );
@@ -664,12 +665,12 @@ public class GwtLdapHelper
 		HttpServletRequest request,
 		String syncId,
 		boolean syncUsersAndGroups,
+		String[] listOfLdapConfigsToSyncGuid,
 		ArrayList<GwtLdapConnectionConfig> listOfLdapServers )
 	{
 		StartLdapSyncRpcResponseData response;
 		LdapSyncThread	ldapSyncThread;
 		LdapModule		ldapModule;
-		String[] listOfLdapConfigsToSyncGuid = null;
 		
 		response = new StartLdapSyncRpcResponseData();
 

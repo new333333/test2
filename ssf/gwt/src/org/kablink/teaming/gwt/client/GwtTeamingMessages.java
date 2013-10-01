@@ -2875,6 +2875,7 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapConfigDlg_GroupsTab();
 	String editLdapConfigDlg_Header();
 	String editLdapConfigDlg_LdapConfigMustBeSaved();
+	String editLdapConfigDlg_LdapGuidAttribChanged();
 	String editLdapConfigDlg_LdapServersTab();
 	String editLdapConfigDlg_LdapSyncInProgressCantStartAnother();
 	String editLdapConfigDlg_LocalUserAccountsTab();
@@ -2888,6 +2889,7 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapConfigDlg_SelectLdapServersToDelete();
 	String editLdapConfigDlg_SelectLdapServersToSync();
 	String editLdapConfigDlg_ServerUrlCol();
+	String editLdapConfigDlg_ShowSyncResultsLabel();
 	String editLdapConfigDlg_SyncGroupMembership();
 	String editLdapConfigDlg_SyncGroupProfiles();
 	String editLdapConfigDlg_Syncing();
@@ -2960,6 +2962,7 @@ public interface GwtTeamingMessages extends Messages
 	String ldapSyncResultsDlg_NameCol();
 	String ldapSyncResultsDlg_NoLdapSyncResults();
 	String ldapSyncResultsDlg_RequestingLdapSyncResults();
+	String ldapSyncResultsDlg_ServerLabel();
 	String ldapSyncResultsDlg_SyncStatusLabel();
 	String ldapSyncResultsDlg_SyncStatus_Completed();
 	String ldapSyncResultsDlg_SyncStatus_Error();

@@ -3375,7 +3375,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 													this,
 													getRequest( ri ),
 													slsCmd.getSyncId(),
-													true,
+													slsCmd.getSyncAll(),
+													slsCmd.getListOfLdapConfigsToSyncGuid(),
 													null );
 			response = new VibeRpcResponse( responseData );
 			return response;

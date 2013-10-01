@@ -141,6 +141,7 @@ public class EditLdapConfigDlg extends DlgBox
 	private boolean m_isDirty;
 	private String m_ldapSyncId;
 	private GwtLdapSyncStatus m_ldapSyncStatus;
+	private boolean m_newLdapServer;
 
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -400,7 +401,30 @@ public class EditLdapConfigDlg extends DlgBox
 						@Override
 						public void execute()
 						{
-							startLdapSync();
+							handleClickOnSyncAllButton();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			menuPanel.add( label );
+
+			// Add a "Show sync results" button.
+			label = new InlineLabel( messages.editLdapConfigDlg_ShowSyncResultsLabel() );
+			label.addStyleName( "editLdapConfigDlg_Btn" );
+			label.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							showLdapSyncResults();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -740,24 +764,55 @@ public class EditLdapConfigDlg extends DlgBox
 	 * "allow adhoc folders" setting
 	 */
 	@Override
-	public boolean editSuccessful( Object obj )
+	public boolean editSuccessful( final Object obj )
 	{
-		Scheduler.ScheduledCommand cmd;
+		Scheduler.ScheduledCommand cmd1;
 		
 		if ( (obj instanceof GwtLdapConfig) == false )
 			return false;
-		
-		cmd = new ScheduledCommand()
+
+		cmd1 = new Scheduler.ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				hide();
+				Scheduler.ScheduledCommand cmd;
+				final String[] listOfLdapConfigsToSyncGuid;
+				final boolean doSync;
+
+				// Get the list of ldap config ids whose ldap guid attribute changed
+				listOfLdapConfigsToSyncGuid = getListOfLdapConfigsToSyncGuid( (GwtLdapConfig) obj );
+				
+				// Did the ldap guid attribute change for any of the ldap servers?
+				if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length > 0 )
+				{
+					// Yes, tell the user we need to sync the guids for all users and groups.
+					Window.alert( GwtTeaming.getMessages().editLdapConfigDlg_LdapGuidAttribChanged() );
+
+					doSync = true;
+				}
+				else
+					doSync = false;
+				
+				cmd = new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						if ( doSync )
+						{
+							startLdapSync( false, listOfLdapConfigsToSyncGuid );
+						}
+						else
+							hide();
+					}
+				};
+				
+				// Issue an rpc request to save the ldap configuration
+				saveLdapConfiguration( (GwtLdapConfig) obj, cmd );
 			}
 		};
-		
-		// Issue an rpc request to save the ldap configuration
-		saveLdapConfiguration( (GwtLdapConfig) obj, cmd );
+		Scheduler.get().scheduleDeferred( cmd1 );
 
 		// Returning false will prevent the dialog from closing.  We will close the dialog
 		// after we successfully save the user access configuration.
@@ -837,9 +892,63 @@ public class EditLdapConfigDlg extends DlgBox
 	}
 
 	/**
+	 * Get a list of the ldap configs whose ldap guid attribute has changed.
+	 */
+	private String[] getListOfLdapConfigsToSyncGuid( GwtLdapConfig ldapConfig )
+	{
+		String[] listOfLdapConfigIds;
+		ArrayList<GwtLdapConnectionConfig> listOfLdapServers;
+		int count = 0;
+		
+		if ( ldapConfig == null )
+			return null;
+		
+		listOfLdapServers = ldapConfig.getListOfLdapConnections();
+		if ( listOfLdapServers == null || listOfLdapServers.size() == 0 )
+			return null;
+		
+		listOfLdapConfigIds = new String[listOfLdapServers.size()];
+		
+		for ( GwtLdapConnectionConfig nextLdapServer : listOfLdapServers )
+		{
+			String id;
+			
+			id = nextLdapServer.getId();
+			
+			// Is this an existing ldap config?
+			if ( id != null && id.length() > 0 )
+			{
+				String serverUrl;
+				String origGuid;
+				String newGuid;
+				boolean changed;
+				
+				// Yes
+				serverUrl = nextLdapServer.getServerUrl();
+				origGuid = nextLdapServer.getOrigLdapGuidAttribute();
+				newGuid = nextLdapServer.getLdapGuidAttribute();
+				changed = false;
+
+				if ( origGuid != null && origGuid.equalsIgnoreCase( newGuid ) == false )
+					changed = true;
+				else if ( newGuid != null && newGuid.equalsIgnoreCase( origGuid ) == false )
+					changed = true;
+				
+				if ( changed )
+				{
+					listOfLdapConfigIds[count] = serverUrl;
+					++count;
+				}
+			}
+		}
+		
+		return listOfLdapConfigIds;
+	}
+	
+	/**
 	 * Issue an rpc request to get the ldap configuration data from the server.
 	 */
-	private void getLdapConfigurationFromServer()
+	private void getLdapConfigurationFromServer( final boolean startLdapSync )
 	{
 		GetLdapConfigCmd cmd;
 		AsyncCallback<VibeRpcResponse> callback;
@@ -880,6 +989,9 @@ public class EditLdapConfigDlg extends DlgBox
 							
 							// Get the list of locales
 							getLocalesFromServer( ldapConfig );
+							
+							if ( startLdapSync )
+								startLdapSync( true, null );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1043,12 +1155,100 @@ public class EditLdapConfigDlg extends DlgBox
 	}
 	
 	/**
+	 * This method gets called when the user clicks on the "Sync all" button
+	 */
+	private void handleClickOnSyncAllButton()
+	{
+		Object obj;
+		GwtTeamingMessages messages;
+		boolean startSync = false;
+		String[] listOfLdapConfigsToSyncGuid;
+		GwtLdapConfig ldapConfig;
+		
+		obj = getDataFromDlg();
+		if ( obj == null || (obj instanceof GwtLdapConfig) == false )
+			return;
+		
+		ldapConfig = (GwtLdapConfig) obj;
+		
+		messages = GwtTeaming.getMessages();
+		
+		// Get the list of ldap config ids whose ldap guid attribute changed
+		listOfLdapConfigsToSyncGuid = getListOfLdapConfigsToSyncGuid( ldapConfig );
+		
+		// Did the ldap guid attribute change for any of the ldap servers?
+		if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length > 0 )
+		{
+			startSync = true;
+		}
+		else if ( isDirty() )
+		{
+			// The ldap config is dirty, tell the user the ldap configuration must be saved first.
+			if ( Window.confirm( messages.editLdapConfigDlg_LdapConfigMustBeSaved() ) )
+			{
+				Scheduler.ScheduledCommand cmd;
+					
+				m_newLdapServer = false;
+				
+				// Do we have any ldap servers that were newly added?
+				if ( m_listOfLdapServers != null )
+				{
+					for ( GwtLdapConnectionConfig nextLdapServer : m_listOfLdapServers )
+					{
+						String id;
+						
+						// Does the ldap server config have an id?
+						id = nextLdapServer.getId();
+						if ( id == null || id.length() == 0 )
+						{
+							// No
+							m_newLdapServer = true;
+							break;
+						}
+					}
+				}
+
+				cmd = new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						if ( m_newLdapServer == false )
+							startLdapSync( true, null );
+						else
+						{
+							// Re-read the ldap configuration.
+							init( true );
+						}
+					}
+				};
+
+				// Issue an rpc request to save the ldap configuration
+				saveLdapConfiguration( ldapConfig, cmd );
+			}
+		}
+		else
+			startSync = true;
+
+		if ( startSync )
+			startLdapSync( true, listOfLdapConfigsToSyncGuid );
+	}
+	
+	/**
 	 * 
 	 */
 	public void init()
 	{
+		init( false );
+	}
+	
+	/**
+	 * 
+	 */
+	private void init( boolean startLdapSync )
+	{
 		// Get the ldap configuration data from the server.
-		getLdapConfigurationFromServer();
+		getLdapConfigurationFromServer( startLdapSync );
 	}
 	
 	/**
@@ -1258,7 +1458,7 @@ public class EditLdapConfigDlg extends DlgBox
 		}
 		else
 		{
-			m_ldapSyncResultsDlg.init( m_ldapSyncId, clearResults );
+			m_ldapSyncResultsDlg.init( m_listOfLdapServers, m_ldapSyncId, clearResults );
 			m_ldapSyncResultsDlg.show();
 		}
 	}
@@ -1529,7 +1729,9 @@ public class EditLdapConfigDlg extends DlgBox
 	/**
 	 * Issue an rpc request to save the ldap configuration.
 	 */
-	private void saveLdapConfiguration( GwtLdapConfig ldapConfig, final Scheduler.ScheduledCommand schedCmd )
+	private void saveLdapConfiguration(
+		GwtLdapConfig ldapConfig,
+		final Scheduler.ScheduledCommand schedCmd )
 	{
 		AsyncCallback<VibeRpcResponse> callback;
 		SaveLdapConfigCmd cmd;
@@ -1556,19 +1758,30 @@ public class EditLdapConfigDlg extends DlgBox
 				if ( response.getResponseData() != null &&
 					 response.getResponseData() instanceof SaveLdapConfigRpcResponseData )
 				{
-					// Mark the ldap configuration as not dirty.
-					m_isDirty = false;
-					if ( m_listOfLdapServers != null )
-					{
-						for ( GwtLdapConnectionConfig nextLdapServer : m_listOfLdapServers )
-						{
-							nextLdapServer.setIsDirty( false );
-						}
-					}
+					Scheduler.ScheduledCommand cmd;
 					
-					// Execute the command we were passed.
-					if ( schedCmd != null )
-						Scheduler.get().scheduleDeferred( schedCmd );
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							// Mark the ldap configuration as not dirty.
+							m_isDirty = false;
+							if ( m_listOfLdapServers != null )
+							{
+								for ( GwtLdapConnectionConfig nextLdapServer : m_listOfLdapServers )
+								{
+									nextLdapServer.setIsDirty( false );
+									nextLdapServer.setOrigLdapGuidAttribute( nextLdapServer.getLdapGuidAttribute() );
+								}
+							}
+							
+							// Execute the command we were passed.
+							if ( schedCmd != null )
+								Scheduler.get().scheduleDeferred( schedCmd );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			}
 		}; 
@@ -1581,13 +1794,23 @@ public class EditLdapConfigDlg extends DlgBox
 	}
 	
 	/**
+	 * Show the current ldap sync results
+	 */
+	private void showLdapSyncResults()
+	{
+		// Invoke the LDAP Sync Results dialog
+		invokeLdapSyncResultsDlg( false );
+	}
+	
+	/**
 	 * Issue an rpc request to save the ldap configuration and after we receive the response to the save
 	 * issue an rpc request to sync the selected ldap servers.
 	 */
-	private void startLdapSync()
+	private void startLdapSync( boolean syncAll, String[] listOfLdapConfigsToSyncGuid )
 	{
 		GwtTeamingMessages messages;
-		boolean startSync = false;
+		AsyncCallback<VibeRpcResponse> callback;
+		StartLdapSyncCmd cmd;
 
 		messages = GwtTeaming.getMessages();
 		
@@ -1603,136 +1826,73 @@ public class EditLdapConfigDlg extends DlgBox
 			return;
 		}
 		
-		// Has the ldap configuration changed?
-		if ( isDirty() )
+		callback = new AsyncCallback<VibeRpcResponse>()
 		{
-			// Yes, tell the user the ldap configuration must be saved first.
-			if ( Window.confirm( messages.editLdapConfigDlg_LdapConfigMustBeSaved() ) )
+			@Override
+			public void onFailure( Throwable t )
 			{
-				Object obj;
+				GwtClientHelper.handleGwtRPCFailure(
+											t,
+											GwtTeaming.getMessages().rpcFailure_StartLdapSync() );
 				
-				obj = getDataFromDlg();
-				if ( obj != null && obj instanceof GwtLdapConfig )
+				hideStatusMsg();
+			}
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				if ( response.getResponseData() != null &&
+					 response.getResponseData() instanceof SaveLdapConfigRpcResponseData )
 				{
-					GwtLdapConfig ldapConfig;
-					Scheduler.ScheduledCommand cmd;
-
-					cmd = new ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							boolean newLdapServer = false;
-							
-							// Do we have any ldap servers that were newly added?
-							if ( m_listOfLdapServers != null )
-							{
-								for ( GwtLdapConnectionConfig nextLdapServer : m_listOfLdapServers )
-								{
-									String id;
-									
-									// Does the ldap server config have an id?
-									id = nextLdapServer.getId();
-									if ( id == null || id.length() == 0 )
-									{
-										// No
-										newLdapServer = true;
-										break;
-									}
-								}
-							}
-							
-							if ( newLdapServer == false )
-								startLdapSync();
-							else
-							{
-								// Re-read the ldap configuration.
-								init();
-							}
-						}
-					};
-
-					ldapConfig = (GwtLdapConfig) obj;
-					
-					// Issue an rpc request to save the ldap configuration
-					saveLdapConfiguration( ldapConfig, cmd );
+					//!!! Finish
 				}
 			}
-		}
-		else
-			startSync = true;
+		}; 
+
+		cmd = new StartLdapSyncCmd();
+		cmd.setSyncAll( syncAll );
+		cmd.setListOfLdapConfigsToSyncGuid( listOfLdapConfigsToSyncGuid );
+		m_ldapSyncId = String.valueOf( Math.random() );
+		cmd.setSyncId( m_ldapSyncId );
 		
-		if ( startSync )
+		// Get the list of selected ldap servers
 		{
-			AsyncCallback<VibeRpcResponse> callback;
-			StartLdapSyncCmd cmd;
-
-			callback = new AsyncCallback<VibeRpcResponse>()
+			Set<GwtLdapConnectionConfig> selectedServers;
+			
+			selectedServers = getSelectedLdapServers();
+			if ( selectedServers != null && selectedServers.size() > 0 )
 			{
-				@Override
-				public void onFailure( Throwable t )
+				Iterator<GwtLdapConnectionConfig> serverIterator;
+
+				// Get a list of all the selected ldap server urls
+				serverIterator = selectedServers.iterator();
+				while ( serverIterator.hasNext() )
 				{
-					GwtClientHelper.handleGwtRPCFailure(
-												t,
-												GwtTeaming.getMessages().rpcFailure_StartLdapSync() );
+					GwtLdapConnectionConfig nextServer;
 					
-					hideStatusMsg();
+					nextServer = serverIterator.next();
+					cmd.addLdapServerToSync( nextServer );
+					
+					nextServer.setLdapSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
 				}
-				
-				@Override
-				public void onSuccess( VibeRpcResponse response )
-				{
-					if ( response.getResponseData() != null &&
-						 response.getResponseData() instanceof SaveLdapConfigRpcResponseData )
-					{
-						//!!! Finish
-					}
-				}
-			}; 
-
-			cmd = new StartLdapSyncCmd();
-			m_ldapSyncId = String.valueOf( Math.random() );
-			cmd.setSyncId( m_ldapSyncId );
-			
-			// Get the list of selected ldap servers
-			{
-				Set<GwtLdapConnectionConfig> selectedServers;
-				
-				selectedServers = getSelectedLdapServers();
-				if ( selectedServers != null && selectedServers.size() > 0 )
-				{
-					Iterator<GwtLdapConnectionConfig> serverIterator;
-
-					// Get a list of all the selected ldap server urls
-					serverIterator = selectedServers.iterator();
-					while ( serverIterator.hasNext() )
-					{
-						GwtLdapConnectionConfig nextServer;
-						
-						nextServer = serverIterator.next();
-						cmd.addLdapServerToSync( nextServer );
-						
-						nextServer.setLdapSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
-					}
-				}
-				else if ( m_listOfLdapServers != null && m_listOfLdapServers.size() > 0 )
-				{
-					for ( GwtLdapConnectionConfig nextLdapServer : m_listOfLdapServers )
-					{
-						nextLdapServer.setLdapSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
-					}
-				}
-
-				// Refresh the list of ldap servers so the syncing image is displayed.
-				m_dataProvider.refresh();
 			}
-			
-			// Execute a GWT RPC command to start an ldap sync
-			GwtClientHelper.executeCommand( cmd, callback );
+			else if ( m_listOfLdapServers != null && m_listOfLdapServers.size() > 0 )
+			{
+				for ( GwtLdapConnectionConfig nextLdapServer : m_listOfLdapServers )
+				{
+					nextLdapServer.setLdapSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
+				}
+			}
 
-			// Invoke the LDAP Sync Results dialog
-			invokeLdapSyncResultsDlg( true );
+			// Refresh the list of ldap servers so the syncing image is displayed.
+			m_dataProvider.refresh();
 		}
+		
+		// Execute a GWT RPC command to start an ldap sync
+		GwtClientHelper.executeCommand( cmd, callback );
+
+		// Invoke the LDAP Sync Results dialog
+		invokeLdapSyncResultsDlg( true );
 	}
 	
 	/*

@@ -65,6 +65,7 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	private ArrayList< GwtLdapSearchInfo> m_listOfGroupSearchCriteria;
 	
 	private boolean m_isDirty;
+	private String m_origLdapGuidAttrib;
 	
 	private GwtLdapSyncStatus m_syncStatus;
 	
@@ -77,6 +78,7 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	public GwtLdapConnectionConfig()
 	{
 		m_isDirty = false;
+		m_origLdapGuidAttrib = null;
 	}
 	
 	/**
@@ -101,6 +103,16 @@ public class GwtLdapConnectionConfig implements IsSerializable
 		m_listOfUserSearchCriteria.add( searchCriteria );
 	}
 	
+	/**
+	 * See if the value of the ldap guid attribute changed
+	 */
+	public boolean didLdapGuidAttributeChange()
+	{
+		if ( m_origLdapGuidAttrib != null && m_origLdapGuidAttrib.equalsIgnoreCase( m_ldapGuidAttribute ) )
+			return true;
+		
+		return false;
+	}
 	/**
 	 * 
 	 */
@@ -157,6 +169,14 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	public ArrayList<GwtLdapSearchInfo> getListOfUserSearchCriteria()
 	{
 		return m_listOfUserSearchCriteria;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getOrigLdapGuidAttribute()
+	{
+		return m_origLdapGuidAttrib;
 	}
 	
 	/**
@@ -276,6 +296,14 @@ public class GwtLdapConnectionConfig implements IsSerializable
 	public void setLdapGuidAttribute( String attrib )
 	{
 		m_ldapGuidAttribute = attrib;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setOrigLdapGuidAttribute( String attrib )
+	{
+		m_origLdapGuidAttrib = attrib;
 	}
 	
 	/**
