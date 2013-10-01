@@ -98,15 +98,8 @@ function ss_clickGoToPage_${renderResponse.namespace}(strFormName) {
 
 function ss_autoGoToPage${renderResponse.namespace}(formId, page) {
 	var formObj = document.getElementById(formId);
-	if (ss_getUserDisplayStyle() == "accessible") {
-		if (ss_goToPage_${renderResponse.namespace}(formObj)) {
-			formObj.submit();
-		}
-	} else {
-		var pageIndex = parseInt((page - 1) * ${ssEntriesPerPage});
-		var url = ss_pageNavigationSliderUrl${renderResponse.namespace};
-		url = ss_replaceSubStr(url, "ss_pageIndexPlaceHolder", pageIndex);
-		ss_showFolderPageIndex(url, '${ssFolder.id}', pageIndex, 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');
+	if (ss_goToPage_${renderResponse.namespace}(formObj)) {
+		formObj.submit();
 	}
 }
 
