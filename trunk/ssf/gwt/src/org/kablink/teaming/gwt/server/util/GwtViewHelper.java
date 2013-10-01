@@ -117,10 +117,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseDat
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesToBindersRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseData.ClickAction;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
@@ -229,6 +231,7 @@ import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.FileIconsHelper;
+import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -2299,6 +2302,113 @@ public class GwtViewHelper {
 					m_logger,
 					e,
 					"GwtViewHelper.getCanAddEntitiesToBinders( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
+	/**
+	 * Return a ClickOnTitleActionRpcResponseData object containing
+	 * what should happen when the user clicks on an entity's title.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ClickOnTitleActionRpcResponseData getClickOnTitleAction(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) throws GwtTeamingException {
+		try {
+			// Are we getting the click action on a folder entry?
+			ClickOnTitleActionRpcResponseData reply = null;
+			if (entityId.isEntry()) {
+				// Yes!  Is it a file entry that we can get the primary
+				// file attachment from?  
+				boolean        doViewDetails = false;
+				boolean        doDownload    = false;
+				Long           binderId      = entityId.getBinderId();
+				Long           entryId       = entityId.getEntityId();
+				FolderEntry    fe            = bs.getFolderModule().getEntry(binderId, entryId);
+				FileAttachment fa            = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
+				if (null != fa) {
+					// Yes!  What's the user's preference to as to the
+					// action to perform?
+					FileLinkAction fla = GwtUIHelper.getEffectiveFileLinkAction(bs);
+					switch (fla) {
+					case DOWNLOAD:
+						// Download the file!
+						doDownload = true;
+						break;
+						
+					case VIEW_HTML_ELSE_DETAILS:
+					case VIEW_HTML_ELSE_DOWNLOAD:
+						// View as HTML, if we can!  Can we?
+						ViewFileInfo vfi = buildViewFileInfo(request, fe, fa);
+						if (null != vfi) {
+							// Yes!  Generate the appropriate reply.
+							reply = new ClickOnTitleActionRpcResponseData(ClickAction.VIEW_AS_HTML, vfi.getViewFileUrl());
+							break;
+						}
+
+						// No, we can't view it as HTML!  Do we view
+						// details or download it?
+						if (fla.isViewHtmlElseDetails())
+							 doViewDetails = true;
+						else doDownload    = true;
+						break;
+
+					default:
+					case VIEW_DETAILS:
+						// View details on the file!
+						doViewDetails = true;
+						break;
+					}
+				}
+				
+				else {
+					// No, it's not a file entry or it doesn't have a
+					// primary file attachment!  For these, we do a
+					// view details.
+					doViewDetails = true;
+				}
+
+				// If we need to view details...
+				if (doViewDetails) {
+					// ...generate the appropriate response...
+					String url = GwtServerHelper.getViewFolderEntryUrl(bs, request, binderId, entryId);
+					reply = new ClickOnTitleActionRpcResponseData(ClickAction.VIEW_DETAILS, url);
+				}
+
+				// ...otherwise, if we need to download the file...
+				else if (doDownload) {
+					// ...generate the appropriate response.
+					String url = GwtServerHelper.getDownloadFileUrl(request, bs, binderId, entryId);
+					reply = new ClickOnTitleActionRpcResponseData(ClickAction.DOWNLOAD_FILE, url);
+				}
+			}
+			
+			else {
+				// No, we aren't getting the click action on a folder
+				// entry!  It must be on a binder.  For those, we
+				// always descend into them.
+				reply = new ClickOnTitleActionRpcResponseData(ClickAction.DESCEND_INTO_BINDER);				
+			}
+
+			// If we get here, reply refers to a
+			// ClickOnTitleActionRpcResponseData with what should
+			// happen when the user clicks on the entity's title.
+			// Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getClickOnTitleAction( SOURCE EXCEPTION ):  ");
 		}
 	}
 	

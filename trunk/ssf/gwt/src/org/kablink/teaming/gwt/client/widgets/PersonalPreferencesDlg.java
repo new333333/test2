@@ -139,6 +139,7 @@ public class PersonalPreferencesDlg extends DlgBox
 		}
 		
 		// Create the controls for "File Link Action"
+		if ( GwtClientHelper.isLicenseFilr() )
 		{
 			table.setText( nextRow, 0, messages.fileLinkActionLabel() );
 			
@@ -314,15 +315,20 @@ public class PersonalPreferencesDlg extends DlgBox
 	 */
 	private GwtFileLinkAction getFileLinkActionFromDlg()
 	{
-		int index;
-		GwtFileLinkAction reply;
+		if ( GwtClientHelper.isLicenseFilr() )
+		{
+			int index;
+			GwtFileLinkAction reply;
+			
+			index = m_fileLinkActionListbox.getSelectedIndex();
+			if ( index == -1 )
+				index = 0;
+			
+			reply = GwtFileLinkAction.getEnum( Integer.parseInt( m_fileLinkActionListbox.getValue( index ) ) );
+			return reply;
+		}
 		
-		index = m_fileLinkActionListbox.getSelectedIndex();
-		if ( index == -1 )
-			index = 0;
-		
-		reply = GwtFileLinkAction.getEnum( Integer.parseInt( m_fileLinkActionListbox.getValue( index ) ) );
-		return reply;
+		return GwtFileLinkAction.VIEW_DETAILS;
 	}// end getEntryDisplayStyleFromDlg()
 	
 	
@@ -379,24 +385,27 @@ public class PersonalPreferencesDlg extends DlgBox
 	 */
 	private void initFileLinkActionControls( GwtPersonalPreferences personalPrefs )
 	{
-		m_fileLinkActionListbox.clear();
-		GwtTeamingMessages messages = GwtTeaming.getMessages();
-		boolean canDownload = personalPrefs.canDownload();
-		if (canDownload) m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_Download(),             String.valueOf( GwtFileLinkAction.DOWNLOAD.ordinal()                ) );
-		                 m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewDetails(),          String.valueOf( GwtFileLinkAction.VIEW_DETAILS.ordinal()            ) );
-		                 m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDetails(),  String.valueOf( GwtFileLinkAction.VIEW_HTML_ELSE_DETAILS.ordinal()  ) );
-		if (canDownload) m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDownload(), String.valueOf( GwtFileLinkAction.VIEW_HTML_ELSE_DOWNLOAD.ordinal() ) );
-		
-		m_fileLinkActionListbox.setSelectedIndex( -1 );
-		
-		// Select the appropriate item in the "file link action" listbox.
-		int index = GwtClientHelper.selectListboxItemByValue( m_fileLinkActionListbox, String.valueOf( personalPrefs.getFileLinkAction().ordinal() ) );
-		
-		// Did we select an item in the listbox?
-		if ( index == -1 )
+		if ( GwtClientHelper.isLicenseFilr() )
 		{
-			// No
-			m_fileLinkActionListbox.setSelectedIndex( 0 );
+			m_fileLinkActionListbox.clear();
+			GwtTeamingMessages messages = GwtTeaming.getMessages();
+			boolean canDownload = personalPrefs.canDownload();
+			if (canDownload) m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_Download(),             String.valueOf( GwtFileLinkAction.DOWNLOAD.ordinal()                ) );
+			                 m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewDetails(),          String.valueOf( GwtFileLinkAction.VIEW_DETAILS.ordinal()            ) );
+			                 m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDetails(),  String.valueOf( GwtFileLinkAction.VIEW_HTML_ELSE_DETAILS.ordinal()  ) );
+			if (canDownload) m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDownload(), String.valueOf( GwtFileLinkAction.VIEW_HTML_ELSE_DOWNLOAD.ordinal() ) );
+			
+			m_fileLinkActionListbox.setSelectedIndex( -1 );
+			
+			// Select the appropriate item in the "file link action" listbox.
+			int index = GwtClientHelper.selectListboxItemByValue( m_fileLinkActionListbox, String.valueOf( personalPrefs.getFileLinkAction().ordinal() ) );
+			
+			// Did we select an item in the listbox?
+			if ( index == -1 )
+			{
+				// No
+				m_fileLinkActionListbox.setSelectedIndex( 0 );
+			}
 		}
 	}// end initFileLinkActionControls()
 

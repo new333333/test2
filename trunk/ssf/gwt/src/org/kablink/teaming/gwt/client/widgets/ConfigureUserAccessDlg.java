@@ -206,6 +206,7 @@ public class ConfigureUserAccessDlg extends DlgBox
 		}
 		
 		// Add the "Disable Download" checkbox;
+		if ( GwtClientHelper.isLicenseFilr() )
 		{
 			FlowPanel panel;
 			
@@ -337,7 +338,11 @@ public class ConfigureUserAccessDlg extends DlgBox
 	 */
 	private boolean getDisableDownload()
 	{
-		return m_disableDownloadCkbox.getValue();
+		boolean reply;
+		if ( GwtClientHelper.isLicenseFilr() )
+		     reply = m_disableDownloadCkbox.getValue();
+		else reply = false;
+		return reply;
 	}
 	
 	/**
@@ -453,8 +458,11 @@ public class ConfigureUserAccessDlg extends DlgBox
 		if ( m_allowSelfRegOfInternalUserAccountCkbox != null )
 			m_allowSelfRegOfInternalUserAccountCkbox.setValue( false );
 		
-		if ( m_disableDownloadCkbox != null )
-			m_disableDownloadCkbox.setValue( false );
+		if ( GwtClientHelper.isLicenseFilr() )
+		{
+			if ( m_disableDownloadCkbox != null )
+				m_disableDownloadCkbox.setValue( false );
+		}
 		
 		if ( m_disableWebAccessCkbox != null )
 			m_disableWebAccessCkbox.setValue( false );
@@ -480,8 +488,11 @@ public class ConfigureUserAccessDlg extends DlgBox
 		if ( m_allowSelfRegOfInternalUserAccountCkbox != null )
 			m_allowSelfRegOfInternalUserAccountCkbox.setValue( config.getAllowSelfReg() );
 		
-		if ( m_disableDownloadCkbox != null )
-			m_disableDownloadCkbox.setValue( !config.getAllowDownload() );
+		if ( GwtClientHelper.isLicenseFilr() )
+		{
+			if ( m_disableDownloadCkbox != null )
+				m_disableDownloadCkbox.setValue( !config.getAllowDownload() );
+		}
 		
 		if ( m_disableWebAccessCkbox != null )
 			m_disableWebAccessCkbox.setValue( !config.getAllowWebAccess() );

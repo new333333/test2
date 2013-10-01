@@ -669,35 +669,50 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user) {
-		boolean        canDownload = getEffectiveDownloadSetting(bs, user);
-		FileLinkAction defaultFLA  = (canDownload ? FileLinkAction.DOWNLOAD : FileLinkAction.VIEW_HTML_ELSE_DETAILS);
-		FileLinkAction reply       = null;
-		if (!(user.isShared())) {
-			UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
-			String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
-			if (!(MiscUtil.hasString(flaS))) {
-				flaS = String.valueOf(FileLinkAction.DOWNLOAD.ordinal());
-			}
-			try {
-				int flaI = Integer.parseInt(      flaS);
-				reply    = FileLinkAction.getEnum(flaI);
-				if (!canDownload) {
-					switch (reply) {
-					case DOWNLOAD:
-					case VIEW_HTML_ELSE_DOWNLOAD:
-						reply = FileLinkAction.VIEW_HTML_ELSE_DETAILS;
-						break;
-						
-					default:
-						break;
+		// Is this Filr?
+		FileLinkAction reply;
+		if (Utils.checkIfFilr()) {
+			// Yes!
+			boolean        canDownload   = getEffectiveDownloadSetting(bs, user);
+			FileLinkAction defaultFLA    = (canDownload ? FileLinkAction.DOWNLOAD : FileLinkAction.VIEW_HTML_ELSE_DETAILS);
+			FileLinkAction calculatedFLA = null;
+			if (!(user.isShared())) {
+				UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+				String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
+				if (!(MiscUtil.hasString(flaS))) {
+					flaS = String.valueOf(FileLinkAction.DOWNLOAD.ordinal());
+				}
+				try {
+					int flaI = Integer.parseInt(      flaS);
+					calculatedFLA    = FileLinkAction.getEnum(flaI);
+					if (!canDownload) {
+						switch (calculatedFLA) {
+						case DOWNLOAD:
+						case VIEW_HTML_ELSE_DOWNLOAD:
+							calculatedFLA = FileLinkAction.VIEW_HTML_ELSE_DETAILS;
+							break;
+							
+						default:
+							break;
+						}
 					}
 				}
+				catch (NumberFormatException nfe) {
+					m_logger.warn("GwtUIHelper.getEffectiveFileLinkAction():  file link action is not an integer.", nfe);
+				}
 			}
-			catch (NumberFormatException nfe) {
-				m_logger.warn("GwtUIHelper.getEffectiveFileLinkAction():  file link action is not an integer.", nfe);
-			}
+			reply = ((null == calculatedFLA) ? defaultFLA : calculatedFLA);
 		}
-		return ((null == reply) ? defaultFLA : reply);
+		
+		else {
+			// No, this isn't Filr!  For Vibe, we always do view
+			// details.
+			reply = FileLinkAction.VIEW_DETAILS;
+		}
+
+		// If we get here, reply contains the user's effective
+		// FileLinkAction.  Return it.
+		return reply;
 	}
 	
 	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, Long userId) {

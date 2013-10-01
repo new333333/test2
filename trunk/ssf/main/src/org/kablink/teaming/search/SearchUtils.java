@@ -1430,16 +1430,22 @@ public class SearchUtils {
 	 * @return
 	 */
 	public static Boolean getEffectiveDownloadSetting(AllModulesInjected bs, User user) {
-		// ! Check the user's setting.  
 		Boolean result;
-		if (null !=  user)
-		     result = getDownloadSettingFromUser(bs, user.getId());
-		else result = null;
-	
-		// Did we find a setting for the user?
-		if (null == result) {
-			// No!  Read the global setting.
-			result = getDownloadSettingFromZone(bs);
+		if (Utils.checkIfFilr()) {
+			// ! Check the user's setting.  
+			if (null !=  user)
+			     result = getDownloadSettingFromUser(bs, user.getId());
+			else result = null;
+		
+			// Did we find a setting for the user?
+			if (null == result) {
+				// No!  Read the global setting.
+				result = getDownloadSettingFromZone(bs);
+			}
+		}
+		
+		else {
+			result = Boolean.TRUE;
 		}
 
 		// If we get here, reply contains true if downloads are
@@ -1526,13 +1532,20 @@ public class SearchUtils {
 	 * @return
 	 */
 	public static Boolean getDownloadSettingFromUser(AllModulesInjected bs, Long userId) {
-		// If we have a user ID...
-		if (null != userId) {
-			// ...read the 'download' setting from the
-			// ...User object...
-			return bs.getProfileModule().getDownloadEnabled(userId);
+		Boolean reply;
+		if (Utils.checkIfFilr()) {
+			// If we have a user ID...
+			if (null != userId) {
+				// ...read the 'download' setting from the
+				// ...User object...
+				return bs.getProfileModule().getDownloadEnabled(userId);
+			}
+			reply = null;
 		}
-		return null;
+		else {
+			reply = Boolean.TRUE;
+		}
+		return reply;
 	}
 
 	/**
@@ -1583,7 +1596,11 @@ public class SearchUtils {
 	 * @return
 	 */
 	public static Boolean getDownloadSettingFromZone(AllModulesInjected bs) {
-	    return new Boolean(bs.getAdminModule().isDownloadEnabled());
+		Boolean reply;
+		if (Utils.checkIfFilr())
+	         reply = new Boolean(bs.getAdminModule().isDownloadEnabled());
+		else reply = Boolean.TRUE;
+		return reply;
 	}
 
 	/**

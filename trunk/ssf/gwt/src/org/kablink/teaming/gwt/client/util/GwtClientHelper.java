@@ -1414,9 +1414,27 @@ public class GwtClientHelper {
 		$wnd.top.ss_openUrlInWindow({href: url}, windowName, windowWidth, windowHeight);
 	}-*/;
 	
+	public static void jsLaunchUrlInWindowAsync(final String url, final String windowName, final int windowHeight, final int windowWidth) {
+		deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				jsLaunchUrlInWindow(url, windowName, windowHeight, windowWidth);
+			}
+		});
+	}
+	
 	public static native void jsLaunchUrlInWindow(String url, String windowName) /*-{
 		$wnd.top.ss_openUrlInWindow({href: url}, windowName);
 	}-*/;
+	
+	public static void jsLaunchUrlInWindowAsync(final String url, final String windowName) {
+		deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				jsLaunchUrlInWindow(url, windowName);
+			}
+		});
+	}
 
 	/**
 	 * Loads a URL into the current window.
