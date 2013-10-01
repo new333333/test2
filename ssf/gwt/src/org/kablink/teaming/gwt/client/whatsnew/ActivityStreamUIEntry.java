@@ -41,7 +41,9 @@ import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteSelectionsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetClickOnTitleActionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDownloadFileUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
@@ -87,6 +89,8 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class ActivityStreamUIEntry extends Composite
 	implements ClickHandler, MouseOverHandler, MouseOutHandler
 {
+	public static final boolean HONOR_CLICK_ON_TITLE_PREFERNECE	= false;	//! DRF (20131001):  Leave false on checkin until this is working.
+	
     public static final int FORMAT_HTML = 1;
     public static final int FORMAT_NONE = 2;
 
@@ -848,6 +852,49 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// Are we running Filr?
 		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 		{
+			if ( HONOR_CLICK_ON_TITLE_PREFERNECE )
+			{
+				EntityId eid = getEntryEntityId();
+				GwtClientHelper.executeCommand( new GetClickOnTitleActionCmd( eid ), new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onFailure(Throwable t)
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_GetClickOnTitleAction(),
+							m_entryId );
+					}
+					
+					/**
+					 * 
+					 */
+					@Override
+					public void onSuccess( VibeRpcResponse response )
+					{
+						GwtTeaming.fireEventAsync( new MarkEntryReadEvent( ActivityStreamUIEntry.this ) );			
+						ClickOnTitleActionRpcResponseData cotAction = ((ClickOnTitleActionRpcResponseData) response.getResponseData());
+						String url = cotAction.getUrl();
+						switch ( cotAction.getClickAction() )
+						{
+						case DOWNLOAD_FILE:
+						case VIEW_AS_HTML:
+							GwtClientHelper.jsLaunchUrlInWindowAsync( url, "_blank" );
+							break;
+							
+						case VIEW_DETAILS:
+							GwtTeaming.fireEventAsync( new ViewForumEntryEvent( url ) );
+							break;
+						}
+					}
+				} );
+				
+				return;
+			}
+			
 			// Yes, open the file
 			openFile();
 		}

@@ -877,35 +877,38 @@ public class GwtMenuHelper {
 
 		// Is this other than the built-in admin user?
 		if (!isAdmin) {
-			// Yes!  Add a separator after the previous item...
-			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
-	
-			// ...and if they have download access...
-			if (ai.canDownload()) {
-				// ...add the disable download item...
-				manageUserTBI = new ToolbarItem("1_disableSelectedDownload");
-				markTBITitle(manageUserTBI, "toolbar.disable.user.download.perUser");
-				markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD);
-				entryToolbar.addNestedItem(manageUserTBI);
-			}
-			
-			else {
-				// ...otherwise, if they can't download, add
-				// ...the enable download item...
-				manageUserTBI = new ToolbarItem("1_enableSelectedDownload");
-				markTBITitle(manageUserTBI, "toolbar.enable.user.download.perUser");
-				markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
-				entryToolbar.addNestedItem(manageUserTBI);
-			}
-	
-			// ...if they currently have a per user download
-			// ...setting...
-			if (ai.isPerUserDownload()) {
-				// ...and add the clear users download item.
-				manageUserTBI = new ToolbarItem("1_clearSelectedDownload");
-				markTBITitle(manageUserTBI, "toolbar.clear.user.download");
-				markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
-				entryToolbar.addNestedItem(manageUserTBI);
+			// Yes!  Is this Filr?
+			if (Utils.checkIfFilr()) {
+				// Yes!  Add a separator after the previous item...
+				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+		
+				// ...and if they have download access...
+				if (ai.canDownload()) {
+					// ...add the disable download item...
+					manageUserTBI = new ToolbarItem("1_disableSelectedDownload");
+					markTBITitle(manageUserTBI, "toolbar.disable.user.download.perUser");
+					markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD);
+					entryToolbar.addNestedItem(manageUserTBI);
+				}
+				
+				else {
+					// ...otherwise, if they can't download, add
+					// ...the enable download item...
+					manageUserTBI = new ToolbarItem("1_enableSelectedDownload");
+					markTBITitle(manageUserTBI, "toolbar.enable.user.download.perUser");
+					markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
+					entryToolbar.addNestedItem(manageUserTBI);
+				}
+		
+				// ...if they currently have a per user download
+				// ...setting...
+				if (ai.isPerUserDownload()) {
+					// ...and add the clear users download item.
+					manageUserTBI = new ToolbarItem("1_clearSelectedDownload");
+					markTBITitle(manageUserTBI, "toolbar.clear.user.download");
+					markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
+					entryToolbar.addNestedItem(manageUserTBI);
+				}
 			}
 
 			// Is this other than the guest user?
@@ -1190,25 +1193,28 @@ public class GwtMenuHelper {
 				markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS);
 				moreTBI.addNestedItem(tbi);
 			}
-			
-			// ...add the disable users download files item...
-			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-			tbi = new ToolbarItem("1_disableSelectedDownload");
-			markTBITitle(tbi, "toolbar.disable.user.download");
-			markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD);
-			moreTBI.addNestedItem(tbi);
-			
-			// ...add the enable users download files item...
-			tbi = new ToolbarItem("1_enableSelectedDownload");
-			markTBITitle(tbi, "toolbar.enable.user.download");
-			markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
-			moreTBI.addNestedItem(tbi);
-			
-			// ...and add the clear users download files item.
-			tbi = new ToolbarItem("1_clearSelectedDownload");
-			markTBITitle(tbi, "toolbar.clear.user.download");
-			markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
-			moreTBI.addNestedItem(tbi);
+
+			// ...if this is Filr...
+			if (Utils.checkIfFilr()) {
+				// ...add the disable users download files item...
+				moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+				tbi = new ToolbarItem("1_disableSelectedDownload");
+				markTBITitle(tbi, "toolbar.disable.user.download");
+				markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD);
+				moreTBI.addNestedItem(tbi);
+				
+				// ...add the enable users download files item...
+				tbi = new ToolbarItem("1_enableSelectedDownload");
+				markTBITitle(tbi, "toolbar.enable.user.download");
+				markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
+				moreTBI.addNestedItem(tbi);
+				
+				// ...and add the clear users download files item.
+				tbi = new ToolbarItem("1_clearSelectedDownload");
+				markTBITitle(tbi, "toolbar.clear.user.download");
+				markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
+				moreTBI.addNestedItem(tbi);
+			}
 			
 			// ...add the disable users web access item...
 			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());

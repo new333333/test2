@@ -405,6 +405,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBinderPermalink();
 	String rpcFailure_GetBranding();
 	String rpcFailure_GetChangeLogsHtml();
+	String rpcFailure_GetClickOnTitleAction();
 	String rpcFailure_GetCreditsHtml();
 	String rpcFailure_GetDatabasePruneDlgConfiguration();
 	String rpcFailure_GetDataQuotaExceededHtml();

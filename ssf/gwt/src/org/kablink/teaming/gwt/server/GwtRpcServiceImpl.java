@@ -1049,6 +1049,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return new VibeRpcResponse( responseData );
 		}
 		
+		case GET_CLICK_ON_TITLE_ACTION:
+		{
+			GetClickOnTitleActionCmd gcotaCmd = ((GetClickOnTitleActionCmd) cmd);
+			ClickOnTitleActionRpcResponseData result = GwtViewHelper.getClickOnTitleAction( this, getRequest( ri ), gcotaCmd.getEntityId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_CLIPBOARD_TEAM_USERS:
 		{
 			GetClipboardTeamUsersCmd gctuCmd = ((GetClipboardTeamUsersCmd) cmd);
