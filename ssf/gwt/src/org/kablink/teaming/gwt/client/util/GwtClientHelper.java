@@ -1111,6 +1111,39 @@ public class GwtClientHelper {
 	}-*/;
 	
 	/**
+	 * Simulates a click on an HTML Element.
+	 * 
+	 * @param htmlElement
+	 */
+	public static native void jsClickElement(Element htmlElement) /*-{
+		htmlElement.click();
+	}-*/;
+
+	/**
+	 * Synchronously simulates a click on a Widget.
+	 * 
+	 * @param w
+	 */
+	public static void jsClickWidget(Widget w){
+		jsClickElement(w.getElement());
+	}
+
+	/**
+	 * Asynchronously simulates a click on a Widget.
+	 * 
+	 * @param w
+	 */
+	public static void jsClickWidgetAsync(final Widget w){
+		deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					jsClickWidget(w);
+				}
+			});
+	}
+	
+	/**
 	 * Invokes edit-in-place on a file using the applet.
 	 * 
 	 * @param binderId

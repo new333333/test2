@@ -141,6 +141,24 @@ public class GwtUIHelper {
 	private final static int	UNKNOWN_ACTIVITY_STREAM	= 0;	// ActivityStream.UNKNOWN.
 
 	/**
+	 * Enumeration used to specify where a file link is being used.
+	 * 
+	 * See the implementation of getEffectiveFileLinkAction() below.
+	 */
+	public enum FileLinkLocation {
+		SEARCH_RESULTS,
+		OTHER;
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isSearchResults() {return SEARCH_RESULTS.equals(this);}
+		public boolean isOther()         {return OTHER.equals(         this);}
+	}
+	
+	/**
 	 * Inner class used by addTrackBinderToToolbar() to assist in
 	 * building the toolbar items to support tracking.
 	 */
@@ -665,10 +683,11 @@ public class GwtUIHelper {
 	 * 
 	 * @param bs
 	 * @param user
+	 * @param fll
 	 * 
 	 * @return
 	 */
-	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user) {
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user, FileLinkLocation fll) {
 		// Is this Filr?
 		FileLinkAction reply;
 		if (Utils.checkIfFilr()) {
@@ -683,8 +702,8 @@ public class GwtUIHelper {
 					flaS = String.valueOf(FileLinkAction.DOWNLOAD.ordinal());
 				}
 				try {
-					int flaI = Integer.parseInt(      flaS);
-					calculatedFLA    = FileLinkAction.getEnum(flaI);
+					int flaI      = Integer.parseInt(      flaS);
+					calculatedFLA = FileLinkAction.getEnum(flaI);
 					if (!canDownload) {
 						switch (calculatedFLA) {
 						case DOWNLOAD:
@@ -705,9 +724,12 @@ public class GwtUIHelper {
 		}
 		
 		else {
-			// No, this isn't Filr!  For Vibe, we always do view
-			// details.
-			reply = FileLinkAction.VIEW_DETAILS;
+			// No, this isn't Filr!  For Vibe, we download from the
+			// search results and view details from everywhere else.
+			reply = 
+				(fll.isSearchResults()      ?
+					FileLinkAction.DOWNLOAD :
+					FileLinkAction.VIEW_DETAILS);
 		}
 
 		// If we get here, reply contains the user's effective
@@ -715,14 +737,29 @@ public class GwtUIHelper {
 		return reply;
 	}
 	
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user) {
+		// Always use the initial form of the method.
+		return getEffectiveFileLinkAction(bs, user, FileLinkLocation.OTHER);
+	}
+	
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, Long userId, FileLinkLocation fll) {
+		// Always use the initial form of the method.
+		return getEffectiveFileLinkAction(bs, getUserSafely(bs.getProfileModule(), userId), fll);
+	}
+	
 	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, Long userId) {
 		// Always use the initial form of the method.
-		return getEffectiveFileLinkAction(bs, getUserSafely(bs.getProfileModule(), userId));
+		return getEffectiveFileLinkAction(bs, getUserSafely(bs.getProfileModule(), userId), FileLinkLocation.OTHER);
+	}
+	
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, FileLinkLocation fll) {
+		// Always use the initial form of the method.
+		return getEffectiveFileLinkAction(bs, RequestContextHolder.getRequestContext().getUser(), fll);
 	}
 	
 	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs) {
 		// Always use the initial form of the method.
-		return getEffectiveFileLinkAction(bs, RequestContextHolder.getRequestContext().getUser());
+		return getEffectiveFileLinkAction(bs, RequestContextHolder.getRequestContext().getUser(), FileLinkLocation.OTHER);
 	}
 	
 	/**
