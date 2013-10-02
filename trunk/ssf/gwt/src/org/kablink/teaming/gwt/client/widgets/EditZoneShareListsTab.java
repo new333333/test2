@@ -52,6 +52,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtShareLists.ShareListMode;
 import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgButtonMode;
+import org.kablink.teaming.gwt.client.widgets.PromptDlg.PromptDlgClient;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -86,6 +87,7 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 	private List<Long>					m_invalidShareIds;			// A List<Long> of the share IDs to be deleted because they're invalid.  Setup in validate().
 	private ListBox						m_domainsLB;				// The list of domains.
 	private ListBox						m_emailAddressesLB;			// The list of email addresses.
+	private PromptDlg					m_pDlg;						// The dialog used to prompt the user for information.
 	private RadioButton					m_blacklistRB;				// The radio button specifying the lists are part of a blacklist.
 	private RadioButton					m_disabledRB;				// The radio button specifying the lists are to be ignored.
 	private RadioButton					m_whitelistRB;				// The radio button specifying the lists are part of a whitelist.
@@ -226,75 +228,7 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 		Button b = new Button(m_messages.editZoneShareListsTab_Add(), new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				GwtClientHelper.deferCommand(new ScheduledCommand() {
-					@Override
-					public void execute() {
-						// Prompt the user for something to add.  Did
-						// they enter something?
-						String addThis = "";
-						while (true) {
-							addThis = Window.prompt(addPrompt, addThis);
-							if (!(GwtClientHelper.hasString(addThis))) {
-								return;
-							}
-							addThis = addThis.trim();
-							if (0 < addThis.length()) {
-								// Yes!  Are we working with an email
-								// address list?
-								int atPos = addThis.indexOf('@');
-								if (isEMAList) {
-									// Yes!  is it valid?
-									int parts = ((0 < atPos) ? addThis.split("@").length : 0);
-									if ((2 != parts) || ((addThis.length() - 1) == atPos)) {
-										// No!  Tell the user about the
-										// problem and let them try
-										// again.
-										Window.alert(m_messages.editZoneShareListsTab_Error_InvalidEMA());
-										continue;
-									}
-								}
-								
-								else {
-									// No, we aren't working with an
-									// email address list!  It must be
-									// a domain list.  Is this a valid
-									// domain?
-									if (0 < atPos) {
-										// No!  Tell the user about the
-										// problem and let them try
-										// again.
-										Window.alert(m_messages.editZoneShareListsTab_Error_InvalidDomain());
-										continue;
-									}
-									if ((0 == atPos) && ((1 == addThis.length()) || ((-1) != addThis.substring(1).indexOf('@')))) {
-										// No!  Tell the user about the
-										// problem and let them try
-										// again.
-										Window.alert(m_messages.editZoneShareListsTab_Error_InvalidDomain());
-										continue;
-									}
-									
-									// If the domain they entered
-									// starts with an '@'...
-									if (0 == atPos) {
-										// ...strip it off.
-										addThis = addThis.substring(1);
-									}
-								}
-	
-								// If this isn't already in the list...
-								if (!(listContains(listBox, addThis))) {
-									// ...add it...
-									listBox.addItem(addThis);
-								}
-								
-								// ...and bail.  We're done with the
-								// ...add.
-								return;
-							}
-						}
-					}
-				});
+				promptForDataAsync(isEMAList, listBox, addPrompt);
 			}
 		});
 		b.addStyleName("editZoneShareListsTab_ListButton");
@@ -594,10 +528,54 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 	/*
 	 * Synchronously loads the next part of the tab.
 	 * 
+	 * Creates a PromptDlg if we haven't already created one. 
+	 */
+	private void loadPart1Now() {
+		// Have we created a PromptDlg yet?
+		if (null == m_pDlg) {
+			// No!  Create one now...
+			PromptDlg.createAsync(new PromptDlgClient() {
+				@Override
+				public void onSuccess(PromptDlg pDlg) {
+					// ...and continue loading.
+					m_pDlg = pDlg;
+					loadPart2Async();
+				}
+	
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've already created a PromptDlg!  Simply
+			// continue loading.
+			loadPart2Now();
+		}
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the tab.
+	 */
+	private void loadPart2Async() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart2Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the next part of the tab.
+	 * 
 	 * Sends an RPC request to the server for a GwtShareLists object
 	 * and uses it to complete the initialization of the tab.
 	 */
-	private void loadPart1Now() {
+	private void loadPart2Now() {
 		GwtClientHelper.executeCommand(new GetShareListsCmd(), new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -637,7 +615,103 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 		super.onDetach();
 		unregisterEvents();
 	}
+
+	/*
+	 * Asynchronously prompts for an entry for a ListBox.
+	 */
+	private void promptForDataAsync(final boolean isEMAList, final ListBox listBox, final String addPrompt, final String addThis) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				promptForDataNow(isEMAList, listBox, addPrompt, addThis);
+			}
+		});
+	}
 	
+	private void promptForDataAsync(final boolean isEMAList, final ListBox listBox, final String addPrompt) {
+		// Always use the initial form of the method.
+		promptForDataAsync(isEMAList, listBox, addPrompt, "");
+	}
+	
+	/*
+	 * Synchronously prompts for an entry for a ListBox.
+	 */
+	private void promptForDataNow(final boolean isEMAList, final ListBox listBox, final String addPrompt, final String addThis) {
+		// Prompt the user for something to add.
+		PromptDlg.initAndShow(
+			m_pDlg,
+			new PromptCallback() {
+				@Override
+				public void applied(String addThis) {
+					// Did they enter something?
+					if (!(GwtClientHelper.hasString(addThis))) {
+						// No!  Bail.
+						return;
+					}
+					
+					addThis = addThis.trim();
+					if (0 < addThis.length()) {
+						// Yes!  Are we working with an email address
+						// list?
+						int atPos = addThis.indexOf('@');
+						if (isEMAList) {
+							// Yes!  is it valid?
+							int parts = ((0 < atPos) ? addThis.split("@").length : 0);
+							if ((2 != parts) || ((addThis.length() - 1) == atPos)) {
+								// No!  Tell the user about the problem
+								// and let them try again.
+								Window.alert(m_messages.editZoneShareListsTab_Error_InvalidEMA());
+								promptForDataAsync(isEMAList, listBox, addPrompt, addThis);
+								return;
+							}
+						}
+						
+						else {
+							// No, we aren't working with an email
+							// address list!  It must be a domain list.
+							// Is this a valid domain?
+							if (0 < atPos) {
+								// No!  Tell the user about the problem
+								// and let them try again.
+								Window.alert(m_messages.editZoneShareListsTab_Error_InvalidDomain());
+								promptForDataAsync(isEMAList, listBox, addPrompt, addThis);
+								return;
+							}
+							if ((0 == atPos) && ((1 == addThis.length()) || ((-1) != addThis.substring(1).indexOf('@')))) {
+								// No!  Tell the user about the problem
+								// and let them try again.
+								Window.alert(m_messages.editZoneShareListsTab_Error_InvalidDomain());
+								promptForDataAsync(isEMAList, listBox, addPrompt, addThis);
+								return;
+							}
+							
+							// If the domain they entered starts with
+							// an '@'...
+							if (0 == atPos) {
+								// ...strip it off.
+								addThis = addThis.substring(1);
+							}
+						}
+
+						// If this isn't already in the list...
+						if (!(listContains(listBox, addThis))) {
+							// ...add it...
+							listBox.addItem(addThis);
+						}
+						
+						// ...and bail.  We're done with the add.
+						return;
+					}
+				}
+
+				@Override
+				public void canceled() {
+					// Nothing to do.
+				}
+			},
+			addPrompt,
+			addThis);
+	}
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */
