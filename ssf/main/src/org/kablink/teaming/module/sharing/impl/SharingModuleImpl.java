@@ -59,6 +59,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -257,6 +258,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					}
 				}
 				//Now check that the entry itself allows the requested operation
+				//First test if the user is allowed to do all of the rights in the rights list
+				List<WorkAreaOperation> ops = shareItem.getRightSet().getRights();
+				for (WorkAreaOperation op : ops) {
+					accessControlManager.checkOperation(fe, op);
+				}
 				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
 					if (recipient.getIdentityInfo().isInternal()) {
 						if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
@@ -303,6 +309,12 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 						throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
 					}
 				}
+				//Now check the access to the binder
+				//First test if the user is allowed to do all of the rights in the rights list
+				List<WorkAreaOperation> ops = shareItem.getRightSet().getRights();
+				for (WorkAreaOperation op : ops) {
+					accessControlManager.checkOperation(binder, op);
+				}
 				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
 					if (recipient.getIdentityInfo().isInternal()) {
 						if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
@@ -346,10 +358,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				}
 			}
 			//Now check if this user is still allowed to add a share of this entity
-			if (testAccess(shareItem, SharingOperation.addShareItem)) {
-				return;
-			}
-			break;
+			checkAccess(shareItem, SharingOperation.addShareItem);
+			return;
 		case deleteShareItem:
 			//The share creator, the entity owner, or the site admin can delete a shareItem
 			if (user.getId().equals(shareItem.getSharerId())) {
