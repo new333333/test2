@@ -141,7 +141,6 @@ public class EditLdapConfigDlg extends DlgBox
 	private boolean m_isDirty;
 	private String m_ldapSyncId;
 	private GwtLdapSyncStatus m_ldapSyncStatus;
-	private boolean m_newLdapServer;
 
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -800,9 +799,7 @@ public class EditLdapConfigDlg extends DlgBox
 					public void execute()
 					{
 						if ( doSync )
-						{
-							startLdapSync( false, listOfLdapConfigsToSyncGuid );
-						}
+							init( true, false, listOfLdapConfigsToSyncGuid );
 						else
 							hide();
 					}
@@ -896,9 +893,8 @@ public class EditLdapConfigDlg extends DlgBox
 	 */
 	private String[] getListOfLdapConfigsToSyncGuid( GwtLdapConfig ldapConfig )
 	{
-		String[] listOfLdapConfigIds;
 		ArrayList<GwtLdapConnectionConfig> listOfLdapServers;
-		int count = 0;
+		ArrayList<String> listOfLdapServerUrls;
 		
 		if ( ldapConfig == null )
 			return null;
@@ -907,7 +903,7 @@ public class EditLdapConfigDlg extends DlgBox
 		if ( listOfLdapServers == null || listOfLdapServers.size() == 0 )
 			return null;
 		
-		listOfLdapConfigIds = new String[listOfLdapServers.size()];
+		listOfLdapServerUrls= new ArrayList<String>();
 		
 		for ( GwtLdapConnectionConfig nextLdapServer : listOfLdapServers )
 		{
@@ -935,20 +931,23 @@ public class EditLdapConfigDlg extends DlgBox
 					changed = true;
 				
 				if ( changed )
-				{
-					listOfLdapConfigIds[count] = serverUrl;
-					++count;
-				}
+					listOfLdapServerUrls.add( serverUrl );
 			}
 		}
 		
-		return listOfLdapConfigIds;
+		if ( listOfLdapServerUrls.size() == 0 )
+			return null;
+		
+		return listOfLdapServerUrls.toArray( new String[listOfLdapServerUrls.size()] );
 	}
 	
 	/**
 	 * Issue an rpc request to get the ldap configuration data from the server.
 	 */
-	private void getLdapConfigurationFromServer( final boolean startLdapSync )
+	private void getLdapConfigurationFromServer(
+		final boolean startLdapSync,
+		final boolean syncAll,
+		final String[] listOfLdapConfigsToSyncGuid )
 	{
 		GetLdapConfigCmd cmd;
 		AsyncCallback<VibeRpcResponse> callback;
@@ -991,7 +990,7 @@ public class EditLdapConfigDlg extends DlgBox
 							getLocalesFromServer( ldapConfig );
 							
 							if ( startLdapSync )
-								startLdapSync( true, null );
+								startLdapSync( syncAll, listOfLdapConfigsToSyncGuid );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1162,7 +1161,6 @@ public class EditLdapConfigDlg extends DlgBox
 		Object obj;
 		GwtTeamingMessages messages;
 		boolean startSync = false;
-		String[] listOfLdapConfigsToSyncGuid;
 		GwtLdapConfig ldapConfig;
 		
 		obj = getDataFromDlg();
@@ -1173,53 +1171,24 @@ public class EditLdapConfigDlg extends DlgBox
 		
 		messages = GwtTeaming.getMessages();
 		
-		// Get the list of ldap config ids whose ldap guid attribute changed
-		listOfLdapConfigsToSyncGuid = getListOfLdapConfigsToSyncGuid( ldapConfig );
-		
-		// Did the ldap guid attribute change for any of the ldap servers?
-		if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length > 0 )
-		{
-			startSync = true;
-		}
-		else if ( isDirty() )
+		if ( isDirty() )
 		{
 			// The ldap config is dirty, tell the user the ldap configuration must be saved first.
 			if ( Window.confirm( messages.editLdapConfigDlg_LdapConfigMustBeSaved() ) )
 			{
 				Scheduler.ScheduledCommand cmd;
-					
-				m_newLdapServer = false;
-				
-				// Do we have any ldap servers that were newly added?
-				if ( m_listOfLdapServers != null )
-				{
-					for ( GwtLdapConnectionConfig nextLdapServer : m_listOfLdapServers )
-					{
-						String id;
-						
-						// Does the ldap server config have an id?
-						id = nextLdapServer.getId();
-						if ( id == null || id.length() == 0 )
-						{
-							// No
-							m_newLdapServer = true;
-							break;
-						}
-					}
-				}
+				final String[] listOfLdapConfigsToSyncGuid;
 
+				// Get the list of ldap config ids whose ldap guid attribute changed
+				listOfLdapConfigsToSyncGuid = getListOfLdapConfigsToSyncGuid( ldapConfig );
+					
 				cmd = new ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
-						if ( m_newLdapServer == false )
-							startLdapSync( true, null );
-						else
-						{
-							// Re-read the ldap configuration.
-							init( true );
-						}
+						// Re-read the ldap configuration and then start an ldap sync
+						init( true, true, listOfLdapConfigsToSyncGuid );
 					}
 				};
 
@@ -1231,7 +1200,7 @@ public class EditLdapConfigDlg extends DlgBox
 			startSync = true;
 
 		if ( startSync )
-			startLdapSync( true, listOfLdapConfigsToSyncGuid );
+			startLdapSync( true, null );
 	}
 	
 	/**
@@ -1239,16 +1208,16 @@ public class EditLdapConfigDlg extends DlgBox
 	 */
 	public void init()
 	{
-		init( false );
+		init( false, false, null );
 	}
 	
 	/**
 	 * 
 	 */
-	private void init( boolean startLdapSync )
+	private void init( boolean startLdapSync, boolean syncAll, String[] listOfLdapConfigsToSyncGuid )
 	{
 		// Get the ldap configuration data from the server.
-		getLdapConfigurationFromServer( startLdapSync );
+		getLdapConfigurationFromServer( startLdapSync, syncAll, listOfLdapConfigsToSyncGuid );
 	}
 	
 	/**

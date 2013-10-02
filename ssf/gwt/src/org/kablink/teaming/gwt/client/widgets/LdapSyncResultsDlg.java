@@ -44,8 +44,13 @@ import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults.GwtLdapSyncStatus;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.binderviews.QuickFilter;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.LdapSyncStatusEvent;
+import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDateTimeStrCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLdapSyncResultsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -63,9 +68,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -76,6 +83,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ListDataProvider;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -84,6 +92,8 @@ import com.google.gwt.view.client.ListDataProvider;
  * @author jwootton
  */
 public class LdapSyncResultsDlg extends DlgBox
+	implements
+		QuickFilterEvent.Handler
 {
 	private CellTable<GwtLdapSyncResult> m_ldapSyncResultsTable;
 	private ListDataProvider<GwtLdapSyncResult> m_dataProvider;
@@ -118,7 +128,25 @@ public class LdapSyncResultsDlg extends DlgBox
 	private boolean m_showAddedGroups = true;
 	private boolean m_showModifiedGroups = true;
 	private boolean m_showDeletedGroups = true;
+
+	private QuickFilter m_quickFilter;
+	private String m_currentFilterStr = null;
+
 	private List<GwtLdapConnectionConfig> m_listOfLdapServers;
+
+	private List<HandlerRegistration> m_registeredEventHandlers;
+
+	// LDAP_SYNC_RESULTS_DLG is used to tell the QuickFilter widget who it is dealing with.
+	private static final long LDAP_SYNC_RESULTS_DLG = -301;
+
+	// The following defines the TeamingEvents that are handled by
+	// this class. See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
+	{
+		TeamingEvents.QUICK_FILTER
+	};
+	
 
 	/**
 	 * Callback interface to interact with the "ldap sync results" dialog
@@ -155,46 +183,18 @@ public class LdapSyncResultsDlg extends DlgBox
 		
 		if ( listOfLdapSyncResults == null || listOfLdapSyncResults.size() == 0 )
 			return;
-		
+
 		// Add the results to the table
 		for ( GwtLdapSyncResult nextResult : listOfLdapSyncResults )
 		{
 			boolean addResult;
-			GwtEntityType entityType;
 			
 			// Add the result to our list that holds all the results
 			m_listOfAllLdapSyncResults.add( nextResult );
 			
 			// Only add results that match our filter.
-			entityType = nextResult.getEntityType();
-			addResult = false;
-			switch ( nextResult.getSyncAction() )
-			{
-			case ADDED_ENTITY:
-				if ( entityType == GwtEntityType.USER && m_showAddedUsers )
-					addResult = true;
-				else if ( entityType == GwtEntityType.GROUP && m_showAddedGroups )
-					addResult = true;
+			addResult = doesLdapSyncResultMatchFilter( nextResult );
 				
-				break;
-				
-			case DELETED_ENTITY:
-				if ( entityType == GwtEntityType.USER && m_showDeletedUsers )
-					addResult = true;
-				else if ( entityType == GwtEntityType.GROUP && m_showDeletedGroups )
-					addResult = true;
-				
-				break;
-				
-			case MODIFIED_ENTITY:
-				if ( entityType == GwtEntityType.USER && m_showModifiedUsers )
-					addResult = true;
-				else if ( entityType == GwtEntityType.GROUP && m_showModifiedGroups )
-					addResult = true;
-				
-				break;
-			}
-			
 			if ( addResult )
 			{
 				m_listOfDisplayedLdapSyncResults.add( nextResult );
@@ -372,32 +372,70 @@ public class LdapSyncResultsDlg extends DlgBox
 		
 		// Create a menu
 		{
-			InlineLabel label;
-			
+			FlowPanel mainFilterPanel;
+
 			menuPanel = new FlowPanel();
 			menuPanel.addStyleName( "ldapSyncResultsDlg_MenuPanel" );
 			
-			// Add a "Delete" button.
-			label = new InlineLabel( messages.manageNetFolderServersDlg_DeleteNetFolderServerLabel() );
-			label.addStyleName( "manageNetFolderRootsDlg_Btn" );
-			label.addClickHandler( new ClickHandler()
+			// Add filtering controls
 			{
-				@Override
-				public void onClick( ClickEvent event )
+				FlowPanel qfPanel;
+				
+				mainFilterPanel = new FlowPanel();
+				mainFilterPanel.addStyleName( GwtClientHelper.jsIsIE() ? "displayInline" : "displayInlineBlock" );
+				mainFilterPanel.addStyleName( "ldapSyncResultsDlg_MainFilterPanel" );
+				
+				qfPanel = new FlowPanel();
+				qfPanel.addStyleName( "ldapSyncResultsDlg_QuickFilterPanel" );
+				qfPanel.addStyleName( GwtClientHelper.jsIsIE() ? "displayInline" : "displayInlineBlock" );
+				
+				mainFilterPanel.add( qfPanel );
+				
+				m_quickFilter = new QuickFilter( LDAP_SYNC_RESULTS_DLG );
+				qfPanel.add( m_quickFilter );
+				
+				menuPanel.add( mainFilterPanel );
+			}
+
+			// Add an image the user can click on to invoke the menu items that allows the
+			// user to select which types of ldap sync results they want to see
+			{
+				FlowPanel tmpPanel;
+				final Anchor a;
+				Image filterImg;
+				
+				tmpPanel = new FlowPanel();
+				tmpPanel.addStyleName( GwtClientHelper.jsIsIE() ? "displayInline" : "displayInlineBlock" );
+				
+				a = new Anchor();
+				a.setTitle( messages.ldapSyncResultsDlg_FilterOptionsAlt() );
+				filterImg = new Image( GwtTeaming.getImageBundle().menuButton() );
+				filterImg.addStyleName( "vibe-filterMenuImg" );
+				filterImg.getElement().setAttribute( "align", "absmiddle" );
+				a.getElement().appendChild( filterImg.getElement() );
+				
+				a.addClickHandler( new ClickHandler()
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					@Override
+					public void onClick( ClickEvent event )
 					{
-						@Override
-						public void execute()
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
 						{
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
-			menuPanel.add( label );
+							@Override
+							public void execute()
+							{
+								Window.alert( "Not yet implemented" );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				} );
+
+				tmpPanel.add( a );
+				mainFilterPanel.add( tmpPanel );
+			}
 		}
 		
 		// Create the CellTable that will display the list of ldap sync results.
@@ -510,7 +548,106 @@ public class LdapSyncResultsDlg extends DlgBox
 
 		return mainPanel;
 	}
-	
+
+	/**
+	 * Does the given ldap sync result match our filter?
+	 */
+	private boolean doesLdapSyncResultMatchFilter( GwtLdapSyncResult result )
+	{
+		boolean match;
+		GwtEntityType entityType;
+		GwtTeamingMessages messages;
+		
+		messages = GwtTeaming.getMessages();
+		
+		entityType = result.getEntityType();
+		match = false;
+		switch ( result.getSyncAction() )
+		{
+		case ADDED_ENTITY:
+			if ( entityType == GwtEntityType.USER && m_showAddedUsers )
+				match = true;
+			else if ( entityType == GwtEntityType.GROUP && m_showAddedGroups )
+				match = true;
+			
+			break;
+			
+		case DELETED_ENTITY:
+			if ( entityType == GwtEntityType.USER && m_showDeletedUsers )
+				match = true;
+			else if ( entityType == GwtEntityType.GROUP && m_showDeletedGroups )
+				match = true;
+			
+			break;
+			
+		case MODIFIED_ENTITY:
+			if ( entityType == GwtEntityType.USER && m_showModifiedUsers )
+				match = true;
+			else if ( entityType == GwtEntityType.GROUP && m_showModifiedGroups )
+				match = true;
+			
+			break;
+		}
+		
+		if ( match )
+		{
+			// Do we have a filter string?
+			if ( m_currentFilterStr != null && m_currentFilterStr.length() > 0 )
+			{
+				String name;
+				String type = null;
+				String action = null;
+				String lowerCaseFilter;
+				
+				// Yes
+				match = false;
+			
+				name = result.getEntityName();
+				if ( name != null )
+					name = name.toLowerCase();
+				
+				if ( result.getEntityType() == GwtEntityType.GROUP )
+					type = messages.ldapSyncResultsDlg_GroupType();
+				else if ( result.getEntityType() == GwtEntityType.USER )
+					type = messages.ldapSyncResultsDlg_UserType();
+				
+				if ( type != null )
+					type = type.toLowerCase();
+
+				switch ( result.getSyncAction() )
+				{
+				case ADDED_ENTITY:
+					action = messages.ldapSyncResultsDlg_AddedAction();
+					break;
+					
+				case DELETED_ENTITY:
+					action = messages.ldapSyncResultsDlg_DeletedAction();
+					break;
+					
+				case MODIFIED_ENTITY:
+					action = messages.ldapSyncResultsDlg_ModifiedAction();
+					break;
+					
+				default:
+					break;
+				}
+				
+				if ( action != null )
+					action = action.toLowerCase();
+				
+				// Does the next result match our filter
+				lowerCaseFilter = m_currentFilterStr.toLowerCase();
+				if ( (name != null && name.indexOf( lowerCaseFilter ) != -1) ||
+					 (type != null && type.indexOf( lowerCaseFilter ) != -1) ||
+					 (action != null && action.indexOf( lowerCaseFilter ) != -1) )
+				{
+					match = true;
+				}
+			}
+		}
+		
+		return match;
+	}
 
 	/**
 	 * Get the data from the controls in the dialog box.
@@ -615,6 +752,121 @@ public class LdapSyncResultsDlg extends DlgBox
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 
+	/**
+	 * Called when the dialog is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach()
+	{
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the dialog is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/**
+	 * Handles QuickFilterEvent's received by this class.
+	 * 
+	 * Implements the QuickFilterEvent.Handler.onQuickFilter() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onQuickFilter( QuickFilterEvent event )
+	{
+		// Is this event meant for us?
+		if ( event.getFolderId().equals( LDAP_SYNC_RESULTS_DLG ) )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			// Yes.  Filter the list of ldap sync results.
+			m_currentFilterStr = event.getQuickFilter();
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					// Clear the current list of displayed results.
+					if ( m_listOfDisplayedLdapSyncResults != null )
+						m_listOfDisplayedLdapSyncResults.clear();
+					
+					if ( m_listOfAllLdapSyncResults != null )
+					{
+						for ( GwtLdapSyncResult nextResult : m_listOfAllLdapSyncResults )
+						{
+							boolean addResult;
+							
+							// Only add results that match our filter.
+							addResult = doesLdapSyncResultMatchFilter( nextResult );
+							if ( addResult )
+								m_listOfDisplayedLdapSyncResults.add( nextResult );
+						}
+					}
+					
+					m_dataProvider.refresh();
+
+					// Tell the table how many sync results we have.
+					m_ldapSyncResultsTable.setRowCount( m_listOfDisplayedLdapSyncResults.size(), true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents()
+	{
+		// If we haven't allocated a list to track events we've registered yet...
+		if ( null == m_registeredEventHandlers )
+		{
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if ( m_registeredEventHandlers.isEmpty() )
+		{
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+										GwtTeaming.getEventBus(),
+										m_registeredEvents,
+										this,
+										m_registeredEventHandlers );
+		}
+	}
+
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents()
+	{
+		// If we have a non-empty list of registered events...
+		if ( ( null != m_registeredEventHandlers ) && ( ! ( m_registeredEventHandlers.isEmpty() ) ) )
+		{
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
+		}
+	}
+	
 	/**
 	 * 
 	 */
@@ -721,6 +973,7 @@ public class LdapSyncResultsDlg extends DlgBox
 			m_numDeletedUsers = 0;
 			m_numModifiedGroups = 0;
 			m_numModifiedUsers = 0;
+			
 			updateSyncStatusLabel();
 		}
 		
@@ -769,6 +1022,9 @@ public class LdapSyncResultsDlg extends DlgBox
 	{
 		String statusTxt;
 		GwtTeamingMessages messages;
+		
+		if ( m_syncStatus == null )
+			return;
 		
 		messages = GwtTeaming.getMessages();
 		
