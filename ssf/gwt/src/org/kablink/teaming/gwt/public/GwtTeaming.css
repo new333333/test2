@@ -5749,4 +5749,11 @@ td.datePickerMonth {
 
 /* End */
  
+/* Start:  Prompt dialog styles. */
+	.vibe-promptDlg_Grid       {}
+	.vibe-promptDlg_NameInput  {width: 250px;}
+	.vibe-promptDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-promptDlg_Panel      {padding: 10px;}
+/* End:  Prompt dialog styles. */
+
 /* End Of File */

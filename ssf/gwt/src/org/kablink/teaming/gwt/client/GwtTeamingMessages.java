@@ -707,6 +707,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ProjectInfoWidget();
 	String codeSplitFailure_ProjectStatsWidget();
 	String codeSplitFailure_ProjectManagementWSView();
+	String codeSplitFailure_PromptDlg();
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_RenameEntityDlg();
 	String codeSplitFailure_RunAReportDlg();
@@ -2973,5 +2974,8 @@ public interface GwtTeamingMessages extends Messages
 	String ldapSyncResultsDlg_SyncStatus_SyncAlreadyInProgress();
 	String ldapSyncResultsDlg_TypeCol();
 	String ldapSyncResultsDlg_UserType();
+
+	// Strings used by PromptDlg.
+	String promptDlgHeader();
 	
 }// end GwtTeamingMessages
