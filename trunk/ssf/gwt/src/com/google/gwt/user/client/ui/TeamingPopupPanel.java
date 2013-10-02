@@ -94,17 +94,20 @@ public class TeamingPopupPanel extends PopupPanel {
 		    if (0 != (type & Event.MOUSEEVENTS)) {
 				// Yes!  Is it targeted to the root <HTML>?
 			    EventTarget target = event.getEventTarget();
-			    Element element = Element.as(target);
-				String tagName = element.getTagName();
-				if (tagName.equalsIgnoreCase("html")) {
-					// Yes!  Then we don't want the PopupPanel to have it.
-					// On FF, if it gets it, it won't let the user scroll
-					// by clicking on the scroll bar.
-					nativeEvent.consume();
-					nativeEvent.cancel();
-					
-					return;
-				}
+			    if ( target != null )
+			    {
+				    Element element = Element.as(target);
+					String tagName = element.getTagName();
+					if (tagName.equalsIgnoreCase("html")) {
+						// Yes!  Then we don't want the PopupPanel to have it.
+						// On FF, if it gets it, it won't let the user scroll
+						// by clicking on the scroll bar.
+						nativeEvent.consume();
+						nativeEvent.cancel();
+						
+						return;
+					}
+			    }
 		    }
 		}
 		

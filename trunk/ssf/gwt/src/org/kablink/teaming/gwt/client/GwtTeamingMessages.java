@@ -2955,6 +2955,7 @@ public interface GwtTeamingMessages extends Messages
 	String ldapSyncResultsDlg_DeletedAction();
 	String ldapSyncResultsDlg_DeletedGroupsLabel();
 	String ldapSyncResultsDlg_DeletedUsersLabel();
+	String ldapSyncResultsDlg_FilterOptionsAlt();
 	String ldapSyncResultsDlg_GroupType();
 	String ldapSyncResultsDlg_Header();
 	String ldapSyncResultsDlg_ModifiedAction();
