@@ -834,16 +834,16 @@ public interface ProfileModule {
     public void    setUserWorkspacePreDeleted(Long userId, boolean userWorkspacePreDeleted);
 
     /**
-     * Interacts with a user's download enabled flag.
+     * Interacts with a user or group's download enabled flag.
      */
-    public Boolean getDownloadEnabled(Long userId);
-    public void    setDownloadEnabled(Long userId, Boolean downloadEnabled);
+    public Boolean getDownloadEnabled(Long upId);
+    public void    setDownloadEnabled(Long upId, Boolean downloadEnabled);
 
     /**
-     * Interacts with a user's web access enabled flag.
+     * Interacts with a user or group's web access enabled flag.
      */
-    public Boolean getWebAccessEnabled(Long userId);
-    public void    setWebAccessEnabled(Long userId, Boolean webAccessEnabled);
+    public Boolean getWebAccessEnabled(Long upId);
+    public void    setWebAccessEnabled(Long upId, Boolean webAccessEnabled);
 
     /**
      * Returns a Collection<User> of all the external user's the

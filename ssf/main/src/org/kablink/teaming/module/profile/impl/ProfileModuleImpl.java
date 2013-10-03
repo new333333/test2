@@ -424,6 +424,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private User getUser(Long userId, boolean modify) {
 		return getUser(userId, modify, true);
 	}
+	private UserPrincipal getUserPrincipal(Long prinId, boolean modify, boolean checkActive) {
+   		UserPrincipal up = getProfileDao().loadUserPrincipal(prinId, RequestContextHolder.getRequestContext().getZoneId(), checkActive);
+  		User currentUser = RequestContextHolder.getRequestContext().getUser();
+  		if (!(currentUser.getId().equals(up.getId()))) {
+			if (modify)
+			     AccessUtils.modifyCheck(up);
+			else AccessUtils.readCheck(  up);
+  		}
+		return up;		
+	}
 	private UserProperties getProperties(User user, Long binderId) {
 		UserProperties uProps=null;
 		if (user.isShared()) { //better be the current user
@@ -2583,53 +2593,53 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     }
 
     /**
-     * Returns a User's download enabled flag.
+     * Returns a user or group's download enabled flag.
      * 
-     * @param userId
+     * @param upId
      */
     //RO transaction
     @Override
-    public Boolean getDownloadEnabled(Long userId) {
-   		User user = getUser(userId, true, false);
-		return user.isDownloadEnabled();
+    public Boolean getDownloadEnabled(Long upId) {
+   		UserPrincipal up = getUserPrincipal(upId, true, false);
+		return up.isDownloadEnabled();
     }
     
     /**
-     * Sets a User's downloadEnabled flag.
+     * Sets a user or group's downloadEnabled flag.
      * 
-     * @param userId
+     * @param upId
      * @param downloadEnabled
      */
     //RW transaction
     @Override
-    public void setDownloadEnabled(Long userId, Boolean downloadEnabled) {
-   		User user = getUser(userId, true, false);
-		user.setDownloadEnabled(downloadEnabled);
+    public void setDownloadEnabled(Long upId, Boolean downloadEnabled) {
+   		UserPrincipal up = getUserPrincipal(upId, true, false);
+		up.setDownloadEnabled(downloadEnabled);
     }
 
     /**
-     * Returns a User's web access enabled flag.
+     * Returns a user or group's web access enabled flag.
      * 
-     * @param userId
+     * @param upId
      */
     //RO transaction
     @Override
-    public Boolean getWebAccessEnabled(Long userId) {
-   		User user = getUser(userId, true, false);
-		return user.isWebAccessEnabled();
+    public Boolean getWebAccessEnabled(Long upId) {
+   		UserPrincipal up = getUserPrincipal(upId, true, false);
+		return up.isWebAccessEnabled();
     }
     
     /**
-     * Sets a User's downloadEnabled flag.
+     * Sets a user or group's web access enabled flag.
      * 
-     * @param userId
+     * @param upId
      * @param webAccessEnabled
      */
     //RW transaction
     @Override
-    public void setWebAccessEnabled(Long userId, Boolean webAccessEnabled) {
-   		User user = getUser(userId, true, false);
-		user.setWebAccessEnabled(webAccessEnabled);
+    public void setWebAccessEnabled(Long upId, Boolean webAccessEnabled) {
+   		UserPrincipal up = getUserPrincipal(upId, true, false);
+		up.setWebAccessEnabled(webAccessEnabled);
     }
 
     /**

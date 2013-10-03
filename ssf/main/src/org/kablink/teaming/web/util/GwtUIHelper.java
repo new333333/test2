@@ -846,15 +846,16 @@ public class GwtUIHelper {
 	}
 	
 	/**
-	 * Return the 'Download' setting from the given user's properties.
+	 * Return the 'Download' setting from the given user or group
+	 * (i.e., UserPrincipal object.)
 	 * 
 	 * @param bs
-	 * @param userId
+	 * @param upId
 	 * 
 	 * @return
 	 */
-	public static Boolean getDownloadSettingFromUser(AllModulesInjected bs, Long userId) {
-		return SearchUtils.getDownloadSettingFromUser(bs, userId);
+	public static Boolean getDownloadSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
+		return SearchUtils.getDownloadSettingFromUserOrGroup(bs, upId);
 	}
 
 	/**
@@ -1173,15 +1174,16 @@ public class GwtUIHelper {
 	}
 
 	/**
-	 * Return the 'WebAccess' setting from the given user's properties.
+	 * Return the 'WebAccess' setting from the given user or group
+	 * (i.e., UserPrincipal object.)
 	 * 
 	 * @param bs
-	 * @param userId
+	 * @param upId
 	 * 
 	 * @return
 	 */
-	public static Boolean getWebAccessSettingFromUser(AllModulesInjected bs, Long userId) {
-		return SearchUtils.getWebAccessSettingFromUser(bs, userId);
+	public static Boolean getWebAccessSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
+		return SearchUtils.getWebAccessSettingFromUserOrGroup(bs, upId);
 	}
 
 	/**

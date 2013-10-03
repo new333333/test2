@@ -1232,11 +1232,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_DOWNLOAD_SETTING:
 		{
 			GetDownloadSettingCmd gdsCmd = ((GetDownloadSettingCmd) cmd);
-			Long                  userId = gdsCmd.getUserId();
+			Long                  upId   = gdsCmd.getUserPrincipalId();
 			Boolean               result;
-			if (null != userId)
-			     result = GwtUIHelper.getDownloadSettingFromUser( this, userId );
-			else result = GwtUIHelper.getDownloadSettingFromZone( this         );
+			if (null != upId)
+			     result = GwtUIHelper.getDownloadSettingFromUserOrGroup( this, upId );
+			else result = GwtUIHelper.getDownloadSettingFromZone(        this       );
 			if (null == result) {
 				result = Boolean.FALSE;
 			}
@@ -2535,11 +2535,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_WEBACCESS_SETTING:
 		{
 			GetWebAccessSettingCmd gwasCmd = ((GetWebAccessSettingCmd) cmd);
-			Long                   userId  = gwasCmd.getUserId();
+			Long                   upId    = gwasCmd.getUserPrincipalId();
 			Boolean                result;
-			if (null != userId)
-			     result = GwtUIHelper.getWebAccessSettingFromUser( this, userId );
-			else result = GwtUIHelper.getWebAccessSettingFromZone( this         );
+			if (null != upId)
+			     result = GwtUIHelper.getWebAccessSettingFromUserOrGroup( this, upId );
+			else result = GwtUIHelper.getWebAccessSettingFromZone(        this       );
 			if (null == result) {
 				result = Boolean.FALSE;
 			}

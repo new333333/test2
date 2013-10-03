@@ -1422,7 +1422,9 @@ public class SearchUtils {
 	/**
 	 * Return the effective 'Download' setting for the given user.
 	 * We will look in the User object first for a value.  If one
-	 * is not found we will get the setting from the zone.
+	 * is not found we will or the settings from the groups the user
+	 * is a member of.  If one is still not found, we'll get the
+	 * setting from the zone.
 	 * 
 	 * @param bs
 	 * @param user
@@ -1433,9 +1435,15 @@ public class SearchUtils {
 		Boolean result;
 		if (Utils.checkIfFilr()) {
 			// ! Check the user's setting.  
-			if (null !=  user)
-			     result = getDownloadSettingFromUser(bs, user.getId());
-			else result = null;
+			if (null !=  user) {
+			     result = getDownloadSettingFromUserOrGroup(bs, user.getId());
+			     if (null == result) {
+//!					...this needs to be implemented...
+			     }
+			}
+			else {
+				result = null;
+			}
 		
 			// Did we find a setting for the user?
 			if (null == result) {
@@ -1456,7 +1464,9 @@ public class SearchUtils {
 	/**
 	 * Return the effective 'WebAccess' setting for the given user.
 	 * We will look in the User object first for a value.  If one
-	 * is not found we will get the setting from the zone.
+	 * is not found we will or the settings from the groups the user
+	 * is a member of.  If one is still not found, we'll get the
+	 * setting from the zone.
 	 * 
 	 * @param am
 	 * @param pm
@@ -1468,9 +1478,15 @@ public class SearchUtils {
 		// ! Check the user's setting.  
 		Boolean result;
 		if (null !=  user) {
-			if (user.isSuper())
-			     result = Boolean.TRUE;	// Admin is ALWAYS allowed to use the WebAccess client.
-			else result = getWebAccessSettingFromUser(pm, user.getId());
+			if (user.isSuper()) {
+				result = Boolean.TRUE;	// Admin is ALWAYS allowed to use the WebAccess client.
+			}
+			else {
+				result = getWebAccessSettingFromUserOrGroup(pm, user.getId());
+				if (null == result) {
+//!					...this needs to be implemented...
+				}
+			}
 		}
 		else {
 			result = null;
@@ -1524,21 +1540,22 @@ public class SearchUtils {
 	}
 
 	/**
-	 * Return the 'download' setting from the given User object.
+	 * Return the 'download' setting from the given user or group
+	 * (i.e., a UserPrinciapl object.)
 	 * 
 	 * @param bs
-	 * @param userId
+	 * @param upId
 	 * 
 	 * @return
 	 */
-	public static Boolean getDownloadSettingFromUser(AllModulesInjected bs, Long userId) {
+	public static Boolean getDownloadSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
 		Boolean reply;
 		if (Utils.checkIfFilr()) {
 			// If we have a user ID...
-			if (null != userId) {
+			if (null != upId) {
 				// ...read the 'download' setting from the
-				// ...User object...
-				return bs.getProfileModule().getDownloadEnabled(userId);
+				// ...UserPrincipal object...
+				return bs.getProfileModule().getDownloadEnabled(upId);
 			}
 			reply = null;
 		}
@@ -1549,26 +1566,27 @@ public class SearchUtils {
 	}
 
 	/**
-	 * Return the 'web access' setting from the given User object.
+	 * Return the 'web access' setting from the given user or group
+	 * (i.e., UserPrincipal object.)
 	 * 
 	 * @param pm
-	 * @param userId
+	 * @param upId
 	 * 
 	 * @return
 	 */
-	public static Boolean getWebAccessSettingFromUser(ProfileModule pm, Long userId) {
+	public static Boolean getWebAccessSettingFromUserOrGroup(ProfileModule pm, Long upId) {
 		// If we have a user ID...
-		if (null != userId) {
+		if (null != upId) {
 			// ...read the 'web access' setting from the
-			// ...User object...
-			return pm.getWebAccessEnabled(userId);
+			// ...UserPrincipal object...
+			return pm.getWebAccessEnabled(upId);
 		}
 		return null;
 	}
 	
-	public static Boolean getWebAccessSettingFromUser(AllModulesInjected bs, Long userId) {
+	public static Boolean getWebAccessSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
 		// Always use the initial form of the method.
-		return getWebAccessSettingFromUser(bs.getProfileModule(), userId);
+		return getWebAccessSettingFromUserOrGroup(bs.getProfileModule(), upId);
 	}
 
 	/**
