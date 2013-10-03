@@ -41,12 +41,17 @@
 <%@ page import="org.kablink.teaming.util.IconSize" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 
 <%
 boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 isFilr = false;		//I turned off the way Filr sorted its hits. (pmh)
 					//This caused the pages to have fewer than 10 hits per page
 					//Customers complained this was confusing. See bug #804179
+
+boolean isIECheck = BrowserSniffer.is_ie(request);
+String strBrowserType = "";
+if (isIECheck) strBrowserType = "ie";
 %>
 
 <c:if test="${empty ss_namespace}">
@@ -86,7 +91,17 @@ isFilr = false;		//I turned off the way Filr sorted its hits. (pmh)
 		    <c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].pathName}">
 		    	<c:set var="entryBinderPathName" value="${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].pathName}"/>
 		    </c:if>
-		
+			<c:set var="supportsViewAsHtml" value="0"/>
+			<ssf:ifSupportsViewAsHtml relativeFilePath="${entry._fileName}" browserType="<%=strBrowserType%>">
+			  <c:set var="supportsViewAsHtml" value="1"/>
+			</ssf:ifSupportsViewAsHtml>
+			<c:set var="fileLinkAction" value="VIEW_DETAILS"/>
+			<c:if test="${ssEffectiveFileLinkAction == 'DOWNLOAD' || ssEffectiveFileLinkAction == 'VIEW_HTML_ELSE_DOWNLOAD'}">
+			  <c:set var="fileLinkAction" value="DOWNLOAD"/>
+			</c:if>
+			<c:if test="${supportsViewAsHtml == 1 && (ssEffectiveFileLinkAction == 'VIEW_HTML_ELSE_DOWNLOAD' || ssEffectiveFileLinkAction == 'VIEW_HTML_ELSE_DETAILS')}">
+			  <c:set var="fileLinkAction" value="HTML"/>
+			</c:if>
 			
 			<jsp:useBean id="isDashboard" type="java.lang.String" />
 			
@@ -382,19 +397,54 @@ isFilr = false;		//I turned off the way Filr sorted its hits. (pmh)
 							<div class="ss_entry">
 								<div class="ss_entryHeader ss_search_hit">
 									<div class="ss_entryTitleSearchResults">
+										<c:if test="${fileLinkAction == 'VIEW_DETAILS' }">
+											<ssf:titleLink 
+												entryId="${entry._docId}" binderId="${entry._binderId}" 
+												entityType="${entry._entityType}"  
+												namespace="${ss_namespace}" 
+												isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="no">
+												
+											<ssf:param name="url" useBody="true">
+											    <ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+												action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+											</ssf:param>
+												
+										    	<c:out value="${entry._fileName}"/>
+											</ssf:titleLink>
+										</c:if>
+										<c:if test="${fileLinkAction == 'DOWNLOAD' }">
 											<ssf:titleLink 
 												entryId="${entry._docId}" binderId="${entry._binderId}" 
 												entityType="${entry._entityType}"  
 												namespace="${ss_namespace}" 
 												isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
-												
-											<ssf:param name="url" useBody="true">
+											<ssf:param name="url" useBody="true">	
 												<ssf:fileUrl search="${entry}"/>
 											</ssf:param>
-												
 										    	<c:out value="${entry._fileName}"/>
 											</ssf:titleLink>
-											
+										</c:if>
+										<c:if test="${fileLinkAction == 'HTML'}">
+											<ssf:titleLink 
+												entryId="${entry._docId}" binderId="${entry._binderId}" 
+												entityType="${entry._entityType}"  
+												namespace="${ss_namespace}" 
+												isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
+											<ssf:param name="url" useBody="true">	
+												<ssf:url 
+												webPath="viewFile"
+											    folderId="${entry._binderId}"
+											    entryId="${entry._docId}" >
+												<ssf:param name="entityType" value="${entry._entityType}"/>
+											    <ssf:param name="fileId" value="${entry._fileID}"/>
+											    <ssf:param name="fileTime" value="${entry._fileTime}"/>
+											    <ssf:param name="viewType" value="html"/>
+											    </ssf:url>
+											</ssf:param>
+										    	<c:out value="${entry._fileName}"/>
+											</ssf:titleLink>
+										  </c:if>
+
 									</div>
 									<div class="ss_clear">&nbsp;</div>
 								</div>

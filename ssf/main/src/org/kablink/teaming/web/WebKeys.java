@@ -920,6 +920,7 @@ public class WebKeys {
     public static final String DIV_ID="ss_divId";
     public static final String DOM_TREE="ssDomTree";
     public static final String DOWNLOAD_URL="ssDownloadURL";
+    public static final String EFFECTIVE_FILE_LINK_ACTION="ssEffectiveFileLinkAction";
     public static final String ERROR_INDEXING_COUNT="ssErrorIndexingCount";
     public static final String ERROR_INDEXING_BINDERS="ssErrorIndexingBinders";
     public static final String ERROR_INDEXING_ENTRIES="ssErrorIndexingEntries";
