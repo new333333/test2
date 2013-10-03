@@ -39,7 +39,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * @author drfoster@novell.com
  */
 public class GetWebAccessSettingCmd extends VibeRpcCmd {
-	private Long	m_userId;	//
+	private Long	m_upId;	//
 	
 	/**
 	 * Constructor method.
@@ -54,14 +54,14 @@ public class GetWebAccessSettingCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 *
-	 * @param userId
+	 * @param upId
 	 */
-	public GetWebAccessSettingCmd(Long userId) {
+	public GetWebAccessSettingCmd(Long upId) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameter.
-		setUserId(userId);
+		setUserPrincipalId(upId);
 	}
 	
 	/**
@@ -69,14 +69,14 @@ public class GetWebAccessSettingCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public Long getUserId() {return m_userId;}
+	public Long getUserPrincipalId() {return m_upId;}
 	
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param userId
+	 * @param upId
 	 */
-	public void setUserId(Long userId) {m_userId = userId;}
+	public void setUserPrincipalId(Long upId) {m_upId = upId;}
 	
 	/**
 	 * Returns the command's enumeration value.

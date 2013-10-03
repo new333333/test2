@@ -141,8 +141,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Long extProvSeed; // applicable only to external users 
     
 	protected Boolean workspacePreDeleted;
-	protected Boolean downloadEnabled;
-	protected Boolean webAccessEnabled;
 	
     private static Random random = new Random(System.currentTimeMillis());
     
@@ -668,27 +666,5 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     }
     public void setWorkspacePreDeleted(Boolean workspacePreDeleted) {
     	this.workspacePreDeleted = workspacePreDeleted;
-    }
-    
-    /**
-     * @hibernate.property
-     * @return
-     */
-    public Boolean isDownloadEnabled() {
-    	return downloadEnabled;
-    }
-    public void setDownloadEnabled(Boolean downloadEnabled) {
-    	this.downloadEnabled = downloadEnabled;
-    }
-    
-    /**
-     * @hibernate.property
-     * @return
-     */
-    public Boolean isWebAccessEnabled() {
-    	return webAccessEnabled;
-    }
-    public void setWebAccessEnabled(Boolean webAccessEnabled) {
-    	this.webAccessEnabled = webAccessEnabled;
     }
 }
