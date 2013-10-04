@@ -10712,30 +10712,26 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Save the 'AdHoc folder' setting.  If userId is not null saves
-	 * the value in the user's properties.  Otherwise, saves the
-	 * setting in the zone.
+	 * Save the 'AdHoc folder' setting.  If upId is not null saves
+	 * the value in the user or group.  Otherwise, saves the setting in
+	 * the zone.
 	 * 
 	 * @param bs
-	 * @param userId
+	 * @param upId
 	 * @param allowAdHoc
 	 * @param errList
 	 * 
 	 * @return
 	 */
-	public static Boolean saveAdhocFolderSetting(AllModulesInjected bs, Long userId, Boolean allowAdHoc, ErrorListRpcResponseData errList) {
-		// Are we dealing with a user?
-		if (null != userId) {
-			// Yes!  Save the setting to their properties.
-			User user = ((User) bs.getProfileModule().getEntry(userId));
-			if (user.getIdentityInfo().isFromLdap()) {
+	public static Boolean saveAdhocFolderSetting(AllModulesInjected bs, Long upId, Boolean allowAdHoc, ErrorListRpcResponseData errList) {
+		// Are we dealing with a user or group?
+		if (null != upId) {
+			// Yes!  Save the setting to their UserPrincipal object.
+			Principal p    = bs.getProfileModule().getEntry(upId);
+			User      user = ((p instanceof User) ? ((User) p) : null);
+			if ((null == user) || user.getIdentityInfo().isFromLdap()) {
 				// We don't allow this to be set for non-LDAP users.
-				bs.getProfileModule().setUserProperty(
-					userId,
-					ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS,
-					((null == allowAdHoc) ?
-						null              :				//     null -> Remove the setting and revert to the zone's setting.
-						String.valueOf(allowAdHoc)));	// non-null -> Specific value to set.
+				bs.getProfileModule().setAdHocFoldersEnabled(upId, allowAdHoc);
 			}
 			else if (null != errList) {
 				errList.addError(NLT.get("saveAdHocFolderSetting.invalidUser", new String[]{user.getTitle()}));
@@ -10753,9 +10749,9 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 	
-	public static Boolean saveAdhocFolderSetting(AllModulesInjected bs, Long userId, Boolean allow) {
+	public static Boolean saveAdhocFolderSetting(AllModulesInjected bs, Long upId, Boolean allow) {
 		// Always use the initial form of the method.
-		return saveAdhocFolderSetting(bs, userId, allow, null);
+		return saveAdhocFolderSetting(bs, upId, allow, null);
 	}
 	
 	/**

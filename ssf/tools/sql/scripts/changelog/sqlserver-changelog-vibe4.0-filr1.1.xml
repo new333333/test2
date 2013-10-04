@@ -294,4 +294,13 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="dennis" context="schema" failOnError="true" id="21">
+        <comment>Enable Personal Storage folders in a user's personal workspace</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="allowAdhocFolders" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

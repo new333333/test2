@@ -538,7 +538,7 @@ public interface ObjectKeys {
     public static final String USER_DISPLAY_STYLE_NEWPAGE = "newpage";
     public static final String USER_DISPLAY_STYLE_POPUP = "popup";
     public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
-    public static final String USER_PROPERTY_ALLOW_ADHOC_FOLDERS = "allowAdhocFolders";
+    public static final String USER_PROPERTY_ALLOW_ADHOC_FOLDERS_DEPRECATED = "allowAdhocFolders";	// Moved into the database in Filr 1.1.
     public static final String USER_PROPERTY_CALENDAR_VIEWMODE = "calendarViewMode";
     public static final String USER_PROPERTY_DASHBOARD_GLOBAL = "dashboard_global";
     public static final String USER_PROPERTY_DASHBOARD_SHOW_ALL = "dashboard_show_all";

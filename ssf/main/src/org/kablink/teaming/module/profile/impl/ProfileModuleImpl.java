@@ -2643,6 +2643,31 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     }
 
     /**
+     * Returns a user or group's adHoc folders flag.
+     * 
+     * @param upId
+     */
+    //RO transaction
+    @Override
+    public Boolean getAdHocFoldersEnabled(Long upId) {
+   		UserPrincipal up = getUserPrincipal(upId, true, false);
+		return up.isAdHocFoldersEnabled();
+    }
+    
+    /**
+     * Sets a user or group's web access enabled flag.
+     * 
+     * @param upId
+     * @param aAdHocFoldersEnabled
+     */
+    //RW transaction
+    @Override
+    public void setAdHocFoldersEnabled(Long upId, Boolean adHocFoldersEnabled) {
+   		UserPrincipal up = getUserPrincipal(upId, true, false);
+		up.setAdHocFoldersEnabled(adHocFoldersEnabled);
+    }
+
+    /**
      * Returns a Collection<User> of all the external user's the
      * current user has rights to see.
      * 

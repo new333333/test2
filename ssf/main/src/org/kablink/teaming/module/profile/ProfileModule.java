@@ -846,6 +846,12 @@ public interface ProfileModule {
     public void    setWebAccessEnabled(Long upId, Boolean webAccessEnabled);
 
     /**
+     * Interacts with a user or group's adHoc folders enabled flag.
+     */
+    public Boolean getAdHocFoldersEnabled(Long upId);
+    public void    setAdHocFoldersEnabled(Long upId, Boolean adHocFoldersEnabled);
+
+    /**
      * Returns a Collection<User> of all the external user's the
      * current user has rights to see.
      * 
