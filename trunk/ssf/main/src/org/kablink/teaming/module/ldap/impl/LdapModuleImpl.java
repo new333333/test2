@@ -784,7 +784,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			return null;
 		
 		attributeName = homeDirConfig.getAttributeName();
-		attributeName = "fullName";
 		if ( attributeName == null || attributeName.length() == 0 )
 		{
 			if ( logErrors )
