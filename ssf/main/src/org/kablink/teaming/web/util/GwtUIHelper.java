@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -51,11 +52,14 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -71,6 +75,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -960,6 +965,37 @@ public class GwtUIHelper {
 		return getEntrySafely2(fm, Long.parseLong(binderId), Long.parseLong(entryId));
 	}
 		
+	/**
+	 * Returns information about the groups of a specific user.
+	 * 
+	 * @param bs
+	 * @param userId 
+	 * 
+	 * @return
+	 */
+	public static List<Group> getGroups(Principal p) {
+		ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
+	    Set<Long> groupIds = profileDao.getApplicationLevelPrincipalIds(p);
+	    groupIds.remove(p.getId());
+		return profileDao.loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<Group> getGroups(Long userId) {
+		// Scan the groups the current user is a member of...
+		List<Group> reply;
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		List users = ResolveIds.getPrincipals(userIds, true);
+		if (MiscUtil.hasItems(users))
+		     reply = getGroups((Principal) users.get(0));
+		else reply = new ArrayList<Group>();
+		
+		// If we get here, reply refers to the List<Group> of the
+		// groups the user is a member of.  Return it.
+		return reply;
+	}
+	
 	/**
 	 * Returns an Integer based value from an options Map.  If a value
 	 * for key isn't found, defInt is returned.

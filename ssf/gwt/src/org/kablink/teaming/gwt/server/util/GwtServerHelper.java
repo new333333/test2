@@ -7185,19 +7185,13 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static List<GroupInfo> getGroups(HttpServletRequest request, AllModulesInjected bs, Long userId) {
-		// Allocate an ArrayList<GroupInfo> to hold the groups.
-		ArrayList<GroupInfo> reply = new ArrayList<GroupInfo>();
+		// Allocate an List<GroupInfo> to hold the groups.
+		List<GroupInfo> reply = new ArrayList<GroupInfo>();
 		
-		// Scan the groups the current user is a member of...
-		ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		List users = ResolveIds.getPrincipals(userIds, true);
-		if (!users.isEmpty()) {
-			Principal p = (Principal)users.get(0);
-		    Set<Long> groupIds = profileDao.getApplicationLevelPrincipalIds(p);
-		    groupIds.remove(userId);
-			List<Group> groups = profileDao.loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
+		// Is the user a member of any groups?
+		List<Group> groups = GwtUIHelper.getGroups(userId);
+		if (MiscUtil.hasItems(groups)) {
+			// Yes!  Scan them...
 			for (Group myGroup : groups) {
 				// ...adding a GroupInfo for each to the reply list.
 				GroupInfo gi = new GroupInfo();
@@ -7213,8 +7207,8 @@ public class GwtServerHelper {
 			Collections.sort(reply, new GroupInfoComparator());
 		}
 		
-		// If we get here, reply refers to the ArrayList<GroupInfo> of
-		// the groups the current user is a member of.  Return it.
+		// If we get here, reply refers to a List<GroupInfo> of the
+		// groups the user is a member of.  Return it.
 		return reply;
 	}
 	
