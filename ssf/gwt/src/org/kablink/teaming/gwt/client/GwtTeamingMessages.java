@@ -2966,6 +2966,12 @@ public interface GwtTeamingMessages extends Messages
 	String ldapSyncResultsDlg_NoLdapSyncResults();
 	String ldapSyncResultsDlg_RequestingLdapSyncResults();
 	String ldapSyncResultsDlg_ServerLabel();
+	String ldapSyncResultsDlg_ShowAddedGroupsCB();
+	String ldapSyncResultsDlg_ShowAddedUsersCB();
+	String ldapSyncResultsDlg_ShowDeletedGroupsCB();
+	String ldapSyncResultsDlg_ShowDeletedUsersCB();
+	String ldapSyncResultsDlg_ShowModifiedGroupsCB();
+	String ldapSyncResultsDlg_ShowModifiedUsersCB();
 	String ldapSyncResultsDlg_SyncStatusLabel();
 	String ldapSyncResultsDlg_SyncStatus_Completed();
 	String ldapSyncResultsDlg_SyncStatus_Error();

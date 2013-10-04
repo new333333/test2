@@ -874,7 +874,7 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Configure Jits" dialog.
 			InvokeJitsZoneConfigDlgEvent.fireOne();
 		}
-		else if ( adminAction.getActionType() == AdminAction.LDAP_CONFIG && Window.confirm( "Show new ldap dialog?" ) )
+		else if ( adminAction.getActionType() == AdminAction.LDAP_CONFIG )
 		{
 			// Fire the event to invoke the "Edit ldap configuration" dialog.
 			InvokeEditLdapConfigDlgEvent.fireOne();

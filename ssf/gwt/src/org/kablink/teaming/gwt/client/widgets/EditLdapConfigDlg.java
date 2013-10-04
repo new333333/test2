@@ -43,6 +43,7 @@ import java.util.TreeMap;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
+import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults.GwtLdapSyncStatus;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -60,6 +61,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetTimeZonesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveLdapConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveLdapConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StartLdapSyncCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StartLdapSyncRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
@@ -1811,9 +1813,28 @@ public class EditLdapConfigDlg extends DlgBox
 			public void onSuccess( VibeRpcResponse response )
 			{
 				if ( response.getResponseData() != null &&
-					 response.getResponseData() instanceof SaveLdapConfigRpcResponseData )
+					 response.getResponseData() instanceof StartLdapSyncRpcResponseData )
 				{
-					//!!! Finish
+					StartLdapSyncRpcResponseData responseData;
+					GwtLdapSyncResults ldapSyncResults;
+
+					responseData = (StartLdapSyncRpcResponseData) response.getResponseData();
+					ldapSyncResults = responseData.getLdapSyncResults();
+					if ( ldapSyncResults != null )
+					{
+						GwtLdapSyncStatus status;
+						
+						status = ldapSyncResults.getSyncStatus();
+	
+						if ( status != null )
+						{
+							LdapSyncStatusEvent event;
+
+							// Fire an event that lets everyone know the sync completed.
+							event = new LdapSyncStatusEvent( status );
+							GwtTeaming.fireEvent( event );
+						}
+					}
 				}
 			}
 		}; 

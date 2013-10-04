@@ -2989,6 +2989,11 @@ body, table td, select
 }
 
 /* Styles for buttons */
+.teamingSmallButton
+{
+	font-size: 8px;
+}
+
 .teamingButton
 {
 	margin-left: 0.5em;
@@ -5746,6 +5751,29 @@ td.datePickerMonth {
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;	
 }
+
+.ldapSyncResultsDlg_FilterPopup
+{
+	font-size: 14px;
+	background-color: #fafad5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: 5px 10px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	z-index: 1100;
+}
+
+.ldapSyncResultsDlg_closeFilterPopupImg
+{
+	cursor: pointer;
+	position: absolute;
+	right: 10px;
+	top: 5px;
+}
+
 
 /* End */
  
