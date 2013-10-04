@@ -91,6 +91,75 @@ public class GwtLdapHelper
 	}
 
 	/**
+	 * 
+	 */
+	private static void copyLdapSyncResults( GwtLdapSyncResults gwtLdapSyncResults, LdapSyncResults ldapSyncResults )
+	{
+		PartialLdapSyncResults partialSyncResults;
+
+		partialSyncResults = ldapSyncResults.getAddedGroups();
+		gwtLdapSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.ADDED_ENTITY,
+									GwtEntityType.GROUP,
+									partialSyncResults.getResults() );
+		
+		partialSyncResults = ldapSyncResults.getAddedUsers();
+		gwtLdapSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.ADDED_ENTITY,
+									GwtEntityType.USER,
+									partialSyncResults.getResults() );
+		
+		partialSyncResults = ldapSyncResults.getDeletedGroups();
+		gwtLdapSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.DELETED_ENTITY,
+									GwtEntityType.GROUP,
+									partialSyncResults.getResults() );
+		
+		partialSyncResults = ldapSyncResults.getDeletedUsers();
+		gwtLdapSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.DELETED_ENTITY,
+									GwtEntityType.USER,
+									partialSyncResults.getResults() );
+		
+		partialSyncResults = ldapSyncResults.getModifiedGroups();
+		gwtLdapSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.MODIFIED_ENTITY,
+									GwtEntityType.GROUP,
+									partialSyncResults.getResults() );
+		
+		partialSyncResults = ldapSyncResults.getModifiedUsers();
+		gwtLdapSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.MODIFIED_ENTITY,
+									GwtEntityType.USER,
+									partialSyncResults.getResults() );
+		
+		switch ( ldapSyncResults.getStatus() )
+		{
+		case STATUS_ABORTED_BY_ERROR:
+			gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_ABORTED_BY_ERROR );
+			gwtLdapSyncResults.setErrorDesc( ldapSyncResults.getErrorDesc() );
+			gwtLdapSyncResults.setErrorLdapServerId( ldapSyncResults.getErrorLdapConfigId() );
+			break;
+			
+		case STATUS_COLLECT_RESULTS:
+			gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
+			break;
+			
+		case STATUS_COMPLETED:
+			gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_COMPLETED );
+			break;
+			
+		case STATUS_STOP_COLLECTING_RESULTS:
+			gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_STOP_COLLECTING_RESULTS );
+			break;
+			
+		case STATUS_SYNC_ALREADY_IN_PROGRESS:
+			gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS );
+			break;
+		}
+	}
+	
+	/**
 	 * Return the id of the default locale.  This setting is used to set the locale on a user when
 	 * the user is created from an ldap sync.
 	 */
@@ -346,7 +415,6 @@ public class GwtLdapHelper
 	{
 		GwtLdapSyncResults gwtSyncResults;
 		LdapSyncResults syncResults;
-		PartialLdapSyncResults partialSyncResults;
 		
 		gwtSyncResults = new GwtLdapSyncResults();
 		if ( syncId == null || syncId.length() == 0 )
@@ -364,66 +432,7 @@ public class GwtLdapHelper
 			return gwtSyncResults;
 		}
 		
-		partialSyncResults = syncResults.getAddedGroups();
-		gwtSyncResults.addLdapSyncResults(
-									GwtLdapSyncAction.ADDED_ENTITY,
-									GwtEntityType.GROUP,
-									partialSyncResults.getResults() );
-		
-		partialSyncResults = syncResults.getAddedUsers();
-		gwtSyncResults.addLdapSyncResults(
-									GwtLdapSyncAction.ADDED_ENTITY,
-									GwtEntityType.USER,
-									partialSyncResults.getResults() );
-		
-		partialSyncResults = syncResults.getDeletedGroups();
-		gwtSyncResults.addLdapSyncResults(
-									GwtLdapSyncAction.DELETED_ENTITY,
-									GwtEntityType.GROUP,
-									partialSyncResults.getResults() );
-		
-		partialSyncResults = syncResults.getDeletedUsers();
-		gwtSyncResults.addLdapSyncResults(
-									GwtLdapSyncAction.DELETED_ENTITY,
-									GwtEntityType.USER,
-									partialSyncResults.getResults() );
-		
-		partialSyncResults = syncResults.getModifiedGroups();
-		gwtSyncResults.addLdapSyncResults(
-									GwtLdapSyncAction.MODIFIED_ENTITY,
-									GwtEntityType.GROUP,
-									partialSyncResults.getResults() );
-		
-		partialSyncResults = syncResults.getModifiedUsers();
-		gwtSyncResults.addLdapSyncResults(
-									GwtLdapSyncAction.MODIFIED_ENTITY,
-									GwtEntityType.USER,
-									partialSyncResults.getResults() );
-		
-		switch ( syncResults.getStatus() )
-		{
-		case STATUS_ABORTED_BY_ERROR:
-			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_ABORTED_BY_ERROR );
-			gwtSyncResults.setErrorDesc( syncResults.getErrorDesc() );
-			gwtSyncResults.setErrorLdapServerId( syncResults.getErrorLdapConfigId() );
-			break;
-			
-		case STATUS_COLLECT_RESULTS:
-			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
-			break;
-			
-		case STATUS_COMPLETED:
-			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_COMPLETED );
-			break;
-			
-		case STATUS_STOP_COLLECTING_RESULTS:
-			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_STOP_COLLECTING_RESULTS );
-			break;
-			
-		case STATUS_SYNC_ALREADY_IN_PROGRESS:
-			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS );
-			break;
-		}
+		copyLdapSyncResults( gwtSyncResults, syncResults );
 		
 		// Clear the results so we start fresh.
 		syncResults.clearResults();
@@ -669,6 +678,7 @@ public class GwtLdapHelper
 		ArrayList<GwtLdapConnectionConfig> listOfLdapServers )
 	{
 		StartLdapSyncRpcResponseData response;
+		LdapSyncResults syncResults;
 		LdapSyncThread	ldapSyncThread;
 		LdapModule		ldapModule;
 		
@@ -687,7 +697,14 @@ public class GwtLdapHelper
 														listOfLdapConfigsToSyncGuid );
 		if ( ldapSyncThread != null )
 		{
-			ldapSyncThread.doLdapSync();
+			GwtLdapSyncResults gwtLdapSyncResults;
+			
+			syncResults = ldapSyncThread.doLdapSync();
+			
+			gwtLdapSyncResults = new GwtLdapSyncResults();
+			copyLdapSyncResults( gwtLdapSyncResults, syncResults );
+			
+			response.setLdapSyncResults( gwtLdapSyncResults );
 		}
 		
 		return response;

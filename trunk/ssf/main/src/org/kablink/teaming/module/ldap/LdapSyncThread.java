@@ -252,7 +252,7 @@ public class LdapSyncThread
 	/**
 	 * Execute the code that will perform the ldap sync.
 	 */
-	public void doLdapSync()
+	public LdapSyncResults doLdapSync()
 	{
 		boolean 		enabled;
 		LdapSyncResults	syncResults;
@@ -321,6 +321,8 @@ public class LdapSyncThread
 				m_ldapModule.setLdapSchedule( schedule );
 			}
 		}
+		
+		return syncResults;
 	}// end doLdapSync()
 	
 	

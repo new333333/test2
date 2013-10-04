@@ -50,7 +50,6 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.LdapSyncStatusEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDateTimeStrCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLdapSyncResultsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -62,17 +61,19 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style.TextAlign;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -81,6 +82,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -113,7 +115,9 @@ public class LdapSyncResultsDlg extends DlgBox
 	private Label m_addedGroupsLabel;
 	private Label m_modifiedGroupsLabel;
 	private Label m_deletedGroupsLabel;
-	
+
+	private LdapSyncResultsFilterPopup m_filterPopup;
+
 	private int m_numAddedUsers = 0;
 	private int m_numModifiedUsers = 0;
 	private int m_numDeletedUsers = 0;
@@ -426,7 +430,8 @@ public class LdapSyncResultsDlg extends DlgBox
 							@Override
 							public void execute()
 							{
-								Window.alert( "Not yet implemented" );
+								m_filterPopup.init();
+								m_filterPopup.showRelativeTo( a );
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -435,6 +440,9 @@ public class LdapSyncResultsDlg extends DlgBox
 
 				tmpPanel.add( a );
 				mainFilterPanel.add( tmpPanel );
+
+				// Create the popup that will be displayed when the user clicks on the image.
+				m_filterPopup = new LdapSyncResultsFilterPopup();
 			}
 		}
 		
@@ -650,6 +658,34 @@ public class LdapSyncResultsDlg extends DlgBox
 	}
 
 	/**
+	 * Filter the current ldap sync results
+	 */
+	private void filterCurrentLdapSyncResults()
+	{
+		// Clear the current list of displayed results.
+		if ( m_listOfDisplayedLdapSyncResults != null )
+			m_listOfDisplayedLdapSyncResults.clear();
+		
+		if ( m_listOfAllLdapSyncResults != null )
+		{
+			for ( GwtLdapSyncResult nextResult : m_listOfAllLdapSyncResults )
+			{
+				boolean addResult;
+				
+				// Only add results that match our filter.
+				addResult = doesLdapSyncResultMatchFilter( nextResult );
+				if ( addResult )
+					m_listOfDisplayedLdapSyncResults.add( nextResult );
+			}
+		}
+		
+		m_dataProvider.refresh();
+
+		// Tell the table how many sync results we have.
+		m_ldapSyncResultsTable.setRowCount( m_listOfDisplayedLdapSyncResults.size(), true );
+	}
+
+	/**
 	 * Get the data from the controls in the dialog box.
 	 */
 	@Override
@@ -802,27 +838,7 @@ public class LdapSyncResultsDlg extends DlgBox
 				@Override
 				public void execute()
 				{
-					// Clear the current list of displayed results.
-					if ( m_listOfDisplayedLdapSyncResults != null )
-						m_listOfDisplayedLdapSyncResults.clear();
-					
-					if ( m_listOfAllLdapSyncResults != null )
-					{
-						for ( GwtLdapSyncResult nextResult : m_listOfAllLdapSyncResults )
-						{
-							boolean addResult;
-							
-							// Only add results that match our filter.
-							addResult = doesLdapSyncResultMatchFilter( nextResult );
-							if ( addResult )
-								m_listOfDisplayedLdapSyncResults.add( nextResult );
-						}
-					}
-					
-					m_dataProvider.refresh();
-
-					// Tell the table how many sync results we have.
-					m_ldapSyncResultsTable.setRowCount( m_listOfDisplayedLdapSyncResults.size(), true );
+					filterCurrentLdapSyncResults();
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
@@ -873,19 +889,13 @@ public class LdapSyncResultsDlg extends DlgBox
 	private void setLdapSyncStatus( GwtLdapSyncResults ldapSyncResults )
 	{
 		GwtLdapSyncStatus status;
+		LdapSyncStatusEvent event;
 		
 		status = ldapSyncResults.getSyncStatus();
 		
-		// Is the sync status changing?
-		if ( m_syncStatus != status )
-		{
-			LdapSyncStatusEvent event;
-			
-			// Yes
-			// Fire an event that lets everyone know the ldap sync status changed.
-			event = new LdapSyncStatusEvent( status );
-			GwtTeaming.fireEvent( event );
-		}
+		// Fire an event that lets everyone know the ldap sync status changed.
+		event = new LdapSyncStatusEvent( status );
+		GwtTeaming.fireEvent( event );
 		
 		m_syncStatus = status;
 		updateSyncStatusLabel();
@@ -1023,6 +1033,8 @@ public class LdapSyncResultsDlg extends DlgBox
 		String statusTxt;
 		GwtTeamingMessages messages;
 		
+		m_syncStatusImg.setVisible( false );
+
 		if ( m_syncStatus == null )
 			return;
 		
@@ -1118,6 +1130,215 @@ public class LdapSyncResultsDlg extends DlgBox
 
 		if ( statusTxt != null )
 			m_syncStatusLabel.setText( statusTxt );
+	}
+
+	
+	/**
+	 * This class displays the options for filtering ldap sync results.
+	 * @author jwootton
+	 *
+	 */
+	public class LdapSyncResultsFilterPopup extends TeamingPopupPanel
+	{
+		private CheckBox m_showAddedGroupsCB;
+		private CheckBox m_showAddedUsersCB;
+		private CheckBox m_showDeletedGroupsCB;
+		private CheckBox m_showDeletedUsersCB;
+		private CheckBox m_showModifiedGroupsCB;
+		private CheckBox m_showModifiedUsersCB;
+
+		/**
+		 * 
+		 */
+		public LdapSyncResultsFilterPopup()
+		{
+			super( true, true );
+		
+			FlowPanel mainPanel;
+			FlowPanel footerPanel;
+			FlexTable statsTable;
+			Button btn;
+			GwtTeamingMessages messages;
+		
+			messages = GwtTeaming.getMessages();
+			
+			// Tell this popup to 'roll down' when opening. 
+			GwtClientHelper.rollDownPopup( this );
+			
+			// Override the style used for PopupPanel
+			setStyleName( "ldapSyncResultsDlg_FilterPopup" );
+		
+			mainPanel = new FlowPanel();
+
+			statsTable = new FlexTable();
+			
+			// Create the checkboxes used to define which user statistics are displayed
+			{
+				FlowPanel userPanel;
+				FlexTable userTable;
+				int row = 0;
+				
+				userPanel = new FlowPanel();
+				userPanel.addStyleName( "marginbottom3" );
+				
+				userTable = new FlexTable();
+				userPanel.add( userTable );
+
+				// Add the "Added users" controls
+				{
+					m_showAddedUsersCB = new CheckBox( messages.ldapSyncResultsDlg_ShowAddedUsersCB() );
+					userTable.setWidget( row, 0, m_showAddedUsersCB );
+				
+					++row;
+				}
+
+				// Add the "Modified users:" controls
+				{
+					m_showModifiedUsersCB = new CheckBox( messages.ldapSyncResultsDlg_ShowModifiedUsersCB() );
+					userTable.setWidget( row, 0, m_showModifiedUsersCB );
+					
+					++row;
+				}
+
+				// Add the "Deleted users:" controls
+				{
+					m_showDeletedUsersCB = new CheckBox( messages.ldapSyncResultsDlg_ShowDeletedUsersCB() );
+					userTable.setWidget( row, 0, m_showDeletedUsersCB );
+					
+					++row;
+				}
+				
+				statsTable.setWidget( 0, 0, userPanel );
+			}
+			
+			// Create the checkboxes used to define which user statistics are displayed
+			{
+				FlowPanel groupPanel;
+				FlexTable groupTable;
+				int row = 0;
+				
+				groupPanel = new FlowPanel();
+				groupPanel.addStyleName( "marginbottom3" );
+				groupPanel.addStyleName( "marginleft2" );
+				
+				groupTable = new FlexTable();
+				groupPanel.add( groupTable );
+				
+				// Add the "Added Groups:" controls
+				{
+					m_showAddedGroupsCB = new CheckBox( messages.ldapSyncResultsDlg_ShowAddedGroupsCB() );
+					groupTable.setWidget( row, 0, m_showAddedGroupsCB );
+					
+					++row;
+				}
+
+				// Add the "Modified groups" controls
+				{
+					m_showModifiedGroupsCB = new CheckBox( messages.ldapSyncResultsDlg_ShowModifiedGroupsCB() );
+					groupTable.setWidget( row, 0, m_showModifiedGroupsCB );
+					
+					++row;
+				}
+
+				// Add the "Deleted groups" controls
+				{
+					m_showDeletedGroupsCB = new CheckBox( messages.ldapSyncResultsDlg_ShowDeletedGroupsCB() );
+					groupTable.setWidget( row, 0, m_showDeletedGroupsCB );
+					
+					++row;
+				}
+				
+				statsTable.setWidget( 0, 1, groupPanel );
+			}
+			
+			mainPanel.add( statsTable );
+
+			footerPanel = new FlowPanel();
+			footerPanel.getElement().getStyle().setTextAlign( TextAlign.RIGHT );
+			mainPanel.add( footerPanel );
+			
+			btn = new Button( messages.ok() );
+			btn.addStyleName( "teamingSmallButton" );
+			btn.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							m_showAddedGroups = m_showAddedGroupsCB.getValue();
+							m_showAddedUsers = m_showAddedUsersCB.getValue();
+							m_showModifiedGroups = m_showModifiedGroupsCB.getValue();
+							m_showModifiedUsers = m_showModifiedUsersCB.getValue();
+							m_showDeletedGroups = m_showDeletedGroupsCB.getValue();
+							m_showDeletedUsers = m_showDeletedUsersCB.getValue();
+
+							// Redisplay the current list of ldap sync results with the new criteria
+							filterCurrentLdapSyncResults();
+							
+							hide();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			footerPanel.add( btn );
+
+			btn = new Button( messages.cancel() );
+			btn.addStyleName( "teamingSmallButton" );
+			btn.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							hide();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			footerPanel.add( btn );
+
+			setWidget( mainPanel );
+		}
+
+		/**
+		 * 
+		 */
+		public void init()
+		{
+			m_showAddedUsersCB.setValue( m_showAddedUsers );
+			m_showModifiedUsersCB.setValue( m_showModifiedUsers );
+			m_showDeletedUsersCB.setValue( m_showDeletedUsers );
+			m_showAddedGroupsCB.setValue( m_showAddedGroups );
+			m_showModifiedGroupsCB.setValue( m_showModifiedGroups );
+			m_showDeletedGroupsCB.setValue( m_showDeletedGroups );
+		}
+		
+		/**
+		 * Shows this popup.
+		 */
+		@Override
+		public void show()
+		{
+			super.show();
+
+			// ...and add vertical scrolling to the main frame for the
+			// ...duration of the popup.
+			GwtClientHelper.scrollUIForPopup( this );
+		}	
 	}
 	
 	/**

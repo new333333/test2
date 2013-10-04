@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 
+import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -44,10 +46,28 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class StartLdapSyncRpcResponseData
 	implements IsSerializable, VibeRpcResponseData
 {
+	GwtLdapSyncResults m_ldapSyncResults;
+	
 	/**
 	 * 
 	 */
 	public StartLdapSyncRpcResponseData()
 	{
+	}
+	
+	/**
+	 * 
+	 */
+	public GwtLdapSyncResults getLdapSyncResults()
+	{
+		return m_ldapSyncResults;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setLdapSyncResults( GwtLdapSyncResults syncResults )
+	{
+		m_ldapSyncResults = syncResults;
 	}
 }
