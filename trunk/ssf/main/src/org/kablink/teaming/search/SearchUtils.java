@@ -58,6 +58,7 @@ import org.kablink.teaming.dao.util.MyFilesStorageSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
@@ -79,6 +80,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.search.*;
@@ -1432,33 +1434,59 @@ public class SearchUtils {
 	 * @return
 	 */
 	public static Boolean getEffectiveDownloadSetting(AllModulesInjected bs, User user) {
-		Boolean result;
+		// Are we running Filr?
+		Boolean reply;
 		if (Utils.checkIfFilr()) {
-			// ! Check the user's setting.  
+			// Yes!  Do we have a user?  
 			if (null !=  user) {
-			     result = getDownloadSettingFromUserOrGroup(bs, user.getId());
-			     if (null == result) {
-//!					...this needs to be implemented...
+				// Yes!  Do they have a download override?
+				Long userId = user.getId();
+				reply = getDownloadSettingFromUserOrGroup(bs, user.getId());
+				if (null == reply) {
+					// No!  Is the user the member of any groups?
+					List<Group> groups = GwtUIHelper.getGroups(userId);
+					if (MiscUtil.hasItems(groups)) {
+						// Yes!  Scan them.
+						for (Group group:  groups) {
+							// Does this group have a download
+							// override?
+							Boolean gDownload = getDownloadSettingFromUserOrGroup(bs, group.getId());
+							if (null != gDownload) {
+								// Yes!  Use it as the override and if
+								// it's true...
+								reply =  gDownload;
+								if (reply) {
+									// ...we're done looking.
+									break;
+								}
+							}
+						}
+					}
 			     }
 			}
+			
 			else {
-				result = null;
+				// No, we don't have a user!  There is no effective
+				// setting.
+				reply = null;
 			}
 		
 			// Did we find a setting for the user?
-			if (null == result) {
+			if (null == reply) {
 				// No!  Read the global setting.
-				result = getDownloadSettingFromZone(bs);
+				reply = getDownloadSettingFromZone(bs);
 			}
 		}
 		
 		else {
-			result = Boolean.TRUE;
+			// No, we aren't running Filr!  Vibe users can always
+			// download.
+			reply = Boolean.TRUE;
 		}
 
 		// If we get here, reply contains true if downloads are
 		// enabled and false otherwise.  Return it.
-		return result;
+		return reply;
 	}
 	
 	/**
@@ -1475,32 +1503,60 @@ public class SearchUtils {
 	 * @return
 	 */
 	public static Boolean getEffectiveWebAccessSetting(AdminModule am, ProfileModule pm, User user) {
-		// ! Check the user's setting.  
-		Boolean result;
+		// Do we have a user?
+		Boolean reply;
 		if (null !=  user) {
+			// Yes!  Is it the system admin?
 			if (user.isSuper()) {
-				result = Boolean.TRUE;	// Admin is ALWAYS allowed to use the WebAccess client.
+				// Yes!  The admin is ALWAYS allowed to use the web
+				// access client.
+				reply = Boolean.TRUE;
 			}
+			
 			else {
-				result = getWebAccessSettingFromUserOrGroup(pm, user.getId());
-				if (null == result) {
-//!					...this needs to be implemented...
+				// No!  The user isn't the admin.  Does the user have a
+				// web access override?
+				Long userId = user.getId();
+				reply = getWebAccessSettingFromUserOrGroup(pm, userId);
+				if (null == reply) {
+					// No!  Is the user the member of any groups?
+					List<Group> groups = GwtUIHelper.getGroups(userId);
+					if (MiscUtil.hasItems(groups)) {
+						// Yes!  Scan them.
+						for (Group group:  groups) {
+							// Does this group have a web access
+							// override?
+							Boolean gAccess = getWebAccessSettingFromUserOrGroup(pm, group.getId());
+							if (null != gAccess) {
+								// Yes!  Use it as the override and if
+								// it's true...
+								reply =  gAccess;
+								if (reply) {
+									// ...we're done looking.
+									break;
+								}
+							}
+						}
+					}
 				}
 			}
 		}
+		
 		else {
-			result = null;
+			// No, we don't have a user!  There is no effective
+			// setting.
+			reply = null;
 		}
 	
 		// Did we find a setting for the user?
-		if (null == result) {
+		if (null == reply) {
 			// No!  Read the global setting.
-			result = getWebAccessSettingFromZone(am);
+			reply = getWebAccessSettingFromZone(am);
 		}
 
 		// If we get here, reply contains true if web access is
 		// enabled and false otherwise.  Return it.
-		return result;
+		return reply;
 	}
 	
 	public static Boolean getEffectiveWebAccessSetting(AllModulesInjected bs, User user) {

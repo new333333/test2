@@ -267,7 +267,7 @@
     </changeSet>
     
     <changeSet author="dennis" context="schema" failOnError="true" id="19">
-        <comment>Enable users to download files</comment>
+        <comment>Enable users and groups to download files</comment>
         <addColumn tableName="SS_ZoneConfig">
             <column name="downloadEnabled" type="TINYINT">
                 <constraints nullable="true" />
@@ -281,7 +281,7 @@
     </changeSet>
     
     <changeSet author="dennis" context="schema" failOnError="true" id="20">
-        <comment>Enable users to use web access</comment>
+        <comment>Enable users and groups to use web access</comment>
         <addColumn tableName="SS_ZoneConfig">
             <column name="webAccessEnabled" type="TINYINT">
                 <constraints nullable="true" />
