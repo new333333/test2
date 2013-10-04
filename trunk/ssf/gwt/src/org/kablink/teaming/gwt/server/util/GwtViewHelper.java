@@ -6343,7 +6343,7 @@ public class GwtViewHelper {
 			boolean perUserAdHoc    = false;
 			if (hasAdHocFolders) {
 				hasAdHocFolders = (!(GwtServerHelper.useHomeAsMyFiles(bs, user)));
-				perUserAdHoc    = (null != pm.getUserProperties(userId).getProperty(ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS));
+				perUserAdHoc    = (null != user.isAdHocFoldersEnabled());
 			}
 			ai.setHasAdHocFolders(hasAdHocFolders);
 			ai.setPerUserAdHoc(   perUserAdHoc   );
@@ -6353,7 +6353,7 @@ public class GwtViewHelper {
 			boolean perUserDownload = false;
 			if (canDownload) {
 				canDownload     = GwtUIHelper.getEffectiveDownloadSetting(bs, user);
-				perUserDownload = (null != pm.getDownloadEnabled(userId));
+				perUserDownload = (null != user.isDownloadEnabled());
 			}
 			ai.setCanDownload(    canDownload    );
 			ai.setPerUserDownload(perUserDownload);
@@ -6363,7 +6363,7 @@ public class GwtViewHelper {
 			boolean perUserWebAccess = false;
 			if (hasWebAccess) {
 				hasWebAccess     = GwtUIHelper.getEffectiveWebAccessSetting(bs, user);
-				perUserWebAccess = (null != pm.getWebAccessEnabled(userId));
+				perUserWebAccess = (null != user.isWebAccessEnabled());
 			}
 			ai.setHasWebAccess(    hasWebAccess    );
 			ai.setPerUserWebAccess(perUserWebAccess);

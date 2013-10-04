@@ -797,12 +797,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetAdhocFolderSettingCmd gafsCmd;
 			Boolean result;
 			BooleanRpcResponseData responseData;
-			Long userId;
+			Long upId;
 			
 			gafsCmd = (GetAdhocFolderSettingCmd) cmd;
-			userId = gafsCmd.getUserId();
-			if ( userId != null )
-				result = GwtUIHelper.getAdhocFolderSettingFromUser( this, userId );
+			upId = gafsCmd.getUserPrincipalId();
+			if ( upId != null )
+				result = GwtUIHelper.getAdhocFolderSettingFromUserOrGroup( this, upId );
 			else
 				result = GwtUIHelper.getAdhocFolderSettingFromZone( this );
 			
@@ -2849,7 +2849,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			BooleanRpcResponseData responseData;
 			
 			safsCmd = (SaveAdhocFolderSettingCmd) cmd;
-			result = GwtServerHelper.saveAdhocFolderSetting( this, safsCmd.getUserId(), safsCmd.getAllowAdhocFolders() );
+			result = GwtServerHelper.saveAdhocFolderSetting( this, safsCmd.getUserPrincipalId(), safsCmd.getAllowAdhocFolders() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;

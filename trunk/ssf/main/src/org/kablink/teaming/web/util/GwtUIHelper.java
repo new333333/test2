@@ -624,16 +624,16 @@ public class GwtUIHelper {
 	}
 
 	/**
-	 * Return the 'AdHoc folder' setting from the given user's
-	 * properties.
+	 * Return the 'AdHoc folder' setting from the given user or group
+	 * (i.e., a UserPrinciapl object.)
 	 * 
-	 * @param ami
-	 * @param userId
+	 * @param bs
+	 * @param upId
 	 * 
 	 * @return
 	 */
-	public static Boolean getAdhocFolderSettingFromUser(AllModulesInjected ami, Long userId) {
-		return SearchUtils.getAdhocFolderSettingFromUser(ami, userId);
+	public static Boolean getAdhocFolderSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
+		return SearchUtils.getAdhocFolderSettingFromUserOrGroup(bs, upId);
 	}
 
 	/**

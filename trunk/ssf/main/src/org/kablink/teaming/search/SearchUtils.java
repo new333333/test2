@@ -1389,36 +1389,65 @@ public class SearchUtils {
 	 * We will look in the user's properties first for a value.  If one
 	 * is not found we will get the setting from the zone.
 	 * 
-	 * @param ami
+	 * @param bs
 	 * @param user
 	 * 
 	 * @return
 	 */
-	public static Boolean getEffectiveAdhocFolderSetting(AllModulesInjected ami, User user) {
+	public static Boolean getEffectiveAdhocFolderSetting(AllModulesInjected bs, User user) {
 		// Are we running Filr?
-		Boolean result;
+		Boolean reply;
 		if (Utils.checkIfFilr()) {
-			// Yes! Check the user's properties.  
-			if (null !=  user)
-			     result = getAdhocFolderSettingFromUser(ami, user.getId());
-			else result = null;
+			// Yes!  Do we have a user?  
+			if (null !=  user) {
+				// Yes!  Do they have an adHoc override?
+				Long userId = user.getId();
+				reply = getAdhocFolderSettingFromUserOrGroup(bs, userId);
+				if (null == reply) {
+					// No!  Is the user the member of any groups?
+					List<Group> groups = GwtUIHelper.getGroups(userId);
+					if (MiscUtil.hasItems(groups)) {
+						// Yes!  Scan them.
+						for (Group group:  groups) {
+							// Does this group have an adHoc folder
+							// override?
+							Boolean gAdHoc = getDownloadSettingFromUserOrGroup(bs, group.getId());
+							if (null != gAdHoc) {
+								// Yes!  Use it as the override and if
+								// it's true...
+								reply =  gAdHoc;
+								if (reply) {
+									// ...we're done looking.
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			else {
+				// No, we don't have a user!  There is no effective
+				// setting.
+				reply = null;
+			}
 		
-			// Did we find a setting in the user's properties?
-			if (null == result) {
+			// Did we find a setting for the user?
+			if (null == reply) {
 				// No!  Read the global setting.
-				result = getAdhocFolderSettingFromZone(ami);
+				reply = getAdhocFolderSettingFromZone(bs);
 			}
 		}
 		
 		else {
-			// No, we're not running Filr!  AdHoc folders are always
-			// supported.
-			result = Boolean.TRUE;
+			// No, we aren't running Filr!  Vibe users always get adHoc
+			// folders.
+			reply = Boolean.TRUE;
 		}
 
 		// If we get here, reply contains true if AdHoc folders are
 		// supported and false otherwise.  Return it.
-		return result;
+		return reply;
 	}
 	
 	/**
@@ -1565,32 +1594,54 @@ public class SearchUtils {
 	}
 	
 	/**
-	 * Return the 'AdHoc folder' setting from the given user's
-	 * properties.
+	 * Return the 'AdHoc folder' setting from the given user or group.
+	 * (i.e., a UserPrinciapl object.)
 	 * 
-	 * @param ami
-	 * @param userId
+	 * @param bs
+	 * @param upId
 	 * 
 	 * @return
 	 */
-	public static Boolean getAdhocFolderSettingFromUser(AllModulesInjected ami, Long userId) {
-		// If we're running Filr...
+	public static Boolean getAdhocFolderSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
+		// Are we running Filr?
 		if (Utils.checkIfFilr()) {
-			if (null != userId) {
+			// Yes!  If we have an ID...
+			if (null != upId) {
 				// ...read the 'allow AdHoc folder' setting from the
-				// ...user's properties...
-				UserProperties userProperties = ami.getProfileModule().getUserProperties(userId);
-				Object value = userProperties.getProperty(ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS);
-				if ((null != value) && (value instanceof String)) {
-					return new Boolean((String) value);
+				// ...UserPrincipal. Did we find it?
+				ProfileModule pm = bs.getProfileModule();
+				Boolean reply = pm.getAdHocFoldersEnabled(upId);
+				if (null == reply) {
+					try {
+						// No!  Assume upId is that of a user and look
+						// in their properties.  Can we find it there?
+						UserProperties userProperties = bs.getProfileModule().getUserProperties(upId);
+						Object value = userProperties.getProperty(ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS_DEPRECATED);
+						if ((null != value) && (value instanceof String)) {
+							// Yes!  Return that...
+							reply = new Boolean((String) value);
+							
+							// ...store the value in the
+							// ...UserPrinciapl...
+							pm.setAdHocFoldersEnabled(upId, reply);
+							
+							// ...and remove it from the their
+							// ...properties.
+							pm.setUserProperty(upId, ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS_DEPRECATED, null);
+						}
+					}
+					catch (Exception e) {
+						// Ignore.
+					}
 				}
+				return reply;
 			}
 			return null;
 		}
 		
 		else {
-			// If we're not running Filr, AdHoc folders are always
-			// allowed.
+			// No, we're not running Filr!  AdHoc folders are always
+			// allowed in Vibe.
 			return Boolean.TRUE;
 		}
 	}
