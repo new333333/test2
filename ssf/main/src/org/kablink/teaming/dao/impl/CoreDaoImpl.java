@@ -623,9 +623,10 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	    	   				if(logger.isDebugEnabled())
 	    	   					logger.debug("Error deleting binder " + binder.getId(), e);
 	    	   				logger.warn("Encountered constraint violation while deleting binder " + binder.getId() + ": Will clear references from children and give it another try");
-	    	   				session.createQuery("update org.kablink.teaming.domain.Binder set parentBinder=null, topFolder=null, deleted=:delete where parentBinder=:binder")
+	    	   				session.createQuery("update org.kablink.teaming.domain.Binder set parentBinder=null, topFolder=null, deleted=:delete where parentBinder=:binder1 or topFolder=:binder2")
 	    	   			    .setBoolean("delete", Boolean.TRUE)
-			   				.setLong("binder", binder.getId())	   				
+			   				.setLong("binder1", binder.getId())	   				
+			   				.setLong("binder2", binder.getId())	   				
 	    	   				.executeUpdate();
 	    	   				// Now that we cleared the association, let's try it again.
 				   			session.createQuery("Delete org.kablink.teaming.domain.Binder where id=:id")
