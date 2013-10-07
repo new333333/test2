@@ -2100,16 +2100,27 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgCreatingGroup();
 	String manageGroupsDlgDeleteGroupLabel();
 	String manageGroupsDlgDeletingGroup();
+	String manageGroupsDlgDownload_Clear();
+	String manageGroupsDlgDownload_Disable();
+	String manageGroupsDlgDownload_Enable();
 	String manageGroupsDlgEditGroupLabel();
 	String manageGroupsDlgHeader();
 	String manageGroupsDlgModifyingGroup();
+	String manageGroupsDlgMoreLabel();
 	String manageGroupsDlgNameCol();
 	String manageGroupsDlgNoGroupsLabel();
+	String manageGroupsDlgPersonalStorage_Clear();
+	String manageGroupsDlgPersonalStorage_Disable();
+	String manageGroupsDlgPersonalStorage_Enable();
 	String manageGroupsDlgSelectGroupToDelete();
+	String manageGroupsDlgSelectGroupsToModify();
 	String manageGroupsDlgSelect1GroupToEdit();
 	String manageGroupsDlgTitleCol();
 	String manageGroupsDlgTypeCol();
 	String manageGroupsDlgUnknownStatus();
+	String manageGroupsDlgWebAccess_Clear();
+	String manageGroupsDlgWebAccess_Disable();
+	String manageGroupsDlgWebAccess_Enable();
 	
 	// Strings used in the Modify Group dialog
 	String addGroupDlgHeader();

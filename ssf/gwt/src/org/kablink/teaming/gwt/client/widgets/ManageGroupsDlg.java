@@ -40,6 +40,7 @@ import java.util.Set;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.QuickFilter;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.datatable.GroupTitleCell;
 import org.kablink.teaming.gwt.client.datatable.GroupTypeCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
@@ -53,6 +54,7 @@ import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
+import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAllGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsRpcResponseData;
@@ -67,7 +69,6 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -76,11 +77,13 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -110,6 +113,7 @@ public class ManageGroupsDlg extends DlgBox implements
 	private ModifyGroupDlg m_modifyGroupDlg;
 	private QuickFilter m_quickFilter;
 	private int m_width;
+	private GwtTeamingMessages m_messages;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class. See EventHelper.registerEventHandlers() for how
@@ -192,6 +196,8 @@ public class ManageGroupsDlg extends DlgBox implements
 		super(autoHide, modal, xPos, yPos, new Integer(width), new Integer(
 				height), DlgButtonMode.Close);
 
+		m_messages = GwtTeaming.getMessages();
+
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(GwtTeaming.getEventBus(),
 				m_registeredEvents, this);
@@ -240,15 +246,12 @@ public class ManageGroupsDlg extends DlgBox implements
 	 */
 	@Override
 	public Panel createContent(Object props) {
-		final GwtTeamingMessages messages;
 		VerticalPanel mainPanel = null;
 		GroupTitleCell cell;
 		Column<GroupInfoPlus, GroupInfoPlus> titleCol;
 		TextColumn<GroupInfoPlus> nameCol;
 		FlowPanel menuPanel;
 		CellTable.Resources cellTableResources;
-
-		messages = GwtTeaming.getMessages();
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName("teamingDlgBoxContent");
@@ -261,42 +264,51 @@ public class ManageGroupsDlg extends DlgBox implements
 			menuPanel.addStyleName("groupManagementMenuPanel");
 
 			// Add an "Add" button.
-			label = new InlineLabel(messages.manageGroupsDlgAddGroupLabel());
+			label = new InlineLabel(m_messages.manageGroupsDlgAddGroupLabel());
 			label.addStyleName("groupManagementBtn");
 			label.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					Scheduler.ScheduledCommand cmd;
-
-					cmd = new Scheduler.ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							invokeAddGroupDlg();
 						}
-					};
-					Scheduler.get().scheduleDeferred(cmd);
+					});
 				}
 			});
 			menuPanel.add(label);
 
 			// Add a "Delete" button.
-			label = new InlineLabel(messages.manageGroupsDlgDeleteGroupLabel());
+			label = new InlineLabel(m_messages.manageGroupsDlgDeleteGroupLabel());
 			label.addStyleName("groupManagementBtn");
 			label.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					Scheduler.ScheduledCommand cmd;
-
-					cmd = new Scheduler.ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							deleteSelectedGroups();
 						}
-					};
-					Scheduler.get().scheduleDeferred(cmd);
+					});
 				}
 			});
 			menuPanel.add(label);
+			
+			// Add a "More" button.
+			final PopupMenu morePopup = new PopupMenu(true, false, false);
+			morePopup.addStyleName("groupManagementDropDown");
+			final InlineLabel moreMenu = new InlineLabel();
+			moreMenu.getElement().setInnerHTML(renderDropdownMenuItemHtml(m_messages.manageGroupsDlgMoreLabel()));
+			moreMenu.addStyleName("groupManagementBtn");
+			moreMenu.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					morePopup.showRelativeToTarget(moreMenu);
+				}
+			});
+			menuPanel.add(moreMenu);
+			populateMorePopup(morePopup);
 			
 			// Add a quick filter
 			{
@@ -377,7 +389,7 @@ public class ManageGroupsDlg extends DlgBox implements
 					return GroupType.INTERNAL_LOCAL;
 				}
 			};
-			m_groupsTable.addColumn(typeCol, messages.manageGroupsDlgTypeCol());
+			m_groupsTable.addColumn(typeCol, m_messages.manageGroupsDlgTypeCol());
 		}
 
 		// Add the "Title" column. The user can click on the text in this column
@@ -405,7 +417,7 @@ public class ManageGroupsDlg extends DlgBox implements
 			});
 			m_groupsTable.addColumn(
 								titleCol,
-								messages.manageGroupsDlgTitleCol());
+								m_messages.manageGroupsDlgTitleCol());
 		}
 
 		// Add the "Name" column
@@ -424,7 +436,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				return name;
 			}
 		};
-		m_groupsTable.addColumn(nameCol, messages.manageGroupsDlgNameCol());
+		m_groupsTable.addColumn(nameCol, m_messages.manageGroupsDlgNameCol());
 
 		// Create a pager
 		{
@@ -537,9 +549,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				 */
 				@Override
 				public void onFailure(final Throwable t) {
-					Scheduler.ScheduledCommand cmd;
-
-					cmd = new Scheduler.ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							GwtClientHelper.handleGwtRPCFailure(t, GwtTeaming
@@ -563,8 +573,7 @@ public class ManageGroupsDlg extends DlgBox implements
 							// deleted a group.
 							m_dataProvider.refresh();
 						}
-					};
-					Scheduler.get().scheduleDeferred(cmd);
+					});
 				}
 
 				/**
@@ -573,9 +582,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				 */
 				@Override
 				public void onSuccess(final VibeRpcResponse response) {
-					Scheduler.ScheduledCommand cmd;
-
-					cmd = new Scheduler.ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						/**
 						 * 
 						 */
@@ -600,8 +607,7 @@ public class ManageGroupsDlg extends DlgBox implements
 							m_groupsTable.setRowCount(m_listOfGroups.size(),
 									true);
 						}
-					};
-					Scheduler.get().scheduleDeferred(cmd);
+					});
 				}
 			};
 
@@ -684,9 +690,7 @@ public class ManageGroupsDlg extends DlgBox implements
 			 */
 			@Override
 			public void onSuccess(final VibeRpcResponse response) {
-				Scheduler.ScheduledCommand cmd;
-
-				cmd = new Scheduler.ScheduledCommand() {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					/**
 					 * 
 					 */
@@ -701,8 +705,7 @@ public class ManageGroupsDlg extends DlgBox implements
 						if (responseData != null)
 							addGroups(responseData.getGroups());
 					}
-				};
-				Scheduler.get().scheduleDeferred(cmd);
+				});
 			}
 		};
 
@@ -790,9 +793,7 @@ public class ManageGroupsDlg extends DlgBox implements
 
 						@Override
 						public void onSuccess(final ModifyGroupDlg mgDlg) {
-							ScheduledCommand cmd;
-
-							cmd = new ScheduledCommand() {
+							GwtClientHelper.deferCommand(new ScheduledCommand() {
 								@Override
 								public void execute() {
 									m_modifyGroupDlg = mgDlg;
@@ -800,8 +801,7 @@ public class ManageGroupsDlg extends DlgBox implements
 									m_modifyGroupDlg.init(groupInfo);
 									m_modifyGroupDlg.show();
 								}
-							};
-							Scheduler.get().scheduleDeferred(cmd);
+							});
 						}
 					});
 		} else {
@@ -1031,20 +1031,18 @@ public class ManageGroupsDlg extends DlgBox implements
 		if ( event.getFolderId().equals( MANAGE_GROUPS_ID ) )
 		{
 			final String filter;
-			Scheduler.ScheduledCommand cmd;
 			
 			// Yes.  Search for groups using the filter entered by the user.
 			filter = event.getQuickFilter();
 			
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand(new ScheduledCommand()
 			{
 				@Override
 				public void execute()
 				{
 					getAllGroupsFromServer( filter );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			});
 		}
 	}
 
@@ -1075,5 +1073,178 @@ public class ManageGroupsDlg extends DlgBox implements
 				mgDlgClient.onSuccess(mgDlg);
 			}
 		});
+	}
+	
+	/*
+	 * Renders HTML for used in a drop down menu item.
+	 */
+	private String renderDropdownMenuItemHtml(String itemText) {
+		FlowPanel htmlPanel = new FlowPanel();
+		InlineLabel itemLabel = new InlineLabel(itemText);
+		itemLabel.addStyleName("groupManagementDropDownText");
+		htmlPanel.add(itemLabel);
+
+		Image dropDownImg = new Image(GwtTeaming.getMainMenuImageBundle().menuArrow());
+		dropDownImg.addStyleName("groupManagementDropDownImg");
+		if (!GwtClientHelper.jsIsIE()) {
+			dropDownImg.addStyleName("groupManagementDropDownImgNonIE");
+		}
+		htmlPanel.add(dropDownImg);
+		
+		return htmlPanel.getElement().getInnerHTML();
+	}
+	
+	/*
+	 * Populates the More popup menu.
+	 */
+	private void populateMorePopup(PopupMenu morePopup) {
+		// Personal storage options.
+		final String emptyWarning = m_messages.manageGroupsDlgSelectGroupsToModify();
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(emptyWarning);
+					if (!(groups.isEmpty())) {
+						BinderViewsHelper.disableUsersAdHocFolders(groups);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgPersonalStorage_Disable());
+		
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(emptyWarning);
+					if (!(groups.isEmpty())) {
+						BinderViewsHelper.enableUsersAdHocFolders(groups);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgPersonalStorage_Enable());
+		
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(emptyWarning);
+					if (!(groups.isEmpty())) {
+						BinderViewsHelper.clearUsersAdHocFolders(groups);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgPersonalStorage_Clear());
+
+		if (GwtClientHelper.isLicenseFilr()) {
+			// Download options.
+			morePopup.addSeparator();
+			morePopup.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						if (!(groups.isEmpty())) {
+							BinderViewsHelper.disableUsersDownload(groups);
+						}
+					}
+				},
+				null,
+				m_messages.manageGroupsDlgDownload_Disable());
+				
+			morePopup.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						if (!(groups.isEmpty())) {
+							BinderViewsHelper.enableUsersDownload(groups);
+						}
+					}
+				},
+				null,
+				m_messages.manageGroupsDlgDownload_Enable());
+				
+			morePopup.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						if (!(groups.isEmpty())) {
+							BinderViewsHelper.clearUsersDownload(groups);
+						}
+					}
+				},
+				null,
+				m_messages.manageGroupsDlgDownload_Clear());
+		}
+		
+		// WebAccess options.
+		morePopup.addSeparator();
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(emptyWarning);
+					if (!(groups.isEmpty())) {
+						BinderViewsHelper.disableUsersWebAccess(groups);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgWebAccess_Disable());
+			
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(emptyWarning);
+					if (!(groups.isEmpty())) {
+						BinderViewsHelper.enableUsersWebAccess(groups);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgWebAccess_Enable());
+			
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(emptyWarning);
+					if (!(groups.isEmpty())) {
+						BinderViewsHelper.clearUsersWebAccess(groups);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgWebAccess_Clear());
+	}
+
+	/*
+	 * Returns a List<Long> of the selected group IDs.
+	 */
+	private List<Long> getSelectedGroupIds(String emptyWarning) {
+		List<Long> reply = new ArrayList<Long>();
+		Set<GroupInfoPlus> selectedGroups = getSelectedGroups();
+		if (GwtClientHelper.hasItems(selectedGroups)) {
+			for (GroupInfoPlus g:  selectedGroups) {
+				reply.add(g.getGroupInfo().getId());
+			}
+		}
+		
+		if (GwtClientHelper.hasString(emptyWarning) && reply.isEmpty()) {
+			GwtClientHelper.deferredAlert(emptyWarning);
+		}
+		return reply;
+	}
+	
+	@SuppressWarnings("unused")
+	private List<Long> getSelectedGroupIds() {
+		// Always use the initial form of the method.
+		return getSelectedGroupIds(null);
 	}
 }

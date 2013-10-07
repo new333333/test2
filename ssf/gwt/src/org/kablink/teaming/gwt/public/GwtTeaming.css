@@ -4485,6 +4485,11 @@ td.datePickerMonth {
     
 }
 
+.groupManagementDropDown         {}
+.groupManagementDropDownText     {font-size: 12px; vertical-align: middle;}
+.groupManagementDropDownImg      {vertical-align: middle;}
+.groupManagementDropDownImgNonIE {margin-left: 1px;}
+
 .groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover
 {
 	color: #135c8f;
