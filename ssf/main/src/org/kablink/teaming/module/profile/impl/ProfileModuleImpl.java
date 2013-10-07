@@ -2600,7 +2600,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     //RO transaction
     @Override
     public Boolean getDownloadEnabled(Long upId) {
-   		UserPrincipal up = getUserPrincipal(upId, true, false);
+   		UserPrincipal up = getUserPrincipal(upId, false, false);
 		return up.isDownloadEnabled();
     }
     
@@ -2625,7 +2625,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     //RO transaction
     @Override
     public Boolean getWebAccessEnabled(Long upId) {
-   		UserPrincipal up = getUserPrincipal(upId, true, false);
+   		UserPrincipal up = getUserPrincipal(upId, false, false);
 		return up.isWebAccessEnabled();
     }
     
@@ -2650,7 +2650,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     //RO transaction
     @Override
     public Boolean getAdHocFoldersEnabled(Long upId) {
-   		UserPrincipal up = getUserPrincipal(upId, true, false);
+   		UserPrincipal up = getUserPrincipal(upId, false, false);
 		return up.isAdHocFoldersEnabled();
     }
     
