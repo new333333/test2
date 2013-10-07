@@ -36,7 +36,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 
@@ -69,7 +68,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		ncp_netware (3),
 		ncp_oes (4),
 		famt (5),
-		cloud_folders (6);
+		cloud_folders (6),
+		share_point_2010 (7),
+		share_point_2013 (8);
 		int dtValue;
 		DriverType(int dtValue) {
 			this.dtValue = dtValue;
@@ -84,6 +85,8 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 			case 4: return DriverType.ncp_oes;
 			case 5: return DriverType.famt;
 			case 6: return DriverType.cloud_folders;
+			case 7: return DriverType.share_point_2010;
+			case 8: return DriverType.share_point_2013;
 			default: return DriverType.filesystem;
 			}
 		}

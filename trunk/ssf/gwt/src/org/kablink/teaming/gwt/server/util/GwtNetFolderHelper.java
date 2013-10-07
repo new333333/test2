@@ -331,6 +331,7 @@ public class GwtNetFolderHelper
 		if ( rdConfig != null )
 		{
 			newRoot = new NetFolderRoot();
+			newRoot.setRootType( getRootTypeFromDriverType( driverType ) );
 			newRoot.setId( rdConfig.getId() );
 			newRoot.setName( rdConfig.getName() );
 			newRoot.setProxyName( rdConfig.getAccountName() );
@@ -506,14 +507,7 @@ public class GwtNetFolderHelper
 				nfRoot.setName( driver.getName() );
 				
 				driverType = driver.getDriverType();
-				if ( driverType == DriverType.filesystem )
-					nfRoot.setRootType( NetFolderRootType.FILE_SYSTEM );
-				else if ( driverType == DriverType.webdav )
-					nfRoot.setRootType( NetFolderRootType.WEB_DAV );
-				else if ( driverType == DriverType.famt )
-					nfRoot.setRootType( NetFolderRootType.FAMT );
-				else
-					nfRoot.setRootType( NetFolderRootType.UNKNOWN );
+				nfRoot.setRootType( getRootTypeFromDriverType( driverType ) );
 				
 				nfRoot.setRootPath( driver.getRootPath() );
 				nfRoot.setProxyName( driver.getAccountName() );
@@ -566,16 +560,39 @@ public class GwtNetFolderHelper
 	 */
 	private static DriverType getDriverType( NetFolderRootType type )
 	{
-		if ( type == NetFolderRootType.FILE_SYSTEM )
-			return DriverType.filesystem;
-		
-		if ( type == NetFolderRootType.WEB_DAV )
-			return DriverType.webdav;
-		
-		if ( type == NetFolderRootType.FAMT )
+		switch ( type )
+		{
+		case CIFS:
+			return DriverType.cifs;
+			
+		case CLOUD_FOLDERS:
+			return DriverType.cloud_folders;
+			
+		case FAMT:
 			return DriverType.famt;
-		
-		return DriverType.famt;
+			
+		case FILE_SYSTEM:
+			return DriverType.filesystem;
+			
+		case NCP_NETWARE:
+			return DriverType.ncp_netware;
+			
+		case NCP_OES:
+			return DriverType.ncp_oes;
+			
+		case SHARE_POINT_2010:
+			return DriverType.share_point_2010;
+			
+		case SHARE_POINT_2013:
+			return DriverType.share_point_2013;
+			
+		case WEB_DAV:
+			return DriverType.webdav;
+			
+		case UNKNOWN:
+		default:
+			return DriverType.famt;
+		}
 	}
 
 	/**
@@ -1068,6 +1085,45 @@ public class GwtNetFolderHelper
 													selectSpec );
 
 		return numNetFolders;
+	}
+	
+	/**
+	 * 
+	 */
+	public static NetFolderRootType getRootTypeFromDriverType( DriverType driverType )
+	{
+		switch ( driverType )
+		{
+		case cifs:
+			return NetFolderRootType.CIFS;
+			
+		case cloud_folders:
+			return NetFolderRootType.CLOUD_FOLDERS;
+			
+		case famt:
+			return NetFolderRootType.FAMT;
+		
+		case filesystem:
+			return NetFolderRootType.FILE_SYSTEM;
+
+		case ncp_netware:
+			return NetFolderRootType.NCP_NETWARE;
+			
+		case ncp_oes:
+			return NetFolderRootType.NCP_OES;
+			
+		case share_point_2010:
+			return NetFolderRootType.SHARE_POINT_2010;
+
+		case share_point_2013:
+			return NetFolderRootType.SHARE_POINT_2013;
+			
+		case webdav:
+			return NetFolderRootType.WEB_DAV;
+
+		default:
+			return NetFolderRootType.UNKNOWN;
+		}
 	}
 	
 	/**

@@ -1794,6 +1794,14 @@ public class GwtUIHelper {
 			allowShowPeople = SPropsUtil.getBoolean( "allow.show.people", true );
 			model.put( "allowShowPeople", allowShowPeople );
 		}
+		
+		// Add a flag that determines whether the admin can select the type of net folder server
+		{
+			Boolean allow;
+			
+			allow = SPropsUtil.getBoolean( "allow.select.net.folder.server.data.source", false );
+			model.put( "allowSelectNetFolderServerDataSource", allow );
+		}
 	}
 	
 	/**

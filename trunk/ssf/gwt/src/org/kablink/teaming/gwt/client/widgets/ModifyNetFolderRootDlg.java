@@ -104,6 +104,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private NetFolderRoot m_netFolderRoot;	// If we are modifying a net folder this is the net folder.
 	private TextBox m_nameTxtBox;
 	private ListBox m_rootTypeListbox;
+	private FlowPanel m_serverPathHintPanel;
 	private TextBox m_rootPathTxtBox;
 	private TextBox m_proxyNameTxtBox;
 	private PasswordTextBox m_proxyPwdTxtBox;
@@ -118,6 +119,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	
 	private static boolean m_showPrivilegedUsersUI = false;
+	private static boolean m_showNetFolderServerType = GwtTeaming.m_requestInfo.getAllowSelectNetFolderServerDataSource();
+	private static boolean m_showWebDavControls = false;
 
 	
 	// The following defines the TeamingEvents that are handled by
@@ -144,10 +147,51 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	 */
 	public enum NetFolderRootType implements IsSerializable
 	{
-		FILE_SYSTEM,
-		WEB_DAV,
+		CIFS,
+		CLOUD_FOLDERS,
 		FAMT,
-		UNKNOWN
+		FILE_SYSTEM,
+		NCP_NETWARE,
+		NCP_OES,
+		SHARE_POINT_2010,
+		SHARE_POINT_2013,
+		WEB_DAV,
+		UNKNOWN;
+
+		public static NetFolderRootType getType( String type )
+		{
+			if ( type == null )
+				return NetFolderRootType.FAMT;
+			
+			if ( type.equalsIgnoreCase( NetFolderRootType.CIFS.toString() ) )
+				return NetFolderRootType.CIFS;
+			
+			if ( type.equalsIgnoreCase( NetFolderRootType.CLOUD_FOLDERS.toString() ) )
+				return NetFolderRootType.CLOUD_FOLDERS;
+			
+			if ( type.equalsIgnoreCase( NetFolderRootType.FAMT.toString() ) )
+				return NetFolderRootType.FAMT;
+			
+			if ( type.equalsIgnoreCase( NetFolderRootType.FILE_SYSTEM.toString() ) )
+				return NetFolderRootType.FILE_SYSTEM;
+			
+			if ( type.equalsIgnoreCase( NetFolderRootType.NCP_NETWARE.toString() ) )
+				return NetFolderRootType.NCP_NETWARE;
+
+			if ( type.equalsIgnoreCase( NetFolderRootType.NCP_OES.toString() ) )
+				return NetFolderRootType.NCP_OES;
+
+			if ( type.equalsIgnoreCase( NetFolderRootType.SHARE_POINT_2010.toString() ) )
+				return NetFolderRootType.SHARE_POINT_2010;
+			
+			if ( type.equalsIgnoreCase( NetFolderRootType.SHARE_POINT_2013.toString() ) )
+				return NetFolderRootType.SHARE_POINT_2013;
+			
+			if ( type.equalsIgnoreCase( NetFolderRootType.WEB_DAV.toString() ) )
+				return NetFolderRootType.WEB_DAV;
+			
+			return NetFolderRootType.UNKNOWN;
+		}
 	}
 	
 	/**
@@ -207,7 +251,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 		
 		// Create a select control for selecting the type of net folder root
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
+		if ( m_showNetFolderServerType )
 		{
 			label = new InlineLabel( messages.modifyNetFolderServerDlg_TypeLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
@@ -216,16 +260,18 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_rootTypeListbox = new ListBox( false );
 			m_rootTypeListbox.setVisibleItemCount( 1 );
 			
-			m_rootTypeListbox.addItem( 
-						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_FileSystem(),
-						NetFolderRootType.FILE_SYSTEM.toString() );
-			m_rootTypeListbox.addItem(
-						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_WebDav(),
-						NetFolderRootType.WEB_DAV.toString() );
 			m_rootTypeListbox.addItem(
 						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_Famt(),
 						NetFolderRootType.FAMT.toString() );
 			
+			m_rootTypeListbox.addItem(
+					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2010(),
+					NetFolderRootType.SHARE_POINT_2010.toString() );
+		
+			m_rootTypeListbox.addItem(
+					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2013(),
+					NetFolderRootType.SHARE_POINT_2013.toString() );
+		
 			m_rootTypeListbox.setSelectedIndex( 0 );
 
 			m_rootTypeListbox.addChangeHandler( new ChangeHandler()
@@ -252,22 +298,20 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 		// Create the controls for "root path"
 		{
-			FlowPanel panel;
-			
-			panel = new FlowPanel();
-			panel.addStyleName( "margintop1" );
-			panel.addStyleName( "modifyNetFolderServerDlg_ServerPathHint" );
+			m_serverPathHintPanel = new FlowPanel();
+			m_serverPathHintPanel.addStyleName( "margintop1" );
+			m_serverPathHintPanel.addStyleName( "modifyNetFolderServerDlg_ServerPathHint" );
 
 			// Add a hint that describes the unc syntax
 			label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint1() );
-			panel.add( label );
+			m_serverPathHintPanel.add( label );
 			label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint2() );
-			panel.add( label );
+			m_serverPathHintPanel.add( label );
 			label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint3() );
-			panel.add( label );
+			m_serverPathHintPanel.add( label );
 			
 			cellFormatter.setColSpan( nextRow, 0, 2 );
-			table.setWidget( nextRow, 0, panel );
+			table.setWidget( nextRow, 0, m_serverPathHintPanel );
 			++nextRow;
 			
 			label = new InlineLabel( messages.modifyNetFolderServerDlg_ServerPathLabel() );
@@ -280,7 +324,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 		
 		// Create the WebDAV specific controls
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
+		if ( m_showWebDavControls )
 		{
 			// Add some space
 			m_webDavSpacerPanel = new FlowPanel();
@@ -601,6 +645,37 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				
 				if ( m_isSharePointServerCkbox != null )
 					m_isSharePointServerCkbox.setVisible( visible );
+				
+				// Update the server path hint
+				{
+					GwtTeamingMessages messages;
+					Label label;
+					
+					m_serverPathHintPanel.clear();
+					
+					messages = GwtTeaming.getMessages();
+					
+					switch( type )
+					{
+					case FAMT:
+						label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint1() );
+						m_serverPathHintPanel.add( label );
+						label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint2() );
+						m_serverPathHintPanel.add( label );
+						label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint3() );
+						m_serverPathHintPanel.add( label );
+						break;
+						
+					case SHARE_POINT_2010:
+					case SHARE_POINT_2013:
+						label = new Label( messages.modifyNetFolderServerDlg_SharePointPathHint() );
+						m_serverPathHintPanel.add( label );
+						break;
+						
+					default:
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -837,16 +912,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	
 				value = m_rootTypeListbox.getValue( selectedIndex );
 				if ( value != null )
-				{
-					if ( value.equalsIgnoreCase( NetFolderRootType.FILE_SYSTEM.toString() ) )
-						return NetFolderRootType.FILE_SYSTEM;
-					
-					if ( value.equalsIgnoreCase( NetFolderRootType.WEB_DAV.toString() ) )
-						return NetFolderRootType.WEB_DAV;
-					
-					if ( value.equalsIgnoreCase( NetFolderRootType.FAMT.toString() ) )
-						return NetFolderRootType.FAMT;
-				}
+					return NetFolderRootType.getType( value );
 			}
 			
 			return NetFolderRootType.UNKNOWN;

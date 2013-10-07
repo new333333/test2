@@ -2231,12 +2231,15 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_ServerPathHint2();
 	String modifyNetFolderServerDlg_ServerPathHint3();
 	String modifyNetFolderServerDlg_ServerPathLabel();
+	String modifyNetFolderServerDlg_SharePointPathHint();
 	String modifyNetFolderServerDlg_SyncAllNetFoldersPrompt();
 	String modifyNetFolderServerDlg_SyncOfNetFolderServerStarted();
 	String modifyNetFolderServerDlg_TestConnectionLabel();
 	String modifyNetFolderServerDlg_TypeLabel();
 	String modifyNetFolderServerDlg_Type_Famt();
 	String modifyNetFolderServerDlg_Type_FileSystem();
+	String modifyNetFolderServerDlg_Type_SharePoint2010();
+	String modifyNetFolderServerDlg_Type_SharePoint2013();
 	String modifyNetFolderServerDlg_Type_WebDav();
 	String modifyNetFolderServerDlg_SyncScheduleCaption();
 	String modifyNetFolderServerDlg_User();

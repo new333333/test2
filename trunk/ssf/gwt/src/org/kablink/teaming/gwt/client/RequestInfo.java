@@ -91,6 +91,15 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return the flag that tells us if we should let the admin select the data source type in a
+	 * net folder server.
+	 */
+	public final native boolean getAllowSelectNetFolderServerDataSource()
+	/*-{
+		return this.getBFromS( this.allowSelectNetFolderServerDataSource );
+	}-*/;
+	
+	/**
 	 * Return the base Vibe URL.
 	 * 
 	 * @return
