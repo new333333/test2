@@ -10755,28 +10755,29 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Save the 'Download' setting.  If userId is not null saves the
-	 * value in the user's properties.  Otherwise, saves the setting
+	 * Save the 'Download' setting.  If upId is not null saves the
+	 * value in the UserPrincipal object.  Otherwise, saves the setting
 	 * in the zone.
 	 * 
 	 * @param bs
-	 * @param userId
+	 * @param upId
 	 * @param allowDownload
 	 * @param errList
 	 * 
 	 * @return
 	 */
-	public static Boolean saveDownloadSetting(AllModulesInjected bs, Long userId, Boolean allowDownload, ErrorListRpcResponseData errList) {
+	public static Boolean saveDownloadSetting(AllModulesInjected bs, Long upId, Boolean allowDownload, ErrorListRpcResponseData errList) {
 		// Are we dealing with a user?
-		if (null != userId) {
-			// Yes!  Save the setting to their properties.
+		if (null != upId) {
+			// Yes!  Save the setting to the UserPrincipal.
 			//     null -> Remove the setting and revert to the zone's setting.
 			// non-null -> Specific value to set.
-			User user = ((User) bs.getProfileModule().getEntry(userId));
-			if (user.isPerson() && (!(user.isSuper()))) {
+			Principal p    = bs.getProfileModule().getEntry(upId);
+			User      user = ((p instanceof User) ? ((User) p) : null);
+			if ((null == user) || (user.isPerson() && (!(user.isSuper())))) {
 				// We don't allow this to be set for non-person users
 				// (e.g., E-Mail Posting Agent) or admin.
-				bs.getProfileModule().setDownloadEnabled(userId, allowDownload);
+				bs.getProfileModule().setDownloadEnabled(upId, allowDownload);
 			}
 			else if (null != errList) {
 				errList.addError(NLT.get("saveDownloadSetting.invalidUser", new String[]{user.getTitle()}));
@@ -10794,9 +10795,9 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 	
-	public static Boolean saveDownloadSetting(AllModulesInjected bs, Long userId, Boolean allowDownload) {
+	public static Boolean saveDownloadSetting(AllModulesInjected bs, Long upId, Boolean allowDownload) {
 		// Always use the initial form of the method.
-		return saveDownloadSetting(bs, userId, allowDownload, null);
+		return saveDownloadSetting(bs, upId, allowDownload, null);
 	}
 	
 	/**
@@ -10866,28 +10867,29 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Save the 'WebAccess' setting.  If userId is not null saves the
-	 * value in the user's properties.  Otherwise, saves the setting
+	 * Save the 'WebAccess' setting.  If upId is not null saves the
+	 * value in the UserPrincipal object.  Otherwise, saves the setting
 	 * in the zone.
 	 * 
 	 * @param bs
-	 * @param userId
+	 * @param upId
 	 * @param allowWebAccess
 	 * @param errList
 	 * 
 	 * @return
 	 */
-	public static Boolean saveWebAccessSetting(AllModulesInjected bs, Long userId, Boolean allowWebAccess, ErrorListRpcResponseData errList) {
+	public static Boolean saveWebAccessSetting(AllModulesInjected bs, Long upId, Boolean allowWebAccess, ErrorListRpcResponseData errList) {
 		// Are we dealing with a user?
-		if (null != userId) {
-			// Yes!  Save the setting to their properties.
+		if (null != upId) {
+			// Yes!  Save the setting to the UserProperties.
 			//     null -> Remove the setting and revert to the zone's setting.
 			// non-null -> Specific value to set.
-			User user = ((User) bs.getProfileModule().getEntry(userId));
-			if (user.isPerson() && (!(user.isSuper())) && (!(user.isShared()))) {
+			Principal p    = bs.getProfileModule().getEntry(upId);
+			User      user = ((p instanceof User) ? ((User) p) : null);
+			if ((null == user) || (user.isPerson() && (!(user.isSuper())) && (!(user.isShared())))) {
 				// We don't allow this to be set for non-person users
 				// (e.g., E-Mail Posting Agent), admin or guest.
-				bs.getProfileModule().setWebAccessEnabled(userId, allowWebAccess);
+				bs.getProfileModule().setWebAccessEnabled(upId, allowWebAccess);
 			}
 			else if (null != errList) {
 				errList.addError(NLT.get("saveWebAccessSetting.invalidUser", new String[]{user.getTitle()}));
@@ -10905,9 +10907,9 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 	
-	public static Boolean saveWebAccessSetting(AllModulesInjected bs, Long userId, Boolean allowWebAccess) {
+	public static Boolean saveWebAccessSetting(AllModulesInjected bs, Long upId, Boolean allowWebAccess) {
 		// Always use the initial form of the method.
-		return saveWebAccessSetting(bs, userId, allowWebAccess, null);
+		return saveWebAccessSetting(bs, upId, allowWebAccess, null);
 	}
 	
 	/**
