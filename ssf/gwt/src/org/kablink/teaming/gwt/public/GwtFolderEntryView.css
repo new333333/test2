@@ -166,7 +166,7 @@
 	/* Start:  Folder entry composite styles. */
 		.vibe-feComposite-closeImg           {}
 		.vibe-feComposite-closeLabel         {white-space: nowrap; margin-right: 5px; vertical-align: middle; font-weight: normal; font-size: .9em; }
-		.vibe-feComposite-closePanel         {position: relative; display: inline; white-space: nowrap; cursor: pointer !important;}
+		.vibe-feComposite-closePanel         {position: relative; top: -1px; display: inline; white-space: nowrap; cursor: pointer !important;}
 		.vibe-feComposite-commentsHeadOuter  {position: absolute; color: white; top: -5px; right: 177px; width: 200px; display: block; font-weight: bold; padding: 5px;}
 		.vibe-feComposite-commentsHeadInner  {border-bottom: 1px solit #CCC; display: block;}
 		.vibe-feComposite-commentsHeadTitle  {position: relative; font-size: 13px; height: 16px; padding: 6px 5px 4px 50px; display: block; color: white; font-weight: bold; padding: 5px;}
@@ -176,7 +176,7 @@
 		.vibe-feComposite-navNextImg         {cursor: pointer;}
 		.vibe-feComposite-navPanel           {position: relative; display: inline; white-space: nowrap;}
 		.vibe-feComposite-navPrevImg         {cursor: pointer; padding-right: 1px;}
-		.vibe-feComposite-rightPanel         {position: absolute; top: 3px; right: 8px; white-space: nowrap;}
+		.vibe-feComposite-rightPanel         {position: absolute; top: 0px; right: 8px; white-space: nowrap;}
 		.vibe-feComposite-rootPanel          {}
 	/* End:  Folder entry composite styles. */
 	

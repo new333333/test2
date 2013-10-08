@@ -337,7 +337,7 @@ public class FolderEntryComposite extends ResizeComposite
 			closePanel.add(close);
 			
 			// ...and an 'X' image to close it.
-			Image closeX = GwtClientHelper.buildImage(m_images.closeX());
+			Image closeX = GwtClientHelper.buildImage(m_images.closeBorder().getSafeUri().asString());
 			closeX.addStyleName("vibe-feComposite-closeImg");
 			closeX.addClickHandler(closeClick);
 			closePanel.add(closeX);
