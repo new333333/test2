@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -102,6 +103,7 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
@@ -2355,6 +2357,130 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs the ToolbarItems for action menu on individual groups
+	 * in the Manage Groups dialog.
+	 */
+	private static void constructGroupManageGroupItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long groupId) {
+		// Access the group in question.
+		Group group = ((Group) bs.getProfileModule().getEntry(groupId));
+		
+		// Are we in Filr mode?
+		ToolbarItem manageGroupTBI;
+		if (Utils.checkIfFilr()) {
+			// Yes!  Add whether adHoc folders are accessible.
+			Boolean adHocFlag = SearchUtils.getAdhocFolderSettingFromUserOrGroup(bs, groupId);
+			if (null == adHocFlag) {
+				adHocFlag = SearchUtils.getAdhocFolderSettingFromZone(bs);
+			}
+			boolean hasAdHocFolders = adHocFlag;
+			boolean perGroupAdHoc   = (null != group.isAdHocFoldersEnabled());
+
+			if (hasAdHocFolders) {
+				// ...add the disable users adHoc folders item...
+				manageGroupTBI = new ToolbarItem("1_disableSelectedAdHoc");
+				markTBITitle(manageGroupTBI, "toolbar.disable.user.adHoc.perGroup");
+				markTBIEvent(manageGroupTBI, TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS);
+				entryToolbar.addNestedItem(manageGroupTBI);
+			}
+			
+			else {
+				// ...otherwise, if they don't have adHoc folders, add
+				// ...the enable users adHoc folders item...
+				manageGroupTBI = new ToolbarItem("1_enableSelectedAdHoc");
+				markTBITitle(manageGroupTBI, "toolbar.enable.user.adHoc.perGroup");
+				markTBIEvent(manageGroupTBI, TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS);
+				entryToolbar.addNestedItem(manageGroupTBI);
+			}
+
+			// ...if they currently have a per user adHoc folder
+			// ...setting...
+			if (perGroupAdHoc) {
+				// ...and add the clear users adHoc folders item.
+				manageGroupTBI = new ToolbarItem("1_clearSelectedAdHoc");
+				markTBITitle(manageGroupTBI, "toolbar.clear.user.adHoc");
+				markTBIEvent(manageGroupTBI, TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS);
+				entryToolbar.addNestedItem(manageGroupTBI);
+			}
+
+			// Add a separator after the previous item...
+			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+	
+			// Add whether files can be downloaded.
+			Boolean dlFlag = SearchUtils.getDownloadSettingFromUserOrGroup(bs, groupId);
+			if (null == dlFlag) {
+				dlFlag = SearchUtils.getDownloadSettingFromZone(bs);
+			}
+			boolean canDownload      = dlFlag;
+			boolean perGroupDownload = (null != group.isDownloadEnabled());
+			
+			if (canDownload) {
+				// ...add the disable download item...
+				manageGroupTBI = new ToolbarItem("1_disableSelectedDownload");
+				markTBITitle(manageGroupTBI, "toolbar.disable.user.download.perGroup");
+				markTBIEvent(manageGroupTBI, TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD);
+				entryToolbar.addNestedItem(manageGroupTBI);
+			}
+			
+			else {
+				// ...otherwise, if they can't download, add
+				// ...the enable download item...
+				manageGroupTBI = new ToolbarItem("1_enableSelectedDownload");
+				markTBITitle(manageGroupTBI, "toolbar.enable.user.download.perGroup");
+				markTBIEvent(manageGroupTBI, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
+				entryToolbar.addNestedItem(manageGroupTBI);
+			}
+	
+			// ...if they currently have a per user download
+			// ...setting...
+			if (perGroupDownload) {
+				// ...and add the clear users download item.
+				manageGroupTBI = new ToolbarItem("1_clearSelectedDownload");
+				markTBITitle(manageGroupTBI, "toolbar.clear.user.download");
+				markTBIEvent(manageGroupTBI, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
+				entryToolbar.addNestedItem(manageGroupTBI);
+			}
+
+			// Yes!  Add a separator after the previous item...
+			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+		}
+
+		// Add whether web access is enabled.
+		Boolean waFlag = SearchUtils.getWebAccessSettingFromUserOrGroup(bs, groupId);
+		if (null == waFlag) {
+			waFlag = SearchUtils.getWebAccessSettingFromZone(bs);
+		}
+		boolean hasWebAccess      = waFlag;
+		boolean perGroupWebAccess = (null != group.isWebAccessEnabled());
+		
+		if (hasWebAccess) {
+			// ...add the disable web access item...
+			manageGroupTBI = new ToolbarItem("1_disableSelectedWebAccess");
+			markTBITitle(manageGroupTBI, "toolbar.disable.user.webAccess.perGroup");
+			markTBIEvent(manageGroupTBI, TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS);
+			entryToolbar.addNestedItem(manageGroupTBI);
+		}
+		
+		else {
+			// ...otherwise, if they can't use web access, add
+			// ...the enable web access item...
+			manageGroupTBI = new ToolbarItem("1_enableSelectedWebAccess");
+			markTBITitle(manageGroupTBI, "toolbar.enable.user.webAccess.perGroup");
+			markTBIEvent(manageGroupTBI, TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS);
+			entryToolbar.addNestedItem(manageGroupTBI);
+		}
+
+		// ...if they currently have a per user web access
+		// ...setting...
+		if (perGroupWebAccess) {
+			// ...and add the clear users web access item.
+			manageGroupTBI = new ToolbarItem("1_clearSelectedWebAccess");
+			markTBITitle(manageGroupTBI, "toolbar.clear.user.webAccess");
+			markTBIEvent(manageGroupTBI, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
+			entryToolbar.addNestedItem(manageGroupTBI);
+		}
+	}
+
+	/*
 	 * Constructs a ToolbarItem to run the send email to team members
 	 * (actually, contributors but I followed the naming that was used
 	 * in the JSP code) dialog. 
@@ -2839,9 +2965,29 @@ public class GwtMenuHelper {
 			// items.
 			constructEntryPinnedItem(entryToolbar, bs, request, viewType, folder);
 
-			// Are we returning the toolbar items for a trash view?
+			// Are we returning the toolbar items for other than a
+			// trash or collections view and are we in other than Filr
+			// mode?
 			boolean isBinderCollection = folderInfo.isBinderCollection();
 			boolean isBinderTrash      = folderInfo.isBinderTrash();
+			if ((!isBinderTrash) && (!isBinderCollection) && (!(Utils.checkIfFilr()))) {
+				// Yes!  Add the configure accessories item to the
+				// toolbar.
+				constructEntryConfigureAccessories(
+					bs,
+					request,
+					binder,
+					configureToolbarItems);
+			}
+
+			// If the binder supports column configuration...
+			ToolbarItem configureColumns = constructEntryConfigureColumsItem(binder);
+			if (null != configureColumns) {
+				// ...add the toolbar item to the configure list.
+				configureToolbarItems.add(configureColumns);
+			}
+
+			// Are we returning the toolbar items for a trash view?
 			if (isBinderTrash) {
 				// Yes!  Construct the items for viewing the trash.
 				constructEntryTrashItems(entryToolbar, bs, request, binder);
@@ -2983,26 +3129,6 @@ public class GwtMenuHelper {
 				}
 			}
 			
-			// Are we returning the toolbar items for other than a
-			// trash or collections view and are we in other than Filr
-			// mode?
-			if ((!isBinderTrash) && (!isBinderCollection) && (!(Utils.checkIfFilr()))) {
-				// Yes!  Add the configure accessories item to the
-				// toolbar.
-				constructEntryConfigureAccessories(
-					bs,
-					request,
-					binder,
-					configureToolbarItems);
-			}
-
-			// If the binder supports column configuration...
-			ToolbarItem configureColumns = constructEntryConfigureColumsItem(binder);
-			if (null != configureColumns) {
-				// ...add the toolbar item to the configure list.
-				configureToolbarItems.add(configureColumns);
-			}
-
 			// If we get here, reply refers to the
 			// GetFolderToolbarItemsRpcResponseData containing the
 			// ToolbarItem's for the folder.  Return it.
@@ -3071,6 +3197,42 @@ public class GwtMenuHelper {
 		}
 	}
 
+	/**
+	 * Returns a GetToolbarItemsRpcResponseData containing the 
+	 * ToolbarItem's for an entity given the current user's rights to
+	 * that entity.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param groupId
+	 * 
+	 * @return
+	 */
+	public static GetToolbarItemsRpcResponseData getGroupActionToolbarItems(AllModulesInjected bs, HttpServletRequest request, Long groupId) {
+		SimpleProfiler.start("GwtMenuHelper.getEntityToolbarItems()");
+		try {
+			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
+			// that we'll return.
+			ToolbarItem						actionToolbar = new ToolbarItem(WebKeys.ENTITY_ACTION_TOOLBAR);
+			List<ToolbarItem>				toolbarItems  = actionToolbar.getNestedItemsList();
+			GetToolbarItemsRpcResponseData	reply         = new GetToolbarItemsRpcResponseData(toolbarItems);
+
+			// Add the per group management items.
+			constructGroupManageGroupItems(actionToolbar, bs, request, groupId);
+			
+			// If we get here, reply refers to the 
+			// GetToolbarItemsRpcResponseData containing the
+			// ToolbarItem's for the entity.  Return it.
+			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getEntityToolbarItems():");
+			dumpToolbarItems(toolbarItems, "...");
+			return reply;
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtMenuHelper.getEntityToolbarItems()");
+		}
+	}
+	
 	/*
 	 * Returns the hostname of the current running instance of Vibe.
 	 */

@@ -1411,7 +1411,7 @@ public class SearchUtils {
 						for (Group group:  groups) {
 							// Does this group have an adHoc folder
 							// override?
-							Boolean gAdHoc = getDownloadSettingFromUserOrGroup(bs, group.getId());
+							Boolean gAdHoc = getAdhocFolderSettingFromUserOrGroup(bs, group.getId());
 							if (null != gAdHoc) {
 								// Yes!  Use it as the override and if
 								// it's true...

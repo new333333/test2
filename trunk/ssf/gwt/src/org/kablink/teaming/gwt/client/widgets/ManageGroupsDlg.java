@@ -41,9 +41,11 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.QuickFilter;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
+import org.kablink.teaming.gwt.client.datatable.GroupActionCell;
 import org.kablink.teaming.gwt.client.datatable.GroupTitleCell;
 import org.kablink.teaming.gwt.client.datatable.GroupTypeCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
+import org.kablink.teaming.gwt.client.datatable.VibeDataTableConstants;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
 import org.kablink.teaming.gwt.client.event.GroupCreationFailedEvent;
@@ -418,6 +420,25 @@ public class ManageGroupsDlg extends DlgBox implements
 			m_groupsTable.addColumn(
 								titleCol,
 								m_messages.manageGroupsDlgTitleCol());
+		}
+
+		// Add the "Title" column. The user can click on the text in this column
+		// to edit the group.
+		{
+			Column<GroupInfoPlus, GroupInfoPlus> actionCol;
+			
+			GroupActionCell gac = new GroupActionCell();
+			actionCol = new Column<GroupInfoPlus, GroupInfoPlus>(gac) {
+				@Override
+				public GroupInfoPlus getValue(GroupInfoPlus groupInfoPlus) {
+					return groupInfoPlus;
+				}
+			};
+
+			m_groupsTable.addColumn(
+								actionCol,
+								SafeHtmlUtils.fromSafeConstant("<br/>"));
+			m_groupsTable.setColumnWidth(actionCol, VibeDataTableConstants.ACTION_MENU_WIDTH_PX, Unit.PX);
 		}
 
 		// Add the "Name" column
@@ -1098,48 +1119,48 @@ public class ManageGroupsDlg extends DlgBox implements
 	 * Populates the More popup menu.
 	 */
 	private void populateMorePopup(PopupMenu morePopup) {
-		// Personal storage options.
 		final String emptyWarning = m_messages.manageGroupsDlgSelectGroupsToModify();
-		morePopup.addMenuItem(
-			new Command() {
-				@Override
-				public void execute() {
-					List<Long> groups = getSelectedGroupIds(emptyWarning);
-					if (!(groups.isEmpty())) {
-						BinderViewsHelper.disableUsersAdHocFolders(groups);
-					}
-				}
-			},
-			null,
-			m_messages.manageGroupsDlgPersonalStorage_Disable());
-		
-		morePopup.addMenuItem(
-			new Command() {
-				@Override
-				public void execute() {
-					List<Long> groups = getSelectedGroupIds(emptyWarning);
-					if (!(groups.isEmpty())) {
-						BinderViewsHelper.enableUsersAdHocFolders(groups);
-					}
-				}
-			},
-			null,
-			m_messages.manageGroupsDlgPersonalStorage_Enable());
-		
-		morePopup.addMenuItem(
-			new Command() {
-				@Override
-				public void execute() {
-					List<Long> groups = getSelectedGroupIds(emptyWarning);
-					if (!(groups.isEmpty())) {
-						BinderViewsHelper.clearUsersAdHocFolders(groups);
-					}
-				}
-			},
-			null,
-			m_messages.manageGroupsDlgPersonalStorage_Clear());
-
 		if (GwtClientHelper.isLicenseFilr()) {
+			// Personal storage options.
+			morePopup.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						if (!(groups.isEmpty())) {
+							BinderViewsHelper.disableUsersAdHocFolders(groups);
+						}
+					}
+				},
+				null,
+				m_messages.manageGroupsDlgPersonalStorage_Disable());
+			
+			morePopup.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						if (!(groups.isEmpty())) {
+							BinderViewsHelper.enableUsersAdHocFolders(groups);
+						}
+					}
+				},
+				null,
+				m_messages.manageGroupsDlgPersonalStorage_Enable());
+			
+			morePopup.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						if (!(groups.isEmpty())) {
+							BinderViewsHelper.clearUsersAdHocFolders(groups);
+						}
+					}
+				},
+				null,
+				m_messages.manageGroupsDlgPersonalStorage_Clear());
+
 			// Download options.
 			morePopup.addSeparator();
 			morePopup.addMenuItem(
@@ -1180,10 +1201,11 @@ public class ManageGroupsDlg extends DlgBox implements
 				},
 				null,
 				m_messages.manageGroupsDlgDownload_Clear());
+			
+			morePopup.addSeparator();
 		}
 		
 		// WebAccess options.
-		morePopup.addSeparator();
 		morePopup.addMenuItem(
 			new Command() {
 				@Override
