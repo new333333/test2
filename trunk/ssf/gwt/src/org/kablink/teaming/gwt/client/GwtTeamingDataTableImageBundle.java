@@ -200,6 +200,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource spacer1px();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/touch_slide.png")
+	public ImageResource touchSlide();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/unknown_128.png")
 	public ImageResource unknown();
 	
