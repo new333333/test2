@@ -72,11 +72,9 @@ public class GroupActionCell extends AbstractCell<GroupInfoPlus> {
 
 	/**
 	 * Constructor method.
-	 * 
-	 * @param binderInfo
 	 */
 	public GroupActionCell() {
-		// Sink the events we need to process an action menu...
+		// Sink the events we need to process this action cell...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
@@ -92,11 +90,11 @@ public class GroupActionCell extends AbstractCell<GroupInfoPlus> {
 	 * Asynchronously builds and shows the action menu for this cell's
 	 * group.
 	 */
-	private void buildAndShowActionMenuAsync(final Element actionMenuImg, final Long group, final String groupTitle, final List<ToolbarItem> tbiList) {
+	private void buildAndShowActionMenuAsync(final Element actionMenuImg, final Long groupId, final List<ToolbarItem> tbiList) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				buildAndShowActionMenuNow(actionMenuImg, group, groupTitle, tbiList);
+				buildAndShowActionMenuNow(actionMenuImg, groupId, tbiList);
 			}
 		});
 	}
@@ -105,7 +103,7 @@ public class GroupActionCell extends AbstractCell<GroupInfoPlus> {
 	 * Synchronously builds and shows the action menu for this cell's
 	 * group.
 	 */
-	private void buildAndShowActionMenuNow(final Element actionMenuImg, final Long groupId, final String groupTitle, final List<ToolbarItem> tbiList) {
+	private void buildAndShowActionMenuNow(final Element actionMenuImg, final Long groupId, final List<ToolbarItem> tbiList) {
 		// If we don't have any items for the action menu...
 		if (tbiList.isEmpty()) {
 			// ...tell the user and bail.
@@ -122,7 +120,7 @@ public class GroupActionCell extends AbstractCell<GroupInfoPlus> {
 			// ...adding each to the action menu...
 			if      (actionTBI.hasNestedToolbarItems()) GwtClientHelper.deferredAlert(m_messages.vibeDataTable_InternalError_UnsupportedStructuredToolbar());
 			else if (actionTBI.isSeparator())           actionMenu.addSeparator();
-			else                                        renderSimpleTBI(groupId, groupTitle, actionMenu, actionMenuImg, actionTBI);
+			else                                        renderActionTBI(groupId, actionMenu, actionMenuImg, actionTBI);
 		}
 			
 		// ...and then show the action menu.
@@ -234,9 +232,8 @@ public class GroupActionCell extends AbstractCell<GroupInfoPlus> {
 		actionMenuImg.addStyleName("vibe-dataTableActions-img");
 		actionMenuImg.setTitle(m_messages.vibeDataTable_Alt_EntryActions());
 		Element amiE = actionMenuImg.getElement();
-		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,   VibeDataTableConstants.CELL_WIDGET_ENTRY_ACTION_MENU_IMAGE);
-		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_GROUP_ID,    String.valueOf(gip.getGroupInfo().getId())                );
-		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_GROUP_TITLE, gip.getGroupInfo().getTitle()                             );
+		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_ACTION_MENU_IMAGE);
+		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_GROUP_ID,  String.valueOf(gip.getGroupInfo().getId())                );
 		fp.add(actionMenuImg);
 		
 		// ...and render that into the cell.
@@ -245,21 +242,15 @@ public class GroupActionCell extends AbstractCell<GroupInfoPlus> {
 	}
 
 	/*
-	 * Renders any simple (i.e., URL or event based) toolbar item.
+	 * Renders an action (event based) toolbar item.
 	 */
-	private void renderSimpleTBI(final Long groupId, final String groupTitle, final PopupMenu actionMenu, final Element actionMenuImg, final ToolbarItem simpleTBI) {
-		// What do we know about this toolbar item?
-		final String        simpleTitle = simpleTBI.getTitle();
-		final TeamingEvents simpleEvent = simpleTBI.getTeamingEvent();
-
-		// No, it in't a URL for a targeted anchor!  Generate a
-		// command based menu item.
-		VibeMenuItem menuItem = new VibeMenuItem(simpleTitle, false, new Command() {
+	private void renderActionTBI(final Long groupId, final PopupMenu actionMenu, final Element actionMenuImg, final ToolbarItem actionTBI) {
+		// Generate a command based menu item.
+		VibeMenuItem menuItem = new VibeMenuItem(actionTBI.getTitle(), false, new Command() {
 			@Override
 			public void execute() {
-				// No, the toolbar item didn't contain a URL!
-				// The only other option is an event.
-				switch (simpleEvent) {
+				TeamingEvents actionEvent = actionTBI.getTeamingEvent();
+				switch (actionEvent) {
 				case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:    BinderViewsHelper.clearUsersAdHocFolders(  groupId); break;
 				case CLEAR_SELECTED_USERS_DOWNLOAD:         BinderViewsHelper.clearUsersDownload(      groupId); break;
 				case CLEAR_SELECTED_USERS_WEBACCESS:        BinderViewsHelper.clearUsersWebAccess(     groupId); break;
@@ -272,7 +263,7 @@ public class GroupActionCell extends AbstractCell<GroupInfoPlus> {
 
 				default:
 				case UNDEFINED:
-					GwtClientHelper.deferredAlert(m_messages.eventHandling_NoActionMenuHandler(simpleEvent.name()));
+					GwtClientHelper.deferredAlert(m_messages.eventHandling_NoActionMenuHandler(actionEvent.name()));
 				}
 			}
 		});
@@ -288,8 +279,7 @@ public class GroupActionCell extends AbstractCell<GroupInfoPlus> {
 	 */
 	private void showActionMenu(final Element actionMenuImg) {
 		// Load the action menu's toolbar items.
-		final String groupTitle    = actionMenuImg.getAttribute(VibeDataTableConstants.CELL_WIDGET_GROUP_TITLE);
-		final String groupIdString = actionMenuImg.getAttribute(VibeDataTableConstants.CELL_WIDGET_GROUP_ID   );
+		final String groupIdString = actionMenuImg.getAttribute(VibeDataTableConstants.CELL_WIDGET_GROUP_ID);
 		final Long	 groupId       = Long.parseLong(groupIdString);
 		GwtClientHelper.executeCommand(
 				new GetGroupActionToolbarItemsCmd(groupId),
@@ -309,7 +299,7 @@ public class GroupActionCell extends AbstractCell<GroupInfoPlus> {
 				
 				// ...and use them to build and show the action
 				// ...menu. 
-				buildAndShowActionMenuAsync(actionMenuImg, groupId, groupTitle, tbiList);
+				buildAndShowActionMenuAsync(actionMenuImg, groupId, tbiList);
 			}
 		});
 	}
