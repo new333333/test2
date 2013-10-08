@@ -5779,6 +5779,12 @@ td.datePickerMonth {
 	top: 5px;
 }
 
+.ldapSyncResultsDlg_PreviewHint
+{
+	color: #4D6D8B;
+	font-size: .9em;
+	width: 500px;
+}
 
 /* End */
  

@@ -62,8 +62,10 @@ import org.kablink.teaming.gwt.client.GwtLdapSyncResults.GwtLdapSyncStatus;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveLdapConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StartLdapSyncRpcResponseData;
+import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.GwtLdapSyncMode;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.ldap.LdapModule;
+import org.kablink.teaming.module.ldap.LdapModule.LdapSyncMode;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
@@ -675,15 +677,21 @@ public class GwtLdapHelper
 		String syncId,
 		boolean syncUsersAndGroups,
 		String[] listOfLdapConfigsToSyncGuid,
-		ArrayList<GwtLdapConnectionConfig> listOfLdapServers )
+		ArrayList<GwtLdapConnectionConfig> listOfLdapServers,
+		GwtLdapSyncMode gwtSyncMode )
 	{
 		StartLdapSyncRpcResponseData response;
 		LdapSyncResults syncResults;
 		LdapSyncThread	ldapSyncThread;
 		LdapModule		ldapModule;
+		LdapSyncMode syncMode;
 		
 		response = new StartLdapSyncRpcResponseData();
 
+		syncMode = LdapSyncMode.PERFORM_SYNC;
+		if ( gwtSyncMode == GwtLdapSyncMode.PREVIEW_ONLY )
+			syncMode = LdapSyncMode.PREVIEW_ONLY;
+		
 		ldapModule = ami.getLdapModule();
 
 		// Create an LdapSyncThread object that will do the sync work.
@@ -694,7 +702,8 @@ public class GwtLdapHelper
 														syncId,
 														ldapModule,
 														syncUsersAndGroups,
-														listOfLdapConfigsToSyncGuid );
+														listOfLdapConfigsToSyncGuid,
+														syncMode );
 		if ( ldapSyncThread != null )
 		{
 			GwtLdapSyncResults gwtLdapSyncResults;

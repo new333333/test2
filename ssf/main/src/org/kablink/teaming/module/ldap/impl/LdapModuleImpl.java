@@ -1644,7 +1644,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							if ( usersToUpdate.size() > 99 )
 							{
 								logger.info( "about to call updateUsers()" );
-								updateUsers( zoneId, usersToUpdate, null, modifiedUsersSyncResults );
+								updateUsers( zoneId, usersToUpdate, null, LdapSyncMode.PERFORM_SYNC, modifiedUsersSyncResults );
 								logger.info( "back from updateUsers()" );
 								
 								usersToUpdate.clear();
@@ -1661,7 +1661,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		// Update the users with the guid from the ldap directory.
 		logger.info( "about to call updateUsers()" );
-		updateUsers( zoneId, usersToUpdate, null, modifiedUsersSyncResults );
+		updateUsers( zoneId, usersToUpdate, null, LdapSyncMode.PERFORM_SYNC, modifiedUsersSyncResults );
 		logger.info( "back from updateUsers()" );
 		
     }// end syncGuidAttributeForAllUsers()
@@ -1680,7 +1680,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Workspace zone;
 		Long zoneId;
 		ProfileDao profileDao;
-		PartialLdapSyncResults modifiedUsersSyncResults;
 		String[] ldapAttributesToRead;
 		String ldapGuidAttribute;
 
@@ -1761,7 +1760,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							userMods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, guid );
 
 							// Update this group with the value of the guid attribute from the ldap directory.
-							updateGroup( zoneId, principal.getId(), userMods, syncResults );
+							updateGroup( zoneId, principal.getId(), userMods, LdapSyncMode.PERFORM_SYNC, syncResults );
 						}
 						catch (NoPrincipalByTheNameException ex)
 						{
@@ -2629,6 +2628,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Read the list of all containers from the db.
 					m_containerCoordinator.getListOfAllContainers();
 					m_containerCoordinator.setLdapDirType( dirType );
+					m_containerCoordinator.setLdapSyncMode( LdapSyncMode.PERFORM_SYNC );
 					m_containerCoordinator.record( dn );
 					m_containerCoordinator.wrapUp( false );
 				}
@@ -2697,6 +2697,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	public void syncAll(
 		boolean syncUsersAndGroups,
 		String[] listOfLdapConfigsToSyncGuid,
+		LdapSyncMode syncMode,
 		LdapSyncResults syncResults ) throws LdapSyncException
 	{
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
@@ -2719,7 +2720,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			boolean errorSyncingGroups;
 			boolean doUserCleanup = false;
 	   		boolean delContainers;
-			
+
 			m_server_vol_map.clear();
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.TRUE );
 			
@@ -2743,6 +2744,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				return;
 			
 			m_containerCoordinator.clear();
+			m_containerCoordinator.setLdapSyncMode( syncMode );
 			
 			// Read the list of all containers from the db.
 			m_containerCoordinator.getListOfAllContainers();
@@ -2750,8 +2752,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			errorSyncingUsers = false;
 			
 			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
-	    	UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
-	   															  info.isUserDelete(), info.isUserWorkspaceDelete(), syncResults );
+	    	UserCoordinator userCoordinator = new UserCoordinator(
+	    													zone,
+	    													info.isUserSync(),
+	    													info.isUserRegister(),
+	   														info.isUserDelete(),
+	   														info.isUserWorkspaceDelete(),
+	   														syncMode,
+	   														syncResults );
 			for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 		   		LdapContext ctx=null;
 
@@ -2840,7 +2848,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			logger.info( "Finished userCoordinator.wrapUp()" );
 
 			errorSyncingGroups = false;
-	   		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, userCoordinator.dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete(), syncResults );
+	   		GroupCoordinator groupCoordinator = new GroupCoordinator(
+	   															zone,
+	   															userCoordinator.dnUsers,
+	   															info.isGroupSync(),
+	   															info.isGroupRegister(),
+	   															info.isGroupDelete(),
+	   															syncMode,
+	   															syncResults );
 	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 		   		LdapContext ctx=null;
 		  		try {
@@ -2914,7 +2929,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   				// Yes
 	   				for ( Long nextGroupId : listOfDynamicGroups )
 	   				{
-	   					updateDynamicGroupMembership( nextGroupId, groupCoordinator.getLdapSyncResults() );
+	   					updateDynamicGroupMembership( nextGroupId, syncMode, groupCoordinator.getLdapSyncResults() );
 	   				}
 	   			}
 	   			
@@ -3033,7 +3048,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	/**
 	 * 
 	 */
-	private void updateDynamicGroupMembership( Long groupId, LdapSyncResults ldapSyncResults )
+	private void updateDynamicGroupMembership(
+		Long groupId,
+		LdapSyncMode syncMode,
+		LdapSyncResults ldapSyncResults )
 	{
 		Principal principal;
 		
@@ -3161,7 +3179,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					logger.info( "\t\tAbout to update dynamic group: " + group.getName() );
-					updateMembership( groupId, newMembers, syncResults );
+					updateMembership( groupId, newMembers, syncMode, syncResults );
 				}
 				catch ( LdapSyncException e )
 				{
@@ -3171,6 +3189,56 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 	}
 	
+
+	/**
+	 * 
+	 */
+	private void addPrincipalsToPreviewSyncResults( Map<String,Map> principals, PartialLdapSyncResults syncResults )
+	{
+		StringBuffer result;
+
+		if ( syncResults == null )
+			return;
+		
+		result = new StringBuffer();
+
+		// Record the names of the users we would have created.
+		for (Iterator iter = principals.values().iterator(); iter.hasNext();)
+		{
+			Map attrs;
+			Object value;
+			String name;
+			String dn;
+
+			name = null;
+			dn = null;
+			result.setLength( 0 );
+			
+			attrs = (Map)iter.next();
+			value = attrs.get( ObjectKeys.FIELD_PRINCIPAL_NAME ); 
+			if (  value != null )
+				name = (String) value;
+			
+			value = attrs.get( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME );
+			if ( value != null )
+				dn = (String) value;
+			
+			if ( name != null )
+			{
+				result.append( name );
+				
+				if ( dn != null )
+				{
+					result.append( " (" );
+					result.append( dn );
+					result.append( ")" );
+				}
+			}
+			
+			if( result.length() > 0 )
+				syncResults.addResult( result.toString() );
+		}
+	}
 	
 	/**
 	 * This class holds information about a container.
@@ -3240,6 +3308,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		// The ldap directory type we are currently working with.
 		private LdapDirType m_dirType;
+		
+		private LdapSyncMode m_syncMode;
 		
 		/**
 		 * 
@@ -3408,6 +3478,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 */
 		private void createNewContainers()
 		{
+			// Are we in "preview" mode?
+			if ( m_syncMode == LdapSyncMode.PREVIEW_ONLY )
+			{
+				// Yes, nothing to do.
+				return;
+			}
+			
 			if ( Utils.checkIfFilr() && m_containersToBeCreated.size() > 0 )
 			{
 				// Go through the list of containers that need to be created and create them.
@@ -3427,6 +3504,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		private void deleteObsoleteContainers()
 		{
+			// Are we in "preview" mode?
+			if ( m_syncMode == LdapSyncMode.PREVIEW_ONLY )
+			{
+				// Yes, nothing to do.
+				return;
+			}
+			
 			if ( Utils.checkIfFilr() )
 			{
 				Map options;
@@ -3543,6 +3627,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		
 		/**
+		 * 
+		 */
+		public void setLdapSyncMode( LdapSyncMode syncMode )
+		{
+			m_syncMode = syncMode;
+		}
+		
+		/**
 		 * Create any new containers and delete any obsolete container.
 		 */
 		public void wrapUp( boolean deleteObsoleteContainers )
@@ -3633,12 +3725,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		private LdapConnectionConfig m_ldapConfig;
 		
+		private LdapSyncMode m_syncMode;
+
 		public UserCoordinator(
 			Binder zone,
 			boolean sync,
 			boolean create,
 			boolean delete,
 			boolean deleteWorkspace,
+			LdapSyncMode syncMode,
 			LdapSyncResults syncResults )
 		{
 			ObjectControls objCtrls;
@@ -3650,6 +3745,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			this.delete = delete;
 			this.deleteWorkspace = deleteWorkspace;
 			m_ldapSyncResults = syncResults;
+			m_syncMode = syncMode;
 			
 			createSyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "create.flush.threshhold"), 100);
 			modifySyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "modify.flush.threshhold"), 100);
@@ -3924,7 +4020,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getModifiedUsers();
 				}
-				updateUsers( zoneId, ldap_existing, ldap_existing_homeDirInfo, syncResults );
+				updateUsers( zoneId, ldap_existing, ldap_existing_homeDirInfo, m_syncMode, syncResults );
 				ldap_existing.clear();
 				ldap_existing_homeDirInfo.clear();
 			}
@@ -3939,7 +4035,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					syncResults = m_ldapSyncResults.getAddedUsers();
 				}
-				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, syncResults );
+				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, m_syncMode, syncResults );
 				ldap_new.clear();
 				ldap_new_homeDirInfo.clear();
 				
@@ -3973,7 +4069,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getModifiedUsers();
 				}
-				updateUsers( zoneId, ldap_existing, ldap_existing_homeDirInfo, syncResults );
+				updateUsers( zoneId, ldap_existing, ldap_existing_homeDirInfo, m_syncMode, syncResults );
 			}
 			
 			if (!ldap_new.isEmpty()) {
@@ -3985,7 +4081,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					syncResults = m_ldapSyncResults.getAddedUsers();
 				}
-				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, syncResults );
+				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, m_syncMode, syncResults );
 				for (int i=0; i<results.size(); ++i) {
 					User user = (User)results.get(i);
 					Object[] row = (Object[])dnUsers.get(user.getForeignName());
@@ -4063,7 +4159,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 
 						// Delete the users no longer found in ldap that once existed in ldap.
-						deletePrincipals(zoneId, users.keySet(), deleteWorkspace, syncResults );
+						deletePrincipals(zoneId, users.keySet(), deleteWorkspace, m_syncMode, syncResults );
 					}
 					else
 					{
@@ -4077,10 +4173,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							syncResults = m_ldapSyncResults.getModifiedUsers();
 						}
 						
-						updateUsers( zoneId, users, null, syncResults );
+						updateUsers( zoneId, users, null, m_syncMode, syncResults );
 						
 						// Disable the users no longer found in ldap that once existed in ldap.
-						disableUsers( users );
+						disableUsers( users, m_syncMode, syncResults );
 					}
 				}
 			}
@@ -4393,12 +4489,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		private LdapSyncResults	m_ldapSyncResults;	// Store the results of the sync here.
 
+		private LdapSyncMode m_syncMode;
+
 		public GroupCoordinator(
 			Binder zone,
 			Map dnUsers,
 			boolean sync,
 			boolean create,
 			boolean delete,
+			LdapSyncMode syncMode,
 			LdapSyncResults syncResults )
 		{
 			ObjectControls objControls;
@@ -4409,6 +4508,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			this.sync = sync;
 			this.create = create;
 			this.delete = delete;
+			
+			m_syncMode = syncMode;
 			m_ldapSyncResults = syncResults;	// Store the results of the sync here.
 			
 			createSyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "create.flush.threshhold"), 100);
@@ -4589,7 +4690,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
 					row[PRINCIPAL_FOREIGN_NAME] = dn;
 
-					updateGroup( zoneId, (Long)row[PRINCIPAL_ID], userMods, m_ldapSyncResults );
+					updateGroup( zoneId, (Long)row[PRINCIPAL_ID], userMods, m_syncMode, m_ldapSyncResults );
 				} 
 				
 				//exists in ldap, remove from missing list
@@ -4625,11 +4726,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 		    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-		    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults, new IdentityInfo(true, true, false, false) );
-		    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
-		    	//flush from cache
-		    	getCoreDao().evict(newGroups);
-		    	return (Group) newGroups.get(0);		    	
+		    	
+		    	if ( m_syncMode == LdapSyncMode.PERFORM_SYNC )
+		    	{
+			    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults, new IdentityInfo(true, true, false, false) );
+			    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
+			    	//flush from cache
+			    	getCoreDao().evict(newGroups);
+			    	return (Group) newGroups.get(0);
+		    	}
+		    	
+		    	if ( m_syncMode == LdapSyncMode.PREVIEW_ONLY )
+		    	{
+		    		HashMap<String,Map> map;
+		    		
+		    		map = new HashMap<String,Map>();
+		    		map.put( ssName, groupData );
+					addPrincipalsToPreviewSyncResults( map, syncResults );
+					
+					return null;
+				}
 			} catch (Exception ex) {
 				logError("Error adding group", ex);
 				logger.error("'" + ssName + "':'" + groupData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "'");
@@ -4660,7 +4776,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 
 			//do inside a transaction
-			updateMembership(groupId, membership, syncResults );	
+			updateMembership(groupId, membership, m_syncMode, syncResults );	
 		}
 
 		public void deleteObsoleteGroups()
@@ -4681,7 +4797,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getDeletedGroups();
 				}
-				deletePrincipals(zoneId,notInLdap.keySet(), false, syncResults );
+				deletePrincipals( zoneId,notInLdap.keySet(), false, m_syncMode, syncResults );
 			} else if (!delete && !notInLdap.isEmpty()) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Groups not found in ldap:");
@@ -5890,6 +6006,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Long zoneId,
 		final Map users,
     	Map<Long, HomeDirInfo> homeDirInfoMap,
+    	LdapSyncMode syncMode,
 		PartialLdapSyncResults syncResults ) 
 	{
 		ProfileBinder pf;
@@ -5901,6 +6018,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		if ( users.isEmpty() )
 			return;
+		
+		// Are we in "preview" mode?
+		if ( syncMode == LdapSyncMode.PREVIEW_ONLY )
+		{
+			// Yes, we don't want to do anything
+			return;
+		}
 		
 		pf = getProfileDao().getProfileBinder(zoneId);
 		collections = new ArrayList();
@@ -6051,7 +6175,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	/**
 	 * Disable the given list of users.
 	 */
-	protected void disableUsers( Map users )
+	protected void disableUsers(
+		Map users,
+		LdapSyncMode syncMode,
+		PartialLdapSyncResults syncResults )
 	{
 		Set userIds;
 		Iterator iter;
@@ -6075,17 +6202,37 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			values = (HashMap) users.get( userIdL );
 			userName = (String) values.get(  ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME );
 			
-			getProfileModule().disableEntry( userIdL, true );
+			if ( syncMode == LdapSyncMode.PERFORM_SYNC )
+			{
+				getProfileModule().disableEntry( userIdL, true );
 
-			logger.info( "Disabled user: " + userName );
+				logger.info( "Disabled user: " + userName );
+			}
+			else if ( syncMode == LdapSyncMode.PREVIEW_ONLY )
+			{
+				if ( syncResults != null )
+					syncResults.addResult( userName );
+			}
 		}
 	}
 
     /**
      * Update group with their own updates
      */    
-	protected void updateGroup( Long zoneId, final Long groupId, final Map groupMods, LdapSyncResults ldapSyncResults )
+	protected void updateGroup(
+		Long zoneId,
+		final Long groupId,
+		final Map groupMods,
+		LdapSyncMode syncMode,
+		LdapSyncResults ldapSyncResults )
 	{
+		// Are we in "preview" mode?
+		if ( syncMode == LdapSyncMode.PREVIEW_ONLY )
+		{
+			// Yes, nothing to do.
+			return;
+		}
+		
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List collections = new ArrayList();
 		collections.add("customAttributes");
@@ -6114,7 +6261,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }// end updateGroup()
 
 
-    protected void updateMembership(Long groupId, Collection newMembers, PartialLdapSyncResults syncResults ) {
+    protected void updateMembership(
+    	Long groupId,
+    	Collection newMembers,
+    	LdapSyncMode syncMode,
+    	PartialLdapSyncResults syncResults )
+    {
+    	// Are we in "preview" mode?
+    	if ( syncMode == LdapSyncMode.PREVIEW_ONLY )
+    	{
+    		// Yes, nothing to do.
+    		return;
+    	}
+    	
 		//have a list of users, now compare with what exists already
 		List oldMembers = getProfileDao().getMembership(groupId, RequestContextHolder.getRequestContext().getZoneId());
 		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
@@ -6448,10 +6607,20 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	Long zoneId,
     	Map<String, Map> users,
     	Map<String, HomeDirInfo> homeDirInfoMap,
+    	LdapSyncMode syncMode,
     	PartialLdapSyncResults syncResults ) 
     {
 		//SimpleProfiler.setProfiler(new SimpleProfiler(false));
 		ProfileCoreProcessor processor;
+		
+		// Are we in "preview" mode?
+		if ( syncMode == LdapSyncMode.PREVIEW_ONLY && syncResults != null )
+		{
+			// Yes
+			addPrincipalsToPreviewSyncResults( users, syncResults );
+			
+			return new ArrayList<User>();
+		}
 		
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List newUsers = new ArrayList();
@@ -6584,7 +6753,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	return newGroups;
 	    	
     }
-     public void deletePrincipals(Long zoneId, Collection ids, boolean deleteWS, PartialLdapSyncResults syncResults ) {
+     public void deletePrincipals(
+    	Long zoneId,
+    	Collection ids,
+    	boolean deleteWS,
+    	LdapSyncMode syncMode,
+    	PartialLdapSyncResults syncResults )
+     {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.valueOf(deleteWS));
 		
@@ -6612,13 +6787,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     				}
     			}
 
-    			getProfileModule().deleteEntry(id, options, true);
-    			getCoreDao().clear(); // clear cache to prevent thrashing resulted from prolonged use of a single session
+    			// Should we actually do the delete?
+    			if ( syncMode == LdapSyncMode.PERFORM_SYNC )
+    			{
+    				// Yes
+        			getProfileModule().deleteEntry(id, options, true);
+        			getCoreDao().clear(); // clear cache to prevent thrashing resulted from prolonged use of a single session
+        			
+        			count++;
+    			}
     			
-    			count++;
+    			if ( syncResults != null && name != null )
+    				syncResults.addResult( name );
     			
-    			if(syncResults != null && name != null)
-    				syncResults.addResult(name);
     		} catch (Exception ex) {
     			logError(NLT.get("errorcode.ldap.delete", new Object[]{id.toString()}), ex);
     		}

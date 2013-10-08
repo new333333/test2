@@ -571,6 +571,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ShareEntry();
 	String rpcFailure_ShowShares();
 	String rpcFailure_StartLdapSync();
+	String rpcFailure_StartLdapSyncPreview();
 	String rpcFailure_StopSyncNetFolders();
 	String rpcFailure_SyncNetFolders();
 	String rpcFailure_SyncNetFolderServer();
@@ -2892,12 +2893,14 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapConfigDlg_GroupsTab();
 	String editLdapConfigDlg_Header();
 	String editLdapConfigDlg_LdapConfigMustBeSaved();
+	String editLdapConfigDlg_LdapConfigMustBeSavedBeforePreviewCanBeStarted();
 	String editLdapConfigDlg_LdapGuidAttribChanged();
 	String editLdapConfigDlg_LdapServersTab();
 	String editLdapConfigDlg_LdapSyncInProgressCantStartAnother();
 	String editLdapConfigDlg_LocalUserAccountsTab();
 	String editLdapConfigDlg_NoLdapServersLabel();
 	String editLdapConfigDlg_NoLdapServersToSync();
+	String editLdapConfigDlg_PreviewLdapSyncLabel();
 	String editLdapConfigDlg_ReadingLdapConfig();
 	String editLdapConfigDlg_RegisterGroupProfilesAutomatically();
 	String editLdapConfigDlg_RegisterUserProfilesAutomatically();
@@ -2974,11 +2977,13 @@ public interface GwtTeamingMessages extends Messages
 	String ldapSyncResultsDlg_FilterOptionsAlt();
 	String ldapSyncResultsDlg_GroupType();
 	String ldapSyncResultsDlg_Header();
+	String ldapSyncResultsDlg_HeaderPreview();
 	String ldapSyncResultsDlg_ModifiedAction();
 	String ldapSyncResultsDlg_ModifiedGroupsLabel();
 	String ldapSyncResultsDlg_ModifiedUsersLabel();
 	String ldapSyncResultsDlg_NameCol();
 	String ldapSyncResultsDlg_NoLdapSyncResults();
+	String ldapSyncResultsDlg_PreviewHint();
 	String ldapSyncResultsDlg_RequestingLdapSyncResults();
 	String ldapSyncResultsDlg_ServerLabel();
 	String ldapSyncResultsDlg_ShowAddedGroupsCB();

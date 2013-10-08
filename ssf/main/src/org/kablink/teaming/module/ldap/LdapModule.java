@@ -52,6 +52,16 @@ public interface LdapModule {
 		manageLdap,
 		manageAuthentication
 	}
+	
+	/**
+	 * 
+	 */
+	public enum LdapSyncMode
+	{
+		PERFORM_SYNC,
+		PREVIEW_ONLY
+	}
+	
 	public boolean testAccess(LdapOperation operation);
 
 	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException;
@@ -70,7 +80,7 @@ public interface LdapModule {
 
     public String readLdapGuidFromDirectory(String userName, Long zoneId, LdapConnectionConfig config);
 
-    public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncResults syncResults ) throws LdapSyncException;
+    public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncMode mode, LdapSyncResults syncResults ) throws LdapSyncException;
 
 	public void syncUser( String teamingUserName, String ldapUserName ) throws NoUserByTheNameException,NamingException;
 	
