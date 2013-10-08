@@ -77,6 +77,7 @@ import org.kablink.teaming.gwt.client.datatable.UserTypeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
+import org.kablink.teaming.gwt.client.datatable.VibeDataTableConstants;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
@@ -290,10 +291,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private final static String STYLE_ROW_EVEN		= "even";
 	private final static String STYLE_ROW_ODD		= "odd";
 
-	// Width, in pixels for the action menu show in conjunction with an
-	// EntryTitleColumn.
-	private final static int ACTION_MENU_WIDTH_PX	= 30;
-	
 	// Defines how long we delay, in MS, after loading the rows for the
 	// view before we send the request for the user's rights for adding
 	// to any nested folder's.
@@ -1266,8 +1263,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (m_fixedLayout)
 		     initDataMembersFixed();
 		else initDataMembersFloat();
-		m_actionMenuColumnWidth = new ColumnWidth(ACTION_MENU_WIDTH_PX, Unit.PX );
-		m_100PctColumnWidth     = new ColumnWidth(100,                  Unit.PCT);
+		m_actionMenuColumnWidth = new ColumnWidth(VibeDataTableConstants.ACTION_MENU_WIDTH_PX, Unit.PX );
+		m_100PctColumnWidth     = new ColumnWidth(100,                                         Unit.PCT);
 		
 		// ...and store the initial columns widths as the defaults.
 		m_defaultColumnWidths = ColumnWidth.copyColumnWidths(m_columnWidths);

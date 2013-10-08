@@ -1266,8 +1266,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_ENTITY_ACTION_TOOLBAR_ITEMS:
 		{
-			GetEntityActionToolbarItemsCmd gftiCmd = ((GetEntityActionToolbarItemsCmd) cmd);
-			GetToolbarItemsRpcResponseData responseData = GwtMenuHelper.getEntityActionToolbarItems( this, getRequest( ri ), gftiCmd.getBinderInfo(), gftiCmd.getEntityId() );
+			GetEntityActionToolbarItemsCmd geatbiCmd = ((GetEntityActionToolbarItemsCmd) cmd);
+			GetToolbarItemsRpcResponseData responseData = GwtMenuHelper.getEntityActionToolbarItems( this, getRequest( ri ), geatbiCmd.getBinderInfo(), geatbiCmd.getEntityId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1537,6 +1537,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gftiCmd = ((GetFooterToolbarItemsCmd) cmd);
 		    result = GwtMenuHelper.getFooterToolbarItems( this, getRequest( ri ), gftiCmd.getEntityId() );
 			responseData = new GetToolbarItemsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_GROUP_ACTION_TOOLBAR_ITEMS:
+		{
+			GetGroupActionToolbarItemsCmd ggatbiCmd = ((GetGroupActionToolbarItemsCmd) cmd);
+			GetToolbarItemsRpcResponseData responseData = GwtMenuHelper.getGroupActionToolbarItems( this, getRequest( ri ), ggatbiCmd.getGroupId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
