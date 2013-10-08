@@ -148,7 +148,17 @@ public class ManageGroupsDlg extends DlgBox implements
 	 * The different statuses of a group
 	 */
 	public enum GroupModificationStatus {
-		GROUP_CREATION_IN_PROGRESS, GROUP_DELETION_IN_PROGRESS, GROUP_MODIFICATION_IN_PROGRESS, READY
+		GROUP_CREATION_IN_PROGRESS, GROUP_DELETION_IN_PROGRESS, GROUP_MODIFICATION_IN_PROGRESS, READY;
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isBeingCreated()  {return GROUP_CREATION_IN_PROGRESS.equals(    this);}
+		public boolean isBeingDeleted()  {return GROUP_DELETION_IN_PROGRESS.equals(    this);}
+		public boolean isBeingModified() {return GROUP_MODIFICATION_IN_PROGRESS.equals(this);}
+		public boolean isReady()         {return READY.equals(                         this);}
 	}
 
 	/**
@@ -411,7 +421,7 @@ public class ManageGroupsDlg extends DlgBox implements
 						GroupInfoPlus value) {
 					// Is this group in the process of being deleted, modified
 					// or created?
-					if (groupInfoPlus.getStatus() == GroupModificationStatus.READY) {
+					if (groupInfoPlus.getStatus().isReady()) {
 						// No, let the user edit the group.
 						invokeModifyGroupDlg(groupInfoPlus.getGroupInfo());
 					}
@@ -494,7 +504,7 @@ public class ManageGroupsDlg extends DlgBox implements
 
 				nextGroup = groupIterator.next();
 
-				if (nextGroup.getStatus() == GroupModificationStatus.READY) {
+				if (nextGroup.getStatus().isReady()) {
 					GroupInfo groupInfo;
 					String text;
 
@@ -542,7 +552,7 @@ public class ManageGroupsDlg extends DlgBox implements
 			GroupInfoPlus nextGroup;
 
 			nextGroup = groupIterator.next();
-			if (nextGroup.getStatus() == GroupModificationStatus.READY) {
+			if (nextGroup.getStatus().isReady()) {
 				GroupInfo groupInfo;
 
 				groupInfo = nextGroup.getGroupInfo();
@@ -1126,7 +1136,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.disableUsersAdHocFolders(groups);
 						}
@@ -1139,7 +1149,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.enableUsersAdHocFolders(groups);
 						}
@@ -1152,7 +1162,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.clearUsersAdHocFolders(groups);
 						}
@@ -1167,7 +1177,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.disableUsersDownload(groups);
 						}
@@ -1180,7 +1190,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.enableUsersDownload(groups);
 						}
@@ -1193,7 +1203,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.clearUsersDownload(groups);
 						}
@@ -1210,7 +1220,7 @@ public class ManageGroupsDlg extends DlgBox implements
 			new Command() {
 				@Override
 				public void execute() {
-					List<Long> groups = getSelectedGroupIds(emptyWarning);
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);
 					if (!(groups.isEmpty())) {
 						BinderViewsHelper.disableUsersWebAccess(groups);
 					}
@@ -1223,7 +1233,7 @@ public class ManageGroupsDlg extends DlgBox implements
 			new Command() {
 				@Override
 				public void execute() {
-					List<Long> groups = getSelectedGroupIds(emptyWarning);
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);
 					if (!(groups.isEmpty())) {
 						BinderViewsHelper.enableUsersWebAccess(groups);
 					}
@@ -1236,7 +1246,7 @@ public class ManageGroupsDlg extends DlgBox implements
 			new Command() {
 				@Override
 				public void execute() {
-					List<Long> groups = getSelectedGroupIds(emptyWarning);
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
 					if (!(groups.isEmpty())) {
 						BinderViewsHelper.clearUsersWebAccess(groups);
 					}
@@ -1249,12 +1259,14 @@ public class ManageGroupsDlg extends DlgBox implements
 	/*
 	 * Returns a List<Long> of the selected group IDs.
 	 */
-	private List<Long> getSelectedGroupIds(String emptyWarning) {
+	private List<Long> getSelectedGroupIds(boolean readyOnly, String emptyWarning) {
 		List<Long> reply = new ArrayList<Long>();
 		Set<GroupInfoPlus> selectedGroups = getSelectedGroups();
 		if (GwtClientHelper.hasItems(selectedGroups)) {
 			for (GroupInfoPlus g:  selectedGroups) {
-				reply.add(g.getGroupInfo().getId());
+				if ((!readyOnly) || g.getStatus().isReady()) {
+					reply.add(g.getGroupInfo().getId());
+				}
 			}
 		}
 		
@@ -1265,8 +1277,8 @@ public class ManageGroupsDlg extends DlgBox implements
 	}
 	
 	@SuppressWarnings("unused")
-	private List<Long> getSelectedGroupIds() {
+	private List<Long> getSelectedGroupIds(boolean readyOnly) {
 		// Always use the initial form of the method.
-		return getSelectedGroupIds(null);
+		return getSelectedGroupIds(readyOnly, null);
 	}
 }

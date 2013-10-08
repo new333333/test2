@@ -68,7 +68,6 @@ public class VibeDataTableConstants {
 	public final static String CELL_WIDGET_ENTRY_VIEW_ANCHOR			= "entryViewAnchor";
 	public final static String CELL_WIDGET_ENTRY_VIEW_LABEL				= "entryViewLabel";
 	public final static String CELL_WIDGET_GROUP_ID						= "n-groupId";
-	public final static String CELL_WIDGET_GROUP_TITLE					= "n-groupTitle";
 	public final static String CELL_WIDGET_INDEX						= "n-cellWidgetIndex";
 	public final static String CELL_WIDGET_GUEST_AVATAR					= "guestAvatar";
 	public final static String CELL_WIDGET_PRESENCE						= "presenceControl";

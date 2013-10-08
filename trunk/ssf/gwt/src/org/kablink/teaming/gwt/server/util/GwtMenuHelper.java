@@ -2384,15 +2384,16 @@ public class GwtMenuHelper {
 			}
 			
 			else {
-				// ...otherwise, if they don't have adHoc folders, add
-				// ...the enable users adHoc folders item...
+				// ...otherwise, if the group doesn't have adHoc
+				// ...folders, add the enable users adHoc folders
+				// ...item...
 				manageGroupTBI = new ToolbarItem("1_enableSelectedAdHoc");
 				markTBITitle(manageGroupTBI, "toolbar.enable.user.adHoc.perGroup");
 				markTBIEvent(manageGroupTBI, TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS);
 				entryToolbar.addNestedItem(manageGroupTBI);
 			}
 
-			// ...if they currently have a per user adHoc folder
+			// ...if the group currently has a per user adHoc folder
 			// ...setting...
 			if (perGroupAdHoc) {
 				// ...and add the clear users adHoc folders item.
@@ -2402,7 +2403,7 @@ public class GwtMenuHelper {
 				entryToolbar.addNestedItem(manageGroupTBI);
 			}
 
-			// Add a separator after the previous item...
+			// Add a separator after the previous item.
 			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 	
 			// Add whether files can be downloaded.
@@ -2422,15 +2423,15 @@ public class GwtMenuHelper {
 			}
 			
 			else {
-				// ...otherwise, if they can't download, add
-				// ...the enable download item...
+				// ...otherwise, if the group doesn't have the download
+				// ...setting, add the enable download item...
 				manageGroupTBI = new ToolbarItem("1_enableSelectedDownload");
 				markTBITitle(manageGroupTBI, "toolbar.enable.user.download.perGroup");
 				markTBIEvent(manageGroupTBI, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
 				entryToolbar.addNestedItem(manageGroupTBI);
 			}
 	
-			// ...if they currently have a per user download
+			// ...if the group currently has a per user download
 			// ...setting...
 			if (perGroupDownload) {
 				// ...and add the clear users download item.
@@ -2440,7 +2441,7 @@ public class GwtMenuHelper {
 				entryToolbar.addNestedItem(manageGroupTBI);
 			}
 
-			// Yes!  Add a separator after the previous item...
+			// Add a separator after the previous item.
 			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 		}
 
@@ -2461,15 +2462,15 @@ public class GwtMenuHelper {
 		}
 		
 		else {
-			// ...otherwise, if they can't use web access, add
-			// ...the enable web access item...
+			// ...otherwise, if the group doesn't have a web access
+			// ...setting, add the enable web access item...
 			manageGroupTBI = new ToolbarItem("1_enableSelectedWebAccess");
 			markTBITitle(manageGroupTBI, "toolbar.enable.user.webAccess.perGroup");
 			markTBIEvent(manageGroupTBI, TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS);
 			entryToolbar.addNestedItem(manageGroupTBI);
 		}
 
-		// ...if they currently have a per user web access
+		// ...if the group currently has a per user web access
 		// ...setting...
 		if (perGroupWebAccess) {
 			// ...and add the clear users web access item.
@@ -3199,8 +3200,8 @@ public class GwtMenuHelper {
 
 	/**
 	 * Returns a GetToolbarItemsRpcResponseData containing the 
-	 * ToolbarItem's for an entity given the current user's rights to
-	 * that entity.
+	 * ToolbarItem's for a group given the current user's rights to
+	 * that group.
 	 *
 	 * @param bs
 	 * @param request
@@ -3209,11 +3210,11 @@ public class GwtMenuHelper {
 	 * @return
 	 */
 	public static GetToolbarItemsRpcResponseData getGroupActionToolbarItems(AllModulesInjected bs, HttpServletRequest request, Long groupId) {
-		SimpleProfiler.start("GwtMenuHelper.getEntityToolbarItems()");
+		SimpleProfiler.start("GwtMenuHelper.getGroupActionToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
 			// that we'll return.
-			ToolbarItem						actionToolbar = new ToolbarItem(WebKeys.ENTITY_ACTION_TOOLBAR);
+			ToolbarItem						actionToolbar = new ToolbarItem(WebKeys.GROUP_ACTION_TOOLBAR);
 			List<ToolbarItem>				toolbarItems  = actionToolbar.getNestedItemsList();
 			GetToolbarItemsRpcResponseData	reply         = new GetToolbarItemsRpcResponseData(toolbarItems);
 
@@ -3222,14 +3223,14 @@ public class GwtMenuHelper {
 			
 			// If we get here, reply refers to the 
 			// GetToolbarItemsRpcResponseData containing the
-			// ToolbarItem's for the entity.  Return it.
-			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getEntityToolbarItems():");
+			// ToolbarItem's for the group.  Return it.
+			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getGroupActionToolbarItems():");
 			dumpToolbarItems(toolbarItems, "...");
 			return reply;
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtMenuHelper.getEntityToolbarItems()");
+			SimpleProfiler.stop("GwtMenuHelper.getGroupActionToolbarItems()");
 		}
 	}
 	
