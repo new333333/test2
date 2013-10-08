@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.GwtLdapSyncMode;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -108,6 +109,8 @@ public class LdapSyncResultsDlg extends DlgBox
 
 	private InlineLabel m_syncStatusLabel;
 	private Image m_syncStatusImg;
+
+	private FlowPanel m_previewHintPanel;
 
 	private Label m_addedUsersLabel;
 	private Label m_modifiedUsersLabel;
@@ -265,6 +268,18 @@ public class LdapSyncResultsDlg extends DlgBox
 			}
 
 			mainPanel.add( statusTable );
+		}
+		
+		// Add a hint that will be displayed when we are in "preview" mode
+		{
+			Label label;
+			
+			m_previewHintPanel = new FlowPanel();
+			label = new Label( messages.ldapSyncResultsDlg_PreviewHint() );
+			label.addStyleName( "ldapSyncResultsDlg_PreviewHint" );
+			m_previewHintPanel.add( label );
+			
+			mainPanel.add( m_previewHintPanel );
 		}
 		
 		// Create the controls that holds the sync statistics
@@ -959,9 +974,25 @@ public class LdapSyncResultsDlg extends DlgBox
 	public void init(
 		List<GwtLdapConnectionConfig> listOfLdapServers,
 		String syncId,
-		boolean clearExistingResults )
+		boolean clearExistingResults,
+		GwtLdapSyncMode syncMode )
 	{
+		GwtTeamingMessages messages;
+		
 		m_listOfLdapServers = listOfLdapServers;
+		
+		// Update the header depending on the sync mode.
+		messages = GwtTeaming.getMessages();
+		if ( syncMode == GwtLdapSyncMode.PERFORM_SYNC )
+		{
+			setCaption( messages.ldapSyncResultsDlg_Header() );
+			m_previewHintPanel.setVisible( false );
+		}
+		else if ( syncMode == GwtLdapSyncMode.PREVIEW_ONLY )
+		{
+			setCaption( messages.ldapSyncResultsDlg_HeaderPreview() );
+			m_previewHintPanel.setVisible( true );
+		}
 		
 		// The sync id is what we use to find the sync results in the session.
 		m_syncId = syncId;

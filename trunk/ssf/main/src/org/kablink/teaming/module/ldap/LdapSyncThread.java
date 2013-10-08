@@ -45,6 +45,7 @@ import javax.servlet.http.HttpSession;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.module.ldap.LdapModule;
+import org.kablink.teaming.module.ldap.LdapModule.LdapSyncMode;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
@@ -65,6 +66,7 @@ public class LdapSyncThread
 	private LdapModule			m_ldapModule;
 	private boolean			m_syncUsersAndGroups;
 	private String[]		m_listOfLdapConfigsToSyncGuid;
+	private LdapSyncMode	m_syncMode;
 
 	/**
 	 * 
@@ -74,14 +76,21 @@ public class LdapSyncThread
 		String id,
 		LdapModule ldapModule,
 		boolean syncUsersAndGroups,
-		String[] listOfLdapConfigsToSyncGuid )
+		String[] listOfLdapConfigsToSyncGuid,
+		LdapSyncMode syncMode )
 	{
 		LdapSyncThread ldapSyncThread;
 		
 		if( session == null )
 			return null; // unable to allocate a new LdapSyncThread object.
 
-		ldapSyncThread = new LdapSyncThread( session, id, ldapModule, syncUsersAndGroups, listOfLdapConfigsToSyncGuid );
+		ldapSyncThread = new LdapSyncThread(
+										session,
+										id,
+										ldapModule,
+										syncUsersAndGroups,
+										listOfLdapConfigsToSyncGuid,
+										syncMode );
 		
 		// Set the priority of the thread to be the lowest.
 		ldapSyncThread.setPriority( Thread.MIN_PRIORITY );
@@ -100,14 +109,21 @@ public class LdapSyncThread
 		String			id,				// Create the thread using this id
 		LdapModule		ldapModule,
 		boolean			syncUsersAndGroups,
-		String[]		listOfLdapConfigsToSyncGuid )
+		String[]		listOfLdapConfigsToSyncGuid,
+		LdapSyncMode	syncMode )
 	{
 		LdapSyncThread	ldapSyncThread;
 		HttpSession 	session;
 		
 		session = WebHelper.getRequiredSession( WebHelper.getHttpServletRequest( request ) );
 
-		ldapSyncThread = createLdapSyncThread( session, id, ldapModule, syncUsersAndGroups, listOfLdapConfigsToSyncGuid );
+		ldapSyncThread = createLdapSyncThread(
+											session,
+											id,
+											ldapModule,
+											syncUsersAndGroups,
+											listOfLdapConfigsToSyncGuid,
+											syncMode );
 	
 		return ldapSyncThread;
 	}// end createLdapSyncThread()
@@ -121,14 +137,21 @@ public class LdapSyncThread
 		String				id,				// Create the thread using this id
 		LdapModule			ldapModule,
 		boolean				syncUsersAndGroups,
-		String[]			listOfLdapConfigsToSyncGuid )
+		String[]			listOfLdapConfigsToSyncGuid,
+		LdapSyncMode		syncMode )
 	{
 		LdapSyncThread	ldapSyncThread;
 		HttpSession 	session;
 		
 		session = WebHelper.getRequiredSession( request );
 		
-		ldapSyncThread = createLdapSyncThread( session, id, ldapModule, syncUsersAndGroups, listOfLdapConfigsToSyncGuid );
+		ldapSyncThread = createLdapSyncThread(
+											session,
+											id,
+											ldapModule,
+											syncUsersAndGroups,
+											listOfLdapConfigsToSyncGuid,
+											syncMode );
 	
 		return ldapSyncThread;
 	}// end createLdapSyncThread()
@@ -233,7 +256,8 @@ public class LdapSyncThread
 		String			id,
 		LdapModule		ldapModule,
 		boolean			syncUsersAndGroups,
-		String[]		listOfLdapConfigsToSyncGuid )
+		String[]		listOfLdapConfigsToSyncGuid,
+		LdapSyncMode	syncMode )
 	{
 		// Initialize this object's super class.
 		super( id );
@@ -243,6 +267,7 @@ public class LdapSyncThread
 		m_ldapModule = ldapModule;
 		m_syncUsersAndGroups = syncUsersAndGroups;
 		m_listOfLdapConfigsToSyncGuid = listOfLdapConfigsToSyncGuid;
+		m_syncMode = syncMode;
 		
 		// Create an LdapSyncResults object to hold the results of the sync.
 		m_ldapSyncResults = new LdapSyncResults( id );
@@ -271,7 +296,7 @@ public class LdapSyncThread
 		try
 		{
 			// Perform the sync.
-			m_ldapModule.syncAll( m_syncUsersAndGroups, m_listOfLdapConfigsToSyncGuid, syncResults );
+			m_ldapModule.syncAll( m_syncUsersAndGroups, m_listOfLdapConfigsToSyncGuid, m_syncMode, syncResults );
 			
 			// Did syncAll() return because a sync was already in progress?
 			if ( syncResults.getStatus() != SyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS )

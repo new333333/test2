@@ -84,6 +84,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -143,6 +144,7 @@ public class EditLdapConfigDlg extends DlgBox
 	private boolean m_isDirty;
 	private String m_ldapSyncId;
 	private GwtLdapSyncStatus m_ldapSyncStatus;
+	private GwtLdapSyncMode m_lastSyncMode;
 
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -165,6 +167,15 @@ public class EditLdapConfigDlg extends DlgBox
 		void onSuccess( EditLdapConfigDlg elcDlg );
 		void onUnavailable();
 	}
+	
+	/**
+	 * 
+	 */
+	public enum GwtLdapSyncMode implements IsSerializable
+	{
+		PERFORM_SYNC,
+		PREVIEW_ONLY
+	}
 
 	
 	/**
@@ -182,6 +193,8 @@ public class EditLdapConfigDlg extends DlgBox
 		
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent( GwtTeaming.getMessages().editLdapConfigDlg_Header(), this, null, null );
+		
+		m_lastSyncMode = GwtLdapSyncMode.PERFORM_SYNC;
 	}
 
 	/**
@@ -387,7 +400,7 @@ public class EditLdapConfigDlg extends DlgBox
 			} );
 			menuPanel.add( label );
 			
-			// Add a "Sync" button.
+			// Add a "Sync all" button.
 			label = new InlineLabel( messages.editLdapConfigDlg_SyncLdapServerLabel() );
 			label.addStyleName( "editLdapConfigDlg_Btn" );
 			label.addClickHandler( new ClickHandler()
@@ -403,6 +416,29 @@ public class EditLdapConfigDlg extends DlgBox
 						public void execute()
 						{
 							handleClickOnSyncAllButton();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			menuPanel.add( label );
+
+			// Add a "Preview sync" button.
+			label = new InlineLabel( messages.editLdapConfigDlg_PreviewLdapSyncLabel() );
+			label.addStyleName( "editLdapConfigDlg_Btn" );
+			label.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							handleClickOnPreviewSyncButton();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -943,12 +979,14 @@ public class EditLdapConfigDlg extends DlgBox
 		return listOfLdapServerUrls.toArray( new String[listOfLdapServerUrls.size()] );
 	}
 	
+	
 	/**
 	 * Issue an rpc request to get the ldap configuration data from the server.
 	 */
 	private void getLdapConfigurationFromServer(
 		final boolean startLdapSync,
 		final boolean syncAll,
+		final GwtLdapSyncMode syncMode,
 		final String[] listOfLdapConfigsToSyncGuid )
 	{
 		GetLdapConfigCmd cmd;
@@ -992,7 +1030,7 @@ public class EditLdapConfigDlg extends DlgBox
 							getLocalesFromServer( ldapConfig );
 							
 							if ( startLdapSync )
-								startLdapSync( syncAll, listOfLdapConfigsToSyncGuid );
+								startLdapSync( syncAll, listOfLdapConfigsToSyncGuid, syncMode );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1156,6 +1194,56 @@ public class EditLdapConfigDlg extends DlgBox
 	}
 	
 	/**
+	 * This method gets called when the user clicks on the "Preview sync" button
+	 */
+	private void handleClickOnPreviewSyncButton()
+	{
+		Object obj;
+		GwtTeamingMessages messages;
+		boolean startPreview = false;
+		GwtLdapConfig ldapConfig;
+		
+		obj = getDataFromDlg();
+		if ( obj == null || (obj instanceof GwtLdapConfig) == false )
+			return;
+		
+		ldapConfig = (GwtLdapConfig) obj;
+		
+		messages = GwtTeaming.getMessages();
+		
+		if ( isDirty() )
+		{
+			// The ldap config is dirty, tell the user the ldap configuration must be saved first.
+			if ( Window.confirm( messages.editLdapConfigDlg_LdapConfigMustBeSavedBeforePreviewCanBeStarted() ) )
+			{
+				Scheduler.ScheduledCommand cmd;
+				final String[] listOfLdapConfigsToSyncGuid;
+
+				// Get the list of ldap config ids whose ldap guid attribute changed
+				listOfLdapConfigsToSyncGuid = getListOfLdapConfigsToSyncGuid( ldapConfig );
+					
+				cmd = new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						// Re-read the ldap configuration and then start an ldap sync preview
+						init( true, true, GwtLdapSyncMode.PREVIEW_ONLY, listOfLdapConfigsToSyncGuid );
+					}
+				};
+
+				// Issue an rpc request to save the ldap configuration
+				saveLdapConfiguration( ldapConfig, cmd );
+			}
+		}
+		else
+			startPreview = true;
+
+		if ( startPreview )
+			startLdapSync( true, null, GwtLdapSyncMode.PREVIEW_ONLY );
+	}
+	
+	/**
 	 * This method gets called when the user clicks on the "Sync all" button
 	 */
 	private void handleClickOnSyncAllButton()
@@ -1202,7 +1290,7 @@ public class EditLdapConfigDlg extends DlgBox
 			startSync = true;
 
 		if ( startSync )
-			startLdapSync( true, null );
+			startLdapSync( true, null, GwtLdapSyncMode.PERFORM_SYNC );
 	}
 	
 	/**
@@ -1218,8 +1306,16 @@ public class EditLdapConfigDlg extends DlgBox
 	 */
 	private void init( boolean startLdapSync, boolean syncAll, String[] listOfLdapConfigsToSyncGuid )
 	{
+		init( startLdapSync, syncAll, GwtLdapSyncMode.PERFORM_SYNC, listOfLdapConfigsToSyncGuid );
+	}
+	
+	/**
+	 * 
+	 */
+	private void init( boolean startLdapSync, boolean syncAll, GwtLdapSyncMode syncMode, String[] listOfLdapConfigsToSyncGuid )
+	{
 		// Get the ldap configuration data from the server.
-		getLdapConfigurationFromServer( startLdapSync, syncAll, listOfLdapConfigsToSyncGuid );
+		getLdapConfigurationFromServer( startLdapSync, syncAll, syncMode, listOfLdapConfigsToSyncGuid );
 	}
 	
 	/**
@@ -1385,7 +1481,7 @@ public class EditLdapConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void invokeLdapSyncResultsDlg( final boolean clearResults )
+	private void invokeLdapSyncResultsDlg( final boolean clearResults, final GwtLdapSyncMode syncMode )
 	{
 		if ( m_ldapSyncResultsDlg == null )
 		{
@@ -1420,7 +1516,7 @@ public class EditLdapConfigDlg extends DlgBox
 						{
 							m_ldapSyncResultsDlg = lsrDlg;
 							
-							invokeLdapSyncResultsDlg( clearResults );
+							invokeLdapSyncResultsDlg( clearResults, syncMode );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1429,7 +1525,7 @@ public class EditLdapConfigDlg extends DlgBox
 		}
 		else
 		{
-			m_ldapSyncResultsDlg.init( m_listOfLdapServers, m_ldapSyncId, clearResults );
+			m_ldapSyncResultsDlg.init( m_listOfLdapServers, m_ldapSyncId, clearResults, syncMode );
 			m_ldapSyncResultsDlg.show();
 		}
 	}
@@ -1634,7 +1730,7 @@ public class EditLdapConfigDlg extends DlgBox
 			@Override
 			public void execute()
 			{
-				invokeLdapSyncResultsDlg( false );
+				invokeLdapSyncResultsDlg( false, m_lastSyncMode );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
@@ -1770,19 +1866,22 @@ public class EditLdapConfigDlg extends DlgBox
 	private void showLdapSyncResults()
 	{
 		// Invoke the LDAP Sync Results dialog
-		invokeLdapSyncResultsDlg( false );
+		invokeLdapSyncResultsDlg( false, m_lastSyncMode );
 	}
 	
 	/**
-	 * Issue an rpc request to save the ldap configuration and after we receive the response to the save
 	 * issue an rpc request to sync the selected ldap servers.
 	 */
-	private void startLdapSync( boolean syncAll, String[] listOfLdapConfigsToSyncGuid )
+	private void startLdapSync(
+		boolean syncAll,
+		String[] listOfLdapConfigsToSyncGuid,
+		GwtLdapSyncMode syncMode )
 	{
 		GwtTeamingMessages messages;
 		AsyncCallback<VibeRpcResponse> callback;
 		StartLdapSyncCmd cmd;
 
+		m_lastSyncMode = syncMode;
 		messages = GwtTeaming.getMessages();
 		
 		// Is an ldap sync currently in progress?
@@ -1792,7 +1891,7 @@ public class EditLdapConfigDlg extends DlgBox
 			Window.alert( messages.editLdapConfigDlg_LdapSyncInProgressCantStartAnother() );
 			
 			// Invoke the LDAP Sync Results dialog
-			invokeLdapSyncResultsDlg( false );
+			invokeLdapSyncResultsDlg( false, syncMode );
 			
 			return;
 		}
@@ -1842,6 +1941,7 @@ public class EditLdapConfigDlg extends DlgBox
 		cmd = new StartLdapSyncCmd();
 		cmd.setSyncAll( syncAll );
 		cmd.setListOfLdapConfigsToSyncGuid( listOfLdapConfigsToSyncGuid );
+		cmd.setSyncMode( syncMode );
 		m_ldapSyncId = String.valueOf( Math.random() );
 		cmd.setSyncId( m_ldapSyncId );
 		
@@ -1882,7 +1982,7 @@ public class EditLdapConfigDlg extends DlgBox
 		GwtClientHelper.executeCommand( cmd, callback );
 
 		// Invoke the LDAP Sync Results dialog
-		invokeLdapSyncResultsDlg( true );
+		invokeLdapSyncResultsDlg( true, syncMode );
 	}
 	
 	/*
