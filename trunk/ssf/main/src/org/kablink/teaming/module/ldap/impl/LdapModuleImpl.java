@@ -4163,20 +4163,20 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					else
 					{
-						PartialLdapSyncResults	syncResults	= null;
+						PartialLdapSyncResults	disabledUsersSyncResults = null;
 						
 						// Disable the users.
 						// Do we have a place to store the sync results?
 						if ( m_ldapSyncResults != null )
 						{
-							// Yes, get the list to store the modified users.
-							syncResults = m_ldapSyncResults.getModifiedUsers();
+							// Yes, get the list to store the disabled users.
+							disabledUsersSyncResults = m_ldapSyncResults.getDisabledUsers();
 						}
 						
-						updateUsers( zoneId, users, null, m_syncMode, syncResults );
+						updateUsers( zoneId, users, null, m_syncMode, null );
 						
 						// Disable the users no longer found in ldap that once existed in ldap.
-						disableUsers( users, m_syncMode, syncResults );
+						disableUsers( users, m_syncMode, disabledUsersSyncResults );
 					}
 				}
 			}
@@ -6208,11 +6208,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 				logger.info( "Disabled user: " + userName );
 			}
-			else if ( syncMode == LdapSyncMode.PREVIEW_ONLY )
-			{
-				if ( syncResults != null )
-					syncResults.addResult( userName );
-			}
+
+			if ( syncResults != null )
+				syncResults.addResult( userName );
 		}
 	}
 
@@ -6809,32 +6807,4 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		IndexSynchronizationManager.applyChanges();
     }
-    //have not implement re-enable so only support delete
-/*    protected void disableUsers(final Binder zone, final Collection ids) {
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-       		getProfileDao().disablePrincipals(ids, zone.getZoneId());
-        		
-        		return null;
-        	}});
-        //remove from index
-   		for (Iterator i=ids.iterator(); i.hasNext();) {
-   	   	    IndexSynchronizationManager.deleteDocument(BasicIndexUtils.makeUid("org.kablink.teaming.domain.User", (Long)i.next()));  			
-   		}
-   		IndexSynchronizationManager.applyChanges();
-   	    
-    }
-    protected void disableGroups(final Binder zone, final Collection ids) {
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-        		getProfileDao().disablePrincipals(ids, zone.getZoneId());
-        		return null;
-        	}});
-        //remove from index
-   		for (Iterator i=ids.iterator(); i.hasNext();) {
-   	   	    IndexSynchronizationManager.deleteDocument(BasicIndexUtils.makeUid("org.kablink.teaming.domain.Group", (Long)i.next()));  			
-   		}
-   		IndexSynchronizationManager.applyChanges();
-   }
- */
 }
