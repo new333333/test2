@@ -141,30 +141,37 @@ public class GwtLdapHelper
 									GwtEntityType.USER,
 									partialSyncResults.getResults() );
 		
-		switch ( ldapSyncResults.getStatus() )
+		gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_ABORTED_BY_ERROR );
+		if ( ldapSyncResults.getStatus() != null )
 		{
-		case STATUS_ABORTED_BY_ERROR:
-			gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_ABORTED_BY_ERROR );
-			gwtLdapSyncResults.setErrorDesc( ldapSyncResults.getErrorDesc() );
-			gwtLdapSyncResults.setErrorLdapServerId( ldapSyncResults.getErrorLdapConfigId() );
-			break;
-			
-		case STATUS_COLLECT_RESULTS:
-			gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
-			break;
-			
-		case STATUS_COMPLETED:
-			gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_COMPLETED );
-			break;
-			
-		case STATUS_STOP_COLLECTING_RESULTS:
-			gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_STOP_COLLECTING_RESULTS );
-			break;
-			
-		case STATUS_SYNC_ALREADY_IN_PROGRESS:
-			gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS );
-			break;
+			switch ( ldapSyncResults.getStatus() )
+			{
+			case STATUS_ABORTED_BY_ERROR:
+				gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_ABORTED_BY_ERROR );
+				gwtLdapSyncResults.setErrorDesc( ldapSyncResults.getErrorDesc() );
+				gwtLdapSyncResults.setErrorLdapServerId( ldapSyncResults.getErrorLdapConfigId() );
+				break;
+				
+			case STATUS_COLLECT_RESULTS:
+				gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
+				break;
+				
+			case STATUS_COMPLETED:
+				gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_COMPLETED );
+				break;
+				
+			case STATUS_STOP_COLLECTING_RESULTS:
+				gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_STOP_COLLECTING_RESULTS );
+				break;
+				
+			case STATUS_SYNC_ALREADY_IN_PROGRESS:
+				gwtLdapSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS );
+				break;
+			}
 		}
+		else
+			m_logger.error( "In GwtLdapHelper.copyLdapSyncResults(), getStatus() returned null" );
+			
 	}
 	
 	/**
@@ -428,6 +435,8 @@ public class GwtLdapHelper
 		if ( syncId == null || syncId.length() == 0 )
 		{
 			gwtSyncResults.setSyncError( GwtLdapSyncError.SYNC_ID_IS_NULL );
+			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_ABORTED_BY_ERROR );
+			m_logger.error( "in getLdapSyncResults(), syncId is empty" );
 			return gwtSyncResults;
 		}
 		
@@ -437,6 +446,8 @@ public class GwtLdapHelper
 		if ( syncResults == null )
 		{
 			gwtSyncResults.setSyncError( GwtLdapSyncError.INVALID_SYNC_ID );
+			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
+			m_logger.info( "-----> in getLdapSyncResults(), LdapSyncThread.getLdapSyncResults() returned null" );
 			return gwtSyncResults;
 		}
 		
