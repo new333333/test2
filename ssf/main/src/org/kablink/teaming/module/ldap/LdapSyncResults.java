@@ -59,6 +59,7 @@ public class LdapSyncResults
 	private PartialLdapSyncResults		m_usersAddedToTeaming;		// List of users added to Teaming
 	private PartialLdapSyncResults		m_usersModified;			// List of users modified in Teaming
 	private PartialLdapSyncResults		m_usersDeletedFromTeaming;	// List of users deleted from Teaming
+	private PartialLdapSyncResults		m_usersDisabled;			// List of users that were disabled.
 	private PartialLdapSyncResults		m_groupsAddedToTeaming;		// List of groups added to Teaming
 	private PartialLdapSyncResults		m_groupsModified;			// List of groups modified in Teaming
 	private PartialLdapSyncResults		m_groupsDeletedFromTeaming;	// List of groups deleted from Teaming
@@ -83,6 +84,7 @@ public class LdapSyncResults
     	m_usersAddedToTeaming = new PartialLdapSyncResults();
     	m_usersModified = new PartialLdapSyncResults();
     	m_usersDeletedFromTeaming = new PartialLdapSyncResults();
+    	m_usersDisabled = new PartialLdapSyncResults();
     	m_groupsAddedToTeaming = new PartialLdapSyncResults();
     	m_groupsModified = new PartialLdapSyncResults();
     	m_groupsDeletedFromTeaming = new PartialLdapSyncResults();
@@ -97,6 +99,7 @@ public class LdapSyncResults
     	m_usersAddedToTeaming.clearResults();
     	m_usersModified.clearResults();
     	m_usersDeletedFromTeaming.clearResults();
+    	m_usersDisabled.clearResults();
     	m_groupsAddedToTeaming.clearResults();
     	m_groupsModified.clearResults();
     	m_groupsDeletedFromTeaming.clearResults();
@@ -158,6 +161,15 @@ public class LdapSyncResults
     {
     	return m_groupsDeletedFromTeaming;
     }// end getDeletedGroups()
+
+    
+    /**
+     * Return the object that holds the list of users that have been disabled. 
+     */
+    public PartialLdapSyncResults getDisabledUsers()
+    {
+    	return m_usersDisabled;
+    }
 
     
     /**

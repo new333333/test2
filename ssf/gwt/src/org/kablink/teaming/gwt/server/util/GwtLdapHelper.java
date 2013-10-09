@@ -123,6 +123,12 @@ public class GwtLdapHelper
 									GwtEntityType.USER,
 									partialSyncResults.getResults() );
 		
+		partialSyncResults = ldapSyncResults.getDisabledUsers();
+		gwtLdapSyncResults.addLdapSyncResults(
+									GwtLdapSyncAction.DISABLED_ENTITY,
+									GwtEntityType.USER,
+									partialSyncResults.getResults() );
+		
 		partialSyncResults = ldapSyncResults.getModifiedGroups();
 		gwtLdapSyncResults.addLdapSyncResults(
 									GwtLdapSyncAction.MODIFIED_ENTITY,

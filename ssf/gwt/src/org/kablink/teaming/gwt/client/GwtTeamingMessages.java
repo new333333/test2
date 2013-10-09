@@ -2974,6 +2974,8 @@ public interface GwtTeamingMessages extends Messages
 	String ldapSyncResultsDlg_DeletedAction();
 	String ldapSyncResultsDlg_DeletedGroupsLabel();
 	String ldapSyncResultsDlg_DeletedUsersLabel();
+	String ldapSyncResultsDlg_DisabledAction();
+	String ldapSyncResultsDlg_DisabledUsersLabel();
 	String ldapSyncResultsDlg_FilterOptionsAlt();
 	String ldapSyncResultsDlg_GroupType();
 	String ldapSyncResultsDlg_Header();
@@ -2990,6 +2992,7 @@ public interface GwtTeamingMessages extends Messages
 	String ldapSyncResultsDlg_ShowAddedUsersCB();
 	String ldapSyncResultsDlg_ShowDeletedGroupsCB();
 	String ldapSyncResultsDlg_ShowDeletedUsersCB();
+	String ldapSyncResultsDlg_ShowDisabledUsersCB();
 	String ldapSyncResultsDlg_ShowModifiedGroupsCB();
 	String ldapSyncResultsDlg_ShowModifiedUsersCB();
 	String ldapSyncResultsDlg_SyncStatusLabel();

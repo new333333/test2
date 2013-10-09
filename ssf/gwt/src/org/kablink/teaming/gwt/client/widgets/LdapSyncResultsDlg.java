@@ -78,7 +78,9 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -115,6 +117,7 @@ public class LdapSyncResultsDlg extends DlgBox
 	private Label m_addedUsersLabel;
 	private Label m_modifiedUsersLabel;
 	private Label m_deletedUsersLabel;
+	private Label m_disabledUsersLabel;
 	private Label m_addedGroupsLabel;
 	private Label m_modifiedGroupsLabel;
 	private Label m_deletedGroupsLabel;
@@ -124,6 +127,7 @@ public class LdapSyncResultsDlg extends DlgBox
 	private int m_numAddedUsers = 0;
 	private int m_numModifiedUsers = 0;
 	private int m_numDeletedUsers = 0;
+	private int m_numDisabledUsers = 0;
 	private int m_numAddedGroups = 0;
 	private int m_numModifiedGroups = 0;
 	private int m_numDeletedGroups = 0;
@@ -132,6 +136,7 @@ public class LdapSyncResultsDlg extends DlgBox
 	private boolean m_showAddedUsers = true;
 	private boolean m_showModifiedUsers = true;
 	private boolean m_showDeletedUsers = true;
+	private boolean m_showDisabledUsers = true;
 	private boolean m_showAddedGroups = true;
 	private boolean m_showModifiedGroups = true;
 	private boolean m_showDeletedGroups = true;
@@ -286,8 +291,13 @@ public class LdapSyncResultsDlg extends DlgBox
 		{
 			Label label;
 			FlexTable statsTable;
+			CellFormatter cellFormatter;
 			
 			statsTable = new FlexTable();
+			
+			cellFormatter = statsTable.getCellFormatter();
+			cellFormatter.setVerticalAlignment( 0, 0, HasVerticalAlignment.ALIGN_TOP );
+			cellFormatter.setVerticalAlignment( 0, 1, HasVerticalAlignment.ALIGN_TOP );
 			
 			// Create the controls used to display user statistics
 			{
@@ -330,6 +340,17 @@ public class LdapSyncResultsDlg extends DlgBox
 				
 					m_deletedUsersLabel = new Label( "0" );
 					userStatsTable.setWidget( row, 1, m_deletedUsersLabel );
+					
+					++row;
+				}
+				
+				// Add the "Disabled users:" controls
+				{
+					label = new Label( messages.ldapSyncResultsDlg_DisabledUsersLabel() );
+					userStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
+				
+					m_disabledUsersLabel = new Label( "0" );
+					userStatsTable.setWidget( row, 1, m_disabledUsersLabel );
 					
 					++row;
 				}
@@ -533,6 +554,10 @@ public class LdapSyncResultsDlg extends DlgBox
 					action = messages.ldapSyncResultsDlg_DeletedAction();
 					break;
 					
+				case DISABLED_ENTITY:
+					action = messages.ldapSyncResultsDlg_DisabledAction();
+					break;
+					
 				case MODIFIED_ENTITY:
 					action = messages.ldapSyncResultsDlg_ModifiedAction();
 					break;
@@ -603,6 +628,12 @@ public class LdapSyncResultsDlg extends DlgBox
 			
 			break;
 			
+		case DISABLED_ENTITY:
+			if ( entityType == GwtEntityType.USER && m_showDisabledUsers )
+				match = true;
+			
+			break;
+			
 		case MODIFIED_ENTITY:
 			if ( entityType == GwtEntityType.USER && m_showModifiedUsers )
 				match = true;
@@ -645,6 +676,10 @@ public class LdapSyncResultsDlg extends DlgBox
 					
 				case DELETED_ENTITY:
 					action = messages.ldapSyncResultsDlg_DeletedAction();
+					break;
+					
+				case DISABLED_ENTITY:
+					action = messages.ldapSyncResultsDlg_DisabledAction();
 					break;
 					
 				case MODIFIED_ENTITY:
@@ -957,6 +992,7 @@ public class LdapSyncResultsDlg extends DlgBox
 		m_numAddedUsers += ldapSyncResults.getNumUsersAdded();
 		m_numDeletedGroups += ldapSyncResults.getNumGroupsDeleted();
 		m_numDeletedUsers += ldapSyncResults.getNumUsersDeleted();
+		m_numDisabledUsers += ldapSyncResults.getNumUsersDisabled();
 		m_numModifiedGroups += ldapSyncResults.getNumGroupsModified();
 		m_numModifiedUsers += ldapSyncResults.getNumUsersModified();
 		
@@ -964,6 +1000,7 @@ public class LdapSyncResultsDlg extends DlgBox
 		m_addedUsersLabel.setText( String.valueOf( m_numAddedUsers ) );
 		m_deletedGroupsLabel.setText( String.valueOf( m_numDeletedGroups ) );
 		m_deletedUsersLabel.setText( String.valueOf( m_numDeletedUsers ) );
+		m_disabledUsersLabel.setText( String.valueOf( m_numDisabledUsers ) );
 		m_modifiedGroupsLabel.setText( String.valueOf( m_numModifiedGroups ) );
 		m_modifiedUsersLabel.setText( String.valueOf( m_numModifiedUsers ) );
 	}
@@ -1012,6 +1049,7 @@ public class LdapSyncResultsDlg extends DlgBox
 			m_numAddedUsers = 0;
 			m_numDeletedGroups = 0;
 			m_numDeletedUsers = 0;
+			m_numDisabledUsers = 0;
 			m_numModifiedGroups = 0;
 			m_numModifiedUsers = 0;
 			
@@ -1175,6 +1213,7 @@ public class LdapSyncResultsDlg extends DlgBox
 		private CheckBox m_showAddedUsersCB;
 		private CheckBox m_showDeletedGroupsCB;
 		private CheckBox m_showDeletedUsersCB;
+		private CheckBox m_showDisabledUsersCB;
 		private CheckBox m_showModifiedGroupsCB;
 		private CheckBox m_showModifiedUsersCB;
 
@@ -1188,6 +1227,7 @@ public class LdapSyncResultsDlg extends DlgBox
 			FlowPanel mainPanel;
 			FlowPanel footerPanel;
 			FlexTable statsTable;
+			CellFormatter cellFormatter;
 			Button btn;
 			GwtTeamingMessages messages;
 		
@@ -1202,6 +1242,10 @@ public class LdapSyncResultsDlg extends DlgBox
 			mainPanel = new FlowPanel();
 
 			statsTable = new FlexTable();
+			
+			cellFormatter = statsTable.getCellFormatter();
+			cellFormatter.setVerticalAlignment( 0, 0, HasVerticalAlignment.ALIGN_TOP );
+			cellFormatter.setVerticalAlignment( 0, 1, HasVerticalAlignment.ALIGN_TOP );
 			
 			// Create the checkboxes used to define which user statistics are displayed
 			{
@@ -1239,10 +1283,18 @@ public class LdapSyncResultsDlg extends DlgBox
 					++row;
 				}
 				
+				// Add the "Disabled users:" controls
+				{
+					m_showDisabledUsersCB = new CheckBox( messages.ldapSyncResultsDlg_ShowDisabledUsersCB() );
+					userTable.setWidget( row, 0, m_showDisabledUsersCB );
+					
+					++row;
+				}
+				
 				statsTable.setWidget( 0, 0, userPanel );
 			}
 			
-			// Create the checkboxes used to define which user statistics are displayed
+			// Create the checkboxes used to define which group statistics are displayed
 			{
 				FlowPanel groupPanel;
 				FlexTable groupTable;
@@ -1308,6 +1360,7 @@ public class LdapSyncResultsDlg extends DlgBox
 							m_showModifiedUsers = m_showModifiedUsersCB.getValue();
 							m_showDeletedGroups = m_showDeletedGroupsCB.getValue();
 							m_showDeletedUsers = m_showDeletedUsersCB.getValue();
+							m_showDisabledUsers = m_showDisabledUsersCB.getValue();
 
 							// Redisplay the current list of ldap sync results with the new criteria
 							filterCurrentLdapSyncResults();
@@ -1353,6 +1406,7 @@ public class LdapSyncResultsDlg extends DlgBox
 			m_showAddedUsersCB.setValue( m_showAddedUsers );
 			m_showModifiedUsersCB.setValue( m_showModifiedUsers );
 			m_showDeletedUsersCB.setValue( m_showDeletedUsers );
+			m_showDisabledUsersCB.setValue( m_showDisabledUsers );
 			m_showAddedGroupsCB.setValue( m_showAddedGroups );
 			m_showModifiedGroupsCB.setValue( m_showModifiedGroups );
 			m_showDeletedGroupsCB.setValue( m_showDeletedGroups );

@@ -66,7 +66,8 @@ public class GwtLdapSyncResult implements IsSerializable, VibeRpcResponseData
 	{
 		ADDED_ENTITY,
 		MODIFIED_ENTITY,
-		DELETED_ENTITY
+		DELETED_ENTITY,
+		DISABLED_ENTITY
 	}
 
 	/**

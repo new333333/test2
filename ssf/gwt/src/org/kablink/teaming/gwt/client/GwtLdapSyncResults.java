@@ -55,6 +55,7 @@ public class GwtLdapSyncResults implements IsSerializable, VibeRpcResponseData
 	private String m_errorLdapServerId;		// The id of the ldap server being used when an error happened.
 	private int m_numUsersAdded;
 	private int m_numUsersDeleted;
+	private int m_numUsersDisabled;
 	private int m_numUsersModified;
 	private int m_numGroupsAdded;
 	private int m_numGroupsDeleted;
@@ -94,6 +95,7 @@ public class GwtLdapSyncResults implements IsSerializable, VibeRpcResponseData
 		m_syncError = null;
 		m_numUsersAdded = 0;
 		m_numUsersDeleted = 0;
+		m_numUsersDisabled = 0;
 		m_numUsersModified = 0;
 		m_numGroupsAdded = 0;
 		m_numGroupsDeleted = 0;
@@ -160,7 +162,11 @@ public class GwtLdapSyncResults implements IsSerializable, VibeRpcResponseData
 			else if ( entityType == GwtEntityType.GROUP )
 				++m_numGroupsModified;
 			break;
-			
+
+		case DISABLED_ENTITY:
+			if ( entityType == GwtEntityType.USER )
+				++m_numUsersDisabled;
+			break;
 		}
 	}
 	
@@ -226,6 +232,14 @@ public class GwtLdapSyncResults implements IsSerializable, VibeRpcResponseData
 	public int getNumUsersDeleted()
 	{
 		return m_numUsersDeleted;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getNumUsersDisabled()
+	{
+		return m_numUsersDisabled;
 	}
 	
 	/**
