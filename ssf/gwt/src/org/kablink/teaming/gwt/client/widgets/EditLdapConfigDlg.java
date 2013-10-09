@@ -1744,6 +1744,9 @@ public class EditLdapConfigDlg extends DlgBox
 	{
 		if ( event != null )
 		{
+			if ( event.getLdapSyncStatus() == null )
+				return;
+			
 			m_ldapSyncStatus = event.getLdapSyncStatus();
 			switch ( m_ldapSyncStatus )
 			{

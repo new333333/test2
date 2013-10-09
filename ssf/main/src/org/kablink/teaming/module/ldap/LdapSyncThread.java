@@ -42,6 +42,8 @@ import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -60,6 +62,8 @@ import org.kablink.teaming.web.util.WebHelper;
 public class LdapSyncThread
 	extends Thread
 {
+	private static Log m_logger = LogFactory.getLog( LdapSyncThread.class );
+
 	private LdapSyncResults	m_ldapSyncResults;	// The results of the sync will be stored here as the sync progresses.
 	private HttpSession		m_session = null;	// The session we stored this object in.
 	private String				m_id;
@@ -243,6 +247,8 @@ public class LdapSyncThread
 		
 		if ( ldapSyncThread != null )
 			ldapSyncResults = ldapSyncThread.getLdapSyncResults();
+		else
+			m_logger.error( "-------> in LdapSyncThread.getLdapSyncResults(), getLdapSyncThread() returned null" );
 		
 		return ldapSyncResults;
 	}	

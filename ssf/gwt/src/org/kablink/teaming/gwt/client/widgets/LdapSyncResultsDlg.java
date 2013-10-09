@@ -813,7 +813,7 @@ public class LdapSyncResultsDlg extends DlgBox
 						responseData = response.getResponseData();
 						if ( responseData != null && responseData instanceof GwtLdapSyncResults )
 						{
-							final GwtLdapSyncResults ldapSyncResults;
+							GwtLdapSyncResults ldapSyncResults;
 							
 							ldapSyncResults = (GwtLdapSyncResults) responseData;
 							
@@ -942,6 +942,11 @@ public class LdapSyncResultsDlg extends DlgBox
 		LdapSyncStatusEvent event;
 		
 		status = ldapSyncResults.getSyncStatus();
+		if ( status == null )
+		{
+			Window.alert( "in setLdapSyncStatus(), status is null" );
+			return;
+		}
 		
 		// Fire an event that lets everyone know the ldap sync status changed.
 		event = new LdapSyncStatusEvent( status );
@@ -1015,6 +1020,7 @@ public class LdapSyncResultsDlg extends DlgBox
 		GwtLdapSyncMode syncMode )
 	{
 		GwtTeamingMessages messages;
+		Timer timer;
 		
 		m_listOfLdapServers = listOfLdapServers;
 		
@@ -1053,10 +1059,19 @@ public class LdapSyncResultsDlg extends DlgBox
 			m_numModifiedGroups = 0;
 			m_numModifiedUsers = 0;
 			
-			updateSyncStatusLabel();
+			m_syncStatusImg.setVisible( false );
+			m_syncStatusLabel.setText( "" );
 		}
 		
-		getLdapSyncResults();
+		timer = new Timer()
+		{
+			@Override
+			public void run()
+			{
+				getLdapSyncResults();
+			}
+		};
+		timer.schedule( 1000 );
 	}
 
 	/**
