@@ -1063,6 +1063,9 @@ public class LdapSyncResultsDlg extends DlgBox
 			m_syncStatusLabel.setText( "" );
 		}
 		
+		// Wait for 1 second before we issue a request to get the ldap sync results.  We need to give the
+		// request to start the ldap sync time to create an LdapSyncThread and store that object in the
+		// session.
 		timer = new Timer()
 		{
 			@Override
