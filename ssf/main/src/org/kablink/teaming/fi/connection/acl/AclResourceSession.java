@@ -35,6 +35,7 @@ package org.kablink.teaming.fi.connection.acl;
 
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.fi.FIException;
@@ -159,4 +160,41 @@ public interface AclResourceSession extends ResourceSession {
 	 * @throws UncheckedIOException
 	 */
 	public boolean isVisible() throws FIException, UncheckedIOException;
+	
+	/**
+	 * Returns <code>ResourceItem</code> representing the resource at the current path, or <code>null</code>
+	 * if no such resource is available.
+	 * 
+	 * IMPLEMENTATION NOTE: For best efficiency, whenever possible, the implementation of this method should
+	 * obtain all pertaining pieces of information about the resource in a single trip to the data source.
+	 * 
+	 * @param includeAclInfo
+	 * If <code>true</code>, the resource item should include ACL inheritance/equivalence flag for the resource.
+	 * If <code>false</code>, ACL information must not be obtained for the resource. It is important to
+	 * avoid the processing cost associated with obtaining such information, unless the caller explicitly
+	 * requests for it.
+	 * 
+	 * @param includeOwnerInfo
+	 * If<code>true</code>, the resource item should include owner ID and type information for the resource.
+	 * If<code>false</code>, owner information must not be obtained for the resource.
+	 * 
+	 * @return
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
+	public ResourceItem getResource(boolean includeAclInfo, boolean includeOwnerInfo) throws FIException, UncheckedIOException;
+	
+	/**
+	 * Returns a sorted set of <code>ResourceChange</code> objects representing the changes occurred on the
+	 * file system since the specified time inclusive. If there's no changes since the last time, this
+	 * method should return an empty set. If the resource driver does not support "change since" capability,
+	 * this method should return a <code>null</code>.
+	 * 
+	 * 
+	 * @param timestamp
+	 * @return
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
+	public SortedSet<ResourceChange> getChangesSince(long timestamp) throws FIException, UncheckedIOException;
 }

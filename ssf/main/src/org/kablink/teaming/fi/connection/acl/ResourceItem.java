@@ -50,7 +50,8 @@ public class ResourceItem {
 	// This field is relevant only for files. The value is 0 for folders.
 	private long contentLength;
 	
-	// This field is relevant only for folders. The value is null for all files indicating that this information is unknown.
+	// This optional field is relevant only for folders, and should be filled only when the client 
+	// explicitly asks for it. The value is null for all files indicating that this information is unknown.
 	private Boolean aclInherited = null;
 	
 	// These fields are optional, and should be filled only when the client explicitly asks for it.
@@ -70,12 +71,28 @@ public class ResourceItem {
 		return new ResourceItem(parentPath, name, lastModified, false, contentLength, aclInherited, ownerId, ownerIdType);
 	}
 	
+	public static ResourceItem file(String filePath, long lastModified, long contentLength) {
+		return new ResourceItem(makeParentPath(filePath), makeName(filePath), lastModified, false, contentLength);
+	}
+	
+	public static ResourceItem file(String filePath, long lastModified, long contentLength, Boolean aclInherited, String ownerId, String ownerIdType) {
+		return new ResourceItem(makeParentPath(filePath), makeName(filePath), lastModified, false, contentLength, aclInherited, ownerId, ownerIdType);
+	}
+	
 	public static ResourceItem directory(String parentPath, String name) {
 		return new ResourceItem(parentPath, name, 0, true, 0);
 	}
 	
 	public static ResourceItem directory(String parentPath, String name, Boolean aclInherited, String ownerId, String ownerIdType) {
 		return new ResourceItem(parentPath, name, 0, true, 0, aclInherited, ownerId, ownerIdType);
+	}
+	
+	public static ResourceItem directory(String folderPath) {
+		return new ResourceItem(makeParentPath(folderPath), makeName(folderPath), 0, true, 0);
+	}
+	
+	public static ResourceItem directory(String folderPath, Boolean aclInherited, String ownerId, String ownerIdType) {
+		return new ResourceItem(makeParentPath(folderPath), makeName(folderPath), 0, true, 0, aclInherited, ownerId, ownerIdType);
 	}
 	
 	private ResourceItem(String parentPath, String name, long lastModified, boolean directory, long contentLength, Boolean aclInherited, String ownerId, String ownerIdType) {
@@ -237,5 +254,21 @@ public class ResourceItem {
 		// A normalized path can only be obtained from the respective resource driver implementing
 		// class.
 		return parentPath + Constants.SLASH + name;
+	}
+	
+	private static String makeParentPath(String path) {
+		int index = path.lastIndexOf("/");
+		if(index < 0)
+			return "";
+		else
+			return path.substring(0, index);
+	}
+	
+	private static String makeName(String path) {
+		int index = path.lastIndexOf("/");
+		if(index < 0)
+			return path;
+		else
+			return path.substring(index+1);
 	}
 }
