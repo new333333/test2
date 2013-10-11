@@ -303,4 +303,31 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <comment>Sync type</comment>
+        <addColumn tableName="SS_BinderState">
+            <column name="syncType" type="VARCHAR(1)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <comment>IPv4 address of the node executing sync</comment>
+        <addColumn tableName="SS_BinderState">
+            <column name="syncIpv4Address" type="VARCHAR(16)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <comment>Sync in progress</comment>
+        <addColumn tableName="SS_BinderState">
+            <column name="syncInProgress" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

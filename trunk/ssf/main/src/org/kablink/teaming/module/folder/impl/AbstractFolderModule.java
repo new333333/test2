@@ -1741,7 +1741,8 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 		fc.add("deleted", Boolean.TRUE);
 		ObjectControls objs = new ObjectControls(Folder.class, new String[] {"id"});
 		List<Object> folders = getCoreDao().loadObjects(objs, fc, RequestContextHolder.getRequestContext().getZoneId());
-		logger.debug("checking for deleted folders");
+		if(traceEnabled)
+			logger.trace("checking for deleted folders");
 		int success = 0;
 		int fail = 0;
 		for (Object obj: folders) {
@@ -1764,7 +1765,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 				logger.error(ex);
 			}
 		}
-		if(folders != null && folders.size() > 0)
+		if(debugEnabled && folders != null && folders.size() > 0)
 			logger.debug("Folders cleaned up: success=" + success + ", fail=" + fail);
 	}
 
