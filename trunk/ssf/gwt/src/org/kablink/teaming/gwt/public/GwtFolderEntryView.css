@@ -37,7 +37,7 @@
 		.vibe-feView-headerEntryImage                 {position: absolute; left:  5px; top:  0px;}
 		.vibe-feView-headerEntryLockImage             {position: absolute; left: 19px; top: 34px;}
 		.vibe-feView-headerEntryLockLabel             {position: absolute; left: 10px; top: 55px; font-size: 12px; color: #949494;}
-		.vibe-feView-headerRoot                       {position: relative; display: block; padding: 0px 380px 10px 10px;}
+		.vibe-feView-headerRoot                       {position: relative; display: block; padding: 0px 50px 10px 10px;}
 	/* End:  Header styles. */
 	
 	/* Start:  Menu styles. */
@@ -100,11 +100,11 @@
 		.vibe-feView_commentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
 		.vibe-feView_commentsComposite-addCommentHint         {color: #949494; font-size: .8em; display: inline-block; width: 150px;}
 		.vibe-feView_commentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
-		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
+		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
 		.vibe-feView_commentsComposite-addCommentPanel-nonIE  {width: 100%; }
-		.vibe-feView_commentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 280px; height: 45px; padding: 5px; border: 1px solid #c4c4c4; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+		.vibe-feView_commentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 300px; height: 45px; padding: 5px; border: 1px solid #c4c4c4; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 		.vibe-feView_commentsComposite-captionImg             {width: 36px; height: 36px;}
-		.vibe-feView_commentsComposite-commentsWidget         {height: 300px; position: relative; overflow: auto; width: 328px;}
+		.vibe-feView_commentsComposite-commentsWidget         {height: 300px; position: relative; overflow: auto; width: 328px; border-bottom: 1px solid #cccccc;}
 		.vibe-feView_commentsComposite-label                  {}
 		.vibe-feView_commentsComposite-panel                  {}
 		.vibe-feView_commentsComposite-sendButton-nonIE       {float:right;}
@@ -150,15 +150,10 @@
 			display: block;
 			position: relative;
 			background: white;
-			box-shadow: #E0E0E0 0px 2px 3px;
 			border-left:   1px solid #CCC;
-			border-right:  1px solid #CCC;
 			border-bottom: 1px solid #CCC;
-			border-bottom-left-radius:         5px; border-bottom-right-radius:         5px;
-			-moz-border-radius-bottomleft:     5px; -moz-border-radius-bottomright:     5px;
-			-webkit-border-bottom-left-radius: 5px; -webkit-border-bottom-right-radius: 5px;
 		}
-d	/* End:  Comments styles. */
+	/* End:  Comments styles. */
 	
 	/* Start:  Sidebar styles. */
 		.vibe-feView-sidebar                           {position: relative; display: block; width: 350px; background-color: #fafafa; border-left: 1px solid #cccccc;}
@@ -166,9 +161,9 @@ d	/* End:  Comments styles. */
 		.vibe-feView-sidebarCommentsHeadExpander       {margin-right: 16px !important;}
 		.vibe-feView-sidebarCommentsHeadExpander:hover {cursor: pointer;}
 		.vibe-feView-sidebarCommentsHeadInner          {}
-		.vibe-feView-sidebarCommentsHeadOuter          {position: relative; width: 350px; background-color: #e0e0e0; border-bottom: 1px solid #cccccc; z-index: 4001;}
+		.vibe-feView-sidebarCommentsHeadOuter          {position: relative; width: 350px; background-color: #f6f6f6; border-bottom: 1px solid #cccccc; z-index: 4001;}
 		.vibe-feView-sidebarCommentsHeadText           {color: #5691a6 !important;}
-		.vibe-feView-sidebarCommentsHeadTitle          {position: relative; font-size: 14px; height: 20px; padding: 6px 5px 4px 18px;}
+		.vibe-feView-sidebarCommentsHeadTitle          {position: relative; font-size: 14px; height: 25px; padding: 10px 5px 4px 18px; border-left: 1px solid #cccccc;}
 		.vibe-feView-sidebarSliderImg                  {padding-top: 5px; padding-left: 4px;}
 		.vibe-feView-sidebarSliderDiv-hidden           {right: 0px !important;}
 		.vibe-feView-sidebarSliderDiv:hover            {cursor: pointer;}
@@ -177,10 +172,11 @@ d	/* End:  Comments styles. */
 			display: block;
 			background-color: #f6f6f6;
 			border: 1px solid #cccccc;
+			border-right: 0px;
 			width: 30px;
 			height: 25px;
-			top: 28px;
-			right: 350px;
+			top: 39px;
+			right: 345px;
 			z-index: 4000;
 			border-top-left-radius: 5px;
 			border-bottom-left-radius: 5px;
