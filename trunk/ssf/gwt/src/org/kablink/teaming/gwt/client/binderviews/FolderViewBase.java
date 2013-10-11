@@ -221,8 +221,8 @@ public abstract class FolderViewBase extends ViewBase
 		 * Synchronously resizes the panel.
 		 */
 		private void onResizeNow() {
-			setHeight((m_rootPanel.getOffsetHeight() + getContentHeightAdjust()) + "px");
-			setWidth( (m_rootPanel.getOffsetWidth()  + getContentWidthAdjust())  + "px");
+			setHeight(getNonNegativeInt(m_rootPanel.getOffsetHeight() + getContentHeightAdjust()) + "px");
+			setWidth( getNonNegativeInt(m_rootPanel.getOffsetWidth()  + getContentWidthAdjust())  + "px");
 			
 			m_verticalFlowPanel.onResize();
 		}
@@ -527,6 +527,16 @@ public abstract class FolderViewBase extends ViewBase
 		return MINIMUM_CONTENT_HEIGHT;
 	}
 
+	/*
+	 * Ensures an integer value is >= 0.
+	 */
+	private static int getNonNegativeInt(int value) {
+		if (0 > value) {
+			value = 0;
+		}
+		return value;
+	}
+	
 	/**
 	 * Returns the adjustment to used for a folder view's content so
 	 * that it doesn't get a vertical scroll bar.

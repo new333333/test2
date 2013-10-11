@@ -4751,7 +4751,7 @@ td.datePickerMonth {
 	padding-bottom: 12px;
 }
 
-.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #fafad5; width: auto; -moz-border-radius: 6px; border-radius: 6px; -webkit-border-radius: 6px; }
+.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #fafad5; width: auto; -moz-border-radius: 6px; border-radius: 6px; -webkit-border-radius: 6px;}
 .vibe-hoverHintLabel {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
 
 /* End */
@@ -5134,7 +5134,7 @@ td.datePickerMonth {
  */
 .userActionsPopup
 {
-	z-index: 1100;
+	z-index: 5000;
 }
 
 .userActionsPopup_OutermostPanel
@@ -5338,7 +5338,7 @@ td.datePickerMonth {
 	.vibe-userPropertiesDlg-delete           {}
 	.vibe-userPropertiesDlg-grid             {border-spacing: 0; padding: 10px;}
 
-	.vibe-userPropertiesDlg-nfHoverHint      {z-index: 1002;}
+	.vibe-userPropertiesDlg-nfHoverHint      {z-index: 1004;}
 	.vibe-userPropertiesDlg-rootPanel        {}
 	.vibe-userPropertiesDlg-title            {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important; display: inline-block; padding-left: 35px; padding-top: 5px;}
 	.vibe-userPropertiesDlg-nfRow td         {vertical-align: top;}

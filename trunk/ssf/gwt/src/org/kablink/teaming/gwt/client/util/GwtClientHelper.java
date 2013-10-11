@@ -917,7 +917,21 @@ public class GwtClientHelper {
 	}
 	
 	/**
+	 * Returns true if the logged in user is an external user and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isExternalUser() {
+		return getRequestInfo().isExternalUser();
+	}
+
+	/**
 	 * Returns true if the given id is belongs to the "guest" user.
+	 * 
+	 * @param id
+	 * 
+	 * @return
 	 */
 	public static boolean isGuest( String id )
 	{
@@ -927,6 +941,16 @@ public class GwtClientHelper {
 		return id.equalsIgnoreCase( getRequestInfo().getGuestId() );
 	}
 	
+	/**
+	 * Returns true if the logged in user is the Guest user and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isGuestUser() {
+		return getRequestInfo().isGuestUser();
+	}
+
 	/**
 	 * Returns true if the current user is guest
 	 */

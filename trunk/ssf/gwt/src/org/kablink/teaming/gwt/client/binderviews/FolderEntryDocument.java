@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -176,13 +177,18 @@ public class FolderEntryDocument extends VibeFlowPanel {
 	 * Overrides the UIObject.setHeight() method.
 	 */
 	@Override
-	public void setHeight(String height) {
+	public void setHeight(final String height) {
 		// If we've got an <IFRAME> containing HTML...
-		String width  = ((getOffsetWidth() - NO_VSCROLL_ADJUST) + "px");
 		if (null != m_htmlFrame) {
-			// ...set it's size...
-			m_htmlFrame.setHeight(height);
-			m_htmlFrame.setWidth( width );
+			// ...set it's size after things stabilize...
+			m_htmlFrame.setWidth("1px");	// We first set it to 1px so that the getOffsetWidth() call below isn't affected by the current width.
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					m_htmlFrame.setHeight(height);
+					m_htmlFrame.setWidth((getOffsetWidth() - NO_VSCROLL_ADJUST) + "px");
+				}
+			});
 		}
 
 		// ...and pass the height to the super class.
