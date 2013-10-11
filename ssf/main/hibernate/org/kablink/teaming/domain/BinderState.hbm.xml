@@ -34,5 +34,8 @@
       <property name="countFolderProcessed" column="fullSync_countFolderProcessed"/>
       <property name="countFolderMaxQueue" column="fullSync_countFolderMaxQueue"/>
     </component>
+    <property name="syncTypeStr" column="syncType" length="1"/>
+    <property name="syncIpv4Address" length="16"/>
+    <property name="syncInProgress" access="field"/>
   </class>
 </hibernate-mapping>

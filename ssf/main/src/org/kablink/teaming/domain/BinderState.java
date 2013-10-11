@@ -75,14 +75,27 @@ public class BinderState extends ZonedObject {
 		deleting
 	}
 	
+	// IMPORTANT: This enum values must be exactly one character long
+	public enum SyncType {
+		/**
+		 * FUll sync
+		 */
+		F,
+		/**
+		 * JITS
+		 */
+		J
+	}
+	
 	/*
 	 * Owning binder ID
 	 */
 	private Long binderId;
 	/*
-	 * Last time sync completed on this particular binder.
+	 * Last time sync completed on this particular folder.
 	 * This does NOT tell whether the sync was full (whole branch) or JIT 
 	 * (single level only), or whether the sync was successful or not.
+	 * Applicable to all folders within net folder, not just net folder root.
 	 */
 	private Date lastSyncTime; 
 	
@@ -116,7 +129,25 @@ public class BinderState extends ZonedObject {
 	 * This flag is used to request full synchronization currently in progress to be stopped as soon as possible.
 	 * 
 	 */
-	Boolean fullSyncStopRequested;
+	private Boolean fullSyncStopRequested;
+	
+	/*
+	 * Tells whether latest sync is full sync or JITS on this folder
+	 * Applicable to all folders within net folder, not just net folder root.
+	 */
+	private SyncType syncType;
+	
+	/*
+	 * IP address of the node executing latest sync on this folder
+	 * Applicable to all folders within net folder, not just net folder root.
+	 */
+	private String syncIpv4Address;
+
+	/*
+	 * Tells whether or not sync (of any type) is in progress on this folder.
+	 * Applicable to all folders within net folder, not just net folder root.
+	 */
+	private Boolean syncInProgress;
 	
 	protected BinderState() {
 		// Use by Hibernate only
@@ -140,6 +171,56 @@ public class BinderState extends ZonedObject {
 
 	public void setLastSyncTime(Date lastSyncTime) {
 		this.lastSyncTime = lastSyncTime;
+	}
+
+	public SyncType getSyncType() {
+		return syncType;
+	}
+	
+	public void setSyncType(SyncType syncType) {
+		this.syncType = syncType;
+	}
+	
+	// Used by Hibernate only
+	private String getSyncTypeStr() {
+		if(syncType == null)
+			return null;
+		else
+			return syncType.name();
+	}
+	
+	// Used by Hibernate only
+	private void setSyncTypeStr(String syncTypeStr) {
+		if(syncTypeStr == null) {
+			syncType = null;
+		}
+		else {
+			try {
+				syncType = SyncType.valueOf(syncTypeStr);
+			}
+			catch(Exception e) {
+				syncType = null;
+			}
+		}
+	}
+	
+	public String getSyncIpv4Address() {
+		return syncIpv4Address;
+	}
+	
+	public void setSyncIpv4Address(String syncIpv4Address) {
+		this.syncIpv4Address = syncIpv4Address;
+	}
+		
+	public boolean isSyncInProgress() {
+		if(syncInProgress == null)
+			return false; // default to false
+		else 
+			return syncInProgress.booleanValue();
+	}
+
+	public void setSyncInProgress(boolean syncInProgress) {
+		this.syncInProgress = syncInProgress;
 	}
 
 	public Date getLastFullSyncCompletionTime() {
