@@ -84,6 +84,8 @@
 		isQuotasDiskQuotaExceeded:			'${ss_diskQuotaExceeded}',
 		isQuotasEnabled:					'${ss_quotasEnabled}',
 		isSiteAdmin:						'${isSiteAdmin}',
+		isGuestUser:						'${isGuestUser}',
+		isExternalUser:						'${isExternalUser}',
 		isTinyMCECapable:					'${isTinyMCECapable}',
 		isUserLoggedIn:						'${isUserLoggedIn}',
 		jsPath:								'<ssf:escapeJavaScript><html:rootPath/>js/</ssf:escapeJavaScript>',

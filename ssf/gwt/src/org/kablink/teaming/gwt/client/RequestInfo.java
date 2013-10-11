@@ -575,6 +575,28 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the flag that tells us if the logged in user is the Guest
+	 * user.
+	 * 
+	 * @return
+	 */
+	public final native boolean isGuestUser()
+	/*-{
+		return (this.getBFromS( this.isGuestUser ));
+	}-*/;
+
+	/**
+	 * Return the flag that tells us if the logged in user is an
+	 * external user.
+	 * 
+	 * @return
+	 */
+	public final native boolean isExternalUser()
+	/*-{
+		return (this.getBFromS( this.isExternalUser ));
+	}-*/;
+
+	/**
 	 * Return the id of the "all external users" group
 	 */
 	public final native String getAllExternalUsersGroupId()

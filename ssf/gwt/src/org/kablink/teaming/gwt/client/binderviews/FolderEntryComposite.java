@@ -67,7 +67,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryDetailsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNextPreviousFolderEntryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -76,6 +75,7 @@ import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -83,12 +83,11 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -104,7 +103,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class FolderEntryComposite extends ResizeComposite	
-	implements CommentAddedCallback, EventsHandledBySourceMarker, FolderEntryCallback, ToolPanelReady,
+	implements EventsHandledBySourceMarker, FolderEntryCallback, ToolPanelReady,
 		// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntitiesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
@@ -122,41 +121,46 @@ public class FolderEntryComposite extends ResizeComposite
 		UnlockSelectedEntitiesEvent.Handler,
 		ZipAndDownloadSelectedFilesEvent.Handler
 {
-	private boolean							m_commentsVisible;			//
 	private boolean							m_compositeReady;			// Set true once the composite and all its components are ready.
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
-	private FolderEntryComments				m_commentsArea;				//
+	private boolean							m_sidebarVisible;			// true -> The sidebar is visible.  false -> It's not.
+	private FlexCellFormatter				m_contentGridFCF;			// Used to format cells in m_contentGridFCF.
 	private FolderEntryDetails				m_fed;						// Details about the folder entry being viewed.
-	private FolderEntryDocument				m_documentArea;				//
-	private FolderEntryHeader				m_headerArea;				//
-	private FolderEntryMenu					m_menuArea;					//
+	private FolderEntryDocument				m_documentArea;				// The document portion of the view.
+	private FolderEntryHeader				m_headerArea;				// The header   portion of the view.
+	private FolderEntryMenu					m_menuArea;					// The menu     portion of the view.
+	private FolderEntrySidebar				m_sidebarArea;				// The sidebar  portion of the view.
 	private FooterPanel						m_footerPanel;				// Footer at the bottom of the view with the permalink, ...
-	private FormPanel						m_downloadForm;				//
+	private FormPanel						m_downloadForm;				// A <FORM> used for downloading a file.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
-	private Image							m_commentsSliderImg;		//
-	private InlineLabel 					m_commentsHeader;			//
 	private int								m_readyComponents;			// Components that are ready, incremented as they callback.
 	private Label							m_caption;					// The text on the left of the caption bar. 
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ViewReady						m_viewReady;				// Stores a ViewReady created for the classes that extends it.
+	private VibeFlexTable					m_contentGrid;				// A <TABLE> containing the content portions of the view (everything but the sidebar.)
 	private VibeFlowPanel 					m_captionImagePanel;		// A panel holding an image in the caption, if one is required.
 	private VibeFlowPanel					m_contentPanel;				// The panel containing the composite's main content.
 	private VibeFlowPanel					m_rootPanel;				// The panel containing everything about the composite.
 	private ViewFolderEntryInfo				m_vfei;						// The view information for the folder entry being viewed.
 
-	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of the composite's content panel.
-	private final static int MINIMUM_DOCUMENT_HEIGHT	=  50;
+	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of the composite's content  panel.
+	private final static int MINIMUM_DOCUMENT_HEIGHT	=  50;	// The minimum height (in pixels) of the composite's document area.
 	private final static int FOOTER_ADJUST_DLG			=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
 	private final static int FOOTER_ADJUST_VIEW			=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
 	
-	// Number of components to coordinate with during construction:
+	private final static int CONTENT_ROW	= 0;	// Row    index in m_contentGrid for the content.
+	private final static int CONTENT_CELL	= 0;	// Column index in m_contentGrid for the content.
+	private final static int SIDEBAR_CELL	= 1;	// Column index in m_contentGrid for the sidebar.
+	
+	// Number of components to coordinate during construction:
 	// - Header;
 	// - Menu;
 	// - Document;
-	// - Comments; and
+	// - Sidebar;
+	// - Comments (within sidebar); and
 	// - Footer.
-	private final static int FOLDER_ENTRY_COMPONENTS = 5;	//
+	private final static int FOLDER_ENTRY_COMPONENTS = 6;	//
 	
 	// The following is the ID/name of the <IFRAME> used to run the
 	// edit-in-place editor via an applet.
@@ -166,7 +170,7 @@ public class FolderEntryComposite extends ResizeComposite
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTITIES,
@@ -199,9 +203,10 @@ public class FolderEntryComposite extends ResizeComposite
 		m_viewReady = viewReady;
 		
 		// ...initialize the data members requiring it...
-		m_isDialog = (null != dialog);
-		m_images   = GwtTeaming.getDataTableImageBundle();
-		m_messages = GwtTeaming.getMessages();
+		m_isDialog       = (null != dialog);
+		m_images         = GwtTeaming.getDataTableImageBundle();
+		m_messages       = GwtTeaming.getMessages();
+		m_sidebarVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.SIDEBAR_VISIBLE, true);
 
 		// ...create the base content panels...
 		m_rootPanel = new VibeFlowPanel();
@@ -210,7 +215,14 @@ public class FolderEntryComposite extends ResizeComposite
 		createCaption(m_rootPanel, ((null == dialog) ? null : dialog.getHeaderPanel()));
 		m_contentPanel = new VibeFlowPanel();
 		m_contentPanel.addStyleName("vibe-feComposite-contentPanel");
-		m_rootPanel.add(m_contentPanel);
+		m_contentGrid = new VibeFlexTable();
+		m_contentGrid.setCellPadding(0);
+		m_contentGrid.setCellSpacing(0);
+		m_contentGridFCF = m_contentGrid.getFlexCellFormatter();
+		m_contentGrid.setWidget(              CONTENT_ROW, CONTENT_CELL, m_contentPanel                );
+		m_contentGridFCF.setWidth(            CONTENT_ROW, CONTENT_CELL, "100%"                        );
+		m_contentGridFCF.setVerticalAlignment(CONTENT_ROW, CONTENT_CELL, HasVerticalAlignment.ALIGN_TOP);
+		m_rootPanel.add(m_contentGrid);
 		m_downloadForm = new FormPanel();
 		m_downloadForm.setMethod(FormPanel.METHOD_POST);
 		m_contentPanel.add(m_downloadForm);
@@ -230,7 +242,7 @@ public class FolderEntryComposite extends ResizeComposite
 			// Yes!  Tell the view and resize as appropriate.
 			m_compositeReady = true;
 			m_viewReady.viewReady();
-			onResizeAsync();
+			onResizeAsync(FolderViewBase.INITIAL_RESIZE_DELAY);
 		}
 	}
 
@@ -283,32 +295,12 @@ public class FolderEntryComposite extends ResizeComposite
 		container.add(m_caption);
 
 		// Create the widgets that appear at the right end of the caption.
-		createCaptionComments(container);
-		createCaptionRight(   container);
+		createCaptionRight(container);
 
 		// Finally, add the caption panel to the root panel.
 		rootPanel.add(container);
 	}
 
-	/**
-	 * Called when a comment is added to the entry.
-	 * 
-	 * Implements the CommentAddedCallback.commentAdded() method.
-	 */
-	@Override
-	public void commentAdded(Object callbackData) {
-		// Update the count in the header.
-		int commentsCount = (m_fed.getComments().getCommentsCount() + 1);
-		m_fed.getComments().setCommentsCount(commentsCount);
-		setCommentsCount(commentsCount);
-
-		// If the comments widget is not currently visible...
-		if (!m_commentsVisible) {
-			// ...show it.
-			toggleCommentsVisibility();
-		}
-	}
-	
 	/*
 	 * Creates a close button in the caption for non-dialog hosts.
 	 */
@@ -344,51 +336,6 @@ public class FolderEntryComposite extends ResizeComposite
 		}
 	}
 	
-	/*
-	 * Creates a panel that contains the comments portion of the caption.
-	 */
-	private void createCaptionComments(Panel container) {
-		// What's the visibility state for comments on this entry?
-		m_commentsVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), false);
-
-		// Create the outer panel for the comment caption...
-		VibeFlowPanel outerPanel = new VibeFlowPanel();
-		outerPanel.addStyleName("vibe-feComposite-commentsHeadOuter");
-		container.add(outerPanel);
-
-		// ...add an anchor to it so that we can make it clickable...
-		Anchor commentsAnchor = new Anchor();
-		commentsAnchor.addStyleName("cursorPointer");
-		commentsAnchor.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				toggleCommentsVisibility();
-			}
-		});
-		outerPanel.add(commentsAnchor);
-
-		// ...add the inner panel to the anchor...
-		VibeFlowPanel innerPanel = new VibeFlowPanel();
-		innerPanel.addStyleName("vibe-feComposite-commentsHeadInner blend2-c");
-		commentsAnchor.getElement().appendChild(innerPanel.getElement());
-
-		// ...add the title panel to the inner panel...
-		VibeFlowPanel titlePanel = new VibeFlowPanel();
-		titlePanel.addStyleName("vibe-feComposite-commentsHeadTitle");
-		innerPanel.add(titlePanel);
-
-		// ...add the slider image to the title panel...
-		ImageResource sliderImg = (m_commentsVisible ? m_images.slideUp() : m_images.slideDown());
-		m_commentsSliderImg = GwtClientHelper.buildImage(sliderImg.getSafeUri().asString());
-		m_commentsSliderImg.addStyleName("vibe-feComposite-commentsHeadSlider");
-		titlePanel.add(m_commentsSliderImg);
-
-		// ...and finally, add the label to the title panel.  Note that
-		// ...its content will be set once we're fully initialized.
-		m_commentsHeader = new InlineLabel();
-		titlePanel.add(m_commentsHeader);
-	}
-
 	/*
 	 * Creates the widgets used to navigate between entries being
 	 * viewed. 
@@ -482,9 +429,7 @@ public class FolderEntryComposite extends ResizeComposite
 	public void doNavigate(ViewFolderEntryInfo vfei) {
 		m_vfei = vfei;
 		m_caption.setText(m_vfei.getTitle());
-		if (m_commentsVisible != FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), false)) {
-			toggleCommentsVisibility();
-		}
+		m_sidebarArea.doNavigate(m_vfei.getEntityId());
 		reloadFolderEntryViewer(false);	// false -> Not part of a refresh.
 	}
 	
@@ -560,6 +505,15 @@ public class FolderEntryComposite extends ResizeComposite
 			GwtClientHelper.hasItems(eidList) &&
 			(1 == eidList.size()) &&
 			isCompositeEntry(eidList.get(0)));
+	}
+	
+	/**
+	 * Implements the FolderEntryCallback.isSidebarVisible()
+	 * method.
+	 */
+	@Override
+	public boolean isSidebarVisible() {
+		return m_sidebarVisible;
 	}
 	
 	/*
@@ -646,28 +600,13 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously loads the next part of the composite.
 	 */
 	private void loadPart3Now() {
-		// Store the current comment count in the comments header...
-		setCommentsCount(m_fed.getComments().getCommentsCount());
-		
-		// ...and create and add the various components to the
-		// ...composite.
-		m_headerArea   = new FolderEntryHeader(  this, m_fed                    ); m_contentPanel.add(m_headerArea  );
-		m_menuArea     = new FolderEntryMenu(    this, m_fed.getToolbarItems()  ); m_contentPanel.add(m_menuArea    );
-		m_documentArea = new FolderEntryDocument(this, m_fed                    ); m_contentPanel.add(m_documentArea);
-		m_commentsArea = new FolderEntryComments(this, m_fed.getComments(), this); m_contentPanel.add(m_commentsArea);
-		if (!m_commentsVisible) {
-			m_commentsArea.setCommentsVisible(false);
-			Timer timer = new Timer() {
-				@Override
-				public void run() {
-					// We do this again 1/2 second later to ensure it
-					// gets hidden after its fully initialized.  On the
-					// first display, sometimes it doesn't stay hidden.
-					m_commentsArea.setCommentsVisible(false);
-				}
-			};
-			timer.schedule(500);
-		}
+		// Create and add the various components to the composite.
+		m_headerArea     = new FolderEntryHeader(  this, m_fed                  ); m_contentPanel.add(m_headerArea  );
+		m_menuArea       = new FolderEntryMenu(    this, m_fed.getToolbarItems()); m_contentPanel.add(m_menuArea    );
+		m_documentArea   = new FolderEntryDocument(this, m_fed                  ); m_contentPanel.add(m_documentArea);
+		m_sidebarArea    = new FolderEntrySidebar( this, m_fed                  );
+		m_contentGrid.setWidget(              CONTENT_ROW, SIDEBAR_CELL, m_sidebarArea                 );
+		m_contentGridFCF.setVerticalAlignment(CONTENT_ROW, SIDEBAR_CELL, HasVerticalAlignment.ALIGN_TOP);
 	}
 
 	/**
@@ -1122,14 +1061,6 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 
 	/*
-	 * Asynchronously sets the size of the data table based on its
-	 * position in the view.
-	 */
-	private void onResizeAsync() {
-		onResizeAsync(FolderViewBase.INITIAL_RESIZE_DELAY);
-	}
-	
-	/*
 	 * Re-sizes / re-lays out the widgets in the component.
 	 */
 	private void onResizeImpl() {
@@ -1367,7 +1298,7 @@ public class FolderEntryComposite extends ResizeComposite
 			// ...register the events.
 			EventHelper.registerEventHandlers(
 				GwtTeaming.getEventBus(),
-				m_registeredEvents,
+				REGISTERED_EVENTS,
 				this,
 				m_registeredEventHandlers);
 		}
@@ -1412,30 +1343,25 @@ public class FolderEntryComposite extends ResizeComposite
 		}
 	}
 
-	/*
-	 * Updates the comments count in the header.
+	/**
+	 * Implements the FolderEntryCallback.toggleSidebarVisibility()
+	 * method.
 	 */
-	private void setCommentsCount(int commentCount) {
-		m_commentsHeader.setText(m_messages.folderEntry_Comments(commentCount));
-	}
-
-	/*
-	/* Toggle the state of the comment widgets visibility.
-	 */
-	private void toggleCommentsVisibility() {
-		// Toggle the state...
-		m_commentsVisible = (!m_commentsVisible);
-		ImageResource sliderRes;
-		if (m_commentsVisible)
-		     sliderRes = m_images.slideUp();
-		else sliderRes = m_images.slideDown();
-		m_commentsSliderImg.setUrl(sliderRes.getSafeUri().asString());
-		m_commentsArea.setCommentsVisible(m_commentsVisible);
+	@Override
+	public void toggleSidebarVisibility() {
+		// Toggle the state of the sidebar's visibility...
+		m_sidebarVisible = (!m_sidebarVisible);
+		String sidebarWidth;
+		if (m_sidebarVisible)
+		     sidebarWidth = "";
+		else sidebarWidth = "1px";
+		m_contentGridFCF.setWidth(CONTENT_ROW, SIDEBAR_CELL, sidebarWidth);
+		onResizeAsync(0);
 		
 		// ...and store the current state in a cookie.
-		if (m_commentsVisible)
-		     FolderEntryCookies.setBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), true);
-		else FolderEntryCookies.removeCookieValue(    Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId()      );
+		if (m_sidebarVisible)
+		     FolderEntryCookies.removeCookieValue(    Cookie.SIDEBAR_VISIBLE       );
+		else FolderEntryCookies.setBooleanCookieValue(Cookie.SIDEBAR_VISIBLE, false);
 	}
 	
 	/**

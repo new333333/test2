@@ -1626,6 +1626,10 @@ public class GwtUIHelper {
 		boolean isSiteAdmin = bs.getAdminModule().testAccess(AdminOperation.manageFunction);
 		model.put("isSiteAdmin", Boolean.toString(isSiteAdmin));
 		
+		// Put out flags indicating if the user is Guest or an external user.
+		model.put("isGuestUser",       currentUser.isShared()                      );
+		model.put("isExternalUser", (!(currentUser.getIdentityInfo().isInternal())));
+		
 		// Put out the flag that tells us if the tinyMCE editor will
 		// work on the device we are running on.  Get the list of user
 		// agents that the tinyMCE editor won't run on.
