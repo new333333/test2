@@ -100,11 +100,11 @@
 		.vibe-feView_commentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
 		.vibe-feView_commentsComposite-addCommentHint         {color: #949494; font-size: .8em; display: inline-block; width: 150px;}
 		.vibe-feView_commentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
-		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
+		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; padding-top: 15px; padding-bottom: 15px;}
 		.vibe-feView_commentsComposite-addCommentPanel-nonIE  {width: 100%; }
-		.vibe-feView_commentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 300px; height: 45px; padding: 5px; border: 1px solid #c4c4c4; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+		.vibe-feView_commentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 280px; height: 45px; padding: 5px; border: 1px solid #c4c4c4; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 		.vibe-feView_commentsComposite-captionImg             {width: 36px; height: 36px;}
-		.vibe-feView_commentsComposite-commentsWidget         {height: 300px; position: relative; overflow: auto; width: 328px; border-bottom: 1px solid #cccccc;}
+		.vibe-feView_commentsComposite-commentsWidget         {height: 300px; position: relative; overflow: auto; width: 340px; border-bottom: 1px solid #cccccc;}
 		.vibe-feView_commentsComposite-label                  {}
 		.vibe-feView_commentsComposite-panel                  {}
 		.vibe-feView_commentsComposite-sendButton-nonIE       {float:right;}
@@ -150,7 +150,6 @@
 			display: block;
 			position: relative;
 			background: white;
-			border-left:   1px solid #CCC;
 			border-bottom: 1px solid #CCC;
 		}
 	/* End:  Comments styles. */
@@ -163,7 +162,7 @@
 		.vibe-feView-sidebarCommentsHeadInner          {}
 		.vibe-feView-sidebarCommentsHeadOuter          {position: relative; width: 350px; background-color: #f6f6f6; border-bottom: 1px solid #cccccc; z-index: 4001;}
 		.vibe-feView-sidebarCommentsHeadText           {color: #5691a6 !important;}
-		.vibe-feView-sidebarCommentsHeadTitle          {position: relative; font-size: 14px; height: 25px; padding: 10px 5px 4px 18px; border-left: 1px solid #cccccc;}
+		.vibe-feView-sidebarCommentsHeadTitle          {position: relative; font-size: 14px; height: 20px; padding: 8px 5px 6px 27px; }
 		.vibe-feView-sidebarSliderImg                  {padding-top: 5px; padding-left: 4px;}
 		.vibe-feView-sidebarSliderDiv-hidden           {right: 0px !important;}
 		.vibe-feView-sidebarSliderDiv:hover            {cursor: pointer;}
@@ -173,10 +172,10 @@
 			background-color: #f6f6f6;
 			border: 1px solid #cccccc;
 			border-right: 0px;
-			width: 30px;
+			width: 25px;
 			height: 25px;
-			top: 39px;
-			right: 345px;
+			top: 34px;
+			right: 351px;
 			z-index: 4000;
 			border-top-left-radius: 5px;
 			border-bottom-left-radius: 5px;
