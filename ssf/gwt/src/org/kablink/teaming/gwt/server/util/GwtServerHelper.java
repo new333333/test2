@@ -6921,32 +6921,41 @@ public class GwtServerHelper {
 		idInfo = user.getIdentityInfo();
 		if ( idInfo != null && idInfo.isInternal() == false )
 		{
+			ExtProvState extProvState;
+			
 			// Yes.
-			switch ( user.getExtProvState() )
+			gwtUser.setExtUserProvState( ExtUserProvState.UNKNOWN );
+			
+			extProvState = user.getExtProvState();
+			
+			if ( extProvState != null )
 			{
-			case credentialed:
-				gwtUser.setExtUserProvState( ExtUserProvState.CREDENTIALED );
-				break;
+				switch ( extProvState )
+				{
+				case credentialed:
+					gwtUser.setExtUserProvState( ExtUserProvState.CREDENTIALED );
+					break;
+					
+				case initial:
+					gwtUser.setExtUserProvState( ExtUserProvState.INITIAL );
+					break;
 				
-			case initial:
-				gwtUser.setExtUserProvState( ExtUserProvState.INITIAL );
-				break;
-			
-			case pwdResetRequested:
-				gwtUser.setExtUserProvState( ExtUserProvState.PWD_RESET_REQUESTED );
-				break;
-			
-			case pwdResetWaitingForVerification:
-				gwtUser.setExtUserProvState( ExtUserProvState.PWD_RESET_WAITING_FOR_VERIFICATION );
-				break;
-			
-			case verified:
-				gwtUser.setExtUserProvState( ExtUserProvState.VERIFIED );
-				break;
-			
-			default:
-				gwtUser.setExtUserProvState( ExtUserProvState.UNKNOWN );
-				break;
+				case pwdResetRequested:
+					gwtUser.setExtUserProvState( ExtUserProvState.PWD_RESET_REQUESTED );
+					break;
+				
+				case pwdResetWaitingForVerification:
+					gwtUser.setExtUserProvState( ExtUserProvState.PWD_RESET_WAITING_FOR_VERIFICATION );
+					break;
+				
+				case verified:
+					gwtUser.setExtUserProvState( ExtUserProvState.VERIFIED );
+					break;
+				
+				default:
+					gwtUser.setExtUserProvState( ExtUserProvState.UNKNOWN );
+					break;
+				}
 			}
 		}
 	}
