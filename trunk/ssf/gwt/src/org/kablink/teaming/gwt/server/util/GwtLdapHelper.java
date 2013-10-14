@@ -69,6 +69,7 @@ import org.kablink.teaming.module.ldap.LdapModule.LdapSyncMode;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
+import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -430,6 +431,7 @@ public class GwtLdapHelper
 	{
 		GwtLdapSyncResults gwtSyncResults;
 		LdapSyncResults syncResults;
+		SyncStatus syncStatus;
 		
 		gwtSyncResults = new GwtLdapSyncResults();
 		if ( syncId == null || syncId.length() == 0 )
@@ -455,6 +457,34 @@ public class GwtLdapHelper
 		
 		// Clear the results so we start fresh.
 		syncResults.clearResults();
+
+		// Remove the LdapSyncThread from the session if the sync is finished.
+		syncStatus = syncResults.getStatus();
+		if ( syncStatus != null )
+		{
+			switch ( syncStatus )
+			{
+			case STATUS_ABORTED_BY_ERROR:
+			case STATUS_COMPLETED:
+			{
+				LdapSyncThread	syncThread;
+
+				// Get the ldap sync thread object we are looking for.
+				syncThread = LdapSyncThread.getLdapSyncThread( request, syncId );
+
+				// Remove the ldap sync thread from the session.  This won't stop the ldap sync.  Just cleaning up.
+				if ( syncThread != null )
+					syncThread.removeFromSession();
+				break;
+			}
+				
+			case STATUS_COLLECT_RESULTS:
+			case STATUS_SYNC_ALREADY_IN_PROGRESS:
+			case STATUS_STOP_COLLECTING_RESULTS:
+			default:
+				break;
+			}
+		}
 		
 		return gwtSyncResults;
 	}
