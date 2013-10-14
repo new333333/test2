@@ -331,4 +331,13 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="peter" context="schema" failOnError="true" id="25">
+        <comment>Add passKey column for sharing links with the public</comment>
+        <addColumn tableName="SS_SHAREITEM">
+            <column name="PASSKEY" type="VARCHAR2(32 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

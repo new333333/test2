@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.domain;
 
+import java.security.SecureRandom;
 import java.util.Date;
 
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -50,7 +51,8 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	public enum RecipientType {
 		user((short)1),
 		group((short)2),
-		team((short)11);
+		team((short)11),
+		publicLink((short)12);
 		short value;
 	    RecipientType(short value) {
 	    	this.value = value;
@@ -63,6 +65,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	    	case 1: return RecipientType.user;
 	    	case 2: return RecipientType.group;
 	    	case 11: return RecipientType.team;
+	    	case 12: return RecipientType.publicLink;
 	    	default: throw new IllegalArgumentException("Invalid db value " + value + " for enum RecipientType");
 	    	}
 	    }
@@ -73,6 +76,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	    	case 1: tag = "share.recipientType.title.user";
 	    	case 2: tag = "share.recipientType.title.group";
 	    	case 11: tag = "share.recipientType.title.team";
+	    	case 12: tag = "share.recipientType.title.publicLink";
 	    	default: tag = "share.recipientType.title.unknown";
 	    	}
 			return NLT.get(tag);
@@ -83,6 +87,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	    	case 1: return "User_16.png";
 	    	case 2: return "group_16.png";
 	    	case 11: return "team_16.png";
+	    	case 12: return "publicLink_16.png";
 	    	default: return "";
 	    	}
 		}
@@ -99,6 +104,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	protected Long recipientId;
 	protected RightSet rightSet;
 	protected Boolean partOfPublicShare = Boolean.FALSE;
+	protected String passKey;
 	// This field is meaningful only for expired shares.
 	protected Boolean expirationHandled;
     protected Date deletedDate;
@@ -119,7 +125,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		if (sharedEntityIdentifier == null) throw new IllegalArgumentException("Shared entity identifier must be specified");
 		if(recipientType == null) throw new IllegalArgumentException("Recipient type must be specified");
 		if(recipientId == null) throw new IllegalArgumentException("Recipient ID must be specified");
-		if(rightSet == null) throw new IllegalArgumentException("Right set must be specified");
+		if(recipientType != RecipientType.publicLink && rightSet == null) throw new IllegalArgumentException("Right set must be specified");
 
 		this.sharerId = sharerId;
 		this.sharedEntityIdentifier = sharedEntityIdentifier;
@@ -132,6 +138,12 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		setRecipientType(recipientType);
 		this.recipientId = recipientId;
 		this.rightSet = rightSet;
+		if (recipientType == RecipientType.publicLink) {
+			SecureRandom random = new SecureRandom();
+			String pk = String.valueOf(random.nextLong());
+			if (pk.length() > 32) pk = pk.substring(0, 31);
+			this.passKey = pk;
+		}
 	}
 
 	// Copy constructor.
@@ -151,6 +163,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		this.rightSet = (RightSet) si.rightSet.clone();
 		this.partOfPublicShare = si.partOfPublicShare;
         this.deletedDate = si.deletedDate;
+        this.passKey = si.passKey;
 	}
 	
 	@Override
@@ -217,6 +230,14 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public String getPassKey() {
+		return passKey;
+	}
+
+	public void setPassKey(String passKey) {
+		this.passKey = passKey;
 	}
 
 	public Date getStartDate() {
