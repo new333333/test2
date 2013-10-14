@@ -65,11 +65,12 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 	private GwtTeamingMessages				m_messages;				// Access to Vibe's messages.
 	private Image							m_commentsExpanderImg;	// The arrow in the comments header that shows the state of the comments            (open or closed.)
 	private Image							m_sharingExpanderImg;	// The arrow in the sharing  header that shows the state of the sharing information (open or closed.)
+	private int								m_sidebarHeight;		// The current height of the sidebar.
 	private InlineLabel						m_commentsHeader;		// The comment header label.
 	private VibeFlowPanel					m_commentHeaderPanel;	// The comment header panel (contains the label and arrow.)
 	private VibeFlowPanel					m_sharingHeaderPanel;	// The sharing header panel (contains the label and arrow.)
 	private VibeFlowPanel					m_slider;				// The <DIV> containing the slider.
-
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -247,7 +248,7 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		titlePanel.add(m_sharingExpanderImg);
 
 		// ...and finally, add the label to the title panel.
-		InlineLabel sharingHeader = new InlineLabel(m_messages.folderEntry_SharedWith());
+		InlineLabel sharingHeader = new InlineLabel(m_messages.folderEntry_ShareInfo());
 		sharingHeader.addStyleName("vibe-feView-sidebarSectionHeadText");
 		titlePanel.add(sharingHeader);
 	}
@@ -311,6 +312,41 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 			toggleCommentsVisibility();
 		}
 	}
+
+	/**
+	 * Called when the sidebar needs to be resized.
+	 * 
+	 * @param sidebarHeight
+	 */
+	public void setSidebarHeight(int sidebarHeight) {
+		m_sidebarHeight = sidebarHeight;
+		setSharingHeightAsync();
+	}
+	
+	/*
+	 * Asynchronously sets the height of the sharing area.
+	 */
+	private void setSharingHeightAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				setSharingHeightNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously sets the height of the sharing area.
+	 */
+	private void setSharingHeightNow() {
+		int commentsHeight      = (m_commentHeaderPanel.getOffsetHeight() + m_commentsArea.getOffsetHeight());
+		int sharingHeaderHeight =  m_sharingHeaderPanel.getOffsetHeight();
+		int sharingHeight       = (m_sidebarHeight - (commentsHeight + sharingHeaderHeight));
+		if (FolderEntryComposite.MINIMUM_SHARING_HEIGHT > sharingHeight) {
+			sharingHeight = FolderEntryComposite.MINIMUM_SHARING_HEIGHT;
+		}
+		m_sharingArea.setHeight(sharingHeight + "px");
+	}
 	
 	/*
 	 * Updates the comments count in the header.
@@ -366,9 +402,13 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		m_sharingExpanderImg.setUrl(expanderRes.getSafeUri().asString());
 		m_sharingArea.setSharingVisible(!m_commentsVisible);
 
-		// ...and store the current state in a cookie.
+		// ...store the current state in a cookie...
 		if (m_commentsVisible)
 		     FolderEntryCookies.removeCookieValue(    Cookie.COMMENTS_VISIBLE       );
 		else FolderEntryCookies.setBooleanCookieValue(Cookie.COMMENTS_VISIBLE, false);
+
+		// ...and force the sharing ares to resize to fit the new
+		// ...dimensions available to it.
+		setSharingHeightAsync();
 	}
 }

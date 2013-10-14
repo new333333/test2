@@ -146,6 +146,7 @@ public class FolderEntryComposite extends ResizeComposite
 
 	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of the composite's content  panel.
 	private final static int MINIMUM_DOCUMENT_HEIGHT	=  50;	// The minimum height (in pixels) of the composite's document area.
+	public  final static int MINIMUM_SHARING_HEIGHT		= 100;	// The minimum height (in pixels) of the sidebar's sharing area.
 	private final static int FOOTER_ADJUST_DLG			=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
 	private final static int FOOTER_ADJUST_VIEW			=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
 	
@@ -607,6 +608,7 @@ public class FolderEntryComposite extends ResizeComposite
 		m_documentArea   = new FolderEntryDocument(this, m_fed                  ); m_contentPanel.add(m_documentArea);
 		m_sidebarArea    = new FolderEntrySidebar( this, m_fed                  );
 		m_contentGrid.setWidget(              CONTENT_ROW, SIDEBAR_CELL, m_sidebarArea                 );
+		m_contentGridFCF.setHeight(           CONTENT_ROW, SIDEBAR_CELL, "100%"                        );
 		m_contentGridFCF.setVerticalAlignment(CONTENT_ROW, SIDEBAR_CELL, HasVerticalAlignment.ALIGN_TOP);
 	}
 
@@ -1099,8 +1101,9 @@ public class FolderEntryComposite extends ResizeComposite
 		else container.removeStyleName("vibe-verticalScroll");
 		
 		// Set the height of the content panel.
-		m_documentArea.setHeight(docHeight     + "px");
-		m_contentPanel.setHeight(contentHeight + "px");
+		m_documentArea.setHeight(      docHeight     + "px");
+		m_contentPanel.setHeight(      contentHeight + "px");
+		m_sidebarArea.setSidebarHeight(contentHeight       );
 	}
 
 	/**

@@ -4266,10 +4266,9 @@ public class GwtViewHelper {
 		if (MiscUtil.hasItems(shareItems)) {
 			// Yes!  Scan them.
 			for (ShareItem si:  shareItems) {
-				// If this share is expired...
-				if (si.isExpired()) {
-					// ...skip it.  We don't show the user shares with
-					// ...them if they've expired.
+				// If this share is expired or deleted...
+				if (si.isExpired() || si.isDeleted() || (!(si.isLatest()))) {
+					// ...skip it.  We don't show these.
 					continue;
 				}
 				
@@ -4325,6 +4324,12 @@ public class GwtViewHelper {
 		if (MiscUtil.hasItems(shareItems)) {
 			// Yes!  Scan them.
 			for (ShareItem si:  shareItems) {
+				// If this share is deleted...
+				if (si.isDeleted() || (!(si.isLatest()))) {
+					// ...skip it.  We don't show these.
+					continue;
+				}
+				
 				// Should we show shares the user made that have
 				// expired?  I think so.  Hence, no check here to skip
 				// them like in the 'Shared by' handler above.
