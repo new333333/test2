@@ -2400,11 +2400,26 @@ public interface GwtTeamingMessages extends Messages
 	String folderEntry_Error_NoPrevious();
 	String folderEntry_Close();
 	String folderEntry_Comments(int count);
+	String folderEntry_File();
 	String folderEntry_FileSize(String size);
 	String folderEntry_Hide();
+	String folderEntry_Item();
 	String folderEntry_Locked();
 	String folderEntry_Modified();
+	String folderEntry_NoShares(String what);
+	String folderEntry_SharedBy();
+	String folderEntry_SharedOn(String date);
 	String folderEntry_SharedWith();
+	String folderEntry_ShareExpires(String date);
+	String folderEntry_ShareInfo();
+	String folderEntry_ShareReshare_External();
+	String folderEntry_ShareReshare_Internal();
+	String folderEntry_ShareReshare_Public();
+	String folderEntry_ShareReshares(String reshare);
+	String folderEntry_ShareRight_Contributor();
+	String folderEntry_ShareRight_Editor();
+	String folderEntry_ShareRight_Viewer();
+	String folderEntry_ShareRights(String right);
 	String folderEntry_ShowDescription();
 	
 	// String used in the Configure Adhoc Folders dialog

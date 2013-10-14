@@ -150,7 +150,14 @@
 	/* End:  Comments styles. */
 
 	/* Start:  Sharing styles. */
-		.vibe-feView-sharingPanel {display: block; position: relative; background: white; border-bottom: 1px solid #CCC;}
+		.vibe-feView-sharingPanel    {display: block; position: relative; background: white; border-bottom: 1px solid #CCC; overflow: auto;}
+		.vibe-feView-shareItemAvatar {display: block; position: absolute; top: 2px; left: 2px; width: 30px; border-radius: 2px;}
+		.vibe-feView-shareItemEmpty  {display: block; position: relative; font-size: 14px; color: black; margin-top: 3.5px;}
+		.vibe-feView-shareItemHeader {display: block; position: relative; color: #5691a6; font-size: 14px; padding: 8px 5px 0px 10px;}
+		.vibe-feView-shareItemInfo   {display: block; position: relative; font-size: 10px; color: #505354; font-weight: normal; padding-left: 0px; padding-right: 5px;}
+		.vibe-feView-shareItemName   {display: block; position: relative; font-weight: bold; padding-right: 5px; margin-bottom: 2px; color: #000;}
+		.vibe-feView-shareItemNote   {display: block; position: relative; font-size: 12px; color: black; margin-top: 3.5px;}
+		.vibe-feView-shareItemPanel  {display: block; position: relative; margin-left: 10px; margin-bottom: 20px; margin-right: 20px; margin-top: 10px; padding-left: 40px; color: #000; font-size: 13px;}
 	/* End:  Sharing styles. */
 
 	/* Start:  Sidebar styles. */
