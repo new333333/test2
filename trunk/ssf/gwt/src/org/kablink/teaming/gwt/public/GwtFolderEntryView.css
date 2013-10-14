@@ -100,7 +100,7 @@
 		.vibe-feView_commentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
 		.vibe-feView_commentsComposite-addCommentHint         {color: #949494; font-size: .8em; display: inline-block; width: 150px;}
 		.vibe-feView_commentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
-		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; padding-top: 15px; padding-bottom: 15px;}
+		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #fafafa; padding-top: 15px; padding-bottom: 15px;}
 		.vibe-feView_commentsComposite-addCommentPanel-nonIE  {width: 100%; }
 		.vibe-feView_commentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 280px; height: 45px; padding: 5px; border: 1px solid #c4c4c4; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 		.vibe-feView_commentsComposite-captionImg             {width: 36px; height: 36px;}
@@ -146,27 +146,26 @@
 			-webkit-border-radius: 15px;
 		}
 		
-		.vibe-feView-commentsPanel {
-			display: block;
-			position: relative;
-			background: white;
-			border-bottom: 1px solid #CCC;
-		}
+		.vibe-feView-commentsPanel {display: block; position: relative; background: white; border-bottom: 1px solid #CCC;}
 	/* End:  Comments styles. */
-	
+
+	/* Start:  Sharing styles. */
+		.vibe-feView-sharingPanel {display: block; position: relative; background: white; border-bottom: 1px solid #CCC;}
+	/* End:  Sharing styles. */
+
 	/* Start:  Sidebar styles. */
-		.vibe-feView-sidebar                           {position: relative; display: block; width: 350px; background-color: #fafafa; border-left: 1px solid #cccccc;}
-		.vibe-feView-sidebar-hidden                    {width: 0px !important;}
-		.vibe-feView-sidebarCommentsHeadExpander       {margin-right: 16px !important;}
-		.vibe-feView-sidebarCommentsHeadExpander:hover {cursor: pointer;}
-		.vibe-feView-sidebarCommentsHeadInner          {}
-		.vibe-feView-sidebarCommentsHeadOuter          {position: relative; width: 350px; background-color: #f6f6f6; border-bottom: 1px solid #cccccc; z-index: 4001;}
-		.vibe-feView-sidebarCommentsHeadText           {color: #5691a6 !important;}
-		.vibe-feView-sidebarCommentsHeadTitle          {position: relative; font-size: 14px; height: 20px; padding: 8px 5px 6px 32px; }
-		.vibe-feView-sidebarSliderImg                  {padding-top: 5px; padding-left: 4px;}
-		.vibe-feView-sidebarSliderDiv-hidden           {right: 0px !important;}
-		.vibe-feView-sidebarSliderDiv:hover            {cursor: pointer;}
-		.vibe-feView-sidebarSliderDiv                  {
+		.vibe-feView-sidebar                          {position: relative; display: block; width: 350px; background-color: #fafafa; border-left: 1px solid #cccccc;}
+		.vibe-feView-sidebar-hidden                   {width: 0px !important;}
+		.vibe-feView-sidebarSectionHeadExpander       {margin-right: 16px !important;}
+		.vibe-feView-sidebarSectionHeadExpander:hover {cursor: pointer;}
+		.vibe-feView-sidebarSectionHeadInner          {}
+		.vibe-feView-sidebarSectionHeadOuter          {position: relative; width: 350px; background-color: #e0e0e0; border-bottom: 1px solid #cccccc; z-index: 4001;}
+		.vibe-feView-sidebarSectionHeadText           {color: #5691a6 !important;}
+		.vibe-feView-sidebarSectionHeadTitle          {position: relative; font-size: 14px; height: 20px; padding: 8px 5px 6px 32px; }
+		.vibe-feView-sidebarSliderImg                 {padding-top: 5px; padding-left: 4px;}
+		.vibe-feView-sidebarSliderDiv-hidden          {right: 0px !important;}
+		.vibe-feView-sidebarSliderDiv:hover           {cursor: pointer;}
+		.vibe-feView-sidebarSliderDiv                 {
 			position: absolute;
 			display: block;
 			background-color: #f6f6f6;

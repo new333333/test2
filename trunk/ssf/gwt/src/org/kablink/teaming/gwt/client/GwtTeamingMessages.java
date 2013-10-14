@@ -2404,6 +2404,7 @@ public interface GwtTeamingMessages extends Messages
 	String folderEntry_Hide();
 	String folderEntry_Locked();
 	String folderEntry_Modified();
+	String folderEntry_SharedWith();
 	String folderEntry_ShowDescription();
 	
 	// String used in the Configure Adhoc Folders dialog

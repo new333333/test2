@@ -46,7 +46,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -61,11 +60,14 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 	private FolderEntryCallback				m_fec;					// Callback to the folder entry composite.
 	private FolderEntryComments				m_commentsArea;			// The are containing the comment display and entry widget.
 	private FolderEntryDetails				m_fed;					// Details about the folder entry being viewed.
+	private FolderEntrySharing				m_sharingArea;			// The are containing the sharing display.
 	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;				// Access to Vibe's messages.
-	private Image							m_commentsExpanderImg;	// The arrow in the comments header that shows the state of the comments (open or closed.)
+	private Image							m_commentsExpanderImg;	// The arrow in the comments header that shows the state of the comments            (open or closed.)
+	private Image							m_sharingExpanderImg;	// The arrow in the sharing  header that shows the state of the sharing information (open or closed.)
 	private InlineLabel						m_commentsHeader;		// The comment header label.
 	private VibeFlowPanel					m_commentHeaderPanel;	// The comment header panel (contains the label and arrow.)
+	private VibeFlowPanel					m_sharingHeaderPanel;	// The sharing header panel (contains the label and arrow.)
 	private VibeFlowPanel					m_slider;				// The <DIV> containing the slider.
 
 	/**
@@ -111,7 +113,8 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 	}
 
 	/*
-	 * Creates a panel that contains the comments portion of the caption.
+	 * Creates a panel that contains the comments portion of the
+	 * caption.
 	 */
 	private void createCommentsCaption() {
 		// What's the visibility state for comments on this entry?
@@ -119,7 +122,7 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 
 		// Create the outer panel for the comment caption...
 		m_commentHeaderPanel = new VibeFlowPanel();
-		m_commentHeaderPanel.addStyleName("vibe-feView-sidebarCommentsHeadOuter");
+		m_commentHeaderPanel.addStyleName("vibe-feView-sidebarSectionHeadOuter");
 		add(m_commentHeaderPanel);
 
 		// ...add an anchor to it so that we can make it clickable...
@@ -135,23 +138,23 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 
 		// ...add the inner panel to the anchor...
 		VibeFlowPanel innerPanel = new VibeFlowPanel();
-		innerPanel.addStyleName("vibe-feView-sidebarCommentsHeadInner");
+		innerPanel.addStyleName("vibe-feView-sidebarSectionHeadInner");
 		commentsAnchor.getElement().appendChild(innerPanel.getElement());
 
 		// ...add the title panel to the inner panel...
 		VibeFlowPanel titlePanel = new VibeFlowPanel();
-		titlePanel.addStyleName("vibe-feView-sidebarCommentsHeadTitle");
+		titlePanel.addStyleName("vibe-feView-sidebarSectionHeadTitle");
 		innerPanel.add(titlePanel);
 
 		// ...add the expander image to the title panel...
 		ImageResource expanderImg = (m_commentsVisible ? m_images.slideUp() : m_images.slideDown());
 		m_commentsExpanderImg = GwtClientHelper.buildImage(expanderImg.getSafeUri().asString());
-		m_commentsExpanderImg.addStyleName("vibe-feView-sidebarCommentsHeadExpander");
+		m_commentsExpanderImg.addStyleName("vibe-feView-sidebarSectionHeadExpander");
 		titlePanel.add(m_commentsExpanderImg);
 
 		// ...and finally, add the label to the title panel.
 		m_commentsHeader = new InlineLabel();
-		m_commentsHeader.addStyleName("vibe-feView-sidebarCommentsHeadText");
+		m_commentsHeader.addStyleName("vibe-feView-sidebarSectionHeadText");
 		titlePanel.add(m_commentsHeader);
 		setCommentsCount(m_fed.getComments().getCommentsCount());
 	}
@@ -164,16 +167,16 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		add(m_commentsArea);
 		if (!m_commentsVisible) {
 			m_commentsArea.setCommentsVisible(false);
-			Timer timer = new Timer() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
-				public void run() {
+				public void execute() {
 					// We do this again 1/2 second later to ensure it
 					// gets hidden after its fully initialized.  On the
 					// first display, sometimes it doesn't stay hidden.
 					m_commentsArea.setCommentsVisible(false);
 				}
-			};
-			timer.schedule(500);
+			},
+			500);
 		}
 	}
 	
@@ -191,7 +194,8 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		// If the logged in user isn't Guest or an external user...
 		if (!(GwtClientHelper.isGuestUser() || GwtClientHelper.isExternalUser())) {
 			// ...create the sharing components.
-//!			...this needs to be implemented...
+			createSharingCaption();
+			createSharingArea();
 		}
 		
 		// Create the sidebar slider components.
@@ -205,6 +209,70 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		m_fec.viewComponentReady();
 	}
 
+	/*
+	 * Creates a panel that contains the sharing portion of the
+	 * caption.
+	 */
+	private void createSharingCaption() {
+		// Create the outer panel for the sharing caption...
+		m_sharingHeaderPanel = new VibeFlowPanel();
+		m_sharingHeaderPanel.addStyleName("vibe-feView-sidebarSectionHeadOuter");
+		add(m_sharingHeaderPanel);
+
+		// ...add an anchor to it so that we can make it clickable...
+		Anchor sharingAnchor = new Anchor();
+		sharingAnchor.addStyleName("cursorPointer");
+		sharingAnchor.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				toggleCommentsVisibility();
+			}
+		});
+		m_sharingHeaderPanel.add(sharingAnchor);
+
+		// ...add the inner panel to the anchor...
+		VibeFlowPanel innerPanel = new VibeFlowPanel();
+		innerPanel.addStyleName("vibe-feView-sidebarSectionHeadInner");
+		sharingAnchor.getElement().appendChild(innerPanel.getElement());
+
+		// ...add the title panel to the inner panel...
+		VibeFlowPanel titlePanel = new VibeFlowPanel();
+		titlePanel.addStyleName("vibe-feView-sidebarSectionHeadTitle");
+		innerPanel.add(titlePanel);
+
+		// ...add the expander image to the title panel...
+		ImageResource expanderImg = (m_commentsVisible ? m_images.slideDown() : m_images.slideUp());
+		m_sharingExpanderImg = GwtClientHelper.buildImage(expanderImg.getSafeUri().asString());
+		m_sharingExpanderImg.addStyleName("vibe-feView-sidebarSectionHeadExpander");
+		titlePanel.add(m_sharingExpanderImg);
+
+		// ...and finally, add the label to the title panel.
+		InlineLabel sharingHeader = new InlineLabel(m_messages.folderEntry_SharedWith());
+		sharingHeader.addStyleName("vibe-feView-sidebarSectionHeadText");
+		titlePanel.add(sharingHeader);
+	}
+
+	/*
+	 * Creates the sharing area widgets.
+	 */
+	private void createSharingArea() {
+		m_sharingArea = new FolderEntrySharing(m_fec, m_fed.getSharedByItems(), m_fed.getSharedWithItems());
+		add(m_sharingArea);
+		if (m_commentsVisible) {
+			m_sharingArea.setSharingVisible(false);
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					// We do this again 1/2 second later to ensure it
+					// gets hidden after its fully initialized.  On the
+					// first display, sometimes it doesn't stay hidden.
+					m_sharingArea.setSharingVisible(false);
+				}
+			},
+			500);
+		}
+	}
+	
 	/*
 	 * Creates the components for hiding/showing the sidebar.
 	 */
@@ -282,7 +350,7 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 	 * Toggle the state of the comment widgets visibility.
 	 */
 	private void toggleCommentsVisibility() {
-		// Toggle the state...
+		// Toggle the state of the comments...
 		m_commentsVisible = (!m_commentsVisible);
 		ImageResource expanderRes;
 		if (m_commentsVisible)
@@ -290,7 +358,14 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		else expanderRes = m_images.slideDown();
 		m_commentsExpanderImg.setUrl(expanderRes.getSafeUri().asString());
 		m_commentsArea.setCommentsVisible(m_commentsVisible);
-		
+
+		// ...toggle the state of the sharing...
+		if (m_commentsVisible)
+		     expanderRes = m_images.slideDown();
+		else expanderRes = m_images.slideUp();
+		m_sharingExpanderImg.setUrl(expanderRes.getSafeUri().asString());
+		m_sharingArea.setSharingVisible(!m_commentsVisible);
+
 		// ...and store the current state in a cookie.
 		if (m_commentsVisible)
 		     FolderEntryCookies.removeCookieValue(    Cookie.COMMENTS_VISIBLE       );
