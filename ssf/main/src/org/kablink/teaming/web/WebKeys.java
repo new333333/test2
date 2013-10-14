@@ -194,6 +194,7 @@ public class WebKeys {
 	public static final String URL_END_DATE_YYYYMMDD = "ss_endDateYYYYMMDD";
 	public static final String URL_ENTITY_ID = "entityId";
     public static final String URL_ENTITY_TYPE="entityType";
+    public static final String URL_ENTITY_TYPE_SHARE="share";
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
 	public static final String URL_ENTRY_ID = "entryId";
     public static final String URL_ENTRY_ID_PLACE_HOLDER="ss_entry_id_place_holder";
@@ -271,6 +272,7 @@ public class WebKeys {
 	public static final String URL_SECTION_TO_EDIT = "_section";
 	public static final String URL_SEND_MAIL_LOCATION = "sendMailLocation";
 	public static final String URL_SEEN_BY_GWT = "seen_by_gwt";
+    public static final String URL_SHARE_PUBLIC_LINK="publicLink";
     public static final String URL_SHOW_TRASH="showTrash";
     public static final String URL_SHOW_COLLECTION="showCollection";
 	public static final String URL_START_DATE = "ss_startDate";
@@ -317,6 +319,7 @@ public class WebKeys {
 	public static final String URL_ID_CHOICES_SEPARATOR = "_";
 	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
 	public static final String URL_URL = "spring-security-redirect";
+	public static final String URL_USER_GROUPS_LIST = "_user_groups_list";
 	public static final String URL_USER_ID = "userId";
     public static final String URL_USER_ID_PLACE_HOLDER="ss_user_id_place_holder";
 	public static final String URL_ICAL_URL = "iCalURL";

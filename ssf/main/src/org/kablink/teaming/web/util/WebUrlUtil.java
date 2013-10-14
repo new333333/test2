@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -103,6 +104,13 @@ public class WebUrlUtil {
 	public static final int FILE_URL_ZIPFOLDER_OPERATION			= 3;
 	public static final int FILE_URL_ZIPFOLDER_RECURSIVE_OPERAND	= 7;
 	public static final int FILE_URL_ZIPFOLDER_RECURSIVE			= 8;
+	
+	// Used the parse the URL returned by getSharedPublicFileUrl().
+	public static final int FILE_URL_SHARED_PUBLIC_FILE_ARG_LENGTH	= 7;
+	public static final int FILE_URL_SHARED_PUBLIC_FILE_SHARE_ID	= 3;
+	public static final int FILE_URL_SHARED_PUBLIC_FILE_PASSKEY		= 4;
+	public static final int FILE_URL_SHARED_PUBLIC_FILE_OPERATION	= 5;
+	public static final int FILE_URL_SHARED_PUBLIC_FILE_NAME		= 6;
 	
 	private static final Log logger = LogFactory.getLog(WebUrlUtil.class);
 
@@ -716,6 +724,17 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + "zip");
 		webUrl.append(Constants.SLASH + WebKeys.URL_RECURSIVE);
 		webUrl.append(Constants.SLASH + recursive);
+		return webUrl.toString();
+	}
+
+	public static String getSharedPublicFileUrl(Long shareItemId, String passKey, String operation, String fileName) {
+		String webPath = WebUrlUtil.getServletRootURL();
+		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
+		webUrl.append(Constants.SLASH + WebKeys.URL_ENTITY_TYPE_SHARE);
+		webUrl.append(Constants.SLASH + String.valueOf(shareItemId));
+		webUrl.append(Constants.SLASH + passKey); 
+		webUrl.append(Constants.SLASH + operation); 
+		webUrl.append(Constants.SLASH + urlEncodeFilename(fileName)); 
 		return webUrl.toString();
 	}
 

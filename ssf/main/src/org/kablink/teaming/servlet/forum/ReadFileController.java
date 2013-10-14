@@ -53,6 +53,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -62,6 +63,9 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.ShareItem.RecipientType;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.FileModule;
@@ -69,6 +73,8 @@ import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.FileUtils;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
@@ -110,6 +116,7 @@ public class ReadFileController extends AbstractReadFileController {
 	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Boolean singleByte = SPropsUtil.getBoolean("export.filename.8bitsinglebyte.only", true);
 		
 		// Assuming that the full request URL was http://localhost:8080/ssf/s/readFile/entityType/entryId/fileTime/fileVersion/filename.ext
@@ -384,6 +391,87 @@ public class ReadFileController extends AbstractReadFileController {
 			}
 			
 			return null;
+		}
+
+		else if ((WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_ARG_LENGTH == args.length) && 
+				String.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_TYPE]).equals("share")) {
+			// Shared File Link
+			try {
+				Long shareItemId = Long.parseLong(String.valueOf(args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_SHARE_ID]));
+				String passKey = args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_PASSKEY];
+				String operation = args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_OPERATION];
+				if (operation.equals(WebKeys.URL_SHARE_PUBLIC_LINK)) {
+					final ShareItem shareItem = getSharingModule().getShareItem(shareItemId);
+					if (shareItem != null && shareItem.isLatest() && !shareItem.isExpired() && !shareItem.isDeleted()) {
+						if (shareItem.getRecipientType().equals(RecipientType.publicLink) && 
+								shareItem.getPassKey().equals(passKey) && !passKey.equals("")) {
+							User sharer = getProfileModule().getUserDeadOrAlive(shareItem.getSharerId());
+							if (sharer != null & sharer.isActive()) {
+								//OK, run this request under the account of the sharer to see if the access to the item is still allowed
+								final String fileName = args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_NAME];
+								FileAttachment fa = (FileAttachment) RunasTemplate.runas(new RunasCallback() {
+									public Object doAs() {
+										DefinableEntity entity = getSharingModule().getSharedEntity(shareItem);
+										FileAttachment fa = null;
+										if (entity != null) {
+											fa = getAttachment(entity, fileName, WebKeys.READ_FILE_LAST, null);
+										}
+										return fa;
+									}
+								}, zoneId, sharer.getId());
+								if (fa != null) {
+									String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
+									String contentType = getFileTypeMap().getContentType(shortFileName);
+									WebUrlUtil.getSharedPublicFileUrl(shareItem.getId(), shareItem.getPassKey(), WebKeys.URL_SHARE_PUBLIC_LINK, shortFileName);
+									//Protect against XSS attacks if this is an HTML file
+									contentType = FileUtils.validateDownloadContentType(contentType);
+	
+									if (!(contentType.toLowerCase().contains("charset"))) {
+										String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+										if (MiscUtil.hasString(encoding)) {
+											contentType += ("; charset=" + encoding);
+										}
+									}
+									response.setContentType(contentType);
+									boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+									String cacheControl = "private, max-age=86400";
+									if (isHttps) {
+										response.setHeader("Pragma", "public");
+										cacheControl += ", proxy-revalidate, s-maxage=0";
+									}
+									response.setHeader("Cache-Control", cacheControl);
+									String attachment = "";
+									if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
+									response.setHeader("Content-Disposition",
+											attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
+									response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
+									try {
+										DefinableEntity entity = fa.getOwner().getEntity();
+										Binder parent = getBinder(entity);
+										if (!fa.isEncrypted()) {
+											//The file length cannot be guaranteed if the file is encrypted. It is better to leave this field off in that case.
+											response.setHeader("Content-Length", 
+												String.valueOf(FileHelper.getLength(parent, entity, fa)));
+										}
+										getFileModule().readFile(parent, entity, fa, response.getOutputStream());
+										//Report the file download in the audit trail
+										getReportModule().addFileInfo(AuditType.download, fa);
+									}
+									catch(Exception e) {
+										response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
+									}
+								} else {
+									response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
+								}
+							}
+						}
+					}
+				}
+			} catch(Exception e) {
+				// Bad format of url; just return null.
+				logger.error("ReadFileController.handleRequestAfterValidation( Share File Downlaod ):  EXCEPTION:  ", e);
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
+			}
 		}
 		
 		else if (args.length < WebUrlUtil.FILE_URL_ARG_LENGTH) {
