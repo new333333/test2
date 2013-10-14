@@ -542,7 +542,10 @@ public class LoginFilter  implements Filter {
 		
 		// Are we looking at a readFile URL?
 		Boolean reply;
-		if (path.startsWith("/" + WebKeys.SERVLET_READ_FILE + "/")) {
+		if (path.startsWith("/" + WebKeys.SERVLET_READ_FILE + "/" + WebKeys.URL_ENTITY_TYPE_SHARE)) {
+			//This is probably a share with public link. Let it go through. It will get checked by the readFile controller
+			reply = true;
+		} else if (path.startsWith("/" + WebKeys.SERVLET_READ_FILE + "/")) {
 			// Yes!  Can we find the folderEntry marker within it?
 			String feIdMarker = (WebKeys.URL_FOLDER_ENTRY + "/");
 			int    feIdPos    = path.indexOf(feIdMarker);
