@@ -46,17 +46,18 @@ import org.kablink.util.Validator;
 public class AuditTrail extends ZonedObject {
 	public enum AuditType {
 		unknown,
-		view,
-		add, 
-		modify, 
-		delete,
-		preDelete,
-		restore,
-		workflow,
-		login,
-		download,
-		userStatus,
-		token
+		view, // viewed a data item
+		add, // added a data item
+		modify, // modified a data item
+		delete, // deleted a data item
+		preDelete, // pre-deleted a data item
+		restore, // restored a data item
+		workflow, // workflow change
+		login, // user, client, or user agent login
+		download, // user, client, or user agent download
+		userStatus, // ?
+		token, // application-scoped token generation
+		acl // ACL change on a data item
 	};
 
 	

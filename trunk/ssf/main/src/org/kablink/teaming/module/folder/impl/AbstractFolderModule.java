@@ -116,6 +116,7 @@ import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.EmptyInputData;
@@ -206,6 +207,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	protected RssModule getRssModule() {
 		// Can't use IoC due to circular dependency
 		return (RssModule) SpringContextUtil.getBean("rssModule");
+	}
+	
+	protected ReportModule getReportModule() {
+		return (ReportModule) SpringContextUtil.getBean("reportModule");
 	}
 	
 	private TransactionTemplate transactionTemplate;
