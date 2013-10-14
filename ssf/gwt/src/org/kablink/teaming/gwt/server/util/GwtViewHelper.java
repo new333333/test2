@@ -165,6 +165,7 @@ import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
+import org.kablink.teaming.gwt.client.util.FolderEntryDetails.ShareInfo;
 import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
@@ -1292,6 +1293,115 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * When initially built, the AssignmentInfo's in the
+	 * FolderEntryDetails only contain the assignee IDs.  We need to
+	 * complete them with each assignee's title, ...
+	 */
+	private static void completeShareAIs(AllModulesInjected bs, HttpServletRequest request, FolderEntryDetails fed) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeShareAIs()");
+		try {
+			// If we don't have any shares to complete...
+			if (!(fed.hasShares())) {
+				// ..bail.
+				return;
+			}
+
+			// Condense all the shares into a single list.
+			List<ShareInfo> shares = new ArrayList<ShareInfo>();
+			if (fed.hasShareBys())   shares.addAll(fed.getSharedByItems());
+			if (fed.hasShareWiths()) shares.addAll(fed.getSharedWithItems());
+	
+			// Allocate List<Long>'s to track the assignees that need
+			// to be completed.
+			List<Long> principalIds = new ArrayList<Long>();
+			List<Long> teamIds      = new ArrayList<Long>();
+	
+			// Track the assignee's IDs.
+			for (ShareInfo si:  shares) {
+				AssignmentInfo ai = si.getUser();
+				ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
+			}
+	
+			// If we don't have any assignees to complete...
+			boolean hasPrincipals = (!(principalIds.isEmpty()));
+			boolean hasTeams      = (!(teamIds.isEmpty()));		
+			if ((!hasPrincipals) && (!hasTeams)) {
+				// ...bail.
+				return;
+			}
+	
+			// Construct Maps, mapping the IDs to their titles,
+			// membership counts, ...
+			Map<Long, String>			avatarUrls        = new HashMap<Long, String>();
+			Map<Long, String>			principalEMAs     = new HashMap<Long, String>();
+			Map<Long, String>			principalTitles   = new HashMap<Long, String>();
+			Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
+			Map<Long, GwtPresenceInfo>	userPresence      = new HashMap<Long, GwtPresenceInfo>();
+			Map<Long, Long>				presenceUserWSIds = new HashMap<Long, Long>();
+			Map<Long, String>			teamTitles        = new HashMap<Long, String>();
+			Map<Long, Integer>			teamCounts        = new HashMap<Long, Integer>();
+			GwtEventHelper.readEventStuffFromDB(
+				// Uses these...
+				bs,
+				request,
+				principalIds,
+				teamIds,
+	
+				// ...to complete these.
+				principalEMAs,
+				principalTitles,
+				groupCounts,
+				userPresence,
+				presenceUserWSIds,
+				
+				teamTitles,
+				teamCounts,
+				
+				avatarUrls);
+	
+			// Scan the shares again...
+			for (ShareInfo si:  shares) {
+				// ...this time, fixing the assignees.
+				AssignmentInfo ai = si.getUser();
+				switch (ai.getAssigneeType()) {
+				case INDIVIDUAL:
+					if (GwtEventHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
+						GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
+						GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
+						GwtEventHelper.setAssignmentInfoAvatarUrl(       ai, avatarUrls       );
+						GwtEventHelper.setAssignmentInfoHover(           ai, principalEMAs    );
+					}
+					break;
+					
+				case GROUP:
+					if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
+						GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
+						ai.setPresenceDude("pics/group_icon_small.png");
+					}
+					break;
+					
+				case TEAM:
+					if (GwtEventHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
+						GwtEventHelper.setAssignmentInfoMembers(ai, teamCounts );
+						ai.setPresenceDude("pics/team_16.png");
+					}
+					break;
+					
+				case PUBLIC:
+					ai.setTitle(NLT.get("share.recipientType.title.public"));
+					ai.setHover(NLT.get("share.recipientType.hover.public"));
+					break;
+				}
+				
+			}
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+	
 	/*
 	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
 	 * representing the 'Shared by Me' items.
@@ -4098,8 +4208,20 @@ public class GwtViewHelper {
 				reply.setDescTxt(   ""  );
 			}
 			
-			// ...and finally, set the view's toolbar items.
+			// ...set the view's toolbar items....
 			reply.setToolbarItems(GwtMenuHelper.getViewEntryToolbarItems(bs, request, fe));
+
+			// ...for non-Guest internal users...
+			if ((!(user.isShared())) && user.getIdentityInfo().isInternal()) {
+				// ...set the view's sharing information...
+				getFolderEntrySharedByInfo(  bs, request, reply);
+				getFolderEntrySharedWithInfo(bs, request, reply);
+				
+				// ...and if there is any sharing information...
+				if (reply.hasShares()) {
+					completeShareAIs(bs, request, reply);
+				}
+			}
 			
 			// If we get here, reply refers to the ViewFolderEntryInfo
 			// for the user to view the entry.  Return it.
@@ -4121,6 +4243,136 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * Fills in the 'Shared by' List<ShareInfo> in a
+	 * FolderEntryDetails. 
+	 */
+	private static void getFolderEntrySharedByInfo(AllModulesInjected bs, HttpServletRequest request, FolderEntryDetails fed) {
+		// Get the List<ShareItem> of the shares of this item with the
+		// current user.
+		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+		
+		EntityIdentifier ei = new EntityIdentifier(fed.getEntityId().getEntityId(), EntityType.folderEntry);
+		spec.setSharedEntityIdentifier(ei);
+		
+		Long userId = GwtServerHelper.getCurrentUserId();
+		List<Long>	groups = GwtServerHelper.getGroupIds(request, bs, userId);
+		List<Long>	teams  = GwtServerHelper.getTeamIds( request, bs, userId);
+		List<Long>	users  = new ArrayList<Long>(); users.add(userId);
+		spec.setRecipients(users, groups, teams);
+		
+		// Did we find any shares?
+		List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+		if (MiscUtil.hasItems(shareItems)) {
+			// Yes!  Scan them.
+			for (ShareItem si:  shareItems) {
+				// If this share is expired...
+				if (si.isExpired()) {
+					// ...skip it.  We don't show the user shares with
+					// ...them if they've expired.
+					continue;
+				}
+				
+				// Create the ShareInfo for this share and added to the
+				// 'Shared by' list.
+				ShareInfo feSI = new ShareInfo();
+				fed.addSharedByItem(feSI);
+				
+				// Add information about the sharer.
+				Long sId = si.getSharerId();
+				feSI.setUser(AssignmentInfo.construct(sId, AssigneeType.INDIVIDUAL));
+				feSI.setTitle(getRecipientTitle(bs, RecipientType.user, sId));
+
+				// Add when it was shared.
+				Date	date       = si.getStartDate();
+				String	dateString = ((null == date) ? "" : GwtServerHelper.getDateTimeString(date, DateFormat.MEDIUM, DateFormat.SHORT));
+				feSI.setShareDate(dateString);
+				
+				// If the share expires...
+				date = si.getEndDate();
+				if (null != date) {
+					// ...add when it expires.
+					dateString = ((null == date) ? "" : GwtServerHelper.getDateTimeString(date, DateFormat.MEDIUM, DateFormat.SHORT));
+					feSI.setExpiresDate(dateString);
+				}
+				feSI.setExpired(si.isExpired());
+
+				// Add the rights granted with the share.
+				feSI.setRights(GwtShareHelper.getShareRightsFromRightSet(si.getRightSet()));
+
+				// Add any comments from the share.
+				feSI.setComment(si.getComment());
+			}
+		}
+	}
+	
+	/*
+	 * Fills in the 'Shared with' List<ShareInfo> in a
+	 * FolderEntryDetails. 
+	 */
+	private static void getFolderEntrySharedWithInfo(AllModulesInjected bs, HttpServletRequest request, FolderEntryDetails fed) {
+		// Get the List<ShareItem> of the shares of this item the
+		// current user has issued.
+		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+		
+		EntityIdentifier ei = new EntityIdentifier(fed.getEntityId().getEntityId(), EntityType.folderEntry);
+		spec.setSharedEntityIdentifier(ei);
+		
+		spec.setSharerId(GwtServerHelper.getCurrentUserId());
+
+		// Did we find any shares?
+		List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+		if (MiscUtil.hasItems(shareItems)) {
+			// Yes!  Scan them.
+			for (ShareItem si:  shareItems) {
+				// Should we show shares the user made that have
+				// expired?  I think so.  Hence, no check here to skip
+				// them like in the 'Shared by' handler above.
+				
+				// Create the ShareInfo for this share and added to the
+				// 'Shared by' list.
+				ShareInfo feSI = new ShareInfo();
+				fed.addSharedWithItem(feSI);
+
+				// Add information about the share recipient.
+				AssigneeType at;
+				switch (si.getRecipientType()) {
+				default:
+				case user:  at = AssigneeType.INDIVIDUAL; break;
+				case group: at = AssigneeType.GROUP;      break;
+				case team:  at = AssigneeType.TEAM;       break;
+				}
+				feSI.setUser(AssignmentInfo.construct(si.getRecipientId(), at));
+				
+				String title;
+				if (si.getIsPartOfPublicShare())
+				     title = NLT.get("share.recipientType.title.public");
+				else title = getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId());
+				feSI.setTitle(title);
+				
+				// Add when it was shared.
+				Date	date       = si.getStartDate();
+				String	dateString = ((null == date) ? "" : GwtServerHelper.getDateTimeString(date, DateFormat.MEDIUM, DateFormat.SHORT));
+				feSI.setShareDate(dateString);
+
+				// If the share expires...
+				date = si.getEndDate();
+				if (null != date) {
+					// ...add when it expires.
+					dateString = ((null == date) ? "" : GwtServerHelper.getDateTimeString(date, DateFormat.MEDIUM, DateFormat.SHORT));
+					feSI.setExpiresDate(dateString);
+				}
+				feSI.setExpired(si.isExpired());
+
+				// Add the rights granted with the share.
+				feSI.setRights(GwtShareHelper.getShareRightsFromRightSet(si.getRightSet()));
+				
+				// Add any comments from the share.
+				feSI.setComment(si.getComment());
+			}
+		}
+	}
+	
 	/**
 	 * Reads the row data from a folder and returns it as a
 	 * FolderRowsRpcResponseData.

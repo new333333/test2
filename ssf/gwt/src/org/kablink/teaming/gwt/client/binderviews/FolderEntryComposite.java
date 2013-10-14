@@ -158,9 +158,10 @@ public class FolderEntryComposite extends ResizeComposite
 	// - Menu;
 	// - Document;
 	// - Sidebar;
-	// - Comments (within sidebar); and
+	// - Comments Manager (within sidebar);
+	// - Sharing  Manager (within sidebar); and
 	// - Footer.
-	private final static int FOLDER_ENTRY_COMPONENTS = 6;	//
+	private final static int FOLDER_ENTRY_COMPONENTS = 7;	//
 	
 	// The following is the ID/name of the <IFRAME> used to run the
 	// edit-in-place editor via an applet.
