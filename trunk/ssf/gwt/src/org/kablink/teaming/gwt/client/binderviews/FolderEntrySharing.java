@@ -59,7 +59,7 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class FolderEntrySharing extends VibeFlowPanel {
 	private FolderEntryCallback				m_fec;				// Callback to the folder entry composite.
-	private GwtTeamingDataTableImageBundle	m_images;			//
+	private GwtTeamingDataTableImageBundle	m_images;			// Access to Vibe's data table images.
 	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
 	private List<ShareInfo>					m_sharedByItems;	// A List<ShareInfo> of shares of the item with the current user.
 	private List<ShareInfo>					m_sharedWithItems;	// A List<ShareInfo> of shares of the item the current user has made.
@@ -104,7 +104,7 @@ public class FolderEntrySharing extends VibeFlowPanel {
 		}
 		
 		else {
-			// ...otherwise, display a simply message that it's not
+			// ...otherwise, display a simple message that it's not
 			// ...shared.
 			createEmptyShareDisplay();
 		}
@@ -122,15 +122,15 @@ public class FolderEntrySharing extends VibeFlowPanel {
 		shareItemPanel.addStyleName("vibe-feView-shareItemPanel");
 		add(shareItemPanel);
 
-		// ...and add the message itself.
-		String what = (GwtClientHelper.isLicenseFilr() ? m_messages.folderEntry_File() : m_messages.folderEntry_Item());
+		// ...and add the message itself to the panel.
+		String what = (GwtClientHelper.isLicenseFilr() ? m_messages.folderEntry_File() : m_messages.folderEntry_Entry());
 		Label info = new Label(m_messages.folderEntry_NoShares(what));
 		info.addStyleName("vibe-feView-shareItemEmpty");
 		shareItemPanel.add(info);
 	}
 	
 	/*
-	 * Creates the content for displaying the content of a
+	 * Creates the widgets for displaying the content of a
 	 * List<ShareInfo>.
 	 */
 	private void createSharedItemContent(List<ShareInfo> shares, String caption) {
@@ -154,7 +154,7 @@ public class FolderEntrySharing extends VibeFlowPanel {
 	}
 
 	/*
-	 * Creates the content for displaying the content of an individual
+	 * Creates the widgets for displaying the content of an individual
 	 * ShareInfo.
 	 */
 	private void createSharedItem(ShareInfo share) {
@@ -163,7 +163,7 @@ public class FolderEntrySharing extends VibeFlowPanel {
 		shareItemPanel.addStyleName("vibe-feView-shareItemPanel");
 		add(shareItemPanel);
 		
-		// Extract the hover text for this assignment.
+		// Extract the hover text for this share's assignment.
 		final AssignmentInfo ai       = share.getUser();
 		String	             hover    = ai.getHover();
 		boolean              hasHover = GwtClientHelper.hasString(hover);
@@ -206,7 +206,7 @@ public class FolderEntrySharing extends VibeFlowPanel {
 			
 		case GROUP:
 		case TEAM: {
-			// A group or team!  Generate its image...
+			// A group or team!  Generate the appropriate image...
 			final Image assigneeImg = GwtClientHelper.buildImage(GwtClientHelper.getRequestInfo().getImagesPath() + ai.getPresenceDude());
 			assigneeImg.addStyleName("vibe-feView-shareItemAvatar");
 			shareItemPanel.add(assigneeImg);
@@ -276,7 +276,7 @@ public class FolderEntrySharing extends VibeFlowPanel {
 			shareItemPanel.add(info);
 		}
 
-		// Add information about the rights granted with the share.
+		// Add information about the rights granted by the share.
 		String right;
 		ShareRights rights = share.getRights();
 		switch (rights.getAccessRights()) {
@@ -291,7 +291,7 @@ public class FolderEntrySharing extends VibeFlowPanel {
 
 		// If the share rights can be forwarded...
 		if (rights.getCanShareForward()) {
-			// ...add information about how.
+			// ...add information about how they can be forwarded.
 			StringBuffer sb = new StringBuffer();
 			if (rights.getCanShareWithInternalUsers()) {
 				sb.append(m_messages.folderEntry_ShareReshare_Internal());
@@ -316,7 +316,7 @@ public class FolderEntrySharing extends VibeFlowPanel {
 		// If the share has a comment...
 		String comment = share.getComment();
 		if (GwtClientHelper.hasString(comment)) {
-			// ...add it to the share's display.
+			// ...add it to the display.
 			info = new Label(comment);
 			info.addStyleName("vibe-feView-shareItemNote");
 			shareItemPanel.add(info);
@@ -324,8 +324,8 @@ public class FolderEntrySharing extends VibeFlowPanel {
 	}
 	
 	/*
-	 * Returns the URL to the image to display for presence for the
-	 * cell.
+	 * Returns the URL to the image to display for presence for an
+	 * AssignmentInfo.
 	 */
 	private String getPresenceImage(AssignmentInfo ai) {
 		String reply = ai.getAvatarUrl();
@@ -336,7 +336,8 @@ public class FolderEntrySharing extends VibeFlowPanel {
 	}
 	
 	/*
-	 * Called to invoke the group membership popup on the principal.
+	 * Called to invoke the group membership popup on an
+	 * AssignmentInfo.
 	 */
 	private void invokeGroupMembership(AssignmentInfo ai, Element pElement) {
 		GroupMembershipPopup gmp = ((GroupMembershipPopup) ai.getMembershipPopup());
@@ -352,21 +353,12 @@ public class FolderEntrySharing extends VibeFlowPanel {
 	}
 	
 	/*
-	 * Called to invoke the simple profile dialog on the principal's
-	 * presence.
+	 * Called to invoke the simple profile dialog on the
+	 * AssignmentInfo.
 	 */
 	private void invokeSimpleProfile(AssignmentInfo ai, Element pElement) {
 		Long wsId = ai.getPresenceUserWSId();
 		String wsIdS = ((null == wsId) ? null : String.valueOf(wsId));
 		GwtClientHelper.invokeSimpleProfile(pElement, wsIdS, ai.getTitle());
-	}
-	
-	/**
-	 * Shows/hides the sharing information.
-	 * 
-	 * @param show
-	 */
-	public void setSharingVisible(boolean show) {
-//!		...this needs to be implemented...
 	}
 }

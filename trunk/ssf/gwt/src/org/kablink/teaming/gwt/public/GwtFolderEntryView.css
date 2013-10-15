@@ -151,7 +151,7 @@
 
 	/* Start:  Sharing styles. */
 		.vibe-feView-sharingPanel    {display: block; position: relative; background: white; border-bottom: 1px solid #CCC; overflow: auto;}
-		.vibe-feView-shareItemAvatar {display: block; position: absolute; top: 2px; left: 2px; width: 30px; border-radius: 2px;}
+		.vibe-feView-shareItemAvatar {display: block; position: absolute; top: 2px; left: 2px; width: 30px; border-radius: 2px; -moz-border-radius: 2px; -webkit-border-radius: 2px;}
 		.vibe-feView-shareItemEmpty  {display: block; position: relative; font-size: 14px; color: black; margin-top: 3.5px;}
 		.vibe-feView-shareItemHeader {display: block; position: relative; color: #5691a6; font-size: 14px; padding: 8px 5px 0px 10px;}
 		.vibe-feView-shareItemInfo   {display: block; position: relative; font-size: 10px; color: #505354; font-weight: normal; padding-left: 0px; padding-right: 5px;}
@@ -166,7 +166,7 @@
 		.vibe-feView-sidebarSectionHeadExpander       {margin-right: 16px !important;}
 		.vibe-feView-sidebarSectionHeadExpander:hover {cursor: pointer;}
 		.vibe-feView-sidebarSectionHeadInner          {}
-		.vibe-feView-sidebarSectionHeadOuter          {position: relative; width: 350px; background-color: #e0e0e0; border-bottom: 1px solid #cccccc; z-index: 4001;}
+		.vibe-feView-sidebarSectionHeadOuter          {position: relative; width: 350px; background-color: #e0e0e0; border-bottom: 1px solid #cccccc; z-index: 1000;}
 		.vibe-feView-sidebarSectionHeadText           {color: #5691a6 !important;}
 		.vibe-feView-sidebarSectionHeadTitle          {position: relative; font-size: 14px; height: 20px; padding: 8px 5px 6px 32px; }
 		.vibe-feView-sidebarSliderImg                 {padding-top: 5px; padding-left: 4px;}
@@ -182,7 +182,7 @@
 			height: 25px;
 			top: 34px;
 			right: 351px;
-			z-index: 4000;
+			z-index: 1000;
 			border-top-left-radius: 5px;
 			border-bottom-left-radius: 5px;
 			-moz-border-radius-topleft: 5px;

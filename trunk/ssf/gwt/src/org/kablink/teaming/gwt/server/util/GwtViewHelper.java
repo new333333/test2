@@ -1295,8 +1295,9 @@ public class GwtViewHelper {
 
 	/*
 	 * When initially built, the AssignmentInfo's in the
-	 * FolderEntryDetails only contain the assignee IDs.  We need to
-	 * complete them with each assignee's title, ...
+	 * List<ShareInfo>'s in the FolderEntryDetails only contain the
+	 * assignee IDs.  We need to complete them with each assignee's
+	 * title, ...
 	 */
 	private static void completeShareAIs(AllModulesInjected bs, HttpServletRequest request, FolderEntryDetails fed) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeShareAIs()");
@@ -1307,7 +1308,8 @@ public class GwtViewHelper {
 				return;
 			}
 
-			// Condense all the shares into a single list.
+			// Condense all the shares into a single list so we can
+			// complete them all at the same time.
 			List<ShareInfo> shares = new ArrayList<ShareInfo>();
 			if (fed.hasShareBys())   shares.addAll(fed.getSharedByItems());
 			if (fed.hasShareWiths()) shares.addAll(fed.getSharedWithItems());
@@ -1317,7 +1319,7 @@ public class GwtViewHelper {
 			List<Long> principalIds = new ArrayList<Long>();
 			List<Long> teamIds      = new ArrayList<Long>();
 	
-			// Track the assignee's IDs.
+			// Extract the assignee IDs from the List<ShareInfo>.
 			for (ShareInfo si:  shares) {
 				AssignmentInfo ai = si.getUser();
 				ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
@@ -1360,9 +1362,10 @@ public class GwtViewHelper {
 				
 				avatarUrls);
 	
-			// Scan the shares again...
+			// Scan the List<ShareInfo> again...
 			for (ShareInfo si:  shares) {
-				// ...this time, fixing the assignees.
+				// ...this time, completing the information in each
+				// ...one's AssignmentInfo.
 				AssignmentInfo ai = si.getUser();
 				switch (ai.getAssigneeType()) {
 				case INDIVIDUAL:
@@ -4261,7 +4264,7 @@ public class GwtViewHelper {
 		List<Long>	users  = new ArrayList<Long>(); users.add(userId);
 		spec.setRecipients(users, groups, teams);
 		
-		// Did we find any shares?
+		// Can we find any shares?
 		List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
 		if (MiscUtil.hasItems(shareItems)) {
 			// Yes!  Scan them.
@@ -4272,8 +4275,8 @@ public class GwtViewHelper {
 					continue;
 				}
 				
-				// Create the ShareInfo for this share and added to the
-				// 'Shared by' list.
+				// Create the ShareInfo for this share and add it to
+				// the 'Shared by' list.
 				ShareInfo feSI = new ShareInfo();
 				fed.addSharedByItem(feSI);
 				
@@ -4319,7 +4322,7 @@ public class GwtViewHelper {
 		
 		spec.setSharerId(GwtServerHelper.getCurrentUserId());
 
-		// Did we find any shares?
+		// Can we find any shares?
 		List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
 		if (MiscUtil.hasItems(shareItems)) {
 			// Yes!  Scan them.
@@ -4334,8 +4337,8 @@ public class GwtViewHelper {
 				// expired?  I think so.  Hence, no check here to skip
 				// them like in the 'Shared by' handler above.
 				
-				// Create the ShareInfo for this share and added to the
-				// 'Shared by' list.
+				// Create the ShareInfo for this share and add it to
+				// the 'Shared with' list.
 				ShareInfo feSI = new ShareInfo();
 				fed.addSharedWithItem(feSI);
 
