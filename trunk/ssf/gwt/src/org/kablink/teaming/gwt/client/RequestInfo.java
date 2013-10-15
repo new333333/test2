@@ -672,6 +672,17 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return whether the Public collection should be presented to the
+	 * logged in user.
+	 * 
+	 * @return
+	 */
+	public final native boolean isShowPublicCollection()
+	/*-{
+		return this.getBFromS( this.showPublicCollection );
+	}-*/;
+
+	/**
 	 * Return whether logging in is allowed from our standard login dialog.  This will be
 	 * disallowed if we are running behind a single-sign on product such as NAM.
 	 * 
