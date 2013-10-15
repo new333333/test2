@@ -719,6 +719,7 @@ public class GwtActivityStreamHelper {
 		private List<String>       m_collection_NetFoldersList;		// The 'Net Folders'    collection point binder list.
 		private List<String>       m_collection_SharedByMeList;		// The 'Shared by Me'   collection point binder list.
 		private List<String>       m_collection_SharedWithMeList;	// The 'Shared with Me' collection point binder list.
+		private List<String>       m_collection_SharedPublicList;	// The 'Public'         collection point binder list.
 		private List<TeamInfo>     m_myTeamsList;					// The teams the current user is a member of.
 		private Long               m_baseBinderId;					// The ID of the base binder this ASTreeData was constructed for.
 		private Map<Long, Binder>  m_bindersMap;					// Map of the Binder's referenced by the lists.
@@ -750,6 +751,7 @@ public class GwtActivityStreamHelper {
 		private List<String>       getCollectionNetFoldersList()   {return m_collection_NetFoldersList;        }
 		private List<String>       getCollectionSharedByMeList()   {return m_collection_SharedByMeList;        }
 		private List<String>       getCollectionSharedWithMeList() {return m_collection_SharedWithMeList;      }
+		private List<String>       getCollectionSharedPublicList() {return m_collection_SharedPublicList;      }
 		private Long               getBaseBinderId()               {return m_baseBinderId;                     }
 
 		/*
@@ -771,6 +773,7 @@ public class GwtActivityStreamHelper {
 			reply.m_collection_MyFilesList      = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.MY_FILES,       reply.m_collection_MyFilesList     );
 			reply.m_collection_SharedByMeList   = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.SHARED_BY_ME,   reply.m_collection_SharedByMeList  );
 			reply.m_collection_SharedWithMeList = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.SHARED_WITH_ME, reply.m_collection_SharedWithMeList);
+			reply.m_collection_SharedPublicList = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.SHARED_PUBLIC,  reply.m_collection_SharedPublicList);
 			reply.m_collection_NetFoldersList   = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.NET_FOLDERS,    reply.m_collection_NetFoldersList  );
 			
 			// Read the required User's and Binder's.
@@ -800,6 +803,7 @@ public class GwtActivityStreamHelper {
 			for (String collectionId:  td.m_collection_MyFilesList)      ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
 			for (String collectionId:  td.m_collection_SharedByMeList)   ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
 			for (String collectionId:  td.m_collection_SharedWithMeList) ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
+			for (String collectionId:  td.m_collection_SharedPublicList) ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
 			for (String collectionId:  td.m_collection_NetFoldersList)   ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
 			
 			// Read the binders that we're tracking (in a single
@@ -915,6 +919,7 @@ public class GwtActivityStreamHelper {
 			case NET_FOLDERS:
 			case SHARED_BY_ME:
 			case SHARED_WITH_ME:
+			case SHARED_PUBLIC:
 				// These are valid so long as they both refer to a
 				// non-empty binder ID list.
 				reply = ((0 < bc1) && (0 < bc2));
@@ -934,6 +939,7 @@ public class GwtActivityStreamHelper {
 			case NET_FOLDER:
 			case SHARED_BY_ME_FOLDER:
 			case SHARED_WITH_ME_FOLDER:
+			case SHARED_PUBLIC_FOLDER:
 			case SPECIFIC_BINDER:
 			case SPECIFIC_FOLDER:
 				// These are valid so long as they both refer to the
@@ -1147,6 +1153,14 @@ public class GwtActivityStreamHelper {
 			ctFolderAS    = ActivityStream.SHARED_WITH_ME_FOLDER;
 			ctRootAS      = ActivityStream.SHARED_WITH_ME;
 			ctFoldersList = td.getCollectionSharedWithMeList();
+			break;
+			
+		case SHARED_PUBLIC:
+			ctBorderTop   = false;
+			ctTitleKey    = "asTreeSharedPublic";
+			ctFolderAS    = ActivityStream.SHARED_PUBLIC_FOLDER;
+			ctRootAS      = ActivityStream.SHARED_PUBLIC;
+			ctFoldersList = td.getCollectionSharedPublicList();
 			break;
 		}
 		
@@ -1697,8 +1711,32 @@ public class GwtActivityStreamHelper {
 			spec.setRecipientsFromUserMembership(user.getId());
 			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
 			for (ShareItem si:  shareItems) {
-				// Is this share expired or obsolete?
-				if (si.isExpired() || (!(si.isLatest()))) {
+				// Is this share expired, obsolete or public?
+				if (si.isExpired() || (!(si.isLatest()) || si.getIsPartOfPublicShare())) {
+					// Yes!  Skip it.
+					continue;
+				}
+				
+				// Add the share's entity ID to the appropriate list. 
+				EntityIdentifier	siEntityIdentifier = si.getSharedEntityIdentifier();
+				EntityType			siEntityType       = siEntityIdentifier.getEntityType();
+				String				siEntityId         = String.valueOf(siEntityIdentifier.getEntityId());
+				if      (trackFolders && siEntityType.equals(EntityType.folder))      ListUtil.addStringToListStringIfUnique(folderIds, siEntityId);
+				else if (trackEntries && siEntityType.equals(EntityType.folderEntry)) ListUtil.addStringToListStringIfUnique(entryIds,  siEntityId);
+			}
+			
+			break;
+		}
+		
+		case SHARED_PUBLIC: {
+			// Scan the SharedItem's shared with the current user (or
+			// their teams or groups.)
+			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+			spec.setRecipientsFromUserMembership(user.getId());
+			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+			for (ShareItem si:  shareItems) {
+				// Is this share expired, obsolete or not public?
+				if (si.isExpired() || (!(si.isLatest())  || (!(si.getIsPartOfPublicShare())))) {
 					// Yes!  Skip it.
 					continue;
 				}
@@ -2201,10 +2239,13 @@ public class GwtActivityStreamHelper {
 			}
 	
 			// Add TreeInfo's for the various collection points.
-			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.MY_FILES)      );
-			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_WITH_ME));
-			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_BY_ME)  );
-			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.NET_FOLDERS)   );
+			if (!(GwtServerHelper.getCurrentUser().isShared())) {
+				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.MY_FILES)      );
+				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_WITH_ME));
+				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_BY_ME)  );
+				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.NET_FOLDERS)   );
+			}
+			rootASList.add(    buildCollectionPointTI(bs, request, td, CollectionType.SHARED_PUBLIC ));
 			
 			// Are we in Filr only mode?
 			if (!(Utils.checkIfFilr())) {
@@ -2285,6 +2326,8 @@ public class GwtActivityStreamHelper {
 		case SHARED_BY_ME_FOLDER:
 		case SHARED_WITH_ME:
 		case SHARED_WITH_ME_FOLDER:
+		case SHARED_PUBLIC:
+		case SHARED_PUBLIC_FOLDER:
 		case SPECIFIC_BINDER:
 		case SPECIFIC_FOLDER:
 			// These require 1 or more binders.
@@ -2668,6 +2711,7 @@ public class GwtActivityStreamHelper {
 		case NET_FOLDER:
 		case SHARED_BY_ME_FOLDER:
 		case SHARED_WITH_ME_FOLDER:
+		case SHARED_PUBLIC_FOLDER:
 		case SPECIFIC_BINDER:
 			// A place of some sort:
 			// 1. The tracked places is used unchanged; and
@@ -2679,6 +2723,7 @@ public class GwtActivityStreamHelper {
 		case NET_FOLDERS:
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
+		case SHARED_PUBLIC:
 			// A collection point:
 			// 1. The tracked places are the IDs of the folders from
 			//    the collection point.
@@ -2692,6 +2737,7 @@ public class GwtActivityStreamHelper {
 			case NET_FOLDERS:     collectionType = CollectionType.NET_FOLDERS;    break;
 			case SHARED_BY_ME:    collectionType = CollectionType.SHARED_BY_ME;   break;
 			case SHARED_WITH_ME:  collectionType = CollectionType.SHARED_WITH_ME; break;
+			case SHARED_PUBLIC:   collectionType = CollectionType.SHARED_PUBLIC;  break;
 			}
 			fillCollectionLists(bs, collectionType, trackedPlacesAL, trackedEntriesAL);
 			break;

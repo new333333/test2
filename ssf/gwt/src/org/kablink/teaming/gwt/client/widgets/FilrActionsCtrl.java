@@ -79,6 +79,7 @@ public class FilrActionsCtrl extends Composite
 	private FilrAction m_sharedWithMeAction;
 	private FilrAction m_netFoldersAction;
 	private FilrAction m_sharedByMeAction;
+	private FilrAction m_sharedPublicAction;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -101,6 +102,7 @@ public class FilrActionsCtrl extends Composite
 		NET_FOLDERS,
 		SHARED_BY_ME,
 		SHARED_WITH_ME,
+		SHARED_PUBLIC,
 		UNKNOWN
 	}
 	/**
@@ -221,46 +223,87 @@ public class FilrActionsCtrl extends Composite
 		
 		messages = GwtTeaming.getMessages();
 		imgBundle = GwtTeaming.getFilrImageBundle();
-		
-		// Add "My Files" action
-		cmd = new Command()
-		{
-			@Override
-			public void execute()
-			{
-				FilrActionsCtrl.closeAdminConsole();
 
-				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.MY_FILES ) );
-			}
-		};
-		m_myFilesAction = new FilrAction(
-										FilrActionType.MY_FILES,
-										imgBundle.myFiles_transparent_48(),
-										messages.myFiles(),
-										cmd );
-		m_myFilesAction.addDomHandler( this, ClickEvent.getType() );
-		m_mainPanel.add( m_myFilesAction );
-		
-		// Add the "Shared with Me" action
-		cmd = new Command()
+		if (!(GwtClientHelper.isGuestUser()))
 		{
-			@Override
-			public void execute()
+			// Add "My Files" action
+			cmd = new Command()
 			{
-				FilrActionsCtrl.closeAdminConsole();
-
-				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_WITH_ME ) );
-			}
-		};
-		m_sharedWithMeAction = new FilrAction(
-											FilrActionType.SHARED_WITH_ME,
-											imgBundle.sharedWithMe_transparent_48(),
-											messages.sharedWithMe(),
+				@Override
+				public void execute()
+				{
+					FilrActionsCtrl.closeAdminConsole();
+	
+					GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.MY_FILES ) );
+				}
+			};
+			m_myFilesAction = new FilrAction(
+											FilrActionType.MY_FILES,
+											imgBundle.myFiles_transparent_48(),
+											messages.myFiles(),
 											cmd );
-		m_sharedWithMeAction.addDomHandler( this, ClickEvent.getType() );
-		m_mainPanel.add( m_sharedWithMeAction );
+			m_myFilesAction.addDomHandler( this, ClickEvent.getType() );
+			m_mainPanel.add( m_myFilesAction );
+			
+			// Add the "Shared with Me" action
+			cmd = new Command()
+			{
+				@Override
+				public void execute()
+				{
+					FilrActionsCtrl.closeAdminConsole();
+	
+					GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_WITH_ME ) );
+				}
+			};
+			m_sharedWithMeAction = new FilrAction(
+												FilrActionType.SHARED_WITH_ME,
+												imgBundle.sharedWithMe_transparent_48(),
+												messages.sharedWithMe(),
+												cmd );
+			m_sharedWithMeAction.addDomHandler( this, ClickEvent.getType() );
+			m_mainPanel.add( m_sharedWithMeAction );
+			
+			// Add the "Shared by Me" action
+			cmd = new Command()
+			{
+				@Override
+				public void execute()
+				{
+					FilrActionsCtrl.closeAdminConsole();
+	
+					GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
+				}
+			};
+			m_sharedByMeAction = new FilrAction(
+											FilrActionType.SHARED_BY_ME,
+											imgBundle.sharedByMe_transparent_40(),
+											messages.sharedByMe(),
+											cmd );
+			m_sharedByMeAction.addDomHandler( this, ClickEvent.getType() );
+			m_mainPanel.add( m_sharedByMeAction );
+			
+			// Add the "File Spaces" action
+			cmd = new Command()
+			{
+				@Override
+				public void execute()
+				{
+					FilrActionsCtrl.closeAdminConsole();
+	
+					GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.NET_FOLDERS ) );
+				}
+			};
+			m_netFoldersAction = new FilrAction(
+											FilrActionType.NET_FOLDERS,
+											imgBundle.netFolders_transparent_48(),
+											messages.netFolders(),
+											cmd );
+			m_netFoldersAction.addDomHandler( this, ClickEvent.getType() );
+			m_mainPanel.add( m_netFoldersAction );
+		}
 		
-		// Add the "Shared by Me" action
+		// Add the "Public" action
 		cmd = new Command()
 		{
 			@Override
@@ -268,35 +311,16 @@ public class FilrActionsCtrl extends Composite
 			{
 				FilrActionsCtrl.closeAdminConsole();
 
-				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
+				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_PUBLIC ) );
 			}
 		};
-		m_sharedByMeAction = new FilrAction(
-										FilrActionType.SHARED_BY_ME,
-										imgBundle.sharedByMe_transparent_40(),
-										messages.sharedByMe(),
-										cmd );
-		m_sharedByMeAction.addDomHandler( this, ClickEvent.getType() );
-		m_mainPanel.add( m_sharedByMeAction );
-		
-		// Add the "File Spaces" action
-		cmd = new Command()
-		{
-			@Override
-			public void execute()
-			{
-				FilrActionsCtrl.closeAdminConsole();
-
-				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.NET_FOLDERS ) );
-			}
-		};
-		m_netFoldersAction = new FilrAction(
-										FilrActionType.NET_FOLDERS,
-										imgBundle.netFolders_transparent_48(),
-										messages.netFolders(),
-										cmd );
-		m_netFoldersAction.addDomHandler( this, ClickEvent.getType() );
-		m_mainPanel.add( m_netFoldersAction );
+		m_sharedPublicAction = new FilrAction(
+											FilrActionType.SHARED_PUBLIC,
+											imgBundle.sharedPublic_transparent_48(),
+											messages.sharedPublic(),
+											cmd );
+		m_sharedPublicAction.addDomHandler( this, ClickEvent.getType() );
+		m_mainPanel.add( m_sharedPublicAction );
 		
 		initWidget( m_mainPanel );
 	}
@@ -414,6 +438,10 @@ public class FilrActionsCtrl extends Composite
 					action = m_sharedWithMeAction;
 					break;
 				
+				case SHARED_PUBLIC:
+					action = m_sharedPublicAction;
+					break;
+				
 				default:
 					break;
 				}
@@ -445,6 +473,8 @@ public class FilrActionsCtrl extends Composite
 				collectionType = CollectionType.NET_FOLDERS;
 			else if ( m_selectedAction == m_sharedWithMeAction )
 				collectionType = CollectionType.SHARED_WITH_ME;
+			else if ( m_selectedAction == m_sharedPublicAction )
+				collectionType = CollectionType.SHARED_PUBLIC;
 			else if ( m_selectedAction == m_sharedByMeAction )
 				collectionType = CollectionType.SHARED_BY_ME;
 		}

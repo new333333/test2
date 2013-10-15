@@ -2192,6 +2192,7 @@ public interface GwtTeamingMessages extends Messages
 	String peopleList();
 	String sharedByMe();
 	String sharedWithMe();
+	String sharedPublic();
 
 	// Strings used with the "Share send-to" widget
 	String shareSendToWidget_AllRecipients();
@@ -2535,6 +2536,7 @@ public interface GwtTeamingMessages extends Messages
 	String emptyCollection_Info_SharedByMe_1( String product );
 	String emptyCollection_Info_SharedByMe_2();
 	String emptyCollection_Info_SharedWithMe( String product );
+	String emptyCollection_Info_SharedPublic( String product );
 	String emptyCollection_Info_NetFolders_1( String product );
 	String emptyCollection_Info_NetFolders_2();
 	String emptyCollection_Info_NetFolders_3();
@@ -2542,6 +2544,7 @@ public interface GwtTeamingMessages extends Messages
 	String emptyCollection_SubHead_MyFiles();
 	String emptyCollection_SubHead_SharedByMe();
 	String emptyCollection_SubHead_SharedWithMe();
+	String emptyCollection_SubHead_SharedPublic();
 	String emptyCollection_SubHead_NetFolders();
 	
 	// Strings used for the empty file folder view widget.

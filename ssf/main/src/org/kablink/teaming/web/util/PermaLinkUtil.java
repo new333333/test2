@@ -65,6 +65,7 @@ public class PermaLinkUtil {
     public static final int COLLECTION_NET_FOLDERS = 1;
     public static final int COLLECTION_SHARED_BY_ME = 2;
     public static final int COLLECTION_SHARED_WITH_ME = 3;
+    public static final int COLLECTION_SHARED_PUBLIC = 4;
 
 	private static final Log m_logger = LogFactory.getLog(PermaLinkUtil.class);
 

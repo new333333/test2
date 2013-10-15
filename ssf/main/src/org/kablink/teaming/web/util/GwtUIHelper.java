@@ -1748,9 +1748,9 @@ public class GwtUIHelper {
 				// ...put that out.
 				int sc = Integer.parseInt(showCollection);
 				if (PermaLinkUtil.COLLECTION_USER_DEFAULT == sc) {
-					if (SearchUtils.userCanAccessMyFiles(bs, currentUser))
-					     sc = PermaLinkUtil.COLLECTION_MY_FILES;
-					else sc = PermaLinkUtil.COLLECTION_SHARED_WITH_ME;
+					if      (SearchUtils.userCanAccessMyFiles(bs, currentUser)) sc = PermaLinkUtil.COLLECTION_MY_FILES;
+					else if (currentUser.isShared())                            sc = PermaLinkUtil.COLLECTION_SHARED_PUBLIC;
+					else                                                        sc = PermaLinkUtil.COLLECTION_SHARED_WITH_ME;
 					showCollection = String.valueOf(sc);
 				}
 				model.put(WebKeys.URL_SHOW_COLLECTION, showCollection);

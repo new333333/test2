@@ -91,6 +91,7 @@ public class CollectionView extends DataTableFolderViewBase {
 			
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
+		case SHARED_PUBLIC:
 			columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth(160, Unit.PX));
 			columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth(160, Unit.PX));
 			columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(180, Unit.PX));
