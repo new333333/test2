@@ -768,6 +768,20 @@ public class GwtUIHelper {
 	}
 	
 	/**
+	 * Return the effective 'Public Collection' setting from the given
+	 * user.  We will look in the user's properties first for a value.
+	 * If one is not found we will get the setting from the zone.
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Boolean getEffectivePublicCollectionSetting(AllModulesInjected bs, User user) {
+		return SearchUtils.getEffectivePublicCollectionSetting(bs, user);
+	}
+	
+	/**
 	 * Return the effective 'WebAccess' setting from the given user.
 	 * We will look in the user's properties first for a value.  If one
 	 * is not found we will get the setting from the zone.
@@ -1209,6 +1223,30 @@ public class GwtUIHelper {
 		return reply;
 	}
 
+	/**
+	 * Return the 'Public Collection' setting from the given user or
+	 * group (i.e., UserPrincipal object.)
+	 * 
+	 * @param bs
+	 * @param upId
+	 * 
+	 * @return
+	 */
+	public static Boolean getPublicCollectionSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
+		return SearchUtils.getPublicCollectionSettingFromUserOrGroup(bs, upId);
+	}
+
+	/**
+	 * Return the 'Public Collection' setting from the zone.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static Boolean getPublicCollectionSettingFromZone(AllModulesInjected bs) {
+		return SearchUtils.getPublicCollectionSettingFromZone(bs);
+	}
+	
 	/**
 	 * Return the 'WebAccess' setting from the given user or group
 	 * (i.e., UserPrincipal object.)

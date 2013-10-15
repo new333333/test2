@@ -31,6 +31,7 @@
 	<property name="fileArchivingEnabled" access="field"/>
 	<property name="downloadEnabled" access="field"/>
 	<property name="webAccessEnabled" access="field"/>
+	<property name="publicCollectionEnabled" access="field"/>
 	<property name="auditTrailKeepDays" access="field"/>
 	<property name="auditTrailEnabled" access="field"/>
 	<property name="changeLogsKeepDays" access="field"/>

@@ -270,6 +270,7 @@ public enum TeamingEvents implements IsSerializable {
 	CHECK_MANAGE_USERS_ACTIVE,						// Event to detect if the the manage users facility is active.
 	CLEAR_SELECTED_USERS_ADHOC_FOLDERS,				// Clears the adHoc folder setting for the Selected Users so they revert to the zone setting.
 	CLEAR_SELECTED_USERS_DOWNLOAD,					// Clears the download   setting for the Selected Users so they revert to the zone setting.
+	CLEAR_SELECTED_USERS_PUBLIC_COLLECTION,			// Clears the public collection setting for the Selected Users so they revert to the zone setting.
 	CLEAR_SELECTED_USERS_WEBACCESS,					// Clears the web access setting for the Selected Users so they revert to the zone setting.
 	COPY_SELECTED_ENTITIES,							// Copies the Selected Entities.
 	DELETE_SELECTED_ENTITIES,						// Deletes the Selected Entities.
@@ -277,11 +278,13 @@ public enum TeamingEvents implements IsSerializable {
 	DISABLE_SELECTED_USERS,							// Disables the Selected Users.
 	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
 	DISABLE_SELECTED_USERS_DOWNLOAD,				// Disables downloading of files for the Selected Users.
-	DISABLE_SELECTED_USERS_WEBACCESS,				// Disables web access           for the Selected Users.
+	DISABLE_SELECTED_USERS_PUBLIC_COLLECTION,		// Disables a public collection for the Selected Users.
+	DISABLE_SELECTED_USERS_WEBACCESS,				// Disables web access for the Selected Users.
 	ENABLE_SELECTED_USERS,							// Enables the Selected Users.
 	ENABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Enables adHoc folders for the the Selected Users.
 	ENABLE_SELECTED_USERS_DOWNLOAD,					// Enables downloading of file for the the Selected Users.
-	ENABLE_SELECTED_USERS_WEBACCESS,				// Enables web access          for the the Selected Users.
+	ENABLE_SELECTED_USERS_PUBLIC_COLLECTION,		// Enables a public collection for the the Selected Users.
+	ENABLE_SELECTED_USERS_WEBACCESS,				// Enables web access for the the Selected Users.
 	FIND_CONTROL_BROWSE,							// Invoke the find control browser.
 	FOLDER_ENTRY_ACTION_COMPLETE,					// An action on a folder entry has completed.
 	GET_MANAGE_USERS_TITLE,							// Event to request the manage users title.

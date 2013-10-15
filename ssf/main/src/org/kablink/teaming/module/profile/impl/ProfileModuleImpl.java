@@ -2643,6 +2643,31 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     }
 
     /**
+     * Returns a user or group's public collection enabled flag.
+     * 
+     * @param upId
+     */
+    //RO transaction
+    @Override
+    public Boolean getPublicCollectionEnabled(Long upId) {
+   		UserPrincipal up = getUserPrincipal(upId, false, false);
+		return up.isPublicCollectionEnabled();
+    }
+    
+    /**
+     * Sets a user or group's public collection enabled flag.
+     * 
+     * @param upId
+     * @param publicCollectionEnabled
+     */
+    //RW transaction
+    @Override
+    public void setPublicCollectionEnabled(Long upId, Boolean publicCollectionEnabled) {
+   		UserPrincipal up = getUserPrincipal(upId, true, false);
+		up.setPublicCollectionEnabled(publicCollectionEnabled);
+    }
+
+    /**
      * Returns a user or group's adHoc folders flag.
      * 
      * @param upId

@@ -66,6 +66,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.HideSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleAdhocFolderSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleDownloadSettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveMultiplePublicCollectionSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleWebAccessSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
@@ -321,6 +322,69 @@ public class BinderViewsHelper {
 	public static void clearUsersDownload(final Long userId) {
 		// Always use the previous form of the method.
 		clearUsersDownload(userId, null);
+	}
+
+	/**
+	 * Clears the user's public collection setting based on a
+	 * List<Long> of their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void clearUsersPublicCollection(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any user IDs to be cleared...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we clear the web access settings.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to clear the public collection setting.
+		SaveMultiplePublicCollectionSettingsCmd cmd = new SaveMultiplePublicCollectionSettingsCmd(userIds, null);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_ClearUsersPublicCollection());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingPublicCollection(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
+				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
+			}
+		});
+	}
+	
+	public static void clearUsersPublicCollection(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		clearUsersPublicCollection(userIds, null);
+	}
+	
+	public static void clearUsersPublicCollection(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		clearUsersPublicCollection(userIds, reloadEvent);
+	}
+
+	public static void clearUsersPublicCollection(final Long userId) {
+		// Always use the previous form of the method.
+		clearUsersPublicCollection(userId, null);
 	}
 
 	/**
@@ -685,6 +749,69 @@ public class BinderViewsHelper {
 	}
 
 	/**
+	 * Disables the user's public collection based on a List<Long>
+	 * of their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void disableUsersPublicCollection(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any user IDs to be disabled...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we disable the web access setting.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to disable the public collection setting.
+		SaveMultiplePublicCollectionSettingsCmd cmd = new SaveMultiplePublicCollectionSettingsCmd(userIds, false);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_DisableUsersPublicCollection());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingPublicCollection(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
+				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
+			}
+		});
+	}
+	
+	public static void disableUsersPublicCollection(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		disableUsersPublicCollection(userIds, null);
+	}
+	
+	public static void disableUsersPublicCollection(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		disableUsersPublicCollection(userIds, reloadEvent);
+	}
+
+	public static void disableUsersPublicCollection(final Long userId) {
+		// Always use the previous form of the method.
+		disableUsersPublicCollection(userId, null);
+	}
+
+	/**
 	 * Disables the user's web access based on a List<Long>
 	 * of their user IDs.
 	 *
@@ -922,6 +1049,70 @@ public class BinderViewsHelper {
 	public static void enableUsersDownload(final Long userId) {
 		// Always use the previous form of the method.
 		enableUsersDownload(userId, null);
+	}
+
+	/**
+	 * Enables public collection for the users based on a List<Long> of
+	 * their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void enableUsersPublicCollection(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any user IDs to be enable web access
+		// on...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we enable the web access setting.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to enable public collection setting.
+		SaveMultiplePublicCollectionSettingsCmd cmd = new SaveMultiplePublicCollectionSettingsCmd(userIds, true);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_EnableUsersPublicCollection());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingPublicCollection(), erList.getErrorList());
+				}
+				
+				// ...and hide the busy spinner.
+				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
+			}
+		});
+	}
+	
+	public static void enableUsersPublicCollection(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		enableUsersPublicCollection(userIds, null);
+	}
+	
+	public static void enableUsersPublicCollection(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		enableUsersPublicCollection(userIds, reloadEvent);
+	}
+	
+	public static void enableUsersPublicCollection(final Long userId) {
+		// Always use the previous form of the method.
+		enableUsersPublicCollection(userId, null);
 	}
 
 	/**

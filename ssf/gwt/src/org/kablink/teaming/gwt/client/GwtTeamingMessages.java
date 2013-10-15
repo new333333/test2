@@ -312,6 +312,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CheckNetFolderRootsStatus();
 	String rpcFailure_ClearUsersAdHocFolders();
 	String rpcFailure_ClearUsersDownload();
+	String rpcFailure_ClearUsersPublicCollection();
 	String rpcFailure_ClearUsersWebAccess();
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();
@@ -336,10 +337,12 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_DisableUsers();
 	String rpcFailure_DisableUsersAdHocFolders();
 	String rpcFailure_DisableUsersDownload();
+	String rpcFailure_DisableUsersPublicCollection();
 	String rpcFailure_DisableUsersWebAccess();
 	String rpcFailure_EnableUsers();
 	String rpcFailure_EnableUsersAdHocFolders();
 	String rpcFailure_EnableUsersDownload();
+	String rpcFailure_EnableUsersPublicCollection();
 	String rpcFailure_EnableUsersWebAccess();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_executeCustomJsp();
@@ -1977,6 +1980,7 @@ public interface GwtTeamingMessages extends Messages
 	// String used within BinderViewsHelper.
 	String binderViewsHelper_failureSettingAdHocFolders();
 	String binderViewsHelper_failureSettingDownload();
+	String binderViewsHelper_failureSettingPublicCollection();
 	String binderViewsHelper_failureSettingWebAccess();
 	
 	// Strings used by ChangeEntryTypesDlg.
@@ -2390,6 +2394,7 @@ public interface GwtTeamingMessages extends Messages
 	String configureUserAccessDlg_AllowExternalUserAccessLabel();
 	String configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel();
 	String configureUserAccessDlg_DisableDownloadLabel();
+	String configureUserAccessDlg_DisablePublicCollectionLabel();
 	String configureUserAccessDlg_DisableWebAccessLabel();
 	
 	// Strings used by the GWT based Folder Entry viewer.

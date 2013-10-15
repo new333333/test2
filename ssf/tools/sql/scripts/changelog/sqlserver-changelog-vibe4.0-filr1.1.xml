@@ -339,4 +339,18 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="dennis" context="schema" failOnError="true" id="26">
+        <comment>Enable users and groups to have a Public collection</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="publicCollectionEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_Principals">
+            <column name="publicCollectionEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

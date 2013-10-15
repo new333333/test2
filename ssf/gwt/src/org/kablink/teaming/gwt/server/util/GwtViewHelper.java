@@ -6631,6 +6631,17 @@ public class GwtViewHelper {
 			ai.setCanDownload(    canDownload    );
 			ai.setPerUserDownload(perUserDownload);
 
+			// ...add whether the user has access to a public
+			// ...collection...
+			boolean hasPublicCollection     = user.isPerson();
+			boolean perUserPublicCollection = false;
+			if (hasPublicCollection) {
+				hasPublicCollection     = GwtUIHelper.getEffectivePublicCollectionSetting(bs, user);
+				perUserPublicCollection = (null != user.isPublicCollectionEnabled());
+			}
+			ai.setHasPublicCollection(    hasPublicCollection    );
+			ai.setPerUserPublicCollection(perUserPublicCollection);
+
 			// ...add whether the user can use web access...
 			boolean hasWebAccess = user.isPerson();
 			boolean perUserWebAccess = false;
