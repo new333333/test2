@@ -2169,7 +2169,9 @@ public class GwtShareHelper
 				fnId = GwtServerHelper.getFunctionIdFromRole( ami, nextRole );
 	
 				// Did we find the function for the given role?
-				if ( fnId == null )
+				// It is ok if we didn't find the "EnableShareWithAllExternal" role.  That role used
+				// to exist but doesn't now.
+				if ( fnId == null && nextRole.getType() != GwtRoleType.EnableShareWithAllExternal )
 				{
 					// No
 					m_logger.error( "In GwtShareHelper.saveZoneShareRights(), could not find function for role: " + nextRole.getType() );
