@@ -727,6 +727,20 @@ public class WebUrlUtil {
 		return webUrl.toString();
 	}
 
+	/**
+	 * This routine is used to get Public Link URLs. 
+	 * Public Links result from creating a ShareItem with a recipientType of publicLink
+	 * Those ShareItems contain a pass key that allows the file to be publicaly read
+	 * There are two supported operations: publicLink and publicLinkHtml
+	 * The publicLink operation downloads the file
+	 * The publicLinkHtml operation displays the converted HTML of the file.
+	 * 
+	 * @param shareItemId
+	 * @param passKey
+	 * @param operation
+	 * @param fileName
+	 * @return
+	 */
 	public static String getSharedPublicFileUrl(Long shareItemId, String passKey, String operation, String fileName) {
 		String webPath = WebUrlUtil.getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);

@@ -273,6 +273,7 @@ public class WebKeys {
 	public static final String URL_SEND_MAIL_LOCATION = "sendMailLocation";
 	public static final String URL_SEEN_BY_GWT = "seen_by_gwt";
     public static final String URL_SHARE_PUBLIC_LINK="publicLink";
+    public static final String URL_SHARE_PUBLIC_LINK_HTML="publicLinkHtml";
     public static final String URL_SHOW_TRASH="showTrash";
     public static final String URL_SHOW_COLLECTION="showCollection";
 	public static final String URL_START_DATE = "ss_startDate";
