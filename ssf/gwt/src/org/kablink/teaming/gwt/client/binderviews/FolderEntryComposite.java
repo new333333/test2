@@ -208,7 +208,7 @@ public class FolderEntryComposite extends ResizeComposite
 		m_isDialog       = (null != dialog);
 		m_images         = GwtTeaming.getDataTableImageBundle();
 		m_messages       = GwtTeaming.getMessages();
-		m_sidebarVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.SIDEBAR_VISIBLE, true);
+		m_sidebarVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.SIDEBAR_VISIBLE, true);	// true -> Defaults to visible.
 
 		// ...create the base content panels...
 		m_rootPanel = new VibeFlowPanel();
@@ -426,6 +426,8 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Navigate the entry viewer to the given ViewFolderEntryInfo.
 	 * 
 	 * Implements the FolderEntryCallback.doNavigate() method.
+	 * 
+	 * @param vfei
 	 */
 	@Override
 	public void doNavigate(ViewFolderEntryInfo vfei) {
@@ -1370,6 +1372,8 @@ public class FolderEntryComposite extends ResizeComposite
 	
 	/**
 	 * Implements the ToolPanelReady.toolPanelReady() method.
+	 * 
+	 * @param toolPanel
 	 */
 	@Override
 	public void toolPanelReady(ToolPanelBase toolPanel) {

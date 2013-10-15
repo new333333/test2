@@ -51,12 +51,13 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
- * Class that holds the folder entry viewer sidebar manager.
+ * Class that holds the folder entry viewer's sidebar manager.
  * 
  * @author drfoster@novell.com
  */
 public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCallback {
 	private boolean							m_commentsVisible;		// true -> The comments are visible.  false -> They're hidden.
+	private boolean							m_sharingAreaShown;		// true -> We're showing a sharing area.  false -> We're not.
 	private FolderEntryCallback				m_fec;					// Callback to the folder entry composite.
 	private FolderEntryComments				m_commentsArea;			// The are containing the comment display and entry widget.
 	private FolderEntryDetails				m_fed;					// Details about the folder entry being viewed.
@@ -69,7 +70,7 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 	private InlineLabel						m_commentsHeader;		// The comment header label.
 	private VibeFlowPanel					m_commentHeaderPanel;	// The comment header panel (contains the label and arrow.)
 	private VibeFlowPanel					m_sharingHeaderPanel;	// The sharing header panel (contains the label and arrow.)
-	private VibeFlowPanel					m_slider;				// The <DIV> containing the slider.
+	private VibeFlowPanel					m_slider;				// The <DIV> containing the slider for hiding/showing the sidebar.
 	
 	/**
 	 * Constructor method.
@@ -118,15 +119,15 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 	 * caption.
 	 */
 	private void createCommentsCaption() {
-		// What's the visibility state for comments on this entry?
-		m_commentsVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, true);
+		// What's the visibility state for comments?
+		m_commentsVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, true);	// true -> Defaults to visible.
 
 		// Create the outer panel for the comment caption...
 		m_commentHeaderPanel = new VibeFlowPanel();
 		m_commentHeaderPanel.addStyleName("vibe-feView-sidebarSectionHeadOuter");
 		add(m_commentHeaderPanel);
 
-		// ...add an anchor to it so that we can make it clickable...
+		// ...add an anchor to it so that it can be clicked on...
 		Anchor commentsAnchor = new Anchor();
 		commentsAnchor.addStyleName("cursorPointer");
 		commentsAnchor.addClickHandler(new ClickHandler() {
@@ -193,20 +194,20 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		createCommentsArea();
 	
 		// If the logged in user isn't Guest or an external user...
-		if (!(GwtClientHelper.isGuestUser() || GwtClientHelper.isExternalUser())) {
+		m_sharingAreaShown = (!(GwtClientHelper.isGuestUser() || GwtClientHelper.isExternalUser()));
+		if (m_sharingAreaShown) {
 			// ...create the sharing components.
 			createSharingCaption();
 			createSharingArea();
 		}
 		
-		// Create the sidebar slider components.
+		// Create the sidebar's slider components.
 		createSidebarSlider();
 		
 		// Hide/show it based on what the composite says.
 		setSidebarVisible(m_fec.isSidebarVisible());
-
 		
-		// Tell the composite that we're ready.
+		// Finally, tell the composite that we're ready.
 		m_fec.viewComponentReady();
 	}
 
@@ -220,7 +221,7 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		m_sharingHeaderPanel.addStyleName("vibe-feView-sidebarSectionHeadOuter");
 		add(m_sharingHeaderPanel);
 
-		// ...add an anchor to it so that we can make it clickable...
+		// ...add an anchor to it so that it can be clicked on...
 		Anchor sharingAnchor = new Anchor();
 		sharingAnchor.addStyleName("cursorPointer");
 		sharingAnchor.addClickHandler(new ClickHandler() {
@@ -259,19 +260,6 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 	private void createSharingArea() {
 		m_sharingArea = new FolderEntrySharing(m_fec, m_fed.getSharedByItems(), m_fed.getSharedWithItems());
 		add(m_sharingArea);
-		if (m_commentsVisible) {
-			m_sharingArea.setSharingVisible(false);
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					// We do this again 1/2 second later to ensure it
-					// gets hidden after its fully initialized.  On the
-					// first display, sometimes it doesn't stay hidden.
-					m_sharingArea.setSharingVisible(false);
-				}
-			},
-			500);
-		}
 	}
 	
 	/*
@@ -306,6 +294,8 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 
 	/**
 	 * Navigate the entry viewer to the given ViewFolderEntryInfo.
+	 * 
+	 * @param eid
 	 */
 	public void doNavigate(EntityId eid) {
 		if (m_commentsVisible != FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, true)) {
@@ -339,13 +329,17 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 	 * Synchronously sets the height of the sharing area.
 	 */
 	private void setSharingHeightNow() {
-		int commentsHeight      = (m_commentHeaderPanel.getOffsetHeight() + m_commentsArea.getOffsetHeight());
-		int sharingHeaderHeight =  m_sharingHeaderPanel.getOffsetHeight();
-		int sharingHeight       = (m_sidebarHeight - (commentsHeight + sharingHeaderHeight));
-		if (FolderEntryComposite.MINIMUM_SHARING_HEIGHT > sharingHeight) {
-			sharingHeight = FolderEntryComposite.MINIMUM_SHARING_HEIGHT;
+		// If we're showing a sharing area...
+		if (m_sharingAreaShown) {
+			// ...adjust its height based on the height of the sidebar.
+			int commentsHeight      = (m_commentHeaderPanel.getOffsetHeight() + m_commentsArea.getOffsetHeight());
+			int sharingHeaderHeight =  m_sharingHeaderPanel.getOffsetHeight();
+			int sharingHeight       = (m_sidebarHeight - (commentsHeight + sharingHeaderHeight));
+			if (FolderEntryComposite.MINIMUM_SHARING_HEIGHT > sharingHeight) {
+				sharingHeight = FolderEntryComposite.MINIMUM_SHARING_HEIGHT;
+			}
+			m_sharingArea.setHeight(sharingHeight + "px");
 		}
-		m_sharingArea.setHeight(sharingHeight + "px");
 	}
 	
 	/*
@@ -365,6 +359,10 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 			// Yes!  Show its components...
             m_commentHeaderPanel.setVisible(true);
             m_commentsArea.setVisible(      true);
+            if (m_sharingAreaShown) {
+                m_sharingHeaderPanel.setVisible(true);
+                m_sharingArea.setVisible(       true);
+            }
 
             // ...and adjust the slider and sidebar styles accordingly.
 			m_slider.removeStyleName("vibe-feView-sidebarSliderDiv-hidden");
@@ -375,6 +373,10 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 			// No, we must be hiding it!  Hide its components...
 			m_commentHeaderPanel.setVisible(false);
 			m_commentsArea.setVisible(      false);
+            if (m_sharingAreaShown) {
+                m_sharingHeaderPanel.setVisible(false);
+                m_sharingArea.setVisible(       false);
+            }
 			
             // ...and adjust the slider and sidebar styles accordingly.
 			m_slider.addStyleName("vibe-feView-sidebarSliderDiv-hidden");
@@ -399,8 +401,9 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		if (m_commentsVisible)
 		     expanderRes = m_images.slideDown();
 		else expanderRes = m_images.slideUp();
-		m_sharingExpanderImg.setUrl(expanderRes.getSafeUri().asString());
-		m_sharingArea.setSharingVisible(!m_commentsVisible);
+        if (m_sharingAreaShown) {
+        	m_sharingExpanderImg.setUrl(expanderRes.getSafeUri().asString());
+        }
 
 		// ...store the current state in a cookie...
 		if (m_commentsVisible)
