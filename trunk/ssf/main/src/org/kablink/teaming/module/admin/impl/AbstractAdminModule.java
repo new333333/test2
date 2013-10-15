@@ -592,6 +592,30 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   	 * 
   	 */
   	@Override
+	public boolean isPublicCollectionEnabled()
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		return zoneConfig.isPublicCollectionEnabled(); 		
+  	}
+  	
+  	/**
+  	 * 
+  	 */
+  	@Override
+	public void setPublicCollectionEnabled( boolean enabled ) 
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		zoneConfig.setPublicCollectionEnabled( enabled );
+  	}
+
+  	/**
+  	 * 
+  	 */
+  	@Override
 	public boolean isWebAccessEnabled()
   	{
   		ZoneConfig zoneConfig;

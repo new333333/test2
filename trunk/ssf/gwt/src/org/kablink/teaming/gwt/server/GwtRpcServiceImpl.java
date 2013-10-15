@@ -2036,6 +2036,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_PUBLIC_COLLECTION_SETTING:
+		{
+			GetPublicCollectionSettingCmd gpcsCmd = ((GetPublicCollectionSettingCmd) cmd);
+			Long                          upId    = gpcsCmd.getUserPrincipalId();
+			Boolean                       result;
+			if (null != upId)
+			     result = GwtUIHelper.getPublicCollectionSettingFromUserOrGroup( this, upId );
+			else result = GwtUIHelper.getPublicCollectionSettingFromZone(        this       );
+			if (null == result) {
+				result = Boolean.FALSE;
+			}
+			
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case GET_QUICK_VIEW_INFO:
 		{
 			GetQuickViewInfoCmd gqviCmd;
@@ -3082,6 +3098,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_MULTIPLE_PUBLIC_COLLECTION_SETTINGS:
+		{
+			SaveMultiplePublicCollectionSettingsCmd smpcsCmd = ((SaveMultiplePublicCollectionSettingsCmd) cmd);
+			ErrorListRpcResponseData result = GwtServerHelper.saveMultiplePublicCollectionSettings( this, smpcsCmd.getUserIds(), smpcsCmd.getAllowPublicCollection() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case SAVE_MULTIPLE_WEBACCESS_SETTINGS:
 		{
 			SaveMultipleWebAccessSettingsCmd smwasCmd = ((SaveMultipleWebAccessSettingsCmd) cmd);
@@ -3258,6 +3282,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			susCmd = ((SaveUserStatusCmd) cmd);
 			responseData = saveUserStatus( ri, susCmd.getStatus() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_PUBLIC_COLLECTION_SETTING:
+		{
+			SavePublicCollectionSettingCmd spcsCmd = ((SavePublicCollectionSettingCmd) cmd);
+			Boolean result = GwtServerHelper.savePublicCollectionSetting( this, spcsCmd.getUserId(), spcsCmd.isAllowPublicCollection() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

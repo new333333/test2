@@ -1519,6 +1519,80 @@ public class SearchUtils {
 	}
 	
 	/**
+	 * Return the effective 'Public Collection' setting for the given
+	 * user.  We will look in the User object first for a value.  If
+	 * one is not found we will or the settings from the groups the
+	 * user is a member of.  If one is still not found, we'll get the
+	 * setting from the zone.
+	 * 
+	 * @param am
+	 * @param pm
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Boolean getEffectivePublicCollectionSetting(AdminModule am, ProfileModule pm, User user) {
+		// Do we have a user?
+		Boolean reply;
+		if (null !=  user) {
+			// Yes!  Is it guest?
+			if (user.isShared()) {
+				// Yes!  Guest ALWAYS has a public collection.
+				reply = Boolean.TRUE;
+			}
+			
+			else {
+				// No!  The user isn't the guest.  Does the user have a
+				// public collection override?
+				Long userId = user.getId();
+				reply = getPublicCollectionSettingFromUserOrGroup(pm, userId);
+				if (null == reply) {
+					// No!  Is the user the member of any groups?
+					List<Group> groups = GwtUIHelper.getGroups(userId);
+					if (MiscUtil.hasItems(groups)) {
+						// Yes!  Scan them.
+						for (Group group:  groups) {
+							// Does this group have a public collection
+							// override?
+							Boolean gAccess = getPublicCollectionSettingFromUserOrGroup(pm, group.getId());
+							if (null != gAccess) {
+								// Yes!  Use it as the override and if
+								// it's true...
+								reply =  gAccess;
+								if (reply) {
+									// ...we're done looking.
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		else {
+			// No, we don't have a user!  There is no effective
+			// setting.
+			reply = null;
+		}
+	
+		// Did we find a setting for the user?
+		if (null == reply) {
+			// No!  Read the global setting.
+			reply = getPublicCollectionSettingFromZone(am);
+		}
+
+		// If we get here, reply contains true if web access is
+		// enabled and false otherwise.  Return it.
+		return reply;
+	}
+	
+	public static Boolean getEffectivePublicCollectionSetting(AllModulesInjected bs, User user) {
+		// Always use the initial form of the method.
+		return getEffectivePublicCollectionSetting(bs.getAdminModule(), bs.getProfileModule(), user);
+	}
+	
+	/**
 	 * Return the effective 'WebAccess' setting for the given user.
 	 * We will look in the User object first for a value.  If one
 	 * is not found we will or the settings from the groups the user
@@ -1673,6 +1747,30 @@ public class SearchUtils {
 	}
 
 	/**
+	 * Return the 'public collection' setting from the given user or
+	 * group (i.e., UserPrincipal object.)
+	 * 
+	 * @param pm
+	 * @param upId
+	 * 
+	 * @return
+	 */
+	public static Boolean getPublicCollectionSettingFromUserOrGroup(ProfileModule pm, Long upId) {
+		// If we have a user ID...
+		if (null != upId) {
+			// ...read the 'public collection' setting from the
+			// ...UserPrincipal object...
+			return pm.getPublicCollectionEnabled(upId);
+		}
+		return null;
+	}
+	
+	public static Boolean getPublicCollectionSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
+		// Always use the initial form of the method.
+		return getPublicCollectionSettingFromUserOrGroup(bs.getProfileModule(), upId);
+	}
+
+	/**
 	 * Return the 'web access' setting from the given user or group
 	 * (i.e., UserPrincipal object.)
 	 * 
@@ -1726,6 +1824,22 @@ public class SearchUtils {
 	         reply = new Boolean(bs.getAdminModule().isDownloadEnabled());
 		else reply = Boolean.TRUE;
 		return reply;
+	}
+
+	/**
+	 * Return the 'Public Collection' setting from the zone.
+	 * 
+	 * @param am
+	 * 
+	 * @return
+	 */
+	public static Boolean getPublicCollectionSettingFromZone(AdminModule am) {
+	    return new Boolean(am.isPublicCollectionEnabled());
+	}
+	
+	public static Boolean getPublicCollectionSettingFromZone(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return getPublicCollectionSettingFromZone(bs.getAdminModule());
 	}
 
 	/**
