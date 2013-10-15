@@ -39,6 +39,7 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.repository.RepositoryServiceException;
 
 public interface ConvertedFileModule {
@@ -98,8 +99,16 @@ public interface ConvertedFileModule {
 			String url, Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out) 
 		throws UncheckedIOException, RepositoryServiceException;
 	
+	public void readCacheHtmlFile(
+			String url, ShareItem shareItem, Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out) 
+		throws UncheckedIOException, RepositoryServiceException;
+	
 	public void deleteCacheHtmlFile(
 			Binder binder, DefinableEntity entity, FileAttachment fa) 
+		throws UncheckedIOException, RepositoryServiceException;
+	
+	public void deleteCacheHtmlFile(
+			ShareItem shareItem, Binder binder, DefinableEntity entity, FileAttachment fa) 
 		throws UncheckedIOException, RepositoryServiceException;
 	
 	public void deleteCacheTextFile(
@@ -113,9 +122,15 @@ public interface ConvertedFileModule {
 	public void readCacheImageReferenceFile(
 			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out, String imageFileName) 
 		throws UncheckedIOException, RepositoryServiceException;
+	public void readCacheImageReferenceFile(
+			ShareItem shareItem, Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out, String imageFileName) 
+		throws UncheckedIOException, RepositoryServiceException;
 	
 	public void readCacheUrlReferenceFile(
 			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out, String urlFileName) 
+		throws UncheckedIOException, RepositoryServiceException;
+	public void readCacheUrlReferenceFile(
+			ShareItem shareItem, Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out, String urlFileName) 
 		throws UncheckedIOException, RepositoryServiceException;
 
 	public boolean isOOHtmlConverter();
