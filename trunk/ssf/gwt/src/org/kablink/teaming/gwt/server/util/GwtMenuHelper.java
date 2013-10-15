@@ -3019,7 +3019,8 @@ public class GwtMenuHelper {
 					boolean isCollectionNetFolders   = (CollectionType.NET_FOLDERS    == ct);
 					boolean isCollectionSharedByMe   = (CollectionType.SHARED_BY_ME   == ct);
 					boolean isCollectionSharedWithMe = (CollectionType.SHARED_WITH_ME == ct);
-					boolean isCollectionShared       = (isCollectionSharedByMe || isCollectionSharedWithMe);
+					boolean isCollectionSharedPublic = (CollectionType.SHARED_PUBLIC  == ct);
+					boolean isCollectionShared       = (isCollectionSharedByMe || isCollectionSharedWithMe || isCollectionSharedPublic);
 					if ((!(Utils.checkIfFilr())) && isCollectionShared) {
 						constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                                                  );
 					}
@@ -3034,7 +3035,7 @@ public class GwtMenuHelper {
 					if ((isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) && GwtShareHelper.isSharingEnabled(bs)) {
 					    constructEntryShareItem(           entryToolbar, bs, request                                                                                  );
 					}
-					if (((isCollectionMyFiles && ((!useHomeAsMyFiles)) && (!isCollectionNetFolders))) || isCollectionShared) {
+					if (((isCollectionMyFiles && (!useHomeAsMyFiles) && (!isCollectionNetFolders))) || (isCollectionShared && (!isCollectionSharedPublic))) {
 						constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
 					}
 					if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs)) && isAddEntryAllowed()) {

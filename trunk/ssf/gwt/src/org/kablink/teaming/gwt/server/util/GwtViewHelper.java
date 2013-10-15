@@ -1526,7 +1526,7 @@ public class GwtViewHelper {
 	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
 	 * representing the 'Shared with Me' items.
 	 */
-	private static List<GwtSharedMeItem> convertItemListToWithMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups, String sortBy, boolean sortDescend) {
+	private static List<GwtSharedMeItem> convertItemListToWithMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups, String sortBy, boolean sortDescend, boolean isPublic) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.convertItemListToWithMeList()");
 		try {
 			// Allocate a List<GwtSharedMeItem> to hold the converted
@@ -1540,17 +1540,25 @@ public class GwtViewHelper {
 			}
 	
 			// Get the state of the shared view.
+			CollectionType ct = (isPublic ? CollectionType.SHARED_PUBLIC : CollectionType.SHARED_WITH_ME);
 			SharedViewState svs;
-			try                  {svs = getSharedViewState(bs, request, CollectionType.SHARED_WITH_ME).getSharedViewState();}
-			catch (Exception ex) {svs = new SharedViewState(true, false);                                                   }
+			try                  {svs = getSharedViewState(bs, request, ct).getSharedViewState();}
+			catch (Exception ex) {svs = new SharedViewState(true, false);                        }
 	
 			// Scan the share items.
-			boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_WITH_ME);
+			boolean			sharedFiles = getUserViewSharedFiles(request, ct);
 			SharingModule	sm          = bs.getSharingModule();
 			for (ShareItem si:  shareItems) {
 				// Is this share item expired or not the latest share
 				// for the entity?
 				if (si.isExpired() || (!(si.isLatest()))) {
+					// Yes!  Skip it.
+					continue;
+				}
+				
+				// Are we looking for public shares and this isn't
+				// public or vice versa?
+				if (isPublic != si.getIsPartOfPublicShare()) {
 					// Yes!  Skip it.
 					continue;
 				}
@@ -1571,7 +1579,7 @@ public class GwtViewHelper {
 				// Are we showing everything?
 				boolean showHidden     = svs.isShowHidden();
 				boolean showNonHidden  = svs.isShowNonHidden();
-				boolean isEntityHidden = isSharedEntityHidden(bs, CollectionType.SHARED_WITH_ME, siEntity);
+				boolean isEntityHidden = isSharedEntityHidden(bs, ct, siEntity);
 				if ((!showHidden) || (!showNonHidden)) {
 					// No!  Are we supposed to show entities in this
 					// hide state?
@@ -1634,7 +1642,7 @@ public class GwtViewHelper {
 			
 			// Sort the GwtPerShareInfo's attached to the
 			// List<GwtSharedMeItem> we're going to return.
-			PerShareInfoComparator.sortPerShareInfoLists(bs, CollectionType.SHARED_WITH_ME, reply, sortBy, sortDescend);
+			PerShareInfoComparator.sortPerShareInfoLists(bs, ct, reply, sortBy, sortDescend);
 			
 			// If we get here, reply refers to the
 			// List<GwtSharedMeItem> built from condensing the
@@ -3087,7 +3095,8 @@ public class GwtViewHelper {
 		case MY_FILES:       reply = pruneColumnNames(ct, "title", "comments", "size",   "date"                                                                     ); break;
 		case NET_FOLDERS:    reply = pruneColumnNames(ct, "title", "date",     "netfolder_access", "descriptionHtml"                                                ); break;
 		case SHARED_BY_ME:   reply = pruneColumnNames(ct, "title", "comments", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message"); break;
-		case SHARED_WITH_ME: reply = pruneColumnNames(ct, "title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"); break;
+		case SHARED_WITH_ME:
+		case SHARED_PUBLIC:  reply = pruneColumnNames(ct, "title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"); break;
 		default:             reply = new String[0];                                                                                                                    break;
 		}
 		return reply;
@@ -3138,6 +3147,7 @@ public class GwtViewHelper {
 				
 			case SHARED_BY_ME:
 			case SHARED_WITH_ME:
+			case SHARED_PUBLIC:
 				// Do we have any shares to analyze?
 				if (!(MiscUtil.hasItems(shareItems))) {
 					// No!  Bail.
@@ -3679,7 +3689,8 @@ public class GwtViewHelper {
 				case MY_FILES:        baseNameKey += "myfiles.";      break;
 				case NET_FOLDERS:     baseNameKey += "netfolders.";   break;
 				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   break;
-				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; break;
+				case SHARED_WITH_ME:
+				case SHARED_PUBLIC:   baseNameKey += "sharedWithMe."; break;
 				}
 				
 				// ...and generate the column names for the collection.
@@ -4003,8 +4014,9 @@ public class GwtViewHelper {
 			CollectionType collectionType = folderInfo.getCollectionType();
 			switch (collectionType) {
 			case SHARED_BY_ME:
-			case SHARED_WITH_ME:  viewSharedFiles = getUserViewSharedFiles(request, collectionType); break;
-			default:              viewSharedFiles = false;                                           break;
+			case SHARED_WITH_ME:
+			case SHARED_PUBLIC:  viewSharedFiles = getUserViewSharedFiles(request, collectionType); break;
+			default:             viewSharedFiles = false;                                           break;
 			}
 
 			// Does the current user own this folder?
@@ -4545,10 +4557,11 @@ public class GwtViewHelper {
 			boolean					isCollection             = folderInfo.isBinderCollection();
 			boolean					isCollectionSharedByMe   = (isCollection && CollectionType.SHARED_BY_ME.equals(  collectionType));
 			boolean					isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(collectionType));
+			boolean					isCollectionSharedPublic = (isCollection && CollectionType.SHARED_PUBLIC.equals( collectionType));
 			List<GwtSharedMeItem> 	shareItems;
-			if      (isCollectionSharedByMe)   shareItems = getSharedByMeItems(  bs, request, sortBy, sortDescend);
-			else if (isCollectionSharedWithMe) shareItems = getSharedWithMeItems(bs, request, sortBy, sortDescend);
-			else                               shareItems = null;
+			if      (isCollectionSharedByMe)                               shareItems = getSharedByMeItems(  bs, request, sortBy, sortDescend                          );
+			else if (isCollectionSharedWithMe || isCollectionSharedPublic) shareItems = getSharedWithMeItems(bs, request, sortBy, sortDescend, isCollectionSharedPublic);
+			else                                                           shareItems = null;
 
 			// Is the user currently viewing pinned entries?
 			List<Map>  searchEntries;
@@ -6354,7 +6367,7 @@ public class GwtViewHelper {
 	 * Returns a List<GwtSharedMeItem> of the items shared with the
 	 * current user.
 	 */
-	private static List<GwtSharedMeItem> getSharedWithMeItems(AllModulesInjected bs, HttpServletRequest request, String sortBy, boolean sortDescend) {
+	private static List<GwtSharedMeItem> getSharedWithMeItems(AllModulesInjected bs, HttpServletRequest request, String sortBy, boolean sortDescend, boolean isPublic) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getSharedWithMeItems()");
 		try {
 			// Construct a list containing just this user's ID...
@@ -6375,7 +6388,7 @@ public class GwtViewHelper {
 	
 			// ...and finally, convert the List<ShareItem> into a
 			// ...List<GwtShareMeItem> and return that.
-			List<GwtSharedMeItem> siList = convertItemListToWithMeList(bs, request, shareItems, userId, teams, groups, sortBy, sortDescend);
+			List<GwtSharedMeItem> siList = convertItemListToWithMeList(bs, request, shareItems, userId, teams, groups, sortBy, sortDescend, isPublic);
 			return siList;
 		}
 		
@@ -7173,8 +7186,9 @@ public class GwtViewHelper {
 							// No!  Set the entry view's underlying
 							// context to the user's Shared With Me
 							// view.
-							vi.setBinderInfo(GwtServerHelper.buildCollectionBI(CollectionType.SHARED_WITH_ME, user.getWorkspaceId()));							
-							vi.setOverrideUrl(GwtServerHelper.getCollectionPointUrl(request, GwtServerHelper.getUserWorkspace(user), CollectionType.SHARED_WITH_ME));
+							CollectionType ct = (GwtServerHelper.getCurrentUser().isShared() ? CollectionType.SHARED_PUBLIC : CollectionType.SHARED_WITH_ME);
+							vi.setBinderInfo(GwtServerHelper.buildCollectionBI(ct, user.getWorkspaceId()));							
+							vi.setOverrideUrl(GwtServerHelper.getCollectionPointUrl(request, GwtServerHelper.getUserWorkspace(user), ct));
 						}
 					}
 				}
@@ -7797,11 +7811,12 @@ public class GwtViewHelper {
 				// Yes!  Scan them...
 				SharingModule sm = bs.getSharingModule();
                 boolean isSharedWithMe = ct.equals(CollectionType.SHARED_WITH_ME);
+                boolean isSharedPublic = ct.equals(CollectionType.SHARED_PUBLIC );
                 List<EntityIdentifier> ids = new ArrayList<EntityIdentifier>();
 				for (EntityId eid:  entityIds) {
                     ids.add(toEntityIdentifier(eid));
 				}
-                sm.hideSharedEntitiesForCurrentUser(ids, isSharedWithMe);
+                sm.hideSharedEntitiesForCurrentUser(ids, (isSharedWithMe || isSharedPublic));
 			}
 			
 			// If we get here, the hide was successful.  Return true.
@@ -8959,11 +8974,12 @@ public class GwtViewHelper {
 				// Yes!  Scan them.
                 SharingModule sm = bs.getSharingModule();
 				boolean isSharedWithMe = ct.equals(CollectionType.SHARED_WITH_ME);
+				boolean isSharedPublic = ct.equals(CollectionType.SHARED_PUBLIC );
                 List<EntityIdentifier> ids = new ArrayList<EntityIdentifier>();
                 for (EntityId eid:  entityIds) {
                     ids.add(toEntityIdentifier(eid));
                 }
-                sm.unhideSharedEntitiesForCurrentUser(ids, isSharedWithMe);
+                sm.unhideSharedEntitiesForCurrentUser(ids, (isSharedWithMe || isSharedPublic));
 			}
 			
 			// If we get here, the show was successful.  Return true.

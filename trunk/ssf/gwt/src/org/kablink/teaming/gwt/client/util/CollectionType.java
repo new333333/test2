@@ -53,6 +53,7 @@ public enum CollectionType implements IsSerializable {
 	NET_FOLDERS,
 	SHARED_BY_ME,
 	SHARED_WITH_ME,
+	SHARED_PUBLIC,
 	
 	OTHER,
 	NOT_A_COLLECTION;
@@ -112,8 +113,8 @@ public enum CollectionType implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * Shared by Me collection and false otherwise.
+	 * Returns true if this CollectionType value represents a Shared by
+	 * Me collection and false otherwise.
 	 * 
 	 * @return
 	 */
@@ -122,18 +123,28 @@ public enum CollectionType implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * shared collection and false otherwise.
+	 * Returns true if this CollectionType value represents a shared
+	 * collection and false otherwise.
 	 * 
 	 * @return
 	 */
 	public boolean isSharedCollection() {
-		return (isSharedByMe() || isSharedWithMe());
+		return (isSharedByMe() || isSharedWithMe() || isSharedPublic());
 	}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * Shared with Me collection and false otherwise.
+	 * Returns true if this CollectionType value represents a Shared
+	 * Public collection and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isSharedPublic() {
+		return (SHARED_PUBLIC.equals(this));
+	}
+	
+	/**
+	 * Returns true if this CollectionType value represents a Shared
+	 * with Me collection and false otherwise.
 	 * 
 	 * @return
 	 */

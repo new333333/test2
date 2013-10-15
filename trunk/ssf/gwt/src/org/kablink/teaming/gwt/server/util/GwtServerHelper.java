@@ -761,6 +761,7 @@ public class GwtServerHelper {
 		// TreeInfo's for the various collections. 
 		addCollection(bs, request, userWS, ti, CollectionType.MY_FILES,       false);
 		addCollection(bs, request, userWS, ti, CollectionType.SHARED_WITH_ME, false);
+		addCollection(bs, request, userWS, ti, CollectionType.SHARED_PUBLIC,  false);
 		addCollection(bs, request, userWS, ti, CollectionType.NET_FOLDERS,    false);
 		addCollection(bs, request, userWS, ti, CollectionType.SHARED_BY_ME,   true );
 	}
@@ -1257,6 +1258,7 @@ public class GwtServerHelper {
 		case NET_FOLDERS:     titleKey = "collection.netFolders";   break;
 		case SHARED_BY_ME:    titleKey = "collection.sharedByMe";   break;
 		case SHARED_WITH_ME:  titleKey = "collection.sharedWithMe"; break;
+		case SHARED_PUBLIC:   titleKey = "collection.sharedPublic"; break;
 		}
 		String title = NLT.get(titleKey);
 		
@@ -4361,6 +4363,10 @@ public class GwtServerHelper {
 			results.setUrl( collectionType, url );
 
 			collectionType = CollectionType.SHARED_WITH_ME;
+			url = getCollectionPointUrl( request, userWS, collectionType );
+			results.setUrl( collectionType, url );
+
+			collectionType = CollectionType.SHARED_PUBLIC;
 			url = getCollectionPointUrl( request, userWS, collectionType );
 			results.setUrl( collectionType, url );
 		}

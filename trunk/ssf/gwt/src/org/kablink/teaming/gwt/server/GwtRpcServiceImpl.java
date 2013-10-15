@@ -4496,8 +4496,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				{
 					CollectionType ct;
 					if ( SearchUtils.userCanAccessMyFiles( this, RequestContextHolder.getRequestContext().getUser() ) )
-					     ct = CollectionType.MY_FILES;
-					else ct = CollectionType.SHARED_WITH_ME;
+					{
+						ct = CollectionType.MY_FILES;
+					}
+					else if ( GwtServerHelper.getCurrentUser().isShared() )
+					{
+						ct = CollectionType.SHARED_PUBLIC;
+					}
+					else
+					{
+						ct = CollectionType.SHARED_WITH_ME;
+					}
 					reply = GwtUIHelper.appendUrlParam( reply, WebKeys.URL_SHOW_COLLECTION, String.valueOf( ct.ordinal() ) );
 				}
 			}

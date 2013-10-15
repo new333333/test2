@@ -1798,6 +1798,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			case NET_FOLDER:
 			case SHARED_BY_ME_FOLDER:
 			case SHARED_WITH_ME_FOLDER:
+			case SHARED_PUBLIC_FOLDER:
 				// Yes!  Are we looking at it's parent binder?
 				ActivityStream parentAS;
 				switch (as) {
@@ -1810,6 +1811,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				case NET_FOLDER:             parentAS = ActivityStream.NET_FOLDERS;     break;
 				case SHARED_BY_ME_FOLDER:    parentAS = ActivityStream.SHARED_BY_ME;    break;
 				case SHARED_WITH_ME_FOLDER:  parentAS = ActivityStream.SHARED_WITH_ME;  break;
+				case SHARED_PUBLIC_FOLDER:   parentAS = ActivityStream.SHARED_PUBLIC;   break;
 				}
 
 				if (ti.getActivityStreamInfo().getActivityStream() == parentAS) {

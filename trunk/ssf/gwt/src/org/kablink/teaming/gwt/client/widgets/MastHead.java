@@ -967,9 +967,13 @@ public class MastHead extends Composite
 				as = ActivityStream.SHARED_WITH_ME;
 				break;
 			
+			case SHARED_PUBLIC:
+				as = ActivityStream.SHARED_PUBLIC;
+				break;
+			
 			case UNKNOWN:
 			default:
-				as = ActivityStream.SHARED_WITH_ME;
+				as = ( GwtClientHelper.isGuestUser() ? ActivityStream.SHARED_PUBLIC : ActivityStream.SHARED_WITH_ME );
 				break;
 			}
 		}

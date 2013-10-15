@@ -642,6 +642,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 			case NET_FOLDERS:     as = ActivityStream.NET_FOLDERS;    break;
 			case SHARED_BY_ME:    as = ActivityStream.SHARED_BY_ME;   break;
 			case SHARED_WITH_ME:  as = ActivityStream.SHARED_WITH_ME; break;
+			case SHARED_PUBLIC:   as = ActivityStream.SHARED_PUBLIC;  break;
 			}
 			asi.setActivityStream(as);
 		}

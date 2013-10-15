@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -574,6 +574,7 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				case NET_FOLDERS:     reply = filrImages.netFolder();   break;
 				case SHARED_BY_ME:    reply = filrImages.sharedByMe();   break;
 				case SHARED_WITH_ME:  reply = filrImages.sharedWithMe(); break;
+				case SHARED_PUBLIC:   reply = filrImages.sharedPublic(); break;
 				}
 				
 				if (null == reply) {
@@ -659,6 +660,7 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				case NET_FOLDERS:     reply = filrImages.netFolder_medium();    break;
 				case SHARED_BY_ME:    reply = filrImages.sharedByMe_medium();   break;
 				case SHARED_WITH_ME:  reply = filrImages.sharedWithMe_medium(); break;
+				case SHARED_PUBLIC:   reply = filrImages.sharedPublic_medium(); break;
 				}
 				
 				if (null == reply) {
@@ -744,6 +746,7 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				case NET_FOLDERS:     reply = filrImages.netFolder_large();    break;
 				case SHARED_BY_ME:    reply = filrImages.sharedByMe_large();   break;
 				case SHARED_WITH_ME:  reply = filrImages.sharedWithMe_large(); break;
+				case SHARED_PUBLIC:   reply = filrImages.sharedPublic_large(); break;
 				}
 				
 				if (null == reply) {
