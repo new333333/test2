@@ -2531,6 +2531,9 @@ public class GwtMenuHelper {
 			entryToolbar.addNestedItem(manageGroupTBI);
 		}
 
+		// Add a separator after the previous item.
+		entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+		
 		// Add whether a public collection is enabled.
 		Boolean pcFlag = SearchUtils.getPublicCollectionSettingFromUserOrGroup(bs, groupId);
 		if (null == pcFlag) {

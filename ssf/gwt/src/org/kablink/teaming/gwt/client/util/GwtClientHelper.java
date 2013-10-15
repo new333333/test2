@@ -1086,6 +1086,16 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Returns true if the logged in user should see the 'Public'
+	 * collection.
+	 * 
+	 * @return
+	 */
+	public static boolean isShowPublicCollection() {
+		return getRequestInfo().isShowPublicCollection();
+	}
+
+	/**
 	 * Returns true if the logged in user is a site administrator and
 	 * false otherwise.
 	 * 

@@ -118,6 +118,7 @@
 		savedSearchUrl:						'<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="newTab" value="1"/><ssf:param name="operation" value="ss_savedQuery"/></ssf:url></ssf:escapeJavaScript>',
 		sessionCaptive:						'${sessionCaptive}',
 		showCollectionOnLogin:				'${showCollection}',
+		showPublicCollection:				'${showPublicCollection}',
 		showWhatsNewOnLogin:				'${showWhatsNew}',
 		specificWhatsNew:					'${specificWhatsNew}',
 		specificWhatsNewId:					'${specificWhatsNewId}',

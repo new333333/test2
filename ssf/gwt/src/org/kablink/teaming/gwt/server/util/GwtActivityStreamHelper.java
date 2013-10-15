@@ -2239,13 +2239,16 @@ public class GwtActivityStreamHelper {
 			}
 	
 			// Add TreeInfo's for the various collection points.
-			if (!(GwtServerHelper.getCurrentUser().isShared())) {
+			User currentUser = GwtServerHelper.getCurrentUser();
+			if (!(currentUser.isShared())) {
 				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.MY_FILES)      );
 				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_WITH_ME));
 				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_BY_ME)  );
 				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.NET_FOLDERS)   );
 			}
-			rootASList.add(    buildCollectionPointTI(bs, request, td, CollectionType.SHARED_PUBLIC ));
+			if (GwtUIHelper.getEffectivePublicCollectionSetting(bs, currentUser)) {
+				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_PUBLIC ));
+			}
 			
 			// Are we in Filr only mode?
 			if (!(Utils.checkIfFilr())) {

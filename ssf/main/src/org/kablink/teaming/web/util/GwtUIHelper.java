@@ -1668,6 +1668,10 @@ public class GwtUIHelper {
 		model.put("isGuestUser",       currentUser.isShared()                      );
 		model.put("isExternalUser", (!(currentUser.getIdentityInfo().isInternal())));
 		
+		// Put out a flag indicating if the user should see a 'Public'
+		// collection.
+		model.put("showPublicCollection", getEffectivePublicCollectionSetting(bs, currentUser));
+		
 		// Put out the flag that tells us if the tinyMCE editor will
 		// work on the device we are running on.  Get the list of user
 		// agents that the tinyMCE editor won't run on.

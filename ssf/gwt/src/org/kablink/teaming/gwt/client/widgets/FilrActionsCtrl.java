@@ -224,7 +224,7 @@ public class FilrActionsCtrl extends Composite
 		messages = GwtTeaming.getMessages();
 		imgBundle = GwtTeaming.getFilrImageBundle();
 
-		if (!(GwtClientHelper.isGuestUser()))
+		if ( ! ( GwtClientHelper.isGuestUser() ) )
 		{
 			// Add "My Files" action
 			cmd = new Command()
@@ -303,24 +303,27 @@ public class FilrActionsCtrl extends Composite
 			m_mainPanel.add( m_netFoldersAction );
 		}
 		
-		// Add the "Public" action
-		cmd = new Command()
+		if ( GwtClientHelper.isGuestUser() || GwtClientHelper.isShowPublicCollection() )
 		{
-			@Override
-			public void execute()
+			// Add the "Public" action
+			cmd = new Command()
 			{
-				FilrActionsCtrl.closeAdminConsole();
-
-				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_PUBLIC ) );
-			}
-		};
-		m_sharedPublicAction = new FilrAction(
-											FilrActionType.SHARED_PUBLIC,
-											imgBundle.sharedPublic_transparent_48(),
-											messages.sharedPublic(),
-											cmd );
-		m_sharedPublicAction.addDomHandler( this, ClickEvent.getType() );
-		m_mainPanel.add( m_sharedPublicAction );
+				@Override
+				public void execute()
+				{
+					FilrActionsCtrl.closeAdminConsole();
+	
+					GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_PUBLIC ) );
+				}
+			};
+			m_sharedPublicAction = new FilrAction(
+												FilrActionType.SHARED_PUBLIC,
+												imgBundle.sharedPublic_transparent_48(),
+												messages.sharedPublic(),
+												cmd );
+			m_sharedPublicAction.addDomHandler( this, ClickEvent.getType() );
+			m_mainPanel.add( m_sharedPublicAction );
+		}
 		
 		initWidget( m_mainPanel );
 	}
