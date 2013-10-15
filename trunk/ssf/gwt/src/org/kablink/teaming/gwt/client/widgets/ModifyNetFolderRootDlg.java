@@ -74,7 +74,6 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -87,6 +86,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -209,12 +209,10 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		createAllDlgContent( "", this, this, null ); 
 	}
 
-	
 	/**
-	 * Create all the controls that make up the dialog box.
+	 * Create the panel that holds the configuration controls.
 	 */
-	@Override
-	public Panel createContent( Object props )
+	private Panel createConfigPanel()
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel;
@@ -223,17 +221,17 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		Label label;
 		int nextRow;
 		FlexCellFormatter cellFormatter;
-		CaptionPanel captionPanel;
 		
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
-		mainPanel.setStyleName( "teamingDlgBoxContent" );
-		
+
 		// Create a table to hold the controls.
 		table = new FlexTable();
 		table.setCellSpacing( 4 );
 		table.addStyleName( "dlgContent" );
+		
+		mainPanel.add( table );
 		
 		cellFormatter = table.getFlexCellFormatter();
 		
@@ -501,30 +499,66 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				}
 			} );
 		}
+
+		return mainPanel;
+	}
+	
+	/**
+	 * Create all the controls that make up the dialog box.
+	 */
+	@Override
+	public Panel createContent( Object props )
+	{
+		GwtTeamingMessages messages;
+		FlowPanel mainPanel;
+		TabPanel tabPanel;
 		
-		// Create the controls for defining the sync schedule
+		messages = GwtTeaming.getMessages();
+		
+		mainPanel = new FlowPanel();
+		mainPanel.setStyleName( "teamingDlgBoxContent" );
+
+		tabPanel = new TabPanel();
+		tabPanel.addStyleName( "vibe-tabPanel" );
+
+		mainPanel.add( tabPanel );
+
+		// Create the panel that holds the basic net folder server configuration
 		{
-			FlowPanel captionPanelMainPanel;
+			Panel configPanel;
 			
-			// Add some space
-			spacerPanel = new FlowPanel();
-			spacerPanel.getElement().getStyle().setMarginTop( 10, Unit.PX );
-			table.setHTML( nextRow, 0, spacerPanel.getElement().getString() );
-			++nextRow;
-			
-			captionPanel = new CaptionPanel( messages.modifyNetFolderServerDlg_SyncScheduleCaption() );
-			captionPanel.addStyleName( "modifyNetFolderServerDlg_SyncScheduleCaptionPanel" );
-			
-			captionPanelMainPanel = new FlowPanel();
-			captionPanel.add( captionPanelMainPanel );
-
-			m_scheduleWidget = new ScheduleWidget( messages.modifyNetFolderDlg_EnableSyncScheduleLabel() );
-			m_scheduleWidget.addStyleName( "modifyNetFolderServerDlg_ScheduleWidget" );
-			captionPanelMainPanel.add( m_scheduleWidget );
+			configPanel = createConfigPanel();
+			tabPanel.add( configPanel, messages.modifyNetFolderServerDlg_ConfigTab() );
 		}
+		
+		// Create the panel that holds the controls for the schedule
+		{
+			Panel schedPanel;
+			
+			schedPanel = createSchedulePanel();
+			tabPanel.add( schedPanel, messages.modifyNetFolderServerDlg_ScheduleTab() );
+		}
+		
+		tabPanel.selectTab( 0 );
 
-		mainPanel.add( table );
-		mainPanel.add( captionPanel );
+		return mainPanel;
+	}
+	
+	/**
+	 * Create the panel that holds the sync schedule controls.
+	 */
+	private Panel createSchedulePanel()
+	{
+		GwtTeamingMessages messages;
+		FlowPanel mainPanel;
+		
+		messages = GwtTeaming.getMessages();
+		
+		mainPanel = new FlowPanel();
+		
+		m_scheduleWidget = new ScheduleWidget( messages.modifyNetFolderDlg_EnableSyncScheduleLabel() );
+		m_scheduleWidget.addStyleName( "modifyNetFolderServerDlg_ScheduleWidget" );
+		mainPanel.add( m_scheduleWidget );
 
 		return mainPanel;
 	}

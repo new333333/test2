@@ -2219,6 +2219,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the modify Net Folder Server dialog
 	String modifyNetFolderServerDlg_AddHeader();
 	String modifyNetFolderServerDlg_AllowSelfSignedCertsLabel();
+	String modifyNetFolderServerDlg_ConfigTab();
 	String modifyNetFolderServerDlg_CreatingNetFolderServer();
 	String modifyNetFolderServerDlg_EditHeader( String name );
 	String modifyNetFolderServerDlg_EnableSyncScheduleLabel();
@@ -2239,6 +2240,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_ProxyNameHint3();
 	String modifyNetFolderServerDlg_ProxyNameLabel();
 	String modifyNetFolderServerDlg_ProxyPwdLabel();
+	String modifyNetFolderServerDlg_ScheduleTab();
 	String modifyNetFolderServerDlg_ServerAlreadyExists();
 	String modifyNetFolderServerDlg_ServerPathHint1();
 	String modifyNetFolderServerDlg_ServerPathHint2();
