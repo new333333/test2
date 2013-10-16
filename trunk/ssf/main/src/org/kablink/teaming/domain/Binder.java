@@ -908,13 +908,21 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		this.jitsAclMaxAge = Long.valueOf(jitsAclMaxAge);
 	}
     
+	/**
+	 * 
+	 */
+	public Boolean getFullSyncDirOnly()
+	{
+		return fullSyncDirOnly;
+	}
+	
 	public boolean isFullSyncDirOnly() {
 		if(fullSyncDirOnly == null)
 			return SPropsUtil.getBoolean("nf.full.sync.dir.only", false);
 		else
 			return fullSyncDirOnly.booleanValue();
 	}
-	public void setFullSyncDirOnly(boolean fullSyncDirOnly) {
+	public void setFullSyncDirOnly( Boolean fullSyncDirOnly ) {
 		this.fullSyncDirOnly = fullSyncDirOnly;
 	}
 	

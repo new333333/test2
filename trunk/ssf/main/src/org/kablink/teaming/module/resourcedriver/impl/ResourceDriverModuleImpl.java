@@ -308,6 +308,17 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_VOLUME)) {
 			   		newResourceDriver.setVolume((String)options.get(ObjectKeys.RESOURCE_DRIVER_VOLUME));
 			   	}
+			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY ) )
+			   	{
+			   		Boolean value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY ) != null )
+			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY );
+			   		
+			   		newResourceDriver.setFullSyncDirOnly( value );
+			   	}
+			   	
 			   	newResourceDriver.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(newResourceDriver);
 				
@@ -399,6 +410,17 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_VOLUME)) {
 			   		rdc.setVolume((String)options.get(ObjectKeys.RESOURCE_DRIVER_VOLUME));
 			   	}
+
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY ) )
+			   	{
+			   		Boolean value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY ) != null )
+			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY );
+			   		
+			   		rdc.setFullSyncDirOnly( value );
+			   	}
+
 			   	rdc.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(rdc);
     			return null;

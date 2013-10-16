@@ -29,5 +29,6 @@
     <property name="serverIP"/>
     <property name="volume"/>
     <property name="modifiedOn"/>
+    <property name="fullSyncDirOnly" access="field"/>
   </class>
 </hibernate-mapping>

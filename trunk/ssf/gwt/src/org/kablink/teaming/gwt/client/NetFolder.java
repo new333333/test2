@@ -60,6 +60,7 @@ public class NetFolder
 	private boolean m_indexContent;
 	private NetFolderDataSyncSettings m_dataSyncSettings;
 	private GwtJitsNetFolderConfig m_jitsConfig;
+	private Boolean m_fullSyncDirOnly;
 	
 	/**
 	 * The different statuses of a net Folder
@@ -85,6 +86,7 @@ public class NetFolder
 		// Nothing to do.
 		m_isHomeDir = false;
 		m_indexContent = false;
+		m_fullSyncDirOnly = null;
 	}	
 	
 	/**
@@ -105,6 +107,8 @@ public class NetFolder
 		
 		m_jitsConfig = new GwtJitsNetFolderConfig();
 		m_jitsConfig.copy( netFolder.getJitsConfig() );
+		
+		m_fullSyncDirOnly = netFolder.getFullSyncDirOnly();
 	}
 	
 	/**
@@ -113,6 +117,14 @@ public class NetFolder
 	public NetFolderDataSyncSettings getDataSyncSettings()
 	{
 		return m_dataSyncSettings;
+	}
+	
+	/**
+	 * 
+	 */
+	public Boolean getFullSyncDirOnly()
+	{
+		return m_fullSyncDirOnly;
 	}
 	
 	/**
@@ -206,6 +218,14 @@ public class NetFolder
 	{
 		m_dataSyncSettings = new NetFolderDataSyncSettings();
 		m_dataSyncSettings.copy( settings );
+	}
+	
+	/**
+	 * 
+	 */
+	public void setFullSyncDirOnly( Boolean fullSyncDirOnly )
+	{
+		m_fullSyncDirOnly = fullSyncDirOnly;
 	}
 	
 	/**
