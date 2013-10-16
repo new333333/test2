@@ -272,6 +272,7 @@ public enum TeamingEvents implements IsSerializable {
 	CLEAR_SELECTED_USERS_DOWNLOAD,					// Clears the download   setting for the Selected Users so they revert to the zone setting.
 	CLEAR_SELECTED_USERS_PUBLIC_COLLECTION,			// Clears the public collection setting for the Selected Users so they revert to the zone setting.
 	CLEAR_SELECTED_USERS_WEBACCESS,					// Clears the web access setting for the Selected Users so they revert to the zone setting.
+	COPY_PUBLIC_LINK_SELECTED_ENTITIES,				// Copies the Public Link of the Selected Entities.
 	COPY_SELECTED_ENTITIES,							// Copies the Selected Entities.
 	DELETE_SELECTED_ENTITIES,						// Deletes the Selected Entities.
 	DELETE_SELECTED_USERS,							// Deletes the Selected Users.
@@ -280,6 +281,7 @@ public enum TeamingEvents implements IsSerializable {
 	DISABLE_SELECTED_USERS_DOWNLOAD,				// Disables downloading of files for the Selected Users.
 	DISABLE_SELECTED_USERS_PUBLIC_COLLECTION,		// Disables a public collection for the Selected Users.
 	DISABLE_SELECTED_USERS_WEBACCESS,				// Disables web access for the Selected Users.
+	EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,			// Emails the Public Link of the Selected Entities.
 	ENABLE_SELECTED_USERS,							// Enables the Selected Users.
 	ENABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Enables adHoc folders for the the Selected Users.
 	ENABLE_SELECTED_USERS_DOWNLOAD,					// Enables downloading of file for the the Selected Users.

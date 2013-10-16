@@ -494,6 +494,20 @@ public class GwtClientHelper {
 		}
 		return reply;
 	}
+
+	/**
+	 * Returns the current product name, Filr or Vibe.
+	 * 
+	 * @return
+	 */
+	public static String getProductName() {
+		GwtTeamingMessages messages = GwtTeaming.getMessages();
+		String reply =
+			(GwtClientHelper.isLicenseFilr() ?
+				messages.productFilr() :
+				messages.productVibe());
+		return reply;
+	}
 	
 	/**
 	 * Returns the RequestInfo object from whatever component we're

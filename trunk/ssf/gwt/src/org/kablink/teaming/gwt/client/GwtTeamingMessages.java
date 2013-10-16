@@ -638,6 +638,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_CreateBlogPageDlg();
 	String codeSplitFailure_CopyMoveEntriesDlg();
+	String codeSplitFailure_CopyPublicLinkDlg();
 	String codeSplitFailure_DeleteSelectedUsersDlg();
 	String codeSplitFailure_DeleteSelectionsDlg();
 	String codeSplitFailure_DescriptionPanel();
@@ -657,6 +658,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_EditUserZoneShareRightsDlg();
 	String codeSplitFailure_EditZoneShareSettingsDlg();
 	String codeSplitFailure_EmailNotificationDlg();
+	String codeSplitFailure_EmailPublicLinkDlg();
 	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
 	String codeSplitFailure_FilterPanel();
@@ -1353,7 +1355,9 @@ public interface GwtTeamingMessages extends Messages
 	// The following strings are used in the activity stream "share this entry" ui.
 	String addRecipient();
 	String commentsLabel();
+	String copyPublicLinkTheseItems( String product );
 	String defaultShareTitle( String title );
+	String emailPublicLinkTheseItems( String product );
 	String manageShares();
 	String noShareRecipients();
 	String noShareRecipientsOrTeams();

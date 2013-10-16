@@ -89,6 +89,7 @@ import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
+import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
@@ -97,6 +98,7 @@ import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEven
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersPublicCollectionEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
+import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersDownloadEvent;
@@ -223,6 +225,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ClearSelectedUsersWebAccessEvent.Handler,
 		ContentChangedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
+		CopyPublicLinkSelectedEntitiesEvent.Handler,
 		CopySelectedEntitiesEvent.Handler,
 		DeleteSelectedEntitiesEvent.Handler,
 		DeleteSelectedUsersEvent.Handler,
@@ -231,6 +234,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		DisableSelectedUsersDownloadEvent.Handler,
 		DisableSelectedUsersPublicCollectionEvent.Handler,
 		DisableSelectedUsersWebAccessEvent.Handler,
+		EmailPublicLinkSelectedEntitiesEvent.Handler,
 		EnableSelectedUsersEvent.Handler,
 		EnableSelectedUsersAdHocFoldersEvent.Handler,
 		EnableSelectedUsersDownloadEvent.Handler,
@@ -314,6 +318,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS,
 		TeamingEvents.CONTENT_CHANGED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+		TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.COPY_SELECTED_ENTITIES,
 		TeamingEvents.DELETE_SELECTED_ENTITIES,
 		TeamingEvents.DELETE_SELECTED_USERS,
@@ -322,6 +327,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD,
 		TeamingEvents.DISABLE_SELECTED_USERS_PUBLIC_COLLECTION,
 		TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS,
+		TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.ENABLE_SELECTED_USERS,
 		TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD,
@@ -862,6 +868,27 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
+	 * Asynchronously runs the copy public link dialog on the selected
+	 * entities.
+	 */
+	private void copySelectedEntitiesPublicLinkAsync(final List<EntityId> selectedEntities) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				copySelectedEntitiesPublicLinkNow(selectedEntities);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously runs the copy public link dialog on the selected
+	 * entities.
+	 */
+	private void copySelectedEntitiesPublicLinkNow(List<EntityId> selectedEntities) {
+		BinderViewsHelper.copyEntitiesPublicLink(selectedEntities);
+	}
+	
+	/*
 	 * Removes the selection from the rows in a List<FolderRows>.
 	 */
 	private void deselectRows(List<FolderRow> rows) {
@@ -914,6 +941,27 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void doResizeNow() {
 		onResize();
+	}
+	
+	/*
+	 * Asynchronously runs the email public link dialog on the selected
+	 * entities.
+	 */
+	private void emailSelectedEntitiesPublicLinkAsync(final List<EntityId> selectedEntities) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				emailSelectedEntitiesPublicLinkNow(selectedEntities);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously runs the email public link dialog on the selected
+	 * entities.
+	 */
+	private void emailSelectedEntitiesPublicLinkNow(List<EntityId> selectedEntities) {
+		BinderViewsHelper.emailEntitiesPublicLink(selectedEntities);
 	}
 	
 	/*
@@ -1916,6 +1964,140 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
+	 * Handles CopyPublicLinkSelectedEntitiesEvent's received by this class.
+	 * 
+	 * Implements the CopyPublicLinkSelectedEntitiesEvent.Handler.onCopyPublicLinkSelectedEntities() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCopyPublicLinkSelectedEntities(CopyPublicLinkSelectedEntitiesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Does the user have rights to share everything
+			// they've selected?
+			List<EntityId> seList = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(seList))) {
+				seList = getSelectedEntityIds();
+			}
+			
+			
+			final List<EntityId>	selectedEntities = seList;
+			GwtClientHelper.executeCommand(
+					new GetEntityRightsCmd(selectedEntities),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetEntityRights());
+				}
+
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
+					onCopyPublicLinkSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap());
+				}
+			});
+		}
+	}
+
+	/*
+	 * Asynchronously processes the share request on the selected
+	 * entries, given the current user's rights to them.
+	 */
+	private void onCopyPublicLinkSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onCopyPublicLinkSelectedEntitiesNow(selectedEntities, entityRightsMap);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously processes the share request on the selected
+	 * entries, given the current user's rights to them.
+	 */
+	private void onCopyPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+		final List<FolderRow> invalidRows = validateSelectedRows_Sharing(entityRightsMap);
+		if (!(GwtClientHelper.hasItems(invalidRows))) {
+			// Yes!  Invoke the share.
+			copySelectedEntitiesPublicLinkAsync(selectedEntities);
+		}
+		
+		else {
+			// No, they don't have rights to share everything!  What
+			// type of share failures are we dealing with?
+			int totalShareFailures = invalidRows.size();
+			int nfShareFailures    = BinderViewsHelper.getNetFolderShareFailureCount(selectedEntities, entityRightsMap);
+			int otherShareFailures = (totalShareFailures - nfShareFailures);
+			if (0 > otherShareFailures) {
+				otherShareFailures = 0;
+			}
+			boolean hasNFShareFailures    = (0 < nfShareFailures   );
+			boolean hasOtherShareFailures = (0 < otherShareFailures);
+			
+			// Can they share any of them?
+			if (selectedEntities.size() == totalShareFailures) {
+				// No!  Tell them about the problem and bail.
+				String shareAlert;
+				if      (hasNFShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_ShareNoRightsAndNetFolders();
+				else if (hasNFShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_ShareNetFolders();
+				else                                                  shareAlert = m_messages.vibeDataTable_Warning_ShareNoRights();
+				GwtClientHelper.deferredAlert(shareAlert);
+				return;
+			}
+			
+			// Is the user sure they want to share the selections
+			// they have rights to share?
+			final String confirmPrompt;
+			if      (hasNFShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
+			else if (hasNFShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNetFolders();
+			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRights();
+			ConfirmDlg.createAsync(new ConfirmDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(ConfirmDlg cDlg) {
+					ConfirmDlg.initAndShow(
+						cDlg,
+						new ConfirmCallback() {
+							@Override
+							public void dialogReady() {
+								// Ignored.  We don't really care when the
+								// dialog is ready.
+							}
+
+							@Override
+							public void accepted() {
+								// Yes, they're sure!  Remove the
+								// selection from the entries they
+								// don't have rights to share and
+								// perform the copy public link on the
+								// rest.
+								removeRowEntities(                  selectedEntities, invalidRows);
+								deselectRows(                                         invalidRows);
+								copySelectedEntitiesPublicLinkAsync(selectedEntities             );
+							}
+
+							@Override
+							public void rejected() {
+								// No, they're not sure!
+							}
+						},
+						confirmPrompt);
+				}
+			});
+		}
+	}
+	
+	/**
 	 * Handles CopySelectedEntitiesEvent's received by this class.
 	 * 
 	 * Implements the CopySelectedEntitiesEvent.Handler.onCopySelectedEntities() method.
@@ -2154,6 +2336,140 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			BinderViewsHelper.disableUsersWebAccess(
 				EntityId.getLongsFromEntityIds(selectedEntityIds),
 				new FullUIReloadEvent());
+		}
+	}
+	
+	/**
+	 * Handles EmailPublicLinkSelectedEntitiesEvent's received by this class.
+	 * 
+	 * Implements the EmailPublicLinkSelectedEntitiesEvent.Handler.onEmailPublicLinkSelectedEntities() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEmailPublicLinkSelectedEntities(EmailPublicLinkSelectedEntitiesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Does the user have rights to share everything
+			// they've selected?
+			List<EntityId> seList = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(seList))) {
+				seList = getSelectedEntityIds();
+			}
+			
+			
+			final List<EntityId>	selectedEntities = seList;
+			GwtClientHelper.executeCommand(
+					new GetEntityRightsCmd(selectedEntities),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetEntityRights());
+				}
+
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
+					onEmailPublicLinkSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap());
+				}
+			});
+		}
+	}
+
+	/*
+	 * Asynchronously processes the share request on the selected
+	 * entries, given the current user's rights to them.
+	 */
+	private void onEmailPublicLinkSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onEmailPublicLinkSelectedEntitiesNow(selectedEntities, entityRightsMap);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously processes the share request on the selected
+	 * entries, given the current user's rights to them.
+	 */
+	private void onEmailPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+		final List<FolderRow> invalidRows = validateSelectedRows_Sharing(entityRightsMap);
+		if (!(GwtClientHelper.hasItems(invalidRows))) {
+			// Yes!  Invoke the share.
+			emailSelectedEntitiesPublicLinkAsync(selectedEntities);
+		}
+		
+		else {
+			// No, they don't have rights to share everything!  What
+			// type of share failures are we dealing with?
+			int totalShareFailures = invalidRows.size();
+			int nfShareFailures    = BinderViewsHelper.getNetFolderShareFailureCount(selectedEntities, entityRightsMap);
+			int otherShareFailures = (totalShareFailures - nfShareFailures);
+			if (0 > otherShareFailures) {
+				otherShareFailures = 0;
+			}
+			boolean hasNFShareFailures    = (0 < nfShareFailures   );
+			boolean hasOtherShareFailures = (0 < otherShareFailures);
+			
+			// Can they share any of them?
+			if (selectedEntities.size() == totalShareFailures) {
+				// No!  Tell them about the problem and bail.
+				String shareAlert;
+				if      (hasNFShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_ShareNoRightsAndNetFolders();
+				else if (hasNFShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_ShareNetFolders();
+				else                                                  shareAlert = m_messages.vibeDataTable_Warning_ShareNoRights();
+				GwtClientHelper.deferredAlert(shareAlert);
+				return;
+			}
+			
+			// Is the user sure they want to share the selections
+			// they have rights to share?
+			final String confirmPrompt;
+			if      (hasNFShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
+			else if (hasNFShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNetFolders();
+			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRights();
+			ConfirmDlg.createAsync(new ConfirmDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(ConfirmDlg cDlg) {
+					ConfirmDlg.initAndShow(
+						cDlg,
+						new ConfirmCallback() {
+							@Override
+							public void dialogReady() {
+								// Ignored.  We don't really care when the
+								// dialog is ready.
+							}
+
+							@Override
+							public void accepted() {
+								// Yes, they're sure!  Remove the
+								// selection from the entries they
+								// don't have rights to share and
+								// perform the copy public link on the
+								// rest.
+								removeRowEntities(                   selectedEntities, invalidRows);
+								deselectRows(                                          invalidRows);
+								emailSelectedEntitiesPublicLinkAsync(selectedEntities             );
+							}
+
+							@Override
+							public void rejected() {
+								// No, they're not sure!
+							}
+						},
+						confirmPrompt);
+				}
+			});
 		}
 	}
 	
