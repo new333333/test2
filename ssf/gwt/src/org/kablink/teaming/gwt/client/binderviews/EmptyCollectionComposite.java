@@ -70,10 +70,7 @@ public class EmptyCollectionComposite extends ResizeComposite {
 		// ...initialize the data members requiring it...
 		m_filrImages = GwtTeaming.getFilrImageBundle();
 		m_messages   = GwtTeaming.getMessages();
-		m_product    =
-			(GwtClientHelper.isLicenseFilr() ?
-				m_messages.productFilr() :
-				m_messages.productVibe());
+		m_product    = GwtClientHelper.getProductName();
 		
 		// ...create the content...
 		m_rootPanel = new VibeFlowPanel();

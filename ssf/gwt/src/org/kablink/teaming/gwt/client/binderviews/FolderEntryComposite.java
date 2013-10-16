@@ -42,8 +42,10 @@ import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.Dele
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
+import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.EventsHandledBySourceMarker;
 import org.kablink.teaming.gwt.client.event.FolderEntryActionCompleteEvent;
@@ -107,8 +109,10 @@ public class FolderEntryComposite extends ResizeComposite
 		// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntitiesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
+		CopyPublicLinkSelectedEntitiesEvent.Handler,
 		CopySelectedEntitiesEvent.Handler,
 		DeleteSelectedEntitiesEvent.Handler,
+		EmailPublicLinkSelectedEntitiesEvent.Handler,
 		FolderEntryActionCompleteEvent.Handler,
 		InvokeEditInPlaceEvent.Handler,
 		LockSelectedEntitiesEvent.Handler,
@@ -175,8 +179,10 @@ public class FolderEntryComposite extends ResizeComposite
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+		TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.COPY_SELECTED_ENTITIES,
 		TeamingEvents.DELETE_SELECTED_ENTITIES,
+		TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.FOLDER_ENTRY_ACTION_COMPLETE,
 		TeamingEvents.INVOKE_EDIT_IN_PLACE,
 		TeamingEvents.LOCK_SELECTED_ENTITIES,
@@ -733,6 +739,44 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/**
+	 * Handles CopyPublicLinkSelectedEntitiesEvent's received by this class.
+	 * 
+	 * Implements the CopyPublicLinkSelectedEntitiesEvent.Handler.onCopyPublicLinkSelectedEntities() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCopyPublicLinkSelectedEntities(CopyPublicLinkSelectedEntitiesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> sharedEntities = event.getSelectedEntities();
+		if (isCompositeEntry(sharedEntities)) {
+			// Yes!  Run the copy public link on it.
+			onCopyPublicLinkSelectedEntitiesAsync(sharedEntities);
+		}
+	}
+
+	/*
+	 * Asynchronously handles copying the public link of the folder
+	 * entry.
+	 */
+	private void onCopyPublicLinkSelectedEntitiesAsync(final List<EntityId> sharedEntities) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onCopyPublicLinkSelectedEntitiesNow(sharedEntities);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously handles copying the public link of the folder
+	 * entry.
+	 */
+	private void onCopyPublicLinkSelectedEntitiesNow(List<EntityId> sharedEntities) {
+		BinderViewsHelper.copyEntitiesPublicLink(sharedEntities);
+	}
+	
+	/**
 	 * Called when the data table is detached.
 	 * 
 	 * Overrides the Widget.onDetach() method.
@@ -798,6 +842,44 @@ public class FolderEntryComposite extends ResizeComposite
 				// user about the failure.
 			}
 		});
+	}
+	
+	/**
+	 * Handles EmailPublicLinkSelectedEntitiesEvent's received by this class.
+	 * 
+	 * Implements the EmailPublicLinkSelectedEntitiesEvent.Handler.onEmailPublicLinkSelectedEntities() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEmailPublicLinkSelectedEntities(EmailPublicLinkSelectedEntitiesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> sharedEntities = event.getSelectedEntities();
+		if (isCompositeEntry(sharedEntities)) {
+			// Yes!  Run the copy public link on it.
+			onEmailPublicLinkSelectedEntitiesAsync(sharedEntities);
+		}
+	}
+
+	/*
+	 * Asynchronously handles emailing the public link of the folder
+	 * entry.
+	 */
+	private void onEmailPublicLinkSelectedEntitiesAsync(final List<EntityId> sharedEntities) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onEmailPublicLinkSelectedEntitiesNow(sharedEntities);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously handles emailing the public link of the folder
+	 * entry.
+	 */
+	private void onEmailPublicLinkSelectedEntitiesNow(List<EntityId> sharedEntities) {
+		BinderViewsHelper.emailEntitiesPublicLink(sharedEntities);
 	}
 	
 	/**
@@ -1125,18 +1207,6 @@ public class FolderEntryComposite extends ResizeComposite
 		}
 	}
 
-	/**
-	 * Handles ShowViewPermalinksEvent's received by this class.
-	 * 
-	 * Implements the ShowViewPermalinksEvent.Handler.onShowViewPermalinks() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onShowViewPermalinks(ShowViewPermalinksEvent event) {
-		FooterPanel.expandFooter(m_footerPanel);
-	}
-
 	/*
 	 * Asynchronously handles sharing the folder entry.
 	 */
@@ -1156,6 +1226,18 @@ public class FolderEntryComposite extends ResizeComposite
 		BinderViewsHelper.shareEntities(sharedEntities);
 	}
 	
+	/**
+	 * Handles ShowViewPermalinksEvent's received by this class.
+	 * 
+	 * Implements the ShowViewPermalinksEvent.Handler.onShowViewPermalinks() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowViewPermalinks(ShowViewPermalinksEvent event) {
+		FooterPanel.expandFooter(m_footerPanel);
+	}
+
 	/**
 	 * Handles SubscribeSelectedEntitiesEvent's received by this class.
 	 * 

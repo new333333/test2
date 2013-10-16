@@ -596,6 +596,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case COPY_PUBLIC_LINK_SELECTED_ENTITIES:
+				// A CopyPublicLinkSelectedEntitiesEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof CopyPublicLinkSelectedEntitiesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CopyPublicLinkSelectedEntitiesEvent.registerEvent(eventBus, ((CopyPublicLinkSelectedEntitiesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case COPY_SELECTED_ENTITIES:
 				// A CopySelectedEntitiesEvent!  Can the event handler
 				// we were given handle that?
@@ -710,6 +719,15 @@ public class EventHelper {
 				if (eventHandler instanceof EditSiteBrandingEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = EditSiteBrandingEvent.registerEvent(eventBus, ((EditSiteBrandingEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:
+				// A EmailPublicLinkSelectedEntitiesEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof EmailPublicLinkSelectedEntitiesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EmailPublicLinkSelectedEntitiesEvent.registerEvent(eventBus, ((EmailPublicLinkSelectedEntitiesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2773,6 +2791,7 @@ public class EventHelper {
 			case CLEAR_SELECTED_USERS_DOWNLOAD:                hasHandler = (eventHandler instanceof ClearSelectedUsersDownloadEvent.Handler);             break;
 			case CLEAR_SELECTED_USERS_PUBLIC_COLLECTION:       hasHandler = (eventHandler instanceof ClearSelectedUsersPublicCollectionEvent.Handler);     break;
 			case CLEAR_SELECTED_USERS_WEBACCESS:               hasHandler = (eventHandler instanceof ClearSelectedUsersWebAccessEvent.Handler);            break;
+			case COPY_PUBLIC_LINK_SELECTED_ENTITIES:           hasHandler = (eventHandler instanceof CopyPublicLinkSelectedEntitiesEvent.Handler);         break;
 			case COPY_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof CopySelectedEntitiesEvent.Handler);                   break;
 			case DELETE_SELECTED_ENTITIES:                     hasHandler = (eventHandler instanceof DeleteSelectedEntitiesEvent.Handler);                 break;
 			case DELETE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof DeleteSelectedUsersEvent.Handler);                    break;
@@ -2781,6 +2800,7 @@ public class EventHelper {
 			case DISABLE_SELECTED_USERS_DOWNLOAD:              hasHandler = (eventHandler instanceof DisableSelectedUsersDownloadEvent.Handler);           break;
 			case DISABLE_SELECTED_USERS_PUBLIC_COLLECTION:     hasHandler = (eventHandler instanceof DisableSelectedUsersPublicCollectionEvent.Handler);   break;
 			case DISABLE_SELECTED_USERS_WEBACCESS:             hasHandler = (eventHandler instanceof DisableSelectedUsersWebAccessEvent.Handler);          break;
+			case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:          hasHandler = (eventHandler instanceof EmailPublicLinkSelectedEntitiesEvent.Handler);        break;
 			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;
 			case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:          hasHandler = (eventHandler instanceof EnableSelectedUsersAdHocFoldersEvent.Handler);        break;
 			case ENABLE_SELECTED_USERS_DOWNLOAD:               hasHandler = (eventHandler instanceof EnableSelectedUsersDownloadEvent.Handler);            break;

@@ -41,8 +41,10 @@ import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
@@ -222,8 +224,10 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					boolean fireWithSource = true;
 					switch (simpleEvent) {
 					case CHANGE_ENTRY_TYPE_SELECTED_ENTITIES:  event = new ChangeEntryTypeSelectedEntitiesEvent(eid.getBinderId(), eid      );      break;
+					case COPY_PUBLIC_LINK_SELECTED_ENTITIES:   event = new CopyPublicLinkSelectedEntitiesEvent( eid.getBinderId(), eid      );      break;
 					case COPY_SELECTED_ENTITIES:               event = new CopySelectedEntitiesEvent(           eid.getBinderId(), eid      );      break;
 					case DELETE_SELECTED_ENTITIES:             event = new DeleteSelectedEntitiesEvent(         eid.getBinderId(), eid      );      break;
+					case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:  event = new EmailPublicLinkSelectedEntitiesEvent(eid.getBinderId(), eid      );      break;
 					case INVOKE_SEND_EMAIL_TO_TEAM:            event = new InvokeSendEmailToTeamEvent(          simpleUrl); fireWithSource = false; break;
 					case LOCK_SELECTED_ENTITIES:               event = new LockSelectedEntitiesEvent(           eid.getBinderId(), eid      );      break;
 					case MARK_READ_SELECTED_ENTITIES:          event = new MarkReadSelectedEntitiesEvent(       eid.getBinderId(), eid      );      break;

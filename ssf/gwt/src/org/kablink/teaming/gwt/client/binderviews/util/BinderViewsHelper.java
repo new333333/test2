@@ -81,10 +81,14 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg;
+import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg.CopyPublicLinkDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg.DeleteSelectedUsersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg.DeleteSelectionsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.EmailPublicLinkDlg;
+import org.kablink.teaming.gwt.client.widgets.EmailPublicLinkDlg.EmailPublicLinkDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
@@ -104,9 +108,11 @@ public class BinderViewsHelper {
 	private static AddFilesHtml5Popup		m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
 	private static ChangeEntryTypesDlg		m_cetDlg;								// An instance of a change entry types dialog. 
 	private static CopyMoveEntriesDlg		m_cmeDlg;								// An instance of a copy/move entries dialog.
+	private static CopyPublicLinkDlg		m_copyPublicLinkDlg;					// An instance of a copy public link dialog.
 	private static DeleteSelectedUsersDlg	m_dsuDlg;								// An instance of a delete selected users dialog.
 	private static DeleteSelectionsDlg		m_dsDlg;								// An instance of a delete selections dialog.
 	private static EmailNotificationDlg		m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
+	private static EmailPublicLinkDlg		m_emailPublicLinkDlg;					// An instance of an email public link dialog.
 	private static GwtTeamingMessages		m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
 	private static ShareThisDlg2			m_shareDlg;								// An instance of a share this dialog.
 	private static WhoHasAccessDlg			m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
@@ -448,6 +454,57 @@ public class BinderViewsHelper {
 	public static void clearUsersWebAccess(final Long userId) {
 		// Always use the previous form of the method.
 		clearUsersWebAccess(userId, null);
+	}
+
+	/**
+	 * Invokes the appropriate UI to copy the public link of the
+	 * entities based on a List<EntityId> of the entries.
+	 *
+	 * @param entityIds
+	 */
+	public static void copyEntitiesPublicLink(final List<EntityId> entityIds) {
+		// If we weren't given any entity IDs to be shared...
+		if (!(GwtClientHelper.hasItems(entityIds))) {
+			// ...bail.
+			return;
+		}
+
+		// Have we created a copy public link dialog yet?
+		if (null == m_copyPublicLinkDlg) {
+			// No!  Create one now...
+			CopyPublicLinkDlg.createAsync(new CopyPublicLinkDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(CopyPublicLinkDlg cplDlg) {
+					// ...and show it with the given entity IDs.
+					m_copyPublicLinkDlg = cplDlg;
+					showCopyPublicLinkDlgAsync(entityIds);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've already create a copy public link dialog!
+			// Simply show it with the given entry IDs.
+			showCopyPublicLinkDlgAsync(entityIds);
+		}
+	}
+	
+	/**
+	 * Invokes the appropriate UI to copy the public link of an entity
+	 * based on an EntityId.
+	 *
+	 * @param entityId
+	 */
+	public static void copyEntityPublicLink(EntityId entityId) {
+		List<EntityId> entityIds = new ArrayList<EntityId>();
+		entityIds.add(entityId);
+		copyEntitiesPublicLink(entityIds);
 	}
 
 	/**
@@ -872,6 +929,57 @@ public class BinderViewsHelper {
 	public static void disableUsersWebAccess(final Long userId) {
 		// Always use the previous form of the method.
 		disableUsersWebAccess(userId, null);
+	}
+
+	/**
+	 * Invokes the appropriate UI to email the public link of the
+	 * entities based on a List<EntityId> of the entries.
+	 *
+	 * @param entityIds
+	 */
+	public static void emailEntitiesPublicLink(final List<EntityId> entityIds) {
+		// If we weren't given any entity IDs to be shared...
+		if (!(GwtClientHelper.hasItems(entityIds))) {
+			// ...bail.
+			return;
+		}
+
+		// Have we created a email public link dialog yet?
+		if (null == m_emailPublicLinkDlg) {
+			// No!  Create one now...
+			EmailPublicLinkDlg.createAsync(new EmailPublicLinkDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(EmailPublicLinkDlg eplDlg) {
+					// ...and show it with the given entity IDs.
+					m_emailPublicLinkDlg = eplDlg;
+					showEmailPublicLinkDlgAsync(entityIds);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've already create a email public link dialog!
+			// Simply show it with the given entry IDs.
+			showEmailPublicLinkDlgAsync(entityIds);
+		}
+	}
+	
+	/**
+	 * Invokes the appropriate UI to email the public link of an entity
+	 * based on an EntityId.
+	 *
+	 * @param entityId
+	 */
+	public static void emailEntityPublicLink(EntityId entityId) {
+		List<EntityId> entityIds = new ArrayList<EntityId>();
+		entityIds.add(entityId);
+		emailEntitiesPublicLink(entityIds);
 	}
 
 	/**
@@ -1684,6 +1792,50 @@ public class BinderViewsHelper {
 			reloadEvent);	// Event to fire to reload things after a successful operation.
 	}
 	
+	/*
+	 * Asynchronously shows the copy public link dialog.
+	 */
+	private static void showCopyPublicLinkDlgAsync(final List<EntityId> entityIds) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showCopyPublicLinkDlgNow(entityIds);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously shows the copy public link dialog.
+	 */
+	private static void showCopyPublicLinkDlgNow(List<EntityId> entityIds) {
+		String caption = GwtClientHelper.patchMessage(
+			m_messages.copyPublicLinkTheseItems(GwtClientHelper.getProductName()),
+			String.valueOf(entityIds.size()));
+		CopyPublicLinkDlg.initAndShow(m_copyPublicLinkDlg, caption, entityIds);
+	}
+
+	/*
+	 * Asynchronously shows the email public link dialog.
+	 */
+	private static void showEmailPublicLinkDlgAsync(final List<EntityId> entityIds) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showEmailPublicLinkDlgNow(entityIds);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously shows the email public link dialog.
+	 */
+	private static void showEmailPublicLinkDlgNow(List<EntityId> entityIds) {
+		String caption = GwtClientHelper.patchMessage(
+			m_messages.emailPublicLinkTheseItems(GwtClientHelper.getProductName()),
+			String.valueOf(entityIds.size()));
+		EmailPublicLinkDlg.initAndShow(m_emailPublicLinkDlg, caption, entityIds);
+	}
+
 	/*
 	 * Asynchronously shows the share dialog in administrative mode.
 	 */
