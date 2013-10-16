@@ -70,6 +70,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -125,6 +126,9 @@ public class ModifyNetFolderDlg extends DlgBox
 	private FlowPanel m_inProgressPanel;
 	private CheckBox m_allowDesktopAppToSync;
 	private CheckBox m_allowMobileAppsToSync;
+	private RadioButton m_useNFServerSyncOptionRB;
+	private RadioButton m_useNFSyncOptionRB;
+	private CheckBox m_fullSyncDirOnlyCB;
 	private Panel m_rightsPanel;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
@@ -522,6 +526,28 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		// Hidden as per bug#816823.
 		m_allowMobileAppsToSync.setVisible(false);
+		
+		// Add the radio buttons for selecting which sync option to use.
+		{
+			FlowPanel panel;
+			
+			m_useNFServerSyncOptionRB = new RadioButton( "syncOption", messages.modifyNetFolderDlg_UseNetFolderServerSyncOptionRbLabel() );
+			panel = new FlowPanel();
+			panel.addStyleName( "margintop3" );
+			panel.add( m_useNFServerSyncOptionRB );
+			mainPanel.add( panel );
+		
+			m_useNFSyncOptionRB = new RadioButton( "syncOption", messages.modifyNetFolderDlg_UseNetFolderSyncOptionRbLabel() );
+			panel = new FlowPanel();
+			panel.add( m_useNFSyncOptionRB );
+			mainPanel.add( panel );
+			
+			m_fullSyncDirOnlyCB = new CheckBox( messages.modifyNetFolderDlg_FullSyncDirOnlyCB() );
+			panel = new FlowPanel();
+			panel.getElement().getStyle().setMarginLeft( 30, Unit.PX );
+			panel.add( m_fullSyncDirOnlyCB );
+			mainPanel.add( panel );
+		}
 
 		return mainPanel;
 	}
@@ -808,6 +834,17 @@ public class ModifyNetFolderDlg extends DlgBox
 	/**
 	 * 
 	 */
+	private Boolean getFullSyncDirOnly()
+	{
+		if ( m_useNFServerSyncOptionRB.getValue() == true )
+			return null;
+		
+		return m_fullSyncDirOnlyCB.getValue();
+	}
+	
+	/**
+	 * 
+	 */
 	@Override
 	public HelpData getHelpData()
 	{
@@ -980,6 +1017,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setSyncScheduleConfig( getSyncScheduleConfig() );
 		netFolder.setDataSyncSettings( getDataSyncSettings() );
 		netFolder.setJitsConfig( getJitsSettings() );
+		netFolder.setFullSyncDirOnly( getFullSyncDirOnly() );
 		
 		if ( m_netFolder != null )
 		{
@@ -1170,15 +1208,30 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_allowDesktopAppToSync.setValue( true );
 		m_allowMobileAppsToSync.setValue( true );
 		
+		m_useNFServerSyncOptionRB.setValue( true );
+		m_useNFSyncOptionRB.setValue( false );
+		m_fullSyncDirOnlyCB.setValue( false );
+		
 		if ( m_netFolder != null )
 		{
 			NetFolderDataSyncSettings settings;
+			Boolean dirOnly;
 			
 			settings = m_netFolder.getDataSyncSettings();
 			if ( settings != null )
 			{
 				m_allowDesktopAppToSync.setValue( settings.getAllowDesktopAppToSyncData() );
 				m_allowMobileAppsToSync.setValue( settings.getAllowMobileAppsToSyncData() );
+			}
+			
+			dirOnly = m_netFolder.getFullSyncDirOnly(); 
+			if ( dirOnly == null )
+				m_useNFServerSyncOptionRB.setValue( true );
+			else
+			{
+				m_useNFServerSyncOptionRB.setValue( false );
+				m_useNFSyncOptionRB.setValue( true );
+				m_fullSyncDirOnlyCB.setValue( dirOnly );
 			}
 		}
 	}

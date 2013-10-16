@@ -519,6 +519,7 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_SYNCH_TOP_DELETE = "synchTopDelete";
 	public static final String RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH = "putRequiresContentLength";
 	public static final String RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE = "allowSelfSignedCertificate";
+	public static final String RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY = "fullSyncDirOnly";
 	public static final String RESOURCE_DRIVER_HOST_URL = "hostUrl";
 	public static final String RESOURCE_DRIVER_ACCOUNT_NAME = "accountName";
 	public static final String RESOURCE_DRIVER_PASSWORD = "password";
@@ -697,6 +698,7 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_IS_MYFILES_DIR = "myFilesDir";
 	public static final String FIELD_BINDER_SYNC_SCHEDULE_OPTION = "syncScheduleOption";
 	public static final String FIELD_WS_SEARCHTITLE="searchTitle";
+	public static final String FIELD_BINDER_FULL_SYNC_DIR_ONLY = "fullSyncDirOnly";
 	
 	public static final String FIELD_RESOURCE_DRIVER_TYPE = "type";
 

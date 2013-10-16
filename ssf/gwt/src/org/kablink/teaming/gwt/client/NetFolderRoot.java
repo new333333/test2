@@ -58,6 +58,7 @@ public class NetFolderRoot
 	private String m_proxyName = "";
 	private String m_proxyPwd = "";
 	private GwtSchedule m_syncSchedule;
+	private Boolean m_fullSyncDirOnly;
 	private ArrayList<GwtPrincipal> m_principals;
 	private NetFolderRootStatus m_status;
 	private String m_statusTicketId;
@@ -86,6 +87,7 @@ public class NetFolderRoot
 	public NetFolderRoot()
 	{
 		m_status = NetFolderRootStatus.READY;
+		m_fullSyncDirOnly = null;
 	}	
 	
 	/**
@@ -112,6 +114,7 @@ public class NetFolderRoot
 		m_proxyPwd = root.getProxyPwd();
 		m_principals = root.getListOfPrincipals();
 		m_syncSchedule = root.getSyncSchedule();
+		m_fullSyncDirOnly = root.getFullSyncDirOnly();
 
 		m_statusTicketId = root.getStatusTicketId();
 
@@ -239,6 +242,14 @@ public class NetFolderRoot
 	/**
 	 * 
 	 */
+	public Boolean getFullSyncDirOnly()
+	{
+		return m_fullSyncDirOnly;
+	}
+	
+	/**
+	 * 
+	 */
 	public GwtSchedule getSyncSchedule()
 	{
 		return m_syncSchedule;
@@ -358,6 +369,14 @@ public class NetFolderRoot
 	public void setStatusTicketId( String id )
 	{
 		m_statusTicketId = id;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setFullSyncDirOnly( Boolean value )
+	{
+		m_fullSyncDirOnly = value;
 	}
 	
 	/**

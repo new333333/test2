@@ -224,7 +224,8 @@ public class GwtNetFolderHelper
 												syncScheduleOption,
 												parentBinder.getId(),
 												false,
-												netFolder.getIndexContent() );
+												netFolder.getIndexContent(),
+												netFolder.getFullSyncDirOnly() );
 			
 			// Set the rights on the net folder
 			setNetFolderRights( ami, binder.getId(), netFolder.getRoles() );
@@ -258,6 +259,7 @@ public class GwtNetFolderHelper
 			newNetFolder.setRoles( netFolder.getRoles() );
 			newNetFolder.setDataSyncSettings( netFolder.getDataSyncSettings() );
 			newNetFolder.setJitsConfig( netFolder.getJitsConfig() );
+			newNetFolder.setFullSyncDirOnly( netFolder.getFullSyncDirOnly() );
 		}
 		catch ( Exception ex )
 		{
@@ -318,6 +320,7 @@ public class GwtNetFolderHelper
 													netFolderRoot.getHostUrl(),
 													netFolderRoot.getAllowSelfSignedCerts(),
 													netFolderRoot.getIsSharePointServer(),
+													netFolderRoot.getFullSyncDirOnly(),
 													scheduleInfo );
 		}
 		catch ( RDException ex )
@@ -341,6 +344,7 @@ public class GwtNetFolderHelper
 			newRoot.setAllowSelfSignedCerts( rdConfig.isAllowSelfSignedCertificate() );
 			newRoot.setIsSharePointServer( rdConfig.isPutRequiresContentLength() );
 			newRoot.setSyncSchedule( netFolderRoot.getSyncSchedule() );
+			newRoot.setFullSyncDirOnly( rdConfig.getFullSyncDirOnly() );
 
 			// Get the list of principals that can use the net folder root
 			getListOfPrincipals( ami, rdConfig, newRoot );
@@ -515,6 +519,7 @@ public class GwtNetFolderHelper
 				nfRoot.setHostUrl( driver.getHostUrl() );
 				nfRoot.setAllowSelfSignedCerts( driver.isAllowSelfSignedCertificate() );
 				nfRoot.setIsSharePointServer( driver.isPutRequiresContentLength() );
+				nfRoot.setFullSyncDirOnly( driver.getFullSyncDirOnly() );
 				
 				// Get the list of principals that can use the net folder root
 				getListOfPrincipals( ami, driver, nfRoot );
@@ -748,6 +753,7 @@ public class GwtNetFolderHelper
 		netFolder.setStatus( getNetFolderSyncStatus( netFolder.getId() ) );
 		netFolder.setIsHomeDir( binder.isHomeDir() );
 		netFolder.setIndexContent( binder.getIndexContent() );
+		netFolder.setFullSyncDirOnly( binder.getFullSyncDirOnly() );
 
 		return netFolder;
 	}
@@ -821,6 +827,9 @@ public class GwtNetFolderHelper
 		jitsSettings = getJitsSettings( binder );
 		netFolder.setJitsConfig( jitsSettings );
 
+		// Get the full sync dir only setting
+		netFolder.setFullSyncDirOnly( binder.getFullSyncDirOnly() );
+		
 		return netFolder;
 	}
 	
@@ -1181,7 +1190,8 @@ public class GwtNetFolderHelper
 										netFolder.getRelativePath(),
 										scheduleInfo,
 										syncScheduleOption,
-										netFolder.getIndexContent() );
+										netFolder.getIndexContent(),
+										netFolder.getFullSyncDirOnly() );
 
 			// Set the rights on the net folder
 			if ( netFolder.getIsHomeDir() == false )
@@ -1267,6 +1277,7 @@ public class GwtNetFolderHelper
 											netFolderRoot.getAllowSelfSignedCerts(),
 											netFolderRoot.getIsSharePointServer(),
 											netFolderRoot.getListOfPrincipalIds(),
+											netFolderRoot.getFullSyncDirOnly(),
 											scheduleInfo );
 		}
 		catch ( Exception ex )

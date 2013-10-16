@@ -117,6 +117,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private ScheduleWidget m_scheduleWidget;
 	private FlowPanel m_inProgressPanel;
 	private List<HandlerRegistration> m_registeredEventHandlers;
+	private CheckBox m_fullSyncDirOnlyCB;
+	private TabPanel m_tabPanel;
 	
 	private static boolean m_showPrivilegedUsersUI = false;
 	private static boolean m_showNetFolderServerType = GwtTeaming.m_requestInfo.getAllowSelectNetFolderServerDataSource();
@@ -511,24 +513,23 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel;
-		TabPanel tabPanel;
 		
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		tabPanel = new TabPanel();
-		tabPanel.addStyleName( "vibe-tabPanel" );
+		m_tabPanel = new TabPanel();
+		m_tabPanel.addStyleName( "vibe-tabPanel" );
 
-		mainPanel.add( tabPanel );
+		mainPanel.add( m_tabPanel );
 
 		// Create the panel that holds the basic net folder server configuration
 		{
 			Panel configPanel;
 			
 			configPanel = createConfigPanel();
-			tabPanel.add( configPanel, messages.modifyNetFolderServerDlg_ConfigTab() );
+			m_tabPanel.add( configPanel, messages.modifyNetFolderServerDlg_ConfigTab() );
 		}
 		
 		// Create the panel that holds the controls for the schedule
@@ -536,10 +537,18 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			Panel schedPanel;
 			
 			schedPanel = createSchedulePanel();
-			tabPanel.add( schedPanel, messages.modifyNetFolderServerDlg_ScheduleTab() );
+			m_tabPanel.add( schedPanel, messages.modifyNetFolderServerDlg_ScheduleTab() );
 		}
 		
-		tabPanel.selectTab( 0 );
+		// Create the panel that holds the controls for data synch
+		{
+			Panel syncPanel;
+			
+			syncPanel = createSyncPanel();
+			m_tabPanel.add( syncPanel, messages.modifyNetFolderServerDlg_SyncTab() );
+		}
+		
+		m_tabPanel.selectTab( 0 );
 
 		return mainPanel;
 	}
@@ -560,6 +569,24 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_scheduleWidget.addStyleName( "modifyNetFolderServerDlg_ScheduleWidget" );
 		mainPanel.add( m_scheduleWidget );
 
+		return mainPanel;
+	}
+	
+	/**
+	 * Create the panel that holds the sync controls.
+	 */
+	private Panel createSyncPanel()
+	{
+		GwtTeamingMessages messages;
+		FlowPanel mainPanel;
+		
+		messages = GwtTeaming.getMessages();
+		
+		mainPanel = new FlowPanel();
+		
+		m_fullSyncDirOnlyCB = new CheckBox( messages.modifyNetFolderServerDlg_SyncOnlyDirStructureCB() );
+		mainPanel.add( m_fullSyncDirOnlyCB );
+		
 		return mainPanel;
 	}
 	
@@ -820,6 +847,14 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 	
 	/**
+	 * Return the value of the "Synchronize only the directory structure"
+	 */
+	public Boolean getFullSyncDirOnly()
+	{
+		return m_fullSyncDirOnlyCB.getValue();
+	}
+	
+	/**
 	 * 
 	 */
 	@Override
@@ -879,6 +914,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setRootPath( getRootPath() );
 		netFolderRoot.setProxyName( getProxyName() );
 		netFolderRoot.setProxyPwd( getProxyPwd() );
+		netFolderRoot.setFullSyncDirOnly( getFullSyncDirOnly() );
+		
 		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
 			netFolderRoot.setListOfPrincipals( getListOfPrivilegedPrincipals() );
 		
@@ -1006,7 +1043,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 		// Clear out the sync schedule controls
 		m_scheduleWidget.init( null );
-
+		
+		m_fullSyncDirOnlyCB.setValue( false );
+		
 		// Are we modifying an existing net folder root?
 		if ( m_netFolderRoot != null )
 		{
@@ -1039,6 +1078,15 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 			// Initialize the sync schedule controls
 			m_scheduleWidget.init( m_netFolderRoot.getSyncSchedule() );
+			
+			// Initialize the "sync only the directory structure" control
+			{
+				Boolean value;
+				
+				value = m_netFolderRoot.getFullSyncDirOnly();
+				if ( value != null )
+					m_fullSyncDirOnlyCB.setValue( value );
+			}
 		}
 		else
 		{
@@ -1048,6 +1096,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			
 			// Enable the "Name" field.
 			m_nameTxtBox.setEnabled( true );
+			
+			m_tabPanel.selectTab( 0 );
 		}
 		
 		danceDlg( false );

@@ -51,6 +51,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private Boolean synchTopDelete;
 	private Boolean putRequiresContentLength;
 	private Boolean allowSelfSignedCertificate;
+	private Boolean fullSyncDirOnly;
 	private String hostUrl;
 	private String rootPath;
 	private String accountName;
@@ -111,6 +112,8 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     	if(!objectEquals(putRequiresContentLength, config.putRequiresContentLength))
     		return false;
     	if(!objectEquals(allowSelfSignedCertificate, config.allowSelfSignedCertificate))
+    		return false;
+    	if ( !objectEquals( fullSyncDirOnly, config.fullSyncDirOnly ) )
     		return false;
     	if(!objectEquals(hostUrl, config.hostUrl))
     		return false;
@@ -215,6 +218,22 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 
 	public void setAllowSelfSignedCertificate(boolean allowSelfSignedCertificate) {
 		this.allowSelfSignedCertificate = allowSelfSignedCertificate;
+	}
+
+	/**
+	 * 
+	 */
+	public Boolean getFullSyncDirOnly()
+	{
+		return fullSyncDirOnly;
+	}
+
+	/**
+	 * 
+	 */
+	public void setFullSyncDirOnly( Boolean fullSyncDirOnly )
+	{
+		this.fullSyncDirOnly = fullSyncDirOnly;
 	}
 
 	public String getHostUrl() {

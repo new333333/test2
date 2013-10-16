@@ -354,4 +354,13 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jay" context="schema" failOnError="true" id="27">
+        <comment>Whether or not full sync should only process directories</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="FULLSYNCDIRONLY" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>

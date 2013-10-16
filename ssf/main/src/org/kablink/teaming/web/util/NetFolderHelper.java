@@ -171,6 +171,7 @@ public class NetFolderHelper
 													null,
 													false,
 													false,
+													null,
 													scheduleInfo );
 		
 		// Add a task for the administrator to enter the proxy credentials for this server.
@@ -208,7 +209,6 @@ public class NetFolderHelper
 	/**
 	 * Create a net folder and if needed a net folder root for the given home directory information
 	 */
-	@SuppressWarnings("unchecked")
 	public static void createHomeDirNetFolder(
 		ProfileModule profileModule,
 		TemplateModule templateModule,
@@ -369,7 +369,8 @@ public class NetFolderHelper
 															SyncScheduleOption.useNetFolderServerSchedule,
 															workspaceId,
 															true,
-															false );
+															false,
+															null );
 
 				// As the fix for bug 831849 we must call getCoreDao().clear() before we call
 				// NetFolderHelper.saveJitsSettings().  If we don't, saveJitsSettings() throws
@@ -485,7 +486,8 @@ public class NetFolderHelper
 		SyncScheduleOption syncScheduleOption,
 		Long parentBinderId,
 		boolean isHomeDir,
-		boolean indexContent ) throws WriteFilesException, WriteEntryDataException
+		boolean indexContent,
+		Boolean fullSyncDirOnly ) throws WriteFilesException, WriteEntryDataException
 	{
 		Binder binder = null;
 		Long templateId = null;
@@ -523,7 +525,17 @@ public class NetFolderHelper
 
 		if ( templateId != null )
 		{			
-			binder = folderModule.createNetFolder(templateId, parentBinderId, name, owner, rootName, path, isHomeDir, indexContent, syncScheduleOption );
+			binder = folderModule.createNetFolder(
+											templateId,
+											parentBinderId,
+											name,
+											owner,
+											rootName,
+											path,
+											isHomeDir,
+											indexContent,
+											syncScheduleOption,
+											fullSyncDirOnly );
 			
 			// Set the net folder's sync schedule
 			if ( scheduleInfo != null )
@@ -559,6 +571,7 @@ public class NetFolderHelper
 		String hostUrl,
 		boolean allowSelfSignedCerts,
 		boolean isSharePointServer,
+		Boolean fullSyncDirOnly,
 		ScheduleInfo scheduleInfo ) throws RDException
 	{
 		Map options;
@@ -579,6 +592,7 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
 		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, proxyName ); 
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
+		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
 		
 		// Is the root type WebDAV?
 		if ( driverType == DriverType.webdav )
@@ -890,10 +904,11 @@ public class NetFolderHelper
 		String relativePath,
 		ScheduleInfo scheduleInfo,
 		SyncScheduleOption syncScheduleOption,
-		boolean indexContent ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+		boolean indexContent,
+		Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		// Modify the binder with the net folder information.
-		folderModule.modifyNetFolder(id, netFolderName, netFolderRootName, relativePath, null, indexContent, syncScheduleOption );
+		folderModule.modifyNetFolder(id, netFolderName, netFolderRootName, relativePath, null, indexContent, syncScheduleOption, fullSyncDirOnly );
 
 		// Set the net folder's sync schedule
 		if ( scheduleInfo != null )
@@ -927,6 +942,7 @@ public class NetFolderHelper
 		boolean allowSelfSignedCerts,
 		boolean isSharePointServer,
 		Set<Long> listOfPrincipals,
+		Boolean fullSyncDirOnly,
 		ScheduleInfo scheduleInfo )
 	{
 		Map options;
@@ -951,6 +967,7 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
 		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, proxyName ); 
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
+		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
 
 		// Always prevent the top level folder from being deleted
 		// This is forced so that the folder could not accidentally be deleted if the 
