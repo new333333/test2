@@ -4911,7 +4911,7 @@ public class GwtViewHelper {
 									}
 									
 									// No, the column doesn't contain a collection of task folders
-									// either!  Does it contain an email address?
+									// either!  Does it contain an e-mail address?
 									else if (csk.equals("emailAddress")) {
 										// Yes!  Construct an EmailAddressInfo from the entry map.
 										EmailAddressInfo emai = GwtServerHelper.getEmailAddressInfoFromEntryMap(bs, entryMap);
@@ -4919,7 +4919,7 @@ public class GwtViewHelper {
 									}
 									
 									else {
-										// No, the column doesn't contain an email address either!
+										// No, the column doesn't contain an e-mail address either!
 										// Extract its String value.
 										String value = GwtServerHelper.getStringFromEntryMapValue(
 											emValue,

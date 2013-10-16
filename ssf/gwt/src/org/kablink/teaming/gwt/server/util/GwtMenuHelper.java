@@ -442,7 +442,7 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Constructs a ToolbarItem for email subscription handling.
+	 * Constructs a ToolbarItem for e-mail subscription handling.
 	 */
 	private static ToolbarItem constructEmailSubscriptionItems(boolean isFilr, String tbKey, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		// Allocate the base ToolbarItem to return.
@@ -450,7 +450,7 @@ public class GwtMenuHelper {
 
 		// Is the current user the guest user?
 		if (!(GwtServerHelper.getCurrentUser().isShared())) {
-			// No!  Add a ToolbarItem for email notification.
+			// No!  Add a ToolbarItem for e-mail notification.
 			ToolbarItem emailTBI = new ToolbarItem(EMAIL);
 			markTBITitle(emailTBI, "toolbar.menu.subscribeToFolder"       );
 			markTBIHint( emailTBI, "toolbar.menu.title.emailSubscriptions");
@@ -1368,12 +1368,13 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for sharing the selected entries.
 	 */
+	@SuppressWarnings("unused")
 	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
 		// For the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
 			if (folderSupportsShare(bs, folder, viewType)) {
 				// ...construct the share item.
-				constructEntryShareItem(entryToolbar, bs, request);
+				constructEntryShareItem(entryToolbar, bs, request, folder.getEntityType());
 			}
 		}
 	}
@@ -1381,15 +1382,77 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for sharing the selected entries.
 	 */
-	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
+	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, EntityType et) {
 		// For non-guest users...
 		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
 		if (!isGuest) {
-			// ...add the share item.
+			// ...add the share items.
+			boolean isFilr   = Utils.checkIfFilr();
+			boolean isFolder = et.equals(EntityType.folder);
+			String keyTail;
+			if      (isFolder) keyTail = "folder";
+			else if (isFilr)   keyTail = "file";
+			else               keyTail = "entry";
+			
+			ToolbarItem shareTBI = new ToolbarItem("1_shareSelected");
+			markTBITitle(shareTBI, "toolbar.shareSelected." + keyTail);
+			markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
+			entryToolbar.addNestedItem(shareTBI);
+			
+			if (!isFolder) {
+				if (isFilr)
+				     keyTail = "filr";
+				else keyTail = "vibe";
+				
+				shareTBI = new ToolbarItem("1_emailPublicLinkSelected");
+				markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
+				markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
+				entryToolbar.addNestedItem(shareTBI);
+				
+				shareTBI = new ToolbarItem("1_copyPublicLinkSelected");
+				markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
+				markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
+				entryToolbar.addNestedItem(shareTBI);
+			}
+		}
+	}
+	
+	/*
+	 * Constructs the ToolbarItems for the share menu on a entry menu
+	 * bar.
+	 */
+	private static void constructEntryShareItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
+		// For non-guest users...
+		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
+		if (!isGuest) {
+			// Create the share toolbar...
+			ToolbarItem shareItemsTBI = new ToolbarItem("1_share");
+			markTBITitle(shareItemsTBI, "toolbar.share");
+
+			// ...add the share item...
 			ToolbarItem shareTBI = new ToolbarItem("1_shareSelected");
 			markTBITitle(shareTBI, "toolbar.shareSelected");
 			markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-			entryToolbar.addNestedItem(shareTBI);
+			shareItemsTBI.addNestedItem(shareTBI);
+			
+			// ...add the e-mail public link item...
+			String keyTail;
+			if (Utils.checkIfFilr())
+			     keyTail = "filr";
+			else keyTail = "vibe";
+			shareTBI = new ToolbarItem("1_emailPublicLinkSelected");
+			markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
+			markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
+			shareItemsTBI.addNestedItem(shareTBI);
+			
+			// ...add the copy public link item...
+			shareTBI = new ToolbarItem("1_copyPublicLinkSelected");
+			markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
+			markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
+			shareItemsTBI.addNestedItem(shareTBI);
+			
+			// ...and the share toolbar to the entry toolbar.
+			entryToolbar.addNestedItem(shareItemsTBI);
 		}
 	}
 	
@@ -2061,7 +2124,7 @@ public class GwtMenuHelper {
 			configTBI.addNestedItem(actionTBI);
 		}
 		
-		// Does the user have rights to configure email settings on
+		// Does the user have rights to configure e-mail settings on
 		// this binder?
 		if (isFolder && bm.testAccess(binder, BinderOperation.manageMail)) {
 			Folder folder = ((Folder) binder);
@@ -2577,7 +2640,7 @@ public class GwtMenuHelper {
 	}
 
 	/*
-	 * Constructs a ToolbarItem to run the send email to team members
+	 * Constructs a ToolbarItem to run the send e-mail to team members
 	 * (actually, contributors but I followed the naming that was used
 	 * in the JSP code) dialog. 
 	 */
@@ -2967,7 +3030,10 @@ public class GwtMenuHelper {
 					FolderEntry fe       = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
 					boolean     sharable = GwtShareHelper.isEntitySharable(bs, fe);
 					if (sharable) {
-						constructEntryShareItem(actionToolbar, bs, request);
+						constructEntryShareItem(actionToolbar, bs, request, EntityType.folderEntry);
+						if (actionToolbar.hasNestedToolbarItems()) {
+							actionToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+						}
 					}
 					
 					constructEntryZipAndDownload(  actionToolbar, bs, request, fe                    );					
@@ -2987,7 +3053,7 @@ public class GwtMenuHelper {
 					Folder  folder   = bs.getFolderModule().getFolder(folderId);
 					boolean sharable = GwtShareHelper.isEntitySharable(bs, folder);
 					if (sharable) {
-						actionToolbar.addNestedItem(constructShareBinderItem(request, folder, "toolbar.shareSelected"));
+						actionToolbar.addNestedItem(constructShareBinderItem(request, folder, "toolbar.shareSelected.folder"));
 					}
 					
 					constructEntryZipAndDownload(actionToolbar, bs, request, folder);
@@ -3128,7 +3194,7 @@ public class GwtMenuHelper {
 						constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId         );
 					}
 					if ((isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) && GwtShareHelper.isSharingEnabled(bs)) {
-					    constructEntryShareItem(           entryToolbar, bs, request                                                                                  );
+					    constructEntryShareItems(          entryToolbar, bs, request                                                                                  );
 					}
 					if (((isCollectionMyFiles && (!useHomeAsMyFiles) && (!isCollectionNetFolders))) || (isCollectionShared && (!isCollectionSharedPublic))) {
 						constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
@@ -3171,7 +3237,7 @@ public class GwtMenuHelper {
 					
 					// Constructs the items for sharing and deleting
 					// the selected entries.
-					constructEntryShareItem( entryToolbar, bs, request, viewType, folder);
+					constructEntryShareItems(entryToolbar, bs, request                  );
 					constructEntryDeleteItem(entryToolbar, bs, request, viewType, folder);
 		
 					// Can we determine the folder's view type?
@@ -3574,11 +3640,38 @@ public class GwtMenuHelper {
 			SharingModule sm = bs.getSharingModule();
 			if ((!isGuest) && sm.isSharingEnabled() && sm.testAddShareEntity(fe)) {
 				// Yes!  Add a share toolbar item for it.
+				ToolbarItem shareItemsTBI = new ToolbarItem("1_share");
+				markTBITitle(shareItemsTBI, "toolbar.share");
+
+				String keyTail;
+				if (isFilr)
+				     keyTail = "file";
+				else keyTail = "entry";
+				
 				actionTBI = new ToolbarItem(SHARE);
-				markTBITitle(   actionTBI, "toolbar.shareSelected"              );
+				markTBITitle(   actionTBI, "toolbar.shareSelected." + keyTail);
 				markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                   );
-				reply.add(actionTBI);
+				markTBIEntryIds(actionTBI, fe);
+				shareItemsTBI.addNestedItem(actionTBI);
+				
+				if (isFilr)
+				     keyTail = "filr";
+				else keyTail = "vibe";
+				
+				actionTBI = new ToolbarItem("1_emailPublicLinkSelected");
+				markTBITitle(   actionTBI, "toolbar.emailPublicLinkSelected." + keyTail);
+				markTBIEvent(   actionTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
+				markTBIEntryIds(actionTBI, fe);
+				shareItemsTBI.addNestedItem(actionTBI);
+				
+				actionTBI = new ToolbarItem("1_copyPublicLinkSelected");
+				markTBITitle(   actionTBI, "toolbar.copyPublicLinkSelected." + keyTail);
+				markTBIEvent(   actionTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
+				markTBIEntryIds(actionTBI, fe);
+				shareItemsTBI.addNestedItem(actionTBI);
+				
+				// ...and the share toolbar to the view toolbar.
+				reply.add(shareItemsTBI);
 			}
 			
 			// Can the user modify this entry?
@@ -3791,10 +3884,10 @@ public class GwtMenuHelper {
 				markTBIEntryIds(actionTBI, fe                                       );
 				dropdownTBI.addNestedItem(actionTBI);
 
-				// Does the user have an email address?
+				// Does the user have an e-mail address?
 				if (MiscUtil.hasString(user.getEmailAddress())) {
-					// Yes!  Add an email contributors toolbar item for
-					// it.
+					// Yes!  Add an e-mail contributors toolbar item
+					// for it.
 					url = createActionUrl(request);
 					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_SEND_ENTRY_EMAIL                      );
 					url.setParameter(WebKeys.URL_BINDER_ID,   folderId                                             );

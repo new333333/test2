@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -55,9 +56,9 @@ import com.google.gwt.user.client.ui.Panel;
  * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
-public class EmailPublicLinkDlg extends DlgBox {
+public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler {
 	private GwtTeamingMessages	m_messages;		// Access to Vibe's messages.
-	private List<EntityId>		m_entityIds;	// List<EntityId> of the entities whose public links are to be emailed.
+	private List<EntityId>		m_entityIds;	// List<EntityId> of the entities whose public links are to be e-mailed.
 	private VibeFlowPanel		m_mainPanel;	//
 	
 	/*
@@ -69,17 +70,17 @@ public class EmailPublicLinkDlg extends DlgBox {
 	 */
 	private EmailPublicLinkDlg() {
 		// Initialize the superclass...
-		super(false, true, DlgButtonMode.Close);
+		super(false, true, DlgButtonMode.OkCancel);
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			"",								// Dialog caption set when the dialog runs.
-			getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
-			null);							// Create callback data.  Unused. 
+			"",							// Dialog caption set when the dialog runs.
+			this,						// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
+			null);						// Create callback data.  Unused. 
 	}
 
 	/**
@@ -93,10 +94,28 @@ public class EmailPublicLinkDlg extends DlgBox {
 	 */
 	@Override
 	public Panel createContent(Object callbackData) {
-		VibeFlowPanel	m_mainPanel = new VibeFlowPanel();
+		m_mainPanel = new VibeFlowPanel();
+		m_mainPanel.addStyleName("vibe-emailPublicLinkDlg-content");
 		return m_mainPanel;
 	}
 
+	/**
+	 * This method gets called when user user presses the OK push
+	 * button.
+	 * 
+	 * Implements the EditSuccessfulHandler.editSuccessful() interface
+	 * method.
+	 * 
+	 * @param callbackData
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean editSuccessful(Object callbackData) {
+//!		...this needs to be implemented...
+		return true;
+	}
+	
 	/**
 	 * Returns the edited List<FavoriteInfo>.
 	 * 
@@ -151,7 +170,7 @@ public class EmailPublicLinkDlg extends DlgBox {
 	}
 
 	/*
-	 * Asynchronously runs the given instance of the email public link
+	 * Asynchronously runs the given instance of the e-mail public link
 	 * dialog.
 	 */
 	private static void runDlgAsync(final EmailPublicLinkDlg eplDlg, final String caption, final List<EntityId> entityIds) {
@@ -165,7 +184,7 @@ public class EmailPublicLinkDlg extends DlgBox {
 	}
 	
 	/*
-	 * Synchronously runs the given instance of the email public link
+	 * Synchronously runs the given instance of the e-mail public link
 	 * dialog.
 	 */
 	private void runDlgNow(String caption, List<EntityId> entityIds) {
@@ -180,13 +199,13 @@ public class EmailPublicLinkDlg extends DlgBox {
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
-	/* the email public link dialog and perform some operation on    */
+	/* the e-mail public link dialog and perform some operation on   */
 	/* it.                                                           */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	/**
-	 * Callback interface to interact with the email public link dialog
-	 * asynchronously after it loads. 
+	 * Callback interface to interact with the e-mail public link
+	 * dialog asynchronously after it loads. 
 	 */
 	public interface EmailPublicLinkDlgClient {
 		void onSuccess(EmailPublicLinkDlg eplDlg);
@@ -244,7 +263,7 @@ public class EmailPublicLinkDlg extends DlgBox {
 	}
 	
 	/**
-	 * Initializes and shows the email public link dialog.
+	 * Initializes and shows the e-mail public link dialog.
 	 * 
 	 * @param eplDlg
 	 * @param entityIds

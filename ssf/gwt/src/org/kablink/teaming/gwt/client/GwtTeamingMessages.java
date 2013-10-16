@@ -1820,6 +1820,12 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_UnpinEntry();
 	String vibeDataTable_Alt_View();
 	String vibeDataTable_ColumnResizer();
+	String vibeDataTable_Confirm_CantCopyPublicLinkFolders();
+	String vibeDataTable_Confirm_CantCopyPublicLinkNoRights();
+	String vibeDataTable_Confirm_CantCopyPublicLinkNoRightsAndFolders();
+	String vibeDataTable_Confirm_CantEmailPublicLinkFolders();
+	String vibeDataTable_Confirm_CantEmailPublicLinkNoRights();
+	String vibeDataTable_Confirm_CantEmailPublicLinkNoRightsAndFolders();
 	String vibeDataTable_Confirm_CantShareNetFolders();
 	String vibeDataTable_Confirm_CantShareNoRights();
 	String vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
@@ -1846,6 +1852,12 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_TrashInternalErrorOverrideMissing(String methodName);
 	String vibeDataTable_View();
 	String vibeDataTable_ViewTrash();
+	String vibeDataTable_Warning_CopyPublicLinkFolders();
+	String vibeDataTable_Warning_CopyPublicLinkNoRights();
+	String vibeDataTable_Warning_CopyPublicLinkNoRightsAndFolders();
+	String vibeDataTable_Warning_EmailPublicLinkFolders();
+	String vibeDataTable_Warning_EmailPublicLinkNoRights();
+	String vibeDataTable_Warning_EmailPublicLinkNoRightsAndFolders();
 	String vibeDataTable_Warning_NoEntryActions();
 	String vibeDataTable_Warning_ShareNetFolders();
 	String vibeDataTable_Warning_ShareNoRights();

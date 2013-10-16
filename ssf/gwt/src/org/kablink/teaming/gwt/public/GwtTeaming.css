@@ -5795,4 +5795,12 @@ td.datePickerMonth {
 	.vibe-promptDlg_Panel      {padding: 10px;}
 /* End:  Prompt dialog styles. */
 
+/* Start:  Copy Public Link dialog styles. */
+	.vibe-copyPublicLinkDlg-content {margin: 10px 10px 10px 13px;}
+/* End:  Copy Public Link dialog styles. */
+
+/* Start:  Email Public Link dialog styles. */
+	.vibe-emailPublicLinkDlg-content {margin: 10px 10px 10px 13px;}
+/* End:  Email Public Link dialog styles. */
+
 /* End Of File */

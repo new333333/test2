@@ -1242,7 +1242,6 @@ public class EntryMenuPanel extends ToolPanelBase
 		switch (simpleTBI.getTeamingEvent()) {
 		case INVOKE_DROPBOX:                  m_addFilesMenu             = menuItem; break;
 		case DELETE_SELECTED_ENTITIES:        m_deleteMenu               = menuItem; break;
-		case SHARE_SELECTED_ENTITIES:         m_shareMenu                = menuItem; break;
 		case TRASH_PURGE_ALL:                 m_trashPurgeAllMenu        = menuItem; break;
 		case TRASH_PURGE_SELECTED_ENTITIES:   m_trashPurgeSelectedMenu   = menuItem; break;
 		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = menuItem; break;
@@ -1289,8 +1288,9 @@ public class EntryMenuPanel extends ToolPanelBase
 		else popupMenu.addMenuItem(structuredMenuItem);
 		
 		String structuredName = structuredTBI.getName();
-		if (GwtClientHelper.hasString(structuredName) && structuredName.equals("1_more")) {
-			m_moreMenu = structuredMenuItem;
+		if (GwtClientHelper.hasString(structuredName)) {
+			if      (structuredName.equals("1_more"))  m_moreMenu = structuredMenuItem;
+			else if (structuredName.equals("1_share")) m_shareMenu = structuredMenuItem;
 		}
 		
 		// ...scan the nested items...
@@ -1357,11 +1357,19 @@ public class EntryMenuPanel extends ToolPanelBase
 	private void setEntriesSelectedImpl(boolean enable) {
 		// If we have a share menu item...
 		if (null != m_shareMenu) {
-			// ...enable disable it.
+			// ...enable disable it...
 			m_shareMenu.setEnabled(enable);
 			if (enable)
 			     m_shareMenu.removeStyleName("vibe-menuDisabled");
 			else m_shareMenu.addStyleName(   "vibe-menuDisabled");
+			
+			// ...and update its display to reflect the state of the
+			// ...menu item (in particular, the drop down image on the
+			// ...menu.)
+			m_shareMenu.setHTML(
+				renderStructuredItemHTML(
+					m_shareMenu.getText(),
+					enable));
 		}
 
 		// If we have a delete menu item...
