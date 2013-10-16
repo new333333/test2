@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -55,7 +56,7 @@ import com.google.gwt.user.client.ui.Panel;
  * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
-public class CopyPublicLinkDlg extends DlgBox {
+public class CopyPublicLinkDlg extends DlgBox implements EditSuccessfulHandler {
 	private GwtTeamingMessages	m_messages;		// Access to Vibe's messages.
 	private List<EntityId>		m_entityIds;	// List<EntityId> of the entities whose public links are to be copied.
 	private VibeFlowPanel		m_mainPanel;	//
@@ -69,17 +70,17 @@ public class CopyPublicLinkDlg extends DlgBox {
 	 */
 	private CopyPublicLinkDlg() {
 		// Initialize the superclass...
-		super(false, true, DlgButtonMode.Close);
+		super(false, true, DlgButtonMode.OkCancel);
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			"",								// Dialog caption set when the dialog runs.
-			getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
-			null);							// Create callback data.  Unused. 
+			"",							// Dialog caption set when the dialog runs.
+			this,						// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
+			null);						// Create callback data.  Unused. 
 	}
 
 	/**
@@ -93,10 +94,28 @@ public class CopyPublicLinkDlg extends DlgBox {
 	 */
 	@Override
 	public Panel createContent(Object callbackData) {
-		VibeFlowPanel	m_mainPanel = new VibeFlowPanel();
+		m_mainPanel = new VibeFlowPanel();
+		m_mainPanel.addStyleName("vibe-copyPublicLinkDlg-content");
 		return m_mainPanel;
 	}
 
+	/**
+	 * This method gets called when user user presses the OK push
+	 * button.
+	 * 
+	 * Implements the EditSuccessfulHandler.editSuccessful() interface
+	 * method.
+	 * 
+	 * @param callbackData
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean editSuccessful(Object callbackData) {
+//!		...this needs to be implemented...
+		return true;
+	}
+	
 	/**
 	 * Returns the edited List<FavoriteInfo>.
 	 * 

@@ -1794,7 +1794,7 @@ public class GwtServerHelper {
 			
 			ExternalUserUtil.markAsCredentialed( extUser );
 			
-			// invitationUrl is the original url the user was sent in the first share email.
+			// invitationUrl is the original url the user was sent in the first share e-mail.
 			// We need to replace "euet=xxx" with "euet=some new token value".
 			if ( invitationUrl != null && invitationUrl.length() > 0 )
 			{
@@ -1806,7 +1806,7 @@ public class GwtServerHelper {
 				confirmationUrl = ExternalUserUtil.replaceTokenInUrl(invitationUrl, newToken);
 			}
 
-			// Send an email informing the user that their registration is complete.
+			// Send an e-mail informing the user that their registration is complete.
 			EmailHelper.sendConfirmationToExternalUser( ami, extUserId, confirmationUrl );
 		}
 		catch ( Exception ex )
@@ -3239,7 +3239,7 @@ public class GwtServerHelper {
 		if ( adminModule.testAccess( AdminOperation.report ) )
 		{
 			// Yes
-			// Create an "email report"
+			// Create an "e-mail report"
 			{
 				title = NLT.get( "administration.report.title.email" );
 
@@ -6842,7 +6842,7 @@ public class GwtServerHelper {
 
 	/**
 	 * Construct a url the user can click on that will invoke the "change password" dialog.
-	 * Then send an email that includes that url to the given email address
+	 * Then send an e-mail that includes that url to the given e-mail address
 	 */
 	public static SendForgottenPwdEmailRpcResponseData sendForgottenPwdEmail(
 		final AllModulesInjected ami,
@@ -6911,7 +6911,7 @@ public class GwtServerHelper {
 								responseData.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
 							else
 							{
-								// Sending the email worked.  Change the users "external user provisioned state" to
+								// Sending the e-mail worked.  Change the users "external user provisioned state" to
 								// "password reset requested"
 								ExternalUserUtil.markAsPwdResetRequested( user );
 							}
@@ -7516,11 +7516,11 @@ public class GwtServerHelper {
 
 		user = getCurrentUser();
 		
-		// Get the user's primary email address.
+		// Get the user's primary e-mail address.
 		address = user.getEmailAddress( Principal.PRIMARY_EMAIL );
 		subscriptionData.setPrimaryEmailAddress( address );
 		
-		// Get the user's mobile email address.
+		// Get the user's mobile e-mail address.
 		address = user.getEmailAddress( Principal.MOBILE_EMAIL );
 		subscriptionData.setMobileEmailAddress( address );
 		
@@ -7550,11 +7550,11 @@ public class GwtServerHelper {
 				// 2:_primary:3:_primary,_text:5:_primary,_text,_mobile:
 				subMap = sub.getStyles();
 				
-				// Get the subscription values for which address should be sent an email.
+				// Get the subscription values for which address should be sent an e-mail.
 				values = (String[]) subMap.get( Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION );
 				subscriptionData.setSendEmailTo( values );
 				
-				// Get the subscription values for which address should be sent an email without an attachment.
+				// Get the subscription values for which address should be sent an e-mail without an attachment.
 				values = (String[]) subMap.get( Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION );
 				subscriptionData.setSendEmailToWithoutAttachment( values );
 				
@@ -10058,7 +10058,7 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Reset send the user an email with a link they need to click on to verify their
+	 * Reset send the user an e-mail with a link they need to click on to verify their
 	 * password reset.
 	 */
 	public static RequestResetPwdRpcResponseData requestResetPwd(
@@ -10102,7 +10102,7 @@ public class GwtServerHelper {
 					 user.getExtProvState() == ExtProvState.pwdResetRequested )
 				{
 					// Save the password to the user's properties.  We will read it from the user's properties
-					// when the user clicks on the url in the "reset password verification" email.
+					// when the user clicks on the url in the "reset password verification" e-mail.
 					{
 						ami.getProfileModule().setUserProperty(
 															user.getId(),
@@ -10110,7 +10110,7 @@ public class GwtServerHelper {
 															pwd );
 					}
 					
-					// Send the user an email telling them that their password has been modified
+					// Send the user an e-mail telling them that their password has been modified
 					// and they need to verify that they were the one who changed the password.
 					{
 						String token;
@@ -10160,7 +10160,7 @@ public class GwtServerHelper {
 								responseData.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
 							else
 							{
-								// Sending the email worked.  Change the users "external user provisioned state" to
+								// Sending the e-mail worked.  Change the users "external user provisioned state" to
 								// "password reset waiting for verification"
 								ExternalUserUtil.markAsPwdResetWaitingForVerification( user );
 							}
@@ -10527,12 +10527,12 @@ public class GwtServerHelper {
 			{
 				String[] setting;
 				
-				// Get the setting for "send email to"
+				// Get the setting for "send e-mail to"
 				setting = subscriptionData.getSendEmailToAsString();
 				if ( setting != null && setting.length > 0 )
 					subscriptionSettings.put( Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION, setting );
 				
-				// Get the setting for "send email to without an attachment"
+				// Get the setting for "send e-mail to without an attachment"
 				setting = subscriptionData.getSendEmailToWithoutAttachmentAsString();
 				if ( setting != null && setting.length > 0 )
 					subscriptionSettings.put( Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION, setting );
@@ -11602,7 +11602,7 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Validate the given email address.
+	 * Validate the given e-mail address.
 	 * 
 	 * @param emailAddress
 	 * @param externalEMA
@@ -11716,7 +11716,7 @@ public class GwtServerHelper {
 							
 							user = getCurrentUser();
 	
-							// Does the user have an email address and is the user not guest?
+							// Does the user have an e-mail address and is the user not guest?
 							if ( !user.getEmailAddresses().isEmpty() && 
 									!ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) )
 							{

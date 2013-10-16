@@ -2021,7 +2021,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * entries, given the current user's rights to them.
 	 */
 	private void onCopyPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
-		final List<FolderRow> invalidRows = validateSelectedRows_Sharing(entityRightsMap);
+		final List<FolderRow> invalidRows = validateSelectedRows_PublicLink(entityRightsMap);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
 			// Yes!  Invoke the share.
 			copySelectedEntitiesPublicLinkAsync(selectedEntities);
@@ -2031,21 +2031,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// No, they don't have rights to share everything!  What
 			// type of share failures are we dealing with?
 			int totalShareFailures = invalidRows.size();
-			int nfShareFailures    = BinderViewsHelper.getNetFolderShareFailureCount(selectedEntities, entityRightsMap);
-			int otherShareFailures = (totalShareFailures - nfShareFailures);
+			int plShareFailures    = BinderViewsHelper.getFolderPublicLinkFailureCount(selectedEntities);
+			int otherShareFailures = (totalShareFailures - plShareFailures);
 			if (0 > otherShareFailures) {
 				otherShareFailures = 0;
 			}
-			boolean hasNFShareFailures    = (0 < nfShareFailures   );
+			boolean hasPLShareFailures    = (0 < plShareFailures   );
 			boolean hasOtherShareFailures = (0 < otherShareFailures);
 			
 			// Can they share any of them?
 			if (selectedEntities.size() == totalShareFailures) {
 				// No!  Tell them about the problem and bail.
 				String shareAlert;
-				if      (hasNFShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_ShareNoRightsAndNetFolders();
-				else if (hasNFShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_ShareNetFolders();
-				else                                                  shareAlert = m_messages.vibeDataTable_Warning_ShareNoRights();
+				if      (hasPLShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_CopyPublicLinkNoRightsAndFolders();
+				else if (hasPLShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_CopyPublicLinkFolders();
+				else                                                  shareAlert = m_messages.vibeDataTable_Warning_CopyPublicLinkNoRights();
 				GwtClientHelper.deferredAlert(shareAlert);
 				return;
 			}
@@ -2053,9 +2053,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Is the user sure they want to share the selections
 			// they have rights to share?
 			final String confirmPrompt;
-			if      (hasNFShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
-			else if (hasNFShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNetFolders();
-			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRights();
+			if      (hasPLShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLinkNoRightsAndFolders();
+			else if (hasPLShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLinkFolders();
+			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLinkNoRights();
 			ConfirmDlg.createAsync(new ConfirmDlgClient() {
 				@Override
 				public void onUnavailable() {
@@ -2397,7 +2397,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * entries, given the current user's rights to them.
 	 */
 	private void onEmailPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
-		final List<FolderRow> invalidRows = validateSelectedRows_Sharing(entityRightsMap);
+		final List<FolderRow> invalidRows = validateSelectedRows_PublicLink(entityRightsMap);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
 			// Yes!  Invoke the share.
 			emailSelectedEntitiesPublicLinkAsync(selectedEntities);
@@ -2407,21 +2407,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// No, they don't have rights to share everything!  What
 			// type of share failures are we dealing with?
 			int totalShareFailures = invalidRows.size();
-			int nfShareFailures    = BinderViewsHelper.getNetFolderShareFailureCount(selectedEntities, entityRightsMap);
-			int otherShareFailures = (totalShareFailures - nfShareFailures);
+			int plShareFailures    = BinderViewsHelper.getFolderPublicLinkFailureCount(selectedEntities);
+			int otherShareFailures = (totalShareFailures - plShareFailures);
 			if (0 > otherShareFailures) {
 				otherShareFailures = 0;
 			}
-			boolean hasNFShareFailures    = (0 < nfShareFailures   );
+			boolean hasPLShareFailures    = (0 < plShareFailures   );
 			boolean hasOtherShareFailures = (0 < otherShareFailures);
 			
 			// Can they share any of them?
 			if (selectedEntities.size() == totalShareFailures) {
 				// No!  Tell them about the problem and bail.
 				String shareAlert;
-				if      (hasNFShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_ShareNoRightsAndNetFolders();
-				else if (hasNFShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_ShareNetFolders();
-				else                                                  shareAlert = m_messages.vibeDataTable_Warning_ShareNoRights();
+				if      (hasPLShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_EmailPublicLinkNoRightsAndFolders();
+				else if (hasPLShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_EmailPublicLinkFolders();
+				else                                                  shareAlert = m_messages.vibeDataTable_Warning_EmailPublicLinkNoRights();
 				GwtClientHelper.deferredAlert(shareAlert);
 				return;
 			}
@@ -2429,9 +2429,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Is the user sure they want to share the selections
 			// they have rights to share?
 			final String confirmPrompt;
-			if      (hasNFShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
-			else if (hasNFShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNetFolders();
-			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRights();
+			if      (hasPLShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLinkNoRightsAndFolders();
+			else if (hasPLShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLinkFolders();
+			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLinkNoRights();
 			ConfirmDlg.createAsync(new ConfirmDlgClient() {
 				@Override
 				public void onUnavailable() {
@@ -4089,6 +4089,41 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					// Yes!  Is it sharable?
 					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(row.getEntityId()));
 					if ((null == er) || (!(er.isCanShare()))) {
+						// No!  Track it as invalid.
+						reply.add(row);
+					}
+				}
+			}
+		}
+		
+		// If we get here, reply refers to List<FolderRow> of the rows
+		// the user doesn't have rights to share.  Return it.
+		return reply;
+	}
+
+	/*
+	 * Returns a List<FolderRow> of the selected rows that the user
+	 * can't share the public link from.
+	 */
+	private List<FolderRow> validateSelectedRows_PublicLink(final Map<String, EntityRights> entityRightsMap) {
+		// Are there any selected rows in the table?
+		List<FolderRow> reply = new ArrayList<FolderRow>();
+		List<FolderRow> rows  = m_dataTable.getVisibleItems();
+		if (GwtClientHelper.hasItems(rows)) {
+			// Yes!  Scan them
+			FolderRowSelectionModel fsm = ((FolderRowSelectionModel) m_dataTable.getSelectionModel());
+			for (FolderRow row : rows) {
+				// Is this row selected?
+				if (fsm.isSelected(row)) {
+					// Yes!  Is it sharable?
+					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(row.getEntityId()));
+					if ((null == er) || (!(er.isCanShare()))) {
+						// No!  Track it as invalid.
+						reply.add(row);
+					}
+					
+					// Yes, it's sharable!  Is it an entry?
+					else if (row.getEntityId().isBinder()) {
 						// No!  Track it as invalid.
 						reply.add(row);
 					}

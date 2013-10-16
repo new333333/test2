@@ -1313,6 +1313,26 @@ public class BinderViewsHelper {
 	}
 	
 	/**
+	 * Returns a count of the entities that can't have their public
+	 * link copied or e-mailed because they're Folders.
+	 * 
+	 * @param entities
+	 * 
+	 * @return
+	 */
+	public static int getFolderPublicLinkFailureCount(final List<EntityId> entities) {
+		int reply = 0;
+		if (GwtClientHelper.hasItems(entities)) {
+			for (EntityId eid:  entities) {
+				if (eid.isFolder()) {
+					reply += 1;
+				}
+			}
+		}
+		return reply;
+	}
+	
+	/**
 	 * Marks the shares hidden based on a List<Long> of their entity
 	 * IDs.
 	 *
