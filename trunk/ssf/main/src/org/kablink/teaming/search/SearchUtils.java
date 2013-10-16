@@ -1535,15 +1535,21 @@ public class SearchUtils {
 		// Do we have a user?
 		Boolean reply;
 		if (null !=  user) {
-			// Yes!  Is it guest?
+			// Yes!  Is it Guest?
 			if (user.isShared()) {
 				// Yes!  Guest ALWAYS has a public collection.
 				reply = Boolean.TRUE;
 			}
+
+			// No, it isn't Guest! Is it an external user?
+			else if (!(user.getIdentityInfo().isInternal())) {
+				// Yes!  External users NEVER have a public collection.
+				reply = Boolean.FALSE;
+			}
 			
 			else {
-				// No!  The user isn't the guest.  Does the user have a
-				// public collection override?
+				// No!  The user isn't an external user either.  Does
+				// the user have a public collection override?
 				Long userId = user.getId();
 				reply = getPublicCollectionSettingFromUserOrGroup(pm, userId);
 				if (null == reply) {
