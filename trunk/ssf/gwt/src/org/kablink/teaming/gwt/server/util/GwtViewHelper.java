@@ -7197,7 +7197,7 @@ public class GwtViewHelper {
 							// No!  Set the entry view's underlying
 							// context to the user's Shared With Me
 							// view.
-							CollectionType ct = (GwtServerHelper.getCurrentUser().isShared() ? CollectionType.SHARED_PUBLIC : CollectionType.SHARED_WITH_ME);
+							CollectionType ct = GwtServerHelper.getDefaultCollectionType(user);
 							vi.setBinderInfo(GwtServerHelper.buildCollectionBI(ct, user.getWorkspaceId()));							
 							vi.setOverrideUrl(GwtServerHelper.getCollectionPointUrl(request, GwtServerHelper.getUserWorkspace(user), ct));
 						}

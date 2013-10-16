@@ -2240,7 +2240,7 @@ public class GwtActivityStreamHelper {
 	
 			// Add TreeInfo's for the various collection points.
 			User currentUser = GwtServerHelper.getCurrentUser();
-			if (!(currentUser.isShared())) {
+			if (!(currentUser.isShared() && Utils.checkIfFilr())) {
 				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.MY_FILES)      );
 				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_WITH_ME));
 				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_BY_ME)  );

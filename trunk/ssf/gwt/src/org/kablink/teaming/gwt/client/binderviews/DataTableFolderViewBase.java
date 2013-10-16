@@ -66,6 +66,7 @@ import org.kablink.teaming.gwt.client.datatable.EmailAddressColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.GuestColumn;
+import org.kablink.teaming.gwt.client.datatable.PresenceCell.PresenceClickAction;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.ShareStringValueColumn;
@@ -1394,7 +1395,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// show presence?
 			else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName)) {
 				// Yes!  Create a PresenceColumn for it.
-				column = new PresenceColumn<FolderRow>(fc, showProfileEntryForPresenceWithNoWS()) {
+				boolean userManagementCell = (FolderColumn.isColumnFullName(cName) && getFolderInfo().isBinderProfilesRootWSManagement());
+				PresenceClickAction clickAction;
+				if      (userManagementCell)                    clickAction = PresenceClickAction.SHOW_USER_PROPERTIES;
+				else if (showProfileEntryForPresenceWithNoWS()) clickAction = PresenceClickAction.SHOW_PROFILE_ENTRY_WITH_NO_WS;
+				else                                            clickAction = PresenceClickAction.SHOW_SIMPLE_PROFILE;
+				column = new PresenceColumn<FolderRow>(fc, clickAction) {
 					@Override
 					public PrincipalInfo getValue(FolderRow fr) {
 						return fr.getColumnValueAsPrincipalInfo(fc);
@@ -1404,7 +1410,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Is this the full name column for the personal
 				// workspaces view contained in the Manage Users
 				// dialog? 
-				if (FolderColumn.isColumnFullName(cName) && getFolderInfo().isBinderProfilesRootWSManagement()) {
+				if (userManagementCell) {
 					// Yes!  Create an ActionMenuColumn for it.
 					supportColumn = new ActionMenuColumn<FolderRow>(fc, getFolderInfo()) {
 						@Override
