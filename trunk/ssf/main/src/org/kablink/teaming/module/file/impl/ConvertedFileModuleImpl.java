@@ -115,7 +115,7 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 		throws UncheckedIOException, RepositoryServiceException {
 		
 		HtmlConverter converter = this.htmlConverterManager.getConverter();
-		converter.deleteConvertedFile(binder, entity, fa);
+		converter.deleteConvertedFile(shareItem, binder, entity, fa);
 	}
 
 	public void deleteCacheTextFile(

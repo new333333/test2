@@ -46,6 +46,7 @@ import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
+import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
@@ -83,8 +84,16 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	private FolderModule folderModule;
 	private BinderModule binderModule;
 	private ProfileModule profileModule;
+	private ConvertedFileModule convertedFileModule;
 	private TransactionTemplate transactionTemplate;
 	
+    protected ConvertedFileModule getConvertedFileModule() {
+		return convertedFileModule;
+	}
+	public void setConvertedFileModule(ConvertedFileModule convertedFileModule) {
+		this.convertedFileModule = convertedFileModule;
+	}
+
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}
@@ -716,6 +725,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		// Access check (throws error if not allowed)
 		checkAccess(shareItem, SharingOperation.deleteShareItem);
 		
+		//Now delete the shareItem
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -731,6 +741,17 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
 		//Index the entity that is being shared
 		indexSharedEntity(shareItem);
+		
+		//See if there are any cached HTML files to be deleted
+		if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
+			DefinableEntity entity = getSharedEntity(shareItem);
+			Binder binder = entity.getParentBinder();
+			if (entity instanceof Binder) binder = (Binder) entity;
+			Set<FileAttachment> atts = entity.getFileAttachments();
+			for (FileAttachment fa : atts) {
+				getConvertedFileModule().deleteCacheHtmlFile(shareItem, binder, entity, fa);
+			}
+		}
 	}
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareItem(java.lang.Long)
