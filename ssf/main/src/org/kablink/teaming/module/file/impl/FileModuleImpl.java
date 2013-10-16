@@ -72,6 +72,7 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
@@ -79,6 +80,7 @@ import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
@@ -89,6 +91,7 @@ import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Reservable;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -122,6 +125,7 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
@@ -236,6 +240,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	protected ProfileModule getProfileModule() {
 		// Can't use IoC due to circular dependency
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
+	}
+
+	protected SharingModule getSharingModule() {
+		// Can't use IoC due to circular dependency
+		return (SharingModule) SpringContextUtil.getBean("sharingModule");
 	}
 
 	protected ConvertedFileModule getConvertedFileModule() {
@@ -1049,6 +1058,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	newTopVa.getParentAttachment().setMinorVersion(newTopVa.getMinorVersion());
 
     	getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
+    	deleteHtmlCacheFilesForFile(fa);
     	getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
     	getConvertedFileModule().deleteCacheImageFile(binder, entity, fa);
     	setEntityModification(entity);
@@ -1410,6 +1420,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fa.setAgingEnabled(highestVa.getAgingEnabled());
 		fa.setFileStatus(highestVa.getFileStatus());
 		getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
+		deleteHtmlCacheFilesForFile(fa);
 		getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
     	getConvertedFileModule().deleteCacheImageFile(binder, entity, fa);
 		
@@ -3229,5 +3240,30 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         		return null;
         	}
         });	
+	}
+	
+	public void deleteHtmlCacheFilesForFile(FileAttachment fa) {
+		DefinableEntity entity = fa.getOwner().getEntity();
+		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+		EntityIdentifier ei = entity.getEntityIdentifier();
+		spec.setSharedEntityIdentifier(ei);
+		List<ShareItem> shareItems = getProfileDao().findShareItems(spec);
+		if (shareItems != null) {
+			for (ShareItem shareItem : shareItems) {
+				//See if there are any cached HTML files to be deleted
+				if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
+					DefinableEntity e = getSharingModule().getSharedEntity(shareItem);
+					Binder binder = e.getParentBinder();
+					if (e instanceof Binder) binder = (Binder) e;
+					Set<FileAttachment> atts = e.getFileAttachments();
+					for (FileAttachment tfa : atts) {
+						if (tfa.equals(fa)) {
+							getConvertedFileModule().deleteCacheHtmlFile(shareItem, binder, entity, fa);
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 }
