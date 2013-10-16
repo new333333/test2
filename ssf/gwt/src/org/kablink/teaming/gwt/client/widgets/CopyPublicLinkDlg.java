@@ -166,7 +166,7 @@ public class CopyPublicLinkDlg extends DlgBox implements EditSuccessfulHandler {
 		m_mainPanel.add(new InlineLabel("...this needs to be implemented..."));
 
 		// ...and show it centered on the screen.
-		center();;
+		center();
 	}
 
 	/*
