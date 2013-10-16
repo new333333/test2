@@ -61,6 +61,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private String serverIP;
 	private String volume;
 	private Date modifiedOn;
+	private ChangeDetectionMechanism changeDetectionMechanism;
 		
 	public enum DriverType {
 		filesystem (0),
@@ -92,6 +93,12 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 			}
 		}
 	};
+	
+	public enum ChangeDetectionMechanism {
+		none,
+		agent,
+		log
+	}
 
     public boolean equals(Object obj) {
     	if(!(obj instanceof ResourceDriverConfig))
@@ -132,6 +139,8 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     	if(!objectEquals(volume, config.volume))
     		return false;
     	if(!objectEquals(modifiedOn, config.getModifiedOn()))
+    		return false;
+    	if(!objectEquals(changeDetectionMechanism, config.getChangeDetectionMechanism()))
     		return false;
     	return true;
     }
@@ -394,6 +403,36 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		this.modifiedOn = modifiedOn;
 	}
 	
+	// Used by application
+	public ChangeDetectionMechanism getChangeDetectionMechanism() {
+		if(changeDetectionMechanism == null)
+			return ChangeDetectionMechanism.none; // Default to none for backward compatibility
+		else
+			return changeDetectionMechanism;
+	}
+
+	public void setChangeDetectionMechanism(
+			ChangeDetectionMechanism changeDetectionMechanism) {
+		this.changeDetectionMechanism = changeDetectionMechanism;
+	}
+	
+	// Used by Hibernate only
+	private String getChangeDetectionMechanismStr() {
+		if(changeDetectionMechanism == null)
+			return null;
+		else
+			return changeDetectionMechanism.name();
+	}
+	
+	private void setChangeDetectionMechanism(String changeDetectionMechanismStr) {
+		if(changeDetectionMechanismStr == null) {
+			changeDetectionMechanism = null;
+		}
+		else {
+			changeDetectionMechanism = ChangeDetectionMechanism.valueOf(changeDetectionMechanismStr);
+		}
+	}
+
 	private boolean objectEquals(Object first, Object second) {
 		if(first != null) {
 			if(second != null) {
