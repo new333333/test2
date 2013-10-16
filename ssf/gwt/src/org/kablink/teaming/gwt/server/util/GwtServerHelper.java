@@ -8810,9 +8810,43 @@ public class GwtServerHelper {
 		}
 		return reply;
 	}
+
+	/**
+	 * Returns true if the given group is the 'All External Users'
+	 * group and false otherwise.
+	 * 
+	 * @param bs
+	 * @param group
+	 * 
+	 * @return
+	 */
+	public static boolean isAllExternalUsersGroup(AllModulesInjected bs, Group group) {
+		String  internalId    = group.getInternalId();
+		return (MiscUtil.hasString(internalId) && internalId.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID));
+	}
+	
+	public static boolean isAllExternalUsersGroup(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
+		boolean reply = false;
+		try {
+			Principal group = bs.getProfileModule().getEntry(groupId);
+			if ((null != group) && (group instanceof Group)) {
+				// Always use the initial form of the method.
+				reply = isAllExternalUsersGroup(bs, ((Group) group));
+			}
+		}
+		
+		catch (Exception ex) {
+			GwtLogHelper.error(m_logger, "GwtServerHelper.isAllExternalUsersGroup( 'Could not access the group' ):  " + groupId);
+			reply = false;
+		}
+		
+		// If we get here the group is not the "all users" group.
+		return reply;
+	}
 	
 	/**
-	 * Returns whether the given ID is an 'all users' group.
+	 * Returns true if the given ID is the 'all users' or 'all external
+	 * user' group and false otherwise.
 	 * 
 	 * @param bs
 	 * @param groupId
@@ -8839,7 +8873,8 @@ public class GwtServerHelper {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
-		// If we get here the group is not the "all users" group.
+		// If we get here the group is not an 'all users' group.
+		// Return false.
 		return false;
 	}
 	
@@ -10768,6 +10803,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	public static Boolean saveAdhocFolderSetting(AllModulesInjected bs, Long upId, Boolean allowAdHoc, ErrorListRpcResponseData errList) {
 		// Are we dealing with a user or group?
 		if (null != upId) {
@@ -10779,7 +10815,10 @@ public class GwtServerHelper {
 				bs.getProfileModule().setAdHocFoldersEnabled(upId, allowAdHoc);
 			}
 			else if (null != errList) {
-				errList.addError(NLT.get("saveAdHocFolderSetting.invalidUser", new String[]{user.getTitle()}));
+				String key;
+				if (null != user) key = "saveAdHocFolderSetting.invalidUser";
+				else              key = "saveAdHocFolderSetting.invalidGroup";
+				errList.addError(NLT.get(key, new String[]{p.getTitle()}));
 			}
 		}
 		else {
@@ -10811,6 +10850,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	public static Boolean saveDownloadSetting(AllModulesInjected bs, Long upId, Boolean allowDownload, ErrorListRpcResponseData errList) {
 		// Are we dealing with a user?
 		if (null != upId) {
@@ -10825,7 +10865,10 @@ public class GwtServerHelper {
 				bs.getProfileModule().setDownloadEnabled(upId, allowDownload);
 			}
 			else if (null != errList) {
-				errList.addError(NLT.get("saveDownloadSetting.invalidUser", new String[]{user.getTitle()}));
+				String key;
+				if (null != user) key = "saveDownloadSetting.invalidUser";
+				else              key = "saveDownloadSetting.invalidGroup";
+				errList.addError(NLT.get(key, new String[]{p.getTitle()}));
 			}
 		}
 		else {
@@ -10929,15 +10972,23 @@ public class GwtServerHelper {
 			// Yes!  Save the setting to the UserProperties.
 			//     null -> Remove the setting and revert to the zone's setting.
 			// non-null -> Specific value to set.
-			Principal p    = bs.getProfileModule().getEntry(upId);
-			User      user = ((p instanceof User) ? ((User) p) : null);
-			if ((null == user) || (user.isPerson() && (!(user.isShared())))) {
+			Principal p     = bs.getProfileModule().getEntry(upId);
+			User      user  = ((p instanceof User)  ? ((User)  p) : null);
+			Group     group = ((p instanceof Group) ? ((Group) p) : null);
+			
+			boolean modifiableUser  = ((null != user)  && (user.isPerson() && (!(user.isShared())) && user.getIdentityInfo().isInternal()));
+			boolean modifiableGroup = ((null != group) && (!(isAllExternalUsersGroup(bs, group))));
+			if (modifiableUser || modifiableGroup) {
 				// We don't allow this to be set for non-person users
-				// (e.g., E-Mail Posting Agent), or guest.
+				// (e.g., E-Mail Posting Agent), guest, external users
+				// or the all external users group.
 				bs.getProfileModule().setPublicCollectionEnabled(upId, allowPublicCollection);
 			}
 			else if (null != errList) {
-				errList.addError(NLT.get("savePublicCollectionSetting.invalidUser", new String[]{user.getTitle()}));
+				String key;
+				if (null != user) key = "savePublicCollectionSetting.invalidUser";
+				else              key = "savePublicCollectionSetting.invalidGroup";
+				errList.addError(NLT.get(key, new String[]{p.getTitle()}));
 			}
 		}
 		else {
@@ -10991,6 +11042,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	public static Boolean saveWebAccessSetting(AllModulesInjected bs, Long upId, Boolean allowWebAccess, ErrorListRpcResponseData errList) {
 		// Are we dealing with a user?
 		if (null != upId) {
@@ -11005,7 +11057,10 @@ public class GwtServerHelper {
 				bs.getProfileModule().setWebAccessEnabled(upId, allowWebAccess);
 			}
 			else if (null != errList) {
-				errList.addError(NLT.get("saveWebAccessSetting.invalidUser", new String[]{user.getTitle()}));
+				String key;
+				if (null != user) key = "saveWebAccessSetting.invalidUser";
+				else              key = "saveWebAccessSetting.invalidGroup";
+				errList.addError(NLT.get(key, new String[]{p.getTitle()}));
 			}
 		}
 		else {
