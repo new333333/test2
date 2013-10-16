@@ -1791,7 +1791,7 @@ public class GwtUIHelper {
 				int sc = Integer.parseInt(showCollection);
 				if (PermaLinkUtil.COLLECTION_USER_DEFAULT == sc) {
 					if      (SearchUtils.userCanAccessMyFiles(bs, currentUser)) sc = PermaLinkUtil.COLLECTION_MY_FILES;
-					else if (currentUser.isShared())                            sc = PermaLinkUtil.COLLECTION_SHARED_PUBLIC;
+					else if (currentUser.isShared() && isLicenseFilr)           sc = PermaLinkUtil.COLLECTION_SHARED_PUBLIC;
 					else                                                        sc = PermaLinkUtil.COLLECTION_SHARED_WITH_ME;
 					showCollection = String.valueOf(sc);
 				}

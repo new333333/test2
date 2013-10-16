@@ -759,11 +759,15 @@ public class GwtServerHelper {
 		
 		// If we get here, we have access to the user's workspace!  Add
 		// TreeInfo's for the various collections. 
-		addCollection(bs, request, userWS, ti, CollectionType.MY_FILES,       false);
-		addCollection(bs, request, userWS, ti, CollectionType.SHARED_WITH_ME, false);
-		addCollection(bs, request, userWS, ti, CollectionType.SHARED_PUBLIC,  false);
-		addCollection(bs, request, userWS, ti, CollectionType.NET_FOLDERS,    false);
-		addCollection(bs, request, userWS, ti, CollectionType.SHARED_BY_ME,   true );
+		if (!(user.isShared() && Utils.checkIfFilr())) {
+			addCollection(bs, request, userWS, ti, CollectionType.MY_FILES,       false);
+			addCollection(bs, request, userWS, ti, CollectionType.SHARED_WITH_ME, false);
+			addCollection(bs, request, userWS, ti, CollectionType.SHARED_BY_ME,   true );
+			addCollection(bs, request, userWS, ti, CollectionType.NET_FOLDERS,    false);
+		}
+		if (GwtUIHelper.getEffectivePublicCollectionSetting(bs, user)) {
+			addCollection(bs, request, userWS, ti, CollectionType.SHARED_PUBLIC,  false);
+		}
 	}
 	
 	/*
@@ -4463,6 +4467,26 @@ public class GwtServerHelper {
 		return getCurrentUserFilters(userFolderProperties, false);
 	}
 
+	/**
+	 * Returns the default CollectionType for the given user.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static CollectionType getDefaultCollectionType(User user) {
+		CollectionType reply =
+			((user.isShared() && Utils.checkIfFilr()) ?
+				CollectionType.SHARED_PUBLIC          :
+				CollectionType.SHARED_WITH_ME);
+		return reply;
+	}
+	
+	public static CollectionType getDefaultCollectionType() {
+		// Always use the initial form of the method.
+		return getDefaultCollectionType(GwtServerHelper.getCurrentUser());
+	}
+	
 	/**
 	 * Returns a DesktopAppDownloadInfoRpcResponseData object
 	 * containing the information for downloading the desktop
