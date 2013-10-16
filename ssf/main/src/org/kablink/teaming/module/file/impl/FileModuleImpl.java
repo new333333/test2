@@ -541,6 +541,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	checkReservation(entry);
     	
+    	//Start by deleting any cached html files. Since the files are changing, these wouldn't be valid after the change.
+    	deleteCachedFiles(binder, entry);
+    	
     	for (int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
