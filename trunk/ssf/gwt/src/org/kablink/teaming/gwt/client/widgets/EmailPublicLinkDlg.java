@@ -32,23 +32,58 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtFolder;
+import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlgMode;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.datepicker.client.DateBox;
+import com.google.gwt.user.datepicker.client.DatePicker;
 
 /**
  * Implements Vibe's Email Public Link dialog.
@@ -56,10 +91,18 @@ import com.google.gwt.user.client.ui.Panel;
  * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
-public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler {
-	private GwtTeamingMessages	m_messages;		// Access to Vibe's messages.
-	private List<EntityId>		m_entityIds;	// List<EntityId> of the entities whose public links are to be e-mailed.
-	private VibeFlowPanel		m_mainPanel;	//
+public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
+{
+	private List<EntityId> m_entityIds;	// List<EntityId> of the entities whose public links are to be e-mailed.
+	private Image m_headerImg;
+	private Label m_headerNameLabel;
+	private Label m_headerPathLabel;
+	private Label m_emailHint;
+	private Label m_messageHint;
+	private TextBox m_emailAddressesTB;
+	private TextArea m_messageTA;
+	private ShareExpirationWidget m_expirationWidget;
+
 	
 	/*
 	 * Class constructor.
@@ -68,19 +111,19 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler 
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private EmailPublicLinkDlg() {
+	private EmailPublicLinkDlg(
+		boolean autoHide,
+		boolean modal )
+	{
 		// Initialize the superclass...
-		super(false, true, DlgButtonMode.OkCancel);
+		super( autoHide, modal, DlgButtonMode.OkCancel );
 
-		// ...initialize everything else...
-		m_messages = GwtTeaming.getMessages();
-	
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			"",							// Dialog caption set when the dialog runs.
 			this,						// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
-			null);						// Create callback data.  Unused. 
+			null,						// The dialog's EditCanceledHandler.
+			null );						// Create callback data.  Unused. 
 	}
 
 	/**
@@ -93,12 +136,138 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler 
 	 * @return
 	 */
 	@Override
-	public Panel createContent(Object callbackData) {
-		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.addStyleName("vibe-emailPublicLinkDlg-content");
-		return m_mainPanel;
+	public Panel createContent( Object callbackData )
+	{
+		GwtTeamingMessages messages;
+		VibeFlowPanel mainPanel;
+		
+		messages = GwtTeaming.getMessages();
+		
+		mainPanel = new VibeFlowPanel();
+		mainPanel.addStyleName( "vibe-emailPublicLinkDlg-content" );
+		
+		// Create the controls needed in the header
+		{
+			FlowPanel headerPanel;
+			FlowPanel namePanel;
+			
+			headerPanel = new FlowPanel();
+			headerPanel.addStyleName( "emailPublicLinkDlg_HeaderPanel" );
+		
+			m_headerImg = new Image();
+			m_headerImg.addStyleName( "emailPublicLinkDlg_HeaderImg" );
+			headerPanel.add( m_headerImg );
+			
+			namePanel = new FlowPanel();
+			namePanel.addStyleName( "emailPublicLinkDlg_HeaderNamePanel" );
+			
+			m_headerNameLabel = new Label();
+			m_headerNameLabel.addStyleName( "emailPublicLinkDlg_HeaderNameLabel" );
+			namePanel.add( m_headerNameLabel );
+			
+			m_headerPathLabel = new Label();
+			m_headerPathLabel.addStyleName( "emailPublicLinkDlg_HeaderPathLabel" );
+			namePanel.add( m_headerPathLabel );
+			
+			headerPanel.add( namePanel );
+			
+			mainPanel.add( headerPanel );
+		}
+		
+		// Add the control for entering the email addresses.
+		{
+			FlowPanel panel;
+			
+			panel = new FlowPanel();
+			panel.getElement().getStyle().setPosition( Position.RELATIVE );
+			m_emailAddressesTB = new TextBox();
+			m_emailAddressesTB.setVisibleLength( 75 );
+			m_emailAddressesTB.getElement().getStyle().setMarginTop( 10, Unit.PX );
+			m_emailAddressesTB.addKeyPressHandler( new KeyPressHandler()
+			{
+				@Override
+				public void onKeyPress( KeyPressEvent event )
+				{
+					// Hide the hint
+					m_emailHint.setVisible( false );
+				}
+			});
+			panel.add( m_emailAddressesTB );
+			
+			// Create a hint we will put over the top of the text box
+			m_emailHint = new Label( messages.emailPublicLinkDlg_EmailHint() );
+			m_emailHint.addStyleName( "emailPublicLinkDlg_FloatingHint" );
+			panel.add( m_emailHint );
+			
+			mainPanel.add( panel );
+		}
+		
+		// Add the control for entering the message that will be sent with the email.
+		{
+			FlowPanel panel;
+			
+			panel = new FlowPanel();
+			panel.getElement().getStyle().setPosition( Position.RELATIVE );
+			m_messageTA = new TextArea();
+			m_messageTA.getElement().getStyle().setMarginTop( 6, Unit.PX );
+			m_messageTA.setCharacterWidth( 75 );
+			m_messageTA.setVisibleLines( 15 );
+			m_messageTA.addKeyPressHandler( new KeyPressHandler()
+			{
+				@Override
+				public void onKeyPress( KeyPressEvent event )
+				{
+					// Hide the hint
+					m_messageHint.setVisible( false );
+				}
+			});
+			panel.add( m_messageTA );
+			
+			// Create a hint we will put over the top of the text area
+			m_messageHint = new Label( messages.emailPublicLinkDlg_MessageHint() );
+			m_messageHint.addStyleName( "emailPublicLinkDlg_FloatingHint" );
+			panel.add( m_messageHint );
+			
+			mainPanel.add( panel );
+		}
+		
+		// Add the expiration controls.
+		createExpirationContent( mainPanel );
+
+		// Add a hint
+		{
+			Label label;
+			
+			label = new Label( messages.emailPublicLinkDlg_Hint1() );
+			label.addStyleName( "emailPublicLinkDlg_Hint" );
+			label.getElement().getStyle().setMarginTop( 6, Unit.PX );
+			mainPanel.add( label );
+
+			label = new Label( messages.emailPublicLinkDlg_Hint2() );
+			label.addStyleName( "emailPublicLinkDlg_Hint" );
+			label.getElement().getStyle().setMarginBottom( 6, Unit.PX );
+			mainPanel.add( label );
+		}
+		
+		return mainPanel;
 	}
 
+	/**
+	 * 
+	 */
+	private void createExpirationContent( VibeFlowPanel panel )
+	{
+		VibeFlowPanel mainPanel;
+
+		mainPanel = new VibeFlowPanel();
+		mainPanel.addStyleName( "emailPublicLinkDlg_expirationPanel" );
+		
+		m_expirationWidget = new ShareExpirationWidget();
+		mainPanel.add( m_expirationWidget );
+
+		panel.add( mainPanel );
+	}
+	
 	/**
 	 * This method gets called when user user presses the OK push
 	 * button.
@@ -117,6 +286,36 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler 
 	}
 	
 	/**
+	 * Return the email addresses entered by the user.
+	 */
+	private ArrayList<String> getEmailAddresses()
+	{
+		ArrayList<String> listOfEmailAddresses;
+		String text;
+		
+		listOfEmailAddresses = new ArrayList<String>();
+		
+		text = m_emailAddressesTB.getValue();
+		if ( text != null && text.length() > 0 )
+		{
+			String[] emailAddresses;
+			
+			emailAddresses = text.split( "," );
+			if ( emailAddresses != null && emailAddresses.length > 0 )
+			{
+				for ( String nextEmailAddr : emailAddresses )
+				{
+					listOfEmailAddresses.add( nextEmailAddr );
+				}
+			}
+			else
+				listOfEmailAddresses.add( text );
+		}
+		
+		return listOfEmailAddresses;
+	}
+	
+	/**
 	 * Returns the edited List<FavoriteInfo>.
 	 * 
 	 * Implements the DlgBox.getDataFromDlg() abstract method.
@@ -124,11 +323,166 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler 
 	 * @return
 	 */
 	@Override
-	public Object getDataFromDlg() {
-		// Unused.
+	public Object getDataFromDlg()
+	{
+		// Did the user enter any email addresses?
+		{
+			ArrayList<String> listOfEmailAddresses;
+			
+			listOfEmailAddresses = getEmailAddresses();
+			if ( listOfEmailAddresses == null || listOfEmailAddresses.size() == 0 )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				Window.alert( GwtTeaming.getMessages().emailPublicLinkDlg_NoEmailAddresses() );
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						m_emailAddressesTB.setFocus( true );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+				
+				return null;
+			}
+		}
+		
+		// Is the expiration value ok?
+		if ( m_expirationWidget.validateExpirationValue() == false )
+			return null;
+
 		return "";
 	}
 
+	/**
+	 * Issue an rpc request to get information about the given entity.
+	 */
+	private void getEntityInfoFromServer( final EntityId entityId )
+	{
+		if ( entityId == null )
+			return;
+		
+		// Are we working with a folder entry?
+		if ( entityId.isEntry() )
+		{
+			GetEntryCmd cmd;
+			AsyncCallback<VibeRpcResponse> callback;
+
+			// Yes
+			callback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetFolderEntry(),
+						entityId.getEntityId() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					final GwtFolderEntry gwtFolderEntry;
+					
+					gwtFolderEntry = (GwtFolderEntry) response.getResponseData();
+					
+					if ( gwtFolderEntry != null )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								String imgUrl;
+								
+								// Update the name of the entity in the header.
+								m_headerNameLabel.setText( gwtFolderEntry.getEntryName() );
+								m_headerPathLabel.setText( gwtFolderEntry.getParentBinderName() );
+								m_headerPathLabel.setTitle( gwtFolderEntry.getParentBinderName() );
+								
+								// Do we have a url for the file image?
+								imgUrl = gwtFolderEntry.getFileImgUrl();
+								if ( imgUrl != null && imgUrl.length() > 0 )
+								{
+									m_headerImg.setUrl( GwtClientHelper.getRequestInfo().getImagesPath() + imgUrl );
+								}
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			};
+
+			cmd = new GetEntryCmd( null, entityId.getEntityId().toString() );
+			GwtClientHelper.executeCommand( cmd, callback );
+		}
+		else
+		{
+			GetFolderCmd cmd;
+			AsyncCallback<VibeRpcResponse> callback;
+			
+			callback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetFolder(),
+						entityId.getEntityId() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					final GwtFolder gwtFolder;
+					
+					gwtFolder = (GwtFolder) response.getResponseData();
+					
+					if ( gwtFolder != null )
+					{
+						Scheduler.ScheduledCommand cmd;
+
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								// Update the name of the entity in the header
+								m_headerNameLabel.setText( gwtFolder.getFolderName() );
+								m_headerPathLabel.setText( gwtFolder.getParentBinderName() );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			};
+
+			cmd = new GetFolderCmd( null, entityId.getEntityId().toString() );
+			GwtClientHelper.executeCommand( cmd, callback );
+		}
+	}
+	
 	/**
 	 * Returns the Widget to give the focus to.
 	 * 
@@ -137,63 +491,153 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler 
 	 * @return
 	 */
 	@Override
-	public FocusWidget getFocusWidget() {
-		return null;
+	public FocusWidget getFocusWidget()
+	{
+		return m_emailAddressesTB;
 	}
 
 	/*
-	 * Asynchronously populates the contents of the dialog.
+	 * Initialize this dialog
 	 */
-	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				populateDlgNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
-	}
-	
-	/*
-	 * Synchronously populates the contents of the dialog.
-	 */
-	private void populateDlgNow() {
-		// Clear the dialog's current contents...
-		m_mainPanel.clear();
-
-		// ...recreate its contents...
-//!		...this needs to be implemented...
-		m_mainPanel.add(new InlineLabel("...this needs to be implemented..."));
-
-		// ...and show it centered on the screen.
-		center();;
-	}
-
-	/*
-	 * Asynchronously runs the given instance of the e-mail public link
-	 * dialog.
-	 */
-	private static void runDlgAsync(final EmailPublicLinkDlg eplDlg, final String caption, final List<EntityId> entityIds) {
-		ScheduledCommand doRun = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				eplDlg.runDlgNow(caption, entityIds);
-			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
-	}
-	
-	/*
-	 * Synchronously runs the given instance of the e-mail public link
-	 * dialog.
-	 */
-	private void runDlgNow(String caption, List<EntityId> entityIds) {
-		// Store the parameters...
-		setCaption(caption);
+	public void init( String caption, List<EntityId> entityIds )
+	{
+		setCaption( caption );
 		m_entityIds = entityIds;
 
-		// ...and populate the dialog.
-		populateDlgAsync();
+		updateHeader();
+		hideStatusMsg();
+		
+		m_emailAddressesTB.setValue( "" );
+		m_messageTA.setValue( "" );
+		
+		// Change the "Ok" button to "Send"
+		{
+			Button btn;
+			
+			btn = getOkButton();
+			if ( btn != null )
+			{
+				btn.setText( GwtTeaming.getMessages().emailPublicLinkDlg_SendBtn() );
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public void show( boolean centered )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		super.show( centered );
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				// Make the text area for the email message the same width as the text box for email addresses
+				{
+					int width;
+					
+					width = m_emailAddressesTB.getOffsetWidth();
+					m_messageTA.getElement().getStyle().setWidth( width-10, Unit.PX );
+				}
+				
+				// Show the email address hint
+				{
+					int left;
+					int top;
+					Style style;
+					
+					left = m_emailAddressesTB.getAbsoluteLeft() - m_emailAddressesTB.getParent().getAbsoluteLeft();
+					top = m_emailAddressesTB.getAbsoluteTop() - m_emailAddressesTB.getParent().getAbsoluteTop();
+					
+					style = m_emailHint.getElement().getStyle(); 
+					style.setLeft( left+25, Unit.PX );
+					style.setTop( top+8, Unit.PX );
+					
+					m_emailHint.setVisible( true );
+				}
+
+				// Show the email message hint
+				{
+					int left;
+					int top;
+					Style style;
+					
+					left = m_messageTA.getAbsoluteLeft() - m_messageTA.getParent().getAbsoluteLeft();
+					top = m_messageTA.getAbsoluteTop() - m_messageTA.getParent().getAbsoluteTop();
+					
+					style = m_messageHint.getElement().getStyle(); 
+					style.setLeft( left+25, Unit.PX );
+					style.setTop( top+15, Unit.PX );
+					
+					m_messageHint.setVisible( true );
+				}
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
+	 * Update the header that displays the name of the entity we are working with.
+	 * If we are dealing with > 1 entity we don't show a header.
+	 */
+	private void updateHeader()
+	{
+		ImageResource imgResource;
+		int numItems;
+
+		if ( m_entityIds == null )
+		{
+			m_headerImg.setVisible( false );
+			return;
+		}
+		
+		// Are we dealing with > 1 entities?
+		numItems = m_entityIds.size();
+		if ( numItems == 1 )
+		{
+			EntityId entityId;
+			
+			// No
+			entityId = m_entityIds.get( 0 );
+
+			m_headerNameLabel.setText( "" );
+			m_headerPathLabel.setText( "" );
+
+			// Issue an rpc request to get information about this entity
+			getEntityInfoFromServer( entityId );
+
+			// Are we dealing with a folder entry?
+			if ( entityId .isEntry() )
+			{
+				// Yes
+				imgResource = GwtTeaming.getFilrImageBundle().entry_large();
+			}
+			else
+			{
+				// We must be dealing with a binder.
+				imgResource = GwtTeaming.getFilrImageBundle().folder_large();
+			}
+		}
+		else
+		{
+			// We are sharing multiple items.  Use the entry image.
+			imgResource = GwtTeaming.getFilrImageBundle().entry_large();
+			
+			m_headerNameLabel.setText( GwtTeaming.getMessages().sharingMultipleItems( numItems ) );
+			
+			// Put a non-breaking space in the path so that it gets a
+			// height.  This fixes the layout so that the header
+			// doesn't overlap a make public button.
+			m_headerPathLabel.getElement().setInnerHTML( "&nbsp;" );
+		}
+
+		m_headerImg.setVisible( true );
+		m_headerImg.setResource( imgResource );
 	}
 
 	
@@ -212,63 +656,41 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler 
 		void onUnavailable();
 	}
 
-	/*
-	 * Asynchronously loads the EmailPublicLinkDlg and performs some
-	 * operation against the code.
-	 */
-	private static void doAsyncOperation(
-			// Required creation parameters.
-			final EmailPublicLinkDlgClient eplDlgClient,
-			
-			// initAndShow parameters,
-			final EmailPublicLinkDlg	eplDlg,
-			final String				caption,
-			final List<EntityId>		entityIds) {
-		GWT.runAsync(EmailPublicLinkDlg.class, new RunAsyncCallback() {
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_EmailPublicLinkDlg());
-				if (null != eplDlgClient) {
-					eplDlgClient.onUnavailable();
-				}
-			}
-
-			@Override
-			public void onSuccess() {
-				// Is this a request to create a dialog?
-				if (null != eplDlgClient) {
-					// Yes!  Create it and return it via the callback.
-					EmailPublicLinkDlg eplDlg = new EmailPublicLinkDlg();
-					eplDlgClient.onSuccess(eplDlg);
-				}
-				
-				else {
-					// No, it's not a request to create a dialog!  It
-					// must be a request to run an existing one.  Run
-					// it.
-					runDlgAsync(eplDlg, caption, entityIds);
-				}
-			}
-		});
-	}
-	
 	/**
 	 * Loads the EmailPublicLinkDlg split point and returns an instance of it
 	 * via the callback.
 	 * 
 	 * @param eplDlgClient
 	 */
-	public static void createAsync(EmailPublicLinkDlgClient eplDlgClient) {
-		doAsyncOperation(eplDlgClient, null, null, null);
-	}
-	
-	/**
-	 * Initializes and shows the e-mail public link dialog.
-	 * 
-	 * @param eplDlg
-	 * @param entityIds
-	 */
-	public static void initAndShow(EmailPublicLinkDlg eplDlg, String caption, List<EntityId> entityIds) {
-		doAsyncOperation(null, eplDlg, caption, entityIds);
+	public static void createAsync(
+		final boolean autoHide,
+		final boolean modal,
+		final EmailPublicLinkDlgClient eplDlgClient )
+	{
+		GWT.runAsync( EmailPublicLinkDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure(Throwable reason)
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EmailPublicLinkDlg() );
+				if ( null != eplDlgClient )
+				{
+					eplDlgClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				// Is this a request to create a dialog?
+				if ( null != eplDlgClient )
+				{
+					EmailPublicLinkDlg eplDlg;
+
+					eplDlg = new EmailPublicLinkDlg( autoHide, modal );
+					eplDlgClient.onSuccess( eplDlg );
+				}
+			}
+		});
 	}
 }

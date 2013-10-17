@@ -5799,8 +5799,78 @@ td.datePickerMonth {
 	.vibe-copyPublicLinkDlg-content {margin: 10px 10px 10px 13px;}
 /* End:  Copy Public Link dialog styles. */
 
+
 /* Start:  Email Public Link dialog styles. */
 	.vibe-emailPublicLinkDlg-content {margin: 10px 10px 10px 13px;}
+	
+.emailPublicLinkDlg_HeaderPanel
+{
+	position: relative;
+	margin-bottom: 15px;
+}
+
+.emailPublicLinkDlg_HeaderPanel img
+{
+	position: absolute;
+	top: 0px;
+	left: 1px;
+}
+
+.emailPublicLinkDlg_HeaderNamePanel
+{
+	margin-left: 55px;
+	width: 550px;
+}
+
+.emailPublicLinkDlg_HeaderNameLabel
+{
+	font-size: 1.2em;
+	line-height: 1.4em;
+	color: #1f1f1f;
+}
+
+.emailPublicLinkDlg_HeaderPathLabel
+{
+	color: #505354;
+	font-size: 13px;
+	line-height: 16px;
+	overflow: hidden;
+}
+
+.emailPublicLinkDlg_expirationPanel
+{
+	margin-top: 16px;
+}
+
+.emailPublicLinkDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: 13px;
+}
+
+.emailPublicLinkDlg_FloatingHint
+{
+	color: #949494;
+	font-size: small;
+	left: 0;
+	position: absolute;
+	top: 0;
+	z-index: 1000;
+}
+
 /* End:  Email Public Link dialog styles. */
+
+
+/* Start: Share Expiration widget styles. */
+.shareExpirationWidget_expirationPanel
+{
+}
+
+.shareExpirationWidget_expiresOnImg:hover
+{
+	cursor: pointer;
+}
+
+/* End: Share Expiration widget styles. */
 
 /* End Of File */
