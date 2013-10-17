@@ -1083,30 +1083,32 @@ public class GwtViewHelper {
 			// Scan the List<FolderRow>'s again...
 			for (FolderRow fr:  folderRows) {
 				// ...this time, fixing the assignee lists.
-				fixupAIUsers( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
-				fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, groupCounts                                               );
-				fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             teamTitles,      teamCounts                                                );
-				fixupAIUsers( getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
-				fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, groupCounts                                               );
-				fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        teamTitles,      teamCounts                                                );
-				fixupAIUsers( getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
-				fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, groupCounts                                               );
-				fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  teamTitles,      teamCounts                                                );
+				fixupAIUsers(      getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, groupCounts                                               );
+				fixupAITeams(      getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             teamTitles,      teamCounts                                                );
+				fixupAIUsers(      getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, groupCounts                                               );
+				fixupAITeams(      getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        teamTitles,      teamCounts                                                );
+				fixupAIUsers(      getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(     getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, groupCounts                                               );
+				fixupAITeams(      getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  teamTitles,      teamCounts                                                );
 				
-				fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                                               );
-				fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                                               );
-				fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           principalTitles, groupCounts                                               );
+				fixupAIGroups(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                                               );
+				fixupAIGroups(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                                               );
+				fixupAIGroups(     getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           principalTitles, groupCounts                                               );
 				
-				fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                                                );
-				fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                                                );
-				fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                                                );
+				fixupAITeams(      getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                                                );
+				fixupAITeams(      getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                                                );
+				fixupAITeams(      getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                                                );
 				
-				fixupAIUsers(  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                        principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
-				fixupAIUsers(  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
-				fixupAIGroups( getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      principalTitles, groupCounts                                               );
-				fixupAIPublics(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                                    );
-				fixupAIPublics(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                                  );
-				fixupAITeams(  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      teamTitles,      teamCounts                                                );
+				fixupAIUsers(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                        principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
+				fixupAIUsers(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      principalTitles, groupCounts                                               );
+				fixupAIPublics(    getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                                    );
+				fixupAIPublics(    getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                                  );
+				fixupAIPublicLinks(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                                    );
+				fixupAIPublicLinks(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                                  );
+				fixupAITeams(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      teamTitles,      teamCounts                                                );
 			}		
 	
 			// Finally, one last scan through the List<FolderRow>'s...
@@ -1394,6 +1396,11 @@ public class GwtViewHelper {
 				case PUBLIC:
 					ai.setTitle(NLT.get("share.recipientType.title.public"));
 					ai.setHover(NLT.get("share.recipientType.hover.public"));
+					break;
+					
+				case PUBLIC_LINK:
+					ai.setTitle(NLT.get("share.recipientType.title.publicLink"));
+					ai.setHover(NLT.get("share.recipientType.hover.publicLink"));
 					break;
 				}
 				
@@ -2619,17 +2626,40 @@ public class GwtViewHelper {
 	}
 	
 	/*
-	 * Fixes up the public assignees in an List<AssignmentInfo>'s.
+	 * Fixes up the public link assignees in an List<AssignmentInfo>'s.
 	 */
-	private static void fixupAIPublics(List<AssignmentInfo> aiTeamsList) {
+	private static void fixupAIPublicLinks(List<AssignmentInfo> aiPublicLinksList) {
 		// If don't have a list to fixup...
-		if (!(MiscUtil.hasItems(aiTeamsList))) {
+		if (!(MiscUtil.hasItems(aiPublicLinksList))) {
 			// ...bail.
 			return;
 		}
 		
 		// Scan this AssignmentInfo's team assignees...
-		for (AssignmentInfo ai:  aiTeamsList) {
+		for (AssignmentInfo ai:  aiPublicLinksList) {
+			// ...skipping those that aren't really public link...
+			if (!(ai.getAssigneeType().isPublicLink())) {
+				continue;
+			}
+			
+			// ...and setting each one's title and hover.
+			ai.setTitle(NLT.get("share.recipientType.title.publicLink"));
+			ai.setHover(NLT.get("share.recipientType.hover.publicLink"));
+		}
+	}
+	
+	/*
+	 * Fixes up the public assignees in an List<AssignmentInfo>'s.
+	 */
+	private static void fixupAIPublics(List<AssignmentInfo> aiPublicList) {
+		// If don't have a list to fixup...
+		if (!(MiscUtil.hasItems(aiPublicList))) {
+			// ...bail.
+			return;
+		}
+		
+		// Scan this AssignmentInfo's team assignees...
+		for (AssignmentInfo ai:  aiPublicList) {
 			// ...skipping those that aren't really public...
 			if (!(ai.getAssigneeType().isPublic())) {
 				continue;
@@ -2810,10 +2840,11 @@ public class GwtViewHelper {
 			}
 			else {
 				switch (psi.getRecipientType()) {
-				default:     assigneeType = null;                    continue;
-				case user:   assigneeType = AssigneeType.INDIVIDUAL; break;
-				case group:  assigneeType = AssigneeType.GROUP;      break;
-				case team:   assigneeType = AssigneeType.TEAM;       break;
+				default:          assigneeType = null;                     continue;
+				case user:        assigneeType = AssigneeType.INDIVIDUAL;  break;
+				case group:       assigneeType = AssigneeType.GROUP;       break;
+				case publicLink:  assigneeType = AssigneeType.PUBLIC_LINK; break;
+				case team:        assigneeType = AssigneeType.TEAM;        break;
 				}
 			}
 			AssignmentInfo ai = AssignmentInfo.construct(
@@ -6095,6 +6126,11 @@ public class GwtViewHelper {
 				// Return the title of the binder.
 				Binder binder = bs.getBinderModule().getBinder(sId);
 				reply = binder.getTitle();
+				break;
+				
+			case publicLink:
+				// Return a localized public link string.
+				reply = NLT.get("share.recipientType.title.publicLink");
 				break;
 			}
 		}
