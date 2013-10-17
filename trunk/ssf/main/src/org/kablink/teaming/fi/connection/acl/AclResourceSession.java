@@ -186,15 +186,23 @@ public interface AclResourceSession extends ResourceSession {
 	
 	/**
 	 * Returns a sorted set of <code>ResourceChange</code> objects representing the changes occurred on the
-	 * file system since the specified time inclusive. If there's no changes since the last time, this
-	 * method should return an empty set. If the resource driver does not support "change since" capability,
-	 * this method should return a <code>null</code>.
+	 * file system since the specified time inclusive. The result is sorted in ascending order of timestamps. 
+	 * If there's no changes since the last time, this method should return an empty set. If the resource
+	 * driver does not support "change since" capability, this method should return a <code>null</code>.
 	 * 
 	 * 
-	 * @param timestamp
+	 * @param timestamp information about the changes occurred since this time is being requested
+	 * @param maxResults maximum number of <code>ResourceChange</code> objects allowed in the result.
+	 * IMPORTANT: If the number of changes found on the file system is greater than the specified
+	 * <code>maxResults</code>, it is crucially important that the implementation must cut off the
+	 * list at the specified size in a way that honors the timestamp ordering of the elements across
+	 * all changes, both those that made into the list and those that did not. This is so that the
+	 * next round of invocation to this method will not inadvertently miss any changes occurred
+	 * on the file system.
+	 * 
 	 * @return
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public SortedSet<ResourceChange> getChangesSince(long timestamp) throws FIException, UncheckedIOException;
+	public SortedSet<ResourceChange> getChangesSince(long timestamp, int maxResults) throws FIException, UncheckedIOException;
 }
