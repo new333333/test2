@@ -51,10 +51,8 @@ import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
@@ -136,11 +134,9 @@ public class CalendarFolderView extends FolderViewBase
 		CalendarShowEvent.Handler,
 		CalendarViewDaysEvent.Handler,
 		ChangeEntryTypeSelectedEntitiesEvent.Handler,
-		CopyPublicLinkSelectedEntitiesEvent.Handler,
 		CopySelectedEntitiesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		DeleteSelectedEntitiesEvent.Handler,
-		EmailPublicLinkSelectedEntitiesEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		LockSelectedEntitiesEvent.Handler,
 		MarkReadSelectedEntitiesEvent.Handler,
@@ -177,10 +173,8 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.CALENDAR_VIEW_DAYS,
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
-		TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.COPY_SELECTED_ENTITIES,
 		TeamingEvents.DELETE_SELECTED_ENTITIES,
-		TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.LOCK_SELECTED_ENTITIES,
 		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
@@ -1135,27 +1129,6 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles CopyPublicLinkSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the CopyPublicLinkSelectedEntitiesEvent.Handler.onCopyPublicLinkSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onCopyPublicLinkSelectedEntities(CopyPublicLinkSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the copy.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
-			}
-			BinderViewsHelper.copyEntitiesPublicLink(selectedEntityIds);
-		}
-	}
-	
-	/**
 	 * Handles CopySelectedEntitiesEvent's received by this class.
 	 * 
 	 * Implements the CopySelectedEntitiesEvent.Handler.onCopySelectedEntities() method.
@@ -1220,27 +1193,6 @@ public class CalendarFolderView extends FolderViewBase
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
-	}
-	
-	/**
-	 * Handles EmailPublicLinkSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the EmailPublicLinkSelectedEntitiesEvent.Handler.onEmailPublicLinkSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onEmailPublicLinkSelectedEntities(EmailPublicLinkSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the copy.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
-			}
-			BinderViewsHelper.emailEntitiesPublicLink(selectedEntityIds);
-		}
 	}
 	
 	/**
