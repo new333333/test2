@@ -299,6 +299,24 @@ public interface AdminModule {
     		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception;
     	 
     /**
+	 * Send a public link notification mail message to a collection of
+	 * email addresses.
+	 * 
+	 * @param share				- Share item.
+	 * @param sharedEntity		- Entity (folder or folder entry) being shared.
+	 * @param emas				- toList,  stand alone email address.
+	 * @param bccEMAs			- bccList
+	 * @param viewUrl			- The public link view URL.
+	 * @param downloadUrl		- The public link download URL.
+	 * 
+	 * @return
+	 * 
+	 * @throws Exception
+     */
+    public Map<String, Object> sendPublicLinkMail(ShareItem share, DefinableEntity sharedEntity, Collection<String> ems,
+    		Collection<String> bccEMAs, String viewUrl, String downloadUrl) throws Exception;
+    	 
+    /**
 	 * Sends a URL notification mail message to a collection of users
 	 * and/or explicit email addresses.
 	 * 
