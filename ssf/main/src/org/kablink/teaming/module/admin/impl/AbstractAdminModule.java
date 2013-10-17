@@ -2126,6 +2126,172 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     }
 
     /**
+	 * Send a public link notification mail message to a collection of
+	 * email addresses.
+     * 
+     * @param share
+     * @param sharedEntity
+     * @param emailAddresses
+     * @param bccIds
+     * @param viewUrl
+     * @param downloadUrl
+     * 
+     * @return
+     * 
+     * @throws Exception
+     */
+	@Override
+    public Map<String, Object> sendPublicLinkMail(ShareItem share, DefinableEntity sharedEntity, Collection<String> emailAddresses,
+    		Collection<String> bccIds, String viewUrl, String downloadUrl) throws Exception {
+    	// If sending email is not enabled in the system...
+		if (!(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled())) {
+			// ...throw an appropriate exception.
+			throw new ConfigurationException(NLT.get("errorcode.sendmail.disabled"));
+		}
+		
+		// Allocate the error tracking/reply objects.
+		List<SendMailErrorWrapper>	errors = new ArrayList<SendMailErrorWrapper>();
+		Map							result = new HashMap();
+		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
+		
+		// Allocate the maps of email addresses to locales we'll
+		// use for sending the notifications in the appropriate
+		// locale(s).
+		Map<Locale, List<InternetAddress>>	toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
+		List<TimeZone>						targetTZs = new ArrayList<TimeZone>();
+
+		// Process the recipient collections we received into the
+		// appropriate email address to locale map.
+		EmailHelper.addEMAsToLocaleMap(MailModule.TO,  toIAsMap,  targetTZs, MiscUtil.validateCS(emailAddresses));
+		EmailHelper.addEMAsToLocaleMap(MailModule.BCC, bccIAsMap, targetTZs, MiscUtil.validateCS(bccIds        ));
+
+		// What timezone should we use for date conversions?  If
+		// there's only 1 from all the recipients, use that.
+		// Otherwise, use the senders. 
+		User		sendingUser = RequestContextHolder.getRequestContext().getUser();
+		TimeZone	targetTZ;
+		if (1 == targetTZs.size())
+		     targetTZ = targetTZs.get(0);
+		else targetTZ = sendingUser.getTimeZone();
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+		// Once we get here, we have maps containing the valid //
+		// email addresses we need to send notifications to    //
+		// mapped with the locale to use to send them.         //
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+		// Get what we need from the zone for sending email.
+		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
+		MailModule		mm         = getMailModule();
+		String			mailSender = mm.getNotificationMailSenderName(zone);
+		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
+
+		// Get what we need about the sending user for sending email.
+		Date			now         = new Date();
+		InternetAddress	sendingIA   = new InternetAddress();
+		String			sendersEMA  = sendingUser.getEmailAddress();
+		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
+
+		// What Velocity template should we use for this share?
+		String template = "publicLinkNotification.vm";
+		
+		// Scan the unique Locale's we need to localize the share
+		// notification email into.
+		boolean			notifyAsBCC   = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
+		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, bccIAsMap));
+		for (Locale locale:  targetLocales) {
+			// Extract the TO:, CC: and BCC: lists for this Locale.
+			List<InternetAddress> toIAs  = MiscUtil.validateIAL(toIAsMap.get( locale));
+			List<InternetAddress> bccIAs = MiscUtil.validateIAL(bccIAsMap.get(locale));
+			
+			// If we we're supposed to send notifications as BCC:s...
+			if (notifyAsBCC && (!(toIAs.isEmpty()))) {
+				// ...move the TO:s to the BCC:s.
+				bccIAs.addAll(toIAs);
+				toIAs.clear();
+			}
+
+			// Allocate a Map to hold the email components for building
+			// the mime...
+			Map mailMap = new HashMap();
+			
+			// ...add the from...
+			mailMap.put(MailModule.FROM, sendingIA);
+
+			// ...add the recipients...
+			mailMap.put(MailModule.TO,  toIAs );
+			mailMap.put(MailModule.BCC, bccIAs);
+
+			// ...add the subject...
+			String shareTitle = sharedEntity.getTitle();
+			if (!(MiscUtil.hasString(shareTitle))) {
+				shareTitle = ("--" + NLT.get("entry.noTitle", locale) + "--");
+			}
+			String subject = NLT.get("relevance.mailPublicLink", new Object[]{Utils.getUserTitle(sendingUser), shareTitle}, locale);
+			mailMap.put(MailModule.SUBJECT, subject);
+			
+			// ...generate and add the HTML variant...
+			StringWriter	writer  = new StringWriter();
+			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
+           	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
+		    VelocityContext	ctx     = getPublicLinkVelocityContext(visitor, share, sharedEntity, viewUrl, downloadUrl);
+			visitor.processTemplate(template, ctx);
+			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
+			
+			// ...generate and add the TEXT variant...
+			writer  = new StringWriter();
+			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
+           	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
+		    ctx     = getPublicLinkVelocityContext(visitor, share, sharedEntity, viewUrl, downloadUrl);
+			visitor.processTemplate(template, ctx);
+			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
+
+			// ...create the mime helper... 
+			MimeSharePreparator helper = new MimeSharePreparator(mailMap, logger);
+			helper.setDefaultFrom(sendingUser.getEmailAddress());
+			
+			try {
+				// ...and send the email.
+				mm.sendMail(mailSender, helper);
+			}
+			
+	 		catch (MailSendException ex) {
+	 			// The send failed!  Log the exception...
+	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
+	 			logger.error("EXCEPTION:  Error sending share notification:" + exMsg);
+				logger.debug("EXCEPTION", ex);
+				errors.add(new SendMailErrorWrapper(ex, exMsg));
+
+				// ...and if there were any send failed
+				// ...sub-exceptions...
+				Exception[] exceptions = ex.getMessageExceptions();
+				int exCount = ((null == exceptions) ? 0 : exceptions.length);
+	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
+	 				// ...return them in the error list too.
+	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
+	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
+	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
+	 				
+	 			}
+	 	   	}
+	 		
+	 		catch (MailAuthenticationException ex) {
+	 			// The send failed because we couldn't authenticate to
+	 			// the email server!  Log the exception.
+	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
+	       		logger.error("EXCEPTION:  Authentication Exception:" + exMsg);				
+				logger.debug("EXCEPTION", ex);
+				errors.add(new SendMailErrorWrapper(ex, exMsg));
+	 		} 
+		}
+
+		// If we get here, result refers to a map of any errors, ...
+		// Return it.
+    	return result;
+    }
+
+    /**
 	 * Sends a URL notification mail message to a collection of users
 	 * and/or explicit email addresses.
 	 * 
@@ -2639,6 +2805,37 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		reply.put("ssSignin",				NLT.get("share.notify.signin")				   		);
 		reply.put("ssConfirmNotify",		NLT.get("share.notify.confirm")			   			);
 		reply.put("ssProduct",         		(Utils.checkIfFilr() ? "Filr" : "Vibe")           	);
+		
+		// ...and return it.
+		return reply;
+	}
+	
+	/*
+	 * Returns a VelocityContext to use for public link notification
+	 * emails. 
+	 */
+	private static VelocityContext getPublicLinkVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity, String viewUrl, String downloadUrl) {
+		// Create the context...
+	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
+	    
+	    // ...initialize it...
+	    Notify notify = visitor.getNotifyDef();
+	    User user = RequestContextHolder.getRequestContext().getUser();
+		reply.put("ssVisitor",   	 	visitor                                                                                                     );
+		reply.put("ssShare",        	share                                                                                                       );
+		reply.put("ssSharedEntity",		sharedEntity                                                                                                );
+		reply.put("ssShareExpiration",	EmailHelper.getShareExpiration(notify.getLocale(), notify.getTimeZone(), share)                             );
+		reply.put("ssSharer",        	NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user)}, visitor.getNotifyDef().getLocale()));
+		reply.put("ssProduct",       	(Utils.checkIfFilr() ? "Filr" : "Vibe")                                                                     );
+		reply.put("user",           	user                                                                                                        );
+		
+		reply.put("sspublicLinkDownloadHeader", NLT.get("share.publicLink.downloadHeader", visitor.getNotifyDef().getLocale()));
+		reply.put("ssPublicLinkDownloadUrl",    downloadUrl                                                                   );
+		
+		if (MiscUtil.hasString(viewUrl)) {
+			reply.put("sspublicLinkViewHeader", NLT.get("share.publicLink.viewHeader", visitor.getNotifyDef().getLocale()));
+			reply.put("ssPublicLinkViewUrl",    viewUrl                                                                   );
+		}
 		
 		// ...and return it.
 		return reply;
