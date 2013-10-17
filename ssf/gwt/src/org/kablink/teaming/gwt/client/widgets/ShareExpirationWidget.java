@@ -76,6 +76,7 @@ public class ShareExpirationWidget extends Composite
 	private TextBox m_expiresAfterTextBox;
 
 	private static long MILLISEC_IN_A_DAY = 86400000;
+	private static String LEAVE_UNCHANGED = "leave-unchanged";
 	
 	/**
 	 * 
@@ -222,6 +223,44 @@ public class ShareExpirationWidget extends Composite
 		}
 
 		initWidget( mainPanel );
+	}
+	
+	/**
+	 * Add "Do not modify" as the first item in the m_expiresListbox
+	 */
+	public void addDoNotModify()
+	{
+		GwtTeamingMessages messages;
+		
+		messages = GwtTeaming.getMessages();
+		
+		m_expiresListbox.addItem( messages.editShareDlg_leaveUnchanged(), LEAVE_UNCHANGED );
+		m_expiresListbox.setSelectedIndex( m_expiresListbox.getItemCount()-1 );
+	}
+	
+	/**
+	 * Add the 3 standard expiration types
+	 */
+	public void addStandardExpirationTypes()
+	{
+		GwtTeamingMessages messages;
+		
+		messages = GwtTeaming.getMessages();
+		
+		m_expiresListbox.clear();
+		
+		m_expiresListbox.addItem( 
+							messages.shareExpirationDlg_expiresNever(),
+							ShareExpirationType.NEVER.toString() );
+		
+		m_expiresListbox.addItem(
+							messages.shareExpirationDlg_expiresOn(),
+							ShareExpirationType.ON_DATE.toString() );
+		
+		m_expiresListbox.addItem(
+							messages.shareExpirationDlg_expiresAfter(),
+							ShareExpirationType.AFTER_DAYS.toString() );
+		
 	}
 
 	/**
@@ -437,6 +476,8 @@ public class ShareExpirationWidget extends Composite
 				break;
 			}
 		}
+		
+		danceWidget( false );
 	}
 	
 	/**
