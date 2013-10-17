@@ -4689,6 +4689,10 @@ public class GwtViewHelper {
 						fr.setPinned(true);
 					}
 
+					// Set this entity's family type in the row.
+					String entityFileFamily = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD);
+					fr.setRowFamily(entityFileFamily);
+
 					// If we working with a binder...
 					if (!isEntityFolderEntry) {
 						// ...store it's icon name...
@@ -4957,7 +4961,7 @@ public class GwtViewHelper {
 													// completeNFRightsRequired = true;
 												}
 											}
-											if (isEntityFolderEntry && GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
+											if (isEntityFolderEntry && GwtServerHelper.isFamilyFile(entityFileFamily)) {
 												String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
 												if (MiscUtil.hasString(fName)) {
 													eti.setFile(true);

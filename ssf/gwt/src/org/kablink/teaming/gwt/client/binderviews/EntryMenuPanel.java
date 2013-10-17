@@ -151,6 +151,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	private boolean							m_includeColumnResizer;		//
 	private boolean							m_isIE;						//
 	private boolean							m_panelInitialized;			// Set true after the panel has completed initializing.
+	private boolean							m_shareMenuIsDropdown;		//
 	private boolean							m_viewingPinnedEntries;		//
 	private boolean							m_viewingSharedFiles;		//
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
@@ -1247,6 +1248,12 @@ public class EntryMenuPanel extends ToolPanelBase
 		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = menuItem; break;
 		case TRASH_RESTORE_SELECTED_ENTITIES: m_trashRestoreSelectedMenu = menuItem; break;
 		case VIEW_SELECTED_ENTRY:             m_detailsMenu              = menuItem; break;
+		case SHARE_SELECTED_ENTITIES:
+			if (null == m_shareMenu) {
+				m_shareMenu           = menuItem;
+				m_shareMenuIsDropdown = false;
+			}
+			break;
 		}
 		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
 		if (null != menuBar)
@@ -1289,8 +1296,8 @@ public class EntryMenuPanel extends ToolPanelBase
 		
 		String structuredName = structuredTBI.getName();
 		if (GwtClientHelper.hasString(structuredName)) {
-			if      (structuredName.equals("1_more"))  m_moreMenu = structuredMenuItem;
-			else if (structuredName.equals("1_share")) m_shareMenu = structuredMenuItem;
+			if      (structuredName.equals("1_more"))   m_moreMenu = structuredMenuItem;
+			else if (structuredName.equals("1_share")) {m_shareMenu = structuredMenuItem; m_shareMenuIsDropdown = true;}
 		}
 		
 		// ...scan the nested items...
@@ -1363,13 +1370,15 @@ public class EntryMenuPanel extends ToolPanelBase
 			     m_shareMenu.removeStyleName("vibe-menuDisabled");
 			else m_shareMenu.addStyleName(   "vibe-menuDisabled");
 			
-			// ...and update its display to reflect the state of the
-			// ...menu item (in particular, the drop down image on the
-			// ...menu.)
-			m_shareMenu.setHTML(
-				renderStructuredItemHTML(
-					m_shareMenu.getText(),
-					enable));
+			if (m_shareMenuIsDropdown) {
+				// ...and update its display to reflect the state of the
+				// ...menu item (in particular, the drop down image on the
+				// ...menu.)
+				m_shareMenu.setHTML(
+					renderStructuredItemHTML(
+						m_shareMenu.getText(),
+						enable));
+			}
 		}
 
 		// If we have a delete menu item...

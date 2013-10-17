@@ -887,6 +887,23 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private void copySelectedEntitiesPublicLinkNow(List<EntityId> selectedEntities) {
 		BinderViewsHelper.copyEntitiesPublicLink(selectedEntities);
 	}
+
+	/*
+	 * Returns the number of entry rows in a List<FolderRow> that are
+	 * not file entries.
+	 */
+	private static int countNonFileEntryRows(List<FolderRow> rows) {
+		int reply = 0;
+		if (GwtClientHelper.hasItems(rows)) {
+			boolean isFilr = GwtClientHelper.isLicenseFilr();
+			for (FolderRow row:  rows) {
+				if (row.getEntityId().isEntry() && (!(row.isRowFile(isFilr)))) {
+					reply += 1;
+				}
+			}
+		}
+		return reply;
+	}
 	
 	/*
 	 * Removes the selection from the rows in a List<FolderRows>.
@@ -2030,22 +2047,28 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		else {
 			// No, they don't have rights to share everything!  What
 			// type of share failures are we dealing with?
-			int totalShareFailures = invalidRows.size();
-			int plShareFailures    = BinderViewsHelper.getFolderPublicLinkFailureCount(selectedEntities);
-			int otherShareFailures = (totalShareFailures - plShareFailures);
+			int totalPLFailures    = invalidRows.size();
+			int plFolderFailures   = BinderViewsHelper.getFolderPublicLinkFailureCount(selectedEntities);
+			int plNonFileFailures  = countNonFileEntryRows(invalidRows);
+			int otherShareFailures = (totalPLFailures - (plFolderFailures + plNonFileFailures));
 			if (0 > otherShareFailures) {
 				otherShareFailures = 0;
 			}
-			boolean hasPLShareFailures    = (0 < plShareFailures   );
-			boolean hasOtherShareFailures = (0 < otherShareFailures);
+			boolean hasPLFolderFailures  = (0 < plFolderFailures  );
+			boolean hasPLNonFileFailures = (0 < plNonFileFailures );
+			boolean hasOtherPLFailures   = (0 < otherShareFailures);
 			
 			// Can they share any of them?
-			if (selectedEntities.size() == totalShareFailures) {
+			if (selectedEntities.size() == totalPLFailures) {
 				// No!  Tell them about the problem and bail.
 				String shareAlert;
-				if      (hasPLShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_CopyPublicLinkNoRightsAndFolders();
-				else if (hasPLShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_CopyPublicLinkFolders();
-				else                                                  shareAlert = m_messages.vibeDataTable_Warning_CopyPublicLinkNoRights();
+				if      (hasPLFolderFailures && hasPLNonFileFailures && hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_3();
+				else if (hasPLFolderFailures && hasPLNonFileFailures)                       shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_2a();
+				else if (                       hasPLNonFileFailures && hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_2b();
+				else if (hasPLFolderFailures &&                         hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_2c();
+ 				else if (hasPLFolderFailures)                                               shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_1a();
+				else if (                       hasPLNonFileFailures)                       shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_1b();
+				else                                                                        shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_1c();
 				GwtClientHelper.deferredAlert(shareAlert);
 				return;
 			}
@@ -2053,9 +2076,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Is the user sure they want to share the selections
 			// they have rights to share?
 			final String confirmPrompt;
-			if      (hasPLShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLinkNoRightsAndFolders();
-			else if (hasPLShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLinkFolders();
-			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLinkNoRights();
+			if      (hasPLFolderFailures && hasPLNonFileFailures && hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_3();
+			else if (hasPLFolderFailures && hasPLNonFileFailures)                       confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_2a();
+			else if (                       hasPLNonFileFailures && hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_2b();
+			else if (hasPLFolderFailures &&                         hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_2c();
+			else if (hasPLFolderFailures)                                               confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_1a();
+			else if (                       hasPLNonFileFailures)                       confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_1b();
+			else                                                                        confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_1c();
 			ConfirmDlg.createAsync(new ConfirmDlgClient() {
 				@Override
 				public void onUnavailable() {
@@ -2406,22 +2433,28 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		else {
 			// No, they don't have rights to share everything!  What
 			// type of share failures are we dealing with?
-			int totalShareFailures = invalidRows.size();
-			int plShareFailures    = BinderViewsHelper.getFolderPublicLinkFailureCount(selectedEntities);
-			int otherShareFailures = (totalShareFailures - plShareFailures);
+			int totalPLFailures    = invalidRows.size();
+			int plFolderFailures   = BinderViewsHelper.getFolderPublicLinkFailureCount(selectedEntities);
+			int plNonFileFailures  = countNonFileEntryRows(invalidRows);
+			int otherShareFailures = (totalPLFailures - (plFolderFailures + plNonFileFailures));
 			if (0 > otherShareFailures) {
 				otherShareFailures = 0;
 			}
-			boolean hasPLShareFailures    = (0 < plShareFailures   );
-			boolean hasOtherShareFailures = (0 < otherShareFailures);
+			boolean hasPLFolderFailures  = (0 < plFolderFailures  );
+			boolean hasPLNonFileFailures = (0 < plNonFileFailures );
+			boolean hasOtherPLFailures   = (0 < otherShareFailures);
 			
 			// Can they share any of them?
-			if (selectedEntities.size() == totalShareFailures) {
+			if (selectedEntities.size() == totalPLFailures) {
 				// No!  Tell them about the problem and bail.
 				String shareAlert;
-				if      (hasPLShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_EmailPublicLinkNoRightsAndFolders();
-				else if (hasPLShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_EmailPublicLinkFolders();
-				else                                                  shareAlert = m_messages.vibeDataTable_Warning_EmailPublicLinkNoRights();
+				if      (hasPLFolderFailures && hasPLNonFileFailures && hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_3();
+				else if (hasPLFolderFailures && hasPLNonFileFailures)                       shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_2a();
+				else if (                       hasPLNonFileFailures && hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_2b();
+				else if (hasPLFolderFailures &&                         hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_2c();
+				else if (hasPLFolderFailures)                                               shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_1a();
+				else if (                       hasPLNonFileFailures)                       shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_1b();
+				else                                                                        shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_1c();
 				GwtClientHelper.deferredAlert(shareAlert);
 				return;
 			}
@@ -2429,9 +2462,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Is the user sure they want to share the selections
 			// they have rights to share?
 			final String confirmPrompt;
-			if      (hasPLShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLinkNoRightsAndFolders();
-			else if (hasPLShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLinkFolders();
-			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLinkNoRights();
+			if      (hasPLFolderFailures && hasPLNonFileFailures && hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_3();
+			else if (hasPLFolderFailures && hasPLNonFileFailures)                       confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_2a();
+			else if (                       hasPLNonFileFailures && hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_2b();
+			else if (hasPLFolderFailures &&                         hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_2c();
+			else if (hasPLFolderFailures)                                               confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_1a();
+			else if (                       hasPLNonFileFailures)                       confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_1b();
+			else                                                                        confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_1c();
 			ConfirmDlg.createAsync(new ConfirmDlgClient() {
 				@Override
 				public void onUnavailable() {
@@ -4124,6 +4161,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					
 					// Yes, it's sharable!  Is it an entry?
 					else if (row.getEntityId().isBinder()) {
+						// No!  Track it as invalid.
+						reply.add(row);
+					}
+					
+					// Yes, it's an entry!  Is it a file entry?
+					else if (!(row.isRowFile(GwtClientHelper.isLicenseFilr()))) {
 						// No!  Track it as invalid.
 						reply.add(row);
 					}

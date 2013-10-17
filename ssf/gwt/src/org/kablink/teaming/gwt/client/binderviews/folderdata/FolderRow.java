@@ -90,6 +90,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, List<ShareMessageInfo>>		m_rowShareMessageInfos;		// A map of column names to List<ShareMessageInfo>'s              possibly stored for a column.
 	private Map<String, String>						m_rowStrings;				// A map of column names to String values                         possibly stored for a column.
 	private Map<String, UserType>					m_rowUserTypes;				// A map of column names to UserType values                       possibly stored for a column.
+	private String									m_rowFamily;				// Family type of this row's entity.
 
 	/**
 	 * Inner class used to wrap a long for use as a specific object
@@ -190,6 +191,7 @@ public class FolderRow implements IsSerializable {
 	public Map<String, String>					getRowStringsMap()                     {validateMapStrings();          return m_rowStrings;         }
 	public Map<String, UserType>				getRowUserTypesMap()                   {validateMapUserTypes();        return m_rowUserTypes;       }
 	public String								getBinderIcon(BinderIconSize iconSize) {return m_binderIcons.getBinderIcon(iconSize);               }
+	public String								getRowFamily()                         {return m_rowFamily;                                         }
 
 	/**
 	 * Set'er methods.
@@ -202,6 +204,7 @@ public class FolderRow implements IsSerializable {
 	public void setMyFilesDir(boolean            myFilesDir)                          {m_myFilesDir = myFilesDir;                        }
 	public void setPinned(    boolean            pinned)                              {m_pinned     = pinned;                            }
 	public void setBinderIcon(String             binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}
+	public void setRowFamily( String             rowFamily)                           {m_rowFamily  = rowFamily;                         }
 	
 	/**
 	 * Clears the binder icons being tracked in this TreeInfo.
@@ -689,6 +692,25 @@ public class FolderRow implements IsSerializable {
 	 */
 	public boolean isColumnValueUserType(FolderColumn fc) {
 		return ((null != m_rowUserTypes) && (null != m_rowUserTypes.get(getValueKey(fc))));
+	}
+
+	/**
+	 * Returns true if this row corresponds to a file entity and false
+	 * otherwise.
+	 *
+	 * @param isFilr
+	 * 
+	 * @return
+	 */
+	public boolean isRowFile(boolean isFilr) {
+		boolean reply = (null != m_rowFamily);
+		if (reply) {
+			reply = m_rowFamily.equalsIgnoreCase("file");
+			if ((!reply) && (!isFilr)) {
+				reply = m_rowFamily.equalsIgnoreCase("photo");
+			}
+		}
+		return reply;
 	}
 
 	/*
