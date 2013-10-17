@@ -3053,5 +3053,13 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by PromptDlg.
 	String promptDlgHeader();
+
+	// Strings used in the Email Public Link dialog
+	String emailPublicLinkDlg_EmailHint();
+	String emailPublicLinkDlg_Hint1();
+	String emailPublicLinkDlg_Hint2();
+	String emailPublicLinkDlg_MessageHint();
+	String emailPublicLinkDlg_NoEmailAddresses();
+	String emailPublicLinkDlg_SendBtn();
 	
 }// end GwtTeamingMessages

@@ -947,7 +947,7 @@ public class BinderViewsHelper {
 		// Have we created a email public link dialog yet?
 		if (null == m_emailPublicLinkDlg) {
 			// No!  Create one now...
-			EmailPublicLinkDlg.createAsync(new EmailPublicLinkDlgClient() {
+			EmailPublicLinkDlg.createAsync( false, true, new EmailPublicLinkDlgClient( ) {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
@@ -1850,10 +1850,16 @@ public class BinderViewsHelper {
 	 * Synchronously shows the email public link dialog.
 	 */
 	private static void showEmailPublicLinkDlgNow(List<EntityId> entityIds) {
-		String caption = GwtClientHelper.patchMessage(
-			m_messages.emailPublicLinkTheseItems(GwtClientHelper.getProductName()),
-			String.valueOf(entityIds.size()));
-		EmailPublicLinkDlg.initAndShow(m_emailPublicLinkDlg, caption, entityIds);
+		if ( m_emailPublicLinkDlg != null )
+		{
+			String caption;
+
+			caption = GwtClientHelper.patchMessage(
+											m_messages.emailPublicLinkTheseItems(GwtClientHelper.getProductName()),
+											String.valueOf(entityIds.size()));
+			m_emailPublicLinkDlg.init( caption, entityIds );
+			m_emailPublicLinkDlg.show( true );
+		}
 	}
 
 	/*
