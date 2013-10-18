@@ -2829,11 +2829,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		reply.put("ssProduct",       	(Utils.checkIfFilr() ? "Filr" : "Vibe")                                                                     );
 		reply.put("user",           	user                                                                                                        );
 		
-		reply.put("sspublicLinkDownloadHeader", NLT.get("share.publicLink.downloadHeader", visitor.getNotifyDef().getLocale()));
+		reply.put("ssPublicLinkDownloadHeader", NLT.get("share.publicLink.downloadHeader", visitor.getNotifyDef().getLocale()));
 		reply.put("ssPublicLinkDownloadUrl",    downloadUrl                                                                   );
 		
 		if (MiscUtil.hasString(viewUrl)) {
-			reply.put("sspublicLinkViewHeader", NLT.get("share.publicLink.viewHeader", visitor.getNotifyDef().getLocale()));
+			reply.put("ssPublicLinkViewHeader", NLT.get("share.publicLink.viewHeader", visitor.getNotifyDef().getLocale()));
 			reply.put("ssPublicLinkViewUrl",    viewUrl                                                                   );
 		}
 		

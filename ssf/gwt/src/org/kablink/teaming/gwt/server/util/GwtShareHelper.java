@@ -57,7 +57,6 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
-import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -83,6 +82,7 @@ import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.PublicLinksRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateShareListsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtEmailPublicLinkData;
@@ -813,7 +813,7 @@ public class GwtShareHelper
 																	fileName );
 
 						// Can this file be rendered as html?
-						if ( SsfsUtil.supportsViewAsHtml( fileName ) )
+						if ( GwtViewHelper.supportsViewAsHtml( fileName ) )
 						{
 							// Yes, get the view file url.
 							viewUrl = WebUrlUtil.getSharedPublicFileUrl(
@@ -2835,6 +2835,51 @@ public class GwtShareHelper
 			if ( deleteEx instanceof AccessControlException ) key = "deleteShareError.AccssControlException";
 			else                                              key = "deleteShareError.OtherException";
 			reply.addError( NLT.get( key, new String[]{ shareTitle, sharerTitle } ) );
+		}
+	}
+
+	/**
+	 * Returns a PublicLinksRpcResponseData object containing the
+	 * public links for the specified entities.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static PublicLinksRpcResponseData getPublicLinks( AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds ) throws GwtTeamingException
+	{
+		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.getPublicLinks()" );
+		try
+		{
+			PublicLinksRpcResponseData reply = new PublicLinksRpcResponseData();
+
+//!			...this needs to be implemented...
+			reply.addError("GwtShareHelper.getPublicLinks():  ...this needs to be implemented...");
+			
+			// If we get here, reply refers to a
+			// PublicLinksRpcResponseData containing the results of obtaining
+			// the public links for the entities.  Return it.
+			return reply;
+		}
+		
+		catch ( Exception e )
+		{
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtShareHelper.getPublicLinks( SOURCE EXCEPTION ):  " );
+		}
+		
+		finally
+		{
+			gsp.stop();
 		}
 	}
 }

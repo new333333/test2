@@ -1043,14 +1043,6 @@ public class GwtViewHelper {
 				}
 			}
 	
-			// If we don't have any assignees to complete...
-			boolean hasPrincipals = (!(principalIds.isEmpty()));
-			boolean hasTeams      = (!(teamIds.isEmpty()));		
-			if ((!hasPrincipals) && (!hasTeams)) {
-				// ...bail.
-				return;
-			}
-	
 			// Construct Maps, mapping the IDs to their titles,
 			// membership counts, ...
 			Map<Long, String>			avatarUrls        = new HashMap<Long, String>();
@@ -9048,11 +9040,15 @@ public class GwtViewHelper {
 		}
 	}
 
-	/*
+	/**
 	 * Returns true if the given filename supports viewing as HTML and
 	 * false otherwise.
+	 * 
+	 * @param fName
+	 * 
+	 * @return
 	 */
-	private static boolean supportsViewAsHtml(String fName) {
+	public static boolean supportsViewAsHtml(String fName) {
 		if (!(MiscUtil.hasString(fName))) {
 			return false;
 		}

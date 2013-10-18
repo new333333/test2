@@ -5796,7 +5796,23 @@ td.datePickerMonth {
 /* End:  Prompt dialog styles. */
 
 /* Start:  Copy Public Link dialog styles. */
-	.vibe-copyPublicLinkDlg-content {margin: 10px 10px 10px 13px;}
+	.vibe-copyPublicLinkDlg-contentPanel    {margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-createButton    {}
+	.vibe-copyPublicLinkDlg-headerPanel     {position: relative; margin-bottom: 15px;}
+	.vibe-copyPublicLinkDlg-headerPanel img {position: absolute; top: 0px; left: 1px;}
+	.vibe-copyPublicLinkDlg-headerNamePanel {margin-left: 55px; width: 550px;}
+	.vibe-copyPublicLinkDlg-headerNameLabel {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
+	.vibe-copyPublicLinkDlg-headerPathLabel {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-copyPublicLinkDlg-hintPanel       {display: block; width: 600px; white-space: normal; margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-hintStart       {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
+	.vibe-copyPublicLinkDlg-hintTail        {display: inline; font-weight: normal; font-size: .9em;}
+	.vibe-copyPublicLinkDlg-linksPanel      {}
+	.vibe-copyPublicLinkDlg-mainPanel       {margin: 10px 10px 10px 13px;}
+	.vibe-copyPublicLinkDlg-readingImage    {display: inline; padding-right: 5px;}
+	.vibe-copyPublicLinkDlg-readingLabel    {display: inline; font-size: 1.1em; color: #505354;}
+	.vibe-copyPublicLinkDlg-readingPanel    {display: block;}
+	.vibe-copyPublicLinkDlg-scrollPanel     {overflow-y: auto !important; overflow-x: hidden !important; border: 1px solid #C4C4C4;}
+	.vibe-copyPublicLinkDlg-scrollLimit     {height: 175px;}
 /* End:  Copy Public Link dialog styles. */
 
 

@@ -88,6 +88,7 @@
 	.email-expire   {font-size: 1em;   color: #949494; margin-top: 10px;}
 	.email-note     {font-size: 1em;   color: #1f1f1f; margin-top: 10px; line-height: 1.4em;}
 	.email-logo     {font-size: 1.2em; color: #5691a6; margin-top: 25px}
+	.email-title    {font-size: 1em;   color: #949494; font-weight: bold;}
 	.email-plHeader {font-size: 1em;   color: #1f1f1f; margin-top: 10px; line-height: 1.4em;}
  </style>
 #end

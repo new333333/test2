@@ -456,6 +456,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetProfileInfo();
 	String rpcFailure_GetProfileStats();
 	String rpcFailure_GetProjectInfo();
+	String rpcFailure_GetPublicLinks();
 	String rpcFailure_GetRecentPlaces();
 	String rpcFailure_GetReportsInfo();
 	String rpcFailure_GetRootWorkspaceId();
@@ -3079,5 +3080,16 @@ public interface GwtTeamingMessages extends Messages
 	String emailPublicLinkDlg_NoEmailAddresses();
 	String emailPublicLinkDlg_SendBtn();
 	String emailPublicLinkDlg_SendingEmails();
+
+	// Strings used in the Copy Public Link dialog.
+	String copyPublicLink(String product);
+	String copyPublicLink_Button(String product);
+	String copyPublicLink_Error_ReadErrors();
+	String copyPublicLink_HintSingle(String product);
+	String copyPublicLink_HintMultiple(String product);
+	String copyPublicLink_InternalError_NoEntries();
+	String copyPublicLink_InternalError_NotAnEntry();
+	String copyPublicLink_MultipleItems(int numItems);
+	String copyPublicLink_Reading();
 	
 }// end GwtTeamingMessages

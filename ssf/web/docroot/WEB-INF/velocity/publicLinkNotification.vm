@@ -31,29 +31,30 @@
 	
 	<div class="email-block">  
 		<div class="email-share">$esc.html(${ssSharer})</div>  
-		<div class="email-url"><a class="email-anchor" href="$ssVisitor.getPermaLink($ssSharedEntity)">$esc.html(${ssSharedEntity.Title})</a></div>
+		<div class="email-title">$esc.html(${ssSharedEntity.Title})</div>
 		<div class="email-expire">$esc.html(${ssShareExpiration})</div>
 		#if ($ssShare.Comment && $ssShare.Comment != "")
 			<div class="email-note">$esc.html(${ssShare.Comment})</div>
 		#end
 		
 		<div class="email-logo">Novell<span style="font-size: 8px;">&reg;</span> $esc.html(${ssProduct})</div>
+		<br />
 		
 		#if ($ssPublicLinkViewUrl && $ssPublicLinkViewUrl != "")
-			<div class="email-plHeader">$esc.html(${share.publicLink.viewHeader})</div>
-			<div class="email-url"><a class="email-anchor" href="${ssPublicLinkViewUrl}" /></div>
+			<div class="email-plHeader">$esc.html(${ssPublicLinkViewHeader})</div>
+			<div class="email-url"><a class="email-anchor" href="${ssPublicLinkViewUrl}">$esc.html(${ssPublicLinkViewUrl})</a></div>
 			<br />
 		#end
 		
-		<div class="email-plHeader">$esc.html(${share.publicLink.downloadHeader})</div>
-		<div class="email-url"><a class="email-anchor" href="${ssPublicLinkDownloadUrl}" /></div>
+		<div class="email-plHeader">$esc.html(${ssPublicLinkDownloadHeader})</div>
+		<div class="email-url"><a class="email-anchor" href="${ssPublicLinkDownloadUrl}">$esc.html(${ssPublicLinkDownloadUrl})</a></div>
 	</div>
 	
 
 #else
 	#ss_printLn(${ssSharer})
 	
-	#ss_printLn($ssVisitor.getPermaLink($ssSharedEntity))
+	#ss_printLn(${ssSharedEntity.Title})
 	
 	#ss_printLn(${ssShareExpiration})
 	
@@ -64,10 +65,10 @@
 	#ss_printLn("Novell® ${ssProduct}")
 	
 	#if ($ssPublicLinkViewUrl && $ssPublicLinkViewUrl != "")
-		#ss_printLn(${share.publicLink.viewHeader})
+		#ss_printLn(${ssPublicLinkViewHeader})
 		#ss_printLn(${ssPublicLinkViewUrl})
 	#end
 	
-	#ss_printLn(${share.publicLink.downloadHeader})
+	#ss_printLn(${ssPublicLinkDownloadHeader})
 	#ss_printLn(${ssPublicLinkDownloadUrl})
 #end
