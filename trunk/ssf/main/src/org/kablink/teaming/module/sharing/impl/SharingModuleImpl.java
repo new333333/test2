@@ -268,9 +268,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				}
 				//Now check that the entry itself allows the requested operation
 				//First test if the user is allowed to do all of the rights in the rights list
-				List<WorkAreaOperation> ops = shareItem.getRightSet().getRights();
-				for (WorkAreaOperation op : ops) {
-					accessControlManager.checkOperation(fe, op);
+				List<FolderOperation> ops = shareItem.getRightSet().getFolderEntryRights();
+				for (FolderOperation op : ops) {
+					folderModule.checkAccess(fe, op);
 				}
 				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
 					if (recipient.getIdentityInfo().isInternal()) {
@@ -320,9 +320,17 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				}
 				//Now check the access to the binder
 				//First test if the user is allowed to do all of the rights in the rights list
-				List<WorkAreaOperation> ops = shareItem.getRightSet().getRights();
-				for (WorkAreaOperation op : ops) {
-					accessControlManager.checkOperation(binder, op);
+				List<Object> ops = shareItem.getRightSet().getFolderRights();
+				for (Object op : ops) {
+					if (op instanceof WorkAreaOperation) {
+						accessControlManager.checkOperation(binder, (WorkAreaOperation)op);
+					} else if (op instanceof BinderOperation) {
+						binderModule.checkAccess(binder, (BinderOperation)op);
+					} else if (op instanceof FolderOperation && binder instanceof Folder) {
+						folderModule.checkAccess((Folder)binder, (FolderOperation)op);
+					} else {
+						throw new AccessControlException();
+					}
 				}
 				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
 					if (recipient.getIdentityInfo().isInternal()) {
