@@ -1504,9 +1504,15 @@ public class GwtShareHelper
 						gwtShareItem.setRecipientType( GwtRecipientType.TEAM );
 						break;
 						
+					case publicLink:
+						name = NLT.get( "public.link.name" );
+						gwtShareItem.setRecipientName( name );
+						gwtShareItem.setRecipientType( GwtRecipientType.PUBLIC_LINK );
+						break;
+						
 					default:
 						gwtShareItem.setRecipientType( GwtRecipientType.UNKNOWN );
-						m_logger.error( "unknown recipient type for user: " + nextShareItem.getRecipientId().toString() );
+						m_logger.error( "unknown recipient type: " + nextShareItem.getRecipientType().toString() );
 						break;
 					}
 				}
