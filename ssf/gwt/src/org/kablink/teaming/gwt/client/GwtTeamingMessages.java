@@ -339,6 +339,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_DisableUsersDownload();
 	String rpcFailure_DisableUsersPublicCollection();
 	String rpcFailure_DisableUsersWebAccess();
+	String rpcFailure_EmailPublicLink();
 	String rpcFailure_EnableUsers();
 	String rpcFailure_EnableUsersAdHocFolders();
 	String rpcFailure_EnableUsersDownload();
@@ -3077,5 +3078,6 @@ public interface GwtTeamingMessages extends Messages
 	String emailPublicLinkDlg_MessageHint();
 	String emailPublicLinkDlg_NoEmailAddresses();
 	String emailPublicLinkDlg_SendBtn();
+	String emailPublicLinkDlg_SendingEmails();
 	
 }// end GwtTeamingMessages

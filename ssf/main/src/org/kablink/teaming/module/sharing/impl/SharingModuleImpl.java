@@ -300,6 +300,15 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
 					throw new AccessControlException();
 				}
+				else if ( shareItem.getRecipientType().equals( RecipientType.publicLink ) )
+				{
+					// Is sharing with the public enabled?
+					if ( folderModule.testAccess( fe, FolderOperation.allowSharingPublic ) )
+					{
+						// Yes
+						return;
+					}
+				}
 			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
 					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
 				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
