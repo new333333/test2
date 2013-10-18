@@ -37,15 +37,25 @@ import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtEmailPublicLinkResults;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtShareEntryResults;
+import org.kablink.teaming.gwt.client.GwtShareItemResult;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
+import org.kablink.teaming.gwt.client.rpc.shared.EmailPublicLinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.GwtEmailPublicLinkData;
+import org.kablink.teaming.gwt.client.util.GwtShareItem;
+import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -62,8 +72,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -197,6 +205,24 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 			// Create a hint we will put over the top of the text box
 			m_emailHint = new Label( messages.emailPublicLinkDlg_EmailHint() );
 			m_emailHint.addStyleName( "emailPublicLinkDlg_FloatingHint" );
+			m_emailHint.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							m_emailAddressesTB.setFocus( true );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} ); 
 			panel.add( m_emailHint );
 			
 			mainPanel.add( panel );
@@ -226,6 +252,24 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 			// Create a hint we will put over the top of the text area
 			m_messageHint = new Label( messages.emailPublicLinkDlg_MessageHint() );
 			m_messageHint.addStyleName( "emailPublicLinkDlg_FloatingHint" );
+			m_messageHint.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							m_messageTA.setFocus( true );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
 			panel.add( m_messageHint );
 			
 			mainPanel.add( panel );
@@ -280,11 +324,160 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 	 * @return
 	 */
 	@Override
-	public boolean editSuccessful(Object callbackData) {
-//!		...this needs to be implemented...
-		return true;
+	public boolean editSuccessful( Object data )
+	{
+		EmailPublicLinkCmd cmd;
+		AsyncCallback<VibeRpcResponse> callback;
+		
+		if ( data == null || (data instanceof GwtEmailPublicLinkData) == false )
+			return false;
+
+		callback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( final Throwable caught )
+			{
+				Scheduler.ScheduledCommand ofCmd;
+				
+				ofCmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+								caught,
+								GwtTeaming.getMessages().rpcFailure_ShareEntry() );
+	
+						// Enable the Ok button.
+						Window.alert( GwtTeaming.getMessages().rpcFailure_EmailPublicLink() );
+						hideStatusMsg();
+						setOkEnabled( true );
+					}
+				};
+				Scheduler.get().scheduleDeferred( ofCmd );
+			}
+
+			@Override
+			public void onSuccess( final VibeRpcResponse vibeResult )
+			{
+				Scheduler.ScheduledCommand osCmd;
+				
+				osCmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						GwtEmailPublicLinkResults results;
+						String[] errorMessages;
+						FlowPanel errorPanel;
+
+						results = (GwtEmailPublicLinkResults) vibeResult.getResponseData();
+						
+						// Get the panel that holds the errors.
+						errorPanel = getErrorPanel();
+						errorPanel.clear();
+						
+						// Were there any errors?
+						errorMessages = results.getErrors();
+						if ( errorMessages != null && errorMessages.length > 0 )
+						{
+							// Yes
+							// Add each error message to the error panel.
+							{
+								Label label;
+								
+								label = new Label( GwtTeaming.getMessages().shareErrors() );
+								label.addStyleName( "dlgErrorLabel" );
+								errorPanel.add( label );
+								
+								for ( String nextErrMsg : errorMessages )
+								{
+									label = new Label( nextErrMsg );
+									label.addStyleName( "bulletListItem" );
+									errorPanel.add( label );
+								}
+							}
+
+							// Make the error panel visible.
+							showErrorPanel();
+
+							// Enable the Ok button.
+							hideStatusMsg();
+							setOkEnabled( true );
+						}
+						else
+						{
+							// Close this dialog.
+							hide();
+						}
+					}
+				};
+				Scheduler.get().scheduleDeferred( osCmd );
+			}				
+		};
+
+		// Disable the Ok button.
+		showStatusMsg( GwtTeaming.getMessages().emailPublicLinkDlg_SendingEmails() );
+		setOkEnabled( false );
+
+		cmd = new EmailPublicLinkCmd();
+		cmd.setEmailPublicLinkData( (GwtEmailPublicLinkData) data );
+		
+		GwtClientHelper.executeCommand( cmd, callback );
+
+		return false;
 	}
 	
+	/**
+	 * Returns the edited List<FavoriteInfo>.
+	 * 
+	 * Implements the DlgBox.getDataFromDlg() abstract method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Object getDataFromDlg()
+	{
+		GwtEmailPublicLinkData data;
+		ArrayList<String> listOfEmailAddresses = null;
+		
+		data = new GwtEmailPublicLinkData();
+		
+		// Did the user enter any email addresses?
+		{
+			listOfEmailAddresses = getEmailAddresses();
+			if ( listOfEmailAddresses == null || listOfEmailAddresses.size() == 0 )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				Window.alert( GwtTeaming.getMessages().emailPublicLinkDlg_NoEmailAddresses() );
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						m_emailAddressesTB.setFocus( true );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+				
+				return null;
+			}
+		}
+		
+		// Is the expiration value ok?
+		if ( m_expirationWidget.validateExpirationValue() == false )
+			return null;
+
+		data.setListOfEntityIds( m_entityIds );
+		data.setListOfEmailAddresses( listOfEmailAddresses );
+		data.setMessage( m_messageTA.getValue() );
+		data.setExpirationValue( m_expirationWidget.getExpirationValue() );
+		
+		return data;
+	}
+
 	/**
 	 * Return the email addresses entered by the user.
 	 */
@@ -315,48 +508,6 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 		return listOfEmailAddresses;
 	}
 	
-	/**
-	 * Returns the edited List<FavoriteInfo>.
-	 * 
-	 * Implements the DlgBox.getDataFromDlg() abstract method.
-	 * 
-	 * @return
-	 */
-	@Override
-	public Object getDataFromDlg()
-	{
-		// Did the user enter any email addresses?
-		{
-			ArrayList<String> listOfEmailAddresses;
-			
-			listOfEmailAddresses = getEmailAddresses();
-			if ( listOfEmailAddresses == null || listOfEmailAddresses.size() == 0 )
-			{
-				Scheduler.ScheduledCommand cmd;
-				
-				Window.alert( GwtTeaming.getMessages().emailPublicLinkDlg_NoEmailAddresses() );
-				
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						m_emailAddressesTB.setFocus( true );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-				
-				return null;
-			}
-		}
-		
-		// Is the expiration value ok?
-		if ( m_expirationWidget.validateExpirationValue() == false )
-			return null;
-
-		return "";
-	}
-
 	/**
 	 * Issue an rpc request to get information about the given entity.
 	 */
@@ -506,6 +657,7 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 
 		updateHeader();
 		hideStatusMsg();
+		setOkEnabled( true );
 		
 		m_emailAddressesTB.setValue( "" );
 		m_messageTA.setValue( "" );

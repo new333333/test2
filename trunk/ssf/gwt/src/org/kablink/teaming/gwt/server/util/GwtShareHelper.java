@@ -57,9 +57,12 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
@@ -67,6 +70,7 @@ import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.User.ExtProvState;
+import org.kablink.teaming.gwt.client.GwtEmailPublicLinkResults;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtPublic;
 import org.kablink.teaming.gwt.client.GwtRole;
@@ -81,6 +85,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateShareListsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.GwtEmailPublicLinkData;
 import org.kablink.teaming.gwt.client.util.GwtPublicShareItem;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
@@ -107,8 +112,11 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.WebUrlUtil;
+import org.springframework.mail.MailSendException;
 
 /**
  * Helper methods for the GWT UI server code that services share requests.
@@ -511,6 +519,34 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * Create a ShareItem that can be used as a "public link" share.
+	 */
+	private static ShareItem createPublicLinkShareItem(
+		AllModulesInjected ami,
+		Long sharedById,
+		EntityId entityId,
+		ShareExpirationValue expirationValue,
+		String comment )
+	{
+		ShareItem shareItem;
+		
+		shareItem = buildPublicLinkShareItem( ami, sharedById, entityId, expirationValue, comment );
+		if ( shareItem != null )
+		{
+			try
+			{
+				ami.getSharingModule().addShareItem( shareItem );
+			}
+			catch ( Exception ex )
+			{
+				m_logger.error( "In createPublicLinkShareItem(), addShareItem() threw an exception: " + ex.toString() );
+			}
+		}
+		
+		return shareItem;
+	}
+	
+	/**
 	 * Create a ShareItem from the given GwtShareItem object
 	 */
 	private static ShareItem createShareItem(
@@ -521,6 +557,76 @@ public class GwtShareHelper
 		ShareItem shareItem = buildShareItem( ami, sharedById, gwtShareItem );
 		
 		ami.getSharingModule().addShareItem( shareItem );
+		
+		return shareItem;
+	}
+	
+	/**
+	 * Build a ShareItem that can be used as a "public link" share
+	 */
+	private static ShareItem buildPublicLinkShareItem(
+		AllModulesInjected ami,
+		Long sharedById,
+		EntityId entityId,
+		ShareExpirationValue expirationValue,
+		String comment )
+	{
+		ShareItem shareItem;
+		Date endDate = null;
+		RightSet rightSet;
+		EntityIdentifier entityIdentifier;
+		int daysToExpire = -1;
+
+		// Get the entity that is being shared.
+		entityIdentifier = getEntityIdentifierFromEntityId( entityId );		
+
+		// Get the share expiration value
+		{
+			switch ( expirationValue.getExpirationType() )
+			{
+			case AFTER_DAYS:
+			{
+                // Don't calculate the expiration date (endDate) here.  Let the SharingModule do that.
+				daysToExpire = expirationValue.getValue().intValue();
+				break;
+			}
+
+			case NEVER:
+				break;
+
+			case ON_DATE:
+				endDate = new Date( expirationValue.getValue() );
+				break;
+				
+			case UNKNOWN:
+			default:
+				break;
+			}
+		}
+		
+		// Create the appropriate RightSet
+		{
+			rightSet = getViewerRightSet();
+			rightSet.setAllowSharingForward( false );
+			rightSet.setAllowSharing( false );
+			rightSet.setAllowSharingExternal( false );
+			rightSet.setAllowSharingPublic( false );
+		}
+		
+		// Create the new ShareItem in the db
+		{
+			shareItem = new ShareItem(
+									sharedById,
+									entityIdentifier,
+									comment,
+									endDate,
+									RecipientType.publicLink,
+									null,
+									rightSet );
+			
+			shareItem.setDaysToExpire( daysToExpire );
+			shareItem.setLatest( true );
+		}		
 		
 		return shareItem;
 	}
@@ -626,6 +732,134 @@ public class GwtShareHelper
 		}		
 		
 		return shareItem;
+	}
+	
+	/**
+	 * 
+	 */
+	public static GwtEmailPublicLinkResults emailPublicLink(
+		AllModulesInjected ami,
+		GwtEmailPublicLinkData data )
+	{
+		GwtEmailPublicLinkResults results;
+		ArrayList<String> listOfEmailAddresses;
+		List<EntityId> listOfEntityIds;
+		List<SendMailErrorWrapper> emailErrors = null;
+		User currentUser;
+		
+		results = new GwtEmailPublicLinkResults();
+
+		currentUser = GwtServerHelper.getCurrentUser();
+
+		emailErrors = new ArrayList<SendMailErrorWrapper>();
+		
+		listOfEmailAddresses = data.getListOfEmailAddresses();
+		listOfEntityIds = data.getListOfEntities();
+		
+		if ( listOfEntityIds != null && listOfEntityIds.size() > 0 &&
+			 listOfEmailAddresses != null && listOfEmailAddresses.size() > 0 )
+		{
+			for ( EntityId nextEntityId : listOfEntityIds )
+			{
+				String fileName = null;
+				
+				// Get the name of the file.
+				try
+				{
+					FolderEntry entry;
+					FileAttachment fileAttach;
+					FileItem fileItem;
+
+					entry = ami.getFolderModule().getEntry( null, nextEntityId.getEntityId() );
+					fileAttach = MiscUtil.getPrimaryFileAttachment( entry );
+					fileItem = fileAttach.getFileItem();
+					if ( fileItem != null )
+						fileName = fileItem.getName();
+				}
+				catch ( Exception ex )
+				{
+					SendMailErrorWrapper error;
+					MailSendException msEx = null;
+					
+					m_logger.error( "In GwtShareHelper.emailPublicLink(), unable to get file name" );
+					
+					error = new SendMailErrorWrapper( msEx, NLT.get( "email.public.link.cant.get.file.name" ) );
+					emailErrors.add( error );
+				}
+				
+				if ( fileName != null )
+				{
+					ShareItem shareItem;
+
+					// Create a "public link" ShareItem
+					shareItem = createPublicLinkShareItem(
+													ami,
+													currentUser.getId(),
+													nextEntityId,
+													data.getExpirationValue(),
+													data.getMessage() );
+					
+					if ( shareItem != null && shareItem.getId() != null )
+					{
+						List<SendMailErrorWrapper> entityEmailErrors = null;
+						String viewUrl = null;
+						String downloadUrl = null;
+						
+						// Get the download file url
+						downloadUrl = WebUrlUtil.getSharedPublicFileUrl(
+																	shareItem.getId(),
+																	shareItem.getPassKey(),
+																	WebKeys.ACTION_READ_FILE,
+																	fileName );
+
+						// Can this file be rendered as html?
+						if ( SsfsUtil.supportsViewAsHtml( fileName ) )
+						{
+							// Yes, get the view file url.
+							viewUrl = WebUrlUtil.getSharedPublicFileUrl(
+																	shareItem.getId(),
+																	shareItem.getPassKey(),
+																	WebKeys.ACTION_VIEW_FILE,
+																	fileName );
+						}
+						
+						// Send an email to each recipient
+						entityEmailErrors = EmailHelper.sendEmailToPublicLinkRecipients(
+																					ami,
+																					shareItem,
+																					currentUser,
+																					listOfEmailAddresses,
+																					viewUrl,
+																					downloadUrl);
+						if ( entityEmailErrors != null )
+						{
+							if ( emailErrors == null )
+								emailErrors = entityEmailErrors;
+							else
+								emailErrors.addAll( entityEmailErrors );
+						}
+					}
+					else
+					{
+						SendMailErrorWrapper error;
+						MailSendException msEx = null;
+						
+						m_logger.error( "In GwtShareHelper.emailPublicLink(), unable to create ShareItem" );
+						
+						error = new SendMailErrorWrapper( msEx, NLT.get( "email.public.link.cant.create.shareitem" ) );
+						emailErrors.add( error );
+					}
+				}
+			}
+		}
+
+		// Add any errors that happened to the results.
+		if ( emailErrors != null )
+		{
+			results.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
+		}
+
+		return results;
 	}
 	
 	/**

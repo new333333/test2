@@ -76,6 +76,7 @@ import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
+import org.kablink.teaming.gwt.client.GwtEmailPublicLinkResults;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
@@ -575,6 +576,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			DisableUsersCmd duCmd = ((DisableUsersCmd) cmd);
 			ErrorListRpcResponseData responseData = GwtViewHelper.disableUsers( this, getRequest( ri ), duCmd.getUserIds() );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case EMAIL_PUBLIC_LINK:
+		{
+			EmailPublicLinkCmd eplCmd;
+			GwtEmailPublicLinkResults results;
+
+			eplCmd = (EmailPublicLinkCmd) cmd;
+			results = GwtShareHelper.emailPublicLink( this, eplCmd.getEmailPublicLinkData() );
+			response = new VibeRpcResponse( results );
 			return response;
 		}
 		

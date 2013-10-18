@@ -124,7 +124,10 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		if (sharerId == null) throw new IllegalArgumentException("Sharer ID must be specified");
 		if (sharedEntityIdentifier == null) throw new IllegalArgumentException("Shared entity identifier must be specified");
 		if(recipientType == null) throw new IllegalArgumentException("Recipient type must be specified");
-		if(recipientId == null) throw new IllegalArgumentException("Recipient ID must be specified");
+		
+		if ( recipientId == null && recipientType != RecipientType.publicLink )
+			throw new IllegalArgumentException("Recipient ID must be specified");
+		
 		if(recipientType != RecipientType.publicLink && rightSet == null) throw new IllegalArgumentException("Right set must be specified");
 
 		this.sharerId = sharerId;

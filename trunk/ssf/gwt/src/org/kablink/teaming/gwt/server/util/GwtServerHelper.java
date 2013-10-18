@@ -9625,6 +9625,7 @@ public class GwtServerHelper {
 		case DELETE_SHARES:
 		case DELETE_TASKS:
 		case DISABLE_USERS:
+		case EMAIL_PUBLIC_LINK:
 		case ENABLE_USERS:
 		case EXECUTE_ENHANCED_VIEW_JSP:
 		case EXECUTE_LANDING_PAGE_CUSTOM_JSP:
