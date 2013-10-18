@@ -46,6 +46,7 @@ public enum GwtRecipientType implements IsSerializable
 	EXTERNAL_USER,
 	TEAM,
 	PUBLIC_TYPE,
+	PUBLIC_LINK,
 	
 	UNKNOWN;
 
@@ -61,6 +62,14 @@ public enum GwtRecipientType implements IsSerializable
 	
 	public boolean isPublic() {
 		return this.equals( PUBLIC_TYPE );
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean isPublicLink()
+	{
+		return this.equals( PUBLIC_LINK );
 	}
 	
 	public boolean isTeam()
