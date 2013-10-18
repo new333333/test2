@@ -766,6 +766,15 @@ public class EditZoneShareListsTab extends EditZoneShareTabBase {
 	public void validate(final EditZoneShareTabCallback callback) {
 		// Before validating, no shares should be set for deletion. 
 		m_invalidShareIds = null;
+
+		// If the checkbox isn't checked that says to delete invalid
+		// shares...
+		if (!(m_cleanupCB.getValue())) {
+			// ...nothing needs validation.  Simply call the success
+			// ...callback.
+			callback.success();
+			return;
+		}
 		
 		// Construct a GwtShareLists containing the tab's content.
 		GwtShareLists validateThis = getShareListsFromTab();
