@@ -493,16 +493,23 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 		{
 			String[] emailAddresses;
 			
-			emailAddresses = text.split( "," );
+			// Separate the email addresses using ',' or ' ' as a delimiter
+			emailAddresses = text.split( "[, ]" );
 			if ( emailAddresses != null && emailAddresses.length > 0 )
 			{
 				for ( String nextEmailAddr : emailAddresses )
 				{
-					listOfEmailAddresses.add( nextEmailAddr );
+					nextEmailAddr = nextEmailAddr.trim();
+					if ( nextEmailAddr.length() > 0 )
+						listOfEmailAddresses.add( nextEmailAddr );
 				}
 			}
 			else
-				listOfEmailAddresses.add( text );
+			{
+				text = text.trim();
+				if ( text.length() > 0 )
+					listOfEmailAddresses.add( text );
+			}
 		}
 		
 		return listOfEmailAddresses;

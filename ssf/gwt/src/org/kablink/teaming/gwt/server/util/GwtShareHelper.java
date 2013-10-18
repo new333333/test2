@@ -743,6 +743,7 @@ public class GwtShareHelper
 	{
 		GwtEmailPublicLinkResults results;
 		ArrayList<String> listOfEmailAddresses;
+		ArrayList<String> listOfValidEmailAddresses;
 		List<EntityId> listOfEntityIds;
 		List<SendMailErrorWrapper> emailErrors = null;
 		User currentUser;
@@ -752,12 +753,48 @@ public class GwtShareHelper
 		currentUser = GwtServerHelper.getCurrentUser();
 
 		emailErrors = new ArrayList<SendMailErrorWrapper>();
+
+		listOfValidEmailAddresses = new ArrayList<String>();
 		
+		// Validate the email addresses against the black list
 		listOfEmailAddresses = data.getListOfEmailAddresses();
+		if ( listOfEmailAddresses != null && listOfEmailAddresses.size() > 0 )
+		{
+			ShareLists shareLists;
+			SharingModule sharingModule;
+
+			sharingModule = ami.getSharingModule();
+			shareLists = sharingModule.getShareLists();
+			if ( shareLists != null )
+			{
+				for ( String nextEmailAddr : listOfEmailAddresses )
+				{
+					// Is this email address valid?
+					if ( sharingModule.isExternalAddressValid( nextEmailAddr, shareLists ) == false )
+					{
+						String msg;
+						String[] args;
+						SendMailErrorWrapper error;
+						MailSendException msEx = null;
+
+						// No
+						args = new String[1];
+						args[0] = nextEmailAddr;
+						msg = NLT.get( "email.public.link.email.address.on.blacklist", args );
+						error = new SendMailErrorWrapper( msEx, msg );
+													
+						emailErrors.add( error );
+					}
+					else
+						listOfValidEmailAddresses.add( nextEmailAddr );
+				}
+			}
+		}
+		
 		listOfEntityIds = data.getListOfEntities();
 		
 		if ( listOfEntityIds != null && listOfEntityIds.size() > 0 &&
-			 listOfEmailAddresses != null && listOfEmailAddresses.size() > 0 )
+			 listOfValidEmailAddresses != null && listOfValidEmailAddresses.size() > 0 )
 		{
 			for ( EntityId nextEntityId : listOfEntityIds )
 			{
@@ -809,7 +846,7 @@ public class GwtShareHelper
 						downloadUrl = WebUrlUtil.getSharedPublicFileUrl(
 																	shareItem.getId(),
 																	shareItem.getPassKey(),
-																	WebKeys.ACTION_READ_FILE,
+																	WebKeys.URL_SHARE_PUBLIC_LINK,
 																	fileName );
 
 						// Can this file be rendered as html?
@@ -819,7 +856,7 @@ public class GwtShareHelper
 							viewUrl = WebUrlUtil.getSharedPublicFileUrl(
 																	shareItem.getId(),
 																	shareItem.getPassKey(),
-																	WebKeys.ACTION_VIEW_FILE,
+																	WebKeys.URL_SHARE_PUBLIC_LINK_HTML,
 																	fileName );
 						}
 						
@@ -828,7 +865,7 @@ public class GwtShareHelper
 																					ami,
 																					shareItem,
 																					currentUser,
-																					listOfEmailAddresses,
+																					listOfValidEmailAddresses,
 																					viewUrl,
 																					downloadUrl);
 						if ( entityEmailErrors != null )
