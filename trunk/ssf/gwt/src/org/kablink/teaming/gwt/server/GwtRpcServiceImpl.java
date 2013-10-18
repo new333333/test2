@@ -2064,6 +2064,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_PUBLIC_LINKS:
+		{
+			GetPublicLinksCmd gplCmd = ((GetPublicLinksCmd) cmd);
+			PublicLinksRpcResponseData result = GwtShareHelper.getPublicLinks( this, getRequest( ri ), gplCmd.getEntityIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_QUICK_VIEW_INFO:
 		{
 			GetQuickViewInfoCmd gqviCmd;
