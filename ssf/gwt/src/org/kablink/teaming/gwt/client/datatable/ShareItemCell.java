@@ -456,7 +456,8 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 
 			if ( note.length() > 0 )
 			{
-				label = new Label( messages.shareDlg_noteLabel() + " " + note );
+//				label = new Label( messages.shareDlg_noteLabel() + " " + note );
+				label = new Label( note );
 				label.addStyleName( "shareItem_Note" );
 				mainPanel.add( label );
 			}

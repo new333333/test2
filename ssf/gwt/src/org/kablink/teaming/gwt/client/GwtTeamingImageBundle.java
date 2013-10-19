@@ -509,6 +509,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource public16();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/public36.png")
+	public ImageResource public36();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/refresh.png")
 	public ImageResource refresh();
 
