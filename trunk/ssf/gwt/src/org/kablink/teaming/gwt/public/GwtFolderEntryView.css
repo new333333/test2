@@ -16,15 +16,15 @@
 		.vibe-feView-headerContentPersonPanel         {color: #353838; font-size: 0.85em; font-weight: bold; margin-top: 10px; display: block;}
 		.vibe-feView-headerContentPersonAnchor        {cursor: pointer; text-decoration: none;}
 		.vibe-feView-headerContentPersonAvatar        {margin-right: 5px; width: 20px; height: 20px; -moz-border-radius: 2px; border-radius: 2px; -webkit-border-radius: 2px; vertical-align: middle; display: inline-block;}
-		.vibe-feView-headerContentPersonCreated       {font-size: .8em; color: #505354; font-weight: normal; padding-left: 8px;}
-		.vibe-feView-headerContentPersonModified      {padding-left: 10px; font-size: .8em; color: #505354; font-weight: normal;}
+		.vibe-feView-headerContentPersonCreated       {font-size: 10px; color: #666666; font-weight: normal; padding-left: 8px;}
+		.vibe-feView-headerContentPersonModified      {padding-left: 10px; font-size: 10px; color: #666666; font-weight: normal;}
 		.vibe-feView-headerContentPersonModifiedLabel {padding-left: 5px;}
 		.vibe-feView-headerContentPanel               {margin-left: 50px; margin-top: 0.3em; display: block;}
-		.vibe-feView-headerContentPath                {color: #505354; padding-top: 2px; font-size: 13px; line-height: 16px; display: block;}
+		.vibe-feView-headerContentPath                {color: #505354; padding-top: 5px; font-size: 13px; line-height: 16px; display: block;}
 		.vibe-feView-headerContentTitleAsAnchor       {cursor: pointer; text-decoration: none;}
 		.vibe-feView-headerContentTitleAsAnchor:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-feView-headerContentTitleAsLabel        {font-size: 1.2em;}
-		.vibe-feView-headerContentTitleFileSize       {color: #505354; padding-left: 10px; font-size: 13px;}
+		.vibe-feView-headerContentTitleFileSize       {color: #666666; padding-left: 12px; font-size: 13px;}
 		.vibe-feView-headerContentTitleMarkRead       {cursor: pointer; padding-right: 3px;}
 		.vibe-feView-headerContentTitlePanel          {display: inline-block;}
 		.vibe-feView-headerDescription                {display: block; position: relative; margin-top: 10px;}
@@ -41,7 +41,7 @@
 	/* End:  Header styles. */
 	
 	/* Start:  Menu styles. */
-		.vibe-feView-menuPanel    {display: block; padding: 3px 380px 3px 10px; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC; box-shadow: #E0E0E0 0px 2px 3px; margin-left: -10px; margin-right: -10px;}
+		.vibe-feView-menuPanel    {display: block; padding: 3px 380px 3px 10px; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC; margin-left: -10px; margin-right: -10px;}
 		.vibe-feView-menuBar      {padding: 3px; background: transparent;}
 		.vibe-feView-menuBar .gwt-MenuItem-selected {
 			color: #135c8f !important;
@@ -155,9 +155,9 @@
 		.vibe-feView-shareItemEmpty  {display: block; position: relative; font-size: 14px; color: black; margin-top: 3.5px;}
 		.vibe-feView-shareItemHeader {display: block; position: relative; color: #5691a6; font-size: 14px; padding: 8px 5px 0px 10px;}
 		.vibe-feView-shareItemInfo   {display: block; position: relative; font-size: 10px; color: #505354; font-weight: normal; padding-left: 0px; padding-right: 5px;}
-		.vibe-feView-shareItemName   {display: block; position: relative; font-weight: bold; padding-right: 5px; margin-bottom: 2px; color: #000;}
-		.vibe-feView-shareItemNote   {display: block; position: relative; font-size: 12px; color: black; margin-top: 3.5px;}
-		.vibe-feView-shareItemPanel  {display: block; position: relative; margin-left: 10px; margin-bottom: 20px; margin-right: 20px; margin-top: 10px; padding-left: 40px; color: #000; font-size: 13px;}
+		.vibe-feView-shareItemName   {display: block; position: relative; font-size: 11px; font-weight: bold; padding-right: 5px; margin-bottom: 2px; color: #000;}
+		.vibe-feView-shareItemNote   {display: block; position: relative; font-size: 13px; color: black; margin-top: 2px;}
+		.vibe-feView-shareItemPanel  {display: block; position: relative; margin-left: 10px; margin-bottom: 10px; margin-right: 20px; margin-top: 10px; padding-left: 43px; color: #000; font-size: 13px;}
 	/* End:  Sharing styles. */
 
 	/* Start:  Sidebar styles. */
@@ -166,7 +166,7 @@
 		.vibe-feView-sidebarSectionHeadExpander       {margin-right: 16px !important;}
 		.vibe-feView-sidebarSectionHeadExpander:hover {cursor: pointer;}
 		.vibe-feView-sidebarSectionHeadInner          {}
-		.vibe-feView-sidebarSectionHeadOuter          {position: relative; width: 350px; background-color: #e0e0e0; border-bottom: 1px solid #cccccc; z-index: 1000;}
+		.vibe-feView-sidebarSectionHeadOuter          {position: relative; width: 350px; background-color: #f6f6f6; border-bottom: 1px solid #cccccc; z-index: 1000;}
 		.vibe-feView-sidebarSectionHeadText           {color: #5691a6 !important;}
 		.vibe-feView-sidebarSectionHeadTitle          {position: relative; font-size: 14px; height: 20px; padding: 8px 5px 6px 32px; }
 		.vibe-feView-sidebarSliderImg                 {padding-top: 5px; padding-left: 4px;}

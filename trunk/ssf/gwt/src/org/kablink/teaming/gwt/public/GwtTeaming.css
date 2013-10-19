@@ -848,9 +848,17 @@
 	font-weight: bold;
 }
 
-.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_Note, .shareItem_PublicUrl, .shareItem_SharedByName
+.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_PublicUrl, .shareItem_SharedByName
 {
-	font-size: 0.8em;
+	color: #666666;
+	font-size: 11px;
+	letter-spacing: .25px;
+}
+.shareItem_Note
+{
+	color: #353838;
+	font-size: 12px;
+	line-height: 18px;
 }
 
 .shareItem_PublicUrl:hover
