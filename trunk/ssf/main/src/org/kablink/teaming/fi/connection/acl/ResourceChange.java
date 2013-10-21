@@ -32,9 +32,6 @@
  */
 package org.kablink.teaming.fi.connection.acl;
 
-import java.util.Arrays;
-import java.util.TreeSet;
-
 /**
  * Immutable class representing a change to a resource on the file system.
  * 
@@ -49,6 +46,7 @@ public class ResourceChange implements Comparable<ResourceChange> {
 		
 		/**
 		 * A new folder created
+		 * Since 1.1
 		 */
 		folder_create,
 		/**
@@ -57,14 +55,17 @@ public class ResourceChange implements Comparable<ResourceChange> {
 		folder_move,
 		/**
 		 * A folder deleted
+		 * Since 1.1
 		 */
 		folder_delete,
 		/**
 		 * ACL changed on a folder
+		 * Since 1.1
 		 */
 		folder_acl,
 		/**
 		 * Owner changed on a folder
+		 * Since 1.1
 		 */
 		folder_owner,
 		
@@ -72,10 +73,12 @@ public class ResourceChange implements Comparable<ResourceChange> {
 		
 		/**
 		 * A new file created
+		 * Since 1.1
 		 */
 		file_create,
 		/**
 		 * A file updated
+		 * Since 1.1
 		 */
 		file_update,
 		/**
@@ -84,6 +87,7 @@ public class ResourceChange implements Comparable<ResourceChange> {
 		file_move,
 		/**
 		 * A file deleted
+		 * Since 1.1
 		 */
 		file_delete,
 		/**
@@ -92,17 +96,18 @@ public class ResourceChange implements Comparable<ResourceChange> {
 		file_acl,
 		/**
 		 * Owner changed on a file
+		 * Since 1.1
 		 */
 		file_owner
 	}
 	
-	private String path; // path of the resource being affected; required field
-	
-	private String targetPath; // target path of the resource after move or rename; required only for move
+	private long timestamp; // the time at which this change is detected/recorded
 	
 	private ResourceChangeType type; // resource change type
 	
-	private long timestamp; // the time at which this change is detected/recorded
+	private String path; // normalized path of the resource being affected; required field
+	
+	private String targetPath; // target path of the resource after move or rename; required only for move
 	
 	public ResourceChange(String path, String targetPath, ResourceChangeType type) {
 		this.path = path;
@@ -150,4 +155,16 @@ public class ResourceChange implements Comparable<ResourceChange> {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[timestamp=")
+		.append(timestamp)
+		.append(",type=")
+		.append(type.name())
+		.append(",path=")
+		.append(path)
+		.append("]");
+		return sb.toString();
+	}
 }

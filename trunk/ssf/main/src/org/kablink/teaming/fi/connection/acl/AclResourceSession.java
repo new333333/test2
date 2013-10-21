@@ -186,10 +186,10 @@ public interface AclResourceSession extends ResourceSession {
 	
 	/**
 	 * Returns a sorted set of <code>ResourceChange</code> objects representing the changes occurred on the
-	 * file system since the specified time inclusive. The result is sorted in ascending order of timestamps. 
-	 * If there's no changes since the last time, this method should return an empty set. If the resource
-	 * driver does not support "change since" capability, this method should return a <code>null</code>.
-	 * 
+	 * file system at or below the current path since the specified time inclusive. The result is sorted in 
+	 * ascending order of timestamps. If there's no changes meeting the criteria, this method should return
+	 * an empty set. If the resource driver does not support "change since" capability, this method should 
+	 * return a <code>null</code>.
 	 * 
 	 * @param timestamp information about the changes occurred since this time is being requested
 	 * @param maxResults maximum number of <code>ResourceChange</code> objects allowed in the result.
