@@ -126,12 +126,12 @@ public interface ResourceDriver {
 	/**
 	 * Returns normalized resource path given its parent path and the resource name.
 	 * 
-	 * @param parentResourcePath normalized parent path, must be non-null.
-	 * @param resourceName
+	 * @param parentResourceNormalizedPath normalized parent path, must be non-null.
+	 * @param resourceName name of the resource
 	 * @return normalized path of the resource
 	 * @throws FIException
 	 */
-	public String normalizedResourcePath(String parentResourcePath, String resourceName) throws FIException;
+	public String normalizedResourcePath(String parentResourceNormalizedPath, String resourceName) throws FIException;
 	
 	/**
 	 * Returns normalized path of the specified resource.
@@ -143,12 +143,22 @@ public interface ResourceDriver {
 	public String normalizedResourcePath(String resourcePath) throws FIException;
 	
 	/**
+	 * Returns normalized path of the parent of the specified resource or <code>null</code>
+	 * if the resource doesn't have a parent.
+	 * 
+	 * @param normalizedResourcePath normalized resource path
+	 * @return
+	 * @throws FIException
+	 */
+	public String getParentResourcePath(String normalizedResourcePath) throws FIException;
+	
+	/**
 	 * Return the last element name of the resource identified by the path.
 	 * 
-	 * @param resourcePath 
+	 * @param normalizedResourcePath 
 	 * @return
 	 */
-	public String getResourceName(String resourcePath) throws FIException;
+	public String getResourceName(String normalizedResourcePath) throws FIException;
 	
 	/**
 	 * Returns whether the driver is read-only.
