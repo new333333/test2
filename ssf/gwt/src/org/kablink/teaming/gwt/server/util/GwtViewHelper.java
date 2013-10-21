@@ -6122,7 +6122,7 @@ public class GwtViewHelper {
 				
 			case publicLink:
 				// Return a localized public link string.
-				reply = NLT.get(NLT.get("share.recipientType.title.productLink", new String[]{MiscUtil.getProductName()}));
+				reply = NLT.get("share.recipientType.title.productLink", new String[]{MiscUtil.getProductName()});
 				break;
 			}
 		}
