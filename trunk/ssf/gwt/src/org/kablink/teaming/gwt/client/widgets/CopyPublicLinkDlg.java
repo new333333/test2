@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -53,6 +54,8 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -66,6 +69,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * Implements Vibe's Copy Public Link dialog.
@@ -86,8 +90,6 @@ public class CopyPublicLinkDlg extends DlgBox {
 	private String						m_product;			//
 	private VibeFlowPanel				m_contentPanel;		//
 	private VibeVerticalPanel			m_linksPanel;		//
-	
-	private final static int	SCROLL_WHEN	= 3;	// Count of items we display when scroll bars are enabled.
 	
 	/*
 	 * Class constructor.
@@ -171,7 +173,6 @@ public class CopyPublicLinkDlg extends DlgBox {
 
 		// ...add and Image for whatever's selected...
 		m_headerImg = new Image();
-		m_headerImg.addStyleName("vibe-copyPublicLinkDlg-headerImg");
 		headerPanel.add(m_headerImg);
 
 		// ...add widgets for the name...
@@ -249,7 +250,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 
 				// If we got any public links, display them.
 				// Otherwise, display the create links button again.
-				Map<EntityId, PublicLinkInfo> plMap = plData.getPublicLinksMap();
+				Map<String, PublicLinkInfo> plMap = plData.getPublicLinksMap();
 				if ((null != plMap) && (!(plMap.isEmpty())))
 				     displayPublicLinks(plMap);
 				else showCreateLinksButton();
@@ -260,37 +261,108 @@ public class CopyPublicLinkDlg extends DlgBox {
 	/*
 	 * Displays an individual public link in the list.
 	 */
-	private void displayPublicLink(PublicLinkInfo pl) {
-//!		...this needs to be implemented...
+	private void displayPublicLink(PublicLinkInfo pl, boolean showFileInfo) {
+		// Do we need to show per file information?
+		if (showFileInfo) {
+			// Yes!  Create the panel for the header...
+			VibeFlowPanel fiPanel = new VibeFlowPanel();
+			fiPanel.addStyleName("vibe-copyPublicLinkDlg-linksHeaderPanel");
+			m_linksPanel.add(fiPanel);
+
+			// ...add and Image for whatever's selected...
+			String imageUrl = pl.getImageUrl();
+			if (GwtClientHelper.hasString(imageUrl))
+			     imageUrl = (m_imagesPath + imageUrl);
+			else imageUrl = m_filrImages.entry().getSafeUri().asString();
+			Image fiImg = GwtClientHelper.buildImage(imageUrl);
+			fiPanel.add(fiImg);
+
+			// ...add widgets for the name...
+			VibeFlowPanel fiNamePanel = new VibeFlowPanel();
+			fiNamePanel.addStyleName("vibe-copyPublicLinkDlg-linksHeaderNamePanel");
+			Label fiNameLabel = new Label(pl.getTitle());
+			fiNameLabel.addStyleName("vibe-copyPublicLinkDlg-linksHeaderNameLabel");
+			fiNamePanel.add(fiNameLabel);
+			
+			// ...add widgets for the path...
+			Label fiPathLabel = new Label(pl.getPath());
+			fiPathLabel.addStyleName("vibe-copyPublicLinkDlg-linksHeaderPathLabel");
+			fiNamePanel.add(fiPathLabel);
+			fiPanel.add(fiNamePanel);
+		}
+
+		// If we have a view URL...
+		String  url     = pl.getViewUrl();
+		boolean hasView = GwtClientHelper.hasString(url);
+		if (hasView) {
+			// ...add that to the display...
+			displayPublicLinkUrl(m_messages.copyPublicLink_ViewFileLink(), url, (!showFileInfo));
+		}
+		
+		// ...and if we have a download URL...
+		url = pl.getDownloadUrl();
+		if (GwtClientHelper.hasString(url)) {
+			// ...add that to the display.
+			displayPublicLinkUrl(m_messages.copyPublicLink_DownloadFileLink(), url, ((!showFileInfo) && (!hasView)));
+		}
 	}
 	
 	/*
 	 * Displays the public links in the map.
 	 */
-	private void displayPublicLinks(Map<EntityId, PublicLinkInfo> plMap) {
-		// Clear the content panel.
+	private void displayPublicLinks(Map<String, PublicLinkInfo> plMap) {
+		// Clear the content panel...
 		m_linksPanel.clear();
-		m_linksPanel.removeStyleName("vibe-copyPublicLinkDlg-scrollLimit");
 		
-		// Count the links that we need to display.
-		int linkCount = 0;
-		for (EntityId eid:  m_entityIds) {
-			PublicLinkInfo pl = plMap.get(eid);
-			if (GwtClientHelper.hasString(pl.getViewUrl()))     linkCount += 1;
-			if (GwtClientHelper.hasString(pl.getDownloadUrl())) linkCount += 1;
-		}
-
-		// Enable/disable scrolling, based on the number of links.
-		if (linkCount >= SCROLL_WHEN)
-		     m_linksScroller.addStyleName(   "vibe-copyPublicLinkDlg-scrollLimit");
-		else m_linksScroller.removeStyleName("vibe-copyPublicLinkDlg-scrollLimit");
-
+		// ...and adjust the sizes for scrolling.
+		m_linksPanel.removeStyleName("vibe-copyPublicLinkDlg-scrollLimit");	// Size on the ScrollPanel...
+		m_linksScroller.addStyleName("vibe-copyPublicLinkDlg-scrollLimit");	// ...not the VerticalPanel.
+		
 		// Scan the links...
-		for (EntityId eid:  m_entityIds) {
+		int         entityCount  = m_entityIds.size();
+		boolean     showFileInfo = (1 < entityCount);
+		Set<String> plKeys       = plMap.keySet();
+		for (String key:  plKeys) {
 			// ...adding each to the display.
-			displayPublicLink(plMap.get(eid));
+			displayPublicLink(plMap.get(key), showFileInfo);
 		}
 	}
+	
+	/*
+	 * Displays an individual public link URL in the list.
+	 */
+	private void displayPublicLinkUrl(final String urlLabel, final String url, boolean topSpacer) {
+		// Add a label for the URL...
+		Label label = new Label(urlLabel);
+		label.addStyleName("vibe-copyPublicLinkDlg-linksLabel");
+		if (topSpacer) {
+			label.addStyleName("vibe-copyPublicLinkDlg-linksLabel2");
+		}
+		m_linksPanel.add(label);
+
+		// ...add a text box the user can easily select from...
+		final TextBox linkInput = new TextBox();
+		linkInput.addStyleName("vibe-copyPublicLinkDlg-linksInput");
+		m_linksPanel.add(linkInput);
+		linkInput.setValue(url);
+		linkInput.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				linkInput.selectAll();
+			}
+		});
+		linkInput.addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent event) {
+				// ...and if the user happens to change the link (since
+				// ...it's an INPUT, they CAN edit it), we simply
+				// ...restore the INPUT back to its initial value.
+				linkInput.setValue(url);
+				linkInput.selectAll();
+			}
+		});
+	}
+
 	
 	/**
 	 * Unused.
@@ -417,14 +489,14 @@ public class CopyPublicLinkDlg extends DlgBox {
 		else {
 			hintTail = m_messages.copyPublicLink_HintSingle(m_product);
 		}
-		m_headerImg.setVisible(true);
 		m_hintTail.getElement().setInnerText(hintTail);
 
-		// Turn off any scrolling currently in force.
-		m_linksScroller.removeStyleName("vibe-copyPublicLinkDlg-scrollLimit");
+		// Turn off any scrolling currently in force...
+		m_linksPanel.addStyleName(      "vibe-copyPublicLinkDlg-scrollLimit");	// Size on the VerticalPanel...
+		m_linksScroller.removeStyleName("vibe-copyPublicLinkDlg-scrollLimit");	// ...not the ScrollPanel.
 		
-		// Create the dialog's contents in an empty state that allows
-		// the links to be created from scratch.
+		// ...create the dialog's contents in an empty state that
+		// ...allows the links to be created from scratch...
 		showCreateLinksButton();
 
 		// ...and show the dialog centered on the screen.
@@ -495,7 +567,6 @@ public class CopyPublicLinkDlg extends DlgBox {
 		// Clear the content of the links panel... 
 		m_linksPanel.clear();
 		m_linksPanel.setWidth("100%");
-		m_linksPanel.addStyleName("vibe-copyPublicLinkDlg-scrollLimit");
 
 		// ...and add the create links push button.
 		Button createLinksBtn = new Button(m_messages.copyPublicLink_Button(m_product));
@@ -521,7 +592,6 @@ public class CopyPublicLinkDlg extends DlgBox {
 		// create push button)... 
 		m_linksPanel.clear();
 		m_linksPanel.setWidth("100%");
-		m_linksPanel.addStyleName("vibe-copyPublicLinkDlg-scrollLimit");
 
 		// ...and add a busy indicator that we display while we get the
 		// ...links from the server.

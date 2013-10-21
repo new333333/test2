@@ -5804,23 +5804,31 @@ td.datePickerMonth {
 /* End:  Prompt dialog styles. */
 
 /* Start:  Copy Public Link dialog styles. */
-	.vibe-copyPublicLinkDlg-contentPanel    {margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-createButton    {}
-	.vibe-copyPublicLinkDlg-headerPanel     {position: relative; margin-bottom: 15px;}
-	.vibe-copyPublicLinkDlg-headerPanel img {position: absolute; top: 0px; left: 1px;}
-	.vibe-copyPublicLinkDlg-headerNamePanel {margin-left: 55px; width: 550px;}
-	.vibe-copyPublicLinkDlg-headerNameLabel {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
-	.vibe-copyPublicLinkDlg-headerPathLabel {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
-	.vibe-copyPublicLinkDlg-hintPanel       {display: block; width: 600px; white-space: normal; margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-hintStart       {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
-	.vibe-copyPublicLinkDlg-hintTail        {display: inline; font-weight: normal; font-size: .9em;}
-	.vibe-copyPublicLinkDlg-linksPanel      {}
-	.vibe-copyPublicLinkDlg-mainPanel       {margin: 10px 10px 10px 13px;}
-	.vibe-copyPublicLinkDlg-readingImage    {display: inline; padding-right: 5px;}
-	.vibe-copyPublicLinkDlg-readingLabel    {display: inline; font-size: 1.1em; color: #505354;}
-	.vibe-copyPublicLinkDlg-readingPanel    {display: block;}
-	.vibe-copyPublicLinkDlg-scrollPanel     {overflow-y: auto !important; overflow-x: hidden !important; border: 1px solid #C4C4C4;}
-	.vibe-copyPublicLinkDlg-scrollLimit     {height: 175px;}
+	.vibe-copyPublicLinkDlg-contentPanel         {margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-createButton         {}
+	.vibe-copyPublicLinkDlg-headerPanel          {position: relative; margin-bottom: 15px;}
+	.vibe-copyPublicLinkDlg-headerPanel img      {position: absolute; top: 0px; left: 1px;}
+	.vibe-copyPublicLinkDlg-headerNamePanel      {margin-left: 55px; width: 550px;}
+	.vibe-copyPublicLinkDlg-headerNameLabel      {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
+	.vibe-copyPublicLinkDlg-headerPathLabel      {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-copyPublicLinkDlg-hintPanel            {display: block; width: 600px; white-space: normal; margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-hintStart            {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
+	.vibe-copyPublicLinkDlg-hintTail             {display: inline; font-weight: normal; font-size: .9em;}
+	.vibe-copyPublicLinkDlg-linksHeaderPanel     {position: relative; margin-bottom: 5px; margin-left: 8px; margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-linksHeaderPanel img {position: absolute; top: 2px; left: 0px;}
+	.vibe-copyPublicLinkDlg-linksHeaderNamePanel {margin-left: 30px; width: 540px;}
+	.vibe-copyPublicLinkDlg-linksHeaderNameLabel {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
+	.vibe-copyPublicLinkDlg-linksHeaderPathLabel {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-copyPublicLinkDlg-linksLabel           {display: block; position: relative; margin-left: 10px;}
+	.vibe-copyPublicLinkDlg-linksLabel2          {margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-linksInput           {width: 95%; background-color: #fafafa; color: #505354; overflow: hidden; padding: 0px !important; border: 1px solid lightgray; margin-left: 10px;}
+	.vibe-copyPublicLinkDlg-linksPanel           {color: #505354; font-size: 12px;}
+	.vibe-copyPublicLinkDlg-mainPanel            {margin: 10px 10px 10px 13px;}
+	.vibe-copyPublicLinkDlg-readingImage         {display: inline; padding-right: 5px;}
+	.vibe-copyPublicLinkDlg-readingLabel         {display: inline; font-size: 1.1em; color: #505354;}
+	.vibe-copyPublicLinkDlg-readingPanel         {display: block;}
+	.vibe-copyPublicLinkDlg-scrollPanel          {overflow: auto !important; border: 1px solid #C4C4C4;}
+	.vibe-copyPublicLinkDlg-scrollLimit          {height: 175px;}
 /* End:  Copy Public Link dialog styles. */
 
 

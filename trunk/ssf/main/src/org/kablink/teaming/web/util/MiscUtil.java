@@ -62,6 +62,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneInfo;
@@ -1195,5 +1196,27 @@ public final class MiscUtil
 		//primary file attachment or is null if one can't be
 		//determined.  Return it.
 		return reply;
+	}
+
+	/**
+	 * Returns the display string for the product name.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static String getProductName( User user )
+	{
+		String keyTail;
+		if ( Utils.checkIfFilr() )
+		     keyTail = "filr";
+		else keyTail = "vibe";
+		return NLT.get( ( "productName." + keyTail ), user.getLocale() );
+	}
+	
+	public static String getProductName()
+	{
+		// Always use the initial form of the method.
+		return getProductName( RequestContextHolder.getRequestContext().getUser() );
 	}
 }// end MiscUtil

@@ -3083,6 +3083,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Copy Public Link dialog.
 	String copyPublicLink(String product);
+	String copyPublicLink_DownloadFileLink();
 	String copyPublicLink_Button(String product);
 	String copyPublicLink_Error_ReadErrors();
 	String copyPublicLink_HintSingle(String product);
@@ -3091,5 +3092,6 @@ public interface GwtTeamingMessages extends Messages
 	String copyPublicLink_InternalError_NotAnEntry();
 	String copyPublicLink_MultipleItems(int numItems);
 	String copyPublicLink_Reading();
+	String copyPublicLink_ViewFileLink();
 	
 }// end GwtTeamingMessages

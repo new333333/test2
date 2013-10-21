@@ -1391,8 +1391,8 @@ public class GwtViewHelper {
 					break;
 					
 				case PUBLIC_LINK:
-					ai.setTitle(NLT.get("share.recipientType.title.publicLink"));
-					ai.setHover(NLT.get("share.recipientType.hover.publicLink"));
+					ai.setTitle(NLT.get("share.recipientType.title.productLink", new String[]{MiscUtil.getProductName()}));
+					ai.setHover(NLT.get("share.recipientType.hover.productLink", new String[]{MiscUtil.getProductName()}));
 					break;
 				}
 				
@@ -2635,8 +2635,8 @@ public class GwtViewHelper {
 			}
 			
 			// ...and setting each one's title and hover.
-			ai.setTitle(NLT.get("share.recipientType.title.publicLink"));
-			ai.setHover(NLT.get("share.recipientType.hover.publicLink"));
+			ai.setTitle(NLT.get("share.recipientType.title.productLink", new String[]{MiscUtil.getProductName()}));
+			ai.setHover(NLT.get("share.recipientType.hover.productLink", new String[]{MiscUtil.getProductName()}));
 		}
 	}
 	
@@ -6122,7 +6122,7 @@ public class GwtViewHelper {
 				
 			case publicLink:
 				// Return a localized public link string.
-				reply = NLT.get("share.recipientType.title.publicLink");
+				reply = NLT.get(NLT.get("share.recipientType.title.productLink", new String[]{MiscUtil.getProductName()}));
 				break;
 			}
 		}
