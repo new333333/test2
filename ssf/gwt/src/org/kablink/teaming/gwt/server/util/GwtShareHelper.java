@@ -107,6 +107,8 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.FileIconsHelper;
+import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.ShareLists;
@@ -2900,8 +2902,100 @@ public class GwtShareHelper
 		{
 			PublicLinksRpcResponseData reply = new PublicLinksRpcResponseData();
 
-//!			...this needs to be implemented...
-			reply.addError("GwtShareHelper.getPublicLinks():  ...this needs to be implemented...");
+			// Do we have any entities to get the public links from?
+			if ( MiscUtil.hasItems( entityIds ) )
+			{
+				// Yes!  Prepare the common things we need to build the
+				// public links... 
+				Long userId = GwtServerHelper.getCurrentUserId();
+				ShareExpirationValue expires = new ShareExpirationValue();
+				expires.setType( ShareExpirationType.NEVER );
+				
+				// ...and scan them.
+				for ( EntityId eid:  entityIds )
+				{
+					// We'll default to using the entity's ID in any
+					// error we generate until we have its title.
+					String feTitle = String.valueOf( eid.getEntityId() );
+					
+					// Is this entity an en entry?
+					if ( ! ( eid.isEntry() ) )
+					{
+						// No!  This should never happen.  Generate an
+						// error and skip it.
+						reply.addError( NLT.get( "publicLink.internalError.NotAnEntry", new String[]{ feTitle } ) );
+						continue;
+					}
+
+					try
+					{
+						// Can we get the name of the primary file
+						// attached to this entry?
+						FolderEntry fe      = bs.getFolderModule().getEntry( null, eid.getEntityId() );
+						            feTitle = fe.getTitle();
+						FileAttachment fa   = MiscUtil.getPrimaryFileAttachment( fe );
+						FileItem       fi   = fa.getFileItem();
+						String         fName;
+						if ( null != fi )
+						     fName = fi.getName();
+						else fName = null;
+						if ( ! ( MiscUtil.hasString( fName ) ) )
+						{
+							// No!  Then we can't build links for it.
+							// Generate an error and skip it.
+							reply.addError( NLT.get( "publicLink.error.NoFile", new String[]{ feTitle } ) );
+							continue;
+						}
+						
+						// Generate the public link 'share' on the
+						// entry...
+						ShareItem si = buildPublicLinkShareItem( bs, userId, eid, expires, "" );
+						if ( null == si )
+						{
+							reply.addError( NLT.get( "publicLink.error.CantShare", new String[]{ feTitle } ) );
+							continue;
+						}
+						bs.getSharingModule().addShareItem( si );
+						
+						// ...construct a download link URL for it...
+						Long   siId = si.getId();
+						String siPK = si.getPassKey();
+						String downloadUrl = WebUrlUtil.getSharedPublicFileUrl( siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK, fName );
+
+						// ...and it we support viewing it as HTML,
+						// ...construct a view link URL for it...
+						String viewUrl;
+						if ( GwtViewHelper.supportsViewAsHtml( fName ) )
+						     viewUrl = WebUrlUtil.getSharedPublicFileUrl( siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fName );
+						else viewUrl = null;
+
+						// ...and add the public link information to
+						// ...the reply.
+						reply.addPublicLink(
+							eid,
+							feTitle,
+							fe.getParentBinder().getPathName(),
+							FileIconsHelper.getFileIconFromFileName(
+								fName,
+								IconSize.SMALL ),
+							downloadUrl,
+							viewUrl);
+						
+					}
+					
+					catch ( Exception e )
+					{
+						// No!  Add an error to the error list...
+						String messageKey;
+						if (e instanceof AccessControlException) messageKey = "publicLink.error.AccssControlException";
+						else                                     messageKey = "publicLink.error.OtherException";
+						reply.addError( NLT.get( messageKey, new String[]{ feTitle } ) );
+						
+						// ...and log it.
+						GwtLogHelper.error( m_logger, "GwtShareHelper.getPublicLinks( Entry:  '" + feTitle + "', EXCEPTION ):  ", e );
+					}
+				}
+			}
 			
 			// If we get here, reply refers to a
 			// PublicLinksRpcResponseData containing the results of obtaining
