@@ -195,6 +195,7 @@ public class FolderEntryComposite extends ResizeComposite
 		TeamingEvents.UNLOCK_SELECTED_ENTITIES,
 		TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES,
 	};
+	
 	/*
 	 * Constructor method.
 	 * 
@@ -491,6 +492,18 @@ public class FolderEntryComposite extends ResizeComposite
 		});
 	}
 
+	/**
+	 * Returns the EntityId of folder entry being viewed.
+	 * 
+	 * Implements the FolderEntryCallback.getEntityId() method.
+	 * 
+	 * @param vfei
+	 */
+	@Override
+	public EntityId getEntityId() {
+		return m_vfei.getEntityId();
+	}
+
 	/*
 	 * Returns the footer adjustment to use for the content panel.
 	 */
@@ -621,7 +634,7 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 
 	/**
-	 * Called when the data table is attached.
+	 * Called when the composite is attached.
 	 * 
 	 * Overrides the Widget.onAttach() method.
 	 */
@@ -777,7 +790,7 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/**
-	 * Called when the data table is detached.
+	 * Called when the composite is detached.
 	 * 
 	 * Overrides the Widget.onDetach() method.
 	 */
@@ -1134,7 +1147,7 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/*
-	 * Asynchronously sets the size of the data table based on its
+	 * Asynchronously sets the size of the composite based on its
 	 * position in the view.
 	 */
 	private void onResizeAsync(int delay) {

@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 
 /**
@@ -41,9 +42,10 @@ import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
  * @author drfoster@novell.com
  */
 public interface FolderEntryCallback {
-	public void    doNavigate(ViewFolderEntryInfo vfei);
-	public boolean isSidebarVisible();
-	public void    resizeView();
-	public void    toggleSidebarVisibility();
-	public void    viewComponentReady();
+	public EntityId getEntityId();
+	public void     doNavigate(ViewFolderEntryInfo vfei);
+	public boolean  isSidebarVisible();
+	public void     resizeView();
+	public void     toggleSidebarVisibility();
+	public void     viewComponentReady();
 }
