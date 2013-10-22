@@ -74,7 +74,7 @@ public class ConfigureUserAccessDlg extends DlgBox
 	CheckBox m_allowSelfRegOfExternalUserAccountCkbox;
 	CheckBox m_disableDownloadCkbox;
 	CheckBox m_disableWebAccessCkbox;
-	CheckBox m_disablePublicCollectionCkbox;
+	CheckBox m_enablePublicCollectionCkbox;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -235,8 +235,8 @@ public class ConfigureUserAccessDlg extends DlgBox
 			
 			panel = new FlowPanel();
 			panel.addStyleName( "marginbottom2" );
-			m_disablePublicCollectionCkbox = new CheckBox( messages.configureUserAccessDlg_DisablePublicCollectionLabel() );
-			panel.add( m_disablePublicCollectionCkbox );
+			m_enablePublicCollectionCkbox = new CheckBox( messages.configureUserAccessDlg_EnablePublicCollectionLabel() );
+			panel.add( m_enablePublicCollectionCkbox );
 			mainPanel.add( panel );
 		}
 		
@@ -368,9 +368,9 @@ public class ConfigureUserAccessDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private boolean getDisablePublicCollection()
+	private boolean getEnablePublicCollection()
 	{
-		return m_disablePublicCollectionCkbox.getValue();
+		return m_enablePublicCollectionCkbox.getValue();
 	}
 	
 	/**
@@ -389,7 +389,7 @@ public class ConfigureUserAccessDlg extends DlgBox
 		config.setAllowSelfReg( getAllowInternalSelfReg() );
 		config.setAllowDownload( !getDisableDownload() );
 		config.setAllowWebAccess( !getDisableWebAccess() );
-		config.setAllowPublicCollection( !getDisablePublicCollection() );
+		config.setAllowPublicCollection( getEnablePublicCollection() );
 		
 		return config;
 	}
@@ -488,8 +488,8 @@ public class ConfigureUserAccessDlg extends DlgBox
 		if ( m_disableWebAccessCkbox != null )
 			m_disableWebAccessCkbox.setValue( false );
 		
-		if ( m_disablePublicCollectionCkbox != null )
-			m_disablePublicCollectionCkbox.setValue( false );
+		if ( m_enablePublicCollectionCkbox != null )
+			m_enablePublicCollectionCkbox.setValue( false );
 		
 		// Issue an rpc request to get the user access information from the server
 		getUserAccessInfoFromServer();
@@ -521,8 +521,8 @@ public class ConfigureUserAccessDlg extends DlgBox
 		if ( m_disableWebAccessCkbox != null )
 			m_disableWebAccessCkbox.setValue( !config.getAllowWebAccess() );
 		
-		if ( m_disablePublicCollectionCkbox != null )
-			m_disablePublicCollectionCkbox.setValue( !config.getAllowPublicCollection() );
+		if ( m_enablePublicCollectionCkbox != null )
+			m_enablePublicCollectionCkbox.setValue( config.getAllowPublicCollection() );
 		
 		danceDlg();
 	}

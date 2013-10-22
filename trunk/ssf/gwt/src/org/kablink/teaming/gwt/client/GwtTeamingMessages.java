@@ -2433,8 +2433,8 @@ public interface GwtTeamingMessages extends Messages
 	String configureUserAccessDlg_AllowExternalUserAccessLabel();
 	String configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel();
 	String configureUserAccessDlg_DisableDownloadLabel();
-	String configureUserAccessDlg_DisablePublicCollectionLabel();
 	String configureUserAccessDlg_DisableWebAccessLabel();
+	String configureUserAccessDlg_EnablePublicCollectionLabel();
 	
 	// Strings used by the GWT based Folder Entry viewer.
 	String folderEntry_Alt_Close();
