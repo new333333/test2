@@ -80,16 +80,16 @@ public class CopyPublicLinkDlg extends DlgBox {
 	private GwtTeamingFilrImageBundle	m_filrImages;		// Access to Filr's images.
 	private GwtTeamingImageBundle		m_images;			// Access to Vibe's images.
 	private GwtTeamingMessages			m_messages;			// Access to Vibe's messages.
-	private Image						m_headerImg;		//
-	private Label						m_headerNameLabel;	//
-	private Label						m_headerPathLabel;	//
-	private Label						m_hintTail;			//
-	private List<EntityId>				m_entityIds;		// List<EntityId> of the entities whose public links are to be copied.
-	private ScrollPanel					m_linksScroller;	//
-	private String						m_imagesPath;		//
-	private String						m_product;			//
-	private VibeFlowPanel				m_contentPanel;		//
-	private VibeVerticalPanel			m_linksPanel;		//
+	private Image						m_headerImg;		// Image in the dialog's header representing what we're generating links for. 
+	private Label						m_headerNameLabel;	// Name of what we're generating links for.
+	private Label						m_headerPathLabel;	// Path to what we're generating links for, if there's only a single item.
+	private Label						m_hintTail;			// Label that makes up the end of the hint just below the dialogs header. 
+	private List<EntityId>				m_entityIds;		// List<EntityId> of the entities whose links are to be copied.
+	private ScrollPanel					m_linksScroller;	// The ScrollPanel that contains the links.
+	private String						m_imagesPath;		// Path to Vibe's images.
+	private String						m_product;			// The product we're running as (Filr or Vibe.)
+	private VibeFlowPanel				m_contentPanel;		// The panel containing the content of the dialog below the header.
+	private VibeVerticalPanel			m_linksPanel;		// The panel containing the links themselves.
 	
 	/*
 	 * Class constructor.
@@ -145,8 +145,8 @@ public class CopyPublicLinkDlg extends DlgBox {
 	 * Create the controls needed in the content.
 	 */
 	private void createContentPanel(Panel mainPanel) {
-		// Create the panel to be used for the dialog content and add
-		// it to the main panel.
+		// Create the panel to be used for the dialog content (below
+		// the header) and add it to the main panel.
 		m_contentPanel = new VibeFlowPanel();
 		m_contentPanel.addStyleName("vibe-copyPublicLinkDlg-contentPanel");
 		mainPanel.add(m_contentPanel);
@@ -171,7 +171,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 		headerPanel.addStyleName("vibe-copyPublicLinkDlg-headerPanel");
 		mainPanel.add(headerPanel);
 
-		// ...add and Image for whatever's selected...
+		// ...add an Image for whatever's selected...
 		m_headerImg = new Image();
 		headerPanel.add(m_headerImg);
 
@@ -216,14 +216,11 @@ public class CopyPublicLinkDlg extends DlgBox {
 	 * Synchronously creates the links for the entities.
 	 */
 	private void createLinksNow() {
-		// Clear the content of the links panel (it should only be the
-		// create push button)... 
-		m_linksPanel.clear();
-
-		// ...add a busy indicator while we get the links from the
-		// ...server...
+		// Show a busy indicator while we get the links from the
+		// server.
 		showReadingInProgress();
-		
+
+		// ...and request the links.
 		GetPublicLinksCmd cmd = new GetPublicLinksCmd(m_entityIds);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -235,11 +232,11 @@ public class CopyPublicLinkDlg extends DlgBox {
 	
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Extract the public link information from the
-				// response.
+				// Extract the link information from the response.
 				PublicLinksRpcResponseData plData = ((PublicLinksRpcResponseData) response.getResponseData());
 				
-				// Did we get any messages from the request?
+				// Did we get any messages (errors, ...) from the
+				// request?
 				int c = plData.getTotalMessageCount();
 				if (0 < c) {
 					// Yes!  Display them.
@@ -248,8 +245,8 @@ public class CopyPublicLinkDlg extends DlgBox {
 						plData.getErrorList());
 				}
 
-				// If we got any public links, display them.
-				// Otherwise, display the create links button again.
+				// If we got any links, display them.  Otherwise,
+				// display the create links button again.
 				Map<String, PublicLinkInfo> plMap = plData.getPublicLinksMap();
 				if ((null != plMap) && (!(plMap.isEmpty())))
 				     displayPublicLinks(plMap);
@@ -259,17 +256,18 @@ public class CopyPublicLinkDlg extends DlgBox {
 	}
 
 	/*
-	 * Displays an individual public link in the list.
+	 * Displays an individual link in the list.
 	 */
 	private void displayPublicLink(PublicLinkInfo pl, boolean showFileInfo) {
-		// Do we need to show per file information?
+		// Do we need to show per file information?  (We do processing
+		// multiple entities.  We don't with a single entity.)
 		if (showFileInfo) {
 			// Yes!  Create the panel for the header...
 			VibeFlowPanel fiPanel = new VibeFlowPanel();
 			fiPanel.addStyleName("vibe-copyPublicLinkDlg-linksHeaderPanel");
 			m_linksPanel.add(fiPanel);
 
-			// ...add and Image for whatever's selected...
+			// ...add an Image for entity...
 			String imageUrl = pl.getImageUrl();
 			if (GwtClientHelper.hasString(imageUrl))
 			     imageUrl = (m_imagesPath + imageUrl);
@@ -284,7 +282,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 			fiNameLabel.addStyleName("vibe-copyPublicLinkDlg-linksHeaderNameLabel");
 			fiNamePanel.add(fiNameLabel);
 			
-			// ...add widgets for the path...
+			// ...and add widgets for the path.
 			Label fiPathLabel = new Label(pl.getPath());
 			fiPathLabel.addStyleName("vibe-copyPublicLinkDlg-linksHeaderPathLabel");
 			fiNamePanel.add(fiPathLabel);
@@ -296,31 +294,36 @@ public class CopyPublicLinkDlg extends DlgBox {
 		boolean hasView = GwtClientHelper.hasString(url);
 		if (hasView) {
 			// ...add that to the display...
-			displayPublicLinkUrl(m_messages.copyPublicLink_ViewFileLink(), url, (!showFileInfo));
+			displayPublicLinkUrl(
+				m_messages.copyPublicLink_ViewFileLink(),
+				url,
+				(!showFileInfo));	// true -> Display a spacer above the URL.  false -> Don't.
 		}
 		
 		// ...and if we have a download URL...
 		url = pl.getDownloadUrl();
 		if (GwtClientHelper.hasString(url)) {
 			// ...add that to the display.
-			displayPublicLinkUrl(m_messages.copyPublicLink_DownloadFileLink(), url, ((!showFileInfo) && (!hasView)));
+			displayPublicLinkUrl(
+				m_messages.copyPublicLink_DownloadFileLink(),
+				url,
+				((!showFileInfo) && (!hasView)));	// true -> Display a spacer above the URL.  false -> Don't.
 		}
 	}
 	
 	/*
-	 * Displays the public links in the map.
+	 * Displays the links from the map.
 	 */
 	private void displayPublicLinks(Map<String, PublicLinkInfo> plMap) {
 		// Clear the content panel...
 		m_linksPanel.clear();
 		
 		// ...and adjust the sizes for scrolling.
-		m_linksPanel.removeStyleName("vibe-copyPublicLinkDlg-scrollLimit");	// Size on the ScrollPanel...
+		m_linksPanel.removeStyleName("vibe-copyPublicLinkDlg-scrollLimit");	// Limit on the ScrollPanel...
 		m_linksScroller.addStyleName("vibe-copyPublicLinkDlg-scrollLimit");	// ...not the VerticalPanel.
 		
 		// Scan the links...
-		int         entityCount  = m_entityIds.size();
-		boolean     showFileInfo = (1 < entityCount);
+		boolean     showFileInfo = (1 < m_entityIds.size());
 		Set<String> plKeys       = plMap.keySet();
 		for (String key:  plKeys) {
 			// ...adding each to the display.
@@ -329,7 +332,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 	}
 	
 	/*
-	 * Displays an individual public link URL in the list.
+	 * Displays an individual link URL in the ScrollPanel.
 	 */
 	private void displayPublicLinkUrl(final String urlLabel, final String url, boolean topSpacer) {
 		// Add a label for the URL...
@@ -356,7 +359,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 			public void onChange(ChangeEvent event) {
 				// ...and if the user happens to change the link (since
 				// ...it's an INPUT, they CAN edit it), we simply
-				// ...restore the INPUT back to its initial value.
+				// ...restore it back to its initial value.
 				linkInput.setValue(url);
 				linkInput.selectAll();
 			}
@@ -492,7 +495,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 		m_hintTail.getElement().setInnerText(hintTail);
 
 		// Turn off any scrolling currently in force...
-		m_linksPanel.addStyleName(      "vibe-copyPublicLinkDlg-scrollLimit");	// Size on the VerticalPanel...
+		m_linksPanel.addStyleName(      "vibe-copyPublicLinkDlg-scrollLimit");	// Limit on the VerticalPanel...
 		m_linksScroller.removeStyleName("vibe-copyPublicLinkDlg-scrollLimit");	// ...not the ScrollPanel.
 		
 		// ...create the dialog's contents in an empty state that
@@ -507,7 +510,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
-		// Create the dialogs content.
+		// Create the dialog's content.
 		if (1 == m_entityIds.size())
 		     loadPart1Async(m_entityIds.get(0));
 		else populateDlgFromInfoAsync();
