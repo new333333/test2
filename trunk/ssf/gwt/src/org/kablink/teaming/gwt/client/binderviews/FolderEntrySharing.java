@@ -32,38 +32,62 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderEntryDetailsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryDetailsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.ShareInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.widgets.GroupMembershipPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Class that holds the folder entry viewer sharing manager.
  * 
  * @author drfoster@novell.com
  */
-public class FolderEntrySharing extends VibeFlowPanel {
-	private FolderEntryCallback				m_fec;				// Callback to the folder entry composite.
-	private GwtTeamingDataTableImageBundle	m_images;			// Access to Vibe's data table images.
-	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
-	private List<ShareInfo>					m_sharedByItems;	// A List<ShareInfo> of shares of the item with the current user.
-	private List<ShareInfo>					m_sharedWithItems;	// A List<ShareInfo> of shares of the item the current user has made.
+public class FolderEntrySharing extends VibeFlowPanel
+	implements
+		// Event handlers implemented by this class.
+		ContentChangedEvent.Handler
+{
+	private FolderEntryCallback				m_fec;						// Callback to the folder entry composite.
+	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's data table images.
+	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private List<ShareInfo>					m_sharedByItems;			// A List<ShareInfo> of shares of the item with the current user.
+	private List<ShareInfo>					m_sharedWithItems;			// A List<ShareInfo> of shares of the item the current user has made.
 
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.CONTENT_CHANGED,
+	};
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -85,13 +109,25 @@ public class FolderEntrySharing extends VibeFlowPanel {
 		m_messages = GwtTeaming.getMessages();
 		
 		// ...and construct the sharing manager's content.
-		createContent();
+		createContentAsync(true);	// true -> Notify the composite that we're ready.
 	}
 	
 	/*
-	 * Creates the sharing manager's content.
+	 * Asynchronously creates the sharing manager's content.
 	 */
-	private void createContent() {
+	private void createContentAsync(final boolean notifyViewReady) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				createContentNow(notifyViewReady);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously creates the sharing manager's content.
+	 */
+	private void createContentNow(boolean notifyViewReady) {
 		// Add the panel's style...
 		addStyleName("vibe-feView-sharingPanel");
 
@@ -108,9 +144,12 @@ public class FolderEntrySharing extends VibeFlowPanel {
 			// ...shared.
 			createEmptyShareDisplay();
 		}
-		
-		// ...and tell the composite that we're ready.
-		m_fec.viewComponentReady();
+
+		// ...and if we were requested to do so...
+		if (notifyViewReady) {
+			// ...tell the composite that we're ready.
+			m_fec.viewComponentReady();
+		}
 	}
 
 	/*
@@ -360,5 +399,122 @@ public class FolderEntrySharing extends VibeFlowPanel {
 		Long wsId = ai.getPresenceUserWSId();
 		String wsIdS = ((null == wsId) ? null : String.valueOf(wsId));
 		GwtClientHelper.invokeSimpleProfile(pElement, wsIdS, ai.getTitle());
+	}
+	
+	/**
+	 * Called when the share panel is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Handles ContentChangedEvent's received by this class.
+	 * 
+	 * Implements the ContentChangedEvent.Handler.onContentChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContentChanged(final ContentChangedEvent event) {
+		// If the content that changed is sharing...
+		if (Change.SHARING.equals( event.getChange())) {
+			// ...force the share list to reload.
+			refreshShareListAsync();;
+		}
+	}
+	
+	/**
+	 * Called when the share panel is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+
+	
+	/*
+	 * Asynchronously refreshes the share list.
+	 */
+	private void refreshShareListAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				refreshShareListNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously refreshes the share list.
+	 */
+	private void refreshShareListNow() {
+		// Read the folder entry details for the updated share lists.
+		GetFolderEntryDetailsCmd cmd = new GetFolderEntryDetailsCmd(m_fec.getEntityId(), false);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetFolderEntryDetails());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Extract the share lists from the details...
+				FolderEntryDetailsRpcResponseData responseData = ((FolderEntryDetailsRpcResponseData) response.getResponseData());
+				FolderEntryDetails fed = responseData.getFolderEntryDetails();
+				m_sharedByItems   = fed.getSharedByItems();
+				m_sharedWithItems = fed.getSharedWithItems();
+
+				// ...and recreate the panel's content.
+				clear();
+				createContentAsync(false);	// false -> Don't notify the composite that we're ready.
+			}
+		});
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				REGISTERED_EVENTS,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
 	}
 }
