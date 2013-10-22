@@ -60,7 +60,6 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -88,6 +87,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	private TransactionTemplate transactionTemplate;
 	
     protected ConvertedFileModule getConvertedFileModule() {
+    	if (null == convertedFileModule) {
+    		convertedFileModule = ((ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule"));
+    	}
 		return convertedFileModule;
 	}
 	public void setConvertedFileModule(ConvertedFileModule convertedFileModule) {
@@ -109,6 +111,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     }
     
     @Override
+	@SuppressWarnings("unchecked")
 	public void checkAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation)
 	    	throws AccessControlException {
     	User user = RequestContextHolder.getRequestContext().getUser();
