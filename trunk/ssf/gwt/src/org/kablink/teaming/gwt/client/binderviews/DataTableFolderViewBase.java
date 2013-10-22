@@ -1995,7 +1995,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Does the user have rights to share everything
 			// they've selected?
 			List<EntityId> seList = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(seList))) {
+			final boolean validateSelectedRows = (!(GwtClientHelper.hasItems(seList)));
+			if (validateSelectedRows) {
 				seList = getSelectedEntityIds();
 			}
 			
@@ -2014,7 +2015,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
-					onCopyPublicLinkSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap());
+					onCopyPublicLinkSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap(), validateSelectedRows);
 				}
 			});
 		}
@@ -2024,11 +2025,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Asynchronously processes the share request on the selected
 	 * entries, given the current user's rights to them.
 	 */
-	private void onCopyPublicLinkSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+	private void onCopyPublicLinkSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, final boolean validateSelectedRows) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onCopyPublicLinkSelectedEntitiesNow(selectedEntities, entityRightsMap);
+				onCopyPublicLinkSelectedEntitiesNow(selectedEntities, entityRightsMap, validateSelectedRows);
 			}
 		});
 	}
@@ -2037,8 +2038,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Synchronously processes the share request on the selected
 	 * entries, given the current user's rights to them.
 	 */
-	private void onCopyPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
-		final List<FolderRow> invalidRows = validateSelectedRows_PublicLink(entityRightsMap);
+	private void onCopyPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, boolean validateSelectedRows) {
+		// Are there any invalid rows?
+		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_PublicLink(entityRightsMap) : null);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
 			// Yes!  Invoke the share.
 			copySelectedEntitiesPublicLinkAsync(selectedEntities);
@@ -2381,7 +2383,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Does the user have rights to share everything
 			// they've selected?
 			List<EntityId> seList = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(seList))) {
+			final boolean validateSelectedRows = (!(GwtClientHelper.hasItems(seList)));
+			if (validateSelectedRows) {
 				seList = getSelectedEntityIds();
 			}
 			
@@ -2400,7 +2403,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
-					onEmailPublicLinkSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap());
+					onEmailPublicLinkSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap(), validateSelectedRows);
 				}
 			});
 		}
@@ -2410,11 +2413,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Asynchronously processes the share request on the selected
 	 * entries, given the current user's rights to them.
 	 */
-	private void onEmailPublicLinkSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+	private void onEmailPublicLinkSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, final boolean validateSelectedRows) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onEmailPublicLinkSelectedEntitiesNow(selectedEntities, entityRightsMap);
+				onEmailPublicLinkSelectedEntitiesNow(selectedEntities, entityRightsMap, validateSelectedRows);
 			}
 		});
 	}
@@ -2423,8 +2426,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Synchronously processes the share request on the selected
 	 * entries, given the current user's rights to them.
 	 */
-	private void onEmailPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
-		final List<FolderRow> invalidRows = validateSelectedRows_PublicLink(entityRightsMap);
+	private void onEmailPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, boolean validateSelectedRows) {
+		// Are there any invalid rows?
+		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_PublicLink(entityRightsMap) : null);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
 			// Yes!  Invoke the share.
 			emailSelectedEntitiesPublicLinkAsync(selectedEntities);
@@ -3151,10 +3155,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Does the user have rights to share everything
 			// they've selected?
 			List<EntityId> seList = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(seList))) {
+			final boolean validateSelectedRows = (!(GwtClientHelper.hasItems(seList)));
+			if (validateSelectedRows) {
 				seList = getSelectedEntityIds();
 			}
-			
 			
 			final List<EntityId>	selectedEntities = seList;
 			GwtClientHelper.executeCommand(
@@ -3170,7 +3174,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
-					onShareSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap());
+					onShareSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap(), validateSelectedRows);
 				}
 			});
 		}
@@ -3180,11 +3184,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Asynchronously processes the share request on the selected
 	 * entries, given the current user's rights to them.
 	 */
-	private void onShareSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+	private void onShareSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, final boolean validateSelectedRows) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onShareSelectedEntitiesNow(selectedEntities, entityRightsMap);
+				onShareSelectedEntitiesNow(selectedEntities, entityRightsMap, validateSelectedRows);
 			}
 		});
 	}
@@ -3193,8 +3197,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Synchronously processes the share request on the selected
 	 * entries, given the current user's rights to them.
 	 */
-	private void onShareSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
-		final List<FolderRow> invalidRows = validateSelectedRows_Sharing(entityRightsMap);
+	private void onShareSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, boolean validateSelectedRows) {
+		// Are there any invalid rows?
+		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_Sharing(entityRightsMap) : null);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
 			// Yes!  Invoke the share.
 			shareSelectedEntitiesAsync(selectedEntities);
