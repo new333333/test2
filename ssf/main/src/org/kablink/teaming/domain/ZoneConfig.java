@@ -511,7 +511,7 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	public boolean isPublicCollectionEnabled()
 	{
 		if ( publicCollectionEnabled == null )
-			return true;
+			return false;
 		
 		return publicCollectionEnabled.booleanValue();
 	}
