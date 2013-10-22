@@ -84,6 +84,12 @@ import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
 public class GwtDeleteHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtDeleteHelper.class);
 
+	// The following controls whether any net storage (Vibe mirrored
+	// folders, Filr Net Folders (including a Home folder), ... get
+	// purge from the net storage source when a user's workspace is
+	// deleted.
+	private final static boolean	PURGE_NETSTORAGE_WITH_USER_WS	= false;
+
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
@@ -228,8 +234,8 @@ public class GwtDeleteHelper {
 			// Purge the purge items...
 			if (null != purgeIds) {
 				if (purgeUsersWithWS)
-				     doPurgeUsers(         bs, request, purgeIds, true, reply);	// true -> purge from..
-				else doPurgeUserWorkspaces(bs, request, purgeIds, true, reply);	// ...remote source.
+				     doPurgeUsers(         bs, request, purgeIds, PURGE_NETSTORAGE_WITH_USER_WS, reply);
+				else doPurgeUserWorkspaces(bs, request, purgeIds, PURGE_NETSTORAGE_WITH_USER_WS, reply);
 			}
 			
 			// ...and delete the trash items.
