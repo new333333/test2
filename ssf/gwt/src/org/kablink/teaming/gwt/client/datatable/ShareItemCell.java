@@ -345,10 +345,21 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 			img.addStyleName( "shareItem_RecipientAvatar" );
 			strBuff = new StringBuffer();
 			strBuff.append( "recipientAvatar-" );
-			if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
+			switch( shareItem.getRecipientType() )
+			{
+			case PUBLIC_TYPE:
 				strBuff.append( "public" );
-			else
+				break;
+				
+			case PUBLIC_LINK:
+				strBuff.append( "PublicLink-ShareItemId:" );
+				strBuff.append( shareItem.getId() );
+				break;
+				
+			default:
 				strBuff.append( String.valueOf( shareItem.getRecipientId() ) );
+				break;
+			}
 			strBuff.append( "-" + String.valueOf( shareItem.getEntityId().getEntityIdString() ) );
 			avatarId = strBuff.toString();
 			img.getElement().setId( avatarId );
@@ -406,7 +417,13 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 			expireLabel2.addStyleName( "shareItem_Expiration" );
 			strBuff = new StringBuffer();
 			strBuff.append( "expirationDate-" );
-			strBuff.append( String.valueOf( shareItem.getRecipientId() ) );
+			if ( shareItem.getRecipientType() != GwtRecipientType.PUBLIC_LINK )
+				strBuff.append( String.valueOf( shareItem.getRecipientId() ) );
+			else
+			{
+				strBuff.append( "PublicLink-ShareItemId:" );
+				strBuff.append( shareItem.getId() );
+			}
 			strBuff.append( "-" + String.valueOf( shareItem.getEntityId().getEntityIdString() ) );
 			expirationDateId = strBuff.toString();
 			expireLabel2.getElement().setId( expirationDateId );
@@ -456,7 +473,6 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 
 			if ( note.length() > 0 )
 			{
-//				label = new Label( messages.shareDlg_noteLabel() + " " + note );
 				label = new Label( note );
 				label.addStyleName( "shareItem_Note" );
 				mainPanel.add( label );
@@ -494,6 +510,14 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		{
 			// Yes
 			updateAvatarUrl( elementId, GwtMainPage.m_requestInfo.getImagesPath() + "pics/public16.png" );
+			return;
+		}
+		
+		// Is the recipient type a "public link"?
+		if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_LINK )
+		{
+			// Yes
+			updateAvatarUrl( elementId, GwtMainPage.m_requestInfo.getImagesPath() + "pics/publicLink16.png" );
 			return;
 		}
 		

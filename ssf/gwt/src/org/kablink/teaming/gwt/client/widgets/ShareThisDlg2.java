@@ -2245,6 +2245,7 @@ public class ShareThisDlg2 extends DlgBox
 			GwtShareItem shareItem;
 			boolean recipientIsExternal = false;
 			boolean recipientIsPublic = false;
+			boolean isPublicLink = false;
 
 			shareItem = listOfShareItems.get( 0 );
 			
@@ -2263,6 +2264,10 @@ public class ShareThisDlg2 extends DlgBox
 				else if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
 				{
 					recipientIsPublic = true;
+				}
+				else if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_LINK )
+				{
+					isPublicLink = true;
 				}
 			}
 			else
@@ -2283,11 +2288,15 @@ public class ShareThisDlg2 extends DlgBox
 					{
 						recipientIsPublic = true;
 					}
+					else if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_LINK )
+					{
+						isPublicLink = true;
+					}
 				}
 			}
 
-			// Is the recipient the public user?
-			if ( recipientIsPublic )
+			// Is the recipient the public user or a public link?
+			if ( recipientIsPublic || isPublicLink )
 			{
 				// Yes, the public can only have "Viewer" rights.
 				highestRightsPossible = new ShareRights();
