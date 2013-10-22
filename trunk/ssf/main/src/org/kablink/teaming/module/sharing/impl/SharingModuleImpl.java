@@ -690,25 +690,56 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				// Update previous snapshot
-				try {
-					ShareItem previousShareItem = getProfileDao().loadShareItem(previousShareItemId);
-					
-					previousShareItem.setLatest(false);
-					
-					getCoreDao().update(previousShareItem);
+				// Are we dealing with a "public link" share item?
+				if ( latestShareItem.getRecipientType() != RecipientType.publicLink )
+				{
+					// No
+					// Update previous snapshot
+					try {
+						ShareItem previousShareItem = getProfileDao().loadShareItem(previousShareItemId);
+						
+						previousShareItem.setLatest(false);
+						
+						getCoreDao().update(previousShareItem);
+					}
+					catch(NoShareItemByTheIdException e) {
+						// The previous snapshot isn't found.
+						logger.warn("Previous share item with id '" + previousShareItemId + "' is not found.");
+					}
+
+					// Create a new ShareItem
+					getCoreDao().save(latestShareItem);
+
+					//Log this share action in the change log
+					addShareItemChangeLogEntry(latestShareItem, ChangeLog.SHARE_MODIFY);
 				}
-				catch(NoShareItemByTheIdException e) {
-					// The previous snapshot isn't found.
-					logger.warn("Previous share item with id '" + previousShareItemId + "' is not found.");
+				else
+				{
+					// Yes, we can't delete the old ShareItem.  We need to update it.
+					try
+					{
+						ShareItem previousShareItem;
+						
+						previousShareItem = getProfileDao().loadShareItem( previousShareItemId );
+						
+						// The only things that can be modified are the comments and end date.
+						previousShareItem.setComment( latestShareItem.getComment() );
+						previousShareItem.setDaysToExpire( latestShareItem.getDaysToExpire() );
+						previousShareItem.setEndDate( latestShareItem.getEndDate() );
+						previousShareItem.setStartDate( latestShareItem.getStartDate() );
+						
+						getCoreDao().update( previousShareItem );
+
+						// Log this share action in the change log
+						addShareItemChangeLogEntry( previousShareItem, ChangeLog.SHARE_MODIFY );
+					}
+					catch( NoShareItemByTheIdException e )
+					{
+						// The "public link" share item was not found
+						logger.warn( "Public link share item with id '" + previousShareItemId + "' is not found." );
+					}
 				}
 
-				// Save new snapshot
-				getCoreDao().save(latestShareItem);
-
-				//Log this share action in the change log
-				addShareItemChangeLogEntry(latestShareItem, ChangeLog.SHARE_MODIFY);
-				
 				return null;
 			}
 		});

@@ -706,6 +706,10 @@ public class GwtShareHelper
 			recipientType = RecipientType.user;
 			break;
 			
+		case PUBLIC_LINK:
+			recipientType = RecipientType.publicLink;
+			break;
+			
 		case UNKNOWN:
 		default:
 			recipientType = RecipientType.user;
@@ -717,7 +721,7 @@ public class GwtShareHelper
 		// Get the appropriate RightSet
 		rightSet = getRightSetFromShareRights( gwtShareItem );
 		
-		// Create the new ShareItem in the db
+		// Create the new ShareItem
 		{
 			shareItem = new ShareItem(
 								sharedById,
@@ -2358,13 +2362,13 @@ public class GwtShareHelper
 				else
 				{
 					// The ShareItem exists.
-					// Build a new ShareItem with the new information.
-					shareItem = buildShareItem( ami, nextGwtShareItem.getSharedById(), nextGwtShareItem );
-					
 					// Was it modified?
 					if ( nextGwtShareItem.isDirty() )
 					{
 						// Yes
+						// Build a new ShareItem with the new information.
+						shareItem = buildShareItem( ami, nextGwtShareItem.getSharedById(), nextGwtShareItem );
+						
 						// Modify the share by marking existing snapshot as not being the latest
 						// and persisting the new snapshot. 
 						sharingModule.modifyShareItem(shareItem, shareItemId);
@@ -2377,7 +2381,6 @@ public class GwtShareHelper
 				// Did we successfully create/modify a share?
 				if ( shareItem != null )
 				{
-					
 					// Yes
 					results.addSuccess( shareItem.getId(), nextGwtShareItem, sendEmail );
 				}
