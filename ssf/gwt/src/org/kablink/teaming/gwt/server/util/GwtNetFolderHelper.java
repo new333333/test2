@@ -716,6 +716,7 @@ public class GwtNetFolderHelper
 				gwtUser.setName( p.getName() );
 				gwtUser.setTitle( Utils.getUserTitle( p ) );
 				gwtUser.setWorkspaceTitle( ((User)p).getWSTitle() );
+				gwtUser.setEmail( p.getEmailAddress() );
 				
 				nfRoot.addPrincipal( gwtUser );
 			}
@@ -728,6 +729,7 @@ public class GwtNetFolderHelper
 				gwtGroup.setId( p.getId().toString() );
 				gwtGroup.setName( p.getName() );
 				gwtGroup.setTitle( p.getTitle() );
+				gwtGroup.setDn( p.getForeignName() );
 				
 				nfRoot.addPrincipal( gwtGroup );
 			}
@@ -924,6 +926,7 @@ public class GwtNetFolderHelper
 						gwtGroup.setId( nextGroup.getId().toString() );
 						gwtGroup.setName( nextGroup.getName() );
 						gwtGroup.setTitle( nextGroup.getTitle() );
+						gwtGroup.setDn( nextGroup.getForeignName() );
 						
 						nextRole.addMember( gwtGroup );
 					}
@@ -940,6 +943,7 @@ public class GwtNetFolderHelper
 						gwtUser.setName( user.getName() );
 						gwtUser.setTitle( Utils.getUserTitle( user ) );
 						gwtUser.setWorkspaceTitle( user.getWSTitle() );
+						gwtUser.setEmail( user.getEmailAddress() );
 	
 						nextRole.addMember( gwtUser );
 					}

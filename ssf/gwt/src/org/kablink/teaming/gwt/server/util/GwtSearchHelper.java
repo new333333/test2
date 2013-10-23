@@ -478,6 +478,7 @@ public class GwtSearchHelper
 								gwtGroup.setId( id );
 								gwtGroup.setName( group.getName() );
 								gwtGroup.setTitle( group.getTitle() );
+								gwtGroup.setDn( group.getForeignName() );
 								
 								results.add( gwtGroup );
 							}
@@ -728,6 +729,7 @@ public class GwtSearchHelper
 								gwtGroup.setId( principalId );
 								gwtGroup.setName( principal.getName() );
 								gwtGroup.setTitle( principal.getTitle() );
+								gwtGroup.setDn( principal.getForeignName() );
 								
 								results.add( gwtGroup );
 							}
@@ -847,6 +849,7 @@ public class GwtSearchHelper
 				reply.setName( user.getName() );
 				reply.setTitle( Utils.getUserTitle( user ) );
 				reply.setWorkspaceTitle( user.getWSTitle() );
+				reply.setEmail( user.getEmailAddress() );
 				
 				GwtServerHelper.setExtUserProvState( reply, user );
 				

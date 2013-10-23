@@ -53,6 +53,7 @@ public class GroupInfo
 	private String m_title;			// The group's title.
 	private String m_name;		// The group's name
 	private String m_desc;		// The group's description
+	private String m_fqdn;		// If the group came from ldap, the group's fully qualified dn
 	private boolean m_fromLdap;
 	private GroupMembershipInfo m_membershipInfo;
 	
@@ -87,6 +88,22 @@ public class GroupInfo
 	}
 	
 	/**
+	 * 
+	 */
+	public String getDn()
+	{
+		return m_fqdn;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setDn( String dn )
+	{
+		m_fqdn = dn;
+	}
+	
+	/**
 	 * Returns the group's id.
 	 * 
 	 * @return
@@ -102,6 +119,21 @@ public class GroupInfo
 	 */
 	public void setId(Long id) {
 		m_id = id;
+	}
+	
+	/**
+	 * Return the secondary display text for this group.  The value returned is generally used as the text
+	 * displayed on a mouse over.
+	 */
+	public String getSecondaryDisplayText()
+	{
+		if ( m_fqdn != null && m_fqdn.length() > 0 )
+			return m_fqdn;
+		
+		if ( m_desc != null && m_desc.length() > 0 )
+			return m_desc;
+		
+		return m_name;
 	}
 
 	/**
