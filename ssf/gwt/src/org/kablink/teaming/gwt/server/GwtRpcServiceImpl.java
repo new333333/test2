@@ -170,6 +170,7 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
+import org.kablink.teaming.gwt.server.LdapBrowser.LdapBrowserHelper;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
@@ -1739,6 +1740,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_LDAP_SERVER_DATA:
+		{
+			GetLdapServerDataCmd gcwCmd = ((GetLdapServerDataCmd) cmd);
+			LdapServerDataRpcResponseData result = LdapBrowserHelper.getLdapServerData( this, getRequest( ri ), gcwCmd.getDirectoryServer(), gcwCmd.getSearchInfo() );
+			response = new VibeRpcResponse( result );
+		}
+		
 		case GET_LDAP_SYNC_RESULTS:
 		{
 			GetLdapSyncResultsCmd glsrCmd;
@@ -2672,6 +2680,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case LDAP_AUTHENTICATE_USER:
+		{
+			LdapAuthenticateUserCmd gcwCmd = ((LdapAuthenticateUserCmd) cmd);
+			String result = LdapBrowserHelper.authenticateUser( this, getRequest( ri ), gcwCmd.getDirectoryServer() );
+			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
+		}
+		
 		case LOCK_ENTRIES:
 		{
 			LockEntriesCmd leCmd = ((LockEntriesCmd) cmd);

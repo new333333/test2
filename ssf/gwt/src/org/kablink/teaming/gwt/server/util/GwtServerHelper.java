@@ -9721,6 +9721,7 @@ public class GwtServerHelper {
 		case GET_JITS_ZONE_CONFIG:
 		case GET_LANDING_PAGE_DATA:
 		case GET_LDAP_CONFIG:
+		case GET_LDAP_SERVER_DATA:
 		case GET_LDAP_SYNC_RESULTS:
 		case GET_LIST_OF_CHILD_BINDERS:
 		case GET_LIST_OF_FILES:
@@ -9809,6 +9810,7 @@ public class GwtServerHelper {
 		case IS_PERSON_TRACKED:
 		case IS_SEEN:
 		case HIDE_SHARES:
+		case LDAP_AUTHENTICATE_USER:
 		case LOCK_ENTRIES:
 		case MODIFY_NET_FOLDER:
 		case MODIFY_NET_FOLDER_ROOT:
