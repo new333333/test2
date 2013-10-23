@@ -2152,6 +2152,9 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgPersonalStorage_Clear();
 	String manageGroupsDlgPersonalStorage_Disable();
 	String manageGroupsDlgPersonalStorage_Enable();
+	String manageGroupsDlgPublicCollection_Clear();
+	String manageGroupsDlgPublicCollection_Disable();
+	String manageGroupsDlgPublicCollection_Enable();
 	String manageGroupsDlgSelectGroupToDelete();
 	String manageGroupsDlgSelectGroupsToModify();
 	String manageGroupsDlgSelect1GroupToEdit();
