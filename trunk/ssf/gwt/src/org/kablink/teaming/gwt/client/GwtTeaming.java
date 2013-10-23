@@ -61,6 +61,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  */
 public class GwtTeaming implements EntryPoint
 {
+	private static final CommonImageBundle					m_ldapBrowserImageBundle	=                       GWT.create( CommonImageBundle.class                  );
 	private static final GwtTeamingMessages					m_stringMessages			=                       GWT.create( GwtTeamingMessages.class                 );
 	private static final GwtTeamingCloudFoldersImageBundle	m_cloudFoldersImageBundle	=                       GWT.create( GwtTeamingCloudFoldersImageBundle.class  );
 	private static final GwtTeamingDataTableImageBundle		m_dataTableImageBundle		=                       GWT.create( GwtTeamingDataTableImageBundle.class     );
@@ -80,10 +81,21 @@ public class GwtTeaming implements EntryPoint
 	 * 
 	 * @return
 	 */
+	public static CommonImageBundle getLdapBrowserImageBundle()
+	{
+		return m_ldapBrowserImageBundle;
+	}// end getLdapBrowserImageBundle()
+	
+	
+	/**
+	 * Returns the object that is used to retrieve Cloud Folder images.
+	 * 
+	 * @return
+	 */
 	public static GwtTeamingCloudFoldersImageBundle getCloudFoldersImageBundle()
 	{
 		return m_cloudFoldersImageBundle;
-	}// end getFilrImageBundle()
+	}// end getCloudFoldersImageBundle()
 	
 	
 	/**

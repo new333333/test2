@@ -402,6 +402,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetJitsZoneConfig();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetLdapConfig();
+	String rpcFailure_GetLdapServerData();
 	String rpcFailure_GetListOfAttachments();
 	String rpcFailure_GetLocales();
 	String rpcFailure_GetBinderAccessories();
