@@ -3629,6 +3629,11 @@ public class BinderHelper {
 			}
 			crit = SearchUtils.getSharedWithMeSearchCriteria(binderIds);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
+		} else if (ObjectKeys.SEARCH_SCOPE_SHARED_BY_ME.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
+			//Search the user's "shared by me" files
+			//Build the ancillary criteria for searching within this collection
+			Criteria crit = SearchUtils.getSharedByMeSearchCriteria(bs, null);
+			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_CURRENT.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search the current folder (if known)
 			String searchContextBinderId = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_BINDER_ID, "");

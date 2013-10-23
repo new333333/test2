@@ -119,6 +119,7 @@ public class Constants {
 	public static final String ROOT_FOLDER_ACL_FIELD = "_rootAcl";
 	public static final String ROOT_FOLDER_ALL = "all";
 	public static final String SHARED = "_shared";
+	public static final String SHARE_CREATOR = "_shareCreator";
 	public static final String SHARED_IS_SHARED = "true";
 	public static final String SHARED_IDS = "_sharedIds";
 	public static final String SHARED_TEAM_IDS = "_sharedTeamIds";

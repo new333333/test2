@@ -2663,6 +2663,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
        	return result;
 	}
 
+	private Set<Long> sharerResultListToList(List<Long> list) {
+      	Set<Long> result = new TreeSet<Long>();
+       	for(Long sharerId : list) {
+       		result.add(sharerId);
+       	}
+       	return result;
+	}
+
 	@Override
  	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntities(final Collection<EntityIdentifier> sharedEntityIdentifiers, final String rightName) {
 		return getRecipientIdsWithGrantedRightsToSharedEntities(sharedEntityIdentifiers, new String[]{rightName});
@@ -2711,6 +2719,45 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}
     	finally {
     		end(begin, "getRecipientIdsWithGrantedRightsToSharedEntities(Collection<EntityIdentifier>,String[])");
+    	}	              	
+	}
+
+	@Override
+ 	public Set<Long> getSharerIdsToSharedEntities(final Collection<EntityIdentifier> sharedEntityIdentifiers) {
+		if(sharedEntityIdentifiers == null || sharedEntityIdentifiers.isEmpty())
+			throw new IllegalArgumentException("shared entity identifiers must be specified");
+		long begin = System.nanoTime();
+		try {
+	      	List<Long> list = (List<Long>)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+	                    	Criteria crit = session.createCriteria(ShareItem.class);
+	                    	crit.setProjection(Projections.projectionList()
+	                    			.add(Projections.property("sharerId")));
+	                    	crit.add(Restrictions.eq("latest", Boolean.TRUE));
+	                    	crit.add(Restrictions.isNull("deletedDate"));
+                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
+                    		disjunction.add(Restrictions.isNull("endDate"));
+                    		disjunction.add(Restrictions.gt("endDate", new Date()));
+                    		crit.add(disjunction);
+	                    	if(sharedEntityIdentifiers.size() > 0) {
+		                    	disjunction = Restrictions.disjunction();
+		                    	for(EntityIdentifier sharedEntityIdentifier:sharedEntityIdentifiers)
+		                    		disjunction.add(Restrictions.conjunction()
+		                    				.add(Restrictions.eq("sharedEntityIdentifier.type", sharedEntityIdentifier.getEntityType().getValue()))
+		                    				.add(Restrictions.eq("sharedEntityIdentifier.entityId", sharedEntityIdentifier.getEntityId())));
+		                    	crit.add(disjunction);
+	                    	}
+	                    	return crit.list();
+	                    }
+	                }
+	            );
+	      	
+	      	return sharerResultListToList(list);
+    	}
+    	finally {
+    		end(begin, "getSharerIdsToSharedEntities(Collection<EntityIdentifier>)");
     	}	              	
 	}
 

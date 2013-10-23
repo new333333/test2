@@ -373,4 +373,14 @@ public interface ProfileDao {
      * Update the various db tables to necessary to support a user being renamed.
      */
     public void renameUser( User user );
+    
+    
+ 	/**
+ 	 * Return IDs of sharers of the specified entities.
+ 	 * 
+ 	 * @param sharedEntityIdentifier
+ 	 * @return
+ 	 */
+	public Set<Long> getSharerIdsToSharedEntities(
+			Collection<EntityIdentifier> sharedEntityIdentifiers);
 }
