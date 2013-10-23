@@ -2553,20 +2553,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void checkDataQuota(Binder binder, FileUploadItem fui) throws IOException {
+		Long fileSize = fui.makeReentrant().getSize();
 		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) { 
-			Long fileSize = fui.makeReentrant().getSize();
-			
 			//Check that the user is not over the user quota
 			checkQuota(RequestContextHolder.getRequestContext().getUser(),
 					fileSize,
 					fui.getOriginalFilename());
 			
 			//Check that the binder and its parents aren't over quota
-			checkBinderQuota(binder, fileSize, fui.getOriginalFilename());
-			
-			//Check if not too big
-			checkFileSizeLimit(binder, fileSize, fui.getOriginalFilename());			
+			checkBinderQuota(binder, fileSize, fui.getOriginalFilename());			
 		}
+		//Always test if the file limit is being exceeded
+		//Check if not too big
+		checkFileSizeLimit(binder, fileSize, fui.getOriginalFilename());			
 	}
 	
 	public boolean checkIfQuotaWouldBeExceeded(Binder binder, long fileSize, String fileName) {
