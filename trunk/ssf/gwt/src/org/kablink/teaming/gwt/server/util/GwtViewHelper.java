@@ -4310,6 +4310,13 @@ public class GwtViewHelper {
 					continue;
 				}
 				
+				// If this share was created by the current user...
+				if (si.getSharerId().equals(userId)) {
+					// ...skip it.  We don't show these.  (Will
+					// ...typically happen with public shares.)
+					continue;
+				}
+				
 				// Create the ShareInfo for this share and add it to
 				// the 'Shared by' list.
 				ShareInfo feSI = new ShareInfo();
@@ -4371,27 +4378,57 @@ public class GwtViewHelper {
 				// Should we show shares the user made that have
 				// expired?  I think so.  Hence, no check here to skip
 				// them like in the 'Shared by' handler above.
+
+				// Is this a public share?
+				boolean isPublic = si.getIsPartOfPublicShare();
+				if (isPublic) {
+					// Yes!  Are we tracking any shared with items?
+					List<ShareInfo> swItems = fed.getSharedWithItems();
+					if (MiscUtil.hasItems(swItems)) {
+						// Yes!  Scan them.
+						boolean skipThis = false;
+						for (ShareInfo siScan:  fed.getSharedWithItems()) {
+							// Is this share a public share?
+							if (siScan.isPublic()) {
+								// Yes!  Then we don't need another.
+								skipThis = true;
+								break;
+							}
+						}
+						
+						// If we should skip this share...
+						if (skipThis) {
+							// ...skip it.
+							continue;
+						}
+					}
+				}
 				
 				// Create the ShareInfo for this share and add it to
 				// the 'Shared with' list.
 				ShareInfo feSI = new ShareInfo();
 				fed.addSharedWithItem(feSI);
+				feSI.setPublic(isPublic);
 
-				// Add information about the share recipient.
-				AssigneeType at;
-				switch (si.getRecipientType()) {
-				default:
-				case user:  at = AssigneeType.INDIVIDUAL; break;
-				case group: at = AssigneeType.GROUP;      break;
-				case team:  at = AssigneeType.TEAM;       break;
+				// For public shares...
+				if (isPublic) {
+					// ...add a public assignee and generic title...
+					feSI.setUser(AssignmentInfo.construct(si.getRecipientId(), AssigneeType.PUBLIC));
+					feSI.setTitle(NLT.get("share.recipientType.title.public"));
 				}
-				feSI.setUser(AssignmentInfo.construct(si.getRecipientId(), at));
-				
-				String title;
-				if (si.getIsPartOfPublicShare())
-				     title = NLT.get("share.recipientType.title.public");
-				else title = getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId());
-				feSI.setTitle(title);
+				else {
+					// ...and for non-public shares, add information
+					// ...about the share recipient.
+					AssigneeType at;
+					switch (si.getRecipientType()) {
+					default:
+					case user:  at = AssigneeType.INDIVIDUAL; break;
+					case group: at = AssigneeType.GROUP;      break;
+					case team:  at = AssigneeType.TEAM;       break;
+					}
+					feSI.setUser(AssignmentInfo.construct(si.getRecipientId(), at));
+					feSI.setTitle(getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId()));
+				}
 				
 				// Add when it was shared.
 				Date	date       = si.getStartDate();
