@@ -144,6 +144,16 @@
 								<ssf:nlt tag="search.scope.sharedWithMe"/>
 							  </td>
 							</tr>
+						    <tr>
+						      <td width="20">
+								<input type="radio" name="scope" value="sharedByMe" 
+								<c:if test="${ss_searchScope == 'sharedByMe'}"> checked="checked" </c:if>
+								style="width:20px;">
+							  </td>
+							  <td>
+								<ssf:nlt tag="search.scope.sharedByMe"/>
+							  </td>
+							</tr>
 						    <c:if test="${ss_searchContext == 'binder' || scope == 'current'}">
 						     <tr>
 						      <td width="20" valign="top">

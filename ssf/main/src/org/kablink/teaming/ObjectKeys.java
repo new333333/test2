@@ -458,6 +458,7 @@ public interface ObjectKeys {
     public static final String SEARCH_SCOPE_MY_FILES = "myFiles";
     public static final String SEARCH_SCOPE_NET_FOLDERS = "netFolders";
     public static final String SEARCH_SCOPE_SHARED_WITH_ME = "sharedWithMe";
+    public static final String SEARCH_SCOPE_SHARED_BY_ME = "sharedByMe";
     public static final String SEARCH_SCOPE_CURRENT = "current";
     public static final int SEARCH_MAX_HITS_DEFAULT = 10;
     public static final int SEARCH_MAX_HITS_SUB_BINDERS = 1000;

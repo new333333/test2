@@ -781,6 +781,12 @@ public class EntityIndexUtils {
 	     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARED_TEAM_IDS, String.valueOf(id)));
 	     	}
      	}
+     	//Add in the original sharer id
+     	Set<Long> sharerIds = profileDao.getSharerIdsToSharedEntities(entityIdentifiers);
+     	for (Long id : sharerIds) {
+     		//Indicate that this entity has been shared by someone
+     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARE_CREATOR, String.valueOf(id)));
+     	}
     }
     
     //Routine to add the sharing ids into the index doc

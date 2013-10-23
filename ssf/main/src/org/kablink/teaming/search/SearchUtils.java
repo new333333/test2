@@ -1385,6 +1385,35 @@ public class SearchUtils {
     }
     
 	/**
+	 * This routine returns a Criteria that will search all "shared by me" files and folders
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Criteria getSharedByMeSearchCriteria(AllModulesInjected bs, User user) {
+		SimpleProfiler.start("SearchUtils.getSharedByMeSearchCriteria()");
+		if (user == null) {
+			//Do this for the current user
+			user = RequestContextHolder.getRequestContext().getUser();
+		}
+		String userId = String.valueOf(user.getId());
+		try {
+			// Add the criteria for "sharedBy" field
+			// that have been configured.
+			Criteria reply = new Criteria();
+			reply.add(in(DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER, Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_ATTACHMENT}));
+			reply.add(eq(Constants.SHARE_CREATOR, userId));
+			return reply;
+		}
+		
+		finally {
+			SimpleProfiler.stop("SearchUtils.getSharedByMeSearchCriteria()");
+		}
+	}
+	
+	/**
 	 * Return the effective 'AdHoc folder' setting from the given user.
 	 * We will look in the user's properties first for a value.  If one
 	 * is not found we will get the setting from the zone.
