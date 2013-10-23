@@ -63,6 +63,7 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.exception.ConstraintViolationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -88,6 +89,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
@@ -533,9 +535,53 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		    	   			session.createSQLQuery(sql).setParameter("binderId", binder.getId()).executeUpdate();
 		    	   			
 			   				//finally delete the entries
-			   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
+		    	   			try {		    	   				
+				   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
+				       	   				.setEntity("parent", binder)
+				       	   				.executeUpdate();	
+		    	   			}
+		    	   			catch(ConstraintViolationException e) {
+		    	   				if(entryClass.equals(FolderEntry.class)) {
+			    	   				// This means that there are one or more records in the database that still point to
+			    	   				// one or more folder entries whose parents is the binder being deleted. We will need
+			    	   				// to perform some additional fix-up in order to be able to proceed from this state.
+			    	   				if(logger.isDebugEnabled())
+			    	   					logger.debug("Error deleting folder entries in binder " + binder.getId(), e);
+			    	   				logger.warn("Encountered constraint violation while deleting folder entries in binder " + binder.getId() +
+			    	   						": Will clear references to those entries and give it another try");
+			    	   				List<Long> folderEntryIds = getFolderEntryIds(binder);
+			    	   				StringBuilder inList = new StringBuilder();
+			    	   				int count = 0;
+			    	   				for(Long folderEntryId:folderEntryIds) {
+			    	   					if(inList.length() > 0)
+			    	   						inList.append(",");
+			    	   					inList.append(folderEntryId);
+			    	   					count++;
+			    	   					if(count >= 500) { 
+			    	   						// Clear associations in batch every 500 entries
+			    	             			String entityString = "ownerId in (" + inList.toString() + ") and ownerType='" + EntityType.folderEntry.name() + "'";
+			    		    		   		deleteEntityAssociations(entityString);
+			    		    		   		// Reset variables
+			    		    		   		count = 0;
+			    		    		   		inList = new StringBuilder();
+			    	   					}
+			    	   				}
+			    	   				if(inList.length() > 0) {
+			    	   					// Process the remainder
+		    	             			String entityString = "ownerId in (" + inList.toString() + ") and ownerType='" + EntityType.folderEntry.name() + "'";
+		    		    		   		deleteEntityAssociations(entityString);
+			    	   				}
+			    	   				// Now that we cleared the association, let's try it again.
+					   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
 			       	   				.setEntity("parent", binder)
-			       	   				.executeUpdate();		 		   				
+			       	   				.executeUpdate();	
+					   				logger.info("Successfully re-executed the statement after clearing associations for up to " + folderEntryIds.size() + " child entries");
+		    	   				}
+		    	   				else {
+		    	   					// Don't know how to fix this up. Rethrow.
+		    	   					throw e;
+		    	   				}
+		    	   			}	 		   				
 			   			}
 
 			   			//delete customAttributeListElement definitions on this binder
@@ -560,10 +606,31 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		   				.setLong("binder", binder.getId())
 		   				.executeUpdate();
 	    	   			
-			   			//do ourselves or hibernate will flsuh
-			   			session.createQuery("Delete  org.kablink.teaming.domain.Binder where id=:id")
+	    	   			try {
+				   			//do ourselves or hibernate will flsuh
+				   			session.createQuery("Delete org.kablink.teaming.domain.Binder where id=:id")
+				   		    	.setLong("id", binder.getId().longValue())
+				   		    	.executeUpdate();
+	    	   			}
+	    	   			catch(ConstraintViolationException e) {
+	    	   				// This almost surely means that the table still contains one or more child rows that still point to the binder as parent.
+	    	   				// We need to clear the association in order to be able to delete the binder. Also, it doesn't make any sense to
+	    	   				// delete the parent alone while leaving the child as orphan in a tree hierarchy. So we mark the child appropriately
+	    	   				// so that they can also be garbage collected by the system in subsequent cycles.
+	    	   				if(logger.isDebugEnabled())
+	    	   					logger.debug("Error deleting binder " + binder.getId(), e);
+	    	   				logger.warn("Encountered constraint violation while deleting binder " + binder.getId() + ": Will clear references from children and give it another try");
+	    	   				session.createQuery("update org.kablink.teaming.domain.Binder set parentBinder=null, topFolder=null, deleted=:delete where parentBinder=:binder1 or topFolder=:binder2")
+	    	   			    .setBoolean("delete", Boolean.TRUE)
+			   				.setLong("binder1", binder.getId())	   				
+			   				.setLong("binder2", binder.getId())	   				
+	    	   				.executeUpdate();
+	    	   				// Now that we cleared the association, let's try it again.
+				   			session.createQuery("Delete org.kablink.teaming.domain.Binder where id=:id")
 			   		    	.setLong("id", binder.getId().longValue())
 			   		    	.executeUpdate();
+				   			logger.info("Successfully re-executed the statement after clearing associations from child binders");
+	    	   			}
 			   			
 			   			if (!binder.isRoot()) {
 			   				session.getSessionFactory().evictCollection("org.kablink.teaming.domain.Binder.binders", binder.getParentBinder().getId());
@@ -3096,4 +3163,26 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 
+	private List<Long> getFolderEntryIds(final Binder binder) {
+		// Return a list of IDs of folder entries whose parents are the specified folder
+		long begin = System.nanoTime();
+		try {
+	    	List<Long> result = (List<Long>)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+	                    	Criteria crit = session.createCriteria(FolderEntry.class)
+	                    			.setProjection(Projections.property("id"))
+	                    			.add(Restrictions.eq("parentBinder", binder))
+	                    			.setCacheable(false);
+	                    	return crit.list();
+	                    }
+	                }
+	            );  
+	    	return result;
+    	}
+    	finally {
+    		end(begin, "getFolderEntryIds(binder)");
+    	}	        
+	}
  }
