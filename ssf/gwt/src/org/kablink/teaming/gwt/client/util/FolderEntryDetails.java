@@ -82,6 +82,7 @@ public class FolderEntryDetails implements IsSerializable {
 	 */
 	public static class ShareInfo implements IsSerializable {
 		private boolean			m_expired;		// true -> This share is expired.  false -> It's not.
+		private boolean			m_public;		// true -> This is a public share.  false -> It's not.
 		private AssignmentInfo	m_user;			// By:  The user that shared the item.  With:  The user the item is shared with.
 		private ShareRights		m_rights;		// The rights granted as part of the share.
 		private String			m_comment;		// The comment associated with the share.
@@ -106,6 +107,7 @@ public class FolderEntryDetails implements IsSerializable {
 		 */
 		public AssignmentInfo getUser()        {return m_user;       }
 		public boolean        isExpired()      {return m_expired;    }
+		public boolean        isPublic()       {return m_public;     }
 		public ShareRights    getRights()      {return m_rights;     }
 		public String         getComment()     {return m_comment;    }
 		public String         getExpiresDate() {return m_expiresDate;}
@@ -119,6 +121,7 @@ public class FolderEntryDetails implements IsSerializable {
 		 */
 		public void setUser(       AssignmentInfo user)        {m_user        = user;       }
 		public void setExpired(    boolean        expired)     {m_expired     = expired;    }
+		public void setPublic(     boolean        isPublic)    {m_public      = isPublic;   }
 		public void setRights(     ShareRights    rights)      {m_rights      = rights;     }
 		public void setComment(    String         comment)     {m_comment     = comment;    }
 		public void setExpiresDate(String         expiresDate) {m_expiresDate = expiresDate;}
