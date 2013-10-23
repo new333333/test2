@@ -1136,7 +1136,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.disableUsersAdHocFolders(groups);
 						}
@@ -1149,7 +1149,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.enableUsersAdHocFolders(groups);
 						}
@@ -1162,7 +1162,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.clearUsersAdHocFolders(groups);
 						}
@@ -1177,7 +1177,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.disableUsersDownload(groups);
 						}
@@ -1190,7 +1190,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.enableUsersDownload(groups);
 						}
@@ -1203,7 +1203,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				new Command() {
 					@Override
 					public void execute() {
-						List<Long> groups = getSelectedGroupIds(true, emptyWarning);
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
 						if (!(groups.isEmpty())) {
 							BinderViewsHelper.clearUsersDownload(groups);
 						}
@@ -1211,16 +1211,15 @@ public class ManageGroupsDlg extends DlgBox implements
 				},
 				null,
 				m_messages.manageGroupsDlgDownload_Clear());
-			
-			morePopup.addSeparator();
 		}
 		
 		// WebAccess options.
+		morePopup.addSeparator();
 		morePopup.addMenuItem(
 			new Command() {
 				@Override
 				public void execute() {
-					List<Long> groups = getSelectedGroupIds(true, emptyWarning);
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
 					if (!(groups.isEmpty())) {
 						BinderViewsHelper.disableUsersWebAccess(groups);
 					}
@@ -1233,7 +1232,7 @@ public class ManageGroupsDlg extends DlgBox implements
 			new Command() {
 				@Override
 				public void execute() {
-					List<Long> groups = getSelectedGroupIds(true, emptyWarning);
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
 					if (!(groups.isEmpty())) {
 						BinderViewsHelper.enableUsersWebAccess(groups);
 					}
@@ -1254,6 +1253,47 @@ public class ManageGroupsDlg extends DlgBox implements
 			},
 			null,
 			m_messages.manageGroupsDlgWebAccess_Clear());
+		
+		// Public collection options.
+		morePopup.addSeparator();
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
+					if (!(groups.isEmpty())) {
+						BinderViewsHelper.disableUsersPublicCollection(groups);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgPublicCollection_Disable());
+			
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
+					if (!(groups.isEmpty())) {
+						BinderViewsHelper.enableUsersPublicCollection(groups);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgPublicCollection_Enable());
+			
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true -> Ready only.
+					if (!(groups.isEmpty())) {
+						BinderViewsHelper.clearUsersPublicCollection(groups);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgPublicCollection_Clear());
 	}
 
 	/*
