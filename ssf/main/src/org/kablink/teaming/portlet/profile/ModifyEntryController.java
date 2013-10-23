@@ -35,6 +35,7 @@ package org.kablink.teaming.portlet.profile;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,9 +44,12 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
@@ -175,6 +179,31 @@ public class ModifyEntryController extends SAbstractController {
 	            }
 	            
 				getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
+				
+				//Now look to see if there were groups specified (but only if allowed to manage these
+				ProfileBinder binder = getProfileModule().getProfileBinder();
+				if (getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
+					Principal p = getProfileModule().getEntry(entryId);
+					Document def = p.getEntryDefDoc();
+					if (def != null) {
+						Element manageGroupEle = (Element) def.getRootElement().selectSingleNode("//item[@name='profileManageGroups']");
+						if (manageGroupEle != null) {
+							String[] idList = new String[0];
+							if (PortletRequestUtils.getStringParameter(request, WebKeys.URL_USER_GROUPS_LIST) != null) {
+								idList = PortletRequestUtils.getStringParameter(request, WebKeys.URL_USER_GROUPS_LIST).split(" ");
+								for (String uid : idList) {
+									try {
+										Long id = Long.valueOf(uid.trim());
+										Principal group = getProfileModule().getEntry(id); 
+										if (group instanceof GroupPrincipal && group.getIdentityInfo().isFromLocal()) {
+											((GroupPrincipal) group).addMember(p);
+										}
+									} catch(Exception e) {}
+								}
+							}
+						}
+					}
+				}
 	
 				//See if there was a request to reorder the graphic files
 				@SuppressWarnings("unused")

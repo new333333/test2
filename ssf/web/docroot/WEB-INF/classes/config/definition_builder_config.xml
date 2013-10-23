@@ -1461,7 +1461,20 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profilePhone" caption="__phone" type="data" dataType="phone" 
+<!--
+	<item name="profileManageGroups" caption="__userGroupsListForm" type="data" dataType="groupList" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__userGroupsListForm"/>
+			<property name="name" caption="__data_name" type="text" value="_user_groups_list" 
+			  readonly="true" unique="//item[@type='data']"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_groups_form.jsp" />
+		</jsps>
+	</item>
+-->
+		<item name="profilePhone" caption="__phone" type="data" dataType="phone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__phone"/>
