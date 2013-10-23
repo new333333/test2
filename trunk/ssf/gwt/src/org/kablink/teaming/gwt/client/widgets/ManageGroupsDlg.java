@@ -432,8 +432,7 @@ public class ManageGroupsDlg extends DlgBox implements
 								m_messages.manageGroupsDlgTitleCol());
 		}
 
-		// Add the "Title" column. The user can click on the text in this column
-		// to edit the group.
+		// Add the "Action" column.
 		{
 			Column<GroupInfoPlus, GroupInfoPlus> actionCol;
 			

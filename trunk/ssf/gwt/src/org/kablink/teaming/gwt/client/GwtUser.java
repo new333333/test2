@@ -51,6 +51,7 @@ public class GwtUser extends GwtPrincipal
 	private String m_viewUrl;
 	private String m_wsId;
 	private String m_wsTitle;
+	private String m_email;
 	private ExtUserProvState m_extUserProvState;
 	private UserType m_userType = UserType.UNKNOWN;
 	
@@ -105,6 +106,14 @@ public class GwtUser extends GwtPrincipal
 	public ExtUserProvState getExtUserProvState()
 	{
 		return m_extUserProvState;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getEmail()
+	{
+		return m_email;
 	}
 	
 	/**
@@ -166,14 +175,12 @@ public class GwtUser extends GwtPrincipal
 	}
 	
 	/**
-	 * Return the name of the parent binder.
-	 * 
 	 * Implements the GwtTeamingItem.getSecondaryDisplayText() abstract
 	 * method.
 	 */
 	@Override
 	public String getSecondaryDisplayText() {
-		return "";
+		return getEmail();
 	}
 		
 	/**
@@ -202,6 +209,14 @@ public class GwtUser extends GwtPrincipal
 	 */
 	public UserType getUserType() {
 		return m_userType;
+	}
+
+	/**
+	 * 
+	 */
+	public void setEmail( String email )
+	{
+		m_email = email;
 	}
 	
 	/**

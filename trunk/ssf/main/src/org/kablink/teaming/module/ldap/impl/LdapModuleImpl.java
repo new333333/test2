@@ -4640,14 +4640,43 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				// No, should we create the group?
 				if (create)
 				{
-					// Yes, see if name already exists
+					// Yes
+					// Is there already a group in Filr with this name?
 					ssName = teamingName;
 					row = (Object[])ssGroups.get(ssName);
-					if (row != null)
+					if ( row != null )
 					{
-						logger.error(NLT.get("errorcode.ldap.groupexists", new Object[]{dn}));
+						int i;
+						String originalSsName;
+						
+						logger.debug( "group already exists: '" + ssName + "'" );
+
+						// Yes
+						// Try to create a unique name for the group.  For example, ico-group(2)
+						// We don't want to try forever so we try 1,000 times
+						originalSsName = ssName;
+						ssName = null;
+						for (i = 1; i <= 1000; ++i)
+						{
+							String tmpName;
+							
+							// Does this name exist?
+							tmpName = originalSsName + "(" + i + ")";
+							if ( ssGroups.get( tmpName ) == null )
+							{
+								logger.debug( "Group: '" + originalSsName + "' will be known Filr as: '" + tmpName + "'" );
+
+								// No
+								ssName = tmpName;
+								break;
+							}
+						}
+						
+						if ( ssName == null )
+							logger.error( "Could not generate a unique name for the group: '" + originalSsName + "'" );
 					}
-					else
+					
+					if ( ssName != null && ssName.length() > 0 )
 					{
 						Map userMods = new HashMap();
 						
@@ -4664,7 +4693,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						Group group = createGroup(zoneId, ssName, userMods); 
 						if(group != null)
 						{
-							dnGroups.put(dn, new Object[]{ssName, group.getId(), Boolean.FALSE, null, dn, ldapGuid});
+							Object[] groupInfo;
+							
+							groupInfo = new Object[]{ssName, group.getId(), Boolean.FALSE, null, dn, ldapGuid};
+							dnGroups.put(dn, groupInfo );
+							
+							if ( ssGroups.get( ssName ) == null )
+								ssGroups.put( ssName, groupInfo );
+							
 							isSSGroup = true;
 						}
 					}

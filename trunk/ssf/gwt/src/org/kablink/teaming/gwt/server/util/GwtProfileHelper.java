@@ -1083,6 +1083,7 @@ public class GwtProfileHelper {
 					user.setUserId( principal.getId() );
 					user.setName( principal.getName() );
 					user.setTitle( Utils.getUserTitle(principal) );
+					user.setEmail( principal.getEmailAddress() );
 					
 					if ( binder != null )
 					{

@@ -45,6 +45,7 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	private String m_name;
 	private String m_title;
 	private String m_id;
+	private String m_dn;
 	
 	/**
 	 * Constructor method. 
@@ -55,6 +56,14 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	{
 		// Nothing to do.
 	}	
+	
+	/**
+	 * 
+	 */
+	public String getDn()
+	{
+		return m_dn;
+	}
 	
 	/**
 	 * 
@@ -100,7 +109,7 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	@Override
 	public String getSecondaryDisplayText()
 	{
-		return null;
+		return getDn();
 	}
 	
 	/**
@@ -122,9 +131,17 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	@Override
 	public String getShortDisplayName()
 	{
-		return getTitle();
+		return getName();
 	}
 		
+	/**
+	 * 
+	 */
+	public void setDn( String dn )
+	{
+		m_dn = dn;
+	}
+	
 	/**
 	 * Stores the group's name.
 	 * 

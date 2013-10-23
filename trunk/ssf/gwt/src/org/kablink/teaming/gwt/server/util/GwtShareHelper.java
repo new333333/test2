@@ -1801,6 +1801,7 @@ public class GwtShareHelper
 						gwtGroup.setId( nextGroup.getId().toString() );
 						gwtGroup.setName( nextGroup.getName() );
 						gwtGroup.setTitle( nextGroup.getTitle() );
+						gwtGroup.setDn( nextGroup.getForeignName() );
 						
 						nextRole.addMember( gwtGroup );
 					}
@@ -1817,6 +1818,7 @@ public class GwtShareHelper
 						gwtUser.setName( user.getName() );
 						gwtUser.setTitle( Utils.getUserTitle( user ) );
 						gwtUser.setWorkspaceTitle( user.getWSTitle() );
+						gwtUser.setEmail( user.getEmailAddress() );
 	
 						nextRole.addMember( gwtUser );
 					}

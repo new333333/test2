@@ -70,6 +70,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -98,7 +99,6 @@ public class FindCtrl extends Composite
 		{
 			FlowPanel panel;
 			Anchor anchor;
-			InlineLabel secondaryText;
 			
 			m_item = item;
 			
@@ -116,12 +116,14 @@ public class FindCtrl extends Composite
 			String secondaryDisplayText = item.getSecondaryDisplayText();
 			if (GwtClientHelper.hasString( secondaryDisplayText ))
 			{
-				secondaryText = new InlineLabel( secondaryDisplayText );
+				Label secondaryText;
+
+				secondaryText = new Label( secondaryDisplayText );
 				secondaryText.addStyleName( "fontSize75em" );
 				secondaryText.setWordWrap( false );
 				panel.add( secondaryText );
 			}
-			
+
 			// All composites must call initWidget() in their constructors.
 			initWidget( panel );
 		}// end SearchResultItemWidget()

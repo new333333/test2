@@ -3479,6 +3479,7 @@ public class GwtServerHelper {
 				groupInfo.setName( nextGroup.getName() );
 				groupInfo.setDesc( nextGroup.getDescription().getText() );
 				groupInfo.setIsFromLdap( nextGroup.getIdentityInfo().isFromLdap() );
+				groupInfo.setDn( nextGroup.getForeignName() );
 				
 				reply.add( groupInfo );
 			}
@@ -5758,6 +5759,7 @@ public class GwtServerHelper {
 							gwtGroup.setId( nextGroup.getId().toString() );
 							gwtGroup.setName( nextGroup.getName() );
 							gwtGroup.setTitle( nextGroup.getTitle() );
+							gwtGroup.setDn( nextGroup.getForeignName() );
 							
 							retList.add( gwtGroup );
 						}
@@ -5777,6 +5779,7 @@ public class GwtServerHelper {
 							gwtUser.setName( user.getName() );
 							gwtUser.setTitle( Utils.getUserTitle( user ) );
 							gwtUser.setWorkspaceTitle( user.getWSTitle() );
+							gwtUser.setEmail( user.getEmailAddress() );
 		
 							retList.add( gwtUser );
 						}

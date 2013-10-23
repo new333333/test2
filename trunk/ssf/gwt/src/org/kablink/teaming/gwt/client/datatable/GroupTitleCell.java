@@ -116,10 +116,19 @@ public class GroupTitleCell extends AbstractCell<GroupInfoPlus>
 		if ( groupInfo != null )
 		{
 			SafeHtml safeValue;
+			String secondaryText;
 			GroupModificationStatus status;
 
 			// Wrap everything in a <div>
-			sb.appendHtmlConstant( "<div class=\"groupTitlePanel\">" );
+			safeValue = SafeHtmlUtils.fromTrustedString( "<div class=\"groupTitlePanel\" title=\"" );
+			sb.append( safeValue );
+			secondaryText = groupInfo.getSecondaryDisplayText();
+			if ( secondaryText == null )
+				secondaryText = "";
+			safeValue = SafeHtmlUtils.fromString( secondaryText );
+			sb.append( safeValue );
+			safeValue = SafeHtmlUtils.fromTrustedString( "\" >" );
+			sb.append( safeValue );
 			
 			// Add the group's title
 			sb.appendHtmlConstant( "<span class=\"groupTitle\">" );

@@ -1550,9 +1550,11 @@ body, table td, select
 /* Style used for an item in a search result list. */
 .findSearchResultItemWidget
 {
+	border-bottom: 1px solid #BABDB6;
 	margin-bottom: .25em;
 	margin-left: .5em;
 	margin-right: .5em;
+	padding-bottom: 6px;
 	white-space: nowrap;
 }
 .findSearchResultItemWidget a
@@ -1563,6 +1565,7 @@ body, table td, select
 {
 	color: #505354;
 }
+
 .findCtrlScopePanel
 {
 }

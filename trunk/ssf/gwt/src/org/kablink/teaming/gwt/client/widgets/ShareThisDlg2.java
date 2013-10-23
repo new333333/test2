@@ -3031,6 +3031,7 @@ public class ShareThisDlg2 extends DlgBox
 							gwtUser.setUserType( UserType.EXTERNAL_OTHERS );
 							gwtUser.setName( emailAddress );
 							gwtUser.setUserId( userId );
+							gwtUser.setEmail( emailAddress );
 							
 							listOfShareItems = addShare( gwtUser );
 

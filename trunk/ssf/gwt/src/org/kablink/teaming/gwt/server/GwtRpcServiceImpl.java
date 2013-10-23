@@ -439,6 +439,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				allowExternal = true;//!!! Get the group the group object
 				groupInfo.setMembershipInfo( group.isDynamic(), allowExternal );
 
+				groupInfo.setDn( group.getForeignName() );
+				
 				desc = group.getDescription();
 				if ( desc != null )
 					groupInfo.setDesc( desc.getText() );
