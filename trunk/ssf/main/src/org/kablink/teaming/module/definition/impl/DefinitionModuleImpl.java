@@ -76,6 +76,7 @@ import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.PortletSessionContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.Restrictions;
 import org.kablink.teaming.domain.Application;
@@ -97,9 +98,11 @@ import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
 import org.kablink.teaming.domain.PackedValue;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
@@ -108,6 +111,8 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowModule;
@@ -166,6 +171,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    	protected BinderModule getBinderModule() {
 		return binderModule;
 	}
+	protected ProfileModule profileModule;
+	public void setProfileModule(ProfileModule profileModule) {
+		this.profileModule = profileModule;
+	}
+   	protected ProfileModule getProfileModule() {
+   		if (profileModule == null) {
+   			profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
+   		}
+		return profileModule;
+	}
+
    	protected WorkflowModule workflowModule;
 
 	public void setWorkflowModule(WorkflowModule workflowModule) {
@@ -2805,6 +2821,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					}
 				}
 			}
+		} else if (itemName.equals("profileManageGroups")) {
+			//Ignore this item. It gets handled after the Add or Modify is finished.
 		} else {
 			if (inputData.exists(nameValue)) {
 				if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
