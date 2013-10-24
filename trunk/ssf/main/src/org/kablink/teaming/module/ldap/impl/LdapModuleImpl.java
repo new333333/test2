@@ -5022,7 +5022,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						else
 						{
 							Enumeration members;
-							
+
 							members = getGroupMembershipFromAD( teamingName, zone, config, searchInfo );
 							if ( members != null )
 								groupCoordinator.syncMembership( groupId, members );
@@ -5067,6 +5067,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			searchCtls = new SearchControls();
 			searchCtls.setSearchScope( scope );
+			
+			// Replace all '(' with "\28"
+			groupName = groupName.replaceAll( "\\(", "\\\\28" );
+			
+			// Replace all ')' with "\29"
+			groupName = groupName.replaceAll( "\\)", "\\\\29" );
+			
 			search = "(" + ldapConfig.getUserIdAttribute() + "=" + groupName + ")";
 			filter = searchInfo.getFilterWithoutCRLF();
 			if ( Validator.isNull( filter ) == false )
