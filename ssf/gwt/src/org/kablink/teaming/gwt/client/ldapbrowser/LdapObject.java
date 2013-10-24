@@ -44,71 +44,100 @@ public class LdapObject implements IsSerializable,  Comparable<LdapObject> {
 	private String		m_name;			//
 	private String[]	m_objectClass;	//
 
-	public LdapObject()
-	{
+	/**
+	 * Constructor method.
+	 * 
+	 * Zero parameters as per GWT serialization requirements.
+	 */
+	public LdapObject() {
+		// Initialize the super class.
+		super();
 	}
 
-	public LdapObject(String name)
-	{
-		m_name = name;
+	/**
+	 * Constructor method.
+	 * 
+	 * @param name
+	 */
+	public LdapObject(String name) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setName(name);
 	}
 
-	public String[] getObjectClass()
-	{
-		return m_objectClass;
-	}
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public String   getDn()          {return m_dn;         }
+	public String   getName()        {return m_name;       }
+	public String[] getObjectClass() {return m_objectClass;}
 
-	public void setObjectClass(String[] objectClass)
-	{
-		m_objectClass = objectClass;
-	}
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setDn(         String   dn)          {m_dn          = dn;         }
+	public void setName(       String   name)        {m_name        = name;       }
+	public void setObjectClass(String[] objectClass) {m_objectClass = objectClass;}
 
-	public String getDn()
-	{
-		return m_dn;
-	}
 
-	public void setDn(String dn)
-	{
-		m_dn = dn;
-	}
-
-	public String getName()
-	{
-		return m_name;
-	}
-
-	public void setName(String name)
-	{
-		m_name = name;
-	}
-
-	public boolean isLeaf()
-	{
-		if (m_objectClass == null)
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
+	public boolean isLeaf() {
+		if (null == m_objectClass) {
 			return false;
-		return isObjectClassFound("person") || isObjectClassFound("organizationalPerson") || isObjectClassFound("inetOrgPerson")
-				|| isObjectClassFound("groupOfNames") || isObjectClassFound("groupWiseExternalEntity")
-				|| isObjectClassFound("groupWiseDistributionList") || isObjectClassFound("group")
-				|| isObjectClassFound("organizationalRole");
+		}
+		
+		return (
+			isObjectClassFound("person")                    ||
+			isObjectClassFound("organizationalPerson")      ||
+			isObjectClassFound("inetOrgPerson")             ||
+			isObjectClassFound("groupOfNames")              ||
+			isObjectClassFound("groupWiseExternalEntity")   ||
+			isObjectClassFound("groupWiseDistributionList") ||
+			isObjectClassFound("group")                     ||
+			isObjectClassFound("organizationalRole"));
 	}
 
-	public boolean isObjectClassFound(String type)
-	{
-		if (m_objectClass == null)
+	/**
+	 * ?
+	 * 
+	 * @param type
+	 * 
+	 * @return
+	 */
+	public boolean isObjectClassFound(String type) {
+		if (null == m_objectClass) {
 			return false;
+		}
 
-		for (String str : m_objectClass)
-		{
-			if (str.equalsIgnoreCase(type))
+		for (String str:  m_objectClass) {
+			if (str.equalsIgnoreCase(type)) {
 				return true;
+			}
 		}
 		return false;
 	}
 
+	/**
+	 * ?
+	 * 
+	 * Implements the Comparator.compare() method.
+	 * 
+	 * @param o
+	 * 
+	 * @return
+	 */
 	@Override
-	public int compareTo(LdapObject o)
-	{
+	public int compareTo(LdapObject o) {
 		return m_name.compareToIgnoreCase(o.getName());
 	}
 }

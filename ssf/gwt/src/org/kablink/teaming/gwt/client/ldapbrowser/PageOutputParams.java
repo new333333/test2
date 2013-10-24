@@ -36,33 +36,36 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * The Class PageOutputParams.
+ * 
+ * @author rvasudevan
  */
-public class PageOutputParams implements IsSerializable
-{
+public class PageOutputParams implements IsSerializable {
 	private int		m_outOf;	// The out of.
-	private String m_nextId;	// The start at.
+	private String	m_nextId;	// The start at.
 
-	public PageOutputParams()
-	{
+	/**
+	 * Constructor method.
+	 * 
+	 * Zero parameters as per GWT serialization requirements.
+	 */
+	public PageOutputParams() {
+		// Initialize the super class.
+		super();
 	}
 
-	public String getNextId()
-	{
-		return m_nextId;
-	}
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public int    getOutOf()  {return m_outOf; }
+	public String getNextId() {return m_nextId;}
 
-	public void setNextId(String nextId)
-	{
-		m_nextId = nextId;
-	}
-
-	public int getOutOf()
-	{
-		return m_outOf;
-	}
-
-	public void setOutOf(int outOf)
-	{
-		m_outOf = outOf;
-	}
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setOutOf(int     outOf)  {m_outOf  = outOf; }
+	public void setNextId(String nextId) {m_nextId = nextId;}
 }

@@ -57,151 +57,53 @@ public class LdapServer implements IsSerializable {
 
 	/**
 	 */
-	public enum DirectoryType {
+	public enum DirectoryType implements IsSerializable {
 		EDIRECTORY,
 		ACTIVE_DIRECTORY,
 		UNKNOWN;
 	}
 
-	public LdapServer()
-	{
+	/**
+	 * Constructor method.
+	 * 
+	 * Zero parameters as per GWT serialization requirements.
+	 */
+	public LdapServer() {
+		// Initialize the super class.
+		super();
 	}
 
 	/**
-	 * @return the m_address
+	 * Get'er methods.
+	 * 
+	 * @return
 	 */
-	public String getAddress()
-	{
-		return m_address;
-	}
+	public Boolean getHasSslCertificateBin() {return m_hasSslCertificateBin;}
+	public Boolean getSslEnabled()           {return m_sslEnabled;          }
+	public byte[]  getSslCertificateBin()    {return m_sslCertificateBin;   }
+	public int     getLdapPort()             {return m_ldapPort;            }
+	public String  getAddress()              {return m_address;             }
+	public String  getDescription()          {return m_description;         }
+	public String  getDirectoryId()          {return m_directoryId;         }
+	public String  getName()                 {return m_name;                }
+	public String  getSslCertificateFile()   {return m_sslCertificateFile;  }
+	public String  getTempSslCertBinDir()    {return m_tempSslCertBinDir;   }
+	public String  getUrl()                  {return m_url;                 }
 
 	/**
-	 * @param m_address
-	 *            the m_address to set
+	 * Set'er methods.
+	 * 
+	 * @param
 	 */
-	public void setAddress(String address)
-	{
-		m_address = address;
-	}
-
-	/**
-	 * @return the sSLKeyFile
-	 */
-	public String getSslCertificateFile()
-	{
-		return m_sslCertificateFile;
-	}
-
-	/**
-	 * @param sSLKeyFile
-	 *            the sSLKeyFile to set
-	 */
-	public void setSslCertificateFile(String sSLKeyFile)
-	{
-		m_sslCertificateFile = sSLKeyFile;
-	}
-
-	/**
-	 * @return the m_description
-	 */
-	public String getDescription()
-	{
-		return m_description;
-	}
-
-	/**
-	 * @param m_description
-	 *            the m_description to set
-	 */
-	public void setDescription(String description)
-	{
-		m_description = description;
-	}
-
-	/**
-	 * @return the m_ldapPort
-	 */
-	public int getLdapPort()
-	{
-		return m_ldapPort;
-	}
-
-	/**
-	 * @param m_ldapPort
-	 *            the m_ldapPort to set
-	 */
-	public void setLdapPort(int ldapPort)
-	{
-		m_ldapPort = ldapPort;
-	}
-
-	public Boolean getSslEnabled()
-	{
-		return m_sslEnabled;
-	}
-
-	public void setSslEnabled(Boolean sslEnabled)
-	{
-		m_sslEnabled = sslEnabled;
-	}
-
-	public byte[] getSslCertificateBin()
-	{
-		return m_sslCertificateBin;
-	}
-
-	public void setSslCertificateBin(byte[] sslCertificateBin)
-	{
-		m_sslCertificateBin = sslCertificateBin;
-	}
-
-	public Boolean getHasSslCertificateBin()
-	{
-		return m_hasSslCertificateBin;
-	}
-
-	public void setHasSslCertificateBin(Boolean hasSslCertificateBin)
-	{
-		m_hasSslCertificateBin = hasSslCertificateBin;
-	}
-
-	public String getDirectoryId()
-	{
-		return m_directoryId;
-	}
-
-	public void setDirectoryId(String directoryId)
-	{
-		m_directoryId = directoryId;
-	}
-
-	public String getTempSslCertBinDir()
-	{
-		return m_tempSslCertBinDir;
-	}
-
-	public void setTempSslCertBinDir(String tempSslCertBinDir)
-	{
-		m_tempSslCertBinDir = tempSslCertBinDir;
-	}
-
-	public String getName()
-	{
-		return m_name;
-	}
-
-	public void setName(String name)
-	{
-		m_name = name;
-	}
-
-	public String getUrl()
-	{
-		return m_url;
-	}
-
-	public void setUrl(String url)
-	{
-		m_url = url;
-	}
+	public void setHasSslCertificateBin(Boolean hasSslCertificateBin) {m_hasSslCertificateBin = hasSslCertificateBin;}
+	public void setSslEnabled(          Boolean sslEnabled)           {m_sslEnabled           = sslEnabled;          }
+	public void setSslCertificateBin(   byte[]  sslCertificateBin)    {m_sslCertificateBin    = sslCertificateBin;   }
+	public void setLdapPort(            int     ldapPort)             {m_ldapPort             = ldapPort;            }
+	public void setAddress(             String  address)              {m_address              = address;             }
+	public void setDescription(         String  description)          {m_description          = description;         }
+	public void setDirectoryId(         String  directoryId)          {m_directoryId          = directoryId;         }
+	public void setName(                String  name)                 {m_name                 = name;                }
+	public void setSslCertificateFile(  String  sSLKeyFile)           {m_sslCertificateFile   = sSLKeyFile;          }
+	public void setTempSslCertBinDir(   String  tempSslCertBinDir)    {m_tempSslCertBinDir    = tempSslCertBinDir;   }
+	public void setUrl(                 String  url)                  {m_url                  = url;                 }
 }

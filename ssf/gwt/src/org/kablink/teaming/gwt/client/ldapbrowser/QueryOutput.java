@@ -41,72 +41,40 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author rvasudevan
  */
-public class QueryOutput<T> implements IsSerializable
-{
-	private boolean				m_sizeExceeded;	//
+public class QueryOutput<T> implements IsSerializable {
 	private ArrayList<T>		m_results;		//
+	private boolean				m_sizeExceeded;	//
 	private PageOutputParams	m_page;			//
 	private String 				m_ids;			//
 
 	/**
-	 * Instantiates a new query output
+	 * Constructor method.
+	 * 
+	 * Zero parameters as per GWT serialization requirements.
 	 */
-	public QueryOutput()
-	{
+	public QueryOutput() {
+		// Initialize the super class.
+		super();
 	}
 
 	/**
-	 * Gets the m_page.
+	 * Get'er methods.
 	 * 
-	 * @return the m_page
+	 * @return
 	 */
-	public PageOutputParams getPage()
-	{
-		return m_page;
-	}
-
-	public void setPage(PageOutputParams page)
-	{
-		m_page = page;
-	}
+	public ArrayList<T>     getResultList()  {return m_results;     }
+	public boolean          isSizeExceeded() {return m_sizeExceeded;}
+	public PageOutputParams getPage()        {return m_page;        }
+	public String           getIds()         {return m_ids;         }
 
 	/**
-	 * Gets the result list.
+	 * Set'er methods.
 	 * 
-	 * @return the result list
+	 * @param
 	 */
-	public ArrayList<T> getResultList()
-	{
-		return m_results;
-	}
-
-	public void setResultList(ArrayList<T> results)
-	{
-		m_results = results;
-	}
-
-	public void sizeExceeded(boolean sizeExceeded)
-	{
-		m_sizeExceeded = sizeExceeded;
-	}
-
-	public boolean isSizeExceeded()
-	{
-		return m_sizeExceeded;
-	}
-
-	public void setSizeExceeded(boolean sizeExceeded)
-	{
-		m_sizeExceeded = sizeExceeded;
-	}
-
-	public String getIds()
-	{
-		return m_ids;
-	}
-
-	public void setIds(String ids)
-	{
-		m_ids = ids;
-	}
+	public void setResultList(  ArrayList<T>     results)      {m_results      = results;     }
+	public void sizeExceeded(   boolean          sizeExceeded) {m_sizeExceeded = sizeExceeded;}
+	public void setSizeExceeded(boolean          sizeExceeded) {m_sizeExceeded = sizeExceeded;}
+	public void setPage(        PageOutputParams page)         {m_page         = page;        }
+	public void setIds(         String           ids)          {m_ids          = ids;         }
 }
