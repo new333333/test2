@@ -686,6 +686,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
 	String codeSplitFailure_LandingPageWidget();
+	String codeSplitFailure_LdapBrowserDlg();
 	String codeSplitFailure_LdapSyncResultsDlg();
 	String codeSplitFailure_LoginDlg();
 	String codeSplitFailure_MainMenuControl();
@@ -3097,5 +3098,9 @@ public interface GwtTeamingMessages extends Messages
 	String copyPublicLink_MultipleItems(int numItems);
 	String copyPublicLink_Reading();
 	String copyPublicLink_ViewFileLink();
+
+	// LDAP browser dialog strings.
+	String ldapBrowser_Caption();
+	String ldapBrowser_Warning_Partial();
 	
 }// end GwtTeamingMessages

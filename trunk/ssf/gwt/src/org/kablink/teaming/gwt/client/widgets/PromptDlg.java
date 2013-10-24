@@ -77,7 +77,7 @@ public class PromptDlg extends DlgBox implements EditSuccessfulHandler, EditCanc
 	 */
 	private PromptDlg() {
 		// Initialize the super class...
-		super(false, true);	// false -> Auto hide.  true -> Modal.
+		super(false, true);	// false -> Don't auto hide.  true -> Modal.
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
