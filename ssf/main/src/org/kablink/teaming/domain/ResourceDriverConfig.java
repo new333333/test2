@@ -95,8 +95,17 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	};
 	
 	public enum ChangeDetectionMechanism {
+		/**
+		 * Change list can not be obtained. Only brute-force scanning will do.
+		 */
 		none,
+		/**
+		 * Change list can be obtained via an agent installed on the file server.
+		 */
 		agent,
+		/**
+		 * Change list can be obtained via log/journal information available from the file system.
+		 */
 		log
 	}
 

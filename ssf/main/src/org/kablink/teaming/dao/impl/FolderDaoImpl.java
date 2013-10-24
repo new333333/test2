@@ -1306,4 +1306,40 @@ public void delete(final Folder folder) {
 		
       	return 0;   	
 	}
+ 	
+	@Override
+	public Folder loadFolderByResourcePath(final String resourcePath, final Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+			List<Folder> folders = (List)getHibernateTemplate().execute(
+				    new HibernateCallback() {
+				        @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+							Criteria crit = session.createCriteria(Folder.class)
+							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+							.add(Restrictions.eq("resourcePath", resourcePath))
+							.setCacheable(isBinderQueryCacheable());
+							return crit.list();
+		               }
+		            }
+				);
+			
+			Folder result = null;
+			if(folders != null) {
+				for(Folder folder:folders) {
+					if(resourcePath.equals(folder.getResourcePath())) { // case sensitive equality
+						result = folder;
+						break;
+					}
+				}
+			}
+			
+			return result;
+    	}
+    	finally {
+    		end(begin, "loadFolderByResourcePath()");
+    	}
+	}
+
+
 }

@@ -37,5 +37,6 @@
     <property name="syncTypeStr" column="syncType" length="1"/>
     <property name="syncIpv4Address" length="16"/>
     <property name="syncInProgress" access="field"/>
+    <property name="updatedToDate"/>
   </class>
 </hibernate-mapping>

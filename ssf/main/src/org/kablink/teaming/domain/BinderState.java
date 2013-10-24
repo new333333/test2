@@ -149,6 +149,43 @@ public class BinderState extends ZonedObject {
 	 */
 	private Boolean syncInProgress;
 	
+	/*
+	 * The date up to which a net folder in Filr is updated with respect to the 
+	 * source file system. This is an indicator of how up to date a net folder is.
+	 * 
+	 * With successful full initial sync, this value is set to the time at which 
+	 * the full initial sync started, which means we do know that the data in
+	 * Filr is at least that much up-to-date. The same is true with successful
+	 * full subsequent sync that uses brute-force scanning. This is based on the
+	 * fact that both types of full sync always work with the latest states of 
+	 * data by going to the very source (hence, no latency in data freshness), 
+	 * AND that they do not work with change list and therefore there is no reliable
+	 * way to find out precisely when was the last time anything changed on the
+	 * file system prior to the sync.
+	 * 
+	 * On the other hand, with successful full subsequent sync that uses some
+	 * sort of change list (delta) mechanism, this value is set to the time of
+	 * the last change item in the change list processed during the sync cycle.
+	 * The reason why we do not set the value to the time at which the sync 
+	 * cycle started is because the underlying mechanism providing this service
+	 * may not necessarily work 100% real-time. For example, consider an example
+	 * where there are changes c2, c3, and c4 at time t2, t3, and t4 respectively,
+	 * and a sync cycle starts at time t5. Then the sync process asks the service
+	 * for a change list since t1 (which is the value of this field from the
+	 * last sync cycle). The service returns {c2, c3} and misses c4 in response
+	 * to this request, because this service is not 100% real-time based and 
+	 * its internal change list is maintained by getting notified of the file 
+	 * system changes in a batch every 30 seconds (hence up to 30 seconds delay).
+	 * So the sync process has no opportunity to process c4 during the particular
+	 * sync cycle. In this case, if the sync cycle sets this value to t5 (which
+	 * is the time at which the sync cycle started), then when the next sync
+	 * cycle kicks in and use the value (t5) to obtain a change list from the
+	 * service, the response will miss t4 in the result because it comes before
+	 * t5. For this reason, this value has to be set to the time of the last
+	 * change item processed by the sync cycle.
+	 */
+	private Date updatedToDate;
+	
 	protected BinderState() {
 		// Use by Hibernate only
 	}
@@ -221,6 +258,14 @@ public class BinderState extends ZonedObject {
 
 	public void setSyncInProgress(boolean syncInProgress) {
 		this.syncInProgress = syncInProgress;
+	}
+
+	public Date getUpdatedToDate() {
+		return updatedToDate;
+	}
+
+	public void setUpdatedToDate(Date updatedToDate) {
+		this.updatedToDate = updatedToDate;
 	}
 
 	public Date getLastFullSyncCompletionTime() {

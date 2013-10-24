@@ -42,6 +42,7 @@ import org.kablink.teaming.dao.util.MyFilesStorageSelectSpec;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -183,4 +184,7 @@ public interface FolderDao {
 	 * @return
 	 */
 	public int getNumberOfNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId );
+	
+	public Folder loadFolderByResourcePath(final String resourcePath, final Long zoneId);
+
 }

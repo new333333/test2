@@ -386,4 +386,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <comment>The date up to which a net folder is updated</comment>
+        <addColumn tableName="SS_BinderState">
+            <column name="updatedToDate" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
