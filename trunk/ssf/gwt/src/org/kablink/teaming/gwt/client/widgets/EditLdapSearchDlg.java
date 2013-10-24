@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,11 +46,15 @@ import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.ldapbrowser.DirectoryServer;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapSearchInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowserDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
 
 import com.google.gwt.core.client.GWT;
@@ -67,6 +71,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
@@ -84,8 +89,10 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class EditLdapSearchDlg extends DlgBox
 	implements NetFolderRootCreatedEvent.Handler
 {
+	private DirectoryServer m_directoryServer;
 	private GwtLdapSearchInfo m_ldapSearch;
-	
+
+	private Button m_browseBaseDnBtn;
 	private TextBox m_baseDnTextBox;
 	private TextArea m_filterTextArea;
 	private CheckBox m_searchSubtreeCheckBox;
@@ -101,6 +108,7 @@ public class EditLdapSearchDlg extends DlgBox
 	private RadioButton m_dontCreateNetFolderRB;
 
 	private ModifyNetFolderRootDlg m_modifyNetFolderServerDlg;
+	private LdapBrowserDlg m_ldapBrowserDlg;
 
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -192,9 +200,30 @@ public class EditLdapSearchDlg extends DlgBox
 			tmpPanel.add( label );
 			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
 			
+			tmpPanel = new FlowPanel();
 			m_baseDnTextBox = new TextBox();
 			m_baseDnTextBox.setVisibleLength( 40 );
-			table.setWidget( row, 1, m_baseDnTextBox );
+			tmpPanel.add( m_baseDnTextBox );
+			FlowPanel html = new FlowPanel();
+			Image browseImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().browseHierarchy().getSafeUri().asString() );
+			html.add( browseImg );
+			m_browseBaseDnBtn = new Button( html.getElement().getInnerHTML() );
+			m_browseBaseDnBtn.addClickHandler( new ClickHandler() {
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							browseLdapForBaseDn();
+						}
+					} );
+				}
+			} );
+			tmpPanel.add( m_browseBaseDnBtn );
+			table.setWidget( row, 1, tmpPanel );
 			++row;
 		}
 
@@ -377,6 +406,79 @@ public class EditLdapSearchDlg extends DlgBox
 		return mainPanel;
 	}
 
+	/*
+	 * Runs the LDAP browser for a base DN.
+	 */
+	private void browseLdapForBaseDn()
+	{
+		// Have we instantiated an LDAP browser yet?
+		if ( null == m_ldapBrowserDlg )
+		{
+			// No!  Create one now...
+			LdapBrowserDlg.createAsync( new LdapBrowserDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( LdapBrowserDlg ldapDlg )
+				{
+					// ...save it away...
+					m_ldapBrowserDlg = ldapDlg;
+					GwtClientHelper.deferCommand(new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							// ...and run it.
+							browseLdapForBaseDnImpl();
+						}
+					} );
+				}
+			} );
+		}
+		
+		else
+		{
+			// Yes, we've already instantiated an LDAP browser!  Simply
+			// run it.
+			browseLdapForBaseDnImpl();
+		}
+	}
+	
+	private void browseLdapForBaseDnImpl()
+	{
+		LdapSearchInfo si = new LdapSearchInfo();
+		si.setSearchObjectClass(LdapSearchInfo.RETURN_CONTAINERS_ONLY);
+		si.setSearchSubTree(true);
+		
+		LdapBrowserDlg.initAndShow(
+			m_ldapBrowserDlg,
+			new LdapBrowserCallback()
+			{
+				@Override
+				public void closed()
+				{
+					// Ignored.  We don't care if the user closes
+					// the browser.
+				}
+
+				@Override
+				public void selectionChanged(LdapObject selection)
+				{
+					m_baseDnTextBox.setValue(selection.getDn());
+					m_ldapBrowserDlg.hide();
+				}
+			},
+			m_directoryServer,
+			si,
+			m_browseBaseDnBtn);
+	}
+	
 	/**
 	 * Get the data from the controls in the dialog box.
 	 */
@@ -568,8 +670,9 @@ public class EditLdapSearchDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init( GwtLdapSearchInfo ldapSearch, boolean showHomeDirInfoControls )
+	public void init( DirectoryServer directoryServer, GwtLdapSearchInfo ldapSearch, boolean showHomeDirInfoControls )
 	{
+		m_directoryServer = directoryServer;
 		m_ldapSearch = ldapSearch;
 		
 		m_baseDnTextBox.setValue( "" );
@@ -584,6 +687,10 @@ public class EditLdapSearchDlg extends DlgBox
 		m_baseDnTextBox.setValue( ldapSearch.getBaseDn() );
 		m_filterTextArea.setValue( ldapSearch.getFilter() );
 		m_searchSubtreeCheckBox.setValue( ldapSearch.getSearchSubtree() );
+		
+		// Hide/show the base DN browse button based on whether the
+		// directory server we were given is valid.
+		m_browseBaseDnBtn.setVisible( ( LdapBrowserDlg.ENABLE_LDAP_BROWSER && ( null != m_directoryServer ) && m_directoryServer.isEnoughToConnect() ) );
 		
 		// Are we showing the home dir info controls?
 		if ( showHomeDirInfoControls )
@@ -633,7 +740,7 @@ public class EditLdapSearchDlg extends DlgBox
 			getListOfNetFolderServers();
 		}
 	}
-
+	
 	/**
 	 * Invoke the "create net folder server" dialog
 	 */

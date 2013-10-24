@@ -50,98 +50,64 @@ public final class DirectoryServer extends LdapServer implements IsSerializable 
 	private String			m_syncUser;			//
 	private String			m_treeName;			//
 
-	public DirectoryServer()
-	{
-
+	/**
+	 * Constructor method.
+	 * 
+	 * Zero parameters as per GWT serialization requirements.
+	 */
+	public DirectoryServer() {
+		// Initialize the super class.
+		super();
 	}
 
-	public String getSyncPassword()
-	{
-		return m_syncPassword;
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public Boolean       getSyncEnabled()   {return m_syncEnabled;  }
+	public DirectoryType getDirectoryType() {return m_directoryType;}
+	public String        getAuthPassword()  {return m_authPassword; }
+	public String        getAuthUser()      {return m_authUser;     }
+	public String        getBaseDn()        {return m_baseDn;       }
+	public String        getSyncDomain()    {return m_syncDomain;   }
+	public String        getSyncPassword()  {return m_syncPassword; }
+	public String        getSyncUser()      {return m_syncUser;     }
+	public String        getTreeName()      {return m_treeName;     }
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setSyncEnabled(  Boolean       syncEnabled)   {m_syncEnabled   = syncEnabled;  }
+	public void setDirectoryType(DirectoryType directoryType) {m_directoryType = directoryType;}
+	public void setAuthPassword( String        authPassword)  {m_authPassword  = authPassword; }
+	public void setAuthUser(     String        authUser)      {m_authUser      = authUser;     }
+	public void setBaseDn(       String        baseDn)        {m_baseDn        = baseDn;       }
+	public void setSyncDomain(   String        syncDomain)    {m_syncDomain    = syncDomain;   }
+	public void setSyncPassword( String        syncPassword)  {m_syncPassword  = syncPassword; }
+	public void setSyncUser(     String        syncUser)      {m_syncUser      = syncUser;     }
+	public void setTreeName(     String        treeName)      {m_treeName      = treeName;     }
+
+	/**
+	 * Returns true if this DirectoryServer has enough information to
+	 * attempt to connect and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isEnoughToConnect() {
+		return (
+			hasString(getAddress()     ) &&
+			hasString(getSyncUser()    ) &&
+			hasString(getSyncPassword()));
 	}
 
-	public void setSyncPassword(String syncPassword)
-	{
-		m_syncPassword = syncPassword;
-	}
-
-	public String getSyncUser()
-	{
-		return m_syncUser;
-	}
-
-	public void setSyncUser(String syncUser)
-	{
-		m_syncUser = syncUser;
-	}
-
-	public DirectoryType getDirectoryType()
-	{
-		return m_directoryType;
-	}
-
-	public void setDirectoryType(DirectoryType directoryType)
-	{
-		m_directoryType = directoryType;
-	}
-
-	public String getSyncDomain()
-	{
-		return m_syncDomain;
-	}
-
-	public void setSyncDomain(String syncDomain)
-	{
-		m_syncDomain = syncDomain;
-	}
-
-	public String getAuthPassword()
-	{
-		return m_authPassword;
-	}
-
-	public void setAuthPassword(String authPassword)
-	{
-		m_authPassword = authPassword;
-	}
-
-	public String getAuthUser()
-	{
-		return m_authUser;
-	}
-
-	public void setAuthUser(String authUser)
-	{
-		m_authUser = authUser;
-	}
-
-	public Boolean getSyncEnabled()
-	{
-		return m_syncEnabled;
-	}
-
-	public void setSyncEnabled(Boolean syncEnabled)
-	{
-		m_syncEnabled = syncEnabled;
-	}
-
-	public String getTreeName()
-	{
-		return m_treeName;
-	}
-
-	public void setTreeName(String treeName)
-	{
-		m_treeName = treeName;
-	}
-
-	public String getBaseDn()
-	{
-		return m_baseDn;
-	}
-
-	public void setBaseDn(String baseDn)
-	{
-		m_baseDn = baseDn;
+	/*
+	 * Returns true is s refers to a non null, non 0 length String and
+	 * false otherwise.
+	 */
+	private static boolean hasString(String s) {
+		return ((null != s) && (0 < s.length()));
 	}
 }

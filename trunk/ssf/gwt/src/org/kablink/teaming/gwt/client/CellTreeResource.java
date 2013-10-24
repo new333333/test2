@@ -42,15 +42,15 @@ import com.google.gwt.user.cellview.client.CellTree;
  */
 public interface CellTreeResource extends CellTree.Resources {
 	@Override
-	@Source("tree-open.png")
+	@Source("org/kablink/teaming/gwt/public/images/LdapBrowser/tree-open.png")
 	public ImageResource cellTreeOpenItem();
 
 	@Override
-	@Source("tree-closed.png")
+	@Source("org/kablink/teaming/gwt/public/images/LdapBrowser/tree-closed.png")
 	public ImageResource cellTreeClosedItem();
 
 	@Override
-	@Source("busyanim16b.gif")
+	@Source("org/kablink/teaming/gwt/public/images/LdapBrowser/busyanim16b.gif")
 	public ImageResource cellTreeLoading();
 
 	@Override
