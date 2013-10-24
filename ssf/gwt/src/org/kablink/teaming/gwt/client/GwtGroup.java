@@ -32,6 +32,10 @@
  */
 package org.kablink.teaming.gwt.client;
 
+import org.kablink.teaming.gwt.client.util.GroupType;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -46,6 +50,7 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	private String m_title;
 	private String m_id;
 	private String m_dn;
+	private GroupType m_groupType;
 	
 	/**
 	 * Constructor method. 
@@ -68,6 +73,14 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	/**
 	 * 
 	 */
+	public GroupType getGroupType()
+	{
+		return m_groupType;
+	}
+	
+	/**
+	 * 
+	 */
 	@Override
 	public Long getIdLong()
 	{
@@ -75,6 +88,22 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 			return Long.valueOf( m_id );
 		
 		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public String getImageUrl()
+	{
+		ImageResource imgResource;
+
+		if ( m_groupType != null )
+			imgResource = GwtClientHelper.getGroupTypeImage( m_groupType );
+		else
+			imgResource = GwtClientHelper.getGroupTypeImage( GroupType.UNKNOWN );
+		
+		return imgResource.getSafeUri().asString();
 	}
 	
 	/**
@@ -140,6 +169,14 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	public void setDn( String dn )
 	{
 		m_dn = dn;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setGroupType( GroupType groupType )
+	{
+		m_groupType = groupType;
 	}
 	
 	/**

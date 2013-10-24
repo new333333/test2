@@ -730,6 +730,7 @@ public class GwtNetFolderHelper
 				gwtGroup.setName( p.getName() );
 				gwtGroup.setTitle( p.getTitle() );
 				gwtGroup.setDn( p.getForeignName() );
+				gwtGroup.setGroupType( GwtServerHelper.getGroupType( p ) );
 				
 				nfRoot.addPrincipal( gwtGroup );
 			}
@@ -927,6 +928,7 @@ public class GwtNetFolderHelper
 						gwtGroup.setName( nextGroup.getName() );
 						gwtGroup.setTitle( nextGroup.getTitle() );
 						gwtGroup.setDn( nextGroup.getForeignName() );
+						gwtGroup.setGroupType( GwtServerHelper.getGroupType( nextGroup ) );
 						
 						nextRole.addMember( gwtGroup );
 					}

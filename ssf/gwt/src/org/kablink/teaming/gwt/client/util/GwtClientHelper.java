@@ -40,6 +40,7 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
@@ -469,6 +470,46 @@ public class GwtClientHelper {
 	public static void executeCommand(VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback) {
 		GwtTeaming.getRpcService().executeCommand(HttpRequestInfo.createHttpRequestInfo(), cmd, callback);
 	}	
+
+	/**
+	 * Returns the ImageResource to use for a group type <IMG>.
+	 * 
+	 * @param groupType
+	 * 
+	 * @return
+	 */
+	public static ImageResource getGroupTypeImage( GroupType groupType )
+	{
+		GwtTeamingDataTableImageBundle images;
+		ImageResource reply;
+
+		images = GwtTeaming.getDataTableImageBundle();
+
+		if ( groupType == null )
+			return images.groupType_Unknown();
+
+		switch ( groupType )
+		{
+		case INTERNAL_LDAP:
+			reply = images.groupType_LDAP();
+			break;
+			
+		case INTERNAL_SYSTEM:
+			reply = images.groupType_System();
+			break;
+		
+		case INTERNAL_LOCAL:
+			reply = images.groupType_Local();
+			break;
+			
+		default:
+			reply = images.groupType_Unknown();
+			break;
+		}
+		
+		return reply;		
+	}
+	
 
 	/**
 	 * Returns the path to Vibe's images.

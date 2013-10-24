@@ -232,6 +232,7 @@ import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.GroupType;
 import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
@@ -5760,6 +5761,7 @@ public class GwtServerHelper {
 							gwtGroup.setName( nextGroup.getName() );
 							gwtGroup.setTitle( nextGroup.getTitle() );
 							gwtGroup.setDn( nextGroup.getForeignName() );
+							gwtGroup.setGroupType( GwtServerHelper.getGroupType( nextGroup ) );
 							
 							retList.add( gwtGroup );
 						}
@@ -7274,6 +7276,29 @@ public class GwtServerHelper {
 		// If we get here, reply refers to the List<Long> of the groups
 		// the user is a member of.  Return it.
 		return reply;
+	}
+	
+	/**
+	 * Return a GroupType from the given group.
+	 */
+	public static GroupType getGroupType( Principal group )
+	{
+		IdentityInfo identityInfo;
+		
+		if ( group == null )
+			return GroupType.UNKNOWN;
+		
+		if ( group.isReserved() )
+			return GroupType.INTERNAL_SYSTEM;
+			
+		identityInfo = group.getIdentityInfo();
+		if ( identityInfo == null )
+			return GroupType.UNKNOWN;
+		
+		if ( identityInfo.isFromLdap() )
+			return GroupType.INTERNAL_LDAP;
+		
+		return GroupType.INTERNAL_LOCAL;
 	}
 	
 	/**

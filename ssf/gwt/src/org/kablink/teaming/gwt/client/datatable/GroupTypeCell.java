@@ -99,42 +99,6 @@ public class GroupTypeCell extends AbstractCell<GroupType>
 	}
 	
 	/**
-	 * Returns the ImageResource to use for a group type <IMG>.
-	 * 
-	 * @param groupType
-	 * 
-	 * @return
-	 */
-	public static ImageResource getGroupTypeImage( GroupType groupType )
-	{
-		GwtTeamingDataTableImageBundle images;
-		ImageResource reply;
-
-		images = GwtTeaming.getDataTableImageBundle();
-
-		switch ( groupType )
-		{
-		case INTERNAL_LDAP:
-			reply = images.groupType_LDAP();
-			break;
-			
-		case INTERNAL_SYSTEM:
-			reply = images.groupType_System();
-			break;
-		
-		case INTERNAL_LOCAL:
-			reply = images.groupType_Local();
-			break;
-			
-		default:
-			reply = images.groupType_Unknown();
-			break;
-		}
-		
-		return reply;		
-	}
-	
-	/**
 	 * Called to render an instance of this cell.
 	 * 
 	 * @param context
@@ -163,7 +127,7 @@ public class GroupTypeCell extends AbstractCell<GroupType>
 		}
 
 		// Create the HTML for the group type image...
-		ir = getGroupTypeImage( groupType );
+		ir = GwtClientHelper.getGroupTypeImage( groupType );
 		i = GwtClientHelper.buildImage( ir.getSafeUri().asString(), getGroupTypeAlt( groupType ) );
 		i.addStyleName( "vibe-dataTableGroupType-image" );
 		groupTypePanel = new VibeFlowPanel();

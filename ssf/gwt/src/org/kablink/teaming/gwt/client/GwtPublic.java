@@ -65,6 +65,15 @@ public class GwtPublic extends GwtPrincipal implements IsSerializable
 	}
 	
 	/**
+	 * 
+	 */
+	@Override
+	public String getImageUrl()
+	{
+		return "";
+	}
+	
+	/**
 	 * Returns the group's name.
 	 */
 	@Override

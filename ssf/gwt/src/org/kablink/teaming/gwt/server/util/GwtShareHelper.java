@@ -1802,6 +1802,7 @@ public class GwtShareHelper
 						gwtGroup.setName( nextGroup.getName() );
 						gwtGroup.setTitle( nextGroup.getTitle() );
 						gwtGroup.setDn( nextGroup.getForeignName() );
+						gwtGroup.setGroupType( GwtServerHelper.getGroupType( nextGroup ) );
 						
 						nextRole.addMember( gwtGroup );
 					}
