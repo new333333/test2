@@ -1872,6 +1872,14 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
         return null;
     }
     
+    protected Date getUpdatedToDate(Folder topMostMirroredFolder) {
+        BinderState binderState = (BinderState) getCoreDao().load(BinderState.class, topMostMirroredFolder.getId());
+        if (binderState!=null) {
+            return binderState.getUpdatedToDate();
+        }
+        return null;
+    }
+    
     protected Folder getTopMostMirroredFolder(Folder folder) {
         Folder top = folder;
         Binder parent;
