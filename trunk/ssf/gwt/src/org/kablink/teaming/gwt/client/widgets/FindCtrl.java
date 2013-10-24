@@ -68,6 +68,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -97,35 +100,60 @@ public class FindCtrl extends Composite
 		 */
 		public SearchResultItemWidget( GwtTeamingItem item )
 		{
-			FlowPanel panel;
+			FlowPanel topPanel;
+			FlowPanel infoPanel;
+			FlexTable table;
 			Anchor anchor;
+			String imgUrl;
 			
 			m_item = item;
 			
-			panel = new FlowPanel();
-			panel.addStyleName( "findSearchResultItemWidget" );
+			topPanel = new FlowPanel();
+			topPanel.addStyleName( "findSearchResultItemWidget" );
+			
+			table = new FlexTable();
+			table.getCellFormatter().setVerticalAlignment( 0, 0, HasVerticalAlignment.ALIGN_TOP );
+			table.getCellFormatter().setVerticalAlignment( 0, 1, HasVerticalAlignment.ALIGN_TOP );
+			topPanel.add( table );
+			
+			// Does this item have an image associated with it?
+			imgUrl = item.getImageUrl();
+			if ( imgUrl != null && imgUrl.length() > 0 )
+			{
+				Image img;
+				
+				// Yes
+				img = new Image( imgUrl );
+				img.setHeight( "20px" );
+				img.setWidth( "20px" );
+				table.setWidget( 0, 0, img );
+			}
+			
+			infoPanel = new FlowPanel();
+			infoPanel.getElement().getStyle().setMarginLeft( 4, Unit.PX );
+			table.setWidget( 0, 1, infoPanel );
 			
 			// Add the name of the item as an anchor.
 			anchor = new Anchor( item.getShortDisplayName() );
 			anchor.setWordWrap( false );
 			anchor.addStyleName( "noTextDecoration" );
 			anchor.addStyleName( "bold" );
-			panel.add( anchor );
+			infoPanel.add( anchor );
 			
 			// Add any additional information about this item.
 			String secondaryDisplayText = item.getSecondaryDisplayText();
-			if (GwtClientHelper.hasString( secondaryDisplayText ))
+			if ( GwtClientHelper.hasString( secondaryDisplayText ) )
 			{
 				Label secondaryText;
 
 				secondaryText = new Label( secondaryDisplayText );
 				secondaryText.addStyleName( "fontSize75em" );
 				secondaryText.setWordWrap( false );
-				panel.add( secondaryText );
+				infoPanel.add( secondaryText );
 			}
 
 			// All composites must call initWidget() in their constructors.
-			initWidget( panel );
+			initWidget( topPanel );
 		}// end SearchResultItemWidget()
 		
 		

@@ -45,6 +45,11 @@ public abstract class GwtTeamingItem implements IsSerializable
 	/**
 	 * 
 	 */
+	public abstract String getImageUrl();
+	
+	/**
+	 * 
+	 */
 	public abstract String getName();
 	
 	/**

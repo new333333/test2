@@ -52,6 +52,7 @@ public class GwtUser extends GwtPrincipal
 	private String m_wsId;
 	private String m_wsTitle;
 	private String m_email;
+	private String m_avatarUrl;
 	private ExtUserProvState m_extUserProvState;
 	private UserType m_userType = UserType.UNKNOWN;
 	
@@ -111,6 +112,14 @@ public class GwtUser extends GwtPrincipal
 	/**
 	 * 
 	 */
+	public String getAvatarUrl()
+	{
+		return m_avatarUrl;
+	}
+	
+	/**
+	 * 
+	 */
 	public String getEmail()
 	{
 		return m_email;
@@ -126,6 +135,25 @@ public class GwtUser extends GwtPrincipal
 			return Long.valueOf( m_userId );
 		
 		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public String getImageUrl()
+	{
+		String url;
+		
+		// Does the user have an avatar?
+		url = getAvatarUrl();
+		if ( url != null && url.length() > 0 )
+		{
+			// Yes
+			return url;
+		}
+		
+		return GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png";
 	}
 	
 	/**
@@ -211,6 +239,14 @@ public class GwtUser extends GwtPrincipal
 		return m_userType;
 	}
 
+	/**
+	 * 
+	 */
+	public void setAvatarUrl( String url )
+	{
+		m_avatarUrl = url;
+	}
+	
 	/**
 	 * 
 	 */
