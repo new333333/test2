@@ -109,7 +109,11 @@ public class ResourceChange implements Comparable<ResourceChange> {
 	
 	private String targetPath; // target path of the resource after move or rename; required only for move
 	
-	public ResourceChange(String path, String targetPath, ResourceChangeType type) {
+	public ResourceChange(String path, ResourceChangeType type, long timestamp) {
+		this(path, null, type, timestamp);
+	}
+	
+	public ResourceChange(String path, String targetPath, ResourceChangeType type, long timestamp) {
 		this.path = path;
 		this.targetPath = targetPath;
 		this.type = type;
