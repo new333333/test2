@@ -5743,6 +5743,11 @@ td.datePickerMonth {
 	font-size: .9em;
 }
 
+.editLdapServerConfigDlg_BrowseDN
+{
+	margin-bottom: 3px;
+}
+
 /* End */
 
 /**
@@ -5907,5 +5912,14 @@ td.datePickerMonth {
 }
 
 /* End: Share Expiration widget styles. */
+
+/* Start:  LDAP browser dialog styles. */
+	.gwNameCell           {font-size: 13px;}
+	.gwNameCell-root      {font-size: 14px; border: 0 none !important;}
+	.gwNameCellImg        {padding-right: 3px;}
+	.gwNameCellImg-root   {padding-right: 3px;}
+	.ldapBrowser-content  {}
+	.ldapBrowser-scroller {margin: 10px 10px 10px 13px; overflow: auto; height: 250px; width: 600px;}
+/* End:  LDAP browser dialog styles. */
 
 /* End Of File */

@@ -81,9 +81,9 @@ public class LdapObject implements IsSerializable,  Comparable<LdapObject> {
 	 * 
 	 * @param
 	 */
-	public void setDn(         String   dn)          {m_dn          = dn;         }
-	public void setName(       String   name)        {m_name        = name;       }
-	public void setObjectClass(String[] objectClass) {m_objectClass = objectClass;}
+	public void setDn(            String   dn)             {m_dn             = dn;            }
+	public void setName(          String   name)           {m_name           = name;          }
+	public void setObjectClass(   String[] objectClass)    {m_objectClass    = objectClass;   }
 
 
 	/**
@@ -92,10 +92,14 @@ public class LdapObject implements IsSerializable,  Comparable<LdapObject> {
 	 * @return
 	 */
 	public boolean isLeaf() {
+		// If we don't have an object class...
 		if (null == m_objectClass) {
+			// ...assume it's not a leaf.
 			return false;
 		}
-		
+
+		// Otherwise, it's a leaf it's one of the fixed set of leaf
+		// object classes.
 		return (
 			isObjectClassFound("person")                    ||
 			isObjectClassFound("organizationalPerson")      ||
@@ -138,6 +142,15 @@ public class LdapObject implements IsSerializable,  Comparable<LdapObject> {
 	 */
 	@Override
 	public int compareTo(LdapObject o) {
-		return m_name.compareToIgnoreCase(o.getName());
+		// Compare names...
+		String s1 = m_name;
+		String s2 = o.getName();
+		if ((null == s1) || (null == s2)) {
+			// ...unless one or both is null in which case we compare
+			// ...DNs.
+			s1 = m_dn;      if (null == s1) s1 = "";
+			s2 = o.getDn(); if (null == s2) s2 = "";
+		}
+		return s1.compareToIgnoreCase(s2);
 	}
 }

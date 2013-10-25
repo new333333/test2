@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,10 +46,13 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.datatable.LdapSearchBaseDnCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.ldapbrowser.DirectoryServer;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapSearchInfo;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapServer.DirectoryType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditLdapSearchDlg.EditLdapSearchDlgClient;
+import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowserDlgClient;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -59,6 +61,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -66,10 +70,12 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -82,11 +88,10 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 
-
 /**
- * 
+ * ?
+ *  
  * @author jwootton
- *
  */
 public class EditLdapServerConfigDlg extends DlgBox
 {
@@ -97,6 +102,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private TabPanel m_tabPanel;
 
 	// Controls used in the Server Information tab
+	private Button m_browseProxyDnBtn;	// LDAP browse button next to m_proxyDnTextBox.
 	private TextBox m_serverUrlTextBox;
 	private TextBox m_proxyDnTextBox;
 	private PasswordTextBox m_proxyPwdTextBox;
@@ -119,7 +125,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private List<GwtLdapSearchInfo> m_listOfGroupSearches = null;
 	
 	private EditLdapSearchDlg m_editLdapSearchDlg = null;
-	
+	private LdapBrowserDlg m_ldapBrowserDlg;
 	
 	/**
 	 * Callback interface to interact with the "edit ldap server config" dialog
@@ -504,6 +510,14 @@ public class EditLdapServerConfigDlg extends DlgBox
 			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
 		
 			m_serverUrlTextBox = new TextBox();
+			m_serverUrlTextBox.addChangeHandler( new ChangeHandler()
+			{
+				@Override
+				public void onChange( ChangeEvent event )
+				{
+					setBrowseProxyDnBtnEnabled( GwtClientHelper.hasString( m_serverUrlTextBox.getValue() ) );
+				}
+			} );
 			m_serverUrlTextBox.setVisibleLength( 40 );
 			table.setWidget( row, 1, m_serverUrlTextBox );
 			++row;
@@ -515,10 +529,36 @@ public class EditLdapServerConfigDlg extends DlgBox
 			label = new Label( messages.editLdapServerConfigDlg_ProxyDNLabel() );
 			tmpPanel.add( label );
 			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
-			
+
+			tmpPanel = new FlowPanel();
 			m_proxyDnTextBox = new TextBox();
 			m_proxyDnTextBox.setVisibleLength( 40 );
-			table.setWidget( row, 1, m_proxyDnTextBox );
+			tmpPanel.add( m_proxyDnTextBox );
+			m_browseProxyDnBtn = new Button();
+			m_browseProxyDnBtn.setEnabled( true  );	// Must set enabled first...
+			setBrowseProxyDnBtnEnabled(    false );	// ...to ensure disabling is honored.
+			m_browseProxyDnBtn.addStyleName( "editLdapServerConfigDlg_BrowseDN" );
+			m_browseProxyDnBtn.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							browseLdapForProxyDn();
+						}
+					} );
+				}
+			} );
+			tmpPanel.add( m_browseProxyDnBtn );
+			if ( ! ( LdapBrowserDlg.ENABLE_LDAP_BROWSER ) )
+			{
+				m_browseProxyDnBtn.setVisible(false);
+			}
+			table.setWidget( row, 1, tmpPanel );
 			++row;
 		}
 		
@@ -635,6 +675,120 @@ public class EditLdapServerConfigDlg extends DlgBox
 		return serverPanel;
 	}
 
+	/*
+	 * Runs the LDAP browser for the user DN.
+	 */
+	private void browseLdapForProxyDn()
+	{
+		// Have we instantiated an LDAP browser yet?
+		if ( null == m_ldapBrowserDlg )
+		{
+			// No!  Create one now...
+			LdapBrowserDlg.createAsync( new LdapBrowserDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( LdapBrowserDlg ldapDlg )
+				{
+					// ...save it away...
+					m_ldapBrowserDlg = ldapDlg;
+					GwtClientHelper.deferCommand(new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							// ...and run it.
+							browseLdapForProxyDnImpl();
+						}
+					} );
+				}
+			} );
+		}
+		
+		else
+		{
+			// Yes, we've already instantiated an LDAP browser!  Simply
+			// run it.
+			browseLdapForProxyDnImpl();
+		}
+	}
+	
+	private void browseLdapForProxyDnImpl()
+	{
+		DirectoryServer server = new DirectoryServer();
+		server.setDirectoryType( DirectoryType.UNKNOWN );
+		server.setAddress( m_serverUrlTextBox.getValue() );
+		server.setSyncUser(     null );	// null -> Use an anonymous...
+		server.setSyncPassword( null );	// ...connection.
+
+		LdapSearchInfo si = new LdapSearchInfo();
+		si.setSearchObjectClass(LdapSearchInfo.RETURN_USERS);
+		si.setSearchSubTree(false);
+		
+		LdapBrowserDlg.initAndShow(
+			m_ldapBrowserDlg,
+			new LdapBrowserCallback()
+			{
+				@Override
+				public void closed()
+				{
+					// Ignored.  We don't care if the user closes
+					// the browser.
+				}
+
+				@Override
+				public void selectionChanged(LdapObject selection)
+				{
+					// Since we're browsing for user DN, it will ONLY
+					// be a leaf node.  Ignore non-leaf selections.
+					if (selection.isLeaf()) {
+						m_proxyDnTextBox.setValue(selection.getDn());
+						m_ldapBrowserDlg.hide();
+					}
+				}
+			},
+			server,
+			si,
+			m_browseProxyDnBtn);
+	}
+	
+	/*
+	 * Enabled/disables the user DN's LDAP browse button. 
+	 */
+	private void setBrowseProxyDnBtnEnabled(boolean enabled) {
+		// Are we changing the sate of the LDAP browse button?
+		if ( m_browseProxyDnBtn.isEnabled() != enabled )
+		{
+			// Yes!  Update it content...
+			FlowPanel html = new FlowPanel();
+			String btnImgTitle;
+			String btnImgUrl;
+			if ( enabled )
+			{
+				btnImgTitle = GwtTeaming.getMessages().editLdapServerConfigDlg_ProxyDn_Alt();
+				btnImgUrl = GwtTeaming.getImageBundle().browseLdap().getSafeUri().asString();
+			}
+			else
+			{
+				btnImgTitle = GwtTeaming.getMessages().editLdapServerConfigDlg_ProxyDn_Alt_Disabled();
+				btnImgUrl = GwtTeaming.getImageBundle().browseLdapDisabled().getSafeUri().asString();
+			}
+			Image btnImg = GwtClientHelper.buildImage( btnImgUrl );
+			btnImg.setTitle( btnImgTitle );
+			html.add( btnImg );
+			m_browseProxyDnBtn.setHTML( html.getElement().getInnerHTML() );
+			
+			// ...and set its new enabled/disabled state.
+			m_browseProxyDnBtn.setEnabled( enabled );
+		}
+	}
+	
 	/**
 	 * 
 	 */
@@ -1151,6 +1305,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			return;
 		
 		m_serverUrlTextBox.setValue( config.getServerUrl() );
+		setBrowseProxyDnBtnEnabled( GwtClientHelper.hasString( config.getServerUrl() ) );
 		m_proxyDnTextBox.setValue( config.getProxyDn() );
 		m_proxyPwdTextBox.setValue( config.getProxyPwd() );
 		m_guidAttribTextBox.setValue( config.getLdapGuidAttribute() );

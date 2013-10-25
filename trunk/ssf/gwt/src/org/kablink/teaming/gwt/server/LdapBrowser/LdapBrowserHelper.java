@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.LdapServerDataRpcResponseData;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerProfiler;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.web.util.MiscUtil;
 
 import org.springframework.ldap.AuthenticationException;
 import org.springframework.ldap.SizeLimitExceededException;
@@ -75,43 +76,55 @@ public final class LdapBrowserHelper {
 
 	/**
 	 * ?
-	 * 
+	 *
+	 * @param bs
+	 * @param request
 	 * @param syncServer
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-    public static String authenticateUser(AllModulesInjected bs, HttpServletRequest request, DirectoryServer syncServer) throws GwtTeamingException
-	{
+    public static String authenticateUser(AllModulesInjected bs, HttpServletRequest request, DirectoryServer syncServer) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "LdapBrowserHelper.authenticateUser()");
 		try {
-			// Connection information
-			// Extended the LdapContextSource to handle SSL, right now, we ignore the certificates
-			SecureLdapContextSource ldapContextSource = new SecureLdapContextSource(syncServer.getSyncUser(), syncServer.getSyncPassword(),
-					syncServer.getSslEnabled());
+			// Connection information.  Extended the LdapContextSource
+			// to handle SSL, right now, we ignore the certificates.
+			String  userDn    = syncServer.getSyncUser();
+			String  password  = syncServer.getSyncPassword();
+			boolean anonymous = ((!(MiscUtil.hasString(userDn))) && (!(MiscUtil.hasString(password))));
+			SecureLdapContextSource ldapContextSource = new SecureLdapContextSource(userDn, password, syncServer.getSslEnabled());
 			ldapContextSource.setUrl(syncServer.getAddress());
-			ldapContextSource.setUserDn(syncServer.getSyncUser());
-			ldapContextSource.setPassword(syncServer.getSyncPassword());
+			if (anonymous) {
+				ldapContextSource.setAnonymousReadOnly(true);
+			}
+			else {
+				ldapContextSource.setUserDn(userDn);
+				ldapContextSource.setPassword(password);
+			}
 	
 			ldapContextSource.afterPropertiesSet();
 	
 			DirContext ctx = null;
-			try
-			{
-				ctx = ldapContextSource.getContext(syncServer.getSyncUser(), syncServer.getSyncPassword());
+			try {
+				if (anonymous)
+				     ctx = ldapContextSource.getReadOnlyContext();
+				else ctx = ldapContextSource.getContext(userDn, password);
 				return null;
 			}
-			catch (Exception e)
-			{
+			
+			catch (Exception e) {
 				// Context creation failed - authentication did not succeed
-				m_logger.error("LdapBrowserHelper.authenticateUser( Login failed trying to authenticate user:  '" + syncServer.getSyncUser() + "' )", e);
+				m_logger.error("LdapBrowserHelper.authenticateUser( Login failed trying to authenticate user:  '" + (anonymous ? "*anonymous*" : userDn) + "' )", e);
 				return e.getMessage();
 			}
-			finally
-			{
-				// It is imperative that the created DirContext instance is always closed
-				LdapUtils.closeContext(ctx);
+			
+			finally {
+				if (null != ctx) {
+					// It is imperative that the created DirContext
+					// instance is always closed.
+					LdapUtils.closeContext(ctx);
+				}
 			}
 		}
 		
@@ -147,13 +160,20 @@ public final class LdapBrowserHelper {
     public static LdapServerDataRpcResponseData getLdapServerData(AllModulesInjected bs, HttpServletRequest request, DirectoryServer directoryServer, LdapSearchInfo ldapSearchInfo) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "LdapBrowserHelper.getLdapServerData()");
 		try {
-			// Connection information
-			// Extended the LdapContextSource to handle SSL, right now, we ignore the certificates
-			SecureLdapContextSource ldapContextSource = new SecureLdapContextSource(directoryServer.getSyncUser(), directoryServer.getSyncPassword(),
-					directoryServer.getSslEnabled());
+			// Connection information.  Extended the LdapContextSource
+			// to handle SSL, right now, we ignore the certificates.
+			String  userDn    = directoryServer.getSyncUser();
+			String  password  = directoryServer.getSyncPassword();
+			boolean anonymous = ((!(MiscUtil.hasString(userDn))) && (!(MiscUtil.hasString(password))));
+			SecureLdapContextSource ldapContextSource = new SecureLdapContextSource(userDn, password, directoryServer.getSslEnabled());
 			ldapContextSource.setUrl(directoryServer.getAddress());
-			ldapContextSource.setUserDn(directoryServer.getSyncUser());
-			ldapContextSource.setPassword(directoryServer.getSyncPassword());
+			if (anonymous) {
+				ldapContextSource.setAnonymousReadOnly(true);
+			}
+			else {
+				ldapContextSource.setUserDn(userDn);
+				ldapContextSource.setPassword(password);
+			}
 	
 			ldapContextSource.afterPropertiesSet();
 	
@@ -164,48 +184,47 @@ public final class LdapBrowserHelper {
 			LdapTemplate template = new LdapTemplate(ldapContextSource);
 	
 			// Need to set this for Active Directory to ignore few errors
-			template.setIgnoreNameNotFoundException(true);
+			template.setIgnoreNameNotFoundException( true);
 			template.setIgnorePartialResultException(true);
 	
-			SearchControls searchControls = getSearchControls(ldapSearchInfo);
-			try
-			{
-				String url = directoryServer.getUrl();
-	
-				// Do the search
-				ldapObjects = template.search(url, ldapSearchInfo.getSearchObjectClass(), searchControls, new LDAPObjectMapper());
+			SearchControls searchControls = getSearchControls(ldapSearchInfo); 
+			try {
+				// Do the search.
+				ldapObjects = template.search(
+					directoryServer.getUrl(),
+					ldapSearchInfo.getSearchObjectClass(),
+					searchControls,
+					new LDAPObjectMapper());
 			}
-			catch (SizeLimitExceededException exception)
-			{
+			
+			catch (SizeLimitExceededException exception) {
 				returnObj.sizeExceeded(true);
-	
-				String url = directoryServer.getUrl();
-	
 				searchControls.setCountLimit(ldapSearchInfo.getMaximumReturnLimit());
-	
 				PagedResultsCookie pagedResultsCookie = null;
 				PagedResultsDirContextProcessor control = new PagedResultsDirContextProcessor(ldapSearchInfo.getMaximumReturnLimit(), pagedResultsCookie);
 	
 				// Do the search
-				ldapObjects = template.search(url, ldapSearchInfo.getSearchObjectClass(), searchControls, new LDAPObjectMapper(), control);
+				ldapObjects = template.search(
+					directoryServer.getUrl(),
+					ldapSearchInfo.getSearchObjectClass(),
+					searchControls,
+					new LDAPObjectMapper(),
+					control);
 			}
-			catch (AuthenticationException ee)
-			{
-				//throw exception
+			
+			catch (AuthenticationException ee) {
+				// Throw exception.
 	            ee.getCause();
 			}
 	
-			if (ldapObjects != null)
-			{
-	
-				for (LdapObject obj : ldapObjects)
-				{
+			if (null != ldapObjects) {
+				for (LdapObject obj:  ldapObjects) {
 					ldapObjectList.add(obj);
 				}
 			}
 	
 			Collections.sort(ldapObjectList);
-			returnObj.setResultList((ArrayList<LdapObject>) ldapObjectList);
+			returnObj.setResultList(ldapObjectList);
 			return new LdapServerDataRpcResponseData(returnObj);
 		}
 		
@@ -226,15 +245,13 @@ public final class LdapBrowserHelper {
 
 	/*
 	 */
-	private static SearchControls getSearchControls(LdapSearchInfo info)
-	{
+	private static SearchControls getSearchControls(LdapSearchInfo info) {
 		SearchControls searchControls = new SearchControls();
 		if (info.isSearchSubTree())
-			searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-		else
-			searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+		     searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+		else searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-		// Speed up the search, we only care for this attributes
+		// Speed up the search, we only care for these attributes.
 		searchControls.setReturningAttributes(new String[] { "cn", "objectClass", "o", "ou", "dc", "c", "l" });
 
 		// We don't want to read more than 1001 per container
@@ -253,34 +270,30 @@ public final class LdapBrowserHelper {
 	 * 
 	 * @return
 	 */
-	public static X509Certificate getX509Certificate(byte[] sslCertDer)
-	{
+	public static X509Certificate getX509Certificate(byte[] sslCertDer) {
 		X509Certificate cert = null;
-		InputStream strm = null;
+		InputStream     strm = null;
 
-		if (sslCertDer != null)
-		{
+		if (null != sslCertDer) {
 			strm = new ByteArrayInputStream(sslCertDer);
 		}
-		if (strm != null)
-		{
-			try
-			{
+		
+		if (null != strm) {
+			try {
 				CertificateFactory factory = CertificateFactory.getInstance("X.509");
-				cert = (X509Certificate) factory.generateCertificate(strm);
+				cert = ((X509Certificate) factory.generateCertificate(strm));
 			}
-			catch (CertificateException e)
-			{
+			
+			catch (CertificateException e) {
 				m_logger.debug("LdapBrowserHelper.getX509Certificate( Unable to access certificate byte stream ):  ", e);
 			}
-			finally
-			{
-				try
-				{
+			
+			finally {
+				try {
 					strm.close();
 				}
-				catch (IOException ignored)
-				{
+				
+				catch (IOException ignored) {
 				}
 			}
 		}

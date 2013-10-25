@@ -36,6 +36,7 @@ import java.util.Hashtable;
 
 import javax.naming.Context;
 
+import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 /**
@@ -46,44 +47,66 @@ import org.springframework.ldap.core.support.LdapContextSource;
  * 
  * @author rvasudevan
  */
-public class SecureLdapContextSource extends LdapContextSource
-{
-	private String userName;
-	private String password;
-	private Boolean useSSL;
+public class SecureLdapContextSource extends LdapContextSource {
+	private Boolean	m_useSSL;	//
+	private String	m_userName;	//
+	private String	m_password;	//
 
-	public SecureLdapContextSource(String principal, String password, Boolean useSSL)
-	{
-		this.userName = principal;
-		this.password = password;
-		this.useSSL = useSSL;
+	/**
+	 * Constructor method.
+	 * 
+	 * @param principal
+	 * @param m_password
+	 * @param m_useSSL
+	 */
+	public SecureLdapContextSource(String principal, String password, Boolean useSSL) {
+		// Initialize the super class...
+		super();
+		
+		// ...and store the parameters.
+		m_userName = principal;
+		m_password = password;
+		m_useSSL   = useSSL;
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @throws Exception
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void afterPropertiesSet() throws Exception
-	{
+	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet(); // To change body of overridden methods use File | Settings | File Templates.
+		boolean anonymous = ((!(MiscUtil.hasString(m_userName))) && (!(MiscUtil.hasString(m_password))));
+		if ((null != m_useSSL) && m_useSSL) {
+			Hashtable env;
+			if (anonymous)
+			     env = super.getAnonymousEnv();
+			else env = super.getAuthenticatedEnv(m_userName, m_password);
 
-		if (useSSL != null && useSSL)
-		{
-			Hashtable env = super.getAuthenticatedEnv(userName, password);
-
-			// simple authentication needs username and password, external needs a keystore
+			// Simple authentication needs username and m_password,
+			// external needs a keystore.
 			env.put(Context.SECURITY_AUTHENTICATION, "External");
 
-			// specify use of ssl
+			// Specify use of ssl.
 			env.put(Context.SECURITY_PROTOCOL, "ssl");
 
 			env.put("java.naming.ldap.factory.socket", "com.novell.gw.admin.server.LdapSslSocketFactory");
 
-			// This next two lines causes the LdapSslFactory and the trust manager to be initialized
-			super.setupAuthenticatedEnvironment(env, userName, password);
-
+			// This next two lines causes the LdapSslFactory and the
+			// trust manager to be initialized.
 			super.setBaseEnvironmentProperties(env);
-
+			if (anonymous)
+			     super.setAnonymousReadOnly(true);
+			else super.setupAuthenticatedEnvironment(env, m_userName, m_password);
 			super.afterPropertiesSet();
 		}
-
+		
+		else if (anonymous) {
+			super.setBaseEnvironmentProperties(super.getAnonymousEnv());
+			super.setAnonymousReadOnly(true);
+			super.afterPropertiesSet();
+		}
 	}
 }

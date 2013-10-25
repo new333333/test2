@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.CellTreeResource;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
@@ -62,6 +63,7 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.view.client.*;
 
@@ -81,14 +83,17 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	private LdapBrowserCallback					m_ldapCallback;		// Callback interface to let the caller know what's going on.
 	private LdapObject							m_selected;			// The currently selected LDAP object.
 	private LdapSearchInfo						m_searchInfo;		// Defines where we're searching from.
-	private LDAPTreeModel						m_treeViewModel;	// The data model for the CellTree.
+	private LdapTreeModel						m_treeViewModel;	// The data model for the CellTree.
 	private SingleSelectionModel<LdapObject>	m_selectionModel;	// Provides selection handling for the cell tree.
 	private UIObject							m_showRelativeTo;	// Show the dialog relative to this.  null -> Center it on the screen.
+	
+	// Various strings to construct the tree. 
+	private final static String	TREE_ROOT	= "ROOT";	//
 
 	/*
 	 * Inner class that provides cells for the LDAP browser's tree.
 	 */
-	private class LDAPObjectCell extends AbstractCell<LdapObject> {
+	private class LdapObjectCell extends AbstractCell<LdapObject> {
 		/**
 		 * ?
 		 * 
@@ -100,66 +105,75 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 		public void render(Context context, LdapObject value, SafeHtmlBuilder sb) {
 			if (null != value) {
 				Image img;
-				if (null == value.getObjectClass())
-					img = new Image(GwtTeaming.getLdapBrowserImageBundle().tree());
+				boolean treeRoot = (null == value.getObjectClass());
+				if (treeRoot) {
+					img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().tree());
+				}
+				
 				else {
-					value.getObjectClass();
 					if (value.isObjectClassFound("person")) {
 						// Show User icon.
-						img = new Image(GwtTeaming.getLdapBrowserImageBundle().user());
+						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().user());
 					}
 					
 					else if (value.isObjectClassFound("domain")) {
 						// Show domain icon.
-						img = new Image(GwtTeaming.getLdapBrowserImageBundle().edirDomain());
+						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().edirDomain());
 					}
 					
 					else if (value.isObjectClassFound("organizationalunit") || value.isObjectClassFound("container")) {
 						// Show Container icon.
-						img = new Image(GwtTeaming.getLdapBrowserImageBundle().organizationalUnit());
+						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().organizationalUnit());
 					}
 					
 					else if (value.isObjectClassFound("organization")) {
 						// Show Organization icon.
-						img = new Image(GwtTeaming.getLdapBrowserImageBundle().organization());
+						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().organization());
 					}
 					
 					else if (value.isObjectClassFound("organizationalrole")) {
 						// Show Organization icon.
-						img = new Image(GwtTeaming.getLdapBrowserImageBundle().orgRole());
+						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().orgRole());
 					}
 					
 					else if (value.isObjectClassFound("group") || value.isObjectClassFound("groupwisedistributionlist") || value.isObjectClassFound("groupOfNames")) {
 						// Show Group icon.
-						img = new Image(GwtTeaming.getLdapBrowserImageBundle().group());
+						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().group());
 					}
 					
 					else if (value.isObjectClassFound("country")) {
 						// Show Country icon.
-						img = new Image(GwtTeaming.getLdapBrowserImageBundle().country());
+						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().country());
 					}
 					
 					else if (value.isObjectClassFound("locality")) {
 						// Show Country icon.
-						img = new Image(GwtTeaming.getLdapBrowserImageBundle().locality());
+						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().locality());
 					}
 					
 					else {
-						// Default to user icon here..We need an
+						// Default to user icon here.  We need an
 						// unknown icon.
-						img = new Image(GwtTeaming.getLdapBrowserImageBundle().user());
+						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().user());
 					}
 				}
-				img.addStyleName("gwNameCellImg");
-
 				FlowPanel flowPanel = new FlowPanel();
-				flowPanel.addStyleName("gwNameCell");
+				flowPanel.addStyleName("gwtUI_nowrap");
+				if (treeRoot)
+				     flowPanel.addStyleName("gwNameCell-root");
+				else flowPanel.addStyleName("gwNameCell");
 
+				if (treeRoot)
+				     img.addStyleName("gwNameCellImg-root");
+				else img.addStyleName("gwNameCellImg");
 				flowPanel.add(img);
 				
 				String name = value.getName();
 				if (null == name) {
 					name = value.getDn();
+					if (null == name) {
+						name = "";
+					}
 				}
 				flowPanel.add(new InlineLabel(name));
 
@@ -172,7 +186,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * Inner class that provides the data model for the LDAP browser's
 	 * tree.
 	 */
-	private class LDAPTreeModel implements TreeViewModel {
+	private class LdapTreeModel implements TreeViewModel {
 		/**
 		 * ?
 		 * 
@@ -182,22 +196,24 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 		 */
 		@Override
 		public <T> NodeInfo<?> getNodeInfo(final T value) {
-			// ROOT Node.
-			if (value instanceof String && value.equals("ROOT")) {
-				ArrayList<LdapObject> list = new ArrayList<LdapObject>();
-				if (null != m_directoryServer.getName())
-					list.add(new LdapObject(m_directoryServer.getName()));
-				else
-					list.add(new LdapObject("TREE"));
+			if ((value instanceof String) && value.equals(TREE_ROOT)) {
+				// Root Node.
+				List<LdapObject> list = new ArrayList<LdapObject>();
+				String treeName = m_directoryServer.getName();
+				if (!(GwtClientHelper.hasString(treeName))) {
+					treeName = m_messages.ldapBrowser_Label_Tree();
+				}
+				list.add(new LdapObject(treeName));
 				ListDataProvider<LdapObject> dataProvider = new ListDataProvider<LdapObject>(list);
-				return new DefaultNodeInfo<LdapObject>(dataProvider, new LDAPObjectCell(), m_selectionModel, null);
+				return new DefaultNodeInfo<LdapObject>(dataProvider, new LdapObjectCell(), m_selectionModel, null);
 			}
 			
 			else {
+				// Non-root Nodes.
 				m_dataProvider = new AsyncDataProvider<LdapObject>() {
 					@Override
 					protected void onRangeChanged(HasData<LdapObject> display) {
-						LdapObject ldapObject = ((LdapObject) value);
+						final LdapObject ldapObject = ((LdapObject) value);
 						if (null == ldapObject.getObjectClass()) {
 							if (null == m_searchInfo.getBaseDn()) {
 								if (m_directoryServer.getDirectoryType().equals(LdapServer.DirectoryType.EDIRECTORY)
@@ -225,23 +241,30 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 						GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 							@Override
 							public void onFailure(Throwable caught) {
+								// We couldn't read the information
+								// from the server!  Tell the user
+								// about the problem...
 								GwtClientHelper.handleGwtRPCFailure(
 									caught,
 									m_messages.rpcFailure_GetLdapServerData());
-//!								hide();
+								
+								// ...and render it as an empty list.
+								getLeafObjectsAsync(ldapObject, null);
 							}
 
 							@Override
 							public void onSuccess(VibeRpcResponse response) {
-								// Extract the share lists from the details...
+								// Extract the share lists from the
+								// details and render them into the
+								// tree.
 								LdapServerDataRpcResponseData responseData = ((LdapServerDataRpcResponseData) response.getResponseData());
-								getLeafObjectsAsync(responseData.getQueryOutput());
+								getLeafObjectsAsync(ldapObject, responseData.getQueryOutput());
 							}
 						});
 					}
 				};
 				
-				return new DefaultNodeInfo<LdapObject>(m_dataProvider, new LDAPObjectCell(), m_selectionModel, null);
+				return new DefaultNodeInfo<LdapObject>(m_dataProvider, new LdapObjectCell(), m_selectionModel, null);
 			}
 		}
 
@@ -300,9 +323,14 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 */
 	@Override
 	public Panel createContent(Object unused) {
+		ScrollPanel scroller = new ScrollPanel();
+		scroller.addStyleName("ldapBrowser-scroller");
+		
 		m_contentPanel = new FlowPanel();
-		m_contentPanel.addStyleName("ldapBrowserContent");
-		return m_contentPanel;
+		m_contentPanel.addStyleName("ldapBrowser-content");
+		
+		scroller.add(m_contentPanel);
+		return scroller;
 	}
 	
 	/**
@@ -329,7 +357,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 */
 	private void invokeLdapBrowser() {
 		// LDAP Tree Model.
-		m_treeViewModel = new LDAPTreeModel();
+		m_treeViewModel = new LdapTreeModel();
 		CellTreeResource   treeResource = GWT.create(CellTreeResource.class  );
 		GwCellTreeMessages treeMessages = GWT.create(GwCellTreeMessages.class);
 
@@ -345,7 +373,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 
 		// Built the tree and set the max node size to be 1000
 		// Set the initial value to be ROOT string to differ from LdapObject
-		m_tree = new CellTree(m_treeViewModel, "ROOT", treeResource, treeMessages);
+		m_tree = new CellTree(m_treeViewModel, TREE_ROOT, treeResource, treeMessages);
 
 		// Active Directory has a max limit of 1000, we will do the same
 		m_tree.setDefaultNodeSize(1000);
@@ -401,20 +429,20 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 
 	/*
 	 */
-	private void getLeafObjectsAsync(final QueryOutput<LdapObject> result) {
+	private void getLeafObjectsAsync(final LdapObject ldapObject, final QueryOutput<LdapObject> result) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				getLeafObjectsNow(result);
+				getLeafObjectsNow(ldapObject, result);
 			}
 		});
 	}
 	
 	/*
 	 */
-	private void getLeafObjectsNow(final QueryOutput<LdapObject> result) {
+	private void getLeafObjectsNow(final LdapObject ldapObject, final QueryOutput<LdapObject> result) {
 		// Get the ldap objects list.
-		ArrayList<LdapObject> resultList;
+		List<LdapObject> resultList;
 		if (null != result)
 		     resultList = result.getResultList();
 		else resultList = null;
@@ -428,8 +456,9 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 		
 		else {
 			// ...otherwise, no data.
-			m_dataProvider.updateRowData(0, new ArrayList<LdapObject>());
-			m_dataProvider.updateRowCount(0, true);
+//!			m_dataProvider.updateRowData(0, new ArrayList<LdapObject>());
+//!			m_dataProvider.updateRowCount(0, true);
+			m_dataProvider.updateRowCount((-1), true);	// -1 -> Forces the expansion to not show an 'Empty' message.
 		}
 
 		// If the search results exceeded the max limit...
