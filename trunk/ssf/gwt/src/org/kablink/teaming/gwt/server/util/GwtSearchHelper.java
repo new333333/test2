@@ -48,6 +48,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -466,22 +467,36 @@ public class GwtSearchHelper
 							{
 								GwtGroup gwtGroup;
 								Principal group;
+								IdentityInfo identityInfo;
 								
 								group = groupPrincipals.first();
 								
-								// Create a GwtGroup item for this group.
-								gwtGroup = new GwtGroup();
-								
-								if ( group instanceof UserPrincipal )
-									gwtGroup.setInternal( ((UserPrincipal)group).getIdentityInfo().isInternal() );
-								
-								gwtGroup.setId( id );
-								gwtGroup.setName( group.getName() );
-								gwtGroup.setTitle( group.getTitle() );
-								gwtGroup.setDn( group.getForeignName() );
-								gwtGroup.setGroupType( GwtServerHelper.getGroupType( group ) );
-								
-								results.add( gwtGroup );
+								// Does this group come from ldap?
+								identityInfo = group.getIdentityInfo();
+								if ( identityInfo != null && identityInfo.isFromLdap() )
+								{
+									// Yes
+									// Are we suppose to include groups from ldap?
+									if ( searchCriteria.getSearchForLdapGroups() == true )
+									{
+										// Yes
+										// Create a GwtGroup item for this group.
+										gwtGroup = new GwtGroup();
+										
+										if ( group instanceof UserPrincipal )
+											gwtGroup.setInternal( identityInfo.isInternal() );
+										
+										gwtGroup.setId( id );
+										gwtGroup.setName( group.getName() );
+										gwtGroup.setTitle( group.getTitle() );
+										gwtGroup.setDn( group.getForeignName() );
+										gwtGroup.setGroupType( GwtServerHelper.getGroupType( group ) );
+										
+										results.add( gwtGroup );
+									}
+									else
+										--searchHits;
+								}
 							}
 						}
 			    	}
@@ -720,12 +735,28 @@ public class GwtSearchHelper
 							if ( entityType == EntityType.group )
 							{
 								GwtGroup gwtGroup;
+								IdentityInfo identityInfo;
 
+								// Is this group from ldap?
+								identityInfo = principal.getIdentityInfo();
+								if ( identityInfo != null && identityInfo.isFromLdap() )
+								{
+									// Yes
+									// Are we supposed to include groups from ldap?
+									if ( searchCriteria.getSearchForLdapGroups() == false )
+									{
+										// No
+										if ( count != null )
+											--count;
+										continue;
+									}
+								}
+								
 								// Create a GwtGroup item for this group.
 								gwtGroup = new GwtGroup();
 								
-								if ( principal instanceof UserPrincipal )
-									gwtGroup.setInternal( ((UserPrincipal)principal).getIdentityInfo().isInternal() );
+								if ( (principal instanceof UserPrincipal) && identityInfo != null )
+									gwtGroup.setInternal( identityInfo.isInternal() );
 								
 								gwtGroup.setId( principalId );
 								gwtGroup.setName( principal.getName() );

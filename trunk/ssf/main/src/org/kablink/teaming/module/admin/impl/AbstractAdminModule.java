@@ -789,6 +789,31 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
        	return (EmailPosting)ReflectHelper.getInstance(className);
      }
 
+   	/**
+   	 * 
+   	 */
+   	@Override
+ 	public boolean isSharingWithLdapGroupsEnabled()
+   	{
+   		ZoneConfig zoneConfig;
+
+   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+   		return zoneConfig.isSharingWithLdapGroupsEnabled(); 		
+   	}
+   	
+   	/**
+   	 * 
+   	 */
+   	@Override
+ 	public void setAllowShareWithLdapGroups( boolean allow ) 
+   	{
+   		ZoneConfig zoneConfig;
+
+   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+   		zoneConfig.setAllowShareWithLdapGroups( allow );
+   	}
+
+
 	/**
      * Do actual work to either enable or disable digest notification.
      * @param id

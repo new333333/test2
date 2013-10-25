@@ -92,6 +92,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	// This setting exists only on zones, not on individual binders.
     private Long jitsWaitTimeout; // in milliseconds
     private String shareListsBlob;
+    private Boolean allowShareWithLdapGroups;
 
 	public ZoneConfig()
 	{
@@ -523,7 +524,27 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	{
 		publicCollectionEnabled = Boolean.valueOf( enabled );
 	}
+
+	/**
+	 * 
+	 */
+	public boolean isSharingWithLdapGroupsEnabled()
+	{
+		if ( allowShareWithLdapGroups == null )
+			return true;
+		
+		return allowShareWithLdapGroups.booleanValue();
+	}
 	
+	/**
+	 * 
+	 */
+	public void setAllowShareWithLdapGroups( boolean allow )
+	{
+		allowShareWithLdapGroups = Boolean.valueOf( allow );
+	}
+	
+
 	public int getAuditTrailKeepDays() {
 		if (auditTrailKeepDays == null) {
 			if (Utils.checkIfFilr() || Utils.checkIfIPrint()) {

@@ -2745,6 +2745,9 @@ public class ShareThisDlg2 extends DlgBox
 
 			// Is sharing with an internal user available?
 			m_findCtrl.setSearchForInternalPrincipals( sharingInfo.getCanShareWithInternalUsers() );
+			
+			// Is sharing with ldap groups available?
+			m_findCtrl.setSearchForLdapGroups( sharingInfo.getCanShareWithLdapGroups() );
 
 			listOfShareItems = sharingInfo.getListOfShareItems();
 			if ( listOfShareItems == null )

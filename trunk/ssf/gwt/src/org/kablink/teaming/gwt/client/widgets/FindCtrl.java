@@ -982,6 +982,14 @@ public class FindCtrl extends Composite
 	}
 	
 	/**
+	 * Set when searching for principals, should we include ldap groups.
+	 */
+	public void setSearchForLdapGroups( boolean search )
+	{
+		m_searchCriteria.setSearchForLdapGroups( search );
+	}
+	
+	/**
 	 * Sets the search type of the search being done.
 	 * 
 	 * @param searchType
