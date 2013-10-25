@@ -5022,8 +5022,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						else
 						{
 							Enumeration members;
+							String guid;
 
-							members = getGroupMembershipFromAD( teamingName, zone, config, searchInfo );
+							// Get the ldap guid that was read from the ldap directory for this user.
+							guid = getLdapGuid( lAttrs, ldapGuidAttribute );
+							
+							members = getGroupMembershipFromAD( guid, zone, config, searchInfo );
 							if ( members != null )
 								groupCoordinator.syncMembership( groupId, members );
 						}
@@ -5037,7 +5041,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Read the group membership for the given group in AD
 	 */
 	private Enumeration getGroupMembershipFromAD(
-		String groupName,
+		String guid,
 		Binder zone,
 		LdapConnectionConfig ldapConfig,
 		LdapConnectionConfig.SearchInfo searchInfo )
@@ -5045,7 +5049,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapContext ctx = null;
 		Hashtable listOfMembers;
 
-		if ( groupName == null || zone == null || ldapConfig == null || searchInfo == null )
+		if ( guid == null || zone == null || ldapConfig == null || searchInfo == null )
 			return null;
 
 		listOfMembers = new Hashtable();
@@ -5057,6 +5061,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String search;
 			String filter;
 			NamingEnumeration ctxSearch;
+			StringBuffer ldapFilterGuid;
 			
 			ctx = getGroupContext( zone.getId(), ldapConfig );
 
@@ -5068,13 +5073,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			searchCtls = new SearchControls();
 			searchCtls.setSearchScope( scope );
 			
-			// Replace all '(' with "\28"
-			groupName = groupName.replaceAll( "\\(", "\\\\28" );
+			// Convert the guid into a format that can be used with an ldap filter.
+			// ie, \C0\92\B2\A3\E4\E4\FF\4A\8C\50\98\DB\B4\C0\17\64
+			ldapFilterGuid = new StringBuffer();
+			for (int i = 0; i < guid.length(); ++i)
+			{
+				if ( (i % 2) == 0 )
+					ldapFilterGuid.append( '\\' );
+				
+				ldapFilterGuid.append( guid.charAt( i ) );
+			}
 			
-			// Replace all ')' with "\29"
-			groupName = groupName.replaceAll( "\\)", "\\\\29" );
-			
-			search = "(" + ldapConfig.getUserIdAttribute() + "=" + groupName + ")";
+			search = "(" + ldapConfig.getLdapGuidAttribute() + "=" + ldapFilterGuid.toString() + ")";
 			filter = searchInfo.getFilterWithoutCRLF();
 			if ( Validator.isNull( filter ) == false )
 			{
