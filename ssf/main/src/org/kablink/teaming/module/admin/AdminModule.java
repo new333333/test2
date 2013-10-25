@@ -194,6 +194,8 @@ public interface AdminModule {
     public void setPublicCollectionEnabled( boolean enabled );
     public boolean isFileArchivingEnabled();
     public void setFileArchivingEnabled(boolean fileArchivingEnabled);
+    public boolean isSharingWithLdapGroupsEnabled();
+    public void setAllowShareWithLdapGroups( boolean allow );
     public int getAuditTrailKeepDays();
     public int getChangeLogsKeepDays();
     public boolean isAuditTrailEnabled();

@@ -370,5 +370,14 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="29">
+        <comment>Can users share with ldap groups</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="allowShareWithLdapGroups" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>

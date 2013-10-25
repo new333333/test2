@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -48,8 +49,10 @@ import org.kablink.teaming.gwt.client.widgets.ZoneShareRightsSelectPrincipalsWid
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -65,6 +68,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class EditZoneShareRightsTab extends EditZoneShareTabBase
 {
+	private CheckBox m_allowShareWithLdapGroupsCB;
 	private EditZoneShareSettingsDlg m_shareDlg;
 	private ZoneShareRights m_zoneShareRights;
 	private ZoneShareRightsSelectPrincipalsWidget m_selectPrincipalsWidget;
@@ -136,8 +140,24 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 		Label label;
 		int nextRow = 0;
 		final int selectPrincipalsWidgetRow;
+		GwtTeamingMessages messages;
+		
+		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
+		
+		// Add the "Allow all users to share with groups that have been imported from LDAP" check box
+		{
+			FlowPanel tmpPanel;
+			
+			tmpPanel = new FlowPanel();
+			tmpPanel.getElement().getStyle().setMarginTop( 4, Unit.PX );
+			tmpPanel.getElement().getStyle().setMarginBottom( 24, Unit.PX );
+
+			m_allowShareWithLdapGroupsCB = new CheckBox( messages.editZoneShareRightsTab_AllowShareWithLdapGroups() );
+			tmpPanel.add( m_allowShareWithLdapGroupsCB );
+			mainPanel.add( tmpPanel );
+		}
 		
 		table = new FlexTable();
 		cellFormatter = table.getFlexCellFormatter();
@@ -147,7 +167,7 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 		cellFormatter.setColSpan( nextRow, 0, 2 );
 		cellFormatter.setWordWrap( nextRow, 0, false );
 		cellFormatter.addStyleName( nextRow, 0, "editZoneShareRightsTab_SelectPrincipalsHint" );
-		label = new InlineLabel( GwtTeaming.getMessages().editZoneShareRightsTab_SelectPrincipalsHint() );
+		label = new InlineLabel( messages.editZoneShareRightsTab_SelectPrincipalsHint() );
 		table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 		++nextRow;
 		
@@ -266,6 +286,8 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 	 */
 	private void initShareRights()
 	{
+		m_allowShareWithLdapGroupsCB.setValue( m_zoneShareRights.getAllowShareWithLdapGroups() );
+		
 		if ( m_selectPrincipalsWidget != null && m_selectPrincipalsWidget.isReady() )
 		{
 			if ( m_zoneShareRights != null )
@@ -417,6 +439,8 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 			roles = getRoles();
 			zoneShareRights = new ZoneShareRights();
 			zoneShareRights.setRoles( roles );
+			
+			zoneShareRights.setAllowShareWithLdapGroups( m_allowShareWithLdapGroupsCB.getValue() );
 			
 			cmd = new SaveZoneShareRightsCmd();
 			cmd.setRights( zoneShareRights );

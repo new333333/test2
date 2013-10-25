@@ -1711,6 +1711,16 @@ public class GwtShareHelper
 		AdminModule adminModule;
 		Long zoneId;
 		WorkArea workArea;
+
+		shareSettings = new ZoneShareRights();
+
+		// Get the "allow users to share with ldap groups" setting
+		{
+			ZoneConfig zoneConfig;
+			
+			zoneConfig = ami.getZoneModule().getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+			shareSettings.setAllowShareWithLdapGroups( zoneConfig.isSharingWithLdapGroupsEnabled() );
+		}
 		
 		listOfRoles = new ArrayList<GwtRole>();
 		role = new GwtRole();
@@ -1734,7 +1744,6 @@ public class GwtShareHelper
 		role.setType( GwtRoleType.EnableShareWithAllInternal );
 		listOfRoles.add( role );
 		
-		shareSettings = new ZoneShareRights();
 		shareSettings.setRoles( listOfRoles );
 		
 		adminModule = ami.getAdminModule();
@@ -1954,6 +1963,14 @@ public class GwtShareHelper
 			sharingInfo.setCanShareWithPublic( canShareWithPublic );
 		}
 		
+		// Get the "allow users to share with ldap groups" setting
+		{
+			ZoneConfig zoneConfig;
+			
+			zoneConfig = ami.getZoneModule().getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+			sharingInfo.setCanShareWithLdapGroups( zoneConfig.isSharingWithLdapGroupsEnabled() );
+		}
+
 		return sharingInfo;
 	}
 
@@ -2466,6 +2483,14 @@ public class GwtShareHelper
 				// Reset the function's membership.
 				adminModule.resetWorkAreaFunctionMemberships( workArea, fnId, nextRole.getMemberIds() );
 			}
+		}
+		
+		// Save the "allow users to share with ldap groups" setting
+		{
+			AdminModule adminModule;
+			
+			adminModule = ami.getAdminModule();
+			adminModule.setAllowShareWithLdapGroups( rights.getAllowShareWithLdapGroups() );
 		}
 		
 		return Boolean.TRUE;

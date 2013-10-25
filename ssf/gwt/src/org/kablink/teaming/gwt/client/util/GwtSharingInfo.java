@@ -59,6 +59,7 @@ public class GwtSharingInfo
 	private boolean m_canShareWithPublic;
 	private boolean m_canShareWithAllExternalUsersGroup;
 	private boolean m_canShareWithAllInternalUsersGroup;
+	private boolean m_canShareWithLdapGroups;
 	
 	/**
 	 * 
@@ -75,6 +76,7 @@ public class GwtSharingInfo
 		m_canShareWithPublic = false;
 		m_canShareWithAllExternalUsersGroup = false;
 		m_canShareWithAllInternalUsersGroup = false;
+		m_canShareWithLdapGroups = false;
 		m_sendToValue = SendToValue.ALL_RECIPIENTS;
 	}
 	
@@ -187,6 +189,14 @@ public class GwtSharingInfo
 	public boolean getCanShareWithInternalUsers()
 	{
 		return m_canShareWithInternalUsers;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithLdapGroups()
+	{
+		return m_canShareWithLdapGroups;
 	}
 	
 	/**
@@ -320,6 +330,14 @@ public class GwtSharingInfo
 	public void setCanShareWithInternalUsers( boolean canShareWithInternalUsers )
 	{
 		m_canShareWithInternalUsers = canShareWithInternalUsers;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanShareWithLdapGroups( boolean canShare )
+	{
+		m_canShareWithLdapGroups = canShare;
 	}
 	
 	/**
