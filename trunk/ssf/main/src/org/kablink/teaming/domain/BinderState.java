@@ -92,7 +92,7 @@ public class BinderState extends ZonedObject {
 	 */
 	private Long binderId;
 	/*
-	 * Last time sync completed on this particular folder.
+	 * Last time sync finished on this particular folder.
 	 * This does NOT tell whether the sync was full (whole branch) or JIT 
 	 * (single level only), or whether the sync was successful or not.
 	 * Applicable to all folders within net folder, not just net folder root.
@@ -122,6 +122,7 @@ public class BinderState extends ZonedObject {
 	 * Statistics information specific to the last full synchronization instance that 
 	 * either already ended or is currently in progress. This information spans no more
 	 * than a single full synchronization instance, and no history is kept.
+	 * This field is applicable to net folder roots only.
 	 */
 	private FullSyncStats fullSyncStats;
 	
@@ -294,6 +295,7 @@ public class BinderState extends ZonedObject {
 		this.fullSyncStopRequested = fullSyncStopRequested;
 	}
 
+	// This class is used only for net folder roots.
 	public static class FullSyncStats {
 		/*
 		 * Full sync status
