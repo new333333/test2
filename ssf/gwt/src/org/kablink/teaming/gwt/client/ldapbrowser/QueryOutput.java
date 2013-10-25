@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.ldapbrowser;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -42,8 +42,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author rvasudevan
  */
 public class QueryOutput<T> implements IsSerializable {
-	private ArrayList<T>		m_results;		//
 	private boolean				m_sizeExceeded;	//
+	private List<T>				m_results;		//
 	private PageOutputParams	m_page;			//
 	private String 				m_ids;			//
 
@@ -62,8 +62,8 @@ public class QueryOutput<T> implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public ArrayList<T>     getResultList()  {return m_results;     }
 	public boolean          isSizeExceeded() {return m_sizeExceeded;}
+	public List<T>          getResultList()  {return m_results;     }
 	public PageOutputParams getPage()        {return m_page;        }
 	public String           getIds()         {return m_ids;         }
 
@@ -72,9 +72,9 @@ public class QueryOutput<T> implements IsSerializable {
 	 * 
 	 * @param
 	 */
-	public void setResultList(  ArrayList<T>     results)      {m_results      = results;     }
 	public void sizeExceeded(   boolean          sizeExceeded) {m_sizeExceeded = sizeExceeded;}
 	public void setSizeExceeded(boolean          sizeExceeded) {m_sizeExceeded = sizeExceeded;}
+	public void setResultList(  List<T>          results)      {m_results      = results;     }
 	public void setPage(        PageOutputParams page)         {m_page         = page;        }
 	public void setIds(         String           ids)          {m_ids          = ids;         }
 }

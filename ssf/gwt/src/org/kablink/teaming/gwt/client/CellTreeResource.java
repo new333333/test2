@@ -41,6 +41,7 @@ import com.google.gwt.user.cellview.client.CellTree;
  * @author rvasudevan
  */
 public interface CellTreeResource extends CellTree.Resources {
+	// Define the images...
 	@Override
 	@Source("org/kablink/teaming/gwt/public/images/LdapBrowser/tree-open.png")
 	public ImageResource cellTreeOpenItem();
@@ -53,15 +54,8 @@ public interface CellTreeResource extends CellTree.Resources {
 	@Source("org/kablink/teaming/gwt/public/images/LdapBrowser/busyanim16b.gif")
 	public ImageResource cellTreeLoading();
 
+	// ...and style sheets.
 	@Override
-	@Source(Style.DEFAULT_CSS)
-	public Style cellTreeStyle();
-
-	/**
-	 * The Interface Style.
-	 */
-	public interface Style extends CellTree.Style {
-		String DEFAULT_CSS = "org/kablink/teaming/gwt/public/CellTree.css";
-
-	}
+	@Source({CellTree.Style.DEFAULT_CSS, "org/kablink/teaming/gwt/public/CellTree.css"})
+	CellTree.Style cellTreeStyle();
 }

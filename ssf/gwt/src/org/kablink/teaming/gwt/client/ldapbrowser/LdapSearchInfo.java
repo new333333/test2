@@ -39,8 +39,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author rvasudevan
  */
-public class LdapSearchInfo implements IsSerializable
-{
+public class LdapSearchInfo implements IsSerializable {
 	private boolean	m_searchSubTree;		//
 	private int		m_maximumReturnLimit;	//
 	private String 	m_baseDn;				//
@@ -65,57 +64,51 @@ public class LdapSearchInfo implements IsSerializable
 
 	private static final int MAX_COUNT_LIMIT = 1000;
 
-	public LdapSearchInfo()
-	{
-		m_searchObjectClass = RETURN_EVERYTHING_EDIR;
-		m_maximumReturnLimit = MAX_COUNT_LIMIT;
-		m_searchSubTree = false;
+	/**
+	 * Constructor method.
+	 * 
+	 * Zero parameter constructor as per GWT serialization
+	 * requirements.
+	 */
+	public LdapSearchInfo() {
+		super();
+		
+		setSearchObjectClass( RETURN_EVERYTHING_EDIR);
+		setMaximumReturnLimit(MAX_COUNT_LIMIT       );
+		setSearchSubTree(     false                 );
 	}
 
-	public LdapSearchInfo(String objectClass, boolean searchSubTree)
-	{
-		m_maximumReturnLimit = MAX_COUNT_LIMIT;
-		m_searchSubTree = searchSubTree;
-		m_searchObjectClass = objectClass;
+	/**
+	 * Constructor method.
+	 * 
+	 * @param objectClass
+	 * @param searchSubTree
+	 */
+	public LdapSearchInfo(String objectClass, boolean searchSubTree) {
+		super();
+		
+		setMaximumReturnLimit(MAX_COUNT_LIMIT);
+		setSearchSubTree(     searchSubTree  );
+		setSearchObjectClass( objectClass    );
 	}
 
-	public String getSearchObjectClass()
-	{
-		return m_searchObjectClass;
-	}
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean isSearchSubTree()       {return m_searchSubTree;     }
+	public int     getMaximumReturnLimit() {return m_maximumReturnLimit;}
+	public String  getBaseDn()             {return m_baseDn;            }
+	public String  getSearchObjectClass()  {return m_searchObjectClass; }
 
-	public void setSearchObjectClass(String searchObjectClass)
-	{
-		m_searchObjectClass = searchObjectClass;
-	}
-
-	public boolean isSearchSubTree()
-	{
-		return m_searchSubTree;
-	}
-
-	public void setSearchSubTree(boolean searchSubTree)
-	{
-		m_searchSubTree = searchSubTree;
-	}
-
-	public int getMaximumReturnLimit()
-	{
-		return m_maximumReturnLimit;
-	}
-
-	public void setMaximumReturnLimit(int maximumReturnLimit)
-	{
-		m_maximumReturnLimit = maximumReturnLimit;
-	}
-
-	public String getBaseDn()
-	{
-		return m_baseDn;
-	}
-
-	public void setBaseDn(String baseDn)
-	{
-		m_baseDn = baseDn;
-	}
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setSearchSubTree(     boolean searchSubTree)      {m_searchSubTree      = searchSubTree;     }
+	public void setMaximumReturnLimit(int     maximumReturnLimit) {m_maximumReturnLimit = maximumReturnLimit;}
+	public void setBaseDn(            String  baseDn)             {m_baseDn             = baseDn;            }
+	public void setSearchObjectClass( String  searchObjectClass)  {m_searchObjectClass  = searchObjectClass; }
 }

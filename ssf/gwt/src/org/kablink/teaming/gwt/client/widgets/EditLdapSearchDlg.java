@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,11 +79,10 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-
 /**
+ * ?
  * 
  * @author jwootton
- *
  */
 public class EditLdapSearchDlg extends DlgBox
 	implements NetFolderRootCreatedEvent.Handler
@@ -92,7 +90,7 @@ public class EditLdapSearchDlg extends DlgBox
 	private DirectoryServer m_directoryServer;
 	private GwtLdapSearchInfo m_ldapSearch;
 
-	private Button m_browseBaseDnBtn;
+	private Button m_browseBaseDnBtn;	// LDAP browse button next to m_baseDnTextBox.
 	private TextBox m_baseDnTextBox;
 	private TextArea m_filterTextArea;
 	private CheckBox m_searchSubtreeCheckBox;
@@ -204,11 +202,12 @@ public class EditLdapSearchDlg extends DlgBox
 			m_baseDnTextBox = new TextBox();
 			m_baseDnTextBox.setVisibleLength( 40 );
 			tmpPanel.add( m_baseDnTextBox );
-			FlowPanel html = new FlowPanel();
-			Image browseImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().browseHierarchy().getSafeUri().asString() );
-			html.add( browseImg );
-			m_browseBaseDnBtn = new Button( html.getElement().getInnerHTML() );
-			m_browseBaseDnBtn.addClickHandler( new ClickHandler() {
+			m_browseBaseDnBtn = new Button();
+			m_browseBaseDnBtn.setEnabled( false );	// Must set disabled first...
+			setBrowseBaseDnBtnEnabled(    true  );	// ...to ensure enabling is honored.
+			m_browseBaseDnBtn.addStyleName( "editLdapServerConfigDlg_BrowseDN" );
+			m_browseBaseDnBtn.addClickHandler( new ClickHandler()
+			{
 				@Override
 				public void onClick( ClickEvent event )
 				{
@@ -454,7 +453,7 @@ public class EditLdapSearchDlg extends DlgBox
 	{
 		LdapSearchInfo si = new LdapSearchInfo();
 		si.setSearchObjectClass(LdapSearchInfo.RETURN_CONTAINERS_ONLY);
-		si.setSearchSubTree(true);
+		si.setSearchSubTree(false);
 		
 		LdapBrowserDlg.initAndShow(
 			m_ldapBrowserDlg,
@@ -477,6 +476,37 @@ public class EditLdapSearchDlg extends DlgBox
 			m_directoryServer,
 			si,
 			m_browseBaseDnBtn);
+	}
+	
+	/*
+	 * Enabled/disables the base DN's LDAP browse button. 
+	 */
+	private void setBrowseBaseDnBtnEnabled(boolean enabled) {
+		// Are we changing the sate of the LDAP browse button?
+		if ( m_browseBaseDnBtn.isEnabled() != enabled )
+		{
+			// Yes!  Update it content...
+			FlowPanel html = new FlowPanel();
+			String btnImgTitle;
+			String btnImgUrl;
+			if ( enabled )
+			{
+				btnImgTitle = GwtTeaming.getMessages().editLdapSearchDlg_BaseDn_Alt();
+				btnImgUrl = GwtTeaming.getImageBundle().browseLdap().getSafeUri().asString();
+			}
+			else
+			{
+				btnImgTitle = GwtTeaming.getMessages().editLdapSearchDlg_BaseDn_Alt_Disabled();
+				btnImgUrl = GwtTeaming.getImageBundle().browseLdapDisabled().getSafeUri().asString();
+			}
+			Image btnImg = GwtClientHelper.buildImage( btnImgUrl );
+			btnImg.setTitle( btnImgTitle );
+			html.add( btnImg );
+			m_browseBaseDnBtn.setHTML( html.getElement().getInnerHTML() );
+			
+			// ...and set its new enabled/disabled state.
+			m_browseBaseDnBtn.setEnabled( enabled );
+		}
 	}
 	
 	/**
@@ -687,10 +717,20 @@ public class EditLdapSearchDlg extends DlgBox
 		m_baseDnTextBox.setValue( ldapSearch.getBaseDn() );
 		m_filterTextArea.setValue( ldapSearch.getFilter() );
 		m_searchSubtreeCheckBox.setValue( ldapSearch.getSearchSubtree() );
-		
-		// Hide/show the base DN browse button based on whether the
-		// directory server we were given is valid.
-		m_browseBaseDnBtn.setVisible( ( LdapBrowserDlg.ENABLE_LDAP_BROWSER && ( null != m_directoryServer ) && m_directoryServer.isEnoughToConnect() ) );
+
+		// Is the LDAP browser ready to be used?
+		if ( LdapBrowserDlg.ENABLE_LDAP_BROWSER )
+		{
+			// Yes!  Enable/disable the browse button based on what we
+			// know about the LDAP server.
+			setBrowseBaseDnBtnEnabled(( null != m_directoryServer ) && m_directoryServer.isEnoughToConnect() );
+		}
+		else
+		{
+			// No, the LDAP browser is not ready!  Simply hide the
+			// button.
+			m_browseBaseDnBtn.setVisible( false );
+		}
 		
 		// Are we showing the home dir info controls?
 		if ( showHomeDirInfoControls )

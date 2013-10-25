@@ -1745,6 +1745,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetLdapServerDataCmd gcwCmd = ((GetLdapServerDataCmd) cmd);
 			LdapServerDataRpcResponseData result = LdapBrowserHelper.getLdapServerData( this, getRequest( ri ), gcwCmd.getDirectoryServer(), gcwCmd.getSearchInfo() );
 			response = new VibeRpcResponse( result );
+			return response;
 		}
 		
 		case GET_LDAP_SYNC_RESULTS:
