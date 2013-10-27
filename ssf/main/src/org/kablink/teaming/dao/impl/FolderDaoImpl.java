@@ -1308,7 +1308,7 @@ public void delete(final Folder folder) {
 	}
  	
 	@Override
-	public Folder loadFolderByResourcePath(final String resourcePath, final Long zoneId) {
+	public Folder loadFolderByResourcePath(final String ancestorSortKey, final String resourcePath, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			List<Folder> folders = (List)getHibernateTemplate().execute(
@@ -1317,7 +1317,8 @@ public void delete(final Folder folder) {
 						public Object doInHibernate(Session session) throws HibernateException {
 							Criteria crit = session.createCriteria(Folder.class)
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.eq("resourcePath", resourcePath))
+							.add(Restrictions.like("binderKey.sortKey", ancestorSortKey + "%"))
+							.add(Restrictions.eq("resourcePath", resourcePath.equals("")? "/" : resourcePath)) // bugzilla 513609 - Also see setResourcePath() method in Binder.java
 							.setCacheable(isBinderQueryCacheable());
 							return crit.list();
 		               }

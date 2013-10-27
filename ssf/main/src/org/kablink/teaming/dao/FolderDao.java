@@ -185,6 +185,6 @@ public interface FolderDao {
 	 */
 	public int getNumberOfNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId );
 	
-	public Folder loadFolderByResourcePath(final String resourcePath, final Long zoneId);
+	public Folder loadFolderByResourcePath(String ancestorSortKey, final String resourcePath, final Long zoneId);
 
 }
