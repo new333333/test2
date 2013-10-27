@@ -149,7 +149,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     		return false;
     	if(!objectEquals(modifiedOn, config.getModifiedOn()))
     		return false;
-    	if(!objectEquals(changeDetectionMechanism, config.getChangeDetectionMechanism()))
+    	if(!objectEquals(getChangeDetectionMechanism(), config.getChangeDetectionMechanism()))
     		return false;
     	return true;
     }

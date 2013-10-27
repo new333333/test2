@@ -98,7 +98,12 @@ public class ResourceChange implements Comparable<ResourceChange> {
 		 * Owner changed on a file
 		 * Since 1.1
 		 */
-		file_owner
+		file_owner,
+		/**
+		 * A file or folder deleted
+		 * Since 1.1
+		 */
+		file_or_folder_delete
 	}
 	
 	private long timestamp; // the time at which this change is detected/recorded
@@ -117,6 +122,7 @@ public class ResourceChange implements Comparable<ResourceChange> {
 		this.path = path;
 		this.targetPath = targetPath;
 		this.type = type;
+		this.timestamp = timestamp;
 	}
 	
 	public String getPath() {
