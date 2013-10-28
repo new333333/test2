@@ -45,6 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class LdapServerDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private QueryOutput<LdapObject>	m_queryOutput;	//
+	private String					m_error;		//
 	
 	/**
 	 * Constructor method.
@@ -75,7 +76,9 @@ public class LdapServerDataRpcResponseData implements IsSerializable, VibeRpcRes
 	 * 
 	 * @return
 	 */
-	public QueryOutput<LdapObject> getQueryOutput() {return m_queryOutput;}
+	public boolean                 hasError()       {return ((null != m_error) && (0 < m_error.length()));};
+	public QueryOutput<LdapObject> getQueryOutput() {return m_queryOutput;                                }
+	public String                  getError()       {return m_error;                                      }
 	
 	/**
 	 * Set'er methods.
@@ -83,4 +86,5 @@ public class LdapServerDataRpcResponseData implements IsSerializable, VibeRpcRes
 	 * @param
 	 */
 	public void setQueryOutput(QueryOutput<LdapObject> queryOutput) {m_queryOutput = queryOutput;}
+	public void setError(      String                  error)       {m_error       = error;      }
 }

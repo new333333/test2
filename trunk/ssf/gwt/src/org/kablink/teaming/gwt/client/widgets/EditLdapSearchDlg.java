@@ -202,9 +202,13 @@ public class EditLdapSearchDlg extends DlgBox
 			m_baseDnTextBox = new TextBox();
 			m_baseDnTextBox.setVisibleLength( 40 );
 			tmpPanel.add( m_baseDnTextBox );
-			m_browseBaseDnBtn = new Button();
-			m_browseBaseDnBtn.setEnabled( false );	// Must set disabled first...
-			setBrowseBaseDnBtnEnabled(    true  );	// ...to ensure enabling is honored.
+			
+			
+			FlowPanel html = new FlowPanel();
+			Image btnImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().browseLdap().getSafeUri().asString() );
+			btnImg.setTitle( GwtTeaming.getMessages().editLdapSearchDlg_BaseDn_Alt() );
+			html.add( btnImg );
+			m_browseBaseDnBtn = new Button( html.getElement().getInnerHTML() );
 			m_browseBaseDnBtn.addStyleName( "editLdapServerConfigDlg_BrowseDN" );
 			m_browseBaseDnBtn.addClickHandler( new ClickHandler()
 			{
@@ -216,7 +220,10 @@ public class EditLdapSearchDlg extends DlgBox
 						@Override
 						public void execute()
 						{
-							browseLdapForBaseDn();
+							boolean canBrowse = (( null != m_directoryServer ) && m_directoryServer.isEnoughToConnect() );
+							if ( canBrowse ) 
+							     browseLdapForBaseDn();
+							else GwtClientHelper.deferredAlert( GwtTeaming.getMessages().editLdapSearchDlg_NoServerURL() );
 						}
 					} );
 				}
@@ -478,37 +485,6 @@ public class EditLdapSearchDlg extends DlgBox
 			m_browseBaseDnBtn);
 	}
 	
-	/*
-	 * Enabled/disables the base DN's LDAP browse button. 
-	 */
-	private void setBrowseBaseDnBtnEnabled(boolean enabled) {
-		// Are we changing the sate of the LDAP browse button?
-		if ( m_browseBaseDnBtn.isEnabled() != enabled )
-		{
-			// Yes!  Update it content...
-			FlowPanel html = new FlowPanel();
-			String btnImgTitle;
-			String btnImgUrl;
-			if ( enabled )
-			{
-				btnImgTitle = GwtTeaming.getMessages().editLdapSearchDlg_BaseDn_Alt();
-				btnImgUrl = GwtTeaming.getImageBundle().browseLdap().getSafeUri().asString();
-			}
-			else
-			{
-				btnImgTitle = GwtTeaming.getMessages().editLdapSearchDlg_BaseDn_Alt_Disabled();
-				btnImgUrl = GwtTeaming.getImageBundle().browseLdapDisabled().getSafeUri().asString();
-			}
-			Image btnImg = GwtClientHelper.buildImage( btnImgUrl );
-			btnImg.setTitle( btnImgTitle );
-			html.add( btnImg );
-			m_browseBaseDnBtn.setHTML( html.getElement().getInnerHTML() );
-			
-			// ...and set its new enabled/disabled state.
-			m_browseBaseDnBtn.setEnabled( enabled );
-		}
-	}
-	
 	/**
 	 * Get the data from the controls in the dialog box.
 	 */
@@ -718,20 +694,6 @@ public class EditLdapSearchDlg extends DlgBox
 		m_filterTextArea.setValue( ldapSearch.getFilter() );
 		m_searchSubtreeCheckBox.setValue( ldapSearch.getSearchSubtree() );
 
-		// Is the LDAP browser ready to be used?
-		if ( LdapBrowserDlg.ENABLE_LDAP_BROWSER )
-		{
-			// Yes!  Enable/disable the browse button based on what we
-			// know about the LDAP server.
-			setBrowseBaseDnBtnEnabled(( null != m_directoryServer ) && m_directoryServer.isEnoughToConnect() );
-		}
-		else
-		{
-			// No, the LDAP browser is not ready!  Simply hide the
-			// button.
-			m_browseBaseDnBtn.setVisible( false );
-		}
-		
 		// Are we showing the home dir info controls?
 		if ( showHomeDirInfoControls )
 		{
