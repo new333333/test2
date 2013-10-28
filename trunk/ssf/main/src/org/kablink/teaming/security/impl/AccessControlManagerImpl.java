@@ -401,7 +401,12 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			// Regular ACL checking must take container groups into consideration. 
 			// However, sharing-granted ACL checking must not because sharing can never take
 			// place against a container group.
-			if (checkWorkAreaFunctionMembership(user.getZoneId(),
+			if (workArea.isAclExternallyControlled() && workArea instanceof FolderEntry && ((FolderEntry)workArea).noAclDredged()) {
+				//This entry has no ACL set up, so it has to get it from the file system 
+				if (testRightGrantedByDredgedAcl(user, (FolderEntry)workArea, workAreaOperation)) {
+					return true;
+				}
+			} else if (checkWorkAreaFunctionMembership(user.getZoneId(),
 							workArea, workAreaOperation, userAllMembersToLookup)) {
 				if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
 					//OK, this is accessible by this user
@@ -410,17 +415,10 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					//See if this was shared. If so, we can ignore the rootFolderAccess check
 					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
 				}
-			} else {
-				if (workArea.isAclExternallyControlled()) {
-					if (workArea instanceof FolderEntry && ((FolderEntry)workArea).noAclDredged()) {
-						//This entry has no ACL set up, so it has to get it from the file system 
-						if (testRightGrantedByDredgedAcl(user, (FolderEntry)workArea, workAreaOperation)) {
-							return true;
-						}
-					}
-				}
-				return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
 			}
+			
+			//It isn't available by normal ACLs, so check if shared
+			return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
 		}
 	}
 	
