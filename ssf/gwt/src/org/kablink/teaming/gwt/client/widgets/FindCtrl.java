@@ -53,6 +53,9 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -68,9 +71,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -85,7 +86,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author jwootton
  */
 public class FindCtrl extends Composite
-	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler
+	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler, KeyDownHandler
 {
 	/**
 	 * This widget is used to hold an item from a search result.
@@ -174,6 +175,31 @@ public class FindCtrl extends Composite
 		{
 			return m_item;
 		}// end getTeamingItem()
+		
+		/**
+		 * 
+		 */
+		public void turnHighlightOff()
+		{
+			Widget widget;
+			
+			widget = getWidget();
+			if ( widget != null )
+				widget.removeStyleName( "findSearchResultItemWidget_HighlightOn" );
+		}
+
+		/**
+		 * 
+		 */
+		public void turnHighlightOn()
+		{
+			Widget widget;
+			
+			widget = getWidget();
+			if ( widget != null )
+				widget.addStyleName( "findSearchResultItemWidget_HighlightOn" );
+		}
+		
 	}// end SearchResultItemWidget
 	
 	
@@ -193,6 +219,7 @@ public class FindCtrl extends Composite
 		private FlowPanel m_searchingPanel;
 		private int m_searchCountTotal = 0;	// Total number of items found by a search.
 		private int m_displayCount = 0;		// Total number of items currently being displayed from a search.
+		private int m_indexOfHighlightedItem = -1;
 		
 		
 		/**
@@ -261,6 +288,7 @@ public class FindCtrl extends Composite
 			// Clear any results we may be currently displaying.
 			clearCurrentContent();
 			
+			m_indexOfHighlightedItem = -1;
 			m_displayCount = 0;
 			m_searchCountTotal = searchResults.getCountTotal();
 			results = searchResults.getResults();
@@ -405,6 +433,30 @@ public class FindCtrl extends Composite
 			return panel;
 		}// end createFooter()
 		
+		/**
+		 * 
+		 */
+		public SearchResultItemWidget getHightlightedItem()
+		{
+			Widget widget;
+			
+			if ( m_indexOfHighlightedItem == -1 )
+				return null;
+			
+			widget = m_contentPanel.getWidget( m_indexOfHighlightedItem );
+			if ( widget != null && widget instanceof SearchResultItemWidget )
+				return (SearchResultItemWidget) widget;
+			
+			return null;
+		}
+
+		/**
+		 * 
+		 */
+		public int getNumResults()
+		{
+			return m_displayCount;
+		}
 		
 		/**
 		 * Hide the "Searching..." text.
@@ -414,6 +466,100 @@ public class FindCtrl extends Composite
 			m_searchingPanel.setVisible( false );
 		}// end hideSearchingText()
 		
+		
+		/**
+		 * Highlight the next item in the list.
+		 */
+		public void highlightNextItem()
+		{
+			Widget widget;
+			
+			if ( m_displayCount == 0 )
+				return;
+
+			// Is there an item that is currently highlighted
+			if ( m_indexOfHighlightedItem != -1 )
+			{
+				// Yes
+				// Is there another item in the list?
+				if ( (m_indexOfHighlightedItem + 1) < m_displayCount )
+				{
+					// Yes
+					// unhighlight the currently highlighted item.
+					widget = m_contentPanel.getWidget( m_indexOfHighlightedItem );
+					
+					if ( widget != null && widget instanceof SearchResultItemWidget )
+					{
+						SearchResultItemWidget searchResultWidget;
+						
+						searchResultWidget = (SearchResultItemWidget) widget;
+						searchResultWidget.turnHighlightOff();
+					}
+					
+					++m_indexOfHighlightedItem;
+				}
+			}
+			else
+				m_indexOfHighlightedItem = 0;
+			
+			widget = m_contentPanel.getWidget( m_indexOfHighlightedItem );
+			if ( widget != null && widget instanceof SearchResultItemWidget )
+			{
+				SearchResultItemWidget searchResultWidget;
+				
+				searchResultWidget = (SearchResultItemWidget) widget;
+				searchResultWidget.turnHighlightOn();
+				
+				searchResultWidget.getElement().scrollIntoView();
+			}
+		}
+		
+		/**
+		 * Highlight the previous item in the list.
+		 */
+		public void highlightPreviousItem()
+		{
+			Widget widget;
+			
+			if ( m_displayCount == 0 )
+				return;
+
+			// Is there an item that is currently highlighted
+			if ( m_indexOfHighlightedItem != -1 )
+			{
+				// Yes
+				// Is there a previous item in the list?
+				if ( (m_indexOfHighlightedItem - 1) >= 0 )
+				{
+					// Yes
+					// unhighlight the currently highlighted item.
+					widget = m_contentPanel.getWidget( m_indexOfHighlightedItem );
+					
+					if ( widget != null && widget instanceof SearchResultItemWidget )
+					{
+						SearchResultItemWidget searchResultWidget;
+						
+						searchResultWidget = (SearchResultItemWidget) widget;
+						searchResultWidget.turnHighlightOff();
+					}
+					
+					--m_indexOfHighlightedItem;
+				}
+			}
+			else
+				m_indexOfHighlightedItem = 0;
+			
+			widget = m_contentPanel.getWidget( m_indexOfHighlightedItem );
+			if ( widget != null && widget instanceof SearchResultItemWidget )
+			{
+				SearchResultItemWidget searchResultWidget;
+				
+				searchResultWidget = (SearchResultItemWidget) widget;
+				searchResultWidget.turnHighlightOn();
+
+				searchResultWidget.getElement().scrollIntoView();
+			}
+		}
 		
 		/**
 		 * This method gets called when the user clicks on an item from the list of search results.
@@ -434,7 +580,6 @@ public class FindCtrl extends Composite
 				setSelectedItemAsync( selectedItem );
 			}
 		}// end onClick()
-		
 		
 		/**
 		 * Set the width of this widget.
@@ -580,6 +725,7 @@ public class FindCtrl extends Composite
 		m_txtBox = new TextBox();
 		m_txtBox.setVisibleLength( visibleLength );
 		m_txtBox.addKeyUpHandler( this );
+		m_txtBox.addKeyDownHandler( this );
 		mainPanel.add( m_txtBox );
 		
 		// Create a widget where the search results will live.
@@ -852,14 +998,89 @@ public class FindCtrl extends Composite
 
 	
 	/**
+	 * Handles the KeyDownEvent
+	 */
+	@Override
+	public void onKeyDown( KeyDownEvent event )
+	{
+		// Does the search results widget have any results?
+		if ( m_searchResultsWidget.getNumResults() == 0 )
+		{
+			// No
+			return;
+		}
+		
+		if ( event.isDownArrow() )
+		{
+			// Yes
+			m_searchResultsWidget.highlightNextItem();
+		}
+		else if ( event.isUpArrow() )
+		{
+			m_searchResultsWidget.highlightPreviousItem();
+		}
+		else
+		{
+	        int keyCode;
+
+	        // Get the key the user pressed
+	        keyCode = event.getNativeEvent().getKeyCode();
+
+	        // Did the user press Enter?
+	        if ( keyCode == KeyCodes.KEY_ENTER )
+	        {
+	        	SearchResultItemWidget highlightedItem;
+	        	
+				// Yes
+	        	// Is there a search result item that is highlighted?
+	        	highlightedItem = m_searchResultsWidget.getHightlightedItem();
+	        	if ( highlightedItem != null )
+	        	{
+					// Yes
+					// Kill the keystroke.
+		        	event.stopPropagation();
+		        	event.preventDefault();
+		        	
+		        	// Close the search results panel
+		        	hideSearchResults();
+	        		
+	        		// Put the selected item into affect.
+					setSelectedItemAsync( highlightedItem.getTeamingItem() );
+	        	}
+	        }
+		}
+	}
+	
+	/**
 	 * Handles the KeyUpEvent
 	 */
 	@Override
 	public void onKeyUp( KeyUpEvent event )
 	{
 		String tmp;
-		
-		// Get the search criteria the user entered.
+        int keyCode;
+
+        // Get the key the user pressed
+        keyCode = event.getNativeEvent().getKeyCode();
+
+        // Did the user press Enter?
+        if ( keyCode == KeyCodes.KEY_ENTER )
+        {
+        	SearchResultItemWidget highlightedItem;
+        	
+			// Yes
+        	// Is there a search result item that is highlighted?
+        	highlightedItem = m_searchResultsWidget.getHightlightedItem();
+        	if ( highlightedItem != null )
+        	{
+				// Yes
+	        	event.stopPropagation();
+	        	event.preventDefault();
+	        	return;
+        	}
+        }
+
+        // Get the search criteria the user entered.
 		tmp = m_txtBox.getText();
 		
 		// Did the search string change?

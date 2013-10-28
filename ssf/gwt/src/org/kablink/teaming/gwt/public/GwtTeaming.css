@@ -1523,7 +1523,7 @@ body, table td, select
 .findSearchResultsContent
 {
 	background-color: white;
-	height: 220px;
+	height: 250px;
 	overflow: auto;
 	width: 200px;	/* Even though this isn't the real width, we need to specify it or IE won't honor the overflow: auto. */
 }
@@ -1564,6 +1564,11 @@ body, table td, select
 .findSearchResultItemWidget span.gwt-InlineLabel
 {
 	color: #505354;
+}
+
+.findSearchResultItemWidget_HighlightOn
+{
+	background: none repeat scroll 0 0 #CCE9EE;
 }
 
 .findCtrlScopePanel
