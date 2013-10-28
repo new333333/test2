@@ -69,6 +69,8 @@ import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.template.TemplateModule;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
 import org.kablink.teaming.security.runwith.RunWithTemplate;
@@ -1764,14 +1766,23 @@ public class SearchUtils {
 	 * 
 	 * @return
 	 */
-	public static Boolean getDownloadSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
+	public static Boolean getDownloadSettingFromUserOrGroup(final AllModulesInjected bs, final Long upId) {
 		Boolean reply;
 		if (Utils.checkIfFilr()) {
 			// If we have a user ID...
 			if (null != upId) {
 				// ...read the 'download' setting from the
 				// ...UserPrincipal object...
-				return bs.getProfileModule().getDownloadEnabled(upId);
+				return ((Boolean) RunasTemplate.runasAdmin(
+					// Note that we run this as admin in case the
+					// logged in user doesn't have rights to the group.
+					new RunasCallback() {
+						@Override
+						public Object doAs() {
+							return bs.getProfileModule().getDownloadEnabled(upId);
+						}
+					},
+					RequestContextHolder.getRequestContext().getZoneName()));
 			}
 			reply = null;
 		}
@@ -1790,12 +1801,21 @@ public class SearchUtils {
 	 * 
 	 * @return
 	 */
-	public static Boolean getPublicCollectionSettingFromUserOrGroup(ProfileModule pm, Long upId) {
+	public static Boolean getPublicCollectionSettingFromUserOrGroup(final ProfileModule pm, final Long upId) {
 		// If we have a user ID...
 		if (null != upId) {
 			// ...read the 'public collection' setting from the
 			// ...UserPrincipal object...
-			return pm.getPublicCollectionEnabled(upId);
+			return ((Boolean) RunasTemplate.runasAdmin(
+				// Note that we run this as admin in case the logged in
+				// user doesn't have rights to the group.
+				new RunasCallback() {
+					@Override
+					public Object doAs() {
+						return pm.getPublicCollectionEnabled(upId);
+					}
+				},
+				RequestContextHolder.getRequestContext().getZoneName()));
 		}
 		return null;
 	}
@@ -1814,12 +1834,21 @@ public class SearchUtils {
 	 * 
 	 * @return
 	 */
-	public static Boolean getWebAccessSettingFromUserOrGroup(ProfileModule pm, Long upId) {
+	public static Boolean getWebAccessSettingFromUserOrGroup(final ProfileModule pm, final Long upId) {
 		// If we have a user ID...
 		if (null != upId) {
 			// ...read the 'web access' setting from the
 			// ...UserPrincipal object...
-			return pm.getWebAccessEnabled(upId);
+			return ((Boolean) RunasTemplate.runasAdmin(
+				// Note that we run this as admin in case the logged in
+				// user doesn't have rights to the group.
+				new RunasCallback() {
+					@Override
+					public Object doAs() {
+						return pm.getWebAccessEnabled(upId);
+					}
+				},
+				RequestContextHolder.getRequestContext().getZoneName()));
 		}
 		return null;
 	}
