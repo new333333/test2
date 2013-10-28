@@ -3008,8 +3008,8 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapServerConfigDlg_NameAttributeHint( String productName );
 	String editLdapServerConfigDlg_NameAttributeLabel( String productName );
 	String editLdapServerConfigDlg_NoSearchesLabel();
+	String editLdapServerConfigDlg_NoServerURL();
 	String editLdapServerConfigDlg_ProxyDn_Alt();
-	String editLdapServerConfigDlg_ProxyDn_Alt_Disabled();
 	String editLdapServerConfigDlg_ProxyDNLabel();
 	String editLdapServerConfigDlg_ProxyPasswordLabel();
 	String editLdapServerConfigDlg_SelectSearchesToDelete();
@@ -3022,7 +3022,6 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Edit Ldap Search dialog
 	String editLdapSearchDlg_AttributeNameLabel();
 	String editLdapSearchDlg_BaseDn_Alt();
-	String editLdapSearchDlg_BaseDn_Alt_Disabled();
 	String editLdapSearchDlg_BaseDnLabel();
 	String editLdapSearchDlg_CustomCriteriaRB();
 	String editLdapSearchDlg_DontCreateNetFolderRB();
@@ -3038,6 +3037,7 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapSearchDlg_HomeDirNetFolderHint();
 	String editLdapSearchDlg_NetFolderPathLabel();
 	String editLdapSearchDlg_NetFolderServerLabel();
+	String editLdapSearchDlg_NoServerURL();
 	String editLdapSearchDlg_SearchSubtreeLabel();
 	String editLdapSearchDlg_SpecifiedAttribRB();
 

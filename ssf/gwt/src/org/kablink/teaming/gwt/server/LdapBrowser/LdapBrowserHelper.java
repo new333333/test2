@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.server.LdapBrowser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -57,6 +58,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.LdapServerDataRpcResponseData;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerProfiler;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.util.MiscUtil;
 
 import org.springframework.ldap.AuthenticationException;
@@ -116,7 +118,7 @@ public final class LdapBrowserHelper {
 			catch (Exception e) {
 				// Context creation failed - authentication did not succeed
 				m_logger.error("LdapBrowserHelper.authenticateUser( Login failed trying to authenticate user:  '" + (anonymous ? "*anonymous*" : userDn) + "' )", e);
-				return e.getMessage();
+				return getLdapBrowserErrorMessage(e, syncServer);
 			}
 			
 			finally {
@@ -143,6 +145,38 @@ public final class LdapBrowserHelper {
 		}
 
 	}
+
+    /*
+     * Maps an exception to an appropriate error message.
+     */
+    private static String getLdapBrowserErrorMessage(Throwable t, DirectoryServer directoryServer) {
+    	String   msgKey;
+    	String[] msgPatches;
+		if (t instanceof AuthenticationException) {
+			msgKey     = "ldapBrowserError.authenticationException";
+			msgPatches = null;
+		}
+		
+		else {
+			Throwable rootCause = getRootCause(t);
+			if (rootCause instanceof MalformedURLException) {
+				msgKey     = "ldapBrowserError.malformedUrlException";
+				msgPatches = new String[]{directoryServer.getAddress()};
+			}
+			
+			else {
+				if (t == rootCause) {
+					msgKey     = "ldapBrowserError.otherException1";
+					msgPatches = new String[]{t.getLocalizedMessage()};
+				}
+				else {
+					msgKey     = "ldapBrowserError.otherException2";
+					msgPatches = new String[]{t.getLocalizedMessage(), rootCause.getLocalizedMessage()};
+				}
+			}
+		}
+		return ((null == msgPatches) ? NLT.get(msgKey) : NLT.get(msgKey, msgPatches));
+    }
     
 	/**
 	 * ?
@@ -162,6 +196,7 @@ public final class LdapBrowserHelper {
 		try {
 			// Connection information.  Extended the LdapContextSource
 			// to handle SSL, right now, we ignore the certificates.
+			String  error     = null;
 			String  userDn    = directoryServer.getSyncUser();
 			String  password  = directoryServer.getSyncPassword();
 			boolean anonymous = ((!(MiscUtil.hasString(userDn))) && (!(MiscUtil.hasString(password))));
@@ -197,24 +232,30 @@ public final class LdapBrowserHelper {
 					new LDAPObjectMapper());
 			}
 			
-			catch (SizeLimitExceededException exception) {
-				returnObj.sizeExceeded(true);
-				searchControls.setCountLimit(ldapSearchInfo.getMaximumReturnLimit());
-				PagedResultsCookie pagedResultsCookie = null;
-				PagedResultsDirContextProcessor control = new PagedResultsDirContextProcessor(ldapSearchInfo.getMaximumReturnLimit(), pagedResultsCookie);
-	
-				// Do the search
-				ldapObjects = template.search(
-					directoryServer.getUrl(),
-					ldapSearchInfo.getSearchObjectClass(),
-					searchControls,
-					new LDAPObjectMapper(),
-					control);
-			}
-			
-			catch (AuthenticationException ee) {
-				// Throw exception.
-	            ee.getCause();
+			catch (Exception ex) {
+				// Did we get a size limit exceeded exception? 
+				if (ex instanceof SizeLimitExceededException) {
+					// Yes!  We special case handle that.
+					returnObj.sizeExceeded(true);
+					searchControls.setCountLimit(ldapSearchInfo.getMaximumReturnLimit());
+					PagedResultsCookie pagedResultsCookie = null;
+					PagedResultsDirContextProcessor control = new PagedResultsDirContextProcessor(ldapSearchInfo.getMaximumReturnLimit(), pagedResultsCookie);
+		
+					// Do the search
+					ldapObjects = template.search(
+						directoryServer.getUrl(),
+						ldapSearchInfo.getSearchObjectClass(),
+						searchControls,
+						new LDAPObjectMapper(),
+						control);
+				}
+
+				else {
+					// No, we didn't get a size limit exceeded
+					// exception!  Handle it as a generic error. 
+					m_logger.error("LdapBrowserHelper.getLdapServerData( Failed trying to browse the tree:  '" + (anonymous ? "*anonymous*" : userDn) + "' )", ex);
+					error = getLdapBrowserErrorMessage(ex, directoryServer);
+				}
 			}
 	
 			if (null != ldapObjects) {
@@ -225,7 +266,11 @@ public final class LdapBrowserHelper {
 	
 			Collections.sort(ldapObjectList);
 			returnObj.setResultList(ldapObjectList);
-			return new LdapServerDataRpcResponseData(returnObj);
+			LdapServerDataRpcResponseData reply = new LdapServerDataRpcResponseData(returnObj);
+			if (null != error) {
+				reply.setError(error);
+			}
+			return reply;
 		}
 		
 		catch (Exception e) {
@@ -243,6 +288,28 @@ public final class LdapBrowserHelper {
 		}
 	}
 
+	/*
+	 * Returns the root cause of an exception.
+	 */
+	private static Throwable getRootCause(Throwable t) {
+		if (null == t) {
+			return t;
+		}
+
+		int tries = 0;
+		do {
+			Throwable cause = t.getCause();
+			if (null == cause) {
+				return t;
+			}
+			t      = cause;
+			tries += 1;
+			if (100 < tries) {
+				return t;
+			}
+		} while (true);
+	}
+	
 	/*
 	 */
 	private static SearchControls getSearchControls(LdapSearchInfo info) {

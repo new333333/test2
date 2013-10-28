@@ -73,8 +73,6 @@ import com.google.gwt.view.client.*;
  * @author rvasudevan
  */
 public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
-	public final static boolean	ENABLE_LDAP_BROWSER	= false;	//! DRF (20131024):  Leave false on checkin until it's all working.
-	
 	private AsyncDataProvider<LdapObject>		m_dataProvider;		// Data provider for the CellTree.
 	private CellTree							m_tree;				// The CellTree for browsing the LDAP directory with.
 	private DirectoryServer						m_directoryServer;	// The LDAP directory we're running against.
@@ -258,6 +256,9 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 								// details and render them into the
 								// tree.
 								LdapServerDataRpcResponseData responseData = ((LdapServerDataRpcResponseData) response.getResponseData());
+								if (responseData.hasError()) {
+									GwtClientHelper.deferredAlert(responseData.getError());
+								}
 								getLeafObjectsAsync(ldapObject, responseData.getQueryOutput());
 							}
 						});

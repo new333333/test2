@@ -85,10 +85,6 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource browseLdap();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/browse_ldap_disabled.png")
-	public ImageResource browseLdapDisabled();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/cal_menu.png")
 	public ImageResource calDatePicker();
 
