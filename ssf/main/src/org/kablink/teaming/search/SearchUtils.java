@@ -1556,13 +1556,12 @@ public class SearchUtils {
 	 * user is a member of.  If one is still not found, we'll get the
 	 * setting from the zone.
 	 * 
-	 * @param am
-	 * @param pm
+	 * @param bs
 	 * @param user
 	 * 
 	 * @return
 	 */
-	public static Boolean getEffectivePublicCollectionSetting(AdminModule am, ProfileModule pm, User user) {
+	public static Boolean getEffectivePublicCollectionSetting(AllModulesInjected bs, User user) {
 		// Do we have a user?
 		Boolean reply;
 		if (null !=  user) {
@@ -1579,30 +1578,12 @@ public class SearchUtils {
 			}
 			
 			else {
-				// No!  The user isn't an external user either.  Does
-				// the user have a public collection override?
-				Long userId = user.getId();
-				reply = getPublicCollectionSettingFromUserOrGroup(pm, userId);
-				if (null == reply) {
-					// No!  Is the user the member of any groups?
-					List<Group> groups = GwtUIHelper.getGroups(userId);
-					if (MiscUtil.hasItems(groups)) {
-						// Yes!  Scan them.
-						for (Group group:  groups) {
-							// Does this group have a public collection
-							// override?
-							Boolean gAccess = getPublicCollectionSettingFromUserOrGroup(pm, group.getId());
-							if (null != gAccess) {
-								// Yes!  Use it as the override and if
-								// it's true...
-								reply =  gAccess;
-								if (reply) {
-									// ...we're done looking.
-									break;
-								}
-							}
-						}
-					}
+				// No!  Are there any public shares active?
+				reply = bs.getSharingModule().arePublicSharesActive();
+				if (reply) {
+					// Yes!  Check whether the user has hidden their
+					// public collection in their preferences.
+//!					...this needs to be implemented...
 				}
 			}
 		}
@@ -1610,23 +1591,12 @@ public class SearchUtils {
 		else {
 			// No, we don't have a user!  There is no effective
 			// setting.
-			reply = null;
+			reply = Boolean.FALSE;
 		}
 	
-		// Did we find a setting for the user?
-		if (null == reply) {
-			// No!  Read the global setting.
-			reply = getPublicCollectionSettingFromZone(am);
-		}
-
-		// If we get here, reply contains true if web access is
-		// enabled and false otherwise.  Return it.
+		// If we get here, reply contains true if the user see's a
+		// public collection false otherwise.  Return it.
 		return reply;
-	}
-	
-	public static Boolean getEffectivePublicCollectionSetting(AllModulesInjected bs, User user) {
-		// Always use the initial form of the method.
-		return getEffectivePublicCollectionSetting(bs.getAdminModule(), bs.getProfileModule(), user);
 	}
 	
 	/**
@@ -1793,39 +1763,6 @@ public class SearchUtils {
 	}
 
 	/**
-	 * Return the 'public collection' setting from the given user or
-	 * group (i.e., UserPrincipal object.)
-	 * 
-	 * @param pm
-	 * @param upId
-	 * 
-	 * @return
-	 */
-	public static Boolean getPublicCollectionSettingFromUserOrGroup(final ProfileModule pm, final Long upId) {
-		// If we have a user ID...
-		if (null != upId) {
-			// ...read the 'public collection' setting from the
-			// ...UserPrincipal object...
-			return ((Boolean) RunasTemplate.runasAdmin(
-				// Note that we run this as admin in case the logged in
-				// user doesn't have rights to the group.
-				new RunasCallback() {
-					@Override
-					public Object doAs() {
-						return pm.getPublicCollectionEnabled(upId);
-					}
-				},
-				RequestContextHolder.getRequestContext().getZoneName()));
-		}
-		return null;
-	}
-	
-	public static Boolean getPublicCollectionSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		// Always use the initial form of the method.
-		return getPublicCollectionSettingFromUserOrGroup(bs.getProfileModule(), upId);
-	}
-
-	/**
 	 * Return the 'web access' setting from the given user or group
 	 * (i.e., UserPrincipal object.)
 	 * 
@@ -1888,22 +1825,6 @@ public class SearchUtils {
 	         reply = new Boolean(bs.getAdminModule().isDownloadEnabled());
 		else reply = Boolean.TRUE;
 		return reply;
-	}
-
-	/**
-	 * Return the 'Public Collection' setting from the zone.
-	 * 
-	 * @param am
-	 * 
-	 * @return
-	 */
-	public static Boolean getPublicCollectionSettingFromZone(AdminModule am) {
-	    return new Boolean(am.isPublicCollectionEnabled());
-	}
-	
-	public static Boolean getPublicCollectionSettingFromZone(AllModulesInjected bs) {
-		// Always use the initial form of the method.
-		return getPublicCollectionSettingFromZone(bs.getAdminModule());
 	}
 
 	/**

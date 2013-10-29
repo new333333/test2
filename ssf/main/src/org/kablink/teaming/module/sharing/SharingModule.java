@@ -104,6 +104,14 @@ public interface SharingModule {
      * @param shareItem
      */
     public void addShareItem(ShareItem shareItem);
+
+    /**
+     * Returns true if there are public shares that are active and
+     * false otherwise.
+     * 
+     * @return
+     */
+    public boolean arePublicSharesActive();
     
     /**
      * Modify an existing share by creating a new snapshot. The previous snapshot becomes an archive. 

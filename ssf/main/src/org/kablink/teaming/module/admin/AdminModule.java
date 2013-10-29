@@ -190,8 +190,6 @@ public interface AdminModule {
     public void setDownloadEnabled( boolean enabled );
     public boolean isWebAccessEnabled();
     public void setWebAccessEnabled( boolean enabled );
-    public boolean isPublicCollectionEnabled();
-    public void setPublicCollectionEnabled( boolean enabled );
     public boolean isFileArchivingEnabled();
     public void setFileArchivingEnabled(boolean fileArchivingEnabled);
     public boolean isSharingWithLdapGroupsEnabled();

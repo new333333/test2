@@ -340,20 +340,6 @@
         </addColumn>
     </changeSet>
     
-    <changeSet author="dennis" context="schema" failOnError="true" id="26">
-        <comment>Enable users and groups to have a Public collection</comment>
-        <addColumn tableName="SS_ZONECONFIG">
-            <column name="PUBLICCOLLECTIONENABLED" type="NUMBER(1,0)">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-        <addColumn tableName="SS_PRINCIPALS">
-            <column name="PUBLICCOLLECTIONENABLED" type="NUMBER(1,0)">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-    </changeSet>
-    
     <changeSet author="jay" context="schema" failOnError="true" id="27">
         <comment>Whether or not full sync should only process directories</comment>
         <addColumn tableName="SS_RESOURCEDRIVER">

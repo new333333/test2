@@ -251,18 +251,15 @@ public class GroupActionCell extends AbstractCell<GroupInfoPlus> {
 			public void execute() {
 				TeamingEvents actionEvent = actionTBI.getTeamingEvent();
 				switch (actionEvent) {
-				case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:        BinderViewsHelper.clearUsersAdHocFolders(      groupId); break;
-				case CLEAR_SELECTED_USERS_DOWNLOAD:             BinderViewsHelper.clearUsersDownload(          groupId); break;
-				case CLEAR_SELECTED_USERS_PUBLIC_COLLECTION:    BinderViewsHelper.clearUsersPublicCollection(  groupId); break;
-				case CLEAR_SELECTED_USERS_WEBACCESS:            BinderViewsHelper.clearUsersWebAccess(         groupId); break;
-				case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:      BinderViewsHelper.disableUsersAdHocFolders(    groupId); break;
-				case DISABLE_SELECTED_USERS_DOWNLOAD:           BinderViewsHelper.disableUsersDownload(        groupId); break;
-				case DISABLE_SELECTED_USERS_PUBLIC_COLLECTION:  BinderViewsHelper.disableUsersPublicCollection(groupId); break;
-				case DISABLE_SELECTED_USERS_WEBACCESS:          BinderViewsHelper.disableUsersWebAccess(       groupId); break;
-				case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:       BinderViewsHelper.enableUsersAdHocFolders(     groupId); break;
-				case ENABLE_SELECTED_USERS_DOWNLOAD:            BinderViewsHelper.enableUsersDownload(         groupId); break;
-				case ENABLE_SELECTED_USERS_PUBLIC_COLLECTION:   BinderViewsHelper.enableUsersPublicCollection( groupId); break;
-				case ENABLE_SELECTED_USERS_WEBACCESS:           BinderViewsHelper.enableUsersWebAccess(        groupId); break;
+				case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:    BinderViewsHelper.clearUsersAdHocFolders(  groupId); break;
+				case CLEAR_SELECTED_USERS_DOWNLOAD:         BinderViewsHelper.clearUsersDownload(      groupId); break;
+				case CLEAR_SELECTED_USERS_WEBACCESS:        BinderViewsHelper.clearUsersWebAccess(     groupId); break;
+				case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:  BinderViewsHelper.disableUsersAdHocFolders(groupId); break;
+				case DISABLE_SELECTED_USERS_DOWNLOAD:       BinderViewsHelper.disableUsersDownload(    groupId); break;
+				case DISABLE_SELECTED_USERS_WEBACCESS:      BinderViewsHelper.disableUsersWebAccess(   groupId); break;
+				case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:   BinderViewsHelper.enableUsersAdHocFolders( groupId); break;
+				case ENABLE_SELECTED_USERS_DOWNLOAD:        BinderViewsHelper.enableUsersDownload(     groupId); break;
+				case ENABLE_SELECTED_USERS_WEBACCESS:       BinderViewsHelper.enableUsersWebAccess(    groupId); break;
 
 				default:
 				case UNDEFINED:

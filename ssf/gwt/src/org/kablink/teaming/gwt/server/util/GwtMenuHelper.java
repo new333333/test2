@@ -947,40 +947,6 @@ public class GwtMenuHelper {
 					markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
 					entryToolbar.addNestedItem(manageUserTBI);
 				}
-				
-				if (isInternal) {
-					// Add a separator after the previous item...
-					entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
-			
-					// ...and if they have a public collection...
-					if (ai.hasPublicCollection()) {
-						// ...add the disable public collection item...
-						manageUserTBI = new ToolbarItem("1_disableSelectedPublicCollection");
-						markTBITitle(manageUserTBI, "toolbar.disable.user.publicCollection.perUser");
-						markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_PUBLIC_COLLECTION);
-						entryToolbar.addNestedItem(manageUserTBI);
-					}
-					
-					else {
-						// ...otherwise, if they don't have a public
-						// ...collection, add the enable web access item...
-						manageUserTBI = new ToolbarItem("1_enableSelectedPublicCollection");
-						markTBITitle(manageUserTBI, "toolbar.enable.user.publicCollection.perUser");
-						markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_PUBLIC_COLLECTION);
-						entryToolbar.addNestedItem(manageUserTBI);
-					}
-			
-					// ...if they currently have a public collection
-					// ...setting...
-					if (ai.isPerUserPublicCollection()) {
-						// ...and add the clear users public collection
-						// ...item.
-						manageUserTBI = new ToolbarItem("1_clearSelectedPublicCollection");
-						markTBITitle(manageUserTBI, "toolbar.clear.user.publicCollection");
-						markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_PUBLIC_COLLECTION);
-						entryToolbar.addNestedItem(manageUserTBI);
-					}
-				}
 			}
 		}
 	}
@@ -1273,25 +1239,6 @@ public class GwtMenuHelper {
 			markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
 			moreTBI.addNestedItem(tbi);
 			
-			// ...add the disable users public collection item...
-			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-			tbi = new ToolbarItem("1_disableSelectedPublicCollection");
-			markTBITitle(tbi, "toolbar.disable.user.publicCollection");
-			markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS_PUBLIC_COLLECTION);
-			moreTBI.addNestedItem(tbi);
-			
-			// ...add the enable users public collection  item...
-			tbi = new ToolbarItem("1_enableSelectedPublicCollection");
-			markTBITitle(tbi, "toolbar.enable.user.publicCollection");
-			markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS_PUBLIC_COLLECTION);
-			moreTBI.addNestedItem(tbi);
-			
-			// ...and add the clear users public collection  item.
-			tbi = new ToolbarItem("1_clearSelectedPublicCollection");
-			markTBITitle(tbi, "toolbar.clear.user.publicCollection");
-			markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_PUBLIC_COLLECTION);
-			moreTBI.addNestedItem(tbi);
-	
 			needSeparator = true;
 		}
 		
@@ -2616,48 +2563,6 @@ public class GwtMenuHelper {
 			markTBITitle(manageGroupTBI, "toolbar.clear.user.webAccess");
 			markTBIEvent(manageGroupTBI, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
 			entryToolbar.addNestedItem(manageGroupTBI);
-		}
-
-		// Is this the all external users group?
-		if (!(GwtServerHelper.isAllExternalUsersGroup(bs, group))) {
-			// No!  Add a separator after the previous item.
-			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
-			
-			// Add whether a public collection is enabled.
-			Boolean pcFlag = SearchUtils.getPublicCollectionSettingFromUserOrGroup(bs, groupId);
-			if (null == pcFlag) {
-				pcFlag = SearchUtils.getPublicCollectionSettingFromZone(bs);
-			}
-			boolean hasPublicCollection      = pcFlag;
-			boolean perGroupPublicCollection = (null != group.isPublicCollectionEnabled());
-			
-			if (hasPublicCollection) {
-				// ...add the disable public collection item...
-				manageGroupTBI = new ToolbarItem("1_disableSelectedPublicCollection");
-				markTBITitle(manageGroupTBI, "toolbar.disable.user.publicCollection.perGroup");
-				markTBIEvent(manageGroupTBI, TeamingEvents.DISABLE_SELECTED_USERS_PUBLIC_COLLECTION);
-				entryToolbar.addNestedItem(manageGroupTBI);
-			}
-			
-			else {
-				// ...otherwise, if the group doesn't have a public
-				// ...collection setting, add the enable web access
-				// ...item...
-				manageGroupTBI = new ToolbarItem("1_enableSelectedPublicCollection");
-				markTBITitle(manageGroupTBI, "toolbar.enable.user.publicCollection.perGroup");
-				markTBIEvent(manageGroupTBI, TeamingEvents.ENABLE_SELECTED_USERS_PUBLIC_COLLECTION);
-				entryToolbar.addNestedItem(manageGroupTBI);
-			}
-	
-			// ...if the group currently has a per group public
-			// ...collection setting...
-			if (perGroupPublicCollection) {
-				// ...and add the clear group's public collection item.
-				manageGroupTBI = new ToolbarItem("1_clearSelectedPublicCollection");
-				markTBITitle(manageGroupTBI, "toolbar.clear.user.publicCollection");
-				markTBIEvent(manageGroupTBI, TeamingEvents.CLEAR_SELECTED_USERS_PUBLIC_COLLECTION);
-				entryToolbar.addNestedItem(manageGroupTBI);
-			}
 		}
 	}
 

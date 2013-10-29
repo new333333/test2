@@ -533,15 +533,6 @@ public class EventHelper {
 				}
 				break;
 			
-			case CLEAR_SELECTED_USERS_PUBLIC_COLLECTION:
-				// A ClearSelectedUsersPublicCollectionEvent!  Can the
-				// event handler we were given handle that?
-				if (eventHandler instanceof ClearSelectedUsersPublicCollectionEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = ClearSelectedUsersPublicCollectionEvent.registerEvent(eventBus, ((ClearSelectedUsersPublicCollectionEvent.Handler) eventHandler));
-				}
-				break;
-			
 			case CLEAR_SELECTED_USERS_WEBACCESS:
 				// A ClearSelectedUsersWebAccessEvent!  Can the event
 				// handler we were given handle that?
@@ -668,15 +659,6 @@ public class EventHelper {
 				}
 				break;
 			
-			case DISABLE_SELECTED_USERS_PUBLIC_COLLECTION:
-				// A DisableSelectedUsersPublicCollectionEvent!  Can
-				// the event handler we were given handle that?
-				if (eventHandler instanceof DisableSelectedUsersPublicCollectionEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = DisableSelectedUsersPublicCollectionEvent.registerEvent(eventBus, ((DisableSelectedUsersPublicCollectionEvent.Handler) eventHandler));
-				}
-				break;
-			
 			case DISABLE_SELECTED_USERS_WEBACCESS:
 				// A DisableSelectedUsersWebAccessEvent!  Can the event
 				// handler we were given handle that?
@@ -755,15 +737,6 @@ public class EventHelper {
 				if (eventHandler instanceof EnableSelectedUsersDownloadEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = EnableSelectedUsersDownloadEvent.registerEvent(eventBus, ((EnableSelectedUsersDownloadEvent.Handler) eventHandler));
-				}
-				break;
-			
-			case ENABLE_SELECTED_USERS_PUBLIC_COLLECTION:
-				// A EnableSelectedUsersPublicCollectionEvent!  Can the
-				// event handler we were given handle that?
-				if (eventHandler instanceof EnableSelectedUsersPublicCollectionEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = EnableSelectedUsersPublicCollectionEvent.registerEvent(eventBus, ((EnableSelectedUsersPublicCollectionEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2789,7 +2762,6 @@ public class EventHelper {
 			case CHECK_MANAGE_USERS_ACTIVE:                    hasHandler = (eventHandler instanceof CheckManageUsersActiveEvent.Handler);                 break;
 			case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:           hasHandler = (eventHandler instanceof ClearSelectedUsersAdHocFoldersEvent.Handler);         break;
 			case CLEAR_SELECTED_USERS_DOWNLOAD:                hasHandler = (eventHandler instanceof ClearSelectedUsersDownloadEvent.Handler);             break;
-			case CLEAR_SELECTED_USERS_PUBLIC_COLLECTION:       hasHandler = (eventHandler instanceof ClearSelectedUsersPublicCollectionEvent.Handler);     break;
 			case CLEAR_SELECTED_USERS_WEBACCESS:               hasHandler = (eventHandler instanceof ClearSelectedUsersWebAccessEvent.Handler);            break;
 			case COPY_PUBLIC_LINK_SELECTED_ENTITIES:           hasHandler = (eventHandler instanceof CopyPublicLinkSelectedEntitiesEvent.Handler);         break;
 			case COPY_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof CopySelectedEntitiesEvent.Handler);                   break;
@@ -2798,13 +2770,11 @@ public class EventHelper {
 			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;
 			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
 			case DISABLE_SELECTED_USERS_DOWNLOAD:              hasHandler = (eventHandler instanceof DisableSelectedUsersDownloadEvent.Handler);           break;
-			case DISABLE_SELECTED_USERS_PUBLIC_COLLECTION:     hasHandler = (eventHandler instanceof DisableSelectedUsersPublicCollectionEvent.Handler);   break;
 			case DISABLE_SELECTED_USERS_WEBACCESS:             hasHandler = (eventHandler instanceof DisableSelectedUsersWebAccessEvent.Handler);          break;
 			case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:          hasHandler = (eventHandler instanceof EmailPublicLinkSelectedEntitiesEvent.Handler);        break;
 			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;
 			case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:          hasHandler = (eventHandler instanceof EnableSelectedUsersAdHocFoldersEvent.Handler);        break;
 			case ENABLE_SELECTED_USERS_DOWNLOAD:               hasHandler = (eventHandler instanceof EnableSelectedUsersDownloadEvent.Handler);            break;
-			case ENABLE_SELECTED_USERS_PUBLIC_COLLECTION:      hasHandler = (eventHandler instanceof EnableSelectedUsersPublicCollectionEvent.Handler);    break;
 			case ENABLE_SELECTED_USERS_WEBACCESS:              hasHandler = (eventHandler instanceof EnableSelectedUsersWebAccessEvent.Handler);           break;
 			case FIND_CONTROL_BROWSE:                          hasHandler = (eventHandler instanceof FindControlBrowseEvent.Handler);                      break;
 			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;

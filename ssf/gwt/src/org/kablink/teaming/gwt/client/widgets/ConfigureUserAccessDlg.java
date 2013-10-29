@@ -74,7 +74,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 	CheckBox m_allowSelfRegOfExternalUserAccountCkbox;
 	CheckBox m_disableDownloadCkbox;
 	CheckBox m_disableWebAccessCkbox;
-	CheckBox m_enablePublicCollectionCkbox;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -229,17 +228,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 			mainPanel.add( panel );
 		}
 		
-		// Add the "Disable Public Collection" checkbox;
-		{
-			FlowPanel panel;
-			
-			panel = new FlowPanel();
-			panel.addStyleName( "marginbottom2" );
-			m_enablePublicCollectionCkbox = new CheckBox( messages.configureUserAccessDlg_EnablePublicCollectionLabel() );
-			panel.add( m_enablePublicCollectionCkbox );
-			mainPanel.add( panel );
-		}
-		
 		return mainPanel;
 	}
 	
@@ -366,14 +354,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 	}
 	
 	/**
-	 * 
-	 */
-	private boolean getEnablePublicCollection()
-	{
-		return m_enablePublicCollectionCkbox.getValue();
-	}
-	
-	/**
 	 * Get the data from the controls in the dialog box.
 	 */
 	@Override
@@ -389,7 +369,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 		config.setAllowSelfReg( getAllowInternalSelfReg() );
 		config.setAllowDownload( !getDisableDownload() );
 		config.setAllowWebAccess( !getDisableWebAccess() );
-		config.setAllowPublicCollection( getEnablePublicCollection() );
 		
 		return config;
 	}
@@ -488,9 +467,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 		if ( m_disableWebAccessCkbox != null )
 			m_disableWebAccessCkbox.setValue( false );
 		
-		if ( m_enablePublicCollectionCkbox != null )
-			m_enablePublicCollectionCkbox.setValue( false );
-		
 		// Issue an rpc request to get the user access information from the server
 		getUserAccessInfoFromServer();
 	}
@@ -520,9 +496,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 		
 		if ( m_disableWebAccessCkbox != null )
 			m_disableWebAccessCkbox.setValue( !config.getAllowWebAccess() );
-		
-		if ( m_enablePublicCollectionCkbox != null )
-			m_enablePublicCollectionCkbox.setValue( config.getAllowPublicCollection() );
 		
 		danceDlg();
 	}

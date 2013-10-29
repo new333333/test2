@@ -846,12 +846,6 @@ public interface ProfileModule {
     public void    setWebAccessEnabled(Long upId, Boolean webAccessEnabled);
 
     /**
-     * Interacts with a user or group's public collection enabled flag.
-     */
-    public Boolean getPublicCollectionEnabled(Long upId);
-    public void    setPublicCollectionEnabled(Long upId, Boolean publicCollectionEnabled);
-
-    /**
      * Interacts with a user or group's adHoc folders enabled flag.
      */
     public Boolean getAdHocFoldersEnabled(Long upId);
