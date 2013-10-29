@@ -46,6 +46,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtPersonalPreferences
 	implements IsSerializable, VibeRpcResponseData
 {
+	private boolean m_publicSharesActive = false;
+	private Boolean m_hidePublicCollection = null; 
 	private boolean m_canDownload = true;
 	private String m_displayStyle = null;
 	private int m_numEntriesPerPage = 0;
@@ -62,7 +64,20 @@ public class GwtPersonalPreferences
 	{
 	}// end PersonalPreferences()
 	
+	/**
+	 * 
+	 */
+	public boolean publicSharesActive() {
+		return m_publicSharesActive;
+	}
 
+	/**
+	 * 
+	 */
+	public Boolean getHidePublicCollection() {
+		return m_hidePublicCollection;
+	}
+	
 	/**
 	 * 
 	 */
@@ -105,8 +120,23 @@ public class GwtPersonalPreferences
 	{
 		return m_editorOverridesSupported;
 	}// end isEditorOverrideSupported()
-	
 
+	/**
+	 * 
+	 */
+	public void setPublicSharesActive( boolean publicSharesActive )
+	{
+		m_publicSharesActive = publicSharesActive;
+	}
+
+	/**
+	 * 
+	 */
+	public void setHidePublicCollection( Boolean hidePublicCollection )
+	{
+		m_hidePublicCollection = hidePublicCollection;
+	}
+	
 	/**
 	 * 
 	 */

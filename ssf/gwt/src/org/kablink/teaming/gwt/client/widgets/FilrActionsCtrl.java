@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.PublicCollectionStateChangedEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -71,7 +72,8 @@ public class FilrActionsCtrl extends Composite
 		ActivityStreamExitEvent.Handler,
 		ClickHandler,
 		ContextChangedEvent.Handler,
-		GetSidebarCollectionEvent.Handler
+		GetSidebarCollectionEvent.Handler,
+		PublicCollectionStateChangedEvent.Handler
 {
 	private FilrAction m_selectedAction;
 	private HorizontalPanel m_mainPanel;
@@ -89,7 +91,8 @@ public class FilrActionsCtrl extends Composite
 		// Context events.
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
 		TeamingEvents.CONTEXT_CHANGED,
-		TeamingEvents.GET_SIDEBAR_COLLECTION
+		TeamingEvents.GET_SIDEBAR_COLLECTION,
+		TeamingEvents.PUBLIC_COLLECTION_STATE_CHANGED,
 	};
 
 	
@@ -303,7 +306,6 @@ public class FilrActionsCtrl extends Composite
 			m_mainPanel.add( m_netFoldersAction );
 		}
 		
-		if ( GwtClientHelper.isGuestUser() || GwtClientHelper.isShowPublicCollection() )
 		{
 			// Add the "Public" action
 			cmd = new Command()
@@ -323,6 +325,11 @@ public class FilrActionsCtrl extends Composite
 												cmd );
 			m_sharedPublicAction.addDomHandler( this, ClickEvent.getType() );
 			m_mainPanel.add( m_sharedPublicAction );
+			
+			if ( ( ! ( GwtClientHelper.isGuestUser() ) ) &&  ( ! ( GwtClientHelper.isShowPublicCollection() ) ) )
+			{
+				m_sharedPublicAction.setVisible( false );
+			}
 		}
 		
 		initWidget( m_mainPanel );
@@ -458,7 +465,7 @@ public class FilrActionsCtrl extends Composite
 	/**
 	 * Handles GetSidebarCollectionEvent's received by this class.
 	 * 
-	 * Implements the GetSidebarCollectionEvent.Handler.onContextChanged() method.
+	 * Implements the GetSidebarCollectionEvent.Handler.onGetSidebarCollection() method.
 	 * 
 	 * @param event
 	 */
@@ -483,6 +490,25 @@ public class FilrActionsCtrl extends Composite
 		}
 		
 		event.getCollectionCallback().collection( collectionType );
+	}
+
+	/**
+	 * Handles PublicCollectionStateChangedEvent's received by this class.
+	 * 
+	 * Implements the PublicCollectionStateChangedEvent.Handler.onPublicCollectionStateChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onPublicCollectionStateChanged( PublicCollectionStateChangedEvent event )
+	{
+		// For non-Guest internal users...
+		if ( ( ! ( GwtClientHelper.isGuestUser() ) ) && ( ! ( GwtClientHelper.isExternalUser() ) ) )
+		{
+			// ...hide/show the "Public" collection button as
+			// ...appropriate.
+			m_sharedPublicAction.setVisible( ! event.isPublicCollectionHidden() );
+		}
 	}
 
 	/**

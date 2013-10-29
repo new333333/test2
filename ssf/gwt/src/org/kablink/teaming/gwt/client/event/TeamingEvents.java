@@ -293,6 +293,7 @@ public enum TeamingEvents implements IsSerializable {
 	MARK_READ_SELECTED_ENTITIES,					// Marks the Selected Entities as     Having Been Read.
 	MARK_UNREAD_SELECTED_ENTITIES,					// Marks the Selected Entities as Not Having Been Read.
 	MOVE_SELECTED_ENTITIES,							// Moves the Selected Entities.
+	PUBLIC_COLLECTION_STATE_CHANGED,				// The Visibility State of the Public Collection Changed.
 	RELOAD_DIALOG_CONTENT,							// Tells a dialog to reload its content.
 	RESET_ENTRY_MENU,								// Resets the Entry Menu on the Given Folder.
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 

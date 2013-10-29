@@ -1489,6 +1489,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case PUBLIC_COLLECTION_STATE_CHANGED:
+				// A PublicCollectionStateChangedEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof PublicCollectionStateChangedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = PublicCollectionStateChangedEvent.registerEvent(eventBus, ((PublicCollectionStateChangedEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case RELOAD_DIALOG_CONTENT:
 				// A ReloadDialogContentEvent!  Can the event handler
 				// we were given handle that?
@@ -2784,6 +2793,7 @@ public class EventHelper {
 			case MARK_READ_SELECTED_ENTITIES:                  hasHandler = (eventHandler instanceof MarkReadSelectedEntitiesEvent.Handler);               break;
 			case MARK_UNREAD_SELECTED_ENTITIES:                hasHandler = (eventHandler instanceof MarkUnreadSelectedEntitiesEvent.Handler);             break;
 			case MOVE_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof MoveSelectedEntitiesEvent.Handler);                   break;
+			case PUBLIC_COLLECTION_STATE_CHANGED:              hasHandler = (eventHandler instanceof PublicCollectionStateChangedEvent.Handler);           break;
 			case SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY:  hasHandler = (eventHandler instanceof SetDesktopDownloadAppControlVisibilityEvent.Handler); break;
 			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;
 			case SET_SELECTED_USER_DESKTOP_SETTINGS:           hasHandler = (eventHandler instanceof SetSelectedUserDesktopSettingsEvent.Handler);         break;

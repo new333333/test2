@@ -78,6 +78,7 @@ import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.MenuHideEvent;
 import org.kablink.teaming.gwt.client.event.MenuShowEvent;
+import org.kablink.teaming.gwt.client.event.PublicCollectionStateChangedEvent;
 import org.kablink.teaming.gwt.client.event.SearchAdvancedEvent;
 import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
@@ -2676,6 +2677,20 @@ public class GwtMainPage extends ResizeComposite
 										if ( personalPrefs != null )
 										{
 											GwtClientHelper.jsSetEntryDisplayStyle( personalPrefs.getDisplayStyle() );
+										}
+
+										// If public shares are active,
+										// for non-guest internal
+										// users...
+										if ( personalPrefs.publicSharesActive() && ( ! ( GwtClientHelper.isGuestUser() ) ) && ( ! ( GwtClientHelper.isExternalUser() ) ) )
+										{
+											// ...fire a public
+											// ...collection state
+											// ...changed event.
+											Boolean hidePublicCollection = personalPrefs.getHidePublicCollection();
+											GwtTeaming.fireEventAsync(
+												new PublicCollectionStateChangedEvent(
+													( ( null != hidePublicCollection ) && hidePublicCollection ) ) );
 										}
 									}// end onSuccess()
 								};

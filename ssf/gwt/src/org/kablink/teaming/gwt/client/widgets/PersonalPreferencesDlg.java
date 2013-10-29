@@ -47,6 +47,7 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -63,10 +64,12 @@ import com.google.gwt.user.client.ui.TextBox;
 public class PersonalPreferencesDlg extends DlgBox
 	implements KeyPressHandler
 {
+	private boolean m_publicSharesActive;
 	private ListBox m_entryDisplayStyleListbox;
 	private ListBox m_fileLinkActionListbox;
 	private TextBox m_numEntriesPerPageTxtBox;
 	private Anchor m_editorOverridesAnchor;
+	private CheckBox m_hidePublicCollectionCkbox;
 	
 
 	/**
@@ -148,6 +151,17 @@ public class PersonalPreferencesDlg extends DlgBox
 			m_fileLinkActionListbox.setVisibleItemCount( 1 );
 
 			table.setWidget( nextRow, 1, m_fileLinkActionListbox );
+			++nextRow;
+		}
+		
+		// Create the checkbox for hiding the public collection.
+		if ( ( ! ( GwtClientHelper.isGuestUser() ) ) && ( ! ( GwtClientHelper.isExternalUser() ) ) )
+		{
+			FlowPanel panel = new FlowPanel();
+			m_hidePublicCollectionCkbox = new CheckBox( messages.hidePublicCollectionLabel() );
+			panel.add( m_hidePublicCollectionCkbox );
+			table.getFlexCellFormatter().setColSpan( nextRow, 0, 2 );
+			table.setWidget( nextRow, 0, panel );
 			++nextRow;
 		}
 		
@@ -249,6 +263,10 @@ public class PersonalPreferencesDlg extends DlgBox
 		fla = getFileLinkActionFromDlg();
 		personalPrefs.setFileLinkAction(fla);
 		
+		// Get the hide public collection from the dialog.
+		personalPrefs.setPublicSharesActive( m_publicSharesActive );
+		personalPrefs.setHidePublicCollection( getHidePublicCollectionFromDlg() );
+		
 		// Get the value of "number of entries per page"
 		{
 			String tmpValue;
@@ -330,6 +348,18 @@ public class PersonalPreferencesDlg extends DlgBox
 		
 		return GwtFileLinkAction.VIEW_DETAILS;
 	}// end getEntryDisplayStyleFromDlg()
+
+	/*
+	 * Returns a Boolean indicating the state of the user's public
+	 * collection.
+	 */
+	private Boolean getHidePublicCollectionFromDlg() {
+		Boolean reply;
+		if ( ( null != m_hidePublicCollectionCkbox ) && m_hidePublicCollectionCkbox.isVisible() )
+		     reply = m_hidePublicCollectionCkbox.getValue();
+		else reply = null;
+		return reply;
+	}
 	
 	
 	/**
@@ -349,6 +379,7 @@ public class PersonalPreferencesDlg extends DlgBox
 	{
 		initEntryDisplayStyleControls( personalPrefs );
 		initFileLinkActionControls( personalPrefs );
+		initHidePublicCollectionControls( personalPrefs );
 		
 		m_numEntriesPerPageTxtBox.setValue( String.valueOf( personalPrefs.getNumEntriesPerPage() ) );
 		
@@ -408,6 +439,28 @@ public class PersonalPreferencesDlg extends DlgBox
 			}
 		}
 	}// end initFileLinkActionControls()
+	
+	
+	/*
+	 * Initialize the controls used with "Hide Public Collection"
+	 */
+	private void initHidePublicCollectionControls( GwtPersonalPreferences personalPrefs )
+	{
+		m_publicSharesActive = personalPrefs.publicSharesActive();
+		
+		if ( null == m_hidePublicCollectionCkbox )
+		{
+			return;
+		}
+		
+		if ( ! m_publicSharesActive )
+		{
+			m_hidePublicCollectionCkbox.setVisible( false );
+		}
+		
+		Boolean hidePublicCollection = personalPrefs.getHidePublicCollection();
+		m_hidePublicCollectionCkbox.setValue( (null != hidePublicCollection ) && hidePublicCollection );
+	}
 
 
 	/*
