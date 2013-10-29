@@ -128,7 +128,7 @@ public class ConfigureMobileAppsDlg extends DlgBox
 		
 		ckboxPanel = new FlowPanel();
 		ckboxPanel.addStyleName( "marginleft1" );
-		ckboxPanel.addStyleName( "marginbottom2" );
+		ckboxPanel.addStyleName( "margintop2" );
 		mainPanel.add( ckboxPanel );
 		
 		// Add the controls for the "allow mobile applications to access Filr"
@@ -184,10 +184,15 @@ public class ConfigureMobileAppsDlg extends DlgBox
 		
 		// Create the controls for sync interval
 		{
+			label = new Label( messages.configureMobileAppsDlgHeader3() );
+			label.addStyleName( "margintop3" );
+			mainPanel.add( label );
+			
 			HorizontalPanel hPanel;
 			Label intervalLabel;
 			
 			hPanel = new HorizontalPanel();
+			hPanel.addStyleName( "marginleft1" );
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 4 );
 			

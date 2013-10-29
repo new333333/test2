@@ -134,8 +134,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		mainPanel.add( label );
 		
 		ckboxPanel = new FlowPanel();
-		ckboxPanel.addStyleName( "marginleft1" );
-		ckboxPanel.addStyleName( "marginbottom2" );
+		ckboxPanel.addStyleName( "marginleft1 margintop2" );
 		mainPanel.add( ckboxPanel );
 		
 		// Add the controls for enable/disable File Sync App
@@ -167,7 +166,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		// Create the controls for auto-update url.
 		{
 			m_autoUpdateChoiceTable = new FlexTable();
-			m_autoUpdateChoiceTable.addStyleName( "marginleft1 marginbottom4px" );
+			m_autoUpdateChoiceTable.addStyleName( "marginleft1" );
 			m_autoUpdateChoiceTable.setCellSpacing( 0 );
 			m_autoUpdateChoiceTable.setCellPadding( 0 );
 
@@ -198,6 +197,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			
 			{
 				m_autoUpdateUrlOnlyTable = new FlexTable();
+				m_autoUpdateUrlOnlyTable.addStyleName( "marginleft1" );
 				m_autoUpdateUrlOnlyTable.setCellSpacing( 4 );
 				
 				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel() );
@@ -216,10 +216,15 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		
 		// Create the controls for File Sync interval
 		{
+			label = new Label( messages.fileSyncAppHeader3() );
+			label.addStyleName( "margintop3" );
+			mainPanel.add( label );
+
 			HorizontalPanel hPanel;
 			Label intervalLabel;
 			
 			hPanel = new HorizontalPanel();
+			hPanel.addStyleName( "marginleft1" );
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 4 );
 			
@@ -242,6 +247,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			FlexTable tmpTable;
 			
 			tmpTable = new FlexTable();
+			tmpTable.addStyleName( "marginleft1" );
 			tmpTable.setCellSpacing( 4 );
 			
 			label = new InlineLabel( messages.fileSyncAppMaxFileSizeLabel() );

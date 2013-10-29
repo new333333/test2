@@ -1688,6 +1688,7 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppDlgHeader();
 	String fileSyncAppEnableDeployLabel();
 	String fileSyncAppHeader2();
+	String fileSyncAppHeader3();
 	String fileSyncAppIntervalLabel();
 	String fileSyncApp_InvalidAutoUpdateUrlText();
 	String fileSyncAppMaxFileSizeLabel();
@@ -2697,6 +2698,7 @@ public interface GwtTeamingMessages extends Messages
 	String configureMobileAppsDlgAllowPlayWithOtherApps();
 	String configureMobileAppsDlgHeader();
 	String configureMobileAppsDlgHeader2();
+	String configureMobileAppsDlgHeader3();
 	String configureMobileAppsDlgOnSaveUnknownException( String err );
 	String configureMobileAppsDlgUseGlobalSettings();
 	String configureMobileAppsDlgUseUserSettings();
