@@ -6344,6 +6344,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 												ObjectKeys.FILE_LINK_ACTION,
 												String.valueOf( personalPrefs.getFileLinkAction().ordinal() ) );
 				}
+				
+				// Save the "Hide Public Collection" preference.
+				{
+					// If public shares are active and this is not an
+					// external user...
+					if ( personalPrefs.publicSharesActive() && user.getIdentityInfo().isFromLocal() )
+					{
+						// ...store the user's hide/show public collection value.
+						profileModule.setUserProperty(
+												user.getId(),
+												ObjectKeys.HIDE_PUBLIC_COLLECTION,
+												personalPrefs.getHidePublicCollection() );
+					}
+				}
 			}
 			else
 			{

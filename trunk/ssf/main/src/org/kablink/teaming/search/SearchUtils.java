@@ -1583,7 +1583,9 @@ public class SearchUtils {
 				if (reply) {
 					// Yes!  Check whether the user has hidden their
 					// public collection in their preferences.
-//!					...this needs to be implemented...
+					UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+					Boolean value = ((Boolean) userProperties.getProperty(ObjectKeys.HIDE_PUBLIC_COLLECTION));
+					reply = ((null == value) || (!value));
 				}
 			}
 		}

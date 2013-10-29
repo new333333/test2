@@ -7494,6 +7494,15 @@ public class GwtServerHelper {
 				// Set the flag that indicates whether 'editor
 				// overrides; are supported.
 				personalPrefs.setEditorOverrideSupported(SsfsUtil.supportAttachmentEdit());
+
+				// Set the flags dealing with the public collection.
+				boolean publicSharesActive = bs.getSharingModule().arePublicSharesActive();
+				personalPrefs.setPublicSharesActive(publicSharesActive);
+				Boolean hidePublicCollection;
+				if (publicSharesActive)
+				     hidePublicCollection = ((Boolean) userProperties.getProperty(ObjectKeys.HIDE_PUBLIC_COLLECTION));
+				else hidePublicCollection = null;
+				personalPrefs.setHidePublicCollection(hidePublicCollection);
 			}
 			
 			else {

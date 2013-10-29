@@ -869,6 +869,7 @@ public interface GwtTeamingMessages extends Messages
 	String fileLinkActionOption_ViewDetails();
 	String fileLinkActionOption_ViewHtmlElseDetails();
 	String fileLinkActionOption_ViewHtmlElseDownload();
+	String hidePublicCollectionLabel();
 	String personalPreferencesDlgHeader();
 	String showEntriesAsAnOverlay();
 	String showEntriesInNewPage();
