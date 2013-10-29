@@ -412,6 +412,7 @@ public class ReadFileController extends AbstractReadFileController {
 								//OK, run this request under the account of the sharer to see if the access to the item is still allowed
 								final String fn = args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_NAME];
 								FileAttachment fa = (FileAttachment) RunasTemplate.runas(new RunasCallback() {
+									@Override
 									public Object doAs() {
 										DefinableEntity entity = getSharingModule().getSharedEntity(shareItem);
 										FileAttachment fa = null;
@@ -425,7 +426,7 @@ public class ReadFileController extends AbstractReadFileController {
 									DefinableEntity entity = fa.getOwner().getEntity();
 									String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
 									String contentType = getFileTypeMap().getContentType(shortFileName);
-									WebUrlUtil.getSharedPublicFileUrl(shareItem.getId(), shareItem.getPassKey(), WebKeys.URL_SHARE_PUBLIC_LINK, shortFileName);
+									WebUrlUtil.getSharedPublicFileUrl(request, shareItem.getId(), shareItem.getPassKey(), WebKeys.URL_SHARE_PUBLIC_LINK, shortFileName);
 									//Protect against XSS attacks if this is an HTML file
 									contentType = FileUtils.validateDownloadContentType(contentType);
 	

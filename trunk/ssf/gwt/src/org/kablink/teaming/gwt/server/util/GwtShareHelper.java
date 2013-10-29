@@ -745,6 +745,7 @@ public class GwtShareHelper
 	 */
 	public static GwtEmailPublicLinkResults emailPublicLink(
 		AllModulesInjected ami,
+		HttpServletRequest request,
 		GwtEmailPublicLinkData data )
 	{
 		GwtEmailPublicLinkResults results;
@@ -850,6 +851,7 @@ public class GwtShareHelper
 						
 						// Get the download file url
 						downloadUrl = WebUrlUtil.getSharedPublicFileUrl(
+																	request,
 																	shareItem.getId(),
 																	shareItem.getPassKey(),
 																	WebKeys.URL_SHARE_PUBLIC_LINK,
@@ -860,6 +862,7 @@ public class GwtShareHelper
 						{
 							// Yes, get the view file url.
 							viewUrl = WebUrlUtil.getSharedPublicFileUrl(
+																	request,
 																	shareItem.getId(),
 																	shareItem.getPassKey(),
 																	WebKeys.URL_SHARE_PUBLIC_LINK_HTML,
@@ -2991,13 +2994,13 @@ public class GwtShareHelper
 						// ...construct a download link URL for it...
 						Long   siId = si.getId();
 						String siPK = si.getPassKey();
-						String downloadUrl = WebUrlUtil.getSharedPublicFileUrl( siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK, fName );
+						String downloadUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK, fName );
 
 						// ...and it we support viewing it as HTML,
 						// ...construct a view link URL for it...
 						String viewUrl;
 						if ( GwtViewHelper.supportsViewAsHtml( fName ) )
-						     viewUrl = WebUrlUtil.getSharedPublicFileUrl( siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fName );
+						     viewUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fName );
 						else viewUrl = null;
 
 						// ...and add the public link information to
