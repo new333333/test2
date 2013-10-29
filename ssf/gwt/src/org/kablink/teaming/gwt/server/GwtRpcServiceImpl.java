@@ -588,7 +588,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtEmailPublicLinkResults results;
 
 			eplCmd = (EmailPublicLinkCmd) cmd;
-			results = GwtShareHelper.emailPublicLink( this, eplCmd.getEmailPublicLinkData() );
+			results = GwtShareHelper.emailPublicLink( this, getRequest( ri ), eplCmd.getEmailPublicLinkData() );
 			response = new VibeRpcResponse( results );
 			return response;
 		}
