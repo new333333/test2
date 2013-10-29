@@ -300,7 +300,9 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			}
 		}
 		boolean isExternalAclControlledOperation = isExternalAclControlledOperation(workArea, workAreaOperation);
-		if ((!isExternalAclControlledOperation && workArea.isFunctionMembershipInherited()) || 
+		if ((!isExternalAclControlledOperation && 
+					(workArea.isFunctionMembershipInherited() || 
+					(workArea instanceof FolderEntry && !((FolderEntry)workArea).hasEntryAcl()))) || 
 				(isExternalAclControlledOperation && workArea.isExtFunctionMembershipInherited())) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
 			if (parentWorkArea == null) {
@@ -401,10 +403,15 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			// Regular ACL checking must take container groups into consideration. 
 			// However, sharing-granted ACL checking must not because sharing can never take
 			// place against a container group.
-			if (workArea.isAclExternallyControlled() && workArea instanceof FolderEntry && ((FolderEntry)workArea).noAclDredged()) {
-				//This entry has no ACL set up, so it has to get it from the file system 
-				if (testRightGrantedByDredgedAcl(user, (FolderEntry)workArea, workAreaOperation)) {
-					return true;
+			if (workArea.isAclExternallyControlled() && 
+					workArea instanceof FolderEntry && 
+					((FolderEntry)workArea).noAclDredged()) {
+				//See if this is an operation controlled externally
+				if (isExternalAclControlledOperation) {
+					//This entry has no ACL set up, so it has to get it from the file system 
+					if (testRightGrantedByDredgedAcl(user, (FolderEntry)workArea, workAreaOperation)) {
+						return true;
+					}
 				}
 			} else if (checkWorkAreaFunctionMembership(user.getZoneId(),
 							workArea, workAreaOperation, userAllMembersToLookup)) {
