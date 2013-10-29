@@ -81,7 +81,6 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Boolean fileArchivingEnabled;
 	private Boolean downloadEnabled;
 	private Boolean webAccessEnabled;
-	private Boolean publicCollectionEnabled;
 	private Integer auditTrailKeepDays;
 	private Integer changeLogsKeepDays;
 	private Boolean auditTrailEnabled;
@@ -506,25 +505,6 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 		webAccessEnabled = Boolean.valueOf( enabled );
 	}
 	
-	/**
-	 * 
-	 */
-	public boolean isPublicCollectionEnabled()
-	{
-		if ( publicCollectionEnabled == null )
-			return false;
-		
-		return publicCollectionEnabled.booleanValue();
-	}
-	
-	/**
-	 * 
-	 */
-	public void setPublicCollectionEnabled( boolean enabled )
-	{
-		publicCollectionEnabled = Boolean.valueOf( enabled );
-	}
-
 	/**
 	 * 
 	 */

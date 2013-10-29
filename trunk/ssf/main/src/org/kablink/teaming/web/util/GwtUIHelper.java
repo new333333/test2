@@ -1224,30 +1224,6 @@ public class GwtUIHelper {
 	}
 
 	/**
-	 * Return the 'Public Collection' setting from the given user or
-	 * group (i.e., UserPrincipal object.)
-	 * 
-	 * @param bs
-	 * @param upId
-	 * 
-	 * @return
-	 */
-	public static Boolean getPublicCollectionSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return SearchUtils.getPublicCollectionSettingFromUserOrGroup(bs, upId);
-	}
-
-	/**
-	 * Return the 'Public Collection' setting from the zone.
-	 * 
-	 * @param bs
-	 * 
-	 * @return
-	 */
-	public static Boolean getPublicCollectionSettingFromZone(AllModulesInjected bs) {
-		return SearchUtils.getPublicCollectionSettingFromZone(bs);
-	}
-	
-	/**
 	 * Return the 'WebAccess' setting from the given user or group
 	 * (i.e., UserPrincipal object.)
 	 * 

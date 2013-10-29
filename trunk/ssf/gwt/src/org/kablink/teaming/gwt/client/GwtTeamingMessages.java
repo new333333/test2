@@ -2154,9 +2154,6 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgPersonalStorage_Clear();
 	String manageGroupsDlgPersonalStorage_Disable();
 	String manageGroupsDlgPersonalStorage_Enable();
-	String manageGroupsDlgPublicCollection_Clear();
-	String manageGroupsDlgPublicCollection_Disable();
-	String manageGroupsDlgPublicCollection_Enable();
 	String manageGroupsDlgSelectGroupToDelete();
 	String manageGroupsDlgSelectGroupsToModify();
 	String manageGroupsDlgSelect1GroupToEdit();
@@ -2439,7 +2436,6 @@ public interface GwtTeamingMessages extends Messages
 	String configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel();
 	String configureUserAccessDlg_DisableDownloadLabel();
 	String configureUserAccessDlg_DisableWebAccessLabel();
-	String configureUserAccessDlg_EnablePublicCollectionLabel();
 	
 	// Strings used by the GWT based Folder Entry viewer.
 	String folderEntry_Alt_Close();

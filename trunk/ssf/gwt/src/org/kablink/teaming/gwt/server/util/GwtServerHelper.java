@@ -8191,9 +8191,8 @@ public class GwtServerHelper {
 
 		// Check for download and web access
 		adminModule = ami.getAdminModule();
-		config.setAllowDownload(         adminModule.isDownloadEnabled()         );
-		config.setAllowPublicCollection( adminModule.isPublicCollectionEnabled() );
-		config.setAllowWebAccess(        adminModule.isWebAccessEnabled()        );
+		config.setAllowDownload( adminModule.isDownloadEnabled() );
+		config.setAllowWebAccess(adminModule.isWebAccessEnabled());
 		
 		if ( ReleaseInfo.isLicenseRequiredEdition() )
 		{
@@ -9774,7 +9773,6 @@ public class GwtServerHelper {
 		case GET_PROFILE_INFO:
 		case GET_PROFILE_STATS:
 		case GET_PROJECT_INFO:
-		case GET_PUBLIC_COLLECTION_SETTING:
 		case GET_PUBLIC_LINKS:
 		case GET_QUICK_VIEW_INFO:
 		case GET_RECENT_PLACES:
@@ -9872,10 +9870,8 @@ public class GwtServerHelper {
 		case SAVE_MOBILE_APPS_CONFIGURATION:
 		case SAVE_MULTIPLE_ADHOC_FOLDER_SETTINGS:
 		case SAVE_MULTIPLE_DOWNLOAD_SETTINGS:
-		case SAVE_MULTIPLE_PUBLIC_COLLECTION_SETTINGS:
 		case SAVE_MULTIPLE_WEBACCESS_SETTINGS:
 		case SAVE_PERSONAL_PREFERENCES:
-		case SAVE_PUBLIC_COLLECTION_SETTING:
 		case SAVE_SHARE_LISTS:
 		case SAVE_SHARED_FILES_STATE:
 		case SAVE_SHARED_VIEW_STATE:
@@ -10611,9 +10607,8 @@ public class GwtServerHelper {
 		
 		// Set "download" and "web access"
 		adminModule = ami.getAdminModule();
-		adminModule.setDownloadEnabled(         config.getAllowDownload()         );
-		adminModule.setPublicCollectionEnabled( config.getAllowPublicCollection() );
-		adminModule.setWebAccessEnabled(        config.getAllowWebAccess()        );
+		adminModule.setDownloadEnabled( config.getAllowDownload() );
+		adminModule.setWebAccessEnabled(config.getAllowWebAccess());
 		
 		if ( ReleaseInfo.isLicenseRequiredEdition() )
 		{
@@ -10962,82 +10957,6 @@ public class GwtServerHelper {
 			}
 		}
 		return reply;
-	}
-	
-	/**
-	 * Saves the 'Public Collection' settings for multiple users.
-	 * 
-	 * @param bs
-	 * @param userIds
-	 * @param allowPublicCollection
-	 * 
-	 * @return
-	 */
-	public static ErrorListRpcResponseData saveMultiplePublicCollectionSettings(AllModulesInjected bs, List<Long> userIds, Boolean allowPublicCollection) {
-		// Do we have any user IDs to save from?
-		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-		if (MiscUtil.hasItems(userIds)) {
-			// Yes!  Scan them...
-			for (Long userId:  userIds) {
-				// ...saving the allow flag for each.
-				savePublicCollectionSetting(bs, userId, allowPublicCollection, reply);
-			}
-		}
-		return reply;
-	}
-	
-	/**
-	 * Save the 'Public Collection' setting.  If upId is not null saves
-	 * the value in the UserPrincipal object.  Otherwise, saves the
-	 * setting in the zone.
-	 * 
-	 * @param bs
-	 * @param upId
-	 * @param allowPublicCollection
-	 * @param errList
-	 * 
-	 * @return
-	 */
-	public static Boolean savePublicCollectionSetting(AllModulesInjected bs, Long upId, Boolean allowPublicCollection, ErrorListRpcResponseData errList) {
-		// Are we dealing with a user?
-		if (null != upId) {
-			// Yes!  Save the setting to the UserProperties.
-			//     null -> Remove the setting and revert to the zone's setting.
-			// non-null -> Specific value to set.
-			Principal p     = bs.getProfileModule().getEntry(upId);
-			User      user  = ((p instanceof User)  ? ((User)  p) : null);
-			Group     group = ((p instanceof Group) ? ((Group) p) : null);
-			
-			boolean modifiableUser  = ((null != user)  && (user.isPerson() && (!(user.isShared())) && user.getIdentityInfo().isInternal()));
-			boolean modifiableGroup = ((null != group) && (!(isAllExternalUsersGroup(bs, group))));
-			if (modifiableUser || modifiableGroup) {
-				// We don't allow this to be set for non-person users
-				// (e.g., E-Mail Posting Agent), guest, external users
-				// or the all external users group.
-				bs.getProfileModule().setPublicCollectionEnabled(upId, allowPublicCollection);
-			}
-			else if (null != errList) {
-				String key;
-				if (null != user) key = "savePublicCollectionSetting.invalidUser";
-				else              key = "savePublicCollectionSetting.invalidGroup";
-				errList.addError(NLT.get(key, new String[]{p.getTitle()}));
-			}
-		}
-		else {
-			// No, we aren't running with a user!  Save as a zone
-			// setting.
-			bs.getAdminModule().setPublicCollectionEnabled(
-				((null == allowPublicCollection) ?
-					Boolean.TRUE                 :	//     null -> Default to true.
-					allowPublicCollection));		// non-null -> Store value directly.
-		}
-		
-		return Boolean.TRUE;
-	}
-	
-	public static Boolean savePublicCollectionSetting(AllModulesInjected bs, Long upId, Boolean allowPublicCollection) {
-		// Always use the initial form of the method.
-		return savePublicCollectionSetting(bs, upId, allowPublicCollection, null);
 	}
 	
 	/**

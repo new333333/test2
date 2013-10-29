@@ -674,7 +674,44 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		else if(shareItem.getSharedEntityIdentifier().getEntityType() == EntityIdentifier.EntityType.folder)
 			GangliaMonitoring.incrementFoldersShared();
 	}
-	
+
+    /**
+     * Returns true if there are public shares that are active and
+     * false otherwise.
+     * 
+     * @return
+     */
+    //NO transaction
+	@Override
+    public boolean arePublicSharesActive() {
+		// Can we access the Guest user?
+		User guest = getProfileModule().getGuestUser();
+		if (null != guest) {
+			// Yes!  Read the shares that have been made with Guest.
+			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+			spec.setRecipients(guest.getId(), null, null);
+			List<ShareItem> shareItems = getShareItems(spec);
+			
+			// Did we find any?
+			if (MiscUtil.hasItems(shareItems)) {
+				// Yes!  Scan them.
+				for (ShareItem si:  shareItems) {
+					// Is this an active share that's part of a public
+					// share?
+					if ((!(si.isDeleted())) && (!(si.isExpired())) && si.isLatest() && si.getIsPartOfPublicShare()) {
+						// Yes!  Return true.
+						return true;
+					}
+				}
+			}
+		}
+		
+		// If we get here, we didn't find any active public shares.
+		// Return false.
+    	return false;
+    }
+    
+
     //NO transaction
 	@Override
 	public void modifyShareItem(final ShareItem latestShareItem, final Long previousShareItemId) {

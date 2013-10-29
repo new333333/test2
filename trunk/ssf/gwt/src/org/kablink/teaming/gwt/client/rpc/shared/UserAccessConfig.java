@@ -48,7 +48,6 @@ public class UserAccessConfig
 	private boolean m_allowExternalUsers;
 	private boolean m_allowExternalUsersSelfReg;
 	private boolean m_allowDownload;
-	private boolean m_allowPublicCollection;
 	private boolean m_allowWebAccess;
 	
 	/**
@@ -66,7 +65,6 @@ public class UserAccessConfig
 		m_allowGuestAccess = false;
 		m_allowSelfReg = false;
 		m_allowDownload = false;
-		m_allowPublicCollection = false;
 		m_allowWebAccess = false;
 	}
 
@@ -116,14 +114,6 @@ public class UserAccessConfig
 	public boolean getAllowDownload()
 	{
 		return m_allowDownload;
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getAllowPublicCollection()
-	{
-		return m_allowPublicCollection;
 	}
 
 	/**
@@ -180,14 +170,6 @@ public class UserAccessConfig
 	public void setAllowDownload( boolean allow )
 	{
 		m_allowDownload = allow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAllowPublicCollection( boolean allow )
-	{
-		m_allowPublicCollection = allow;
 	}
 	
 	/**

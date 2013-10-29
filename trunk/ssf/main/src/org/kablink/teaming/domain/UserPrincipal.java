@@ -44,7 +44,6 @@ public abstract class UserPrincipal extends Principal {
 	protected Long fileSizeLimit;
 	protected Boolean downloadEnabled;
 	protected Boolean webAccessEnabled;
-	protected Boolean publicCollectionEnabled;
 	protected Boolean adHocFoldersEnabled;
     
 	// For use by Hibernate only
@@ -103,17 +102,6 @@ public abstract class UserPrincipal extends Principal {
     }
     public void setWebAccessEnabled(Boolean webAccessEnabled) {
     	this.webAccessEnabled = webAccessEnabled;
-    }
-    
-    /**
-     * @hibernate.property
-     * @return
-     */
-    public Boolean isPublicCollectionEnabled() {
-    	return publicCollectionEnabled;
-    }
-    public void setPublicCollectionEnabled(Boolean publicCollectionEnabled) {
-    	this.publicCollectionEnabled = publicCollectionEnabled;
     }
     
     /**
