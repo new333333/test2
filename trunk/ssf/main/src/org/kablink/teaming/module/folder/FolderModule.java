@@ -135,7 +135,13 @@ public interface FolderModule {
            return appliesToEntries;
        }
     }
- 
+   
+   public enum FileSyncStatus {
+	   deleted, // The file has been deleted 
+	   modified, // The file has been modified
+	   nochange // No change
+   }
+   
    /**
     * Create an <code>FolderEntry</code> from the input data and add it to the specified
     * <code>Folder</code>.  
@@ -705,6 +711,8 @@ public interface FolderModule {
 	public Long getZoneEntryId(Long entryId, String zoneUUID);
 	
     public boolean jitSynchronize(Folder folder) throws AuthException;
+    
+    public FileSyncStatus fileSynchronize(FolderEntry fileEntry) throws FIException, UncheckedIOException, ConfigurationException;
 
     public Date getLastFullSyncCompletionTime(Long folderId);
     /**

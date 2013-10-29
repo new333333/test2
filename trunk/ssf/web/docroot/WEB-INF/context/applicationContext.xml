@@ -747,6 +747,7 @@
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="unreserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="changeEntryType">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="fileSynchronize">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>

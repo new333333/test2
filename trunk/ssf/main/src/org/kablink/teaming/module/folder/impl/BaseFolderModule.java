@@ -32,10 +32,12 @@
  */
 package org.kablink.teaming.module.folder.impl;
 
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -163,5 +165,11 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	@Override
 	public boolean dequeueFullSynchronize(Long netFolderId) {
 		return false;
+	}
+
+	@Override
+	public FileSyncStatus fileSynchronize(FolderEntry fileEntry)
+			throws FIException, UncheckedIOException, ConfigurationException {
+		return FileSyncStatus.nochange;
 	}
 }
