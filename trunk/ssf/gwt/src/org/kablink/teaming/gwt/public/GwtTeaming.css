@@ -5535,7 +5535,7 @@ td.datePickerMonth {
 .editZoneShareListsTab_Content           {padding: 5px; display: block;}
 .editZoneShareListsTab_DomainPanel       {display: block; padding-top: 10px;}
 .editZoneShareListsTab_EmailAddressPanel {display: block; padding-top: 10px;}
-.editZoneShareListsTab_Header            {font-size: 15px; color: #505354;}
+.editZoneShareListsTab_Header            {font-size: 14px; color: #505354;}
 .editZoneShareListsTab_HeaderPanel       {display: block; width: 400px; white-space: normal;}
 .editZoneShareListsTab_List              {width: 250px;}
 .editZoneShareListsTab_ListButton        {min-width: 60px;}
