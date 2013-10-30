@@ -43,7 +43,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.ldapbrowser.DirectoryServer;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapSearchInfo;
-import org.kablink.teaming.gwt.client.ldapbrowser.LdapServer;
 import org.kablink.teaming.gwt.client.ldapbrowser.QueryOutput;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLdapServerDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LdapServerDataRpcResponseData;
@@ -77,12 +76,12 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 
 	private AsyncDataProvider<LdapObject>		m_dataProvider;		// Data provider for the CellTree.
 	private CellTree							m_tree;				// The CellTree for browsing the LDAP directory with.
-	private DirectoryServer						m_directoryServer;	// The LDAP directory we're running against.
+	private DirectoryServer						m_ds;				// The LDAP directory we're running against.
 	private FlowPanel							m_contentPanel;		// The panel holding the dialog's content.
 	private GwtTeamingMessages					m_messages;			// Access to Vibe's messages.
 	private LdapBrowserCallback					m_ldapCallback;		// Callback interface to let the caller know what's going on.
 	private LdapObject							m_selected;			// The currently selected LDAP object.
-	private LdapSearchInfo						m_searchInfo;		// Defines where we're searching from.
+	private LdapSearchInfo						m_si;				// Defines where we're searching from.
 	private LdapTreeModel						m_treeViewModel;	// The data model for the CellTree.
 	private SingleSelectionModel<LdapObject>	m_selectionModel;	// Provides selection handling for the cell tree.
 	private UIObject							m_showRelativeTo;	// Show the dialog relative to this.  null -> Center it on the screen.
@@ -199,7 +198,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 			if ((value instanceof String) && value.equals(TREE_ROOT)) {
 				// Root Node.
 				List<LdapObject> list = new ArrayList<LdapObject>();
-				String treeName = m_directoryServer.getName();
+				String treeName = m_ds.getName();
 				if (!(GwtClientHelper.hasString(treeName))) {
 					treeName = m_messages.ldapBrowser_Label_Tree();
 				}
@@ -215,29 +214,28 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 					protected void onRangeChanged(HasData<LdapObject> display) {
 						final LdapObject ldapObject = ((LdapObject) value);
 						if (null == ldapObject.getObjectClass()) {
-							if (null == m_searchInfo.getBaseDn()) {
-								if (m_directoryServer.getDirectoryType().equals(LdapServer.DirectoryType.EDIRECTORY)
-										|| m_directoryServer.getDirectoryType().equals(LdapServer.DirectoryType.UNKNOWN)) {
-									m_directoryServer.setUrl("");
+							if (null == m_si.getBaseDn()) {
+								if (m_ds.isEDirectory() || m_ds.isUnknown()) {
+									m_ds.setUrl("");
 								}
 								else {
-									String baseDn = getBaseDnFromUserName(m_directoryServer.getSyncUser());
+									String baseDn = getBaseDnFromUserName(m_ds.getSyncUser());
 									if (!(GwtClientHelper.hasString(baseDn)))
-										baseDn = getBaseDnFromUserName(m_directoryServer.getBaseDn());
-									m_directoryServer.setUrl(baseDn);
+										baseDn = getBaseDnFromUserName(m_ds.getBaseDn());
+									m_ds.setUrl(baseDn);
 								}
 							}
 							
 							else {
-								m_directoryServer.setUrl(m_searchInfo.getBaseDn());
+								m_ds.setUrl(m_si.getBaseDn());
 							}
 						}
 						
 						else {
-							m_directoryServer.setUrl(((LdapObject) value).getDn());
+							m_ds.setUrl(((LdapObject) value).getDn());
 						}
 						
-						GetLdapServerDataCmd cmd = new GetLdapServerDataCmd(m_directoryServer, m_searchInfo);
+						GetLdapServerDataCmd cmd = new GetLdapServerDataCmd(m_ds, m_si);
 						GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 							@Override
 							public void onFailure(Throwable caught) {
@@ -285,7 +283,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 				return ldapObject.isLeaf();
 			}
 
-			// Not a leaf
+			// Not a leaf.
 			return false;
 		}
 	}
@@ -364,7 +362,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 		CellTreeResource   treeResource = GWT.create(CellTreeResource.class  );
 		GwCellTreeMessages treeMessages = GWT.create(GwCellTreeMessages.class);
 
-		// Selection model
+		// Selection model.
 		m_selectionModel = new SingleSelectionModel<LdapObject>();
 		m_selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 			@Override
@@ -374,14 +372,16 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 			}
 		});
 
-		// Built the tree and set the max node size to be 1000
-		// Set the initial value to be ROOT string to differ from LdapObject
+		// Built the tree and set the max node size to be 1000.  Set
+		// the initial value to be ROOT string to differ from
+		// LdapObject.
 		m_tree = new CellTree(m_treeViewModel, TREE_ROOT, treeResource, treeMessages);
 
-		// Active Directory has a max limit of 1000, we will do the same
+		// Active Directory has a max limit of 1000, we will do the
+		// same.
 		m_tree.setDefaultNodeSize(1000);
 
-		// Set open the tree so that we can get the data
+		// Set open the tree so that we can get the data.
 		m_tree.getRootTreeNode().setChildOpen(0, true);
 		m_contentPanel.add(m_tree);
 		
@@ -541,11 +541,11 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * Asynchronously runs the given instance of the LDAP browser
 	 * dialog.
 	 */
-	private static void runDlgAsync(final LdapBrowserDlg pDlg, final LdapBrowserCallback ldapCallback, final DirectoryServer directoryServer, final LdapSearchInfo searchInfo, final UIObject showRelativeTo) {
+	private static void runDlgAsync(final LdapBrowserDlg pDlg, final LdapBrowserCallback ldapCallback, final DirectoryServer ds, final LdapSearchInfo si, final UIObject showRelativeTo) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				pDlg.runDlgNow(ldapCallback, directoryServer, searchInfo, showRelativeTo);
+				pDlg.runDlgNow(ldapCallback, ds, si, showRelativeTo);
 			}
 		});
 	}
@@ -554,16 +554,16 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * Synchronously runs the given instance of the LDAP browser
 	 * dialog.
 	 */
-	private void runDlgNow(LdapBrowserCallback ldapCallback, DirectoryServer directoryServer, LdapSearchInfo searchInfo, UIObject showRelativeTo) {
+	private void runDlgNow(LdapBrowserCallback ldapCallback, DirectoryServer ds, LdapSearchInfo si, UIObject showRelativeTo) {
 		// Store the parameters...
-		m_ldapCallback    = ldapCallback;
-		m_directoryServer = directoryServer;
-		m_searchInfo      = searchInfo;
-		if (null == m_searchInfo) {
-			m_searchInfo = new LdapSearchInfo();
-			if (directoryServer.getDirectoryType().equals(LdapServer.DirectoryType.ACTIVE_DIRECTORY))
-			     m_searchInfo.setSearchObjectClass(LdapSearchInfo.RETURN_EVERYTHING_AD  );
-			else m_searchInfo.setSearchObjectClass(LdapSearchInfo.RETURN_CONTAINERS_ONLY);
+		m_ldapCallback = ldapCallback;
+		m_ds           = ds;
+		m_si           = si;
+		if (null == m_si) {
+			m_si = new LdapSearchInfo();
+			if (ds.isActiveDirectory())
+			     m_si.setSearchObjectClass(LdapSearchInfo.RETURN_EVERYTHING_AD  );
+			else m_si.setSearchObjectClass(LdapSearchInfo.RETURN_CONTAINERS_ONLY);
 		}
 		m_showRelativeTo = showRelativeTo;
 
@@ -594,14 +594,14 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * operation against the code.
 	 */
 	private static void doAsyncOperation(
-			// Required creation parameters.
+			// createAsync parameters.
 			final LdapBrowserDlgClient ldapDlgClient,
 			
 			// initAndShow parameters,
 			final LdapBrowserDlg		ldapDlg,
 			final LdapBrowserCallback	ldapCallback,
-			final DirectoryServer		directoryServer,
-			final LdapSearchInfo		searchInfo,
+			final DirectoryServer		ds,
+			final LdapSearchInfo		si,
 			final UIObject				showRelativeTo) {
 		GWT.runAsync(LdapBrowserDlg.class, new RunAsyncCallback() {
 			@Override
@@ -625,7 +625,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(ldapDlg, ldapCallback, directoryServer, searchInfo, showRelativeTo);
+					runDlgAsync(ldapDlg, ldapCallback, ds, si, showRelativeTo);
 				}
 			}
 		});
@@ -646,26 +646,26 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * 
 	 * @param ldapDlg
 	 * @param ldapCallback
-	 * @param directoryServer
-	 * @param searchInfo
+	 * @param ds
+	 * @param si
 	 * @param showRelativeTo
 	 */
-	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer directoryServer, LdapSearchInfo searchInfo, UIObject showRelativeTo) {
-		doAsyncOperation(null, ldapDlg, ldapCallback, directoryServer, searchInfo, showRelativeTo);
+	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer ds, LdapSearchInfo si, UIObject showRelativeTo) {
+		doAsyncOperation(null, ldapDlg, ldapCallback, ds, si, showRelativeTo);
 	}
 	
-	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer directoryServer, LdapSearchInfo searchInfo) {
+	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer ds, LdapSearchInfo si) {
 		// Always use the initial form of the method.
-		initAndShow(ldapDlg, ldapCallback, directoryServer, searchInfo, null);
+		initAndShow(ldapDlg, ldapCallback, ds, si, null);
 	}
 	
-	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer directoryServer, UIObject showRelativeTo) {
+	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer ds, UIObject showRelativeTo) {
 		// Always use the initial form of the method.
-		initAndShow(ldapDlg, ldapCallback, directoryServer, null, showRelativeTo);
+		initAndShow(ldapDlg, ldapCallback, ds, null, showRelativeTo);
 	}
 	
-	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer directoryServer) {
+	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer ds) {
 		// Always use the initial form of the method.
-		initAndShow(ldapDlg, ldapCallback, directoryServer, null, null);
+		initAndShow(ldapDlg, ldapCallback, ds, null, null);
 	}
 }

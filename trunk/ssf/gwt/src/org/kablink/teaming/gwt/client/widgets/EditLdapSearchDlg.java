@@ -220,7 +220,7 @@ public class EditLdapSearchDlg extends DlgBox
 						@Override
 						public void execute()
 						{
-							boolean canBrowse = (( null != m_directoryServer ) && m_directoryServer.isEnoughToConnect() );
+							boolean canBrowse = (( null != m_directoryServer ) && m_directoryServer.isEnoughToConnectAuthenticated() );
 							if ( canBrowse ) 
 							     browseLdapForBaseDn();
 							else GwtClientHelper.deferredAlert( GwtTeaming.getMessages().editLdapSearchDlg_NoServerURL() );

@@ -61,6 +61,15 @@ public class LdapServer implements IsSerializable {
 		EDIRECTORY,
 		ACTIVE_DIRECTORY,
 		UNKNOWN;
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isActiveDirectory() {return this.equals(ACTIVE_DIRECTORY);}
+		public boolean isEDirectory()      {return this.equals(EDIRECTORY      );}
+		public boolean isUnknown()         {return this.equals(UNKNOWN         );}
 	}
 
 	/**
