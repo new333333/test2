@@ -48,7 +48,6 @@ import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.ldapbrowser.DirectoryServer;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapSearchInfo;
-import org.kablink.teaming.gwt.client.ldapbrowser.LdapServer.DirectoryType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditLdapSearchDlg.EditLdapSearchDlgClient;
@@ -719,10 +718,10 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private void browseLdapForProxyDnImpl( final String ldapUrl )
 	{
 		DirectoryServer server = new DirectoryServer();
-		server.setDirectoryType( DirectoryType.UNKNOWN );
-		server.setAddress( ldapUrl );
-		server.setSyncUser(     null );	// null -> Use an anonymous...
-		server.setSyncPassword( null );	// ...connection.
+		server.setAddress(       ldapUrl );
+		server.setSyncUser(      null    );	// null -> Use an...
+		server.setSyncPassword(  null    );	// ...anonymous...
+		server.setGuidAttribute( null    ); // ...connection.
 
 		LdapSearchInfo si = new LdapSearchInfo();
 		si.setSearchObjectClass( LdapSearchInfo.RETURN_USERS );
@@ -1219,10 +1218,10 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private DirectoryServer getDirectoryServer()
 	{
 		DirectoryServer server = new DirectoryServer();
-		server.setDirectoryType( DirectoryType.UNKNOWN );
 		server.setAddress( m_serverUrlTextBox.getValue() );
 		server.setSyncUser( m_proxyDnTextBox.getValue() );
 		server.setSyncPassword( m_proxyPwdTextBox.getValue() );
+		server.setGuidAttribute( m_guidAttribTextBox.getValue() );
 		return server;
 	}
 	

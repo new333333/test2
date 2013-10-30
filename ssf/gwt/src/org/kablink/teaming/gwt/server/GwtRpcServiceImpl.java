@@ -2678,8 +2678,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case LDAP_AUTHENTICATE_USER:
 		{
 			LdapAuthenticateUserCmd gcwCmd = ((LdapAuthenticateUserCmd) cmd);
-			String result = LdapBrowserHelper.authenticateUser( this, getRequest( ri ), gcwCmd.getDirectoryServer() );
-			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
+			StringRpcResponseData responseData = LdapBrowserHelper.authenticateUser( this, getRequest( ri ), gcwCmd.getDirectoryServer() );
+			response = new VibeRpcResponse( responseData );
 		}
 		
 		case LOCK_ENTRIES:

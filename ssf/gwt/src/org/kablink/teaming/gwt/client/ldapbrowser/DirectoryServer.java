@@ -40,15 +40,22 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author rvasudevan
  */
 public final class DirectoryServer extends LdapServer implements IsSerializable {
-	private Boolean			m_syncEnabled;		//
-	private DirectoryType	m_directoryType;	//
-	private String			m_authPassword;		//
-	private String			m_authUser;			//
-	private String			m_baseDn;			//
-	private String			m_syncDomain;		//
-	private String			m_syncPassword;		//
-	private String			m_syncUser;			//
-	private String			m_treeName;			//
+	private Boolean m_syncEnabled;		//
+	private String	m_authPassword;		//
+	private String	m_authUser;			//
+	private String	m_baseDn;			//
+	private String  m_guidAttribute;	//
+	private String	m_syncDomain;		//
+	private String	m_syncPassword;		//
+	private String	m_syncUser;			//
+	private String	m_treeName;			//
+	
+	public static final String GUID_ATTRIBUTE            = "GUID";
+	public static final String OBJECT_GUID_ATTRIBUTE     = "objectGUID";
+	public static final String OBJECT_SID_ATTRIBUTE      = "objectSid";
+	public static final String NDS_HOME_DIR_ATTRIBUTE    = "ndsHomeDirectory";
+	public static final String HOME_DIR_ATTRIBUTE        = "homeDirectory";
+	public static final String NETWORK_ADDRESS_ATTRIBUTE = "networkAddress";
 
 	/**
 	 * Constructor method.
@@ -65,49 +72,127 @@ public final class DirectoryServer extends LdapServer implements IsSerializable 
 	 * 
 	 * @return
 	 */
-	public Boolean       getSyncEnabled()   {return m_syncEnabled;  }
-	public DirectoryType getDirectoryType() {return m_directoryType;}
-	public String        getAuthPassword()  {return m_authPassword; }
-	public String        getAuthUser()      {return m_authUser;     }
-	public String        getBaseDn()        {return m_baseDn;       }
-	public String        getSyncDomain()    {return m_syncDomain;   }
-	public String        getSyncPassword()  {return m_syncPassword; }
-	public String        getSyncUser()      {return m_syncUser;     }
-	public String        getTreeName()      {return m_treeName;     }
+	public Boolean getSyncEnabled()   {return m_syncEnabled;  }
+	public String  getAuthPassword()  {return m_authPassword; }
+	public String  getAuthUser()      {return m_authUser;     }
+	public String  getBaseDn()        {return m_baseDn;       }
+	public String  getGuidAttribute() {return m_guidAttribute;}
+	public String  getSyncDomain()    {return m_syncDomain;   }
+	public String  getSyncPassword()  {return m_syncPassword; }
+	public String  getSyncUser()      {return m_syncUser;     }
+	public String  getTreeName()      {return m_treeName;     }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setSyncEnabled(  Boolean       syncEnabled)   {m_syncEnabled   = syncEnabled;  }
-	public void setDirectoryType(DirectoryType directoryType) {m_directoryType = directoryType;}
-	public void setAuthPassword( String        authPassword)  {m_authPassword  = authPassword; }
-	public void setAuthUser(     String        authUser)      {m_authUser      = authUser;     }
-	public void setBaseDn(       String        baseDn)        {m_baseDn        = baseDn;       }
-	public void setSyncDomain(   String        syncDomain)    {m_syncDomain    = syncDomain;   }
-	public void setSyncPassword( String        syncPassword)  {m_syncPassword  = syncPassword; }
-	public void setSyncUser(     String        syncUser)      {m_syncUser      = syncUser;     }
-	public void setTreeName(     String        treeName)      {m_treeName      = treeName;     }
+	public void setSyncEnabled(  Boolean syncEnabled)   {m_syncEnabled   = syncEnabled;  }
+	public void setAuthPassword( String  authPassword)  {m_authPassword  = authPassword; }
+	public void setAuthUser(     String  authUser)      {m_authUser      = authUser;     }
+	public void setBaseDn(       String  baseDn)        {m_baseDn        = baseDn;       }
+	public void setGuidAttribute(String  guidAttribute) {m_guidAttribute = guidAttribute;}
+	public void setSyncDomain(   String  syncDomain)    {m_syncDomain    = syncDomain;   }
+	public void setSyncPassword( String  syncPassword)  {m_syncPassword  = syncPassword; }
+	public void setSyncUser(     String  syncUser)      {m_syncUser      = syncUser;     }
+	public void setTreeName(     String  treeName)      {m_treeName      = treeName;     }
 
 	/**
-	 * Returns true if this DirectoryServer has enough information to
-	 * attempt to connect and false otherwise.
+	 * Returns the DirectoryType of this DirectoryServer based on its
+	 * GUID.
 	 * 
 	 * @return
 	 */
-	public boolean isEnoughToConnect() {
-		return (
-			hasString(getAddress()     ) &&
-			hasString(getSyncUser()    ) &&
-			hasString(getSyncPassword()));
+	public DirectoryType getDirectoryType() {
+		if (null != m_guidAttribute) {
+			if (m_guidAttribute.equalsIgnoreCase(OBJECT_GUID_ATTRIBUTE)) {
+				return DirectoryType.ACTIVE_DIRECTORY;
+			}
+			
+			if (m_guidAttribute.equalsIgnoreCase(GUID_ATTRIBUTE)) {
+				return DirectoryType.EDIRECTORY;
+			}
+		}
+	
+		return DirectoryType.UNKNOWN;
 	}
 
+	/**
+	 * Sets the GUID based on a DirectoryType.
+	 * 
+	 * @param dt
+	 */
+	public void setGuidForDirectoryType(DirectoryType dt) {
+		String guid;
+		switch (dt) {
+		default:
+		case UNKNOWN:           guid = null;                  break;
+		case ACTIVE_DIRECTORY:  guid = OBJECT_GUID_ATTRIBUTE; break;
+		case EDIRECTORY:        guid = GUID_ATTRIBUTE;        break;
+		}
+		setGuidAttribute(guid);
+	}
+	
 	/*
 	 * Returns true is s refers to a non null, non 0 length String and
 	 * false otherwise.
 	 */
 	private static boolean hasString(String s) {
 		return ((null != s) && (0 < s.length()));
+	}
+
+	/**
+	 * Returns true if this DirectoryServer describes an Active
+	 * Directory LDAP server and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isActiveDirectory() {
+		return getDirectoryType().isActiveDirectory();
+	}
+	
+	/**
+	 * Returns true if this DirectoryServer describes an eDirectory
+	 * LDAP server and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isEDirectory() {
+		return getDirectoryType().isEDirectory();
+	}
+	
+	/**
+	 * Returns true if this DirectoryServer has enough information to
+	 * attempt to connect as anonymous and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isEnoughToConnectAnonymous() {
+		return (
+			hasString(getAddress()));
+	}
+	
+	/**
+	 * Returns true if this DirectoryServer has enough information to
+	 * attempt to connect with full authentication and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isEnoughToConnectAuthenticated() {
+		return (
+			hasString(getAddress()      ) &&
+			hasString(getSyncUser()     ) &&
+			hasString(getSyncPassword() ) &&
+			hasString(getGuidAttribute()));
+	}
+	
+	/**
+	 * Returns true if this DirectoryServer describes an eDirectory
+	 * LDAP server and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isUnknown() {
+		return getDirectoryType().isUnknown();
 	}
 }

@@ -41,24 +41,40 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.ldapbrowser.DirectoryServer;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapSearchInfo;
 import org.kablink.teaming.gwt.client.ldapbrowser.QueryOutput;
 import org.kablink.teaming.gwt.client.rpc.shared.LdapServerDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerProfiler;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 
 import org.springframework.ldap.AuthenticationException;
@@ -75,28 +91,34 @@ import org.springframework.ldap.support.LdapUtils;
  */
 public final class LdapBrowserHelper {
 	protected static Log m_logger = LogFactory.getLog(LdapBrowserHelper.class);
-
+	
+	private static HashMap<String, String> DEFAULT_PROPERTIES = new HashMap<String, String>();
+	static {
+		DEFAULT_PROPERTIES.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		DEFAULT_PROPERTIES.put(Context.SECURITY_AUTHENTICATION, "simple"                          );
+	}
+	
 	/**
 	 * ?
 	 *
 	 * @param bs
 	 * @param request
-	 * @param syncServer
+	 * @param ds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-    public static String authenticateUser(AllModulesInjected bs, HttpServletRequest request, DirectoryServer syncServer) throws GwtTeamingException {
+    public static StringRpcResponseData authenticateUser(AllModulesInjected bs, HttpServletRequest request, DirectoryServer ds) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "LdapBrowserHelper.authenticateUser()");
 		try {
 			// Connection information.  Extended the LdapContextSource
 			// to handle SSL, right now, we ignore the certificates.
-			String  userDn    = syncServer.getSyncUser();
-			String  password  = syncServer.getSyncPassword();
+			String  userDn    = ds.getSyncUser();
+			String  password  = ds.getSyncPassword();
 			boolean anonymous = ((!(MiscUtil.hasString(userDn))) && (!(MiscUtil.hasString(password))));
-			SecureLdapContextSource ldapContextSource = new SecureLdapContextSource(userDn, password, syncServer.getSslEnabled());
-			ldapContextSource.setUrl(syncServer.getAddress());
+			SecureLdapContextSource ldapContextSource = new SecureLdapContextSource(userDn, password, ds.getSslEnabled());
+			ldapContextSource.setUrl(ds.getAddress());
 			if (anonymous) {
 				ldapContextSource.setAnonymousReadOnly(true);
 			}
@@ -112,13 +134,14 @@ public final class LdapBrowserHelper {
 				if (anonymous)
 				     ctx = ldapContextSource.getReadOnlyContext();
 				else ctx = ldapContextSource.getContext(userDn, password);
-				return null;
+				return new StringRpcResponseData();
 			}
 			
 			catch (Exception e) {
-				// Context creation failed - authentication did not succeed
+				// Context creation failed - authentication did not
+				// succeed.
 				m_logger.error("LdapBrowserHelper.authenticateUser( Login failed trying to authenticate user:  '" + (anonymous ? "*anonymous*" : userDn) + "' )", e);
-				return getLdapBrowserErrorMessage(e, syncServer);
+				return new StringRpcResponseData(getLdapBrowserErrorMessage(e, ds, anonymous));
 			}
 			
 			finally {
@@ -146,10 +169,76 @@ public final class LdapBrowserHelper {
 
 	}
 
+	/*
+	 * Returns a CoreDao bean.
+	 */
+	private static CoreDao getCoreDao() {
+		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
+	}
+	
+	/*
+	 * Read the 'defaultNamingContext attribute from the rootDSE object
+	 * in AD.
+	 * 
+	 * The value of the attribute will be in the format:
+	 *      dc=aaa,dc=bbb,dc=ccc,dc=com
+	 */
+	@SuppressWarnings("unchecked")
+	private static String getDomainNameFromAD(DirectoryServer ds) {
+		// If it isn't active directory...
+		if (!(ds.isActiveDirectory())) {
+			// ...return an empty string.
+			return "";
+		}
+		
+		LdapContext ctx        = null;
+        String      domainName = null;
+
+		try {
+	        SearchControls controls = new SearchControls();
+	        controls.setSearchScope(SearchControls.OBJECT_SCOPE);
+	        
+	        ctx = getLdapContext(RequestContextHolder.getRequestContext().getZone().getId(), ds);
+	        NamingEnumeration answer = ctx.search("", "(objectclass=*)", controls);
+	
+	        if (hasMore(answer)) {
+	        	SearchResult sr = ((SearchResult) answer.next());
+	        	if (null != sr) {
+		        	Attributes attrs = sr.getAttributes();
+	        		if (null != attrs) {
+	        			Attribute attrib = attrs.get("defaultNamingContext");
+	        			if (null != attrib) {
+		        			Object value = attrib.get();
+		        			if ((null != value) && (value instanceof String)) {
+		        				domainName = ((String) value);
+		        			}
+	        			}
+	        		}
+	        	}
+	        }
+		}
+		
+		catch (Exception ex) {
+			m_logger.error("LdapBrowserHelper.getDomainNameFromAD() caught exception: " + ex.toString(), ex);
+		}
+		
+		finally {
+	        if (null !=  ctx) {
+				try {
+					ctx.close();
+					ctx = null;
+				}
+				catch (NamingException ex) {}	// Ignore.
+			}
+		}
+		
+		return ((null == domainName) ? "" : domainName);
+	}
+	
     /*
      * Maps an exception to an appropriate error message.
      */
-    private static String getLdapBrowserErrorMessage(Throwable t, DirectoryServer directoryServer) {
+    private static String getLdapBrowserErrorMessage(Throwable t, DirectoryServer ds, boolean anonymous) {
     	String   msgKey;
     	String[] msgPatches;
 		if (t instanceof AuthenticationException) {
@@ -161,7 +250,7 @@ public final class LdapBrowserHelper {
 			Throwable rootCause = getRootCause(t);
 			if (rootCause instanceof MalformedURLException) {
 				msgKey     = "ldapBrowserError.malformedUrlException";
-				msgPatches = new String[]{directoryServer.getAddress()};
+				msgPatches = new String[]{ds.getAddress()};
 			}
 			
 			else {
@@ -169,39 +258,100 @@ public final class LdapBrowserHelper {
 					msgKey     = "ldapBrowserError.otherException1";
 					msgPatches = new String[]{t.getLocalizedMessage()};
 				}
+				else if (anonymous && isRootCauseAnonymousNotSupportedException(rootCause)) {
+					msgKey     = "ldapBrowserError.anonymousNotSupported";
+					msgPatches = new String[]{ds.getAddress()};
+				}
 				else {
 					msgKey     = "ldapBrowserError.otherException2";
 					msgPatches = new String[]{t.getLocalizedMessage(), rootCause.getLocalizedMessage()};
 				}
 			}
 		}
+		
 		return ((null == msgPatches) ? NLT.get(msgKey) : NLT.get(msgKey, msgPatches));
     }
     
+	/*
+	 * Returns an LdapContext for an authentication into an LDAP
+	 * server.
+	 */
+	@SuppressWarnings("unchecked")
+	private static LdapContext getLdapContext(Long zoneId, DirectoryServer ds) throws NamingException {
+		// Load user from LDAP.
+		String  userDn    = ds.getSyncUser();
+		String  password  = ds.getSyncPassword();
+		boolean anonymous = ((!(MiscUtil.hasString(userDn))) && (!(MiscUtil.hasString(password))));
+
+		Hashtable env      = new Hashtable();
+		Workspace zone     = ((Workspace) getCoreDao().load(Workspace.class, zoneId));
+		String    zoneName = zone.getName();
+		env.put(Context.INITIAL_CONTEXT_FACTORY, getLdapProperty(zoneName, Context.INITIAL_CONTEXT_FACTORY));
+		env.put(Context.REFERRAL,                "follow"                                                  );
+		if (!anonymous) {
+			env.put(Context.SECURITY_PRINCIPAL,      userDn                                                    );
+			env.put(Context.SECURITY_CREDENTIALS,    password                                                  );		
+			env.put(Context.SECURITY_AUTHENTICATION, getLdapProperty(zoneName, Context.SECURITY_AUTHENTICATION));
+		} 
+
+		// Specify the attributes we'll want returned as binary data.
+		String guid = ds.getGuidAttribute();
+		if      (null == guid)          guid  = "";
+		else if (0    <  guid.length()) guid += " ";
+		StringBuffer attrBuf = new StringBuffer(guid);
+		attrBuf.append(                     DirectoryServer.OBJECT_SID_ATTRIBUTE     );
+		attrBuf.append(" "); attrBuf.append(DirectoryServer.NDS_HOME_DIR_ATTRIBUTE   );
+		attrBuf.append(" "); attrBuf.append(DirectoryServer.NETWORK_ADDRESS_ATTRIBUTE);
+		if (ds.isEDirectory()) {
+			attrBuf.append(" ");
+			attrBuf.append(DirectoryServer.HOME_DIR_ATTRIBUTE);
+		}
+		env.put("java.naming.ldap.attributes.binary", attrBuf.toString());
+		
+		env.put(Context.PROVIDER_URL, ds.getAddress());
+		String socketFactory = getLdapProperty(zoneName, "java.naming.ldap.factory.socket"); 
+		if (null != socketFactory) {
+			env.put("java.naming.ldap.factory.socket", socketFactory);
+		}
+	
+		return new InitialLdapContext(env, null);
+	}
+
+    /*
+     * Returns an LDAP property from the zone configuration.
+     */
+	private static String getLdapProperty(String zoneName, String name) {
+		String val = SZoneConfig.getString(zoneName, "ldapConfiguration/property[@name='" + name + "']");
+		if (!(MiscUtil.hasString(val))) {
+			val = DEFAULT_PROPERTIES.get(name);
+		}
+		return val;
+	}
+	
 	/**
 	 * ?
 	 *  
 	 * @param bs
 	 * @param request
-	 * @param directoryServer
-	 * @param ldapSearchInfo
+	 * @param ds
+	 * @param si
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-    public static LdapServerDataRpcResponseData getLdapServerData(AllModulesInjected bs, HttpServletRequest request, DirectoryServer directoryServer, LdapSearchInfo ldapSearchInfo) throws GwtTeamingException {
+    public static LdapServerDataRpcResponseData getLdapServerData(AllModulesInjected bs, HttpServletRequest request, DirectoryServer ds, LdapSearchInfo si) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "LdapBrowserHelper.getLdapServerData()");
 		try {
 			// Connection information.  Extended the LdapContextSource
 			// to handle SSL, right now, we ignore the certificates.
 			String  error     = null;
-			String  userDn    = directoryServer.getSyncUser();
-			String  password  = directoryServer.getSyncPassword();
+			String  userDn    = ds.getSyncUser();
+			String  password  = ds.getSyncPassword();
 			boolean anonymous = ((!(MiscUtil.hasString(userDn))) && (!(MiscUtil.hasString(password))));
-			SecureLdapContextSource ldapContextSource = new SecureLdapContextSource(userDn, password, directoryServer.getSslEnabled());
-			ldapContextSource.setUrl(directoryServer.getAddress());
+			SecureLdapContextSource ldapContextSource = new SecureLdapContextSource(userDn, password, ds.getSslEnabled());
+			ldapContextSource.setUrl(ds.getAddress());
 			if (anonymous) {
 				ldapContextSource.setAnonymousReadOnly(true);
 			}
@@ -218,17 +368,22 @@ public final class LdapBrowserHelper {
 	
 			LdapTemplate template = new LdapTemplate(ldapContextSource);
 	
-			// Need to set this for Active Directory to ignore few errors
+			// Need to set this for Active Directory to ignore few
+			// errors.
 			template.setIgnoreNameNotFoundException( true);
 			template.setIgnorePartialResultException(true);
 	
-			SearchControls searchControls = getSearchControls(ldapSearchInfo); 
+			SearchControls sc = getSearchControls(si);
+			String baseDn = ds.getUrl();
+			if (ds.isActiveDirectory() && (!(MiscUtil.hasString(baseDn)))) {
+				baseDn = getDomainNameFromAD(ds);
+			}
 			try {
 				// Do the search.
 				ldapObjects = template.search(
-					directoryServer.getUrl(),
-					ldapSearchInfo.getSearchObjectClass(),
-					searchControls,
+					baseDn,
+					si.getSearchObjectClass(),
+					sc,
 					new LDAPObjectMapper());
 			}
 			
@@ -237,15 +392,15 @@ public final class LdapBrowserHelper {
 				if (ex instanceof SizeLimitExceededException) {
 					// Yes!  We special case handle that.
 					returnObj.sizeExceeded(true);
-					searchControls.setCountLimit(ldapSearchInfo.getMaximumReturnLimit());
+					sc.setCountLimit(si.getMaximumReturnLimit());
 					PagedResultsCookie pagedResultsCookie = null;
-					PagedResultsDirContextProcessor control = new PagedResultsDirContextProcessor(ldapSearchInfo.getMaximumReturnLimit(), pagedResultsCookie);
+					PagedResultsDirContextProcessor control = new PagedResultsDirContextProcessor(si.getMaximumReturnLimit(), pagedResultsCookie);
 		
-					// Do the search
+					// Do the search.
 					ldapObjects = template.search(
-						directoryServer.getUrl(),
-						ldapSearchInfo.getSearchObjectClass(),
-						searchControls,
+						baseDn,
+						si.getSearchObjectClass(),
+						sc,
 						new LDAPObjectMapper(),
 						control);
 				}
@@ -254,7 +409,7 @@ public final class LdapBrowserHelper {
 					// No, we didn't get a size limit exceeded
 					// exception!  Handle it as a generic error. 
 					m_logger.error("LdapBrowserHelper.getLdapServerData( Failed trying to browse the tree:  '" + (anonymous ? "*anonymous*" : userDn) + "' )", ex);
-					error = getLdapBrowserErrorMessage(ex, directoryServer);
+					error = getLdapBrowserErrorMessage(ex, ds, anonymous);
 				}
 			}
 	
@@ -311,6 +466,7 @@ public final class LdapBrowserHelper {
 	}
 	
 	/*
+	 * Maps an LdapSearchInfo to its corresponding SearchControls.
 	 */
 	private static SearchControls getSearchControls(LdapSearchInfo info) {
 		SearchControls searchControls = new SearchControls();
@@ -321,9 +477,9 @@ public final class LdapBrowserHelper {
 		// Speed up the search, we only care for these attributes.
 		searchControls.setReturningAttributes(new String[] { "cn", "objectClass", "o", "ou", "dc", "c", "l" });
 
-		// We don't want to read more than 1001 per container
-		// Active Directory can return only a max of 1000, so set it to 1001 so that we can get
-		// the size limit exception
+		// We don't want to read more than 1001 per container.  Active
+		// Directory can return only a max of 1000, so set it to 1001
+		// so that we can get the size limit exception
 		searchControls.setCountLimit(info.getMaximumReturnLimit());
 		searchControls.setReturningObjFlag(true);
 
@@ -366,5 +522,55 @@ public final class LdapBrowserHelper {
 		}
 
 		return cert;
+	}
+
+	/*
+	 * Returns true if a root cause exception indicates that the LDAP
+	 * server doesn't support anonymous authentication and false
+	 * otherwise.
+	 * 
+	 * When the root cause of an LDAP search failure is an anonymous
+	 * not supported problem, the root cause of the exception is a
+	 * NamingException containing the following message:
+	 * 
+     *      [LDAP: error code 1 - 000004DC: LdapErr: DSID-0C090728, comment: In order to perform this operation a successful bind must be completed on the connection., data 0, v2580
+	 */
+	private static boolean isRootCauseAnonymousNotSupportedException(Throwable rootCause) {
+		boolean reply = ((null != rootCause) && (rootCause instanceof NamingException));
+		if (reply) {
+			String details = rootCause.getMessage();
+			reply = MiscUtil.hasString(details);
+			if (reply) {
+				details = details.toLowerCase();
+				reply = (
+					details.contains("ldap: error code 1"                 ) &&
+					details.contains("ldaperr:"                           ) &&
+					details.contains("a successful bind must be completed"));
+			}
+		}
+		return true;
+	}
+	
+	/*
+	 */
+	@SuppressWarnings("unchecked")
+	private static boolean hasMore(NamingEnumeration namingEnumeration) {
+		if (null == namingEnumeration) {
+			return false;
+		}
+		
+		boolean hasMore = false;
+		try {
+			// NamingEnumeration.hasMore() will throw an exception if
+			// needed only after all valid objects have been returned
+			// as a result of walking through the enumeration.
+			hasMore = namingEnumeration.hasMore();
+		}
+		
+		catch(Exception ex) {
+			m_logger.error("LdapBrowserHelper.hasMore( NamingEnumeration ) threw exception: " + ex.toString(), ex);
+		}
+	
+		return hasMore;
 	}
 }
