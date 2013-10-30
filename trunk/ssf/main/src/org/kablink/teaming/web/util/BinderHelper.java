@@ -3632,7 +3632,28 @@ public class BinderHelper {
 		} else if (ObjectKeys.SEARCH_SCOPE_SHARED_BY_ME.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search the user's "shared by me" files
 			//Build the ancillary criteria for searching within this collection
-			Criteria crit = SearchUtils.getSharedByMeSearchCriteria(bs, null);
+			//First, get the list of shared binder ids
+			Criteria crit = SearchUtils.getSharedByMeFoldersSearchCriteria(bs, null);
+			// Perform the search to get the binders to be searched...
+			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+			Map searchResults = bs.getBinderModule().executeSearchQuery(
+				crit,
+				Constants.SEARCH_MODE_NORMAL,
+				0,
+				maxResults);
+			
+			// Get the binder hits
+			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+			List<String> binderIds = new ArrayList();
+			for (Map entryMap:  searchEntries) {
+				String docId = (String)entryMap.get(Constants.DOCID_FIELD);
+				String docType = (String)entryMap.get(Constants.DOC_TYPE_FIELD);
+				if (docId != null && Constants.DOC_TYPE_BINDER.equals(docType)) {
+					binderIds.add(docId);
+				}
+			}
+			//Now get the final search criteria
+			crit = SearchUtils.getSharedByMeSearchCriteria(bs, null, binderIds);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_CURRENT.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search the current folder (if known)
