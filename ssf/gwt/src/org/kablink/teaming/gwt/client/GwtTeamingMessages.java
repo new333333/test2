@@ -2951,14 +2951,16 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapConfigDlg_AddLdapServerLabel();
 	String editLdapConfigDlg_AllowLocalLoginLabel();
 	String editLdapConfigDlg_ConfirmDelete( String msg );
+	String editLdapConfigDlg_CreatingUsersLabel();
 	String editLdapConfigDlg_DefaultLocaleLabel();
-	String editLdapConfigDlg_DefaultTimeZoneLabel();
+	String editLdapConfigDlg_DefaultTimeZoneLabel();	
 	String editLdapConfigDlg_DeleteGroupsLabel();
 	String editLdapConfigDlg_DeleteLdapServerLabel();
 	String editLdapConfigDlg_DeleteUserLabel();
 	String editLdapConfigDlg_DeleteUsersWarning();
 	String editLdapConfigDlg_DeleteWorkspaceLabel();
 	String editLdapConfigDlg_DisableUserLabel();
+	String editLdapConfigDlg_DisableUserLabel2();
 	String editLdapConfigDlg_EnableSyncScheduleLabel();
 	String editLdapConfigDlg_GroupsTab();
 	String editLdapConfigDlg_Header();
