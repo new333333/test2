@@ -445,6 +445,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetMobileAppsConfiguration();
 	String rpcFailure_GetMyFilesContainerInfo();
 	String rpcFailure_GetMyTeams();
+	String rpcFailure_GetNameCompletionSettings();
 	String rpcFailure_NumberOfMembers();
 	String rpcFailure_GetNetFolder();
 	String rpcFailure_GetNetFolderSyncStatistics();
@@ -548,6 +549,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveFolderSort();
 	String rpcFailure_SaveLdapConfig();
 	String rpcFailure_SaveManageUsersState();
+	String rpcFailure_SaveNameCompletionSettings();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSharedFilesState();
@@ -3109,5 +3111,16 @@ public interface GwtTeamingMessages extends Messages
 	String ldapBrowser_Caption();
 	String ldapBrowser_Label_Tree();
 	String ldapBrowser_Warning_Partial();
+
+	// Strings used in the name completion settings dialog
+	String nameCompletionSettingsDlg_Desc();
+	String nameCompletionSettingsDlg_FQDN();
+	String nameCompletionSettingsDlg_Header();
+	String nameCompletionSettingsDlg_Hint();
+	String nameCompletionSettingsDlg_Name();
+	String nameCompletionSettingsDlg_PrimaryDisplayLabel();
+	String nameCompletionSettingsDlg_SavingSettings();
+	String nameCompletionSettingsDlg_SecondaryDisplayLabel();
+	String nameCompletionSettingsDlg_Title();
 	
 }// end GwtTeamingMessages

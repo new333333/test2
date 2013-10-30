@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +54,7 @@ import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.BinderState.FullSyncStatus;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
@@ -74,8 +74,6 @@ import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig.NetFolderSy
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
-import org.kablink.teaming.gwt.client.GwtSchedule.DayFrequency;
-import org.kablink.teaming.gwt.client.GwtSchedule.TimeFrequency;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
@@ -91,7 +89,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderServersRpcRespon
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse.GwtConnectionTestStatusCode;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
-import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -723,6 +720,7 @@ public class GwtNetFolderHelper
 			else if ( p instanceof Group )
 			{
 				GwtGroup gwtGroup;
+				Description desc;
 				
 				gwtGroup = new GwtGroup();
 				gwtGroup.setInternal( ((Group)p).getIdentityInfo().isInternal() );
@@ -730,6 +728,9 @@ public class GwtNetFolderHelper
 				gwtGroup.setName( p.getName() );
 				gwtGroup.setTitle( p.getTitle() );
 				gwtGroup.setDn( p.getForeignName() );
+				desc = p.getDescription();
+				if ( desc != null )
+					gwtGroup.setDesc( desc.getText() );
 				gwtGroup.setGroupType( GwtServerHelper.getGroupType( p ) );
 				
 				nfRoot.addPrincipal( gwtGroup );
@@ -919,6 +920,7 @@ public class GwtNetFolderHelper
 					{
 						Group nextGroup;
 						GwtGroup gwtGroup;
+						Description desc;
 						
 						nextGroup = (Group) nextPrincipal;
 						
@@ -928,6 +930,9 @@ public class GwtNetFolderHelper
 						gwtGroup.setName( nextGroup.getName() );
 						gwtGroup.setTitle( nextGroup.getTitle() );
 						gwtGroup.setDn( nextGroup.getForeignName() );
+						desc = nextGroup.getDescription();
+						if ( desc != null )
+							gwtGroup.setDesc( desc.getText() );
 						gwtGroup.setGroupType( GwtServerHelper.getGroupType( nextGroup ) );
 						
 						nextRole.addMember( gwtGroup );

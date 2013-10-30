@@ -46,6 +46,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.IdentityInfo;
@@ -479,6 +480,8 @@ public class GwtSearchHelper
 									// Are we suppose to include groups from ldap?
 									if ( searchCriteria.getSearchForLdapGroups() == true )
 									{
+										Description desc;
+										
 										// Yes
 										// Create a GwtGroup item for this group.
 										gwtGroup = new GwtGroup();
@@ -490,6 +493,9 @@ public class GwtSearchHelper
 										gwtGroup.setName( group.getName() );
 										gwtGroup.setTitle( group.getTitle() );
 										gwtGroup.setDn( group.getForeignName() );
+										desc = group.getDescription();
+										if ( desc != null )
+											gwtGroup.setDesc( desc.getText() );
 										gwtGroup.setGroupType( GwtServerHelper.getGroupType( group ) );
 										
 										results.add( gwtGroup );
@@ -736,6 +742,7 @@ public class GwtSearchHelper
 							{
 								GwtGroup gwtGroup;
 								IdentityInfo identityInfo;
+								Description desc;
 
 								// Is this group from ldap?
 								identityInfo = principal.getIdentityInfo();
@@ -762,6 +769,9 @@ public class GwtSearchHelper
 								gwtGroup.setName( principal.getName() );
 								gwtGroup.setTitle( principal.getTitle() );
 								gwtGroup.setDn( principal.getForeignName() );
+								desc = principal.getDescription();
+								if ( desc != null )
+									gwtGroup.setDesc( desc.getText() );
 								gwtGroup.setGroupType( GwtServerHelper.getGroupType( principal ));
 								
 								results.add( gwtGroup );

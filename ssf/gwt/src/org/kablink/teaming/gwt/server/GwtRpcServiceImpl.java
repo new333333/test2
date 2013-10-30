@@ -81,6 +81,7 @@ import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
 import org.kablink.teaming.gwt.client.GwtLocales;
+import org.kablink.teaming.gwt.client.GwtNameCompletionSettings;
 import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.GwtTimeZones;
 import org.kablink.teaming.gwt.client.NetFolderSyncStatistics;
@@ -1897,6 +1898,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_NAME_COMPLETION_SETTINGS:
+		{
+			GwtNameCompletionSettings settings;
+			
+			settings = GwtServerHelper.getNameCompletionSettings( this );
+			response = new VibeRpcResponse( settings );
+			return response;
+		}
+		
 		case GET_NET_FOLDER:
 		{
 			GetNetFolderCmd gnfCmd;
@@ -3124,6 +3134,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			SaveMultipleWebAccessSettingsCmd smwasCmd = ((SaveMultipleWebAccessSettingsCmd) cmd);
 			ErrorListRpcResponseData result = GwtServerHelper.saveMultipleWebAccessSettings( this, smwasCmd.getUserIds(), smwasCmd.getAllowWebAccess() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case SAVE_NAME_COMPLETION_SETTINGS:
+		{
+			SaveNameCompletionSettingsCmd sncsCmd;
+			SaveNameCompletionSettingsRpcResponseData result;
+			
+			sncsCmd = ((SaveNameCompletionSettingsCmd) cmd);
+			result = GwtServerHelper.saveNameCompletionSettings( this, sncsCmd.getSettings() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
