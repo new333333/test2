@@ -168,5 +168,6 @@
   <query name="find-Principal-id-By-ForeignName"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.foreignName=:foreignName and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
   <query name="find-User-By-ObjectSid"><![CDATA[from org.kablink.teaming.domain.User user where user.objectSid=:objectSid and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
   <query name="find-Principal-id-By-ObjectSid"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.objectSid=:objectSid and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-Principal-id-By-Domain-Sam"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.domainName=:domainName and p.samAccountName=:samAccountName and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
   
 </hibernate-mapping>

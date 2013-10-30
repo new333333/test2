@@ -901,8 +901,33 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
  	@Override
- 	public Long findPrincipalIdByDomainAndSamaccount(String domainName, String samaccountName, Long zoneId) {
- 		throw new UnsupportedOperationException("NOT YET IMPLEMENTED");
+ 	public Long findPrincipalIdByDomainAndSamaccount(final String domainName, final String samaccountName, final Long zoneId) {
+ 	   long begin = System.nanoTime();
+ 	   try
+ 	   {
+ 	       Long id = (Long)getHibernateTemplate().execute(
+                 new HibernateCallback()
+                 {
+                     @Override
+ 					public Object doInHibernate(Session session) throws HibernateException
+                     {
+                  	   //only returns active principals
+                        // We store names in lower case in the database.
+                   	   return session.getNamedQuery( "find-Principal-id-By-Domain-Sam" )
+                         		.setString( ParameterNames.DOMAIN_NAME, domainName.toLowerCase() )
+                              	.setString( ParameterNames.SAMACCOUNTNAME, samaccountName.toLowerCase() )
+                              	.setLong( ParameterNames.ZONE_ID, zoneId )
+                              	.setCacheable( isPrincipalQueryCacheable() )
+                              	.uniqueResult();
+                     }
+                 }
+              );		
+ 	       return id;
+ 	   }
+ 	   finally
+ 	   {
+ 		   end(begin, "findPrincipalIdByDomainAndSamaccount(String,String,Long)");
+ 	   }	        
  	}
  	
  	@Override
