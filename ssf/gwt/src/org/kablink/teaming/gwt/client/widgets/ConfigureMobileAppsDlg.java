@@ -205,6 +205,7 @@ public class ConfigureMobileAppsDlg extends DlgBox
 			hPanel.add( m_syncIntervalTextBox );
 			
 			intervalLabel = new Label( messages.configureMobileAppsSyncMinutesLabel() );
+			intervalLabel.addStyleName( "gray3" );
 			hPanel.add( intervalLabel );
 			
 			mainPanel.add( hPanel );

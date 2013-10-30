@@ -237,6 +237,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			hPanel.add( m_syncIntervalTextBox );
 			
 			intervalLabel = new Label( messages.fileSyncAppMinutesLabel() );
+			intervalLabel.addStyleName( "gray3" );
 			hPanel.add( intervalLabel );
 
 			mainPanel.add( hPanel );
@@ -259,6 +260,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			tmpTable.setWidget( 0, 1, m_maxFileSizeTextBox );
 			
 			label = new InlineLabel( messages.fileSyncAppMBLabel() );
+			label.addStyleName( "gray3" );
 			tmpTable.setWidget( 0, 2, label );
 
 			mainPanel.add( tmpTable );
