@@ -1387,6 +1387,35 @@ public class SearchUtils {
     }
     
 	/**
+	 * This routine returns a Criteria that will find the folders shared by me
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Criteria getSharedByMeFoldersSearchCriteria(AllModulesInjected bs, User user) {
+		SimpleProfiler.start("SearchUtils.getSharedByMeFoldersSearchCriteria()");
+		if (user == null) {
+			//Do this for the current user
+			user = RequestContextHolder.getRequestContext().getUser();
+		}
+		String userId = String.valueOf(user.getId());
+		try {
+			// Add the criteria for "sharedBy" field
+			// that have been configured.
+			Criteria reply = new Criteria();
+			reply.add(eq(DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
+			reply.add(eq(Constants.SHARE_CREATOR, userId));
+			return reply;
+		}
+		
+		finally {
+			SimpleProfiler.stop("SearchUtils.getSharedByMeFoldersSearchCriteria()");
+		}
+	}
+	
+	/**
 	 * This routine returns a Criteria that will search all "shared by me" files and folders
 	 * 
 	 * @param bs
@@ -1394,7 +1423,7 @@ public class SearchUtils {
 	 * 
 	 * @return
 	 */
-	public static Criteria getSharedByMeSearchCriteria(AllModulesInjected bs, User user) {
+	public static Criteria getSharedByMeSearchCriteria(AllModulesInjected bs, User user, List<String> binderIds) {
 		SimpleProfiler.start("SearchUtils.getSharedByMeSearchCriteria()");
 		if (user == null) {
 			//Do this for the current user
@@ -1405,8 +1434,14 @@ public class SearchUtils {
 			// Add the criteria for "sharedBy" field
 			// that have been configured.
 			Criteria reply = new Criteria();
+			
 			reply.add(in(DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER, Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_ATTACHMENT}));
-			reply.add(eq(Constants.SHARE_CREATOR, userId));
+			Disjunction disjunction = disjunction();
+			disjunction.add(eq(Constants.SHARE_CREATOR, userId));
+			if ((null != binderIds) && (!(binderIds.isEmpty()))) {
+				disjunction.add(in(ENTRY_ANCESTRY, binderIds));
+			}
+			reply.add(disjunction);
 			return reply;
 		}
 		

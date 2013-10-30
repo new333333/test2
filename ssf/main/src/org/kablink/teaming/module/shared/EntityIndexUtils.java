@@ -782,6 +782,8 @@ public class EntityIndexUtils {
 	     	}
      	}
      	//Add in the original sharer id
+     	entityIdentifiers = new HashSet<EntityIdentifier>();
+     	entityIdentifiers.add(entity.getEntityIdentifier());
      	Set<Long> sharerIds = profileDao.getSharerIdsToSharedEntities(entityIdentifiers);
      	for (Long id : sharerIds) {
      		//Indicate that this entity has been shared by someone
