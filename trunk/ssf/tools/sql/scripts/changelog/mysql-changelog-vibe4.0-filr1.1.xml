@@ -390,4 +390,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="data" failOnError="true" id="34">
+        <comment>Store all domain names in lower case</comment>
+        <sql>
+update SS_Principals set domainName=LOWER(domainName);
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
