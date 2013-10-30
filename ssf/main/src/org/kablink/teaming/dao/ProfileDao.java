@@ -141,6 +141,8 @@ public interface ProfileDao {
  	
  	public Long findPrincipalIdByName(String name, Long zoneId);
 
+ 	public Long findPrincipalIdByDomainAndSamaccount(String domainName, String samaccountName, Long zoneId);
+
  	public Principal findPrincipalByName(String name, Long zoneId) 
  		throws NoPrincipalByTheNameException;
  	public Set<Long> getApplicationLevelGroupMembership(Long principalId, Long zoneId);
