@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeNameCompletionSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeRunAReportDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
@@ -99,6 +100,7 @@ import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetF
 import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg.ManageUsersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
+import org.kablink.teaming.gwt.client.widgets.NameCompletionSettingsDlg.NameCompletionSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.RunAReportDlg.RunAReportDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 
@@ -152,6 +154,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
 		InvokeManageUsersDlgEvent.Handler,
+		InvokeNameCompletionSettingsDlgEvent.Handler,
 		InvokeRunAReportDlgEvent.Handler,
 		InvokeUserDesktopSettingsDlgEvent.Handler,
 		InvokeUserMobileSettingsDlgEvent.Handler,
@@ -187,6 +190,7 @@ public class AdminControl extends TeamingPopupPanel
 	private JitsZoneConfigDlg m_jitsDlg = null;
 	private EditBrandingDlg m_editSiteBrandingDlg = null;
 	private EditLdapConfigDlg m_editLdapConfigDlg = null;
+	private NameCompletionSettingsDlg m_nameCompletionSettingsDlg = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -208,6 +212,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
+		TeamingEvents.INVOKE_NAME_COMPLETION_SETTINGS_DLG,
 		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
 		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
@@ -879,6 +884,11 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Edit ldap configuration" dialog.
 			InvokeEditLdapConfigDlgEvent.fireOne();
 		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_NAME_COMPLETION )
+		{
+			// Fire the event to invoke the "Name Completion Settings" dialog.
+			InvokeNameCompletionSettingsDlgEvent.fireOne();
+		}
 		else
 		{
 			String url;
@@ -1445,6 +1455,71 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	private void invokeNameCompletionSettingsDlg()
+	{
+		int x;
+		int y;
+		
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
+		
+		if ( m_nameCompletionSettingsDlg == null )
+		{
+			Integer width;
+			Integer height;
+			
+			height = new Integer( m_dlgHeight );
+			width = new Integer( m_dlgWidth );
+
+			NameCompletionSettingsDlg.createAsync(
+												true, 
+												false,
+												x, 
+												y,
+												width,
+												height,
+												new NameCompletionSettingsDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final NameCompletionSettingsDlg ncsDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_nameCompletionSettingsDlg = ncsDlg;
+							
+							// Now that we have created the dialog,
+							// fire the event to invoke the "Name Completion Settings" dialog.
+							InvokeNameCompletionSettingsDlgEvent.fireOne();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_nameCompletionSettingsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
+			m_nameCompletionSettingsDlg.init();
+			m_nameCompletionSettingsDlg.setPopupPosition( x, y );
+			m_nameCompletionSettingsDlg.show();
+		}
+	}
+
 	/**
 	 * 
 	 */
@@ -2609,6 +2684,30 @@ public class AdminControl extends TeamingPopupPanel
 		doPreLogoutCleanup();
 	}// end onPreLogout()
 	
+	/**
+	 * Handles InvokeNameCompletionSettingsDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeNameCompletionSettingsDlgEvent.Handler.onInvokeNameCompletionSettingsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeNameCompletionSettingsDlg( InvokeNameCompletionSettingsDlgEvent event )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				invokeNameCompletionSettingsDlg();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+
 	/**
 	 * Handles InvokeRunAReportDlgEvent received by this class.
 	 * 

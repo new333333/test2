@@ -119,6 +119,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_EMAIL_NOTIFICATION,						// Invokes the Email Notification dialog.
 	INVOKE_MANAGE_NET_FOLDERS_DLG,					// Invokes the Manage Net Folders dialog
 	INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,				// Invokes the Manage Net Folder Roots dialog
+	INVOKE_NAME_COMPLETION_SETTINGS_DLG,			// Invokes the Name Completion Settings dialog.
 	INVOKE_HELP,									// Invokes the Vibe online help.
 	INVOKE_IMPORT_ICAL_FILE,						// Invokes the dialog to import an iCal by uploading  a file.
 	INVOKE_IMPORT_ICAL_URL,							// Invokes the dialog to import an iCal by specifying a URL.

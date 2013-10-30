@@ -35,6 +35,9 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.GwtGroup;
+import org.kablink.teaming.gwt.client.GwtNameCompletionSettings;
+import org.kablink.teaming.gwt.client.GwtNameCompletionSettings.GwtDisplayField;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
@@ -43,6 +46,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetNameCompletionSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 
 import com.google.gwt.core.client.GWT;
@@ -135,22 +139,58 @@ public class FindCtrl extends Composite
 			table.setWidget( 0, 1, infoPanel );
 			
 			// Add the name of the item as an anchor.
-			anchor = new Anchor( item.getShortDisplayName() );
-			anchor.setWordWrap( false );
-			anchor.addStyleName( "noTextDecoration" );
-			anchor.addStyleName( "bold" );
-			infoPanel.add( anchor );
+			{
+				String name;
+				
+				name = item.getShortDisplayName();
+				if ( item instanceof GwtGroup )
+				{
+					GwtDisplayField field;
+					
+					// What field are we supposed to use as the primary display?
+					field = m_nameCompletionSettings.getGroupPrimaryDisplayField();
+					if ( field == GwtDisplayField.NAME )
+						name = item.getShortDisplayName();
+					else if ( field == GwtDisplayField.TITLE )
+						name = item.getTitle();
+				}
+				
+				anchor = new Anchor( name );
+				anchor.setWordWrap( false );
+				anchor.addStyleName( "noTextDecoration" );
+				anchor.addStyleName( "bold" );
+				infoPanel.add( anchor );
+			}
 			
 			// Add any additional information about this item.
-			String secondaryDisplayText = item.getSecondaryDisplayText();
-			if ( GwtClientHelper.hasString( secondaryDisplayText ) )
 			{
-				Label secondaryText;
-
-				secondaryText = new Label( secondaryDisplayText );
-				secondaryText.addStyleName( "fontSize75em" );
-				secondaryText.setWordWrap( false );
-				infoPanel.add( secondaryText );
+				String secondaryDisplayText;
+				
+				secondaryDisplayText = item.getSecondaryDisplayText();
+				if ( item instanceof GwtGroup )
+				{
+					GwtDisplayField field;
+					GwtGroup group;
+					
+					group = (GwtGroup) item;
+					
+					// What field are we supposed to use for the secondary info?
+					field = m_nameCompletionSettings.getGroupSecondaryDisplayField();
+					if ( field == GwtDisplayField.FQDN )
+						secondaryDisplayText = group.getDn();
+					else if ( field == GwtDisplayField.DESCRIPTION )
+						secondaryDisplayText = group.getDesc();
+				}
+				
+				if ( GwtClientHelper.hasString( secondaryDisplayText ) )
+				{
+					Label secondaryText;
+	
+					secondaryText = new Label( secondaryDisplayText );
+					secondaryText.addStyleName( "fontSize75em" );
+					secondaryText.setWordWrap( false );
+					infoPanel.add( secondaryText );
+				}
 			}
 
 			// All composites must call initWidget() in their constructors.
@@ -251,6 +291,10 @@ public class FindCtrl extends Composite
 			// Create the footer
 			footer = createFooter();
 			m_mainPanel.add( footer );
+
+			// Issue an rpc request to get the name completion settings from the server
+			m_nameCompletionSettings = new GwtNameCompletionSettings();
+			getNameCompletionSettingsFromServer();
 
 			// All composites must call initWidget() in their constructors.
 			initWidget( m_mainPanel );
@@ -451,6 +495,36 @@ public class FindCtrl extends Composite
 		}
 
 		/**
+		 * Issue an rpc request to get the name completion settings from the server.
+		 */
+		private void getNameCompletionSettingsFromServer()
+		{
+			GetNameCompletionSettingsCmd cmd;
+
+			// Execute a GWT RPC command asking the server for the name completion settings
+			cmd = new GetNameCompletionSettingsCmd();
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+												t,
+												GwtTeaming.getMessages().rpcFailure_GetNameCompletionSettings() );
+				}
+				
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					if ( response.getResponseData() != null && response.getResponseData() instanceof GwtNameCompletionSettings )
+					{
+						m_nameCompletionSettings = (GwtNameCompletionSettings) response.getResponseData();
+					}
+				}
+			});
+		}
+		
+		/**
 		 * 
 		 */
 		public int getNumResults()
@@ -625,8 +699,11 @@ public class FindCtrl extends Composite
 	private FlowPanel m_scopePanel;
 	private RadioButton m_searchSiteRb;
 	private RadioButton m_searchBinderRb;
-	private static int m_count = 0;
 	private Widget m_containerWidget;
+	private GwtNameCompletionSettings m_nameCompletionSettings;
+
+	private static int m_count = 0;
+
 	
 	/*
 	 * Note that the class constructor is private to facilitate code

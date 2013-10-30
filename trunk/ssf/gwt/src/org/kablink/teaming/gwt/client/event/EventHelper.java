@@ -103,6 +103,7 @@ public class EventHelper {
 		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
 		case INVOKE_MANAGE_USERS_DLG:				reply = new InvokeManageUsersDlgEvent();		  break;
+		case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	reply = new InvokeNameCompletionSettingsDlgEvent();	  break;
 		case INVOKE_RENAME_ENTITY:				    reply = new InvokeRenameEntityEvent();		      break;
 		case INVOKE_RUN_A_REPORT_DLG:				reply = new InvokeRunAReportDlgEvent();		      break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
@@ -1242,6 +1243,16 @@ public class EventHelper {
 				if (eventHandler instanceof InvokeManageUsersDlgEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeManageUsersDlgEvent.registerEvent(eventBus, ((InvokeManageUsersDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case INVOKE_NAME_COMPLETION_SETTINGS_DLG:
+				// An InvokeNameCompletionSettingsDlgEvent!  Can the event handler
+				// we were given handle that?
+				if ( eventHandler instanceof InvokeNameCompletionSettingsDlgEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeNameCompletionSettingsDlgEvent.registerEvent( eventBus, ((InvokeNameCompletionSettingsDlgEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2639,6 +2650,7 @@ public class EventHelper {
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
 			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;
 			case INVOKE_MANAGE_USERS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageUsersDlgEvent.Handler);		           break;
+			case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	       hasHandler = (eventHandler instanceof InvokeNameCompletionSettingsDlgEvent.Handler);		   break;
 			case INVOKE_RENAME_ENTITY:					       hasHandler = (eventHandler instanceof InvokeRenameEntityEvent.Handler);                     break;
 			case INVOKE_REPLY:                      	       hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                            break;
 			case INVOKE_RUN_A_REPORT_DLG:				       hasHandler = (eventHandler instanceof InvokeRunAReportDlgEvent.Handler);		               break;

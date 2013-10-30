@@ -5927,4 +5927,15 @@ td.datePickerMonth {
 	.ldapBrowser-scroller {margin: 10px 10px 10px 13px; overflow: auto; height: 250px; width: 600px;}
 /* End:  LDAP browser dialog styles. */
 
+/* Start: Name Completion Settings dialog */
+
+.nameCompletionSettingsDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: .9em;
+	margin-bottom: 6px;
+}
+
+/* End: Name Completion Settings dialog */
+
 /* End Of File */

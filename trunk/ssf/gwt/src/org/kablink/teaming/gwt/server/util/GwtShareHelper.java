@@ -60,6 +60,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
@@ -1805,6 +1806,7 @@ public class GwtShareHelper
 					{
 						Group nextGroup;
 						GwtGroup gwtGroup;
+						Description desc;
 						
 						nextGroup = (Group) nextPrincipal;
 						
@@ -1814,6 +1816,9 @@ public class GwtShareHelper
 						gwtGroup.setName( nextGroup.getName() );
 						gwtGroup.setTitle( nextGroup.getTitle() );
 						gwtGroup.setDn( nextGroup.getForeignName() );
+						desc = nextGroup.getDescription();
+						if ( desc != null )
+							gwtGroup.setDesc( desc.getText() );
 						gwtGroup.setGroupType( GwtServerHelper.getGroupType( nextGroup ) );
 						
 						nextRole.addMember( gwtGroup );

@@ -152,6 +152,8 @@ import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
+import org.kablink.teaming.gwt.client.GwtNameCompletionSettings;
+import org.kablink.teaming.gwt.client.GwtNameCompletionSettings.GwtDisplayField;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtTimeZones;
@@ -198,6 +200,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.Sys
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersStateRpcResponseData;
@@ -3228,6 +3231,20 @@ public class GwtServerHelper {
 				// Add this action to the "system" category
 				systemCategory.addAdminOption( adminAction );
 			}
+
+			// Does the user have rights to "configure name completion settings"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_nameCompletion" );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.CONFIGURE_NAME_COMPLETION );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
 		}
 		
 		// Create a "Reports" category
@@ -5752,6 +5769,7 @@ public class GwtServerHelper {
 						{
 							Group nextGroup;
 							GwtGroup gwtGroup;
+							Description desc;
 							
 							nextGroup = (Group) member;
 							
@@ -5761,6 +5779,9 @@ public class GwtServerHelper {
 							gwtGroup.setName( nextGroup.getName() );
 							gwtGroup.setTitle( nextGroup.getTitle() );
 							gwtGroup.setDn( nextGroup.getForeignName() );
+							desc = nextGroup.getDescription();
+							if ( desc != null )
+								gwtGroup.setDesc( desc.getText() );
 							gwtGroup.setGroupType( GwtServerHelper.getGroupType( nextGroup ) );
 							
 							retList.add( gwtGroup );
@@ -6690,6 +6711,27 @@ public class GwtServerHelper {
 		return getTeams(request, bs, user.getId());
 	}
 
+	/**
+	 * Return the Name Completion Settings
+	 */
+	public static GwtNameCompletionSettings getNameCompletionSettings( AllModulesInjected ami )
+	{
+		GwtNameCompletionSettings settings;
+		ZoneConfig zoneConfig;
+		ZoneModule zoneModule;
+		OpenIDConfig openIdConfig;
+		
+		zoneModule = ami.getZoneModule();
+		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		openIdConfig = zoneConfig.getOpenIDConfig();
+		
+		settings = new GwtNameCompletionSettings();
+		settings.setGroupPrimaryDisplayField( GwtDisplayField.TITLE );
+		settings.setGroupSecondaryDisplayField( GwtDisplayField.DESCRIPTION );
+		
+		return settings;
+	}
+	
 	/**
 	 * Return the number of members in the given group
 	 */
@@ -9770,6 +9812,7 @@ public class GwtServerHelper {
 		case GET_MY_FILES_CONTAINER_INFO:
 		case GET_MY_TASKS:
 		case GET_MY_TEAMS:
+		case GET_NAME_COMPLETION_SETTINGS:
 		case GET_NET_FOLDER:
 		case GET_NET_FOLDER_SYNC_STATISTICS:
 		case GET_NEXT_PREVIOUS_FOLDER_ENTRY_INFO:
@@ -9880,6 +9923,7 @@ public class GwtServerHelper {
 		case SAVE_MULTIPLE_ADHOC_FOLDER_SETTINGS:
 		case SAVE_MULTIPLE_DOWNLOAD_SETTINGS:
 		case SAVE_MULTIPLE_WEBACCESS_SETTINGS:
+		case SAVE_NAME_COMPLETION_SETTINGS:
 		case SAVE_PERSONAL_PREFERENCES:
 		case SAVE_SHARE_LISTS:
 		case SAVE_SHARED_FILES_STATE:
@@ -10988,6 +11032,26 @@ public class GwtServerHelper {
 			}
 		}
 		return reply;
+	}
+	
+	/**
+	 * 
+	 */
+	public static SaveNameCompletionSettingsRpcResponseData saveNameCompletionSettings(
+		AllModulesInjected ami,
+		GwtNameCompletionSettings settings )
+	{
+		SaveNameCompletionSettingsRpcResponseData responseData;
+		
+		responseData = new SaveNameCompletionSettingsRpcResponseData();
+
+		if ( settings == null )
+		{
+			responseData.addError( "Invalid parameters passed to saveNameCompletionSettings()" );
+			return responseData;
+		}
+
+		return responseData;
 	}
 	
 	/**

@@ -50,6 +50,7 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	private String m_title;
 	private String m_id;
 	private String m_dn;
+	private String m_desc;
 	private GroupType m_groupType;
 	
 	/**
@@ -61,6 +62,14 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	{
 		// Nothing to do.
 	}	
+	
+	/**
+	 * 
+	 */
+	public String getDesc()
+	{
+		return m_desc;
+	}
 	
 	/**
 	 * 
@@ -162,7 +171,15 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	{
 		return getName();
 	}
-		
+	
+	/**
+	 * 
+	 */
+	public void setDesc( String desc )
+	{
+		m_desc = desc;
+	}
+	
 	/**
 	 * 
 	 */
