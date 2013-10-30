@@ -5920,12 +5920,16 @@ td.datePickerMonth {
 /* End: Share Expiration widget styles. */
 
 /* Start:  LDAP browser dialog styles. */
-	.gwNameCell           {font-size: 13px;}
-	.gwNameCell-root      {font-size: 14px; border: 0 none !important;}
-	.gwNameCellImg        {padding-right: 3px;}
-	.gwNameCellImg-root   {padding-right: 3px;}
-	.ldapBrowser-content  {}
-	.ldapBrowser-scroller {margin: 10px 10px 10px 13px; overflow: auto; height: 250px; width: 600px;}
+	.gwNameCell                  {font-size: 13px;}
+	.gwNameCell-root             {font-size: 14px; border: 0 none !important;}
+	.gwNameCellImg               {padding-right: 3px;}
+	.gwNameCellImg-root          {padding-right: 3px;}
+	.ldapBrowser-browsePanel     {}
+	.ldapBrowser-mainPanel       {margin: 10px 10px 10px 13px;}
+	.ldapBrowser-scroller        {overflow: auto; height: 250px; width: 600px;}
+	.ldapBrowser-treesPanel      {white-space: nowrap;}
+	.ldapBrowser-treeSelect      {}
+	.ldapBrowser-treeSelectLabel {font-size: 13px; color: #000000;}
 /* End:  LDAP browser dialog styles. */
 
 /* Start: Name Completion Settings dialog */
