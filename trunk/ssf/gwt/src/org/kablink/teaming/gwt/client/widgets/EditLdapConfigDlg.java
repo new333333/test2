@@ -674,14 +674,19 @@ public class EditLdapConfigDlg extends DlgBox
 				}
 			};
 
+			label = new Label( messages.editLdapConfigDlg_DisableUserLabel() );
+			label.addStyleName( "margintop3 fontSize16px" );
+			userPanel.add( label );
+
 			tmpPanel = new FlowPanel();
-			tmpPanel.addStyleName( "margintop3" );
-			m_disableUsersRB = new RadioButton( "notInLdap", messages.editLdapConfigDlg_DisableUserLabel() );
+			tmpPanel.addStyleName( "margintop2 marginleft1" );
+			m_disableUsersRB = new RadioButton( "notInLdap", messages.editLdapConfigDlg_DisableUserLabel2() );
 			m_disableUsersRB.addClickHandler( clickHandler );
 			tmpPanel.add( m_disableUsersRB );
 			userPanel.add( tmpPanel );
 			
 			tmpPanel = new FlowPanel();
+			tmpPanel.addStyleName( "margintop1 marginleft1" );
 			m_deleteUsersRB = new RadioButton( "notInLdap", messages.editLdapConfigDlg_DeleteUserLabel() );
 			m_deleteUsersRB.addClickHandler( clickHandler );
 			tmpPanel.add( m_deleteUsersRB );
@@ -696,8 +701,12 @@ public class EditLdapConfigDlg extends DlgBox
 		
 		// Add the controls dealing time zone
 		{
+			label = new Label( messages.editLdapConfigDlg_CreatingUsersLabel() );
+			label.addStyleName( "margintop3 fontSize16px" );
+			userPanel.add( label );
+
 			label = new Label( messages.editLdapConfigDlg_DefaultTimeZoneLabel() );
-			label.addStyleName( "margintop3" );
+			label.addStyleName( "margintop2 marginleft1" );
 			userPanel.add( label );
 			
 			m_timeZonesListbox = new ListBox( false );
@@ -709,7 +718,7 @@ public class EditLdapConfigDlg extends DlgBox
 		// Add the controls dealing with locale
 		{
 			label = new Label( messages.editLdapConfigDlg_DefaultLocaleLabel() );
-			label.addStyleName( "margintop3" );
+			label.addStyleName( "margintop2 marginleft1" );
 			userPanel.add( label );
 			
 			m_localesListbox = new ListBox( false );

@@ -3094,8 +3094,8 @@ body, table td, select
 
 .gwt-RadioButton {white-space: nowrap;}
 .gwt-RadioButton label {
-	font-size: 14px;
-	padding-top: 5px;
+	font-size: 13px;
+	padding-top: 4px;
 	padding-left: 2px;
 	padding-right: 8px;
 	display: inline-block;
@@ -3103,9 +3103,9 @@ body, table td, select
 
 .gwt-CheckBox label {
 	font-size: 13px !important;
-	padding-top: 2px;
+	padding-top: 4px;
 	padding-left: 2px;
-	padding-right: 4px;
+	padding-right: 8px;
 	display: inline-block;
 	}
 
@@ -4629,7 +4629,7 @@ td.datePickerMonth {
 	border-style: none;
 	border-width: 3px 2px 2px;
 	overflow: visible !important;
-	padding: 6px;
+	padding: 10px;
 	background-color: #EDEDED;
 	border-radius: 0px 3px 3px 3px;
 	-moz-border-radius: 0px 3px 3px 3px;
@@ -5512,7 +5512,7 @@ td.datePickerMonth {
 	-webkit-border-radius: 5px;
 }
 
-.AdminConsoleInfoWidget_tasksToDo_td
+.AdminConsoleInfoWidget_tasksToDo_td, .fontSize16px
 {
 	font-size: 16px !important;
 }
