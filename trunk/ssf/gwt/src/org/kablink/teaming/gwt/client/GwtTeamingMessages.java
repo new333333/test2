@@ -3109,6 +3109,10 @@ public interface GwtTeamingMessages extends Messages
 
 	// LDAP browser dialog strings.
 	String ldapBrowser_Caption();
+	String ldapBrowser_InternalError_CantFindTree();
+	String ldapBrowser_InternalError_NoTrees();
+	String ldapBrowser_Label_SelectOne();
+	String ldapBrowser_Label_SelectTree();
 	String ldapBrowser_Label_Tree();
 	String ldapBrowser_Warning_Partial();
 

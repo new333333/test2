@@ -53,6 +53,8 @@ import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.CellTree;
 import com.google.gwt.user.client.Window;
@@ -61,6 +63,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.UIObject;
@@ -76,18 +79,21 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 
 	private AsyncDataProvider<LdapObject>		m_dataProvider;		// Data provider for the CellTree.
 	private CellTree							m_tree;				// The CellTree for browsing the LDAP directory with.
-	private DirectoryServer						m_ds;				// The LDAP directory we're running against.
-	private FlowPanel							m_contentPanel;		// The panel holding the dialog's content.
+	private FlowPanel							m_browsePanel;		// The panel holding the tree.
+	private FlowPanel							m_treesPanel;		// Panel containing the tree ListBox when m_browseList refers to multiple trees.
 	private GwtTeamingMessages					m_messages;			// Access to Vibe's messages.
+	private LdapBrowseSpec						m_activeTree;		// The LdapBrowseSpec specifying the LDAP tree currently being browsed.
 	private LdapBrowserCallback					m_ldapCallback;		// Callback interface to let the caller know what's going on.
 	private LdapObject							m_selected;			// The currently selected LDAP object.
-	private LdapSearchInfo						m_si;				// Defines where we're searching from.
 	private LdapTreeModel						m_treeViewModel;	// The data model for the CellTree.
+	private ListBox								m_treesLB;			// The list of trees.
+	private List<LdapBrowseSpec>				m_browseList;		// List of LDAP trees the user can choose to browse from.
 	private SingleSelectionModel<LdapObject>	m_selectionModel;	// Provides selection handling for the cell tree.
 	private UIObject							m_showRelativeTo;	// Show the dialog relative to this.  null -> Center it on the screen.
 	
 	// Various strings to construct the tree. 
-	private final static String	TREE_ROOT	= "ROOT";	//
+	private final static String	TREE_ROOT		= "ROOT";	//
+	private final static String SELECT_MARKER	= "xxx-SelectOne-xxx";
 
 	/*
 	 * Inner class that provides cells for the LDAP browser's tree.
@@ -195,10 +201,13 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 		 */
 		@Override
 		public <T> NodeInfo<?> getNodeInfo(final T value) {
+			final DirectoryServer ds = m_activeTree.getDirectoryServer();
+			final LdapSearchInfo  si = m_activeTree.getSearchInfo();
+			
 			if ((value instanceof String) && value.equals(TREE_ROOT)) {
 				// Root Node.
 				List<LdapObject> list = new ArrayList<LdapObject>();
-				String treeName = m_ds.getName();
+				String treeName = ds.getName();
 				if (!(GwtClientHelper.hasString(treeName))) {
 					treeName = m_messages.ldapBrowser_Label_Tree();
 				}
@@ -214,28 +223,28 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 					protected void onRangeChanged(HasData<LdapObject> display) {
 						final LdapObject ldapObject = ((LdapObject) value);
 						if (null == ldapObject.getObjectClass()) {
-							if (null == m_si.getBaseDn()) {
-								if (m_ds.isEDirectory() || m_ds.isUnknown()) {
-									m_ds.setUrl("");
+							if (null == si.getBaseDn()) {
+								if (ds.isEDirectory() || ds.isUnknown()) {
+									ds.setUrl("");
 								}
 								else {
-									String baseDn = getBaseDnFromUserName(m_ds.getSyncUser());
+									String baseDn = getBaseDnFromUserName(ds.getSyncUser());
 									if (!(GwtClientHelper.hasString(baseDn)))
-										baseDn = getBaseDnFromUserName(m_ds.getBaseDn());
-									m_ds.setUrl(baseDn);
+										baseDn = getBaseDnFromUserName(ds.getBaseDn());
+									ds.setUrl(baseDn);
 								}
 							}
 							
 							else {
-								m_ds.setUrl(m_si.getBaseDn());
+								ds.setUrl(si.getBaseDn());
 							}
 						}
 						
 						else {
-							m_ds.setUrl(((LdapObject) value).getDn());
+							ds.setUrl(((LdapObject) value).getDn());
 						}
 						
-						GetLdapServerDataCmd cmd = new GetLdapServerDataCmd(m_ds, m_si);
+						GetLdapServerDataCmd cmd = new GetLdapServerDataCmd(ds, si);
 						GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 							@Override
 							public void onFailure(Throwable caught) {
@@ -324,14 +333,67 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 */
 	@Override
 	public Panel createContent(Object unused) {
+		// Create a main panel to hold everything.
+		FlowPanel mainPanel = new FlowPanel();
+		mainPanel.addStyleName("ldapBrowser-mainPanel");
+
+		// Create a list box and panel for the user to select which
+		// tree to browse.
+		m_treesPanel = new FlowPanel();
+		m_treesPanel.addStyleName("ldapBrowser-treesPanel");
+		InlineLabel il = new InlineLabel(m_messages.ldapBrowser_Label_SelectTree());
+		il.addStyleName("ldapBrowser-treeSelectLabel");
+		m_treesPanel.add(il);
+		m_treesLB = new ListBox(false);	// false -> Single-select ListBox.
+		m_treesLB.setVisibleItemCount(1);
+		m_treesLB.addStyleName("ldapBrowser-treeSelect");
+		m_treesLB.addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent event) {
+				// Is there anything selected in the ListBox?
+				int i = m_treesLB.getSelectedIndex();
+				if (0 <= i) {
+					// Yes!  Can we find the selected tree?
+					String address = m_treesLB.getValue(i);
+					LdapBrowseSpec browse = LdapBrowseSpec.findBrowseSpecByAddress(m_browseList, address);
+					if (null == browse) {
+						// No!  That should never happen.  Tell the
+						// user about the problem and otherwise ignore
+						// the selection.
+						GwtClientHelper.deferredAlert(m_messages.ldapBrowser_InternalError_CantFindTree());
+					}
+					else {
+						// Yes, we found the selected tree!  Remove any
+						// previous tree being browsed and activate
+						// this one.
+						m_browsePanel.clear();
+						m_activeTree = browse;
+						invokeLdapBrowserAsync();
+					}
+
+					// If the first item in the list is still the
+					// <Select One> item...
+					address = m_treesLB.getValue(0);
+					if (GwtClientHelper.hasString(address) && address.equals(SELECT_MARKER)) {
+						// ...remove it.
+						m_treesLB.removeItem(0);
+					}
+				}
+			}
+		});
+		m_treesPanel.add(m_treesLB);
+		mainPanel.add(m_treesPanel);
+
+		// Create a scroll panel and panel for the browser's cell tree. 
 		ScrollPanel scroller = new ScrollPanel();
 		scroller.addStyleName("ldapBrowser-scroller");
-		
-		m_contentPanel = new FlowPanel();
-		m_contentPanel.addStyleName("ldapBrowser-content");
-		
-		scroller.add(m_contentPanel);
-		return scroller;
+		m_browsePanel = new FlowPanel();
+		m_browsePanel.addStyleName("ldapBrowser-browsePanel");
+		scroller.add(m_browsePanel);
+		mainPanel.add(scroller);
+
+		// Return the main panel that contains everything.
+		return mainPanel;
 	}
 	
 	/**
@@ -356,7 +418,18 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 
 	/*
 	 */
-	private void invokeLdapBrowser() {
+	private void invokeLdapBrowserAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				invokeLdapBrowserNow();
+			}
+		});
+	}
+	
+	/*
+	 */
+	private void invokeLdapBrowserNow() {
 		// LDAP Tree Model.
 		m_treeViewModel = new LdapTreeModel();
 		CellTreeResource   treeResource = GWT.create(CellTreeResource.class  );
@@ -383,13 +456,10 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 
 		// Set open the tree so that we can get the data.
 		m_tree.getRootTreeNode().setChildOpen(0, true);
-		m_contentPanel.add(m_tree);
+		m_browsePanel.add(m_tree);
 		
 		// Finally, show the dialog.
-		if (null == m_showRelativeTo)
-		     center();
-		else showRelativeTo(m_showRelativeTo);
-
+		showLdapBrowser();
 	}
 
 	/*
@@ -533,19 +603,56 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * Synchronously populates the content of the dialog.
 	 */
 	private void populateDlgNow() {
-		m_contentPanel.clear();
-		invokeLdapBrowser();
+		// Clear the current browsing panel.
+		m_browsePanel.clear();
+		
+		// Clear and hide any existing tree selector.
+		m_treesLB.clear();
+		m_treesPanel.setVisible(false);
+
+		// How many trees were we given to browse?
+		int trees = ((null == m_browseList) ? 0 : m_browseList.size());
+		switch (trees) {
+		case 0:
+			// None!  That should never happen.  Tell the user about
+			// the problem and bail.
+			GwtClientHelper.deferredAlert(m_messages.ldapBrowser_InternalError_NoTrees());
+			break;
+			
+		case 1:
+			// One!  Activate it and invoke the browser.
+			m_activeTree = m_browseList.get(0);
+			invokeLdapBrowserNow();
+			break;
+			
+		default:
+			// More than one!  The user needs to pick and choose which
+			// to browse.  Scan those supplied...
+			m_treesLB.addItem(m_messages.ldapBrowser_Label_SelectOne(), SELECT_MARKER);
+			for (LdapBrowseSpec browse:  m_browseList) {
+				// ...adding each to the selector list...
+				m_treesLB.addItem(
+					browse.getDirectoryServer().getAddress(),
+					browse.getDirectoryServer().getAddress());
+			}
+			
+			// ...and show the selector panel and dialog.
+			m_treesPanel.setVisible(true);
+			showLdapBrowser();
+			break;
+		}
+		
 	}
 	
 	/*
 	 * Asynchronously runs the given instance of the LDAP browser
 	 * dialog.
 	 */
-	private static void runDlgAsync(final LdapBrowserDlg pDlg, final LdapBrowserCallback ldapCallback, final DirectoryServer ds, final LdapSearchInfo si, final UIObject showRelativeTo) {
+	private static void runDlgAsync(final LdapBrowserDlg pDlg, final LdapBrowserCallback ldapCallback, final List<LdapBrowseSpec> browseList, final UIObject showRelativeTo) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				pDlg.runDlgNow(ldapCallback, ds, si, showRelativeTo);
+				pDlg.runDlgNow(ldapCallback, browseList, showRelativeTo);
 			}
 		});
 	}
@@ -554,17 +661,10 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * Synchronously runs the given instance of the LDAP browser
 	 * dialog.
 	 */
-	private void runDlgNow(LdapBrowserCallback ldapCallback, DirectoryServer ds, LdapSearchInfo si, UIObject showRelativeTo) {
+	private void runDlgNow(LdapBrowserCallback ldapCallback, List<LdapBrowseSpec> browseList, UIObject showRelativeTo) {
 		// Store the parameters...
-		m_ldapCallback = ldapCallback;
-		m_ds           = ds;
-		m_si           = si;
-		if (null == m_si) {
-			m_si = new LdapSearchInfo();
-			if (ds.isActiveDirectory())
-			     m_si.setSearchObjectClass(LdapSearchInfo.RETURN_EVERYTHING_AD  );
-			else m_si.setSearchObjectClass(LdapSearchInfo.RETURN_CONTAINERS_ONLY);
-		}
+		m_ldapCallback   = ldapCallback;
+		m_browseList     = browseList;
 		m_showRelativeTo = showRelativeTo;
 
 		// ...initialize anything else that requires it...
@@ -572,6 +672,15 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 
 		// ...and start populating the dialog.
 		populateDlgAsync();
+	}
+
+	/*
+	 * Does what's necessary to make the LDAP browser visible.
+	 */
+	private void showLdapBrowser() {
+		if (null == m_showRelativeTo)
+		     center();
+		else showRelativeTo(m_showRelativeTo);
 	}
 
 	
@@ -600,8 +709,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 			// initAndShow parameters,
 			final LdapBrowserDlg		ldapDlg,
 			final LdapBrowserCallback	ldapCallback,
-			final DirectoryServer		ds,
-			final LdapSearchInfo		si,
+			final List<LdapBrowseSpec>	browseList,
 			final UIObject				showRelativeTo) {
 		GWT.runAsync(LdapBrowserDlg.class, new RunAsyncCallback() {
 			@Override
@@ -625,7 +733,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(ldapDlg, ldapCallback, ds, si, showRelativeTo);
+					runDlgAsync(ldapDlg, ldapCallback, browseList, showRelativeTo);
 				}
 			}
 		});
@@ -638,7 +746,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * @param ldapDlgClient
 	 */
 	public static void createAsync(LdapBrowserDlgClient ldapDlgClient) {
-		doAsyncOperation(ldapDlgClient, null, null, null, null, null);
+		doAsyncOperation(ldapDlgClient, null, null, null, null);
 	}
 	
 	/**
@@ -646,26 +754,37 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * 
 	 * @param ldapDlg
 	 * @param ldapCallback
-	 * @param ds
-	 * @param si
+	 * @param browseList
 	 * @param showRelativeTo
 	 */
+	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, List<LdapBrowseSpec> browseList, UIObject showRelativeTo) {
+		doAsyncOperation(null, ldapDlg, ldapCallback, browseList, showRelativeTo);
+	}
+	
+	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, LdapBrowseSpec browse, UIObject showRelativeTo) {
+		// Always use the initial form of the method.
+		List<LdapBrowseSpec> browseList = new ArrayList<LdapBrowseSpec>();
+		browseList.add(browse);
+		initAndShow(ldapDlg, ldapCallback, browseList, showRelativeTo);
+	}
+	
 	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer ds, LdapSearchInfo si, UIObject showRelativeTo) {
-		doAsyncOperation(null, ldapDlg, ldapCallback, ds, si, showRelativeTo);
+		// Always use a previous form of the method.
+		initAndShow(ldapDlg, ldapCallback, new LdapBrowseSpec(ds, si), showRelativeTo);
 	}
 	
 	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer ds, LdapSearchInfo si) {
-		// Always use the initial form of the method.
+		// Always use a previous form of the method.
 		initAndShow(ldapDlg, ldapCallback, ds, si, null);
 	}
 	
 	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer ds, UIObject showRelativeTo) {
-		// Always use the initial form of the method.
+		// Always use a previous form of the method.
 		initAndShow(ldapDlg, ldapCallback, ds, null, showRelativeTo);
 	}
 	
 	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, DirectoryServer ds) {
-		// Always use the initial form of the method.
+		// Always use a previous form of the method.
 		initAndShow(ldapDlg, ldapCallback, ds, null, null);
 	}
 }
