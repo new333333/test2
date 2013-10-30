@@ -901,6 +901,11 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
  	@Override
+ 	public Long findPrincipalIdByDomainAndSamaccount(String domainName, String samaccountName, Long zoneId) {
+ 		throw new UnsupportedOperationException("NOT YET IMPLEMENTED");
+ 	}
+ 	
+ 	@Override
 	public Principal findPrincipalByName(final String name, final Long zoneId) 
  		throws NoPrincipalByTheNameException {
  		if(name.startsWith(FAKE_NAME_PREFIX)) {
