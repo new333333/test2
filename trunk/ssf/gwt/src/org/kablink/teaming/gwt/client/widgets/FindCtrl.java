@@ -122,8 +122,19 @@ public class FindCtrl extends Composite
 			table.getCellFormatter().setVerticalAlignment( 0, 1, HasVerticalAlignment.ALIGN_TOP );
 			topPanel.add( table );
 			
+			// Is this a group?
+			if ( item instanceof GwtGroup )
+			{
+				// Yes
+				imgUrl = GwtTeaming.getFilrImageBundle().filrGroup48().getSafeUri().asString();
+			}
+			else
+			{
+				// Get the image associated with the item.
+				imgUrl = item.getImageUrl();
+			}
+			
 			// Does this item have an image associated with it?
-			imgUrl = item.getImageUrl();
 			if ( imgUrl != null && imgUrl.length() > 0 )
 			{
 				Image img;
@@ -134,7 +145,7 @@ public class FindCtrl extends Composite
 				img.setWidth( "20px" );
 				table.setWidget( 0, 0, img );
 			}
-			
+
 			infoPanel = new FlowPanel();
 			infoPanel.getElement().getStyle().setMarginLeft( 4, Unit.PX );
 			table.setWidget( 0, 1, infoPanel );
