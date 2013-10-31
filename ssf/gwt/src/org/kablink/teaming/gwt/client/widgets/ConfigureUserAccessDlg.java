@@ -186,7 +186,17 @@ public class ConfigureUserAccessDlg extends DlgBox
 					@Override
 					public void onClick( ClickEvent event )
 					{
-						danceDlg();
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								danceDlg();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
 					}
 				} );
 			}
@@ -236,7 +246,7 @@ public class ConfigureUserAccessDlg extends DlgBox
 	 */
 	private void danceDlg()
 	{
-		if ( m_allowExternalUserAccessCkbox != null )
+		if ( m_allowExternalUserAccessCkbox != null && m_allowSelfRegOfExternalUserAccountCkbox != null )
 		{
 			m_allowSelfRegOfExternalUserAccountCkbox.setEnabled( m_allowExternalUserAccessCkbox.getValue() );
 		}
