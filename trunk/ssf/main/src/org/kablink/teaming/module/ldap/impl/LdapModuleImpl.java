@@ -4591,7 +4591,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 * @return
 		 * @throws NamingException
 		 */
-		boolean record(String dn, String teamingName, Attributes lAttrs, String ldapGuidAttribute ) throws NamingException
+		boolean record(
+			String dn,
+			String teamingName,
+			Attributes lAttrs,
+			String ldapGuidAttribute,
+			String domainName ) throws NamingException
 		{
 			boolean isSSGroup = false;
 			boolean foundLdapGuid = false;
@@ -4604,6 +4609,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			// Add the necessary containers for this group.
 			m_containerCoordinator.record( dn );
+			
+			if ( domainName != null )
+				domainName = domainName.toLowerCase();
 			
 			// Do we have the name of the ldap attribute that holds the guid?
 			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
@@ -4686,6 +4694,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME,ssName);
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 						userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
+						userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
 
 						if (logger.isDebugEnabled())
 							logger.debug("Creating group:" + ssName);
@@ -4725,6 +4734,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Make sure the dn stored in Teaming is updated for this user.
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
 					row[PRINCIPAL_FOREIGN_NAME] = dn;
+
+					// Update the domain name
+					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
 
 					updateGroup( zoneId, (Long)row[PRINCIPAL_ID], userMods, m_syncMode, m_ldapSyncResults );
 				} 
@@ -4974,6 +4986,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						String groupName;
 						String fixedUpGroupName;
 						String teamingName;
+						String domainName;
 						Attribute id;
 						SearchResult sr;
 						
@@ -5010,9 +5023,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if ( teamingName == null )
 							continue;
 
+						if ( workingWithAD )
+							domainName = getDomainName( config );
+						else
+							domainName = null;
+						
 						//doing this one at a time is going to be slow for lots of groups
 						//not sure why it was changed for v2
-						if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute ) && syncMembership )
+						if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute, domainName ) && syncMembership )
 						{ 
 							//Get map indexed by id
 							Object[] gRow = groupCoordinator.getGroup(dn);
