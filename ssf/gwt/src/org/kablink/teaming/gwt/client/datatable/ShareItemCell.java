@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
+import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.widgets.ShareWithPublicInfoDlg;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlgMode;
 import org.kablink.teaming.gwt.client.widgets.ShareWithPublicInfoDlg.ShareWithPublicInfoDlgClient;
@@ -442,11 +443,22 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		label.addStyleName( "shareItem_AccessRights" );
 		mainPanel.add( label );
 		
-		// Add the reshare rights
-		label = new Label( messages.shareDlg_reshareLabel() + " " + getReshareRightsText( shareItem ) );
-		label.addStyleName( "shareItem_ReshareRights" );
-		mainPanel.add( label );
-
+		// Add reshare rights info.
+		{
+			ShareRights shareRights;
+			
+			// Does the recipient have any reshare rights?
+			shareRights = shareItem.getShareRights(); 
+			if ( shareRights != null && shareRights.getCanShareForward() )
+			{
+				// Yes
+				// Add the reshare rights
+				label = new Label( messages.shareDlg_reshareLabel() + " " + getReshareRightsText( shareItem ) );
+				label.addStyleName( "shareItem_ReshareRights" );
+				mainPanel.add( label );
+			}
+		}
+		
 		// Are we dealing with a public share?
 		if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
 		{
