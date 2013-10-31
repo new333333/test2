@@ -87,6 +87,7 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
+import org.kablink.teaming.domain.NameCompletionSettings;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -718,7 +719,32 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  			getPostingObject().enable(false, zoneConfig.getZoneId());
  		}
   	}
-	@Override
+
+  	/**
+  	 * 
+  	 */
+  	@Override
+	public NameCompletionSettings getNameCompletionSettings()
+  	{
+  		ZoneConfig zoneConfig;
+  		
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		return new NameCompletionSettings( zoneConfig.getNameCompletionSettings() );
+  	}
+  	
+  	/**
+  	 * 
+  	 */
+  	@Override
+	public void setNameCompletionSettings( NameCompletionSettings settings )
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		zoneConfig.setNameCompletionSettings( settings ); 		
+  	}
+
+  	@Override
 	public List<PostingDef> getPostings() {
     	return coreDao.loadPostings(RequestContextHolder.getRequestContext().getZoneId());
     }

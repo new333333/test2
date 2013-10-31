@@ -122,6 +122,8 @@ import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.MobileAppsConfig;
+import org.kablink.teaming.domain.NameCompletionSettings;
+import org.kablink.teaming.domain.NameCompletionSettings.NCDisplayField;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
@@ -6716,20 +6718,50 @@ public class GwtServerHelper {
 	 */
 	public static GwtNameCompletionSettings getNameCompletionSettings( AllModulesInjected ami )
 	{
-		GwtNameCompletionSettings settings;
+		GwtNameCompletionSettings gwtSettings;
 		ZoneConfig zoneConfig;
 		ZoneModule zoneModule;
-		OpenIDConfig openIdConfig;
-		
+		NameCompletionSettings settings;
+
+		gwtSettings = new GwtNameCompletionSettings();
+
 		zoneModule = ami.getZoneModule();
 		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-		openIdConfig = zoneConfig.getOpenIDConfig();
+		settings = zoneConfig.getNameCompletionSettings();
 		
-		settings = new GwtNameCompletionSettings();
-		settings.setGroupPrimaryDisplayField( GwtDisplayField.TITLE );
-		settings.setGroupSecondaryDisplayField( GwtDisplayField.DESCRIPTION );
+		if ( settings != null )
+		{
+			NCDisplayField fld;
+			GwtDisplayField gwtFld;
+			
+			// Get the field used for the group's primary display.
+			{
+				fld = settings.getGroupPrimaryFld();
+			
+				gwtFld = GwtDisplayField.TITLE;
+				if ( fld == NCDisplayField.NAME )
+					gwtFld = GwtDisplayField.NAME;
+				else if ( fld == NCDisplayField.TITLE )
+					gwtFld = GwtDisplayField.TITLE;
+				
+				gwtSettings.setGroupPrimaryDisplayField( gwtFld );
+			}
+			
+			// Get the field used for the groups' secondary display
+			{
+				fld = settings.getGroupSecondaryFld();
+				
+				gwtFld = GwtDisplayField.DESCRIPTION;
+				if ( fld == NCDisplayField.DESCRIPTION )
+					gwtFld = GwtDisplayField.DESCRIPTION;
+				else if ( fld == NCDisplayField.FQDN )
+					gwtFld = GwtDisplayField.FQDN;
+
+				gwtSettings.setGroupSecondaryDisplayField( gwtFld );
+			}
+		}
 		
-		return settings;
+		return gwtSettings;
 	}
 	
 	/**
@@ -11039,17 +11071,51 @@ public class GwtServerHelper {
 	 */
 	public static SaveNameCompletionSettingsRpcResponseData saveNameCompletionSettings(
 		AllModulesInjected ami,
-		GwtNameCompletionSettings settings )
+		GwtNameCompletionSettings gwtSettings )
 	{
 		SaveNameCompletionSettingsRpcResponseData responseData;
+		ZoneConfig zoneConfig;
+		ZoneModule zoneModule;
+		NameCompletionSettings settings;
+		GwtDisplayField fld;
+		NCDisplayField primaryFld;
+		NCDisplayField secondaryFld;
 		
 		responseData = new SaveNameCompletionSettingsRpcResponseData();
 
-		if ( settings == null )
+		if ( gwtSettings == null )
 		{
 			responseData.addError( "Invalid parameters passed to saveNameCompletionSettings()" );
 			return responseData;
 		}
+		
+		// Get the selected primary display field.
+		primaryFld = NCDisplayField.NAME;
+		fld = gwtSettings.getGroupPrimaryDisplayField();
+		if ( fld == GwtDisplayField.NAME )
+			primaryFld = NCDisplayField.NAME;
+		else if ( fld == GwtDisplayField.TITLE )
+			primaryFld = NCDisplayField.TITLE;
+		
+		// Get the selected secondary display field
+		secondaryFld = NCDisplayField.DESCRIPTION;
+		fld = gwtSettings.getGroupSecondaryDisplayField();
+		if ( fld == GwtDisplayField.DESCRIPTION )
+			secondaryFld = NCDisplayField.DESCRIPTION;
+		else if ( fld == GwtDisplayField.FQDN )
+			secondaryFld = NCDisplayField.FQDN;
+		
+		zoneModule = ami.getZoneModule();
+		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		
+		settings = zoneConfig.getNameCompletionSettings();
+		if ( settings == null )
+			settings = new NameCompletionSettings();
+		
+		// Update the settings and save them to the db.
+		settings.setGroupPrimaryFld( primaryFld );
+		settings.setGroupSecondaryFld( secondaryFld );
+		ami.getAdminModule().setNameCompletionSettings( settings );
 
 		return responseData;
 	}

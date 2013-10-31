@@ -367,4 +367,13 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jay" context="schema" failOnError="true" id="30">
+        <comment>Name completion settings stored as an xml string</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="NAMECOMPLETIONSETTINGS" type="CLOB">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

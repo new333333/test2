@@ -92,6 +92,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     private Long jitsWaitTimeout; // in milliseconds
     private String shareListsBlob;
     private Boolean allowShareWithLdapGroups;
+    private NameCompletionSettings nameCompletionSettings;
 
 	public ZoneConfig()
 	{
@@ -104,6 +105,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 		this.mailConfig = new MailConfig();
 		this.openIDConfig = new OpenIDConfig();
 		this.mobileAppsConfig = new MobileAppsConfig();
+		this.nameCompletionSettings = new NameCompletionSettings();
 	}
 	public void setZoneId(Long zoneId)
 	{
@@ -142,6 +144,23 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     public void setWeekendsAndHolidaysConfig(WeekendsAndHolidaysConfig weekendsAndHolidaysConfig) {
     	this.weekendsAndHolidaysConfig = weekendsAndHolidaysConfig;
     }
+
+    /**
+     * 
+     */
+	public NameCompletionSettings getNameCompletionSettings()
+	{
+    	return nameCompletionSettings;
+    }
+	
+	/**
+	 * 
+	 */
+    public void setNameCompletionSettings( NameCompletionSettings settings )
+    {
+    	this.nameCompletionSettings = settings;
+    }
+
     public boolean isMobileAccessEnabled() {
 		if (mobileAccessEnabled != null)
 			return mobileAccessEnabled.booleanValue();
