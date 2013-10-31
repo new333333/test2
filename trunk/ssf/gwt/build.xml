@@ -118,9 +118,9 @@
 				classname="com.google.gwt.dev.Compiler"
 				fork="true">
 			<!-- GWT Compiler JVM arguments. -->
-			<jvmarg value="-Xms1512m"                />
-			<jvmarg value="-Xmx1512m"                />
-			<jvmarg value="-Xss16m"                  />
+			<jvmarg value="-Xms2g"                   />
+			<jvmarg value="-Xmx4g"                   />
+			<jvmarg value="-Xss256m"                 />
 			<jvmarg value="-Xverify:none"            />
 			<jvmarg value="-XX:PermSize=256m"        />
 			<jvmarg value="-XX:MaxPermSize=512m"     />
