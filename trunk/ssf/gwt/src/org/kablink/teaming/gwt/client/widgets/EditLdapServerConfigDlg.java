@@ -743,7 +743,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 				{
 					// Since we're browsing for user DN, it will ONLY
 					// be a leaf node.  Ignore non-leaf selections.
-					if (selection.isLeaf()) {
+					if ( selection.isLeaf() )
+					{
 						m_proxyDnTextBox.setValue( selection.getDn() );
 						m_ldapBrowserDlg.hide();
 					}

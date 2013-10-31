@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.gwt.client.widgets;
-
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,6 +49,7 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderRootModifiedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateNetFolderRootCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyNetFolderRootCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFolderServerCmd;
@@ -59,6 +59,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowseListCallback;
+import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowserDlgClient;
 import org.kablink.teaming.gwt.client.widgets.SelectPrincipalsWidget.SelectPrincipalsWidgetClient;
 
 import com.google.gwt.core.client.GWT;
@@ -90,17 +92,17 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-
 /**
  * This dialog can be used to add a net folder root or modify a net folder root.
+ * 
  * @author jwootton
- *
  */
 public class ModifyNetFolderRootDlg extends DlgBox
 	implements
 		EditCanceledHandler,
 		EditSuccessfulHandler
 {
+	private Button m_browseProxyDnBtn;	// LDAP browse button next to m_proxyNameTxtBox.
 	private NetFolderRoot m_netFolderRoot;	// If we are modifying a net folder this is the net folder.
 	private TextBox m_nameTxtBox;
 	private ListBox m_rootTypeListbox;
@@ -119,6 +121,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private CheckBox m_fullSyncDirOnlyCB;
 	private TabPanel m_tabPanel;
+	private LdapBrowserDlg m_ldapBrowserDlg;
+	
+	private List<LdapBrowseSpec> m_ldapServerList;	// List of LDAP servers obtained the first time m_browseProxyDnBtn is clicked.
 	
 	private static boolean m_showPrivilegedUsersUI = false;
 	private static boolean m_showNetFolderServerType = GwtTeaming.m_requestInfo.getAllowSelectNetFolderServerDataSource();
@@ -388,9 +393,30 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			label = new InlineLabel( messages.modifyNetFolderServerDlg_ProxyNameLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 			
+			FlowPanel tmpPanel = new FlowPanel();
 			m_proxyNameTxtBox = new TextBox();
 			m_proxyNameTxtBox.setVisibleLength( 30 );
-			table.setWidget( nextRow, 1, m_proxyNameTxtBox );
+			tmpPanel.add(m_proxyNameTxtBox);
+			Image btnImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().browseLdap().getSafeUri().asString() );
+			btnImg.setTitle( messages.modifyNetFolderServerDlg_ProxyName_Alt() );
+			FlowPanel html = new FlowPanel();
+			html.add( btnImg );
+			m_browseProxyDnBtn = new Button( html.getElement().getInnerHTML() );
+			m_browseProxyDnBtn.addStyleName( "modifyNetFolderServerDlg_BrowseProxyDN" );
+			m_browseProxyDnBtn.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					browseLdapForProxyNameAsync();
+				}
+			} );
+			tmpPanel.add( m_browseProxyDnBtn );
+			if ( ! ( LdapBrowserDlg.ENABLE_LDAP_BROWSER ) )
+			{
+				m_browseProxyDnBtn.setVisible(false);
+			}
+			table.setWidget( nextRow, 1, tmpPanel );
 			++nextRow;
 			
 			label = new InlineLabel( messages.modifyNetFolderServerDlg_ProxyPwdLabel() );
@@ -815,6 +841,157 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		return false;
 	}
 	
+	/*
+	 * Runs the LDAP browser for the proxy name.
+	 */
+	private void browseLdapForProxyNameAsync()
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				browseLdapForProxyNameNow();
+			}
+		} );
+	}
+	
+	private void browseLdapForProxyNameNow()
+	{
+		// Have we instantiated an LDAP browser yet?
+		if ( null == m_ldapBrowserDlg )
+		{
+			// No!  Create one now...
+			LdapBrowserDlg.createAsync( new LdapBrowserDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( LdapBrowserDlg ldapDlg )
+				{
+					// ...save it away and run it.
+					m_ldapBrowserDlg = ldapDlg;
+					getLdapServersAndRunLdapBrowserAsync();
+				}
+			} );
+		}
+		
+		else
+		{
+			// Yes, we've already instantiated an LDAP browser!  Simply
+			// run it.
+			getLdapServersAndRunLdapBrowserNow();
+		}
+	}
+
+	/*
+	 * Gets the list of LDAP servers and runs the browser on them.
+	 */
+	private void getLdapServersAndRunLdapBrowserAsync()
+	{
+		GwtClientHelper.deferCommand(new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				// ...and run it.
+				getLdapServersAndRunLdapBrowserNow();
+			}
+		} );
+	}
+	
+	private void getLdapServersAndRunLdapBrowserNow()
+	{
+		// Have we obtained the list of LDAP servers yet?
+		if ( null == m_ldapServerList )
+		{
+			// No!  Read them now...
+			LdapBrowserDlg.getLdapServerList( new LdapBrowseListCallback()
+			{
+				@Override
+				public void onFailure()
+				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( List<LdapBrowseSpec> serverList )
+				{
+					// ...save them away and run the dialog.
+					m_ldapServerList = serverList;
+					runLdapBrowserAsync();
+				}
+			} );
+		}
+		
+		else
+		{
+			// Yes, we've already obtained the list of LDAP servers!
+			// Simply run the dialog.
+			runLdapBrowserNow();
+		}
+	}
+
+	/*
+	 * Runs the LDAP browser.
+	 */
+	private void runLdapBrowserAsync()
+	{
+		GwtClientHelper.deferCommand(new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				runLdapBrowserNow();
+			}
+		} );
+	}
+	
+	private void runLdapBrowserNow()
+	{
+		// Do we have any LDAP servers to browse?
+		int c = ( ( null == m_ldapServerList ) ? 0 : m_ldapServerList.size() );
+		if ( 0 == c )
+		{
+			// No!  Tell the user about the problem and bail.
+			GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_NoLdapServers() );
+			return;
+		}
+		
+		// Run the LDAP browser using the list of LDAP servers.
+		LdapBrowserDlg.initAndShow( 
+			m_ldapBrowserDlg,
+			new LdapBrowserCallback()
+			{
+				@Override
+				public void closed()
+				{
+					// Ignored.  We don't care if the user closes
+					// the browser.
+				}
+
+				@Override
+				public void selectionChanged( LdapObject selection )
+				{
+					// Since we're browsing for user DN, it will ONLY
+					// be a leaf node.  Ignore non-leaf selections.
+					if ( selection.isLeaf() )
+					{
+						m_proxyNameTxtBox.setValue( selection.getDn() );
+						m_ldapBrowserDlg.hide();
+					}
+				}
+			},
+			m_ldapServerList,		// List of LDAP servers that can be browsed.
+			m_browseProxyDnBtn );	// The dialog is positioned relative to this.
+	}
+	
 	/**
 	 * 
 	 */
@@ -1045,6 +1222,11 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_scheduleWidget.init( null );
 		
 		m_fullSyncDirOnlyCB.setValue( false );
+		
+		// Forget about any list of LDAP servers.  The list may have
+		// changed since this dialog was last run and setting this to
+		// null will cause it to be reloaded when needed.
+		m_ldapServerList = null;
 		
 		// Are we modifying an existing net folder root?
 		if ( m_netFolderRoot != null )
