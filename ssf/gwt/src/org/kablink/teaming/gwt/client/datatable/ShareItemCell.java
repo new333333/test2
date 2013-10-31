@@ -35,8 +35,8 @@ package org.kablink.teaming.gwt.client.datatable;
 import java.text.DateFormat;
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDateStrCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserAvatarCmd;
@@ -504,12 +504,15 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 	{
 		GetUserAvatarCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
+		GwtTeamingImageBundle imgBundle;
+		
+		imgBundle = GwtTeaming.getImageBundle();
 		
 		// Is the recipient "public"?
 		if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
 		{
 			// Yes
-			updateAvatarUrl( elementId, GwtMainPage.m_requestInfo.getImagesPath() + "pics/public16.png" );
+			updateAvatarUrl( elementId, imgBundle.public48().getSafeUri().asString() );
 			return;
 		}
 		
@@ -517,7 +520,15 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_LINK )
 		{
 			// Yes
-			updateAvatarUrl( elementId, GwtMainPage.m_requestInfo.getImagesPath() + "pics/publicLink16.png" );
+			updateAvatarUrl( elementId, imgBundle.publicLink48().getSafeUri().asString() );
+			return;
+		}
+		
+		// Is the recipient type a "group"?
+		if ( shareItem.getRecipientType() == GwtRecipientType.GROUP )
+		{
+			// Yes
+			updateAvatarUrl( elementId, GwtTeaming.getFilrImageBundle().filrGroup48().getSafeUri().asString() );
 			return;
 		}
 		
@@ -553,7 +564,19 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 							url = responseData.getStringValue();
 
 							if ( url == null || url.length() == 0 )
-								url = GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png";
+							{
+								// Are we dealing with an external user?
+								if ( shareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
+								{
+									// Yes, use the external user image.
+									url = GwtTeaming.getFilrImageBundle().filrExternalUser48().getSafeUri().asString();
+								}
+								else
+								{
+									// No, use the generic user image.
+									url = GwtTeaming.getImageBundle().userAvatar().getSafeUri().asString();
+								}
+							}
 
 							updateAvatarUrl( elementId, url );
 						}
