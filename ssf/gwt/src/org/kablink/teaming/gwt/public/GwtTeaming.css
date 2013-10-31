@@ -4987,6 +4987,13 @@ td.datePickerMonth {
 	margin-bottom: 0.5em;
 }
 
+.modifyNetFolderServerDlg_BrowseProxyDN
+{
+	margin-bottom: 3px;
+	margin-left: 3px;
+}
+
+
 .modifyNetFolderServerDlg_ProxyNameHint
 {
 	color: #4D6D8B;
@@ -5927,7 +5934,7 @@ td.datePickerMonth {
 	.ldapBrowser-browsePanel     {}
 	.ldapBrowser-mainPanel       {margin: 10px 10px 10px 13px;}
 	.ldapBrowser-scroller        {overflow: auto; height: 250px; width: 600px;}
-	.ldapBrowser-treesPanel      {white-space: nowrap;}
+	.ldapBrowser-treesPanel      {white-space: nowrap; padding-bottom: 5px;}
 	.ldapBrowser-treeSelect      {}
 	.ldapBrowser-treeSelectLabel {font-size: 13px; color: #000000;}
 /* End:  LDAP browser dialog styles. */

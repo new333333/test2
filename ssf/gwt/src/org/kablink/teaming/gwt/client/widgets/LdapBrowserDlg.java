@@ -38,12 +38,15 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.CellTreeResource;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.GwCellTreeMessages;
+import org.kablink.teaming.gwt.client.GwtLdapConfig;
+import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.ldapbrowser.DirectoryServer;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapSearchInfo;
 import org.kablink.teaming.gwt.client.ldapbrowser.QueryOutput;
+import org.kablink.teaming.gwt.client.rpc.shared.GetLdapConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLdapServerDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LdapServerDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -70,13 +73,11 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.view.client.*;
 
 /**
- * ?
+ * An LDAP browser dialog.
  *  
  * @author rvasudevan
  */
 public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
-	public final static boolean	ENABLE_LDAP_BROWSER	= false;	//! DRF (20131024):  Leave false on checkin until it's all working.
-
 	private AsyncDataProvider<LdapObject>		m_dataProvider;		// Data provider for the CellTree.
 	private CellTree							m_tree;				// The CellTree for browsing the LDAP directory with.
 	private FlowPanel							m_browsePanel;		// The panel holding the tree.
@@ -91,9 +92,13 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	private SingleSelectionModel<LdapObject>	m_selectionModel;	// Provides selection handling for the cell tree.
 	private UIObject							m_showRelativeTo;	// Show the dialog relative to this.  null -> Center it on the screen.
 	
-	// Various strings to construct the tree. 
-	private final static String	TREE_ROOT		= "ROOT";	//
-	private final static String SELECT_MARKER	= "xxx-SelectOne-xxx";
+	// Controls whether the LDAP browse button show up in the various
+	// administration pages where it's used.
+	public final static boolean	ENABLE_LDAP_BROWSER	= true;	//
+	
+	// Various strings to construct the LDAP browser. 
+	private final static String	TREE_ROOT		= "ROOT";				// Used to mark the root node in the CellTree.
+	private final static String SELECT_MARKER	= "xxx-SelectOne-xxx";	// Marks the <Select One> entry in the tree select widget when ther are multiple trees to choose from.
 
 	/*
 	 * Inner class that provides cells for the LDAP browser's tree.
@@ -501,6 +506,71 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	}
 
 	/*
+	 * Issue an RPC request to get the ldap configuration data from the
+	 * server.
+	 */
+	private static void getLdapServerListFromServerAsync(final LdapBrowseListCallback ldapBrowseListCallback) {
+		GwtClientHelper.deferCommand( new ScheduledCommand() {
+			@Override
+			public void execute() {
+				getLdapServerListFromServerNow(ldapBrowseListCallback);
+			}
+		});
+	}
+	
+	private static void getLdapServerListFromServerNow(final LdapBrowseListCallback ldapBrowseListCallback) {
+		// Execute a GWT RPC command to get the LDAP configurations.
+		GwtClientHelper.executeCommand(new GetLdapConfigCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetLdapConfig());
+				ldapBrowseListCallback.onFailure();
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Allocate a List<LdapBrowseSpec> we can hand back
+				// via the callback.
+				final List<LdapBrowseSpec> browseList = new ArrayList<LdapBrowseSpec>();
+				
+				// Do we have any LDAP connections?
+				GwtLdapConfig m_ldapConfig = ((GwtLdapConfig) response.getResponseData());
+				ArrayList<GwtLdapConnectionConfig> ldapConnections = ((null == m_ldapConfig) ? null : m_ldapConfig.getListOfLdapConnections());
+				if (GwtClientHelper.hasItems(ldapConnections)) {
+					// Yes!  We'll use the same LdapSearchInfo for all
+					// of them.
+					LdapSearchInfo si = new LdapSearchInfo();
+					si.setSearchObjectClass(LdapSearchInfo.RETURN_USERS);
+					si.setSearchSubTree(false);
+
+					// Construct the List<LdapBrowseSpec> using the
+					// information from the
+					// List<GwtLdapConnectionConfig>.
+					for (GwtLdapConnectionConfig ldapConnection:  ldapConnections) {
+						DirectoryServer ds = new DirectoryServer();
+						ds.setAddress(      ldapConnection.getServerUrl()        );
+						ds.setSyncUser(     ldapConnection.getProxyDn()          );
+						ds.setSyncPassword( ldapConnection.getProxyPwd()         );
+						ds.setGuidAttribute(ldapConnection.getLdapGuidAttribute());
+						browseList.add( new LdapBrowseSpec(ds, si));
+					}
+				}
+
+				// Hand the List<LdapBrowseSpec> back to the caller via
+				// the callback.
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						ldapBrowseListCallback.onSuccess(browseList);
+					}
+				});
+			}
+		});
+	}
+	
+	/*
 	 */
 	private void getLeafObjectsAsync(final LdapObject ldapObject, final QueryOutput<LdapObject> result) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
@@ -698,6 +768,15 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 		void onUnavailable();
 	}
 
+	/**
+	 * Callback interface used when requesting a list of
+	 * LdapBrowseSpec's for the currently defined LDAP servers. 
+	 */
+	public interface LdapBrowseListCallback {
+		void onFailure();
+		void onSuccess(List<LdapBrowseSpec> browseList);
+	}
+
 	/*
 	 * Asynchronously loads the LdapBrowserDlg and performs some
 	 * operation against the code.
@@ -705,6 +784,9 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	private static void doAsyncOperation(
 			// createAsync parameters.
 			final LdapBrowserDlgClient ldapDlgClient,
+			
+			// getLdapServerList parameters.
+			final LdapBrowseListCallback ldapBrowseListCallback,
 			
 			// initAndShow parameters,
 			final LdapBrowserDlg		ldapDlg,
@@ -729,10 +811,18 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 					ldapDlgClient.onSuccess(ldapDlg);
 				}
 				
+				// No, it's not a request to create a dialog!  Is it a
+				// request for the list of LDAP servers?
+				else if (null != ldapBrowseListCallback) {
+					// Yes!  Issue the RPC request to get the defined
+					// LDAP servers.
+					getLdapServerListFromServerAsync(ldapBrowseListCallback);
+				}
+				
 				else {
-					// No, it's not a request to create a dialog!  It
-					// must be a request to run an existing one.  Run
-					// it.
+					// No, it's not a request for the LDAP servers
+					// either!  It must be a request to run an existing
+					// dialog.  Run it.
 					runDlgAsync(ldapDlg, ldapCallback, browseList, showRelativeTo);
 				}
 			}
@@ -746,7 +836,17 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * @param ldapDlgClient
 	 */
 	public static void createAsync(LdapBrowserDlgClient ldapDlgClient) {
-		doAsyncOperation(ldapDlgClient, null, null, null, null);
+		doAsyncOperation(ldapDlgClient, null, null, null, null, null);
+	}
+	
+	/**
+	 * Loads the a List<LdapBrowseSpec> of the currently defined LDAP
+	 * servers via the split point and returns it via the callback.
+	 * 
+	 * @param ldapDlgClient
+	 */
+	public static void getLdapServerList(LdapBrowseListCallback ldapBrowseListCallback) {
+		doAsyncOperation(null, ldapBrowseListCallback, null, null, null, null);
 	}
 	
 	/**
@@ -758,7 +858,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * @param showRelativeTo
 	 */
 	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, List<LdapBrowseSpec> browseList, UIObject showRelativeTo) {
-		doAsyncOperation(null, ldapDlg, ldapCallback, browseList, showRelativeTo);
+		doAsyncOperation(null, null, ldapDlg, ldapCallback, browseList, showRelativeTo);
 	}
 	
 	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, LdapBrowseSpec browse, UIObject showRelativeTo) {

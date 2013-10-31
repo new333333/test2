@@ -2278,8 +2278,10 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_ModifyingNetFolderServer();
 	String modifyNetFolderServerDlg_NameLabel();
 	String modifyNetFolderServerDlg_NameRequired();
+	String modifyNetFolderServerDlg_NoLdapServers();
 	String modifyNetFolderServerDlg_NotFullyConfigured();
 	String modifyNetFolderServerDlg_PrivilegedPrincipalsHint();
+	String modifyNetFolderServerDlg_ProxyName_Alt();
 	String modifyNetFolderServerDlg_ProxyNameHint1();
 	String modifyNetFolderServerDlg_ProxyNameHint2();
 	String modifyNetFolderServerDlg_ProxyNameHint3();
