@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.MobileAppsConfig;
+import org.kablink.teaming.domain.NameCompletionSettings;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.OpenIDConfig;
@@ -201,7 +202,10 @@ public interface AdminModule {
     public void setAuditTrailEnabled(boolean auditTrailEnabled);
     public void setChangeLogEnabled(boolean changeLogEnabled);
     public void setLogTableKeepDays(int auditTrailKeepDays, int changeLogsKeepDays);
-    
+
+    public NameCompletionSettings getNameCompletionSettings();
+    public void setNameCompletionSettings( NameCompletionSettings settings );
+
 
     /**
      * Get system functions

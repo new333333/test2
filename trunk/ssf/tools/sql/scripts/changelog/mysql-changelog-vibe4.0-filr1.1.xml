@@ -397,4 +397,13 @@ update SS_Principals set domainName=LOWER(domainName);
         </sql>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="35">
+        <comment>Name completion settings stored as an xml string</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="nameCompletionSettings" type="LONGTEXT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

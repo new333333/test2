@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
@@ -292,9 +293,7 @@ public class FindCtrl extends Composite
 			footer = createFooter();
 			m_mainPanel.add( footer );
 
-			// Issue an rpc request to get the name completion settings from the server
 			m_nameCompletionSettings = new GwtNameCompletionSettings();
-			getNameCompletionSettingsFromServer();
 
 			// All composites must call initWidget() in their constructors.
 			initWidget( m_mainPanel );
@@ -633,6 +632,28 @@ public class FindCtrl extends Composite
 
 				searchResultWidget.getElement().scrollIntoView();
 			}
+		}
+		
+		/**
+		 * 
+		 */
+		@Override
+		public void onAttach()
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			super.onAttach();
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					// Issue an rpc request to get the name completion settings from the server
+					getNameCompletionSettingsFromServer();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 		
 		/**

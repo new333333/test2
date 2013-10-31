@@ -319,6 +319,7 @@ public class NameCompletionSettingsDlg extends DlgBox
 	public void init()
 	{
 		hideStatusMsg();
+		setOkEnabled( true );
 		
 		m_primaryLB.setItemSelected( 0, true );
 		m_secondaryLB.setItemSelected( 0, true );
@@ -363,6 +364,7 @@ public class NameCompletionSettingsDlg extends DlgBox
 					ArrayList<String> errors;
 					
 					hideStatusMsg();
+					setOkEnabled( true );
 					
 					responseData = (SaveNameCompletionSettingsRpcResponseData) response.getResponseData();
 					
