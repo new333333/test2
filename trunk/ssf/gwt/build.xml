@@ -35,6 +35,17 @@
 				<isset property="drop.symbol.maps"/>
 			</not>
 		</condition>
+		
+		<!-- Code fragment handling. -->
+		<if>
+			<isset property="gwt.merge.fragments" />
+			<then>
+				<property name="gwt.codeFragments" value="-XfragmentCount ${gwt.merge.fragments}" />
+			</then>
+			<else>
+				<property name="gwt.codeFragments" value="" />
+			</else>
+		</if>
 	</target>
 	<target name="init-gwt-production" if="production.build">
 		<echo message="Compiling ${build.gwt.module} for production."/>
@@ -126,7 +137,7 @@
 			<jvmarg value="-XX:MaxPermSize=512m"     />
 			<jvmarg value="-Djava.awt.headless=true" />
 			<!-- GWT Compiler arguments. -->
-			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.localWorkers} ${gwt.additionalArgs1} ${gwt.additionalArgs2} ${gwt.module}" />
+			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.codeFragments} ${gwt.localWorkers} ${gwt.additionalArgs1} ${gwt.additionalArgs2} ${gwt.module}" />
 		</java>
 	</target>
 
