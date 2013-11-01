@@ -43,6 +43,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.dom4j.Document;
 import org.dom4j.Node;
@@ -66,6 +67,7 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
@@ -86,6 +88,8 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.ui.AbstractProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -631,6 +635,7 @@ public class ViewPermalinkController  extends SAbstractController {
 				String urlStr;
 			   	String userName;
 			   	String accessException;
+				AuthenticationException authEx;
 			   	User user;
 			   
 				// No, let the gwt page handle this permalink
@@ -650,6 +655,20 @@ public class ViewPermalinkController  extends SAbstractController {
 					String myWSUrl = PermaLinkUtil.getPermalink( request, user );
 					model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1") );
 				}
+				
+				// Was there an error logging in?
+				{
+					HttpSession session;
+
+					session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
+					authEx = (AuthenticationException) session.getAttribute( AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY );
+					if ( authEx != null )
+					{
+						model.put( WebKeys.LOGIN_ERROR, authEx.getMessage() );
+						session.removeAttribute( AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY );
+					}
+				}
+
 
 				// Get the flag that tells us if the user has rights to this permalink.
 				accessException = PortletRequestUtils.getStringParameter( request, "accessException" );
@@ -665,8 +684,9 @@ public class ViewPermalinkController  extends SAbstractController {
 					userName = NLT.get( "administration.initial.guestTitle" );
 					model.put( "userFullName", userName );
 
-					// Does Guest have rights to view the permalink?
-					if ( accessException != null && accessException.equalsIgnoreCase( "true" ) )
+					// Does Guest have rights to view the permalink or was there an error logging in?
+					if ( (accessException != null && accessException.equalsIgnoreCase( "true" )) ||
+						 authEx != null )
 					{
 						String refererUrl;
 						

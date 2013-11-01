@@ -589,16 +589,15 @@ public class GwtMainPage extends Composite
 			if ( m_requestInfo.promptForLogin() == true )
 			{
 				// Yes
-				// Hide the workspace tree control and the menu bar.
-				m_wsTreeCtrl.setVisible( false );
-				m_mainMenuCtrl.setVisible( false );
-				
 				// invoke the login dialog.
 				ScheduledCommand cmd = new ScheduledCommand()
 				{
 					public void execute()
 					{
-						invokeLoginDlg( false );
+						boolean canCancel;
+						
+						canCancel = getLoginCanCancel();
+						invokeLoginDlg( canCancel );
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -1096,6 +1095,14 @@ public class GwtMainPage extends Composite
 	}-*/;
 	
 	/**
+	 * 
+	 */
+	public boolean getLoginCanCancel()
+	{
+		return m_requestInfo.getLoginCanCancel();
+	}
+	
+	/**
 	 * This method will handle the landing page options such as "hide the masthead", "hide the sidebar", etc.
 	 */
 	private void handleLandingPageOptions( final String binderId, final boolean hideMasthead, final boolean hideSidebar, final boolean showBranding, final boolean hideMenu )
@@ -1207,8 +1214,11 @@ public class GwtMainPage extends Composite
 	 */
 	public void handleSessionExpired()
 	{
+		boolean canCancel;
+		
 		// Invoke the login dialog.
-		invokeLoginDlg( false );
+		canCancel = getLoginCanCancel();
+		invokeLoginDlg( canCancel );
 	}
 	
 	/**
@@ -1947,7 +1957,10 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onLogin( LoginEvent event )
 	{
-		invokeLoginDlg( true );
+		boolean canCancel;
+		
+		canCancel = getLoginCanCancel();
+		invokeLoginDlg( canCancel );
 	}// end onLogin()
 	
 	/**
