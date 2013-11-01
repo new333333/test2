@@ -246,7 +246,20 @@ public class LoginFilter  implements Filter {
 
 	protected void handleGuestAccess(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
 		if(isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
-			chain.doFilter(req, res);										
+			String currentURL = Http.getCompleteURL(req);
+
+			if ( currentURL.contains( "action=__login" ) )
+			{
+				String workspaceUrl;
+
+				// Redirect to the workspace url.  That way if the user cancels out of the
+				// log in dialog, there will be something displayed.
+				workspaceUrl = getWorkspaceURL( req );
+				req.setAttribute( WebKeys.REFERER_URL, workspaceUrl );
+				res.sendRedirect( workspaceUrl );
+			}
+			else
+				chain.doFilter(req, res);										
 		}
 		else {				
 			String currentURL = Http.getCompleteURL(req);

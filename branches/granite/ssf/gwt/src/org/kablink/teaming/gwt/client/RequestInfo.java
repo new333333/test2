@@ -209,6 +209,14 @@ public class RequestInfo extends JavaScriptObject
 
 	
 	/**
+	 * Return the flag that tells us if the login dialog can have a cancel button.
+	 */
+	public final native boolean getLoginCanCancel()
+	/*-{
+		return (this.getBFromS( this.loginCanCancel ));
+	}-*/;
+	
+	/**
 	 * Return the error message from the last login.
 	 */
 	public final native String getLoginError()

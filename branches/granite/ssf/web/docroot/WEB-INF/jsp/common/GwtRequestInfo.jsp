@@ -58,6 +58,7 @@
 		language:							'${ssUser.locale.language}',
 		locale:								'${ssUser.locale}',
 		timeZone:							'${ssUser.timeZone.ID}',
+		loginCanCancel:						'<ssf:escapeJavaScript>${login_can_cancel}</ssf:escapeJavaScript>',
 		loginError:							'<ssf:escapeJavaScript>${ss_loginError}</ssf:escapeJavaScript>',
 		loginPostUrl:						'<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
 		loginRefererUrl:					'${loginRefererUrl}',

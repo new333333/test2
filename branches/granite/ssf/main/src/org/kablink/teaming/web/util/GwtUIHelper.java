@@ -48,7 +48,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
@@ -59,6 +61,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.security.AccessControlException;
@@ -71,6 +74,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.BrowserSniffer;
+import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -1296,8 +1300,64 @@ public class GwtUIHelper {
 		Boolean loginDisallowed;
 		loginDisallowed = SPropsUtil.getBoolean( "form.login.auth.disallowed", false );
 		model.put( WebKeys.IS_FORM_LOGIN_ALLOWED,  !loginDisallowed );
+
+		// Can the login dialog have a cancel button?
+		{
+			String refererUrl = null;
+			Object value;
+			
+			value = model.get( "loginRefererUrl" );
+			if ( value != null && value instanceof String)
+				refererUrl = (String) value;
+
+			if ( Validator.isNull( refererUrl ) && isGuestAccessAllowed( bs ) )
+			{
+				// Yes, guest access is allowed.
+				model.put( "login_can_cancel", "true" );
+			}
+			else
+			{
+				// No
+				model.put( "login_can_cancel", "false" );
+			}
+		}
 	}
 	
+	/*
+	 * See if the license allows for guest access.  If so see if guest access is turned on. 
+	 */
+	public static  boolean isGuestAccessAllowed( AllModulesInjected ami )
+	{
+		if ( ReleaseInfo.isLicenseRequiredEdition() )
+		{
+			if ( LicenseChecker.isAuthorizedByLicense( "com.novell.teaming.GuestAccess" ) )
+			{
+				return isGuestAccessTurnedOn( ami );
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return isGuestAccessTurnedOn( ami );
+		}
+	}
+
+	/**
+	 * See if the administrator has turned on guest access.
+	 */
+	public static boolean isGuestAccessTurnedOn( AllModulesInjected ami )
+	{
+		Long zoneId;
+		AuthenticationConfig config;
+
+		zoneId = ami.getZoneModule().getZoneIdByVirtualHost( ZoneContextHolder.getServerName() );
+		config = ami.getAuthenticationModule().getAuthenticationConfigForZone( zoneId );
+		
+		return config.isAllowAnonymousAccess();
+	}
 	/**
 	 * Given a binder, returns the string to display for it in a
 	 * workspace tree.
