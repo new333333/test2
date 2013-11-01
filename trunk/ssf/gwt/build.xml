@@ -64,10 +64,20 @@
 		<property name="gwt.additionalArgs1" value="-draftCompile -ea"       />
 	</target>
 
-	<!-- Are we supposed to generate a compilation report? -->
-	<condition property="gwt.additionalArgs2" value="-compileReport" else="">
+	<!-- Compilation report handling. -->
+	<if>
 		<istrue value="${build.gwt.compileReport}" />
-	</condition>
+		<then>
+			<property name="gwt.additionalArgs2" value="-compileReport" />
+			<property name="gwt.java.xms"        value="-Xms2g"         />
+			<property name="gwt.java.xmx"        value="-Xmx4g"         />
+		</then>
+		<else>
+			<property name="gwt.additionalArgs2" value=""       />
+			<property name="gwt.java.xms"        value="-Xms1g" />
+			<property name="gwt.java.xmx"        value="-Xmx2g" />
+		</else>
+	</if>
 	
 	<!-- Define the platform that we're building on. -->
 	<condition property="build.mac"      value="true" else="false">                                     <os family="mac"     />      </condition>
@@ -129,8 +139,8 @@
 				classname="com.google.gwt.dev.Compiler"
 				fork="true">
 			<!-- GWT Compiler JVM arguments. -->
-			<jvmarg value="-Xms2g"                   />
-			<jvmarg value="-Xmx4g"                   />
+			<jvmarg value="${gwt.java.xms}"          />
+			<jvmarg value="${gwt.java.xmx}"          />
 			<jvmarg value="-Xss256m"                 />
 			<jvmarg value="-Xverify:none"            />
 			<jvmarg value="-XX:PermSize=256m"        />
