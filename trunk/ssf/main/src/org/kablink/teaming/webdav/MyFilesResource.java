@@ -42,6 +42,8 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.search.SearchUtils;
@@ -159,29 +161,69 @@ public class MyFilesResource extends ContainerResource
 	public CollectionResource createCollection(String newName)
 			throws NotAuthorizedException, ConflictException,
 			BadRequestException {
-		Binder parent = getBinderModule().getBinder(RequestContextHolder.getRequestContext().getUser().getWorkspaceId());
+		Binder binder = getMyFilesFolderParent();
 		
-		return createChildFolder(parent, newName);
+		return createChildFolder(binder, newName);
 	}
 
 	@Override
 	public Resource createNew(String newName, InputStream inputStream,
 			Long length, String contentType) throws IOException,
 			ConflictException, NotAuthorizedException, BadRequestException {
-		Long folderId =  SearchUtils.getMyFilesFolderId(this, RequestContextHolder.getRequestContext().getUser(), true);
-		Folder folder = getFolder(folderId);
-		FolderEntry entry = writeFileWithModDate(folder, newName, inputStream, null);
+		Folder folder =  getMyFilesFileParent();
+		
+ 		FolderEntry entry = writeFileWithModDate(folder, newName, inputStream, null);
 		return makeResourceFromFile(entry.getFileAttachment(newName));
 	}
+
+    private Binder getMyFilesFolderParent() throws ConflictException {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+        if (SearchUtils.useHomeAsMyFiles(this, user)) {
+            return getFolder(SearchUtils.getHomeFolderId(this, user.getWorkspaceId())); // user home folder
+        } else {
+            return getWorkspace(user.getWorkspaceId()); // user workspace
+        }
+    }
+
+    private Folder getMyFilesFileParent() throws ConflictException {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+        if (SearchUtils.useHomeAsMyFiles(this, user)) {
+            return getFolder(SearchUtils.getHomeFolderId(this, user.getWorkspaceId())); // user home folder
+        } else {
+            return getFolder(SearchUtils.getMyFilesFolderId(this, user, true)); // user hidden file folder
+        }
+    }
 
 	private Folder getFolder(Long folderId) throws ConflictException {
 		if(folderId == null)
 			throw new ConflictException("No folder id");
 		Binder binder = getBinderModule().getBinder(folderId);
-		if(binder instanceof Folder)
-			return (Folder) binder;
-		else
+		if(binder instanceof Folder) {
+			Folder folder = (Folder) binder;
+			if(folder.isDeleted() || folder.isPreDeleted())
+				throw new ConflictException("Folder '" + folderId + "' not found");
+			else
+				return folder;
+		}
+		else {
 			throw new ConflictException("id '" + folderId + "' does not represent a folder");
+		}
+	}
+
+	private Workspace getWorkspace(Long workspaceId) throws ConflictException {
+		if(workspaceId == null)
+			throw new ConflictException("No workspace id");
+		Binder binder = getBinderModule().getBinder(workspaceId);
+		if(binder instanceof Workspace) {
+			Workspace workspace = (Workspace) binder;
+			if(workspace.isDeleted() || workspace.isPreDeleted())
+				throw new ConflictException("Workspace '" + workspaceId + "' not found");
+			else
+				return workspace;
+		}
+		else {
+			throw new ConflictException("id '" + workspaceId + "' does not represent a workspace");
+		}
 	}
 
 }
