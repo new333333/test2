@@ -550,10 +550,6 @@ public class EditLdapServerConfigDlg extends DlgBox
 				}
 			} );
 			tmpPanel.add( m_browseProxyDnBtn );
-			if ( ! ( LdapBrowserDlg.ENABLE_LDAP_BROWSER ) )
-			{
-				m_browseProxyDnBtn.setVisible(false);
-			}
 			table.setWidget( row, 1, tmpPanel );
 			++row;
 		}

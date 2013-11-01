@@ -35,7 +35,8 @@ package org.kablink.teaming.gwt.client.ldapbrowser;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * ?
+ * Class that represents a node in an LDAP tree for display by the LDAP
+ * browser (i.e., LdapBrowserDlg.java.)
  * 
  * @author rvasudevan
  */
@@ -44,6 +45,9 @@ public class LdapObject implements IsSerializable,  Comparable<LdapObject> {
 	private String		m_name;			//
 	private String[]	m_objectClass;	//
 
+	// Used to represent an empty leaf node in a tree expansion.
+	public final static String EMPTY_LEAF_OBJECT_CLASS	= "emptyLeaf";
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -81,13 +85,22 @@ public class LdapObject implements IsSerializable,  Comparable<LdapObject> {
 	 * 
 	 * @param
 	 */
-	public void setDn(            String   dn)             {m_dn             = dn;            }
-	public void setName(          String   name)           {m_name           = name;          }
-	public void setObjectClass(   String[] objectClass)    {m_objectClass    = objectClass;   }
-
+	public void setDn(         String   dn)          {m_dn          = dn;         }
+	public void setName(       String   name)        {m_name        = name;       }
+	public void setObjectClass(String[] objectClass) {m_objectClass = objectClass;}
 
 	/**
-	 * ?
+	 * Returns true of this represents an empty leaf node and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isEmptyLeaf() {
+		return isObjectClassFound(EMPTY_LEAF_OBJECT_CLASS);
+	}
+	
+	/**
+	 * Returns true of this represents a leaf node and false otherwise.
 	 * 
 	 * @return
 	 */
@@ -108,23 +121,25 @@ public class LdapObject implements IsSerializable,  Comparable<LdapObject> {
 			isObjectClassFound("groupWiseExternalEntity")   ||
 			isObjectClassFound("groupWiseDistributionList") ||
 			isObjectClassFound("group")                     ||
-			isObjectClassFound("organizationalRole"));
+			isObjectClassFound("organizationalRole")        ||
+			isObjectClassFound(EMPTY_LEAF_OBJECT_CLASS));
 	}
 
 	/**
-	 * ?
+	 * Returns true of this represents a node of the given object class
+	 * and false otherwise.
 	 * 
-	 * @param type
+	 * @param objectClass
 	 * 
 	 * @return
 	 */
-	public boolean isObjectClassFound(String type) {
+	public boolean isObjectClassFound(String objectClass) {
 		if (null == m_objectClass) {
 			return false;
 		}
 
 		for (String str:  m_objectClass) {
-			if (str.equalsIgnoreCase(type)) {
+			if (str.equalsIgnoreCase(objectClass)) {
 				return true;
 			}
 		}
@@ -132,7 +147,7 @@ public class LdapObject implements IsSerializable,  Comparable<LdapObject> {
 	}
 
 	/**
-	 * ?
+	 * Compares two LdapObjects.
 	 * 
 	 * Implements the Comparator.compare() method.
 	 * 

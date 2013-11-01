@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ClientBundle.Source;
 import com.google.gwt.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 
@@ -87,4 +88,8 @@ public interface CommonImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
     @Source("org/kablink/teaming/gwt/public/images/LdapBrowser/GroupWise_Group.png")
 	public ImageResource group();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/spacer_1px.png")
+	public ImageResource empty();
 }

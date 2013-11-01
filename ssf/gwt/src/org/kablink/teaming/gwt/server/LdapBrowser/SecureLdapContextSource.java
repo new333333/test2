@@ -40,10 +40,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 /**
- * Created with IntelliJ IDEA. User: RAJESH-PC Date: 3/28/13
- * Time: 4:34 PM.
- * 
- * To change this template use File | Settings | File Templates.
+ * ?
  * 
  * @author rvasudevan
  */

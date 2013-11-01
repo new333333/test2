@@ -59,6 +59,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Workspace;
@@ -99,7 +100,11 @@ public final class LdapBrowserHelper {
 	}
 	
 	/**
-	 * ?
+	 * Authenticates to the given LDAP server.  If successful, returns
+	 * a null string.  If unsuccessful, a localized error message is
+	 * returned.
+	 * 
+	 * Primary usage:  To validate an LDAP connection?
 	 *
 	 * @param bs
 	 * @param request
@@ -329,7 +334,7 @@ public final class LdapBrowserHelper {
 	}
 	
 	/**
-	 * ?
+	 * Requests a block of data from an LDAP server.
 	 *  
 	 * @param bs
 	 * @param request
@@ -552,6 +557,8 @@ public final class LdapBrowserHelper {
 	}
 	
 	/*
+	 * Return true if a NamingEnumeration has a value available and
+	 * false otherwise.
 	 */
 	@SuppressWarnings("unchecked")
 	private static boolean hasMore(NamingEnumeration namingEnumeration) {

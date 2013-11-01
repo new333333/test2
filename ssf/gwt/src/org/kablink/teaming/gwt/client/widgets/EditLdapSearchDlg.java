@@ -229,10 +229,6 @@ public class EditLdapSearchDlg extends DlgBox
 				}
 			} );
 			tmpPanel.add( m_browseBaseDnBtn );
-			if ( ! ( LdapBrowserDlg.ENABLE_LDAP_BROWSER ) )
-			{
-				m_browseBaseDnBtn.setVisible(false);
-			}
 			table.setWidget( row, 1, tmpPanel );
 			++row;
 		}
