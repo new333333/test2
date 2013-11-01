@@ -412,10 +412,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				}
 			} );
 			tmpPanel.add( m_browseProxyDnBtn );
-			if ( ! ( LdapBrowserDlg.ENABLE_LDAP_BROWSER ) )
-			{
-				m_browseProxyDnBtn.setVisible(false);
-			}
 			table.setWidget( nextRow, 1, tmpPanel );
 			++nextRow;
 			

@@ -35,7 +35,8 @@ package org.kablink.teaming.gwt.client.ldapbrowser;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * ?
+ * Class that represents an LDAP server for connecting the LDAP browser
+ * to an LDAP source.
  *  
  * @author rvasudevan
  */

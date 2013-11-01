@@ -5928,8 +5928,10 @@ td.datePickerMonth {
 
 /* Start:  LDAP browser dialog styles. */
 	.gwNameCell                  {font-size: 13px;}
+	.gwNameCell-empty            {font-size: 13px; font-style: italic;}
 	.gwNameCell-root             {font-size: 14px; border: 0 none !important;}
 	.gwNameCellImg               {padding-right: 3px;}
+	.gwNameCellImg-empty         {padding-right: 3px; width: 16px; height: 16px;}
 	.gwNameCellImg-root          {padding-right: 3px;}
 	.ldapBrowser-browsePanel     {}
 	.ldapBrowser-mainPanel       {margin: 10px 10px 10px 13px;}

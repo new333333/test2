@@ -56,6 +56,7 @@ public class LdapServer implements IsSerializable {
 	private String	m_tempSslCertBinDir;	//
 
 	/**
+	 * Enumeration the defines the type of an LDAP server, if known.
 	 */
 	public enum DirectoryType implements IsSerializable {
 		EDIRECTORY,
