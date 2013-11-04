@@ -1062,6 +1062,7 @@ public class AccessUtils  {
 	 * @return
 	 */
 	public static Long askExternalSystemForRoleId(FolderEntry netFolderFile) {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Folder parentFolder = netFolderFile.getParentFolder();
 		if(!parentFolder.noAclDredgedWithEntries())
 			throw new IllegalArgumentException("Invalid entry '" + netFolderFile.getId() + "' for this method");
@@ -1071,19 +1072,25 @@ public class AccessUtils  {
 			return null; // cannot obtain session for the user
 		try {
 			session.setPath(parentFolder.getResourcePath(), netFolderFile.getTitle());
-			String permissionName = session.getPermissionName();
+			String permissionName = null;
+			try {
+				permissionName = session.getPermissionName();
+			}
+			catch(Exception e) {
+				logger.error("Error getting permission name on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
+			}
 			if(permissionName == null)
 				return null;
 			AclItemPermissionMapper permissionMapper = driver.getAclItemPermissionMapper();
 			return permissionMapper.toVibeRoleId(permissionName);
 		}
 		catch (AclItemPermissionMappingException e) {
-			logger.error("Error getting permission info on entry '" + netFolderFile.getId() + "'", e);
+			logger.error("Error mapping permission on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
 			return null;
 		}
 		finally {
 			session.close();
 		}
 	}
-	
+
 }
