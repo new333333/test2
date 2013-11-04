@@ -39,6 +39,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * to an LDAP source.
  *  
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public final class DirectoryServer extends LdapServer implements IsSerializable {
 	private Boolean m_syncEnabled;		//

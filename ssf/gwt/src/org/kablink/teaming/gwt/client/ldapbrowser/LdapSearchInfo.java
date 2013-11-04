@@ -35,16 +35,22 @@ package org.kablink.teaming.gwt.client.ldapbrowser;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * ?
+ * Object used with LdapBrowserDlg to specify how the LDAP server is to
+ * be searched.
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public class LdapSearchInfo implements IsSerializable {
 	private boolean	m_searchSubTree;		//
-	private int		m_maximumReturnLimit;	//
+	private int		m_pageSize;				//
 	private String 	m_baseDn;				//
 	private String	m_searchObjectClass;	//
+
+	// Default page size used to read information from the LDAP server.
+	public static final int DEFAULT_PAGE_SIZE	= 1000;	//
 	
+	// Various object classes for searching.
 	public static final String RETURN_EVERYTHING_EDIR = "(|(objectclass=person)(objectclass=groupOfNames)"
 			+ "(objectclass=container)(objectclass=domain)(objectclass=groupWiseDistributionList)(objectclass=organization)(objectclass=country)(objectclass=locality)(objectclass=organizationalUnit)(objectclass=group)(objectclass=organizationalRole))";
 
@@ -62,8 +68,6 @@ public class LdapSearchInfo implements IsSerializable {
 
 	public static final String RETURN_CONTAINERS_ONLY = "(|(objectclass=organization)(objectclass=organizationalUnit)(objectclass=container)(objectclass=domain)(objectclass=country)(objectclass=locality))";
 
-	private static final int MAX_COUNT_LIMIT = 1000;
-
 	/**
 	 * Constructor method.
 	 * 
@@ -71,11 +75,8 @@ public class LdapSearchInfo implements IsSerializable {
 	 * requirements.
 	 */
 	public LdapSearchInfo() {
-		super();
-		
-		setSearchObjectClass( RETURN_EVERYTHING_EDIR);
-		setMaximumReturnLimit(MAX_COUNT_LIMIT       );
-		setSearchSubTree(     false                 );
+		// Initialize this object.
+		this(RETURN_EVERYTHING_EDIR, false);
 	}
 
 	/**
@@ -85,11 +86,15 @@ public class LdapSearchInfo implements IsSerializable {
 	 * @param searchSubTree
 	 */
 	public LdapSearchInfo(String objectClass, boolean searchSubTree) {
+		// Initialize the super class...
 		super();
-		
-		setMaximumReturnLimit(MAX_COUNT_LIMIT);
-		setSearchSubTree(     searchSubTree  );
+
+		// ...store the parameters...
 		setSearchObjectClass( objectClass    );
+		setSearchSubTree(     searchSubTree  );
+		
+		// ...and initialize everything else that requires it.
+		setPageSize(DEFAULT_PAGE_SIZE);
 	}
 
 	/**
@@ -97,18 +102,18 @@ public class LdapSearchInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean isSearchSubTree()       {return m_searchSubTree;     }
-	public int     getMaximumReturnLimit() {return m_maximumReturnLimit;}
-	public String  getBaseDn()             {return m_baseDn;            }
-	public String  getSearchObjectClass()  {return m_searchObjectClass; }
+	public boolean isSearchSubTree()      {return m_searchSubTree;    }
+	public int     getPageSize()          {return m_pageSize;         }
+	public String  getBaseDn()            {return m_baseDn;           }
+	public String  getSearchObjectClass() {return m_searchObjectClass;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setSearchSubTree(     boolean searchSubTree)      {m_searchSubTree      = searchSubTree;     }
-	public void setMaximumReturnLimit(int     maximumReturnLimit) {m_maximumReturnLimit = maximumReturnLimit;}
-	public void setBaseDn(            String  baseDn)             {m_baseDn             = baseDn;            }
-	public void setSearchObjectClass( String  searchObjectClass)  {m_searchObjectClass  = searchObjectClass; }
+	public void setSearchSubTree(    boolean searchSubTree)      {m_searchSubTree     = searchSubTree;    }
+	public void setPageSize(         int     pageSize)           {m_pageSize          = pageSize;         }
+	public void setBaseDn(           String  baseDn)             {m_baseDn            = baseDn;           }
+	public void setSearchObjectClass(String  searchObjectClass)  {m_searchObjectClass = searchObjectClass;}
 }

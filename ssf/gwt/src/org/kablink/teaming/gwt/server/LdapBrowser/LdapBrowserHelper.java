@@ -79,25 +79,30 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 
 import org.springframework.ldap.AuthenticationException;
-import org.springframework.ldap.SizeLimitExceededException;
+import org.springframework.ldap.OperationNotSupportedException;
 import org.springframework.ldap.control.PagedResultsCookie;
 import org.springframework.ldap.control.PagedResultsDirContextProcessor;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapUtils;
 
 /**
- * ?
+ * Collection of server side helper methods in support of the LDAP
+ * browser.
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public final class LdapBrowserHelper {
 	protected static Log m_logger = LogFactory.getLog(LdapBrowserHelper.class);
 	
-	private static HashMap<String, String> DEFAULT_PROPERTIES = new HashMap<String, String>();
+	private final static HashMap<String, String> DEFAULT_PROPERTIES = new HashMap<String, String>();
 	static {
 		DEFAULT_PROPERTIES.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		DEFAULT_PROPERTIES.put(Context.SECURITY_AUTHENTICATION, "simple"                          );
 	}
+	
+	// Maximum page size supported by ActiveDirectory.
+	private final static int MAX_AD_PAGE_SIZE	= 1000;
 	
 	/**
 	 * Authenticates to the given LDAP server.  If successful, returns
@@ -379,59 +384,85 @@ public final class LdapBrowserHelper {
 			// errors.
 			template.setIgnoreNameNotFoundException( true);
 			template.setIgnorePartialResultException(true);
-	
+
+			// Generate a SearchControls object for running the search.
+			validatePageSize(ds, si);
 			SearchControls sc = getSearchControls(si);
 			String baseDn = ds.getUrl();
 			if (ds.isActiveDirectory() && (!(MiscUtil.hasString(baseDn)))) {
 				baseDn = getDomainNameFromAD(ds);
 			}
-			try {
-				// Do the search.
-				ldapObjects = template.search(
-					baseDn,
-					si.getSearchObjectClass(),
-					sc,
-					new LDAPObjectMapper());
-			}
-			
-			catch (Exception ex) {
-				// Did we get a size limit exceeded exception? 
-				if (ex instanceof SizeLimitExceededException) {
-					// Yes!  We special case handle that.
-					returnObj.sizeExceeded(true);
-					sc.setCountLimit(si.getMaximumReturnLimit());
-					PagedResultsCookie pagedResultsCookie = null;
-					PagedResultsDirContextProcessor control = new PagedResultsDirContextProcessor(si.getMaximumReturnLimit(), pagedResultsCookie);
-		
+
+			// Read the results, by pages, until we get everything.
+			boolean                         morePages     = false;
+			PagedResultsDirContextProcessor pagingControl = new PagedResultsDirContextProcessor(si.getPageSize());
+			do {
+				try {
 					// Do the search.
 					ldapObjects = template.search(
 						baseDn,
 						si.getSearchObjectClass(),
 						sc,
-						new LDAPObjectMapper(),
-						control);
+						new LdapObjectMapper(),
+						pagingControl);
+					
+					PagedResultsCookie pagedResultsCookie = pagingControl.getCookie();
+					morePages = (null != pagedResultsCookie);
+					if (morePages) {
+						byte[] pagingCookie = pagedResultsCookie.getCookie();
+						morePages = ((null != pagingCookie) && (0 < pagingCookie.length));
+					}
+				}
+				
+				catch (Exception ex) {
+					// Is this an exception caused by a paged search
+					// when the LDAP server doesn't support paging?
+					if (morePages && isPageNotSupportedException(ex)) {
+						// Yes!  Clear any results we've already
+						// read...
+						ldapObjects = null;
+						ldapObjectList.clear();
+						
+						// ...for force the data to be re-read, this
+						// ...time without paging.
+						pagingControl = new PagedResultsDirContextProcessor(Integer.MAX_VALUE, null);
+						sc.setCountLimit(0);	// 0 -> No limit.  All entries will be returned.
+					}
+					
+					else {
+						// No, this isn't a paging not supported
+						// exception!  Handle it as a generic
+						// exception... 
+						m_logger.error("LdapBrowserHelper.getLdapServerData( Failed trying to browse the tree:  '" + (anonymous ? "*anonymous*" : userDn) + "' )", ex);
+						error = getLdapBrowserErrorMessage(ex, ds, anonymous);
+						
+						// ...and stop the reading.
+						morePages   = false;
+						ldapObjects = null;
+					}
 				}
 
-				else {
-					// No, we didn't get a size limit exceeded
-					// exception!  Handle it as a generic error. 
-					m_logger.error("LdapBrowserHelper.getLdapServerData( Failed trying to browse the tree:  '" + (anonymous ? "*anonymous*" : userDn) + "' )", ex);
-					error = getLdapBrowserErrorMessage(ex, ds, anonymous);
+				// If we read any LdapObject's...
+				if (MiscUtil.hasItems(ldapObjects)) {
+					// ...copy them to the reply structure.
+					for (LdapObject obj:  ldapObjects) {
+						ldapObjectList.add(obj);
+					}
 				}
-			}
-	
-			if (null != ldapObjects) {
-				for (LdapObject obj:  ldapObjects) {
-					ldapObjectList.add(obj);
-				}
-			}
-	
+			} while (morePages);	// Keep reading while there are more pages of data to be read.
+
+			// Sort the LdapObject's we're returning...
 			Collections.sort(ldapObjectList);
+			
+			// ...construct and LdapServerDataRpcResponseData object
+			// ...with them...
 			returnObj.setResultList(ldapObjectList);
 			LdapServerDataRpcResponseData reply = new LdapServerDataRpcResponseData(returnObj);
 			if (null != error) {
 				reply.setError(error);
 			}
+			
+			// ...and return it.
 			return reply;
 		}
 		
@@ -484,10 +515,9 @@ public final class LdapBrowserHelper {
 		// Speed up the search, we only care for these attributes.
 		searchControls.setReturningAttributes(new String[] { "cn", "objectClass", "o", "ou", "dc", "c", "l" });
 
-		// We don't want to read more than 1001 per container.  Active
-		// Directory can return only a max of 1000, so set it to 1001
-		// so that we can get the size limit exception
-		searchControls.setCountLimit(info.getMaximumReturnLimit());
+		// Set the page size and an indicator that we want objects
+		// returned.
+		searchControls.setCountLimit(info.getPageSize());
 		searchControls.setReturningObjFlag(true);
 
 		return searchControls;
@@ -531,6 +561,32 @@ public final class LdapBrowserHelper {
 		return cert;
 	}
 
+	/*
+	 * Returns true if an Exception is indicates that paging is not
+	 * supported by the current LDAP server and false otherwise.
+	 * 
+	 * When an exception thrown by an LDAP paged search is because the
+	 * LDAP server doesn't support paging, an
+	 * OperationNotSupportedException is thrown that contains the
+	 * following message:
+	 *
+	 *      [LDAP: error code 53 - Unwilling To Perform]; nested exception is javax.naming.OperationNotSupportedException: [LDAP: error code 53 - Unwilling To Perform]; remaining name 'o=novell'
+	 */
+	private static boolean isPageNotSupportedException(Exception ex) {
+		boolean reply = ((null != ex) && (ex instanceof OperationNotSupportedException));
+		if (reply) {
+			String details = ex.getMessage();
+			reply = MiscUtil.hasString(details);
+			if (reply) {
+				details = details.toLowerCase();
+				reply = (
+					details.contains("ldap: error code 53") &&
+					details.contains("unwilling to perform"));
+			}
+		}
+		return reply;
+	}
+	
 	/*
 	 * Returns true if a root cause exception indicates that the LDAP
 	 * server doesn't support anonymous authentication and false
@@ -581,5 +637,18 @@ public final class LdapBrowserHelper {
 		}
 	
 		return hasMore;
+	}
+	
+	/*
+	 * Validates that the LdapSearchInfo contains a valid page size for
+	 * the given LDAP server.
+	 */
+	private static void validatePageSize(DirectoryServer ds, LdapSearchInfo si) {
+		// Is this ActiveDirectory with a page size larger than it
+		// supports?
+		if (ds.isActiveDirectory() && (si.getPageSize() > MAX_AD_PAGE_SIZE)) {
+			// Yes!  Scale it back to its maximum.
+			si.setPageSize(MAX_AD_PAGE_SIZE);
+		}
 	}
 }

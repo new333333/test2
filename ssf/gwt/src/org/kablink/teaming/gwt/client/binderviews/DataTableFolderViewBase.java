@@ -511,8 +511,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Inner class used to represent a select all check box in a data
 	 * table's header.
-	 * 
-	 * @author rvasudevan@novell.com
 	 */
 	private class SelectAllHeader extends Header<Boolean> {
 		private boolean m_checked;	//

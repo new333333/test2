@@ -38,6 +38,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * ?
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public class LdapServer implements IsSerializable {
 	private Boolean	m_hasSslCertificateBin;	//

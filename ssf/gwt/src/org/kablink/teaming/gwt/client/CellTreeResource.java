@@ -39,6 +39,7 @@ import com.google.gwt.user.cellview.client.CellTree;
  * Resources that match the GWT standard style theme.
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public interface CellTreeResource extends CellTree.Resources {
 	// Define the images...

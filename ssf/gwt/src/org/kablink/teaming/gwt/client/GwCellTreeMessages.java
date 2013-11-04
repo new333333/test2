@@ -38,6 +38,7 @@ import com.google.gwt.user.cellview.client.CellTree;
  * ?
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public interface GwCellTreeMessages extends CellTree.CellTreeMessages {
 	@Override
