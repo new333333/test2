@@ -732,7 +732,7 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 					
 					style = m_messageHint.getElement().getStyle(); 
 					style.setLeft( left+13, Unit.PX );
-					style.setTop( top+15, Unit.PX );
+					style.setTop( top+13, Unit.PX );
 					
 					m_messageHint.setVisible( true );
 				}
