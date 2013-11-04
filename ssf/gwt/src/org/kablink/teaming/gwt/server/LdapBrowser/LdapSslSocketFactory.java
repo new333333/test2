@@ -41,86 +41,153 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
- * Created with IntelliJ IDEA. User: RAJESH-PC Date: 3/28/13
- * Time: 3:29 PM.
- * 
- * To change this template use File | Settings | File Templates.
+ * ?
  * 
  * @author rvasudevan
  */
 public class LdapSslSocketFactory extends SSLSocketFactory {
+	protected static Log m_logger = LogFactory.getLog(LdapSslSocketFactory.class);
+	
 	private SSLSocketFactory	m_factory;	//
 
-	public LdapSslSocketFactory()
-	{
-		try
-		{
-
-			SSLContext sslcontext = null;
-			// here you can instanciate your own ssl context with hardened security and your own trust managers which can check the
-			// extension
+	/**
+	 * Constructor method.
+	 */
+	public LdapSslSocketFactory() {
+		try {
+			// Here you can instantiate your own SSL context with
+			// hardened security and your own trust managers which can
+			// check the extension
 			// SSLContext sslcontext = SSLSecurityInitializer.getContext();
-			if (sslcontext == null)
-			{
+			   SSLContext sslcontext = null;	//!
+			
+			if (null == sslcontext) {
 				sslcontext = SSLContext.getInstance("TLS");
-				sslcontext.init(null, // No KeyManager required
-						new TrustManager[] { new LdapSslTrustManager() }, new java.security.SecureRandom());
+				sslcontext.init(
+					null,	// null -> No KeyManager required.
+					new TrustManager[] {new LdapSslTrustManager()},
+					new java.security.SecureRandom());
 			}
 
-			m_factory = (SSLSocketFactory) sslcontext.getSocketFactory();
-
+			m_factory = ((SSLSocketFactory) sslcontext.getSocketFactory());
 		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
+		
+		catch (Exception ex) {
+			m_logger.error("::LdapSssSocketFactory( Constructor Exception )", ex);
 		}
 	}
 
-	public static SocketFactory getDefault()
-	{
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
+	public static SocketFactory getDefault() {
 		return new LdapSslSocketFactory();
 	}
 
+	/**
+	 * ?
+	 *
+	 * @param socket
+	 * @param s
+	 * @param i
+	 * @param flag
+	 * 
+	 * @return
+	 * 
+	 * @throws IOException
+	 */
 	@Override
-	public Socket createSocket(Socket socket, String s, int i, boolean flag) throws IOException
-	{
+	public Socket createSocket(Socket socket, String s, int i, boolean flag) throws IOException {
 		return m_factory.createSocket(socket, s, i, flag);
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param inaddr
+	 * @param i
+	 * @param inaddr1
+	 * @param j
+	 * 
+	 * @return
+	 * 
+	 * @throws IOException
+	 */
 	@Override
-	public Socket createSocket(InetAddress inaddr, int i, InetAddress inaddr1, int j) throws IOException
-	{
+	public Socket createSocket(InetAddress inaddr, int i, InetAddress inaddr1, int j) throws IOException {
 		return m_factory.createSocket(inaddr, i, inaddr1, j);
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param inaddr
+	 * @param i
+	 * 
+	 * @return
+	 * 
+	 * @throws IOException
+	 */
 	@Override
-	public Socket createSocket(InetAddress inaddr, int i) throws IOException
-	{
+	public Socket createSocket(InetAddress inaddr, int i) throws IOException {
 		return m_factory.createSocket(inaddr, i);
 	}
 
+	/**
+	 * ?
+	 *
+	 * @param s
+	 * @param i
+	 * @param inaddr
+	 * @param j
+	 * 
+	 * @return
+	 * 
+	 * @throws IOException
+	 */
 	@Override
-	public Socket createSocket(String s, int i, InetAddress inaddr, int j) throws IOException
-	{
+	public Socket createSocket(String s, int i, InetAddress inaddr, int j) throws IOException {
 		return m_factory.createSocket(s, i, inaddr, j);
 	}
 
+	/**
+	 * ?
+	 *
+	 * @param s
+	 * @param i
+	 * 
+	 * @return
+	 * 
+	 * @throws IOException
+	 */
 	@Override
-	public Socket createSocket(String s, int i) throws IOException
-	{
+	public Socket createSocket(String s, int i) throws IOException {
 		return m_factory.createSocket(s, i);
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
 	@Override
-	public String[] getDefaultCipherSuites()
-	{
+	public String[] getDefaultCipherSuites() {
 		return m_factory.getSupportedCipherSuites();
 	}
 
+	/**
+	 * ?
+	 *
+	 * @return
+	 */
 	@Override
-	public String[] getSupportedCipherSuites()
-	{
+	public String[] getSupportedCipherSuites() {
 		return m_factory.getSupportedCipherSuites();
 	}
 }

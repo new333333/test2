@@ -88,32 +88,53 @@ public class LdapServer implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public Boolean getHasSslCertificateBin() {return m_hasSslCertificateBin;}
-	public Boolean getSslEnabled()           {return m_sslEnabled;          }
-	public byte[]  getSslCertificateBin()    {return m_sslCertificateBin;   }
-	public int     getLdapPort()             {return m_ldapPort;            }
-	public String  getAddress()              {return m_address;             }
-	public String  getDescription()          {return m_description;         }
-	public String  getDirectoryId()          {return m_directoryId;         }
-	public String  getName()                 {return m_name;                }
-	public String  getSslCertificateFile()   {return m_sslCertificateFile;  }
-	public String  getTempSslCertBinDir()    {return m_tempSslCertBinDir;   }
-	public String  getUrl()                  {return m_url;                 }
+	public boolean isSslEnabled()            {return ((null != m_sslEnabled) && m_sslEnabled);}
+	public Boolean getHasSslCertificateBin() {return m_hasSslCertificateBin;                  }
+	public Boolean getSslEnabled()           {return m_sslEnabled;                            }
+	public byte[]  getSslCertificateBin()    {return m_sslCertificateBin;                     }
+	public int     getLdapPort()             {return m_ldapPort;                              }
+	public String  getAddress()              {return m_address;                               }
+	public String  getDescription()          {return m_description;                           }
+	public String  getDirectoryId()          {return m_directoryId;                           }
+	public String  getName()                 {return m_name;                                  }
+	public String  getSslCertificateFile()   {return m_sslCertificateFile;                    }
+	public String  getTempSslCertBinDir()    {return m_tempSslCertBinDir;                     }
+	public String  getUrl()                  {return m_url;                                   }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setHasSslCertificateBin(Boolean hasSslCertificateBin) {m_hasSslCertificateBin = hasSslCertificateBin;}
-	public void setSslEnabled(          Boolean sslEnabled)           {m_sslEnabled           = sslEnabled;          }
-	public void setSslCertificateBin(   byte[]  sslCertificateBin)    {m_sslCertificateBin    = sslCertificateBin;   }
-	public void setLdapPort(            int     ldapPort)             {m_ldapPort             = ldapPort;            }
-	public void setAddress(             String  address)              {m_address              = address;             }
-	public void setDescription(         String  description)          {m_description          = description;         }
-	public void setDirectoryId(         String  directoryId)          {m_directoryId          = directoryId;         }
-	public void setName(                String  name)                 {m_name                 = name;                }
-	public void setSslCertificateFile(  String  sSLKeyFile)           {m_sslCertificateFile   = sSLKeyFile;          }
-	public void setTempSslCertBinDir(   String  tempSslCertBinDir)    {m_tempSslCertBinDir    = tempSslCertBinDir;   }
-	public void setUrl(                 String  url)                  {m_url                  = url;                 }
+	public void setHasSslCertificateBin(Boolean hasSslCertificateBin) {m_hasSslCertificateBin = hasSslCertificateBin;         }
+	public void setSslEnabled(          Boolean sslEnabled)           {m_sslEnabled           = sslEnabled;                   }
+	public void setSslCertificateBin(   byte[]  sslCertificateBin)    {m_sslCertificateBin    = sslCertificateBin;            }
+	public void setLdapPort(            int     ldapPort)             {m_ldapPort             = ldapPort;                     }
+	public void setAddress(             String  address)              {m_address              = address; checkForSslAddress();}
+	public void setDescription(         String  description)          {m_description          = description;                  }
+	public void setDirectoryId(         String  directoryId)          {m_directoryId          = directoryId;                  }
+	public void setName(                String  name)                 {m_name                 = name;                         }
+	public void setSslCertificateFile(  String  sSLKeyFile)           {m_sslCertificateFile   = sSLKeyFile;                   }
+	public void setTempSslCertBinDir(   String  tempSslCertBinDir)    {m_tempSslCertBinDir    = tempSslCertBinDir;            }
+	public void setUrl(                 String  url)                  {m_url                  = url;                          }
+
+	/*
+	 * Sets the LdapServer's m_sslEnabled flag it it's not already set
+	 * based on the LDAP server address stored in m_address.
+	 */
+	private void checkForSslAddress() {
+		// If we already have an SSL enabled flag stored or we don't
+		// have an address to check...
+		if ((null != m_sslEnabled) || (null == m_address) || (0 == m_address.length())) {
+			// ...bail.
+			return;
+		}
+
+		// If the LDAP server address starts with 'ldaps://', consider
+		// it to be SSL.
+		String normalizedAddr = m_address.toLowerCase().trim();
+		if (normalizedAddr.startsWith("ldaps://"))
+		     setSslEnabled(Boolean.TRUE );
+		else setSslEnabled(Boolean.FALSE);
+	}
 }

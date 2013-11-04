@@ -264,8 +264,10 @@ public final class LdapBrowserHelper {
 					msgPatches = new String[]{t.getLocalizedMessage()};
 				}
 				else if (anonymous && isRootCauseAnonymousNotSupportedException(rootCause)) {
-					msgKey     = "ldapBrowserError.anonymousNotSupported";
-					msgPatches = new String[]{ds.getAddress()};
+					if (ds.isSslEnabled())
+					     msgKey = "ldapBrowserError.anonymousNotSupported.ssl";
+					else msgKey = "ldapBrowserError.anonymousNotSupported";
+					msgPatches  = new String[]{ds.getAddress()};
 				}
 				else {
 					msgKey     = "ldapBrowserError.otherException2";
