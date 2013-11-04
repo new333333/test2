@@ -89,7 +89,7 @@ public class SecureLdapContextSource extends LdapContextSource {
 			// Specify use of ssl.
 			env.put(Context.SECURITY_PROTOCOL, "ssl");
 
-			env.put("java.naming.ldap.factory.socket", "com.novell.gw.admin.server.LdapSslSocketFactory");
+			env.put("java.naming.ldap.factory.socket", "org.kablink.teaming.gwt.server.LdapBrowser.LdapSslSocketFactory");
 
 			// This next two lines causes the LdapSslFactory and the
 			// trust manager to be initialized.

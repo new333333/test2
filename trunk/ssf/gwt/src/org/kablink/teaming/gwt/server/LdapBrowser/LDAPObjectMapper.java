@@ -38,45 +38,36 @@ import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 
 /**
- * Created with IntelliJ IDEA. User: RAJESH-PC Date: 3/8/13
- * Time: 8:12 AM.
- * 
- * To change this template use File | Settings | File Templates.
+ * ?
  * 
  * @author rvasudevan
  */
 public class LDAPObjectMapper implements ContextMapper {
-	public static final String ORGANIZATION = "Organization";
-	public static final String ORG_UNIT = "organizationalUnit";
-	public static final String OBJ_CLASS = "objectClass";
+	public static final String ORGANIZATION = "Organization";		//
+	public static final String ORG_UNIT     = "organizationalUnit";	//
+	public static final String OBJ_CLASS    = "objectClass";		//
 
 	@Override
-	public Object mapFromContext(Object o)
-	{
-		DirContextAdapter context = (DirContextAdapter) o;
+	public Object mapFromContext(Object o) {
+		DirContextAdapter context = ((DirContextAdapter) o);
 
-		// Map the data into our LDAP Object
+		// Map the data into our LDAP Object.
 		LdapObject p = new LdapObject();
 		p.setDn(context.getDn().toString());
 
-		// Get the whole object class hierarchy for this object (they will be comma separated)
-		String[] objectClass = (String[]) context.getStringAttributes(OBJ_CLASS);
+		// Get the whole object class hierarchy for this object (they
+		// will be comma separated.)
+		String[] objectClass = ((String[]) context.getStringAttributes(OBJ_CLASS));
 		p.setObjectClass(objectClass);
 
-		// For Organization, the name comes from attribute "o"
-		if (p.isObjectClassFound(ORGANIZATION))
-			p.setName(context.getStringAttribute("o"));
-		// For Organizational Unit, the name comes from attribute "o"
-		else if (p.isObjectClassFound(ORG_UNIT))
-			p.setName(context.getStringAttribute("ou"));
-		else if (p.isObjectClassFound("Country"))
-			p.setName(context.getStringAttribute("c"));
-		else if (p.isObjectClassFound("Locality"))
-			p.setName(context.getStringAttribute("l"));
-		else if (p.isObjectClassFound("domain"))
-			p.setName(context.getStringAttribute("dc"));
-		else
-			p.setName(context.getStringAttribute("cn"));
+		
+		if      (p.isObjectClassFound(ORGANIZATION)) p.setName(context.getStringAttribute("o") );	// For Organization,        the name comes from attribute 'o'.
+		else if (p.isObjectClassFound(ORG_UNIT))     p.setName(context.getStringAttribute("ou"));	// For Organizational Unit, the name comes from attribute 'ou'.
+		else if (p.isObjectClassFound("Country"))    p.setName(context.getStringAttribute("c") );
+		else if (p.isObjectClassFound("Locality"))   p.setName(context.getStringAttribute("l") );
+		else if (p.isObjectClassFound("domain"))     p.setName(context.getStringAttribute("dc"));
+		else                                         p.setName(context.getStringAttribute("cn"));
+		
 		return p;
 	}
 }
