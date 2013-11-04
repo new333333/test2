@@ -43,6 +43,7 @@ import org.springframework.ldap.core.support.LdapContextSource;
  * ?
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public class SecureLdapContextSource extends LdapContextSource {
 	private Boolean	m_useSSL;	//

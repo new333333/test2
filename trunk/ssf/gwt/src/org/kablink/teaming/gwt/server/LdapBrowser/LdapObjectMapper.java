@@ -41,8 +41,9 @@ import org.springframework.ldap.core.DirContextAdapter;
  * ?
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
-public class LDAPObjectMapper implements ContextMapper {
+public class LdapObjectMapper implements ContextMapper {
 	public static final String ORGANIZATION = "Organization";		//
 	public static final String ORG_UNIT     = "organizationalUnit";	//
 	public static final String OBJ_CLASS    = "objectClass";		//

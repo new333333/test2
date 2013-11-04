@@ -43,34 +43,57 @@ import javax.net.ssl.X509TrustManager;
  * admin service needs to connect to.
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
-public class LdapSslTrustManager implements X509TrustManager
-{
+public class LdapSslTrustManager implements X509TrustManager {
 	private static ConcurrentHashMap<Object, X509Certificate>	m_certificates = new ConcurrentHashMap<Object, X509Certificate>();	//
 
-	public static void addCert(String key, X509Certificate cert)
-	{
+	/**
+	 * ?
+	 * 
+	 * @param key
+	 * @param cert
+	 */
+	public static void addCert(String key, X509Certificate cert) {
 		m_certificates.put(cert, cert);
 	}
 
-	public static void removeCert(X509Certificate cert)
-	{
+	/**
+	 * ?
+	 * 
+	 * @param cert
+	 */
+	public static void removeCert(X509Certificate cert) {
 		m_certificates.remove(cert);
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param xcs
+	 * @param string
+	 */
 	@Override
-	public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException
-	{
+	public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException {
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param xcs
+	 * @param string
+	 */
 	@Override
-	public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException
-	{
+	public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
 	@Override
-	public X509Certificate[] getAcceptedIssuers()
-	{
+	public X509Certificate[] getAcceptedIssuers() {
 		// Collection<X509Certificate> issuers = m_certificates.values();
 		// return issuers.toArray(new X509Certificate[issuers.size()]);
 		return null;

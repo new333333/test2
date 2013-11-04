@@ -39,6 +39,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * browser (i.e., LdapBrowserDlg.java.)
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public class LdapObject implements IsSerializable,  Comparable<LdapObject> {
 	private String		m_dn;			//

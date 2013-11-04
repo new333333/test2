@@ -38,6 +38,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * The Class PageOutputParams.
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public class PageOutputParams implements IsSerializable {
 	private int		m_outOf;	// The out of.

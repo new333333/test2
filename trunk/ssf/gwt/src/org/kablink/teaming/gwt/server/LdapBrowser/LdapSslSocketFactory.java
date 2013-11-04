@@ -48,6 +48,7 @@ import org.apache.commons.logging.LogFactory;
  * ?
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public class LdapSslSocketFactory extends SSLSocketFactory {
 	protected static Log m_logger = LogFactory.getLog(LdapSslSocketFactory.class);

@@ -76,6 +76,7 @@ import com.google.gwt.view.client.*;
  * An LDAP browser dialog.
  *  
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	private AsyncDataProvider<LdapObject>		m_dataProvider;		// Data provider for the CellTree.
@@ -236,8 +237,9 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 								}
 								else {
 									String baseDn = getBaseDnFromUserName(ds.getSyncUser());
-									if (!(GwtClientHelper.hasString(baseDn)))
+									if (!(GwtClientHelper.hasString(baseDn))) {
 										baseDn = getBaseDnFromUserName(ds.getBaseDn());
+									}
 									ds.setUrl(baseDn);
 								}
 							}
@@ -457,14 +459,14 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 			}
 		});
 
-		// Built the tree and set the max node size to be 1000.  Set
-		// the initial value to be ROOT string to differ from
-		// LdapObject.
-		m_tree = new CellTree(m_treeViewModel, TREE_ROOT, treeResource, treeMessages);
-
-		// Active Directory has a max limit of 1000, we will do the
-		// same.
-		m_tree.setDefaultNodeSize(1000);
+		// Construct the tree widget, setting the initial value to be
+		// ROOT string to differ from LdapObject.
+		m_tree = new CellTree(
+			m_treeViewModel,
+			TREE_ROOT,
+			treeResource,
+			treeMessages,
+			Integer.MAX_VALUE);	// MaxInt -> Paging is managed on the server.  Everything is returned.
 
 		// Set open the tree so that we can get the data.
 		m_tree.getRootTreeNode().setChildOpen(0, true);

@@ -40,6 +40,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * The Class QueryOutput.
  * 
  * @author rvasudevan
+ * @author drfoster@novell.com
  */
 public class QueryOutput<T> implements IsSerializable {
 	private boolean				m_sizeExceeded;	//
