@@ -235,9 +235,10 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 			panel = new FlowPanel();
 			panel.getElement().getStyle().setPosition( Position.RELATIVE );
 			m_messageTA = new TextArea();
+			m_messageTA.addStyleName( "emailPublicLinkDlg_MessageBox" );
 			m_messageTA.getElement().getStyle().setMarginTop( 6, Unit.PX );
 			m_messageTA.setCharacterWidth( 75 );
-			m_messageTA.setVisibleLines( 15 );
+			m_messageTA.setVisibleLines( 10 );
 			m_messageTA.addKeyPressHandler( new KeyPressHandler()
 			{
 				@Override
@@ -714,8 +715,8 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 					top = m_emailAddressesTB.getAbsoluteTop() - m_emailAddressesTB.getParent().getAbsoluteTop();
 					
 					style = m_emailHint.getElement().getStyle(); 
-					style.setLeft( left+25, Unit.PX );
-					style.setTop( top+8, Unit.PX );
+					style.setLeft( left+13, Unit.PX );
+					style.setTop( top+6, Unit.PX );
 					
 					m_emailHint.setVisible( true );
 				}
@@ -730,7 +731,7 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 					top = m_messageTA.getAbsoluteTop() - m_messageTA.getParent().getAbsoluteTop();
 					
 					style = m_messageHint.getElement().getStyle(); 
-					style.setLeft( left+25, Unit.PX );
+					style.setLeft( left+13, Unit.PX );
 					style.setTop( top+15, Unit.PX );
 					
 					m_messageHint.setVisible( true );
