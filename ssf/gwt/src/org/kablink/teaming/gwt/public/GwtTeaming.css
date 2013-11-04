@@ -3109,12 +3109,13 @@ body, table td, select
 	display: inline-block;
 	}
 
-.gwt-TextBox, .gwt-PasswordTextBox, .gwt-DateBox, .gwt-FileUpload {
+.gwt-TextBox, .gwt-PasswordTextBox, .gwt-DateBox, .gwt-FileUpload, .gwt-TextArea {
 	border: 1px solid #949494;
 	border-radius: 3px;
 	font-size: 13px;
 	padding: 5px;
 	background-color: #fff;
+	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
@@ -5854,7 +5855,7 @@ td.datePickerMonth {
 
 
 /* Start:  Email Public Link dialog styles. */
-	.vibe-emailPublicLinkDlg-content {margin: 10px 10px 10px 13px;}
+	.vibe-emailPublicLinkDlg-content {margin: 10px 13px;}
 	
 .emailPublicLinkDlg_HeaderPanel
 {
@@ -5892,7 +5893,7 @@ td.datePickerMonth {
 
 .emailPublicLinkDlg_expirationPanel
 {
-	margin-top: 16px;
+	margin-top: 10px;
 }
 
 .emailPublicLinkDlg_Hint
@@ -5904,11 +5905,19 @@ td.datePickerMonth {
 .emailPublicLinkDlg_FloatingHint
 {
 	color: #949494;
-	font-size: small;
-	left: 0;
+	font-size: 13px;
 	position: absolute;
+	left: 0;
 	top: 0;
 	z-index: 1000;
+}
+
+.emailPublicLinkDlg_MessageBox
+{
+	padding: 10px !important;
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif;
+	line-height: 18px;
 }
 
 /* End:  Email Public Link dialog styles. */
