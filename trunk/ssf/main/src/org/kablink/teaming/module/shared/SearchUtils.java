@@ -775,17 +775,29 @@ public class SearchUtils {
 	}
 	
 	public static AclResourceSession openAclResourceSession(ResourceDriver driver) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+
 		if(!(driver instanceof AclResourceDriver)) {
-			logger.warn("Unable to open session on resource driver '" + driver.getName() + "' for user '" + RequestContextHolder.getRequestContext().getUserName() + " because the driver is of class '" + driver.getClass().getName() + "'");
+			logger.warn("Unable to open session on resource driver '" + driver.getName() + "' for user '" + user.getName() + " because the driver is of class '" + driver.getClass().getName() + "'");
 			return null;
 		}
-		
-		try {
-			return getResourceDriverManager().openSessionUserMode((AclResourceDriver) driver);
-		} catch (AclItemPrincipalMappingException e) {
+
+		if(user.getIdentityInfo().isFromLdap()) {
 			if(logger.isDebugEnabled())
-				logger.debug("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + RequestContextHolder.getRequestContext().getUserName() + "'");
-			return null;
+				logger.debug("Opening a session on resource driver '" + driver.getName() + "' for user '" + user.getName() + "' to check access");
+			
+			try {
+				return getResourceDriverManager().openSessionUserMode((AclResourceDriver) driver);
+			} catch (AclItemPrincipalMappingException e) {
+				if(logger.isDebugEnabled())
+					logger.debug("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + user.getName() + "'");
+				return null;
+			}
+		}
+		else {
+			if(logger.isTraceEnabled())
+				logger.trace("No need to open a session on resource driver '" + driver.getName() + "' for user '" + user.getName() + "' to check access because the user is not provisioned from LDAP");
+			return null;			
 		}
 	}
 	
