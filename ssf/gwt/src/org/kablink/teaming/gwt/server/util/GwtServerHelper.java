@@ -540,6 +540,7 @@ public class GwtServerHelper {
 	/*
 	 * Inner class used compare two GwtAdminAction objects.
 	 */
+	@SuppressWarnings("unused")
 	private static class GwtAdminActionComparator implements Comparator<GwtAdminAction> {
 		private Collator	m_collator;	//
 		
@@ -2611,6 +2612,174 @@ public class GwtServerHelper {
 			}
 			catch( AccessControlException e )
 			{}
+			
+			// Does the user have rights to "Manage groups"?
+			try
+			{
+				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.groups" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_GROUPS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_GROUPS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch( AccessControlException e ) {}
+
+			// Does the user have rights to "Manage shares"?
+			try
+			{
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.shareItems" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_SHARE_ITEMS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_SHARE_ITEMS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
+			// Does the user have rights to "manage adhoc folder?"?
+			if ( isFilr && adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_adhocFolders" );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.CONFIGURE_ADHOC_FOLDERS );
+				
+				// Add this action to the "management" category
+				managementCategory.addAdminOption( adminAction );
+			}
+
+			// Does the user have rights to "Manage quotas"?
+			try
+			{
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.quotas" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_QUOTAS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
+			// Does the user have rights to "Manage file upload limits"?
+			try
+			{
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.fileUploadLimits" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_FILE_UPLOAD_LIMITS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_FILE_UPLOAD_LIMITS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
+			// Does the user have rights to "Manage net folders"?
+			try
+			{
+				Binder netFoldersParentBinder = null;
+				
+				try
+				{
+					netFoldersParentBinder = SearchUtils.getNetFoldersRootBinder();
+				}
+				catch ( Exception ex )
+				{
+				}
+
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) &&
+					 LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
+					 netFoldersParentBinder != null &&
+					 binderModule.testAccess( netFoldersParentBinder, BinderOperation.modifyBinder ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.netFolders" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_NET_FOLDERS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_NET_FOLDERS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
+			// Does the user have rights to "Manage resource drivers"?
+			try
+			{
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) &&
+					 LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
+					 adminModule.testAccess( AdminOperation.manageResourceDrivers ) &&
+					 binderModule.testAccess( top, BinderOperation.indexBinder ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.resourceDrivers" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_RESOURCE_DRIVERS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_RESOURCE_DRIVERS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
+			// Does the user have rights to "manage JITS configuration"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_jits_zone_config" );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.JITS_ZONE_CONFIG );
+				
+				// Add this action to the "management" category
+				managementCategory.addAdminOption( adminAction );
+			}
 
 			// Does the user have rights to "Manage the search index"?
 			if ( top != null )
@@ -2677,178 +2846,6 @@ public class GwtServerHelper {
 				}
 			}
 
-			// Does the user have rights to "Manage groups"?
-			try
-			{
-				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
-				{
-					// Yes
-					title = NLT.get( "administration.manage.groups" );
-
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_GROUPS );
-					url = adaptedUrl.toString();
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, url, AdminAction.MANAGE_GROUPS );
-					
-					// Add this action to the "management" category
-					managementCategory.addAdminOption( adminAction );
-				}
-			}
-			catch( AccessControlException e ) {}
-
-			// Does the user have rights to "Manage quotas"?
-			try
-			{
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
-				{
-					// Yes
-					title = NLT.get( "administration.manage.quotas" );
-
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS );
-					url = adaptedUrl.toString();
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, url, AdminAction.MANAGE_QUOTAS );
-					
-					// Add this action to the "management" category
-					managementCategory.addAdminOption( adminAction );
-				}
-			}
-			catch(AccessControlException e) {}
-
-			// Does the user have rights to "Manage file upload limits"?
-			try
-			{
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
-				{
-					// Yes
-					title = NLT.get( "administration.manage.fileUploadLimits" );
-
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_FILE_UPLOAD_LIMITS );
-					url = adaptedUrl.toString();
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, url, AdminAction.MANAGE_FILE_UPLOAD_LIMITS );
-					
-					// Add this action to the "management" category
-					managementCategory.addAdminOption( adminAction );
-				}
-			}
-			catch(AccessControlException e) {}
-
-			// Does the user have rights to "Manage resource drivers"?
-			try
-			{
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) &&
-					 LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
-					 adminModule.testAccess( AdminOperation.manageResourceDrivers ) &&
-					 binderModule.testAccess( top, BinderOperation.indexBinder ) )
-				{
-					// Yes
-					title = NLT.get( "administration.manage.resourceDrivers" );
-
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_RESOURCE_DRIVERS );
-					url = adaptedUrl.toString();
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, url, AdminAction.MANAGE_RESOURCE_DRIVERS );
-					
-					// Add this action to the "management" category
-					managementCategory.addAdminOption( adminAction );
-				}
-			}
-			catch(AccessControlException e) {}
-
-			// Does the user have rights to "Manage net folders"?
-			try
-			{
-				Binder netFoldersParentBinder = null;
-				
-				try
-				{
-					netFoldersParentBinder = SearchUtils.getNetFoldersRootBinder();
-				}
-				catch ( Exception ex )
-				{
-				}
-
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) &&
-					 LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
-					 netFoldersParentBinder != null &&
-					 binderModule.testAccess( netFoldersParentBinder, BinderOperation.modifyBinder ) )
-				{
-					// Yes
-					title = NLT.get( "administration.manage.netFolders" );
-
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_NET_FOLDERS );
-					url = adaptedUrl.toString();
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, url, AdminAction.MANAGE_NET_FOLDERS );
-					
-					// Add this action to the "management" category
-					managementCategory.addAdminOption( adminAction );
-				}
-			}
-			catch(AccessControlException e) {}
-
-			// Does the user have rights to "manage adhoc folder?"?
-			if ( isFilr && adminModule.testAccess( AdminOperation.manageFunction ) )
-			{
-				// Yes
-				title = NLT.get( "administration.configure_adhocFolders" );
-
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, "", AdminAction.CONFIGURE_ADHOC_FOLDERS );
-				
-				// Add this action to the "management" category
-				managementCategory.addAdminOption( adminAction );
-			}
-
-			// Does the user have rights to "Manage shares"?
-			try
-			{
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
-				{
-					// Yes
-					title = NLT.get( "administration.manage.shareItems" );
-
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_SHARE_ITEMS );
-					url = adaptedUrl.toString();
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, url, AdminAction.MANAGE_SHARE_ITEMS );
-					
-					// Add this action to the "management" category
-					managementCategory.addAdminOption( adminAction );
-				}
-			}
-			catch(AccessControlException e) {}
-
-			// Does the user have rights to "Manage workspace and folder templates"?
-			if ( isFilr == false && adminModule.testAccess( AdminOperation.manageTemplate ) )
-			{
-				// Yes
-				title = NLT.get( "administration.configure_configurations" );
-
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION );
-				url = adaptedUrl.toString();
-				
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, url, AdminAction.MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES );
-				
-				// Add this action to the "management" category
-				managementCategory.addAdminOption( adminAction );
-			}
-
 			// Does the user have rights to "Manage license"?
 			if( ReleaseInfo.isLicenseRequiredEdition() )
 			{
@@ -2867,6 +2864,33 @@ public class GwtServerHelper {
 					// Add this action to the "management" category
 					managementCategory.addAdminOption( adminAction );
 				}
+			}
+
+//!
+			// The following are the Vibe specific 'Management' actions
+			// not addressed by Lynn's Filr redesign:
+			//     Workspace and Folder Templates
+			//     Zones
+			//     Applications
+			//     Application Groups
+			//     Extensions
+			//     Database Logs and File Archiving
+			
+			// Does the user have rights to "Manage workspace and folder templates"?
+			if ( isFilr == false && adminModule.testAccess( AdminOperation.manageTemplate ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_configurations" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES );
+				
+				// Add this action to the "management" category
+				managementCategory.addAdminOption( adminAction );
 			}
 
 			// Does the user have rights to "Manage zones"?
@@ -2946,19 +2970,6 @@ public class GwtServerHelper {
 				managementCategory.addAdminOption( adminAction );
 			}
 
-			// Does the user have rights to "manage JITS configuration"?
-			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
-			{
-				// Yes
-				title = NLT.get( "administration.configure_jits_zone_config" );
-
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, "", AdminAction.JITS_ZONE_CONFIG );
-				
-				// Add this action to the "management" category
-				managementCategory.addAdminOption( adminAction );
-			}
-
 			// Does the user have rights to "manage database pruning"? 
 			if ( (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe() || Utils.checkIfKablink()) && 
 					adminModule.testAccess( AdminOperation.manageFunction ) )
@@ -2981,25 +2992,87 @@ public class GwtServerHelper {
 			systemCategory.setCategoryType( GwtAdminCategory.GwtAdminCategoryType.SYSTEM );
 			adminCategories.add( systemCategory );
 
-			// Does the user have rights to "Form/View Designers"?
-			if ( isFilr == false && ( null != top ) &&
-			     (definitionModule.testAccess( top, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition ) ||
-				  definitionModule.testAccess( top, Definition.WORKFLOW,     DefinitionOperation.manageDefinition )) )
+			// Does the user have rights to "Share settings"?
+			if ( adminModule.testAccess( AdminOperation.manageFunctionMembership ) )
 			{
-				// Yes
-				title = NLT.get( "administration.definition_builder_designers" );
+				title = NLT.get( "administration.configure_shareSettings" );
 
 				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_SHARE_SETTINGS );
 				url = adaptedUrl.toString();
 				
 				adminAction = new GwtAdminAction();
-				adminAction.init( title, url, AdminAction.FORM_VIEW_DESIGNER );
+				adminAction.init( title, url, AdminAction.CONFIGURE_SHARE_SETTINGS );
 				
 				// Add this action to the "system" category
 				systemCategory.addAdminOption( adminAction );
 			}
+
+			// Does the user have rights to "configure user access"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_userAccess" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_USER_ACCESS );
+				url = adaptedUrl.toString();
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_USER_ACCESS );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
+			// Yes, are we running the Enterprise version of Teaming?
+			if ( ReleaseInfo.isLicenseRequiredEdition() == true )
+			{
+				// Yes
+				// Does the user have rights to "Configure File Sync App"?
+				if ( adminModule.testAccess( AdminOperation.manageFileSynchApp ) )
+				{
+					// Yes
+					title = NLT.get( "administration.configureVibeDesktop" );
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, "", AdminAction.CONFIGURE_FILE_SYNC_APP );
+					
+					// Add this action to the "system" category
+					systemCategory.addAdminOption( adminAction );
+				}
+
+				// Does the user have rights to "Configure Mobile Apps"?
+				if ( adminModule.testAccess( AdminOperation.manageMobileApps ) )
+				{
+					// Yes
+					title = NLT.get( "administration.configureMobileApps" );
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, "", AdminAction.CONFIGURE_MOBILE_APPS );
+					
+					// Add this action to the "system" category
+					systemCategory.addAdminOption( adminAction );
+				}
+			}
 			
+			// Does the user have rights to "Configure E-Mail"?
+			if ( adminModule.testAccess( AdminOperation.manageMail ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_mail" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_POSTINGJOB_CONFIGURE );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_EMAIL );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
 			// Does the user have the rights to "ldap configuration"?
 			if ( ldapModule.testAccess(LdapOperation.manageLdap ) )
 			{
@@ -3020,23 +3093,75 @@ public class GwtServerHelper {
 				}
 			}
 			
-			// Does the user have rights to "configure user access"?
-			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			// Does the user have rights to run reports?
+			if ( adminModule.testAccess( AdminOperation.report ) )
 			{
 				// Yes
-				title = NLT.get( "administration.configure_userAccess" );
-
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_USER_ACCESS );
-				url = adaptedUrl.toString();
-
+				title = NLT.get( "administration.category.reports" );
+				
 				adminAction = new GwtAdminAction();
-				adminAction.init( title, url, AdminAction.CONFIGURE_USER_ACCESS );
+				adminAction.init( title, "", AdminAction.RUN_A_REPORT );
 				
 				// Add this action to the "system" category
 				systemCategory.addAdminOption( adminAction );
 			}
 
+			// Does the user have rights to "Site Branding"
+			if ( top != null && binderModule.testAccess( top, BinderOperation.modifyBinder ) )
+			{
+				// Yes
+				title = NLT.get( "administration.modifySiteBranding" );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.SITE_BRANDING );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
+			// Does the user have rights to "configure name completion settings"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_nameCompletion" );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.CONFIGURE_NAME_COMPLETION );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
+//!
+			// The following are the Vibe specific 'System' actions not
+			// addressed by Lynn's Filr redesign:
+			//     Form/View Designers
+			//     Mobile Access
+			//     Default Landing Pages
+			//     Role Definitions
+			//     Weekends and Holidays
+			//     File Version Aging
+			//     Access Control
+			
+			// Does the user have rights to "Form/View Designers"?
+			if ( isFilr == false && ( null != top ) &&
+			     (definitionModule.testAccess( top, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition ) ||
+				  definitionModule.testAccess( top, Definition.WORKFLOW,     DefinitionOperation.manageDefinition )) )
+			{
+				// Yes
+				title = NLT.get( "administration.definition_builder_designers" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.FORM_VIEW_DESIGNER );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+			
 			// Does the user have rights to "configure mobile access"?
 			if ( isFilr == false && adminModule.testAccess( AdminOperation.manageFunction ) )
 			{
@@ -3105,23 +3230,6 @@ public class GwtServerHelper {
 				systemCategory.addAdminOption( adminAction );
 			}
 			
-			// Does the user have rights to "Configure E-Mail"?
-			if ( adminModule.testAccess( AdminOperation.manageMail ) )
-			{
-				// Yes
-				title = NLT.get( "administration.configure_mail" );
-
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_POSTINGJOB_CONFIGURE );
-				url = adaptedUrl.toString();
-				
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, url, AdminAction.CONFIGURE_EMAIL );
-				
-				// Add this action to the "system" category
-				systemCategory.addAdminOption( adminAction );
-			}
-
 			// Does the user have rights to "Configure File Version Aging"?
 			if ( isFilr == false && adminModule.testAccess( AdminOperation.manageFileVersionAging ) )
 			{
@@ -3160,93 +3268,6 @@ public class GwtServerHelper {
 				// Add this action to the "system" category
 				systemCategory.addAdminOption( adminAction );
 			}
-
-			// Does the user have rights to "Site Branding"
-			if ( top != null && binderModule.testAccess( top, BinderOperation.modifyBinder ) )
-			{
-				// Yes
-				title = NLT.get( "administration.modifySiteBranding" );
-
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, "", AdminAction.SITE_BRANDING );
-				
-				// Add this action to the "system" category
-				systemCategory.addAdminOption( adminAction );
-			}
-			
-			// Does the user have rights to "Share settings"?
-			if ( adminModule.testAccess( AdminOperation.manageFunctionMembership ) )
-			{
-				title = NLT.get( "administration.configure_shareSettings" );
-
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_SHARE_SETTINGS );
-				url = adaptedUrl.toString();
-				
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, url, AdminAction.CONFIGURE_SHARE_SETTINGS );
-				
-				// Add this action to the "system" category
-				systemCategory.addAdminOption( adminAction );
-			}
-
-			// Yes, are we running the Enterprise version of Teaming?
-			if ( ReleaseInfo.isLicenseRequiredEdition() == true )
-			{
-				// Yes
-				// Does the user have rights to "Configure File Sync App"?
-				if ( adminModule.testAccess( AdminOperation.manageFileSynchApp ) )
-				{
-					// Yes
-					title = NLT.get( "administration.configureVibeDesktop" );
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, "", AdminAction.CONFIGURE_FILE_SYNC_APP );
-					
-					// Add this action to the "system" category
-					systemCategory.addAdminOption( adminAction );
-				}
-
-				// Does the user have rights to "Configure Mobile Apps"?
-				if ( adminModule.testAccess( AdminOperation.manageMobileApps ) )
-				{
-					// Yes
-					title = NLT.get( "administration.configureMobileApps" );
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, "", AdminAction.CONFIGURE_MOBILE_APPS );
-					
-					// Add this action to the "system" category
-					systemCategory.addAdminOption( adminAction );
-				}
-			}
-			
-			// Does the user have rights to run reports?
-			if ( adminModule.testAccess( AdminOperation.report ) )
-			{
-				// Yes
-				title = NLT.get( "administration.category.reports" );
-				
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, "", AdminAction.RUN_A_REPORT );
-				
-				// Add this action to the "system" category
-				systemCategory.addAdminOption( adminAction );
-			}
-
-			// Does the user have rights to "configure name completion settings"?
-			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
-			{
-				// Yes
-				title = NLT.get( "administration.configure_nameCompletion" );
-
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, "", AdminAction.CONFIGURE_NAME_COMPLETION );
-				
-				// Add this action to the "system" category
-				systemCategory.addAdminOption( adminAction );
-			}
-
 		}
 		
 		// Create a "Reports" category
@@ -3449,6 +3470,8 @@ public class GwtServerHelper {
 			reportsCategory.addAdminOption( adminAction );
 		}
 
+//!
+/*
 		// Sort the administration actions in each category
 		GwtAdminActionComparator comparator;
 		comparator = new GwtAdminActionComparator();
@@ -3464,6 +3487,7 @@ public class GwtServerHelper {
 				Collections.sort( adminActions, comparator );
 			}
 		}
+*/
 		
 		return adminCategories;
 	}// end getAdminActions()
