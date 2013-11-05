@@ -45,7 +45,6 @@ import java.net.URLDecoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.text.Collator;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -534,46 +533,6 @@ public class GwtServerHelper {
 			// If we get here, reply contains the appropriate value for
 			// the compare.  Return it.
 			return reply;
-		}
-	}
-
-	/*
-	 * Inner class used compare two GwtAdminAction objects.
-	 */
-	@SuppressWarnings("unused")
-	private static class GwtAdminActionComparator implements Comparator<GwtAdminAction> {
-		private Collator	m_collator;	//
-		
-		/**
-		 * Class constructor.
-		 */
-		public GwtAdminActionComparator() {
-			m_collator = Collator.getInstance();
-			m_collator.setStrength(Collator.IDENTICAL);
-		}
-
-	      
-		/**
-		 * Implements the Comparator.compare() method on two GwtAdminAction objects.
-		 *
-		 * Returns:
-		 *    -1 if adminAction1 <  adminAction2;
-		 *     0 if adminAction1 == adminAction2; and
-		 *     1 if adminAction1 >  adminAction2.
-		 */
-		@Override
-		public int compare(GwtAdminAction adminAction1, GwtAdminAction adminAction2) {
-			String s1 = adminAction1.getLocalizedName();
-			if (null == s1) {
-				s1 = "";
-			}
-
-			String s2 = adminAction2.getLocalizedName();
-			if (null == s2) {
-				s2 = "";
-			}
-
-			return 	m_collator.compare(s1, s2);
 		}
 	}
 
@@ -2655,6 +2614,19 @@ public class GwtServerHelper {
 			}
 			catch(AccessControlException e) {}
 
+//!			...this needs to be implemented..
+			// DRF (20131105):
+			//    As part of Lynn's redesign of the Management and
+			//    System categories for Filr, I folded the single item
+			//    in the GWT based 'Personal Storage' dialog into the
+			//    JSP based 'Personal Storage Quotas' dialog and
+			//    renamed that 'Personal Storage'.
+			//
+			//    At some point we're going to want to rewrite that JSP
+			//    dialog into GWT so I left the GWT dialog with the
+			//    single item in place so that we can resurrect it for
+			//    that purpose.
+/*
 			// Does the user have rights to "manage adhoc folder?"?
 			if ( isFilr && adminModule.testAccess( AdminOperation.manageFunction ) )
 			{
@@ -2667,6 +2639,7 @@ public class GwtServerHelper {
 				// Add this action to the "management" category
 				managementCategory.addAdminOption( adminAction );
 			}
+*/
 
 			// Does the user have rights to "Manage quotas"?
 			try
@@ -2866,9 +2839,9 @@ public class GwtServerHelper {
 				}
 			}
 
-//!
 			// The following are the Vibe specific 'Management' actions
-			// not addressed by Lynn's Filr redesign:
+			// not addressed by Lynn's Filr redesign of this category.
+			// He said to leave them in the order they appear below.
 			//     Workspace and Folder Templates
 			//     Zones
 			//     Applications
@@ -3093,6 +3066,19 @@ public class GwtServerHelper {
 				}
 			}
 			
+			// Does the user have rights to "configure name completion settings"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_nameCompletion" );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.CONFIGURE_NAME_COMPLETION );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
 			// Does the user have rights to run reports?
 			if ( adminModule.testAccess( AdminOperation.report ) )
 			{
@@ -3119,22 +3105,9 @@ public class GwtServerHelper {
 				systemCategory.addAdminOption( adminAction );
 			}
 
-			// Does the user have rights to "configure name completion settings"?
-			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
-			{
-				// Yes
-				title = NLT.get( "administration.configure_nameCompletion" );
-
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, "", AdminAction.CONFIGURE_NAME_COMPLETION );
-				
-				// Add this action to the "system" category
-				systemCategory.addAdminOption( adminAction );
-			}
-
-//!
 			// The following are the Vibe specific 'System' actions not
-			// addressed by Lynn's Filr redesign:
+			// addressed by Lynn's Filr redesign of this category.  He
+			// said to leave them in the order they appear below.
 			//     Form/View Designers
 			//     Mobile Access
 			//     Default Landing Pages
@@ -3470,25 +3443,6 @@ public class GwtServerHelper {
 			reportsCategory.addAdminOption( adminAction );
 		}
 
-//!
-/*
-		// Sort the administration actions in each category
-		GwtAdminActionComparator comparator;
-		comparator = new GwtAdminActionComparator();
-		for ( GwtAdminCategory category : adminCategories )
-		{
-			ArrayList<GwtAdminAction> adminActions;
-			
-			// Do we have more than 1 administration action in this category?
-			adminActions = category.getActions();
-			if ( adminActions != null && adminActions.size() > 1 )
-			{
-				// Yes, sort them.
-				Collections.sort( adminActions, comparator );
-			}
-		}
-*/
-		
 		return adminCategories;
 	}// end getAdminActions()
 	

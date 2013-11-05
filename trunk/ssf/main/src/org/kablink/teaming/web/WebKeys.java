@@ -1270,6 +1270,7 @@ public class WebKeys {
     public static final String FILE_SIZE_LIMITS_GROUPS="ss_fileSizeLimitsGroups";
     public static final String FILE_SIZE_LIMITS_USERS="ss_fileSizeLimitsUsers";
     public static final String QUOTAS_HIGH_WATER_MARK="ss_quotasHighWaterMark";
+    public static final String ALLOW_PERSONAL_STORAGE="ss_allowPersonalStorage";
     public static final String BINDER_QUOTA="ss_binderQuota";
     public static final String BINDER_QUOTAS_INITIALIZED="ss_binderQuotasInitialized";
     public static final String BINDER_QUOTAS_ENABLED="ss_binderQuotasEnabled";

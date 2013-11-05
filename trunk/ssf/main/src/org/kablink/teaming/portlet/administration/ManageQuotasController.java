@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -54,14 +54,19 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
 @SuppressWarnings({"unchecked","unused"})
 public class ManageQuotasController extends SAbstractController {
-
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
@@ -69,6 +74,11 @@ public class ManageQuotasController extends SAbstractController {
 		getAdminModule().checkAccess(AdminOperation.manageFunction);
 		if ((formData.containsKey("okBtn") || formData.containsKey("deleteBtn")) && WebHelper.isMethodPost(request)) {
 			if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				if (Utils.checkIfFilr() && formData.containsKey("okBtn")) {
+					boolean allowPersonalStorage = formData.containsKey("allowPersonalStorage");
+					getAdminModule().setAdHocFoldersEnabled(allowPersonalStorage);
+				}
+				
 				boolean okBtnDelete = false;
 				if (formData.containsKey("deleteBtn")) okBtnDelete = true;
 				if (formData.containsKey("enableQuotas")) {
@@ -199,6 +209,7 @@ public class ManageQuotasController extends SAbstractController {
 		}
 	}
 
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -226,10 +237,12 @@ public class ManageQuotasController extends SAbstractController {
 		model.put(WebKeys.BINDER_QUOTAS_ENABLED, getAdminModule().isBinderQuotaEnabled());
 		model.put(WebKeys.BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED, getAdminModule().isBinderQuotaAllowBinderOwnerEnabled());
 		
+		if (Utils.checkIfFilr()) {
+			model.put(WebKeys.ALLOW_PERSONAL_STORAGE, GwtUIHelper.getAdhocFolderSettingFromZone(this));
+		}
+		
 		model.put( "isFilr", Utils.checkIfFilr() );
 		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_QUOTAS, model);
-
 	}
-
 }
