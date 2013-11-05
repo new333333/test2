@@ -305,6 +305,10 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					(workArea instanceof FolderEntry && !((FolderEntry)workArea).hasEntryAcl()))) || 
 				(isExternalAclControlledOperation && workArea.isExtFunctionMembershipInherited())) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
+			if (workArea instanceof FolderEntry) {
+				//For folder entries, get the parent folder instead of the top entry
+				parentWorkArea = ((FolderEntry)workArea).getParentBinder();
+			}
 			if (parentWorkArea == null) {
 				throw new InternalException(
 						"Cannot inherit function membership when it has no parent");
