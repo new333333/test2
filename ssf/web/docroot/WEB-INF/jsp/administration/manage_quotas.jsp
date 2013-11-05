@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -224,7 +224,17 @@ function ss_checkForAllUsersGroup() {
 	  <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="return handleCloseBtn();"/>
 	</div>
-		
+
+	<c:if test="${isFilr}">
+		<legend class="ss_legend">
+		    <input type="checkbox" name="allowPersonalStorage" 
+			  <c:if test="${ss_allowPersonalStorage}">checked=checked</c:if>
+			/>
+			<span class="ss_bold"><ssf:nlt tag="administration.quotas.allowPersonalStorage" /></span>
+		</legend>
+		<br/>
+	</c:if>
+			
 	<c:if test="${!isFilr}">
 		<fieldset class="ss_fieldset">
 		  <legend class="ss_legend">
@@ -265,11 +275,11 @@ function ss_checkForAllUsersGroup() {
 			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 		  </div>
 		</fieldset>
+		
+		<br/>
+		<br/>
 	</c:if>
 		
-	<br/>
-	<br/>
-			
 <fieldset class="ss_fieldset">
     <legend class="ss_legend"><input type="checkbox" name="enableQuotas" 
 	  <c:if test="${ss_quotasEnabled}">checked=checked</c:if>
