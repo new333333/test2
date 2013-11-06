@@ -747,15 +747,36 @@ public class GwtNetFolderHelper
 		Binder binder )
 	{
 		NetFolder netFolder;
+		String name;
 		
 		netFolder = new NetFolder();
 		netFolder.setId( binder.getId() );
 		
-		netFolder.setName( binder.getTitle() );
 		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
 		netFolder.setRelativePath( binder.getResourcePath() );
 		netFolder.setStatus( getNetFolderSyncStatus( netFolder.getId() ) );
 		netFolder.setIsHomeDir( binder.isHomeDir() );
+		
+		// Is this a home dir net folder?
+		name = binder.getTitle();
+		if ( binder.isHomeDir() )
+		{
+			Principal owner;
+			
+			// Yes
+			owner = binder.getOwner();
+			if ( owner != null )
+			{
+				String title;
+				
+				title = owner.getTitle();
+				if ( title != null && title.length() > 0 )
+					name = binder.getTitle() + " (" + title + ")";
+			}
+		}
+		
+		netFolder.setName( name );
+		
 		netFolder.setIndexContent( binder.getIndexContent() );
 		netFolder.setFullSyncDirOnly( binder.getFullSyncDirOnly() );
 
