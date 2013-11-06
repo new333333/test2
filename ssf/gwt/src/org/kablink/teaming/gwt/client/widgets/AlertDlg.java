@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
-import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -43,31 +41,24 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * Implements a prompt dialog that can replace GWT's Windows.prompt()
+ * Implements an alert dialog that can replace GWT's Windows.alert()
  * dialog.
  *  
  * @author drfoster@novell.com
  */
-public class PromptDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
+public class AlertDlg extends DlgBox {
 	private FlowPanel			m_dlgPanel;		// The panel holding the dialog's content.
 	private GwtTeamingMessages	m_messages;		// Access to Vibe's messages.
-	private PromptCallback		m_pCallback;	// The callback interface used to interact with the caller.
-	private String				m_promptText;	// The text to prompt the user with. 
-	private String				m_initialValue;	// The value to initialize the <input> widget with.
-	private TextBox 			m_input;		// The <input> widget.
+	private String				m_alertText;	// The text to alert the user with. 
 
 	/*
 	 * Class constructor.
@@ -76,19 +67,19 @@ public class PromptDlg extends DlgBox implements EditSuccessfulHandler, EditCanc
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private PromptDlg() {
+	private AlertDlg() {
 		// Initialize the super class...
-		super(false, true);	// false -> Don't auto hide.  true -> Modal.
+		super(false, true, DlgButtonMode.Close);	// false -> Don't auto hide.  true -> Modal.
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			m_messages.promptDlgHeader(),
-			this,	// The dialog's EditSuccessfulHandler.
-			this,	// The dialog's EditCanceledHandler.
-			null);	// Create callback data.  Unused. 
+			m_messages.alertDlgHeader(GwtClientHelper.getProductName()),
+			getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
+			null);							// Create callback data.  Unused. 
 	}
 
 	/**
@@ -104,52 +95,8 @@ public class PromptDlg extends DlgBox implements EditSuccessfulHandler, EditCanc
 	public Panel createContent(Object callbackData) {
 		// Create and return a FlowPanel to hold the dialog's content.
 		m_dlgPanel = new VibeFlowPanel();
-		m_dlgPanel.addStyleName("vibe-promptDlg_Panel");
+		m_dlgPanel.addStyleName("vibe-alertDlg_Panel");
 		return m_dlgPanel;
-	}
-
-	/**
-	 * This method gets called when user user presses the Cancel push
-	 * button.
-	 * 
-	 * Implements the EditCanceledHandler.editCanceled() interface
-	 * method.
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean editCanceled() {
-		setButtonsEnabled(false);
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				m_pCallback.canceled();
-			}
-		});
-		return true;
-	}
-
-	/**
-	 * This method gets called when user user presses the OK push
-	 * button.
-	 * 
-	 * Implements the EditSuccessfulHandler.editSuccessful() interface
-	 * method.
-	 * 
-	 * @param callbackData
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean editSuccessful(Object callbackData) {
-		setButtonsEnabled(false);
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				m_pCallback.applied(m_input.getValue());
-			}
-		});
-		return true;
 	}
 
 	/**
@@ -174,7 +121,8 @@ public class PromptDlg extends DlgBox implements EditSuccessfulHandler, EditCanc
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-		return m_input;
+		// Unused.
+		return null;
 	}
 
 	/*
@@ -197,167 +145,117 @@ public class PromptDlg extends DlgBox implements EditSuccessfulHandler, EditCanc
 		// Clear anything already in the dialog's panel.
 		m_dlgPanel.clear();
 
-		// Create a horizontal panel to hold the name input widgets...
+		// Create a FlexTable to hold the widgets...
 		VibeFlexTable grid = new VibeFlexTable();
-		grid.addStyleName("vibe-promptDlg_Grid");
+		grid.addStyleName("vibe-alertDlg_Grid");
 		m_dlgPanel.add(grid);
 		FlexCellFormatter gridCellFmt = grid.getFlexCellFormatter();
 
-		// ...add a label...
-		InlineLabel il = new InlineLabel(m_promptText);
-		il.addStyleName("vibe-promptDlg_NameLabel");
-		grid.setWidget(0, 0, il);
+		// ...and add the alert text.  The following will handle
+		// ...embedded \n characters and other escapes.
+		grid.setHTML(0, 0, new SafeHtmlBuilder().appendEscapedLines(m_alertText).toSafeHtml());
+		gridCellFmt.addStyleName(0, 0, "vibe-alertDlg_NameLabel");
 		gridCellFmt.setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 
-		// ...and add an input widget.
-		m_input = new TextBox();
-		m_input.addStyleName("vibe-promptDlg_NameInput");
-		m_input.addKeyDownHandler(new KeyDownHandler() {
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				// What key is being pressed?
-				switch (event.getNativeEvent().getKeyCode()) {
-				case KeyCodes.KEY_ESCAPE:
-					// Escape!  Treat it like the user pressed Cancel.
-					if (editCanceled()) {
-						hide();
-					}
-					break;
-					
-				case KeyCodes.KEY_ENTER:
-					// Enter!  Treat it like the user pressed OK.
-					if (editSuccessful(null)) {
-						hide();
-					}
-					break;
-				}
-			}
-		});
-		m_input.setValue(m_initialValue);
-		m_input.selectAll();
-		grid.setWidget(0, 1, m_input);
-		gridCellFmt.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);
-		GwtClientHelper.setFocusDelayed(m_input);
-		
 		// Finally, show the dialog centered on the screen.
-		setButtonsEnabled(true);
-		show(true);
+		center();
 	}
 	
 	/*
-	 * Asynchronously runs the given instance of the prompt dialog.
+	 * Asynchronously runs the given instance of the alert dialog.
 	 */
-	private static void runDlgAsync(final PromptDlg pDlg, final PromptCallback pCallback, final String promptText, final String initialValue) {
+	private static void runDlgAsync(final AlertDlg aDlg, final String alertText) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				pDlg.runDlgNow(pCallback, promptText, initialValue);
+				aDlg.runDlgNow(alertText);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
 	}
 	
 	/*
-	 * Synchronously runs the given instance of the prompt dialog.
+	 * Synchronously runs the given instance of the alert dialog.
 	 */
-	private void runDlgNow(PromptCallback pCallback, String promptText, String initialValue) {
-		// Store the parameters...
-		m_pCallback    = pCallback;
-		m_promptText   = promptText;
-		m_initialValue = ((null == initialValue) ? "" : initialValue);
+	private void runDlgNow(String alertText) {
+		// Store the parameter...
+		m_alertText = alertText;
 
 		// ...and start populating the dialog.
 		populateDlgAsync();
-	}
-
-	/*
-	 * Enables/disables the buttons on the dialog.
-	 */
-	private void setButtonsEnabled(boolean enabled) {
-		setOkEnabled(    enabled);
-		setCancelEnabled(enabled);
 	}
 	
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
-	/* the prompt dialog and perform some operation on it.           */
+	/* the alert dialog and perform some operation on it.            */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	/**
-	 * Callback interface to interact with the prompt dialog
+	 * Callback interface to interact with the alert dialog
 	 * asynchronously after it loads. 
 	 */
-	public interface PromptDlgClient {
-		void onSuccess(PromptDlg pDlg);
+	public interface AlertDlgClient {
+		void onSuccess(AlertDlg aDlg);
 		void onUnavailable();
 	}
 
 	/*
-	 * Asynchronously loads the PromptDlg and performs some
+	 * Asynchronously loads the AlertDlg and performs some
 	 * operation against the code.
 	 */
 	private static void doAsyncOperation(
-			// Required creation parameters.
-			final PromptDlgClient pDlgClient,
+			// createAsync() parameters.
+			final AlertDlgClient aDlgClient,
 			
-			// initAndShow parameters,
-			final PromptDlg			pDlg,
-			final PromptCallback	pCallback,
-			final String			promptText,
-			final String			initialValue) {
-		GWT.runAsync(PromptDlg.class, new RunAsyncCallback() {
+			// initAndShow() parameters,
+			final AlertDlg	aDlg,
+			final String	alertText) {
+		GWT.runAsync(AlertDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_PromptDlg());
-				if (null != pDlgClient) {
-					pDlgClient.onUnavailable();
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_AlertDlg());
+				if (null != aDlgClient) {
+					aDlgClient.onUnavailable();
 				}
 			}
 
 			@Override
 			public void onSuccess() {
 				// Is this a request to create a dialog?
-				if (null != pDlgClient) {
+				if (null != aDlgClient) {
 					// Yes!  Create it and return it via the callback.
-					PromptDlg pDlg = new PromptDlg();
-					pDlgClient.onSuccess(pDlg);
+					AlertDlg aDlg = new AlertDlg();
+					aDlgClient.onSuccess(aDlg);
 				}
 				
 				else {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(pDlg, pCallback, promptText, initialValue);
+					runDlgAsync(aDlg, alertText);
 				}
 			}
 		});
 	}
 	
 	/**
-	 * Loads the PromptDlg split point and returns an instance of it
-	 * via the callback.
+	 * Loads the AlertDlg split point and returns an instance of it via
+	 * the callback.
 	 * 
-	 * @param pDlgClient
+	 * @param aDlgClient
 	 */
-	public static void createAsync(PromptDlgClient pDlgClient) {
-		doAsyncOperation(pDlgClient, null, null, null, null);
+	public static void createAsync(AlertDlgClient aDlgClient) {
+		doAsyncOperation(aDlgClient, null, null);
 	}
 	
 	/**
-	 * Initializes and shows the prompt dialog.
+	 * Initializes and shows the alert dialog.
 	 * 
-	 * @param pDlg
-	 * @param pCallback
-	 * @param promptText
-	 * @param initialValue
+	 * @param aDlg
+	 * @param alertText
 	 */
-	public static void initAndShow(PromptDlg pDlg, PromptCallback pCallback, String promptText, String initialValue) {
-		doAsyncOperation(null, pDlg, pCallback, promptText, initialValue);
-	}
-	
-	public static void initAndShow(PromptDlg pDlg, PromptCallback pCallback, String promptText) {
-		// Always use the initial form of the method.
-		initAndShow(pDlg, pCallback, promptText, null);
+	public static void initAndShow(AlertDlg aDlg, String alertText) {
+		doAsyncOperation(null, aDlg, alertText);
 	}
 }

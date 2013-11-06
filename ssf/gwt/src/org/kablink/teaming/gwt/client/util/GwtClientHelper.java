@@ -52,6 +52,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorI
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
+import org.kablink.teaming.gwt.client.widgets.AlertDlg;
+import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.MultiErrorAlertDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgButtonMode;
@@ -94,6 +96,12 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class GwtClientHelper {
+	private final static boolean USE_JAVASCRIPT_ALERT	= true;	//! DRF (20131106):  Leave true on checkin until AlertDlg.java is working.
+	
+	// Holds an instantiated AlertDlg when one is create.
+	private static AlertDlg	m_alertDlg;
+	
+	// Holds an instantiated MultiErrorAlertDlg when one is create.
 	private static MultiErrorAlertDlg	m_meaDlg;
 	
 	// String used to recognized an '&' formatted URL vs. a '/'
@@ -379,7 +387,7 @@ public class GwtClientHelper {
 				new ScheduledCommand() {
 					@Override
 					public void execute() {
-						Window.alert(msg);
+						deferredAlertImpl(msg);
 					}
 				},
 				delay);
@@ -389,6 +397,48 @@ public class GwtClientHelper {
 	public static void deferredAlert(final String msg) {
 		// Always use the initial form of the method.
 		deferredAlert(msg, 0);
+	}
+
+	/*
+	 * Implementation method for deferredAlert().
+	 */
+	private static void deferredAlertImpl(final String msg) {
+		// If we're supposed to use a JavaScript.alert()...
+		if (USE_JAVASCRIPT_ALERT) {
+			// ...use it and bail.
+			Window.alert(msg);
+			return;
+		}
+
+		// Have we created an instance of an AlertDlg yet?
+		if (null == m_alertDlg) {
+			// No!  Create one now...
+			AlertDlg.createAsync(new AlertDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(AlertDlg aDlg) {
+					// ...save it and use it to display the message.
+					m_alertDlg = aDlg;
+					deferredAlertImpl(msg);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've created an instance of an AlertDlg!  Use it
+			// to display the message.
+			deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					AlertDlg.initAndShow(m_alertDlg, msg);
+				}
+			});
+		}
 	}
 
 	/**

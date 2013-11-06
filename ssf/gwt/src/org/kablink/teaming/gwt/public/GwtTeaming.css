@@ -5818,6 +5818,12 @@ td.datePickerMonth {
 
 /* End */
  
+/* Start:  Alert dialog styles. */
+	.vibe-alertDlg_Grid      {max-width: 500px;}
+	.vibe-alertDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: normal;}
+	.vibe-alertDlg_Panel     {padding: 10px;}
+/* End:  Alert dialog styles. */
+
 /* Start:  Prompt dialog styles. */
 	.vibe-promptDlg_Grid       {}
 	.vibe-promptDlg_NameInput  {width: 250px;}

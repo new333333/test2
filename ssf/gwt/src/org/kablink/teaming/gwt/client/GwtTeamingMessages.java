@@ -618,6 +618,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AddNewFolderDlg();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
+	String codeSplitFailure_AlertDlg();
 	String codeSplitFailure_BinderOwnerAvatarPanel();
 	String codeSplitFailure_BlogArchiveCtrl();
 	String codeSplitFailure_BlogFolderView();
@@ -3083,6 +3084,9 @@ public interface GwtTeamingMessages extends Messages
 	String ldapSyncResultsDlg_SyncStatus_SyncAlreadyInProgress();
 	String ldapSyncResultsDlg_TypeCol();
 	String ldapSyncResultsDlg_UserType();
+
+	// Strings used by AlertDlg.
+	String alertDlgHeader(String product);
 
 	// Strings used by PromptDlg.
 	String promptDlgHeader();
