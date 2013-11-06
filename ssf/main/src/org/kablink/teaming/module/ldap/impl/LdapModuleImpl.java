@@ -2452,7 +2452,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 								long sum; 
 								
 								now = new Date();
-								sum = pwdLastSetDate.getTime() + (maxPwdAge * 24 * 60 * 60 * 1000);
+								sum = maxPwdAge;
+								sum *= (24 * 60 * 60 * 1000);
+								sum += pwdLastSetDate.getTime();
 								if ( now.getTime() > sum )
 									expired = true;
 							}
