@@ -3810,7 +3810,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String ssName,
 			Attributes lAttrs,
 			String ldapGuidAttribute,
-			String domainName ) throws NamingException
+			String domainName,
+			HomeDirInfo homeDirInfo ) throws NamingException
 		{
 			boolean foundLdapGuid = false;
 			Object[] row = null; 
@@ -3945,9 +3946,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// net folder or update their existing one.
 					if ( Utils.checkIfFilr() )
 					{
-						HomeDirInfo homeDirInfo;
-						
-						homeDirInfo = getHomeDirInfo( dn, dn, true );
 						ldap_existing_homeDirInfo.put( (Long)row[PRINCIPAL_ID], homeDirInfo );
 					}
 				}
@@ -4000,9 +3998,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Create a HomeDirInfo object for this new user
 					if ( Utils.checkIfFilr() )
 					{
-						HomeDirInfo homeDirInfo;
-						
-						homeDirInfo = getHomeDirInfo( ssName, ssName, true );
 						ldap_new_homeDirInfo.put( ssName.toLowerCase(), homeDirInfo );
 					}
 				}
@@ -4305,6 +4300,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String[] attributesToRead;
 		String ldapGuidAttribute;
 		String domainName = null;
+		LdapDirType dirType;
 		int pageSize = 1500;
 
 		logger.info( "Starting to sync users, syncUsers()" );
@@ -4332,7 +4328,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		ldapGuidAttribute = config.getLdapGuidAttribute();
 		
 		// Are we working with AD?
-		if ( getLdapDirType( ldapGuidAttribute ) == LdapDirType.AD )
+		dirType = getLdapDirType( ldapGuidAttribute );
+		if ( dirType == LdapDirType.AD )
 		{
 			// Yes
 			domainName = getDomainName( config );
@@ -4424,7 +4421,47 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							continue;
 						}
 						
-						userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute, domainName );
+						{
+							HomeDirInfo homeDirInfo = null;
+							
+							if ( Utils.checkIfFilr() )
+							{
+								LdapContext tmpLdapContext;
+
+								// Create an ldap context that we can use to read the home dir info
+								// from the user object.  We can't use ctx because MS Windows
+								// has a bug where we can't read additional attributes if we are doing paging.
+								tmpLdapContext = getUserContext( zone.getId(), config );
+								
+								homeDirInfo = getHomeDirInfoFromConfig(
+																	tmpLdapContext,
+																	dirType,
+																	dn,
+																	searchInfo.getHomeDirConfig(),
+																	true );
+
+								try
+								{
+									if ( tmpLdapContext != null )
+									{
+										tmpLdapContext.close();
+										tmpLdapContext = null;
+									}
+								}
+								catch ( NamingException ex )
+						  		{
+									// Nothing to do.
+						  		}
+							}
+
+							userCoordinator.record(
+												dn,
+												ssName,
+												lAttrs,
+												ldapGuidAttribute,
+												domainName,
+												homeDirInfo);
+						}
 					}
 	     
 					// examine the response controls
