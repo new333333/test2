@@ -49,7 +49,8 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Implements Vibe's confirm dialog.
+ * Implements a confirmation dialog that can replace GWT's
+ * Windows.confirm() dialog.
  *  
  * @author drfoster@novell.com
  */
