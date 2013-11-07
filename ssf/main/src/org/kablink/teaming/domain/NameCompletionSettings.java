@@ -38,7 +38,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * 
@@ -57,7 +56,7 @@ public class NameCompletionSettings
 	/**
 	 * 
 	 */
-	public enum NCDisplayField implements IsSerializable
+	public enum NCDisplayField
 	{
 		DESCRIPTION,
 		FQDN,
