@@ -86,4 +86,6 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	public void clearIndex(String indexname) throws RemoteException;
 	
 	public void shutdown() throws RemoteException;
+	
+	public void test() throws RemoteException;
 }
