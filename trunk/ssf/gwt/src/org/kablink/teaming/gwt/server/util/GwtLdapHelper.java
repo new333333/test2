@@ -289,6 +289,11 @@ public class GwtLdapHelper
 	    		gwtSchedule = GwtServerHelper.getGwtSyncSchedule( scheduleInfo );
 	    		ldapConfig.setSchedule( gwtSchedule );
     		}
+    		else
+    		{
+	    		ldapConfig.setSyncUserProfiles( true );
+	    		ldapConfig.setRegisterUserProfilesAutomatically( true );
+    		}
     	}
     	
     	// Add the ldap servers

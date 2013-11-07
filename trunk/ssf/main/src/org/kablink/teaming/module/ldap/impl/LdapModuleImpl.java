@@ -4501,11 +4501,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Value: array of values read from db.
 		Map ssGroups = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 
-		// notInLdap is initially a list of all groups returned from the call to loadObjects(...)
+		// m_groupsNotInLdap is initially a list of all groups returned from the call to loadObjects(...)
+		// that were provisioned from ldap.
 		// When a group is read from the ldap directory it removed from this list.
 		// Key: Teaming id
 		// Value: group name
-		Map<Long, String> notInLdap = new TreeMap();
+		Map<Long, String> m_groupsNotInLdap = new TreeMap();
 		
 		// dnGroups is a list of all groups returned from the call to loadObjects(...) plus
 		// any groups that we created during the sync process.
@@ -4594,7 +4595,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( ((Boolean)row[PRINCIPAL_DISABLED] == Boolean.FALSE) &&
 					 (Validator.isNull((String)row[PRINCIPAL_INTERNALID])) )
 				{
-					notInLdap.put((Long)row[PRINCIPAL_ID], ssName);
+					m_groupsNotInLdap.put((Long)row[PRINCIPAL_ID], ssName);
 				}
 			}
 		}
@@ -4669,7 +4670,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					{
 						// Yes
 						foundLdapGuid = true;
-						notInLdap.remove( row[PRINCIPAL_ID] );
+						m_groupsNotInLdap.remove( row[PRINCIPAL_ID] );
 					}
 				}
 			}
@@ -4781,7 +4782,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				} 
 				
 				//exists in ldap, remove from missing list
-				notInLdap.remove(row[PRINCIPAL_ID]);
+				m_groupsNotInLdap.remove(row[PRINCIPAL_ID]);
 				isSSGroup = true;
 			}
 			
@@ -4868,30 +4869,62 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		public void deleteObsoleteGroups()
 		{
-			//if disable is enabled, remove groups that were not found in ldap
-			if (delete && !notInLdap.isEmpty()) {
+			// If delete is enabled, remove groups that were originally sync'd from ldap but
+			// are no longer found in ldap.
+			if ( delete && !m_groupsNotInLdap.isEmpty() )
+			{
 				PartialLdapSyncResults	syncResults	= null;
+		    	Map groups;
 				
-				if (logger.isInfoEnabled()) {
-					logger.info("Deleting groups:");
-					for (String name:notInLdap.values()) {
-						logger.info("'" + name + "'");
-					}
+		    	groups = new HashMap();
+
+		    	// m_groupsNotInLdap contains local groups and groups that were originally sync'd
+				// from ldap.  We only want to delete groups that were originally sync'd from
+				// ldap and are no longer in ldap.
+				
+				// Create a list of groups that were originally sync'd from ldap but are no
+				// longer in ldap.
+				for ( Map.Entry<Long, String> me: m_groupsNotInLdap.entrySet() )
+				{
+					Long id;
+					String name;
+					String foreignName;
+					String ldapGuid;
+					Object row[];
+					
+					id = me.getKey();
+					name = me.getValue();
+					row = (Object[])ssGroups.get( name );
+					ldapGuid = (String) row[PRINCIPAL_LDAP_GUID];
+					foreignName = (String) row[PRINCIPAL_FOREIGN_NAME];
+					
+					// Was this group provisioned from ldap?
+					if ( (ldapGuid != null && ldapGuid.length() > 0 ) || !name.equalsIgnoreCase( foreignName ) )
+					{	
+						// Yes
+			    		groups.put( id, name );
+			     	}
 				}
+				
 				// Do we have a place to store the sync results?
 				if ( m_ldapSyncResults != null )
 				{
 					// Yes
 					syncResults = m_ldapSyncResults.getDeletedGroups();
 				}
-				deletePrincipals( zoneId,notInLdap.keySet(), false, m_syncMode, syncResults );
-			} else if (!delete && !notInLdap.isEmpty()) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("Groups not found in ldap:");
-					for (String name:notInLdap.values()) {
+
+				if ( groups.isEmpty() == false )
+					deletePrincipals( zoneId, groups.keySet(), false, m_syncMode, syncResults );
+			}
+			else if ( !delete && !m_groupsNotInLdap.isEmpty() )
+			{
+				if ( logger.isDebugEnabled() )
+				{
+					logger.debug( "Groups not found in ldap:" );
+					for ( String name: m_groupsNotInLdap.values() )
+					{
 						logger.debug("\t'" + name + "'");
 					}
-					
 				}
 			}
 		}
