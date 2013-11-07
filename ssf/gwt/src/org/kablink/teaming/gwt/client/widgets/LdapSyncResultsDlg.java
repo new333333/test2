@@ -113,6 +113,10 @@ public class LdapSyncResultsDlg extends DlgBox
 	private Image m_syncStatusImg;
 
 	private FlowPanel m_previewHintPanel;
+	private FlexTable m_userStatsTable;
+	private FlexTable m_groupStatsTable;
+	private int m_modifiedUsersRow;
+	private int m_modifiedGroupsRow;
 
 	private Label m_addedUsersLabel;
 	private Label m_modifiedUsersLabel;
@@ -302,22 +306,21 @@ public class LdapSyncResultsDlg extends DlgBox
 			// Create the controls used to display user statistics
 			{
 				FlowPanel userStatsPanel;
-				FlexTable userStatsTable;
 				int row = 0;
 				
 				userStatsPanel = new FlowPanel();
 				userStatsPanel.addStyleName( "marginbottom3" );
 				
-				userStatsTable = new FlexTable();
-				userStatsPanel.add( userStatsTable );
+				m_userStatsTable = new FlexTable();
+				userStatsPanel.add( m_userStatsTable );
 				
 				// Add the "Added users:" controls
 				{
 					label = new Label( messages.ldapSyncResultsDlg_AddedUsersLabel() );
-					userStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
+					m_userStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
 				
 					m_addedUsersLabel = new Label( "0" );
-					userStatsTable.setWidget( row, 1, m_addedUsersLabel );
+					m_userStatsTable.setWidget( row, 1, m_addedUsersLabel );
 					
 					++row;
 				}
@@ -325,21 +328,22 @@ public class LdapSyncResultsDlg extends DlgBox
 				// Add the "Modified users:" controls
 				{
 					label = new Label( messages.ldapSyncResultsDlg_ModifiedUsersLabel() );
-					userStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
+					m_userStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
 				
 					m_modifiedUsersLabel = new Label( "0" );
-					userStatsTable.setWidget( row, 1, m_modifiedUsersLabel );
-					
+					m_userStatsTable.setWidget( row, 1, m_modifiedUsersLabel );
+
+					m_modifiedUsersRow = row;
 					++row;
 				}
 
 				// Add the "Deleted users:" controls
 				{
 					label = new Label( messages.ldapSyncResultsDlg_DeletedUsersLabel() );
-					userStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
+					m_userStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
 				
 					m_deletedUsersLabel = new Label( "0" );
-					userStatsTable.setWidget( row, 1, m_deletedUsersLabel );
+					m_userStatsTable.setWidget( row, 1, m_deletedUsersLabel );
 					
 					++row;
 				}
@@ -347,10 +351,10 @@ public class LdapSyncResultsDlg extends DlgBox
 				// Add the "Disabled users:" controls
 				{
 					label = new Label( messages.ldapSyncResultsDlg_DisabledUsersLabel() );
-					userStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
+					m_userStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
 				
 					m_disabledUsersLabel = new Label( "0" );
-					userStatsTable.setWidget( row, 1, m_disabledUsersLabel );
+					m_userStatsTable.setWidget( row, 1, m_disabledUsersLabel );
 					
 					++row;
 				}
@@ -361,23 +365,22 @@ public class LdapSyncResultsDlg extends DlgBox
 			// Create the controls used to display group statistics
 			{
 				FlowPanel groupStatsPanel;
-				FlexTable groupStatsTable;
 				int row = 0;
 				
 				groupStatsPanel = new FlowPanel();
 				groupStatsPanel.addStyleName( "marginbottom3" );
 				groupStatsPanel.addStyleName( "marginleft2" );
 				
-				groupStatsTable = new FlexTable();
-				groupStatsPanel.add( groupStatsTable );
+				m_groupStatsTable = new FlexTable();
+				groupStatsPanel.add( m_groupStatsTable );
 				
 				// Add the "Added Groups:" controls
 				{
 					label = new Label( messages.ldapSyncResultsDlg_AddedGroupsLabel() );
-					groupStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
+					m_groupStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
 				
 					m_addedGroupsLabel = new Label( "0" );
-					groupStatsTable.setWidget( row, 1, m_addedGroupsLabel );
+					m_groupStatsTable.setWidget( row, 1, m_addedGroupsLabel );
 					
 					++row;
 				}
@@ -385,21 +388,22 @@ public class LdapSyncResultsDlg extends DlgBox
 				// Add the "Modified groups" controls
 				{
 					label = new Label( messages.ldapSyncResultsDlg_ModifiedGroupsLabel() );
-					groupStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
+					m_groupStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
 				
 					m_modifiedGroupsLabel = new Label( "0" );
-					groupStatsTable.setWidget( row, 1, m_modifiedGroupsLabel );
+					m_groupStatsTable.setWidget( row, 1, m_modifiedGroupsLabel );
 					
+					m_modifiedGroupsRow = row;
 					++row;
 				}
 
 				// Add the "Deleted groups" controls
 				{
 					label = new Label( messages.ldapSyncResultsDlg_DeletedGroupsLabel() );
-					groupStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
+					m_groupStatsTable.setHTML( row, 0, label.getElement().getInnerHTML() );
 				
 					m_deletedGroupsLabel = new Label( "0" );
-					groupStatsTable.setWidget( row, 1, m_deletedGroupsLabel );
+					m_groupStatsTable.setWidget( row, 1, m_deletedGroupsLabel );
 					
 					++row;
 				}
@@ -1030,11 +1034,19 @@ public class LdapSyncResultsDlg extends DlgBox
 		{
 			setCaption( messages.ldapSyncResultsDlg_Header() );
 			m_previewHintPanel.setVisible( false );
+			
+			// Show the "modified users" and "modified groups" controls
+			m_userStatsTable.getRowFormatter().setVisible( m_modifiedUsersRow, true );
+			m_groupStatsTable.getRowFormatter().setVisible( m_modifiedGroupsRow, true );
 		}
 		else if ( syncMode == GwtLdapSyncMode.PREVIEW_ONLY )
 		{
 			setCaption( messages.ldapSyncResultsDlg_HeaderPreview() );
 			m_previewHintPanel.setVisible( true );
+			
+			// Hide the "modified users" and "modified groups" controls
+			m_userStatsTable.getRowFormatter().setVisible( m_modifiedUsersRow, false );
+			m_groupStatsTable.getRowFormatter().setVisible( m_modifiedGroupsRow, false );
 		}
 		
 		// The sync id is what we use to find the sync results in the session.
