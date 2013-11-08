@@ -445,59 +445,46 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Read the "ndsHomeDirectory" attribute from eDir.  If the "ndsHomeDirectory" attribute does not exist
 	 * or does not contain a value, read the "homeDirectory" attribute.
 	 */
-	private Object readHomeDirectoryAttributeFromEdir( LdapContext ldapContext, String userDn )
+	private Object readHomeDirectoryAttributeFromEdir( Attributes attribs, String userDn )
 	{
 		Object value = null;
 		
-		if ( ldapContext == null || userDn == null )
+		if ( attribs == null )
 		{
-			logger.error( "Invalid arguments passed to readHomeDirectoryAttributeFromEdir()" );
+			logger.error( "In readHomeDirectoryAttributeFromEdir(), attribs is null" );
 			return null;
 		}
 		
 		try
 		{
-			String[] attributeNames;
-			Attributes attrs;
-			Attribute attrib;
+		Attribute attrib;
 
-			// Read the "ndsHomeDirectory" attribute.
-			attributeNames = new String[1];
-			attributeNames[0] = NDS_HOME_DIR_ATTRIBUTE;
-			attrs = ldapContext.getAttributes( userDn, attributeNames );
-			if ( attrs != null )
-			{
-				attrib = attrs.get( NDS_HOME_DIR_ATTRIBUTE );
-				if ( attrib != null )
-				{
-					Object tmpValue;
-					
-					tmpValue = attrib.get();
-					if ( tmpValue != null && tmpValue instanceof byte[] )
-						value = tmpValue;
-				}
-			}
+		// Read the "ndsHomeDirectory" attribute.
+		attrib = attribs.get( NDS_HOME_DIR_ATTRIBUTE );
+		if ( attrib != null )
+		{
+			Object tmpValue;
 			
-			// Did we find an "ndsHomeDirectory" attribute value?
-			if ( value == null )
+			tmpValue = attrib.get();
+			if ( tmpValue != null && tmpValue instanceof byte[] )
+				value = tmpValue;
+		}
+		
+		// Did we find an "ndsHomeDirectory" attribute value?
+		if ( value == null )
+		{
+			// No
+			// Read the "homeDirectory" attribute.
+			attrib = attribs.get( HOME_DIR_ATTRIBUTE );
+			if ( attrib != null )
 			{
-				// No
-				// Read the "homeDirectory" attribute.
-				attributeNames[0] = HOME_DIR_ATTRIBUTE;
-				attrs = ldapContext.getAttributes( userDn, attributeNames );
-				if ( attrs != null )
-				{
-					attrib = attrs.get( HOME_DIR_ATTRIBUTE );
-					if ( attrib != null )
-					{
-						Object tmpValue;
-						
-						tmpValue = attrib.get();
-						if ( tmpValue != null && tmpValue instanceof byte[] )
-							value = tmpValue;
-					}
-				}
+				Object tmpValue;
+				
+				tmpValue = attrib.get();
+				if ( tmpValue != null && tmpValue instanceof byte[] )
+					value = tmpValue;
 			}
+		}
 		}
 		catch ( Exception ex )
 		{
@@ -513,10 +500,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 */
 	private HomeDirInfo readHomeDirInfoFromLdap(
 		LdapContext ldapContext,
+		Attributes attribs,
 		LdapDirType dirType,
 		String userDn )
 	{
 		HomeDirInfo homeDirInfo = null;
+
+		if ( attribs == null )
+		{
+			logger.error( "in readHomeDirInfoFromLdap(), attribs is null" );
+			return null;
+		}
 		
 		if ( dirType == LdapDirType.EDIR )
 		{
@@ -525,7 +519,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				Object value;
 				
 				// Read the "ndsHomeDirectory" attribute
-				value = readHomeDirectoryAttributeFromEdir( ldapContext, userDn );
+				value = readHomeDirectoryAttributeFromEdir( attribs, userDn );
 				
 				// Does the "ndsHomeDirectory" attribute have a value?
 				if ( value != null && value instanceof byte[] )
@@ -612,16 +606,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		else if ( dirType == LdapDirType.AD )
 		{
-			String[] attributeNames;
-			Attributes attrs;
-			Attribute attrib;
-
 			logger.debug( "\t\tin readHomeDirInfo() for user: " + userDn );
-			
-			attributeNames = new String[3];
-			attributeNames[0] = HOME_DRIVE_ATTRIBUTE;
-			attributeNames[1] = AD_HOME_DIR_ATTRIBUTE;
-			attributeNames[2] = SAM_ACCOUNT_NAME_ATTRIBUTE;
 			
 			try
 			{
@@ -631,14 +616,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				String server = null;
 				String volume = null;
 			    Matcher matcher;
-				
-				// Read the "homeDrive" and "homeDirectory" attributes from the given user
-				attrs = ldapContext.getAttributes( userDn, attributeNames );
-				if ( attrs == null )
-					return null;
+				Attribute attrib;
 				
 				// Get the homeDrive attribute
-				attrib = attrs.get( HOME_DRIVE_ATTRIBUTE );
+				attrib = attribs.get( HOME_DRIVE_ATTRIBUTE );
 				if ( attrib == null )
 					return null;
 				
@@ -654,7 +635,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					return null;
 				
 				// Get the homeDirectory attribute.
-				attrib = attrs.get( AD_HOME_DIR_ATTRIBUTE );
+				attrib = attribs.get( AD_HOME_DIR_ATTRIBUTE );
 				if ( attrib == null )
 					return null;
 				
@@ -841,13 +822,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String volumeDn,
 		HomeDirInfo homeDirInfo )
 	{
-		
 		if ( dirType == LdapDirType.EDIR )
 		{
 			String[] attributeNames;
 			Attributes attrs;
 			Attribute attrib;
-			
+
 			attributeNames = new String[2];
 			attributeNames[0] = HOST_RESOURCE_NAME_ATTRIBUTE;
 			attributeNames[1] = HOST_SERVER_ATTRIBUTE;
@@ -1875,8 +1855,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 
 					// Get the home directory info for this user
-					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn );
+					{
+						Attributes attribs;
+						String[] attributesToRead;
+						
+						dirType = getLdapDirType( config.getLdapGuidAttribute() );
+
+						attributesToRead = new String[5];
+						attributesToRead[0] = HOME_DRIVE_ATTRIBUTE;
+						attributesToRead[1] = AD_HOME_DIR_ATTRIBUTE;
+						attributesToRead[2] = SAM_ACCOUNT_NAME_ATTRIBUTE;
+						attributesToRead[3] = NDS_HOME_DIR_ATTRIBUTE;
+						attributesToRead[4] = HOME_DIR_ATTRIBUTE;
+						
+						attribs = ctx.getAttributes( dn, attributesToRead );
+						
+						homeDirInfo = readHomeDirInfoFromLdap( ctx, attribs, dirType, dn );
+						
+					}
 				}
 				finally
 				{
@@ -2275,10 +2271,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) 
 			{
 				HomeDirInfo homeDirInfo = null;
+				Attributes lAttrs = null;
 
 				try {
 					String[] attributesToRead;
-					Attributes lAttrs;
 
 					int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 					SearchControls sch = new SearchControls(scope, 1, 0, userAttributeNames, false, false);
@@ -2325,7 +2321,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					// Get the home directory info for this user
 					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn );
+					homeDirInfo = readHomeDirInfoFromLdap( ctx, lAttrs, dirType, dn );
 
 					m_containerCoordinator.clear();
 					// Read the list of all containers from the db.
@@ -3551,7 +3547,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						LdapDirType dirType;
 						
 						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
-						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn );
+						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, lAttrs, dirType, dn );
 						ldap_existing_homeDirInfo.put( (Long)row[PRINCIPAL_ID], homeDirInfo );
 					}
 				}
@@ -3608,7 +3604,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						LdapDirType dirType;
 						
 						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
-						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn );
+						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, lAttrs, dirType, dn );
 						ldap_new_homeDirInfo.put( ssName.toLowerCase(), homeDirInfo );
 					}
 				}
@@ -4780,7 +4776,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			// 3. the objectSid
 			// 4. sAMAccountName.
 			// 5. the attribute that holds whether a user is disabled.
-			attributeNames = new String[userAttributeNames.length + 5];
+			// 6. "homeDrive" attribute (AD)
+			// 7. "homeDirectory attribute (AD)
+			// 8. "ndsHomeDirectory" attribute (eDir)
+			// 9. "homeDirectory" attribute (eDir)
+			attributeNames = new String[userAttributeNames.length + 9];
 			
 			for (i = 0; i < userAttributeNames.length; ++i)
 			{
@@ -4817,6 +4817,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Add the "userAccountControl" attribute
 					attributeNames[i] = USER_ACCOUNT_CONTROL_ATTRIBUTE;
 					++i;
+
+					// Add the "homeDrive" attribute
+					attributeNames[i] = HOME_DRIVE_ATTRIBUTE;
+					++i;
+					
+					// Ad the "homeDirectory" attribute
+					attributeNames[i] = AD_HOME_DIR_ATTRIBUTE;
+					++i;
 				}
 				// Is the ldap directory eDir?
 				else if ( attrName.equalsIgnoreCase( GUID_ATTRIBUTE ) )
@@ -4824,6 +4832,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					// Add "loginDisabled" to the list of ldap attributes to read.
 					attributeNames[i] = LOGIN_DISABLED_ATTRIBUTE;
+					++i;
+
+					// Add the "ndsHomeDirectory" attribute
+					attributeNames[i] = NDS_HOME_DIR_ATTRIBUTE;
+					++i;
+					
+					// Add the "homeDirectory" attribute
+					attributeNames[i] = HOME_DIR_ATTRIBUTE;
 					++i;
 				}
 			}
