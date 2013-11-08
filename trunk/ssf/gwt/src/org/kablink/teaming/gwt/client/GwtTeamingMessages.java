@@ -2265,6 +2265,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the modify Net Folder Server dialog
 	String modifyNetFolderServerDlg_AddHeader();
 	String modifyNetFolderServerDlg_AllowSelfSignedCertsLabel();
+	String modifyNetFolderServerDlg_AuthenticationTab();
 	String modifyNetFolderServerDlg_ConfigTab();
 	String modifyNetFolderServerDlg_CreatingNetFolderServer();
 	String modifyNetFolderServerDlg_EditHeader( String name );
@@ -2289,10 +2290,11 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_ProxyNameLabel();
 	String modifyNetFolderServerDlg_ProxyPwdLabel();
 	String modifyNetFolderServerDlg_ScheduleTab();
+	String modifyNetFolderServerDlg_SelectServerTypePrompt();
 	String modifyNetFolderServerDlg_ServerAlreadyExists();
 	String modifyNetFolderServerDlg_ServerPathHint1();
-	String modifyNetFolderServerDlg_ServerPathHint2();
-	String modifyNetFolderServerDlg_ServerPathHint3();
+	String modifyNetFolderServerDlg_ServerPathOESHint();
+	String modifyNetFolderServerDlg_ServerPathWindowsHint();
 	String modifyNetFolderServerDlg_ServerPathLabel();
 	String modifyNetFolderServerDlg_SharePointPathHint();
 	String modifyNetFolderServerDlg_SyncAllNetFoldersPrompt();
@@ -2303,9 +2305,13 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_TypeLabel();
 	String modifyNetFolderServerDlg_Type_Famt();
 	String modifyNetFolderServerDlg_Type_FileSystem();
+	String modifyNetFolderServerDlg_Type_Netware();
+	String modifyNetFolderServerDlg_Type_OES();
 	String modifyNetFolderServerDlg_Type_SharePoint2010();
 	String modifyNetFolderServerDlg_Type_SharePoint2013();
+	String modifyNetFolderServerDlg_Type_Undefined();
 	String modifyNetFolderServerDlg_Type_WebDav();
+	String modifyNetFolderServerDlg_Type_Windows();
 	String modifyNetFolderServerDlg_SyncScheduleCaption();
 	String modifyNetFolderServerDlg_User();
 	
