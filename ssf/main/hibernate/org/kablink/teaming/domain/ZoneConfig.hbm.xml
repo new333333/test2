@@ -72,9 +72,19 @@
    		<property name="mobileAppsAllowCacheContent"/>
    		<property name="mobileAppsAllowPlayWithOtherApps"/>
    		<property name="mobileAppsSyncInterval"/>
+   		
+		<!-- The following are the fields for the Mobile -->
+		<!-- Application Management (MAM) settings.      -->
+   		<property name="mobileOpenIn" access="field"/>
+   		<property name="mobileCutCopyEnabled" access="field"/>
+   		<property name="mobileAndroidScreenCaptureEnabled" access="field"/>
+   		<property name="mobileDisableOnRootedOrJailBrokenDevices" access="field"/>
+   		<component name="mobileOpenInWhiteLists" class="org.kablink.teaming.domain.MobileOpenInWhiteLists">
+   			<property name="mobileOpenInWhiteLists" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
+   		</component>
     </component>
 	<component name="nameCompletionSettings" class="org.kablink.teaming.domain.NameCompletionSettings">
-		<property name="nameCompletionSettings"/>
+		<property name="nameCompletionSettings" length="4000"/>
     </component>
    </class>
 </hibernate-mapping>

@@ -406,4 +406,31 @@ update SS_Principals set domainName=LOWER(domainName);
         </addColumn>
     </changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="36">
+        <comment>Mobile application management (MAM) settings</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileOpenIn" type="INT">
+                <constraints nullable="true" />
+            </column>
+            <column name="mobileCutCopyEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="mobileAndroidScreenCaptureEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="mobileDisableOnRootedOrJailBrokenDevices" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="mobileOpenInWhiteLists" type="LONGTEXT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        
+        <addColumn tableName="SS_Principals">
+            <column name="mobileDevices" type="LONGTEXT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

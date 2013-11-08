@@ -10521,21 +10521,33 @@ public class GwtServerHelper {
 		AllModulesInjected allModules,
 		GwtZoneMobileAppsConfig gwtMobileAppsConfig ) throws GwtTeamingException
 	{
-		AdminModule adminModule;
-		MobileAppsConfig mobileAppsConfig;
+		try {
+			AdminModule adminModule;
+			MobileAppsConfig mobileAppsConfig;
+			
+			adminModule = allModules.getAdminModule();
+			
+			mobileAppsConfig = new MobileAppsConfig();
+			mobileAppsConfig.setMobileAppsAllowCacheContent( gwtMobileAppsConfig.getAllowCacheContent() );
+			mobileAppsConfig.setMobileAppsAllowCachePwd( gwtMobileAppsConfig.getAllowCachePwd() );
+			mobileAppsConfig.setMobileAppsAllowPlayWithOtherApps( gwtMobileAppsConfig.getAllowPlayWithOtherApps() );
+			mobileAppsConfig.setMobileAppsEnabled( gwtMobileAppsConfig.getMobileAppsEnabled() );
+			mobileAppsConfig.setMobileAppsSyncInterval( gwtMobileAppsConfig.getSyncInterval() );
+			
+			adminModule.setMobileAppsConfig( mobileAppsConfig );
+	
+			return Boolean.TRUE;
+		}
 		
-		adminModule = allModules.getAdminModule();
-		
-		mobileAppsConfig = new MobileAppsConfig();
-		mobileAppsConfig.setMobileAppsAllowCacheContent( gwtMobileAppsConfig.getAllowCacheContent() );
-		mobileAppsConfig.setMobileAppsAllowCachePwd( gwtMobileAppsConfig.getAllowCachePwd() );
-		mobileAppsConfig.setMobileAppsAllowPlayWithOtherApps( gwtMobileAppsConfig.getAllowPlayWithOtherApps() );
-		mobileAppsConfig.setMobileAppsEnabled( gwtMobileAppsConfig.getMobileAppsEnabled() );
-		mobileAppsConfig.setMobileAppsSyncInterval( gwtMobileAppsConfig.getSyncInterval() );
-		
-		adminModule.setMobileAppsConfig( mobileAppsConfig );
-
-		return Boolean.TRUE;
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtServerHelper.saveMobileAppsConfiguration( SOURCE EXCEPTION ):  ");
+		}
 	}
 	
 	

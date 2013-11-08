@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MobileAppsConfig;
+import org.kablink.teaming.domain.MobileOpenInWhiteLists;
 import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.OpenIDProvider;
 
@@ -117,6 +118,12 @@ public class BaseAdminModule extends AbstractAdminModule {
 
 	@Override
 	public MobileAppsConfig getMobileAppsConfig()
+	{
+		return null;
+	}
+	
+	@Override
+	public MobileOpenInWhiteLists getMobileOpenInWhiteLists()
 	{
 		return null;
 	}
