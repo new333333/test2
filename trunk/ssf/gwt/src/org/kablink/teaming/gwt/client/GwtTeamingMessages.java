@@ -2999,6 +2999,7 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapServerConfigDlg_AddSearchLabel();
 	String editLdapServerConfigDlg_BaseDnCol();
 	String editLdapServerConfigDlg_DeleteSearchLabel();
+	String editLdapServerConfigDlg_DirTypeLabel();
 	String editLdapServerConfigDlg_ErrorNoBaseDn();
 	String editLdapServerConfigDlg_ErrorNoPwd();
 	String editLdapServerConfigDlg_ErrorNoProxyDn();
@@ -3008,13 +3009,14 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapServerConfigDlg_FilterCol();
 	String editLdapServerConfigDlg_GroupsTab();
 	String editLdapServerConfigDlg_GuidAttributeHint1();
-	String editLdapServerConfigDlg_GuidAttributeHint2();
 	String editLdapServerConfigDlg_GuidAttributeLabel();
 	String editLdapServerConfigDlg_Header();
 	String editLdapServerConfigDlg_NameAttributeHint( String productName );
 	String editLdapServerConfigDlg_NameAttributeLabel( String productName );
+	String editLdapServerConfigDlg_NameAttributePrompt( String productName );
 	String editLdapServerConfigDlg_NoSearchesLabel();
 	String editLdapServerConfigDlg_NoServerURL();
+	String editLdapServerConfigDlg_Other();
 	String editLdapServerConfigDlg_ProxyDn_Alt();
 	String editLdapServerConfigDlg_ProxyDNLabel();
 	String editLdapServerConfigDlg_ProxyPasswordLabel();

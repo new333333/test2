@@ -60,6 +60,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -75,6 +77,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -92,6 +95,15 @@ import com.google.gwt.view.client.MultiSelectionModel;
  */
 public class EditLdapServerConfigDlg extends DlgBox
 {
+	private static String EDIR_NAME = "eDirectory";
+	private static String AD_NAME = "Active Directory";
+	private static String DIR_TYPE_AD = "objectGUID";
+	private static String DIR_TYPE_EDIR = "GUID";
+	private static String DIR_TYPE_OTHER = "other";
+	private static String SAM_ACCOUNT_NAME_ATTRIB = "sAMAccountName";
+	private static String CN_ATTRIB = "cn";
+	private static String OTHER_ATTRIB = "other";
+	
 	private GwtLdapConnectionConfig m_serverConfig;
 	private String m_defaultGroupFilter = null;
 	private String m_defaultUserFilter = null;
@@ -104,8 +116,12 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private TextBox m_proxyDnTextBox;
 	private PasswordTextBox m_proxyPwdTextBox;
 	private TextBox m_guidAttribTextBox;
-	private TextBox m_nameAttribTextBox;
 	private TextArea m_userAttribMappingsTextArea;
+	private FlexTable m_serverPanelTable;
+	private ListBox m_dirTypeLB;
+	private ListBox m_nameAttribLB;
+	private int m_ldapGuidHintRow;
+	private int m_ldapGuidControlsRow;
 
 	// Controls used in the Users tab
 	private CellTable<GwtLdapSearchInfo> m_userSearchesTable;
@@ -478,7 +494,6 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private Panel createServerPanel( GwtTeamingMessages messages )
 	{
 		FlowPanel serverPanel;
-		FlexTable table;
 		FlexTable.FlexCellFormatter cellFormatter; 
 		Label label;
 		FlowPanel tmpPanel;
@@ -486,9 +501,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 		
 		serverPanel = new FlowPanel();
 		
-		table = new FlexTable();
-		cellFormatter = table.getFlexCellFormatter();
-		table.setCellSpacing( 4 );
+		m_serverPanelTable = new FlexTable();
+		cellFormatter = m_serverPanelTable.getFlexCellFormatter();
+		m_serverPanelTable.setCellSpacing( 4 );
 		
 		// Add the server url controls
 		{
@@ -497,18 +512,18 @@ public class EditLdapServerConfigDlg extends DlgBox
 			label = new Label( messages.editLdapServerConfigDlg_ServerUrlHint() );
 			label.addStyleName( "editLdapServerConfigDlg_Hint" );
 			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+			m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
 			cellFormatter.setColSpan( row, 0, 2 );
 			++row;
 			
 			tmpPanel = new FlowPanel();
 			label = new Label( messages.editLdapServerConfigDlg_ServerUrlLabel() );
 			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
+			m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
 		
 			m_serverUrlTextBox = new TextBox();
 			m_serverUrlTextBox.setVisibleLength( 40 );
-			table.setWidget( row, 1, m_serverUrlTextBox );
+			m_serverPanelTable.setWidget( row, 1, m_serverUrlTextBox );
 			++row;
 		}
 		
@@ -517,7 +532,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			tmpPanel = new FlowPanel();
 			label = new Label( messages.editLdapServerConfigDlg_ProxyDNLabel() );
 			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
+			m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
 
 			tmpPanel = new FlowPanel();
 			m_proxyDnTextBox = new TextBox();
@@ -550,7 +565,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 				}
 			} );
 			tmpPanel.add( m_browseProxyDnBtn );
-			table.setWidget( row, 1, tmpPanel );
+			m_serverPanelTable.setWidget( row, 1, tmpPanel );
 			++row;
 		}
 		
@@ -559,11 +574,11 @@ public class EditLdapServerConfigDlg extends DlgBox
 			tmpPanel = new FlowPanel();
 			label = new Label( messages.editLdapServerConfigDlg_ProxyPasswordLabel() );
 			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
+			m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
 			
 			m_proxyPwdTextBox = new PasswordTextBox();
 			m_proxyPwdTextBox.setVisibleLength( 20 );
-			table.setWidget( row, 1, m_proxyPwdTextBox );
+			m_serverPanelTable.setWidget( row, 1, m_proxyPwdTextBox );
 			++row;
 		}
 		
@@ -571,40 +586,76 @@ public class EditLdapServerConfigDlg extends DlgBox
 		{
 			tmpPanel = new FlowPanel();
 			tmpPanel.getElement().getStyle().setMarginTop( 5, Unit.PX );
-			table.setWidget( row, 0, tmpPanel );
+			m_serverPanelTable.setWidget( row, 0, tmpPanel );
 			++row;
 		}
 		
 		// Add the ldap guid attribute controls
 		{
-			// Add a hint for the guid attribute
-			tmpPanel = new FlowPanel();
-			label = new Label( messages.editLdapServerConfigDlg_GuidAttributeHint1() );
-			label.addStyleName( "editLdapServerConfigDlg_Hint" );
-			tmpPanel.add( label );
-			label = new Label( messages.editLdapServerConfigDlg_GuidAttributeHint2() );
-			label.addStyleName( "editLdapServerConfigDlg_Hint" );
-			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
-			cellFormatter.setColSpan( row, 0, 2 );
-			++row;
+			// Add a listbox that holds the different directory types
+			{
+				tmpPanel = new FlowPanel();
+				label = new Label( messages.editLdapServerConfigDlg_DirTypeLabel() );
+				tmpPanel.add( label );
+				m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+				
+				m_dirTypeLB = new ListBox( false );
+				m_dirTypeLB.setVisibleItemCount( 1 );
+				m_dirTypeLB.addItem( EDIR_NAME, DIR_TYPE_EDIR );
+				m_dirTypeLB.addItem( AD_NAME, DIR_TYPE_AD );
+				m_dirTypeLB.addItem( messages.editLdapServerConfigDlg_Other(), DIR_TYPE_OTHER );
+				m_dirTypeLB.addChangeHandler( new ChangeHandler()
+				{
+					@Override
+					public void onChange( ChangeEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								handleDirTypeChanged();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				} );
+				m_serverPanelTable.setWidget( row, 1, m_dirTypeLB );
+				++row;
+			}
 			
-			tmpPanel = new FlowPanel();
-			label = new Label( messages.editLdapServerConfigDlg_GuidAttributeLabel() );
-			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
-			
-			m_guidAttribTextBox = new TextBox();
-			m_guidAttribTextBox.setVisibleLength( 20 );
-			table.setWidget( row, 1, m_guidAttribTextBox );
-			++row;
+			// Add controls for entering the name of the attribute that uniquely identifies a user.
+			{
+				// Add a hint for the guid attribute
+				tmpPanel = new FlowPanel();
+				label = new Label( messages.editLdapServerConfigDlg_GuidAttributeHint1() );
+				label.addStyleName( "editLdapServerConfigDlg_Hint" );
+				tmpPanel.add( label );
+				m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+				cellFormatter.setColSpan( row, 0, 2 );
+				m_ldapGuidHintRow = row;
+				++row;
+				
+				tmpPanel = new FlowPanel();
+				label = new Label( messages.editLdapServerConfigDlg_GuidAttributeLabel() );
+				tmpPanel.add( label );
+				m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
+				
+				m_guidAttribTextBox = new TextBox();
+				m_guidAttribTextBox.setVisibleLength( 20 );
+				m_serverPanelTable.setWidget( row, 1, m_guidAttribTextBox );
+				m_ldapGuidControlsRow = row;
+				++row;
+			}
 		}
 		
 		// Add a little space
 		{
 			tmpPanel = new FlowPanel();
 			tmpPanel.getElement().getStyle().setMarginTop( 5, Unit.PX );
-			table.setWidget( row, 0, tmpPanel );
+			m_serverPanelTable.setWidget( row, 0, tmpPanel );
 			++row;
 		}
 		
@@ -619,18 +670,38 @@ public class EditLdapServerConfigDlg extends DlgBox
 			label = new Label( messages.editLdapServerConfigDlg_NameAttributeHint( productName ) );
 			label.addStyleName( "editLdapServerConfigDlg_Hint" );
 			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+			m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
 			cellFormatter.setColSpan( row, 0, 2 );
 			++row;
 			
 			tmpPanel = new FlowPanel();
 			label = new Label( messages.editLdapServerConfigDlg_NameAttributeLabel( productName ) );
 			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
-			
-			m_nameAttribTextBox = new TextBox();
-			m_nameAttribTextBox.setVisibleLength( 20 );
-			table.setWidget( row, 1, m_nameAttribTextBox );
+			m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
+
+			// Add a listbox where the user can select the attribute that is used for the
+			// user's account name.
+			m_nameAttribLB = new ListBox( false );
+			m_nameAttribLB.setVisibleItemCount( 1 );
+			m_nameAttribLB.addChangeHandler( new ChangeHandler()
+			{
+				@Override
+				public void onChange( ChangeEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							handleNameAttribChanged();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			m_serverPanelTable.setWidget( row, 1, m_nameAttribLB );
 			++row;
 		}
 		
@@ -638,7 +709,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 		{
 			tmpPanel = new FlowPanel();
 			tmpPanel.getElement().getStyle().setMarginTop( 5, Unit.PX );
-			table.setWidget( row, 0, tmpPanel );
+			m_serverPanelTable.setWidget( row, 0, tmpPanel );
 			++row;
 		}
 		
@@ -650,19 +721,19 @@ public class EditLdapServerConfigDlg extends DlgBox
 			label.getElement().getStyle().setWidth( 600, Unit.PX );
 			label.addStyleName( "editLdapServerConfigDlg_Hint" );
 			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+			m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
 			cellFormatter.setColSpan( row, 0, 2 );
 			++row;
 			
 			m_userAttribMappingsTextArea = new TextArea();
 			m_userAttribMappingsTextArea.setVisibleLines( 8 );
 			m_userAttribMappingsTextArea.setWidth( "350px" );
-			table.setWidget( row, 0, m_userAttribMappingsTextArea );
+			m_serverPanelTable.setWidget( row, 0, m_userAttribMappingsTextArea );
 			cellFormatter.setColSpan( row, 0, 2 );
 			++row;
 		}
 		
-		serverPanel.add( table );
+		serverPanel.add( m_serverPanelTable );
 		
 		return serverPanel;
 	}
@@ -941,6 +1012,61 @@ public class EditLdapServerConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
+	private void danceDlg()
+	{
+		String dirType;
+		boolean visible = false;
+		
+		// Get the selected directory type
+		dirType = getSelectedDirType();
+		
+		if ( dirType.equalsIgnoreCase( DIR_TYPE_OTHER ) )
+			visible = true;
+		
+		// Show/hide the controls that let the user enter the name of the attribute that uniquely
+		// identifies a user.
+		m_serverPanelTable.getRowFormatter().setVisible( m_ldapGuidHintRow, visible );
+		m_serverPanelTable.getRowFormatter().setVisible( m_ldapGuidControlsRow, visible );
+		
+		// Add or remove attribute names from the listbox depending on the selected dir type
+		{
+			int index;
+			
+			// Is sAMAccountName in the listbox?
+			index = GwtClientHelper.doesListboxContainValue( m_nameAttribLB, SAM_ACCOUNT_NAME_ATTRIB );
+
+			if ( dirType.equalsIgnoreCase( DIR_TYPE_AD ) || dirType.equalsIgnoreCase( DIR_TYPE_OTHER ) )
+			{
+				// Is sAMAccountName in the listbox?
+				if ( index == -1 )
+				{
+					// No, add it.
+					m_nameAttribLB.insertItem( SAM_ACCOUNT_NAME_ATTRIB, SAM_ACCOUNT_NAME_ATTRIB, 0 );
+				}
+			}
+			else if ( dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) )
+			{
+				// Is sAMAccountName in the listbox?
+				if ( index != -1 )
+				{
+					// Yes, remove it.
+					m_nameAttribLB.removeItem( index );
+				}
+			}
+			
+			// Is an attribute selected?
+			index = m_nameAttribLB.getSelectedIndex();
+			if ( index == -1 )
+			{
+				// No, select the first attrib.
+				m_nameAttribLB.setItemSelected( 0, true );
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	private void deleteSelectedGroupSearches()
 	{
 		Set<GwtLdapSearchInfo> selectedSearchInfo;
@@ -1034,8 +1160,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 				serverUrl = m_serverUrlTextBox.getValue();
 				proxyDn = m_proxyDnTextBox.getValue();
 				pwd = m_proxyPwdTextBox.getValue();
-				guidAttrib = m_guidAttribTextBox.getValue();
-				userIdAttrib = m_nameAttribTextBox.getValue();
+				guidAttrib = getSelectedGuidAttrib();
+				userIdAttrib = getSelectedNameAttrib();
 				userAttribMappings = m_userAttribMappingsTextArea.getValue();
 
 				if ( isFieldValid( serverUrl, m_serverUrlTextBox, messages.editLdapServerConfigDlg_ErrorNoServerUrl() ) == false )
@@ -1047,8 +1173,11 @@ public class EditLdapServerConfigDlg extends DlgBox
 				if ( isFieldValid( pwd, m_proxyPwdTextBox, messages.editLdapServerConfigDlg_ErrorNoPwd() ) == false )
 					return null;
 				
-				if ( isFieldValid( userIdAttrib, m_nameAttribTextBox, messages.editLdapServerConfigDlg_ErrorNoUserIdAttrib( getProductName() ) ) == false )
+				if ( userIdAttrib.equalsIgnoreCase( OTHER_ATTRIB ) )
+				{
+					Window.alert( messages.editLdapServerConfigDlg_ErrorNoUserIdAttrib( getProductName() ) );
 					return null;
+				}
 
 				if ( isFieldValid( userAttribMappings, m_userAttribMappingsTextArea, messages.editLdapServerConfigDlg_ErrorNoUserAttribMappings() ) == false )
 					return null;
@@ -1101,7 +1230,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			m_serverConfig.setServerUrl( serverUrl );
 			m_serverConfig.setProxyDn( proxyDn );
 			m_serverConfig.setProxyPwd( pwd );
-			m_serverConfig.setLdapGuidAttribute( m_guidAttribTextBox.getValue() );
+			m_serverConfig.setLdapGuidAttribute( guidAttrib );
 			m_serverConfig.setUserIdAttribute( userIdAttrib );
 			
 			// Get the user attribute mappings
@@ -1193,11 +1322,65 @@ public class EditLdapServerConfigDlg extends DlgBox
 	}
 	
 	/**
+	 * Return the selected directory type
+	 */
+	private String getSelectedDirType()
+	{
+		String dirType;
+		int index;
+		
+		dirType = DIR_TYPE_EDIR;
+		index = m_dirTypeLB.getSelectedIndex();
+		if ( index >= 0 )
+			dirType = m_dirTypeLB.getValue( index );
+		
+		return dirType;
+	}
+	
+	/**
 	 * Return a list of selected group searches.
 	 */
 	public Set<GwtLdapSearchInfo> getSelectedGroupSearches()
 	{
 		return m_groupSearchesSelectionModel.getSelectedSet();
+	}
+	
+	/**
+	 * Return the name of the attribute used for the guid
+	 */
+	private String getSelectedGuidAttrib()
+	{
+		String dirType;
+		String guid;
+		
+		guid = "GUID";
+		dirType = getSelectedDirType();
+		if ( dirType != null )
+		{
+			if ( dirType.equalsIgnoreCase( DIR_TYPE_OTHER ) )
+				guid = m_guidAttribTextBox.getValue();
+			else
+				guid = dirType;
+		}
+		
+		return guid;
+	}
+	
+	/**
+	 * Return the name of the ldap attribute that is used for the account name
+	 */
+	private String getSelectedNameAttrib()
+	{
+		int index;
+		String name;
+		
+		index = m_nameAttribLB.getSelectedIndex();
+		if ( index == -1 )
+			index = 0;
+
+		name = m_nameAttribLB.getValue( index );
+		
+		return name;
 	}
 	
 	/**
@@ -1218,8 +1401,75 @@ public class EditLdapServerConfigDlg extends DlgBox
 		server.setAddress( m_serverUrlTextBox.getValue() );
 		server.setSyncUser( m_proxyDnTextBox.getValue() );
 		server.setSyncPassword( m_proxyPwdTextBox.getValue() );
-		server.setGuidAttribute( m_guidAttribTextBox.getValue() );
+		server.setGuidAttribute( getSelectedGuidAttrib() );
 		return server;
+	}
+
+	/**
+	 * This method gets called when the dir type changes
+	 */
+	private void handleDirTypeChanged()
+	{
+		String dirType;
+		
+		danceDlg();
+		
+		// If the user selected "other" for the directory type, give
+		// the focus to the text box where the user will enter the name
+		// of the guid attribute.
+		dirType = getSelectedDirType();
+		if ( DIR_TYPE_OTHER.equalsIgnoreCase( dirType ) )
+			m_guidAttribTextBox.setFocus( true );
+		else if ( DIR_TYPE_AD.equalsIgnoreCase( dirType ) )
+		{
+			// User selected Active Directory so select sAMAccountName as the
+			// name attribute.
+			GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, SAM_ACCOUNT_NAME_ATTRIB );
+		}
+		else if ( DIR_TYPE_EDIR.equalsIgnoreCase( dirType ) )
+		{
+			// User selected eDirectory so select cn as the name attribute
+			GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, CN_ATTRIB );
+		}
+	}
+	
+	/**
+	 * This method gets called when the name attribute changes
+	 */
+	private void handleNameAttribChanged()
+	{
+		String attrib;
+		
+		// Did the user select "Other"?
+		attrib = getSelectedNameAttrib();
+		if ( attrib != null && attrib.equalsIgnoreCase( OTHER_ATTRIB ) )
+		{
+			String attribName;
+			String msg;
+			
+			// Yes, prompt the user for the name of the attribute.
+			msg = GwtTeaming.getMessages().editLdapServerConfigDlg_NameAttributePrompt( getProductName() );
+			attribName = Window.prompt( msg, "" );
+			
+			// Did the user enter the name of an ldap attribute?
+			if ( attribName != null )
+			{
+				int index;
+				
+				// Yes
+				// Does the name already exist in our listbox?
+				index = GwtClientHelper.doesListboxContainValue( m_nameAttribLB, attribName );
+				if ( index == -1 )
+				{
+					// No, add it before "other"
+					index = GwtClientHelper.doesListboxContainValue( m_nameAttribLB, OTHER_ATTRIB );
+					m_nameAttribLB.insertItem( attribName, attribName, index );
+				}
+				
+				// Select the name that was entered
+				GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, attribName );
+			}
+		}
 	}
 	
 	/**
@@ -1252,6 +1502,18 @@ public class EditLdapServerConfigDlg extends DlgBox
 	 */
 	public void init( GwtLdapConnectionConfig config, String defaultUserFilter, String defaultGroupFilter )
 	{
+		// Add all the possible attribute names to the listbox
+		{
+			GwtTeamingMessages messages;
+			
+			messages = GwtTeaming.getMessages();
+			
+			m_nameAttribLB.clear();
+			m_nameAttribLB.addItem( SAM_ACCOUNT_NAME_ATTRIB, SAM_ACCOUNT_NAME_ATTRIB );
+			m_nameAttribLB.addItem( CN_ATTRIB, CN_ATTRIB );
+			m_nameAttribLB.addItem( messages.editLdapServerConfigDlg_Other(), OTHER_ATTRIB );
+		}
+		
 		m_serverConfig = config;
 		m_defaultUserFilter = defaultUserFilter;
 		m_defaultGroupFilter = defaultGroupFilter;
@@ -1260,7 +1522,6 @@ public class EditLdapServerConfigDlg extends DlgBox
 		m_proxyDnTextBox.setValue( "" );
 		m_proxyPwdTextBox.setValue( "" );
 		m_guidAttribTextBox.setValue( "" );
-		m_nameAttribTextBox.setValue( "" );
 		m_userAttribMappingsTextArea.setValue( "" );
 		
 		if ( config == null )
@@ -1269,8 +1530,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 		m_serverUrlTextBox.setValue( config.getServerUrl() );
 		m_proxyDnTextBox.setValue( config.getProxyDn() );
 		m_proxyPwdTextBox.setValue( config.getProxyPwd() );
-		m_guidAttribTextBox.setValue( config.getLdapGuidAttribute() );
-		m_nameAttribTextBox.setValue( config.getUserIdAttribute() );
+		setGuidValue( config.getLdapGuidAttribute() );
+		setNameAttribValue( config.getUserIdAttribute() );
 		m_userAttribMappingsTextArea.setValue( config.getUserAttributeMappingsAsString() );
 		
 		addUserSearches( config.getListOfUserSearchCriteria() );
@@ -1279,6 +1540,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 
 		if ( m_serverConfig.isDirty() == false )
 			m_serverConfig.setIsDirtySearchInfo( false );
+		
+		danceDlg();
 	}
 
 	/**
@@ -1478,6 +1741,48 @@ public class EditLdapServerConfigDlg extends DlgBox
 			m_editLdapSearchDlg.initHandlers( editSuccessfulHandler, null );
 			m_editLdapSearchDlg.show();
 		}
+	}
+
+	/**
+	 * 
+	 */
+	private void setGuidValue( String guidValue )
+	{
+		m_guidAttribTextBox.setValue( "" );
+		
+		if ( guidValue == null || guidValue.length() == 0 )
+			guidValue = DIR_TYPE_EDIR;
+
+		if ( guidValue.equalsIgnoreCase( DIR_TYPE_EDIR ) || guidValue.equalsIgnoreCase( DIR_TYPE_AD ) )
+		{
+			GwtClientHelper.selectListboxItemByValue( m_dirTypeLB, guidValue );
+		}
+		else
+		{
+			GwtClientHelper.selectListboxItemByValue( m_dirTypeLB, DIR_TYPE_OTHER );
+			m_guidAttribTextBox.setValue( guidValue );
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void setNameAttribValue( String attrib )
+	{
+		if ( attrib == null || attrib.length() == 0 )
+			attrib = CN_ATTRIB;
+		
+		// Does the given attribute exist in our listbox?
+		if ( GwtClientHelper.doesListboxContainValue( m_nameAttribLB, attrib ) == -1 )
+		{
+			int index;
+			
+			// No, add it to the list box before other.
+			index = GwtClientHelper.doesListboxContainValue( m_nameAttribLB, OTHER_ATTRIB );
+			m_nameAttribLB.insertItem( attrib, attrib, index );
+		}
+		
+		GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, attrib );
 	}
 	
 	/**

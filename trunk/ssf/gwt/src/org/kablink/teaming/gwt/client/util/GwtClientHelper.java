@@ -1821,6 +1821,29 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Look for the given value in the given listbox
+	 */
+	public static int doesListboxContainValue( ListBox listbox, String value )
+	{
+		int i;
+		
+		if ( listbox == null || value == null )
+			return -1;
+		
+		for (i = 0; i < listbox.getItemCount(); ++i)
+		{
+			String nextValue;
+			
+			nextValue = listbox.getValue( i );
+			if ( value.equalsIgnoreCase( nextValue ) )
+				return i;
+		}
+		
+		// If we get here we did not find the value.
+		return -1;
+	}
+	
+	/**
 	 * For the given list box, select the item in the list box that has
 	 * the given value.
 	 * 
