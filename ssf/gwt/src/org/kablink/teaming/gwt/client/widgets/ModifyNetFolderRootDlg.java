@@ -126,7 +126,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private List<LdapBrowseSpec> m_ldapServerList;	// List of LDAP servers obtained the first time m_browseProxyDnBtn is clicked.
 	
 	private static boolean m_showPrivilegedUsersUI = false;
-	private static boolean m_showNetFolderServerType = GwtTeaming.m_requestInfo.getAllowSelectNetFolderServerDataSource();
+	private static boolean m_showNetFolderServerType = true;
 	private static boolean m_showWebDavControls = false;
 
 	
@@ -217,14 +217,13 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 
 	/**
-	 * Create the panel that holds the configuration controls.
+	 * Create the panel that holds the authentication controls.
 	 */
-	private Panel createConfigPanel()
+	private Panel createAuthenticationPanel()
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel;
 		final FlexTable table;
-		FlowPanel spacerPanel;
 		Label label;
 		int nextRow;
 		FlexCellFormatter cellFormatter;
@@ -244,131 +243,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		
 		nextRow = 0;
 		
-		// Create the controls for "Name"
-		{
-			label = new InlineLabel( messages.modifyNetFolderServerDlg_NameLabel() );
-			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
-			
-			m_nameTxtBox = new TextBox();
-			m_nameTxtBox.setVisibleLength( 30 );
-			table.setWidget( nextRow, 1, m_nameTxtBox );
-			++nextRow;
-		}
-		
-		// Create a select control for selecting the type of net folder root
-		if ( m_showNetFolderServerType )
-		{
-			label = new InlineLabel( messages.modifyNetFolderServerDlg_TypeLabel() );
-			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
-			
-			// Add the listbox where the user can select the type of net folder root
-			m_rootTypeListbox = new ListBox( false );
-			m_rootTypeListbox.setVisibleItemCount( 1 );
-			
-			m_rootTypeListbox.addItem(
-						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_Famt(),
-						NetFolderRootType.FAMT.toString() );
-			
-			m_rootTypeListbox.addItem(
-					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2010(),
-					NetFolderRootType.SHARE_POINT_2010.toString() );
-		
-			m_rootTypeListbox.addItem(
-					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2013(),
-					NetFolderRootType.SHARE_POINT_2013.toString() );
-		
-			m_rootTypeListbox.setSelectedIndex( 0 );
-
-			m_rootTypeListbox.addChangeHandler( new ChangeHandler()
-			{
-				@Override
-				public void onChange( ChangeEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							handleRootTypeSelected();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
-			table.setWidget( nextRow, 1, m_rootTypeListbox );
-			++nextRow;
-		}
-
-		// Create the controls for "root path"
-		{
-			m_serverPathHintPanel = new FlowPanel();
-			m_serverPathHintPanel.addStyleName( "margintop1" );
-			m_serverPathHintPanel.addStyleName( "modifyNetFolderServerDlg_ServerPathHint" );
-
-			// Add a hint that describes the unc syntax
-			label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint1() );
-			m_serverPathHintPanel.add( label );
-			label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint2() );
-			m_serverPathHintPanel.add( label );
-			label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint3() );
-			m_serverPathHintPanel.add( label );
-			
-			cellFormatter.setColSpan( nextRow, 0, 2 );
-			table.setWidget( nextRow, 0, m_serverPathHintPanel );
-			++nextRow;
-			
-			label = new InlineLabel( messages.modifyNetFolderServerDlg_ServerPathLabel() );
-			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
-			
-			m_rootPathTxtBox = new TextBox();
-			m_rootPathTxtBox.setVisibleLength( 50 );
-			table.setWidget( nextRow, 1, m_rootPathTxtBox );
-			++nextRow;
-		}
-		
-		// Create the WebDAV specific controls
-		if ( m_showWebDavControls )
-		{
-			// Add some space
-			m_webDavSpacerPanel = new FlowPanel();
-			m_webDavSpacerPanel.getElement().getStyle().setMarginTop( 10, Unit.PX );
-			m_webDavSpacerPanel.setVisible( false );
-			table.setWidget( nextRow, 0, m_webDavSpacerPanel );
-			++nextRow;
-			
-			m_hostUrlLabel = new InlineLabel( messages.modifyNetFolderServerDlg_HostUrlLabel() );
-			m_hostUrlLabel.setVisible( false );
-			table.setWidget( nextRow, 0, m_hostUrlLabel );
-			
-			m_hostUrlTxtBox = new TextBox();
-			m_hostUrlTxtBox.setVisibleLength( 50 );
-			m_hostUrlTxtBox.setVisible( false );
-			table.setWidget( nextRow, 1, m_hostUrlTxtBox );
-			++nextRow;
-			
-			cellFormatter.setColSpan( nextRow, 0, 2 );
-			m_allowSelfSignedCertsCkbox = new CheckBox( messages.modifyNetFolderServerDlg_AllowSelfSignedCertsLabel() );
-			m_allowSelfSignedCertsCkbox.setVisible( false );
-			table.setWidget( nextRow, 0, m_allowSelfSignedCertsCkbox );
-			++nextRow;
-
-			cellFormatter.setColSpan( nextRow, 0, 2 );
-			m_isSharePointServerCkbox = new CheckBox( messages.modifyNetFolderServerDlg_IsSharePointServerLabel() );
-			m_isSharePointServerCkbox.setVisible( false );
-			table.setWidget( nextRow, 0, m_isSharePointServerCkbox );
-			++nextRow;
-		}
-		
 		// Create the controls used to enter proxy information
 		{
-			// Add some space
-			spacerPanel = new FlowPanel();
-			spacerPanel.getElement().getStyle().setMarginTop( 10, Unit.PX );
-			table.setWidget( nextRow, 0, spacerPanel );
-			++nextRow;
-
 			// Add some instructions on the format that should be used when entering the proxy name
 			{
 				FlowPanel panel;
@@ -481,6 +357,158 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				++nextRow;
 			}
 		}
+
+		return mainPanel;
+	}
+	
+	/**
+	 * Create the panel that holds the configuration controls.
+	 */
+	private Panel createConfigPanel()
+	{
+		GwtTeamingMessages messages;
+		FlowPanel mainPanel;
+		final FlexTable table;
+		FlowPanel spacerPanel;
+		Label label;
+		int nextRow;
+		FlexCellFormatter cellFormatter;
+		
+		messages = GwtTeaming.getMessages();
+		
+		mainPanel = new FlowPanel();
+
+		// Create a table to hold the controls.
+		table = new FlexTable();
+		table.setCellSpacing( 4 );
+		table.addStyleName( "dlgContent" );
+		
+		mainPanel.add( table );
+		
+		cellFormatter = table.getFlexCellFormatter();
+		
+		nextRow = 0;
+		
+		// Create the controls for "Name"
+		{
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_NameLabel() );
+			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
+			
+			m_nameTxtBox = new TextBox();
+			m_nameTxtBox.setVisibleLength( 30 );
+			table.setWidget( nextRow, 1, m_nameTxtBox );
+			++nextRow;
+		}
+		
+		// Create a select control for selecting the type of net folder root
+		if ( m_showNetFolderServerType )
+		{
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_TypeLabel() );
+			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
+			
+			// Add the listbox where the user can select the type of net folder root
+			m_rootTypeListbox = new ListBox( false );
+			m_rootTypeListbox.setVisibleItemCount( 1 );
+			
+			m_rootTypeListbox.addItem(
+					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_Windows(),
+					NetFolderRootType.CIFS.toString() );
+		
+			m_rootTypeListbox.addItem(
+						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_OES(),
+						NetFolderRootType.NCP_OES.toString() );
+			
+			m_rootTypeListbox.addItem(
+					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_Netware(),
+					NetFolderRootType.NCP_NETWARE.toString() );
+		
+			m_rootTypeListbox.addItem(
+					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2010(),
+					NetFolderRootType.SHARE_POINT_2010.toString() );
+		
+			m_rootTypeListbox.addItem(
+					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2013(),
+					NetFolderRootType.SHARE_POINT_2013.toString() );
+		
+			m_rootTypeListbox.setSelectedIndex( 0 );
+
+			m_rootTypeListbox.addChangeHandler( new ChangeHandler()
+			{
+				@Override
+				public void onChange( ChangeEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							handleRootTypeSelected();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			table.setWidget( nextRow, 1, m_rootTypeListbox );
+			++nextRow;
+		}
+
+		// Create the controls for "root path"
+		{
+			m_serverPathHintPanel = new FlowPanel();
+			m_serverPathHintPanel.addStyleName( "margintop1" );
+			m_serverPathHintPanel.addStyleName( "modifyNetFolderServerDlg_ServerPathHint" );
+
+			// Add a hint that describes the unc syntax
+			label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint1() );
+			m_serverPathHintPanel.add( label );
+			
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			table.setWidget( nextRow, 0, m_serverPathHintPanel );
+			++nextRow;
+			
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_ServerPathLabel() );
+			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
+			
+			m_rootPathTxtBox = new TextBox();
+			m_rootPathTxtBox.setVisibleLength( 50 );
+			table.setWidget( nextRow, 1, m_rootPathTxtBox );
+			++nextRow;
+		}
+		
+		// Create the WebDAV specific controls
+		if ( m_showWebDavControls )
+		{
+			// Add some space
+			m_webDavSpacerPanel = new FlowPanel();
+			m_webDavSpacerPanel.getElement().getStyle().setMarginTop( 10, Unit.PX );
+			m_webDavSpacerPanel.setVisible( false );
+			table.setWidget( nextRow, 0, m_webDavSpacerPanel );
+			++nextRow;
+			
+			m_hostUrlLabel = new InlineLabel( messages.modifyNetFolderServerDlg_HostUrlLabel() );
+			m_hostUrlLabel.setVisible( false );
+			table.setWidget( nextRow, 0, m_hostUrlLabel );
+			
+			m_hostUrlTxtBox = new TextBox();
+			m_hostUrlTxtBox.setVisibleLength( 50 );
+			m_hostUrlTxtBox.setVisible( false );
+			table.setWidget( nextRow, 1, m_hostUrlTxtBox );
+			++nextRow;
+			
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			m_allowSelfSignedCertsCkbox = new CheckBox( messages.modifyNetFolderServerDlg_AllowSelfSignedCertsLabel() );
+			m_allowSelfSignedCertsCkbox.setVisible( false );
+			table.setWidget( nextRow, 0, m_allowSelfSignedCertsCkbox );
+			++nextRow;
+
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			m_isSharePointServerCkbox = new CheckBox( messages.modifyNetFolderServerDlg_IsSharePointServerLabel() );
+			m_isSharePointServerCkbox.setVisible( false );
+			table.setWidget( nextRow, 0, m_isSharePointServerCkbox );
+			++nextRow;
+		}
 		
 		// Create the controls used to select who can create net folders using this
 		// net folder root.
@@ -552,6 +580,14 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			
 			configPanel = createConfigPanel();
 			m_tabPanel.add( configPanel, messages.modifyNetFolderServerDlg_ConfigTab() );
+		}
+		
+		// Create the panel that holds the authentication information
+		{
+			Panel authPanel;
+			
+			authPanel = createAuthenticationPanel();
+			m_tabPanel.add( authPanel, messages.modifyNetFolderServerDlg_AuthenticationTab() );
 		}
 		
 		// Create the panel that holds the controls for the schedule
@@ -740,13 +776,24 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					
 					switch( type )
 					{
-					case FAMT:
+					case NCP_OES:
+					case NCP_NETWARE:
 						label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint1() );
 						m_serverPathHintPanel.add( label );
-						label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint2() );
+
+						label = new Label( messages.modifyNetFolderServerDlg_ServerPathOESHint() );
 						m_serverPathHintPanel.add( label );
-						label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint3() );
+						break;
+						
+					case CIFS:
+						label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint1() );
 						m_serverPathHintPanel.add( label );
+
+						label = new Label( messages.modifyNetFolderServerDlg_ServerPathWindowsHint() );
+						m_serverPathHintPanel.add( label );
+						break;
+						
+					case FAMT:
 						break;
 						
 					case SHARE_POINT_2010:
@@ -794,8 +841,11 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	@Override
 	public boolean editSuccessful( Object obj )
 	{
+		NetFolderRootType serverType;
+		
 		// Is the root type WebDAV?
-		if ( getSelectedRootType() == NetFolderRootType.WEB_DAV )
+		serverType = getSelectedRootType(); 
+		if ( serverType == NetFolderRootType.WEB_DAV )
 		{
 			// Yes, make sure they entered the host url
 			if ( isHostUrlValid() == false )
@@ -803,6 +853,25 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				m_hostUrlTxtBox.setFocus( true );
 				return false;
 			}
+		}
+		
+		// Is the server type "famt" or undefined?
+		if ( serverType == NetFolderRootType.FAMT )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			// Yes, tell the user they need to pick a server type.
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectServerTypePrompt() );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+
+			return false;
 		}
 		
 		clearErrorPanel();
@@ -1179,6 +1248,16 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	 */
 	private void handleRootTypeSelected()
 	{
+		int index;
+		
+		// Does the server types listbox have an "undefined" item?
+		index = GwtClientHelper.doesListboxContainValue( m_rootTypeListbox, NetFolderRootType.FAMT.toString() );
+		if ( index != -1 )
+		{
+			// Yes, remove it.
+			m_rootTypeListbox.removeItem( index );
+		}
+
 		danceDlg( true );
 	}
 	
@@ -1198,8 +1277,10 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 		// Clear existing data in the controls.
 		m_nameTxtBox.setValue( "" );
+		
 		if ( m_rootTypeListbox != null )
-			GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, NetFolderRootType.FAMT.toString() );
+			GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, NetFolderRootType.CIFS.toString() );
+		
 		m_rootPathTxtBox.setValue( "" );
 		m_proxyNameTxtBox.setValue( "" );
 		m_proxyPwdTxtBox.setValue( "" );
@@ -1237,7 +1318,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			
 			// Select the appropriate root type.
 			if ( m_rootTypeListbox != null )
-				GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, netFolderRoot.getRootType().toString() );
+				initServerType( netFolderRoot.getRootType() );
 
 			// If the root type is WebDAV, initialize the WebDAV specific controls
 			if ( netFolderRoot.getRootType() == NetFolderRootType.WEB_DAV )
@@ -1281,6 +1362,44 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		danceDlg( false );
 	}
 	
+	/**
+	 * Initialize the server type
+	 */
+	private void initServerType( NetFolderRootType serverType )
+	{
+		int index;
+		
+		// Does the server types listbox already have an "undefined" item?
+		index = GwtClientHelper.doesListboxContainValue( m_rootTypeListbox, NetFolderRootType.FAMT.toString() );
+
+		if ( serverType == NetFolderRootType.FAMT )
+		{
+			// A server type of famt means that this net folder server was created pre Filr 1.1
+			// We need the user to select the server type.
+			
+			// Does the server types listbox already have an "undefined" item?
+			if ( index == -1 )
+			{
+				// No
+				// Add an Undefined item to the server types listbox.
+				m_rootTypeListbox.addItem(
+										GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_Undefined(),
+										NetFolderRootType.FAMT.toString() );
+			}
+		}
+		else
+		{
+			// Does the server types listbox have an "undefined" item?
+			if ( index != -1 )
+			{
+				// Yes, remove it.
+				m_rootTypeListbox.removeItem( index );
+			}
+		}
+		
+		GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, serverType.toString() );
+	}
+
 	/**
 	 * Is the host url entered by the user valid?
 	 */
@@ -1482,7 +1601,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 											m_registeredEventHandlers );
 		}
 	}
-
+	
 	/**
 	 * Issue an rpc request to sync this net folder server by syncing all the list of net folders
 	 * associated with this net folder server.

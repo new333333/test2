@@ -53,7 +53,7 @@ public class NetFolderRoot
 {
 	private Long m_id;
 	private String m_name;
-	private NetFolderRootType m_rootType = NetFolderRootType.FAMT;
+	private NetFolderRootType m_rootType = NetFolderRootType.CIFS;
 	private String m_rootPath;
 	private String m_proxyName = "";
 	private String m_proxyPwd = "";
