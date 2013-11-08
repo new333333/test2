@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.MobileAppsConfig;
+import org.kablink.teaming.domain.MobileOpenInWhiteLists;
 import org.kablink.teaming.domain.NameCompletionSettings;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
@@ -499,6 +500,7 @@ public interface AdminModule {
     public void setLogTablePurgeSchedule(ScheduleInfo info);
     
     public MobileAppsConfig getMobileAppsConfig();
+    public MobileOpenInWhiteLists getMobileOpenInWhiteLists();
     
     public void setMobileAppsConfig( MobileAppsConfig mobileAppsConfig );
     

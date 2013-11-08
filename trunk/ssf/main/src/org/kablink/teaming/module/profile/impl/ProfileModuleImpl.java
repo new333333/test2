@@ -84,6 +84,7 @@ import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStampBrief;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
+import org.kablink.teaming.domain.MobileDevices;
 import org.kablink.teaming.domain.NoApplicationByTheNameException;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -2718,5 +2719,35 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		// If we get here, reply refers to a Collection<User> of the
 		// external users.  Return it.
     	return reply;
+    }
+    
+    /**
+     * Get'er methods for the Mobile Application Management (MAM)
+     * settings.
+     * 
+     * Returns a user's MobileDevices, if any are defined.
+     * 
+     * @return
+     */
+    @Override
+    public MobileDevices getMobileDevices(Long userId) {
+   		User user = getUser(userId, false, true);
+   		return ((null == user) ? null : user.getMobileDevices());
+    }
+    
+    /**
+     * Set'er methods for the Mobile Application Management (MAM)
+     * settings.
+     *
+     * Stores a MobileDevices as part of a user.
+     * 
+     * @param
+     */
+    @Override
+    public void setMobileDevices(Long userId, MobileDevices mobileDevices) {
+   		User user = getUser(userId, true, true);
+   		if (null != user) {
+   			user.setMobileDevices(mobileDevices);
+   		}
     }
 }
