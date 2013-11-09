@@ -38,6 +38,7 @@ import java.security.MessageDigest;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,6 +55,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -1218,5 +1220,23 @@ public final class MiscUtil
 	{
 		// Always use the initial form of the method.
 		return getProductName( RequestContextHolder.getRequestContext().getUser() );
+	}
+
+	/**
+	 * If there is more than one entry in a List<String>, it is sorted.
+	 * Simply returns the list it was given, sorted or otherwise. 
+	 *  
+	 * @param ls
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<String> sortStringList( List<String> ls ) {
+		if ( ( null != ls ) && ( 1 < ls.size() ) )
+		{
+			StringComparator sc = new StringComparator( RequestContextHolder.getRequestContext().getUser().getLocale() );
+			Collections.sort( ls, sc );
+		}
+		return ls;
 	}
 }// end MiscUtil
