@@ -121,6 +121,8 @@ import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.MobileAppsConfig;
+import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
+import org.kablink.teaming.domain.MobileOpenInWhiteLists;
 import org.kablink.teaming.domain.NameCompletionSettings;
 import org.kablink.teaming.domain.NameCompletionSettings.NCDisplayField;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -162,6 +164,7 @@ import org.kablink.teaming.gwt.client.GwtUser.ExtUserProvState;
 import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
 import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
+import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig.GwtMobileOpenInSetting;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
@@ -6627,6 +6630,44 @@ public class GwtServerHelper {
 		// Get the Mobile Apps sync interval.
 		gwtMobileAppsConfig.setSyncInterval( mobileAppsConfig.getMobileAppsSyncInterval() );
 		
+		// Get the Mobile Application Management (MAM) settings.
+		gwtMobileAppsConfig.setMobileCutCopyEnabled( mobileAppsConfig.getMobileCutCopyEnabled() );
+		gwtMobileAppsConfig.setMobileAndroidScreenCaptureEnabled( mobileAppsConfig.getMobileAndroidScreenCaptureEnabled() );
+		gwtMobileAppsConfig.setMobileDisableOnRootedOrJailBrokenDevices( mobileAppsConfig.getMobileDisableOnRootedOrJailBrokenDevices() );
+		GwtMobileOpenInSetting gwtMoi;
+		MobileOpenInSetting moi = mobileAppsConfig.getMobileOpenIn();
+		if ( null == moi )
+		{
+			gwtMoi = GwtMobileOpenInSetting.ALL_APPLICATIONS;
+		}
+		else
+		{
+			switch ( moi )
+			{
+			default:
+			case ALL_APPLICATIONS:  gwtMoi = GwtMobileOpenInSetting.ALL_APPLICATIONS; break;
+			case DISABLED:          gwtMoi = GwtMobileOpenInSetting.DISABLED;         break;
+			case WHITE_LIST:        gwtMoi = GwtMobileOpenInSetting.WHITE_LIST;       break;
+			}
+		}
+		gwtMobileAppsConfig.setMobileOpenIn( gwtMoi );
+		MobileOpenInWhiteLists mwl = mobileAppsConfig.getMobileOpenInWhiteLists();
+		List<String> androidApplications;
+		List<String> iosApplications;
+		if ( null == mwl )
+		{
+			androidApplications =
+			iosApplications     = null;
+		}
+		else {
+			androidApplications = mwl.getAndroidApplications();
+			iosApplications     = mwl.getIosApplications();
+		}
+		if ( null == androidApplications ) androidApplications = new ArrayList<String>();
+		if ( null == iosApplications     ) iosApplications     = new ArrayList<String>();
+		gwtMobileAppsConfig.setAndroidApplications( MiscUtil.sortStringList( androidApplications ) );
+		gwtMobileAppsConfig.setIosApplications(     MiscUtil.sortStringList( iosApplications     ) );
+		
 		return gwtMobileAppsConfig;
 	}
 	
@@ -10533,6 +10574,38 @@ public class GwtServerHelper {
 			mobileAppsConfig.setMobileAppsAllowPlayWithOtherApps( gwtMobileAppsConfig.getAllowPlayWithOtherApps() );
 			mobileAppsConfig.setMobileAppsEnabled( gwtMobileAppsConfig.getMobileAppsEnabled() );
 			mobileAppsConfig.setMobileAppsSyncInterval( gwtMobileAppsConfig.getSyncInterval() );
+
+			// Save the various Mobile Application Management (MAM)
+			// settings.
+			mobileAppsConfig.setMobileCutCopyEnabled( gwtMobileAppsConfig.getMobileCutCopyEnabled() );
+			mobileAppsConfig.setMobileAndroidScreenCaptureEnabled( gwtMobileAppsConfig.getMobileAndroidScreenCaptureEnabled() );
+			mobileAppsConfig.setMobileDisableOnRootedOrJailBrokenDevices( gwtMobileAppsConfig.getMobileDisableOnRootedOrJailBrokenDevices() );
+			GwtMobileOpenInSetting gwtMoi = gwtMobileAppsConfig.getMobileOpenIn();
+			MobileOpenInSetting moi;
+			if ( null == gwtMoi )
+			{
+				moi = MobileOpenInSetting.ALL_APPLICATIONS;
+			}
+			else
+			{
+				switch ( gwtMoi )
+				{
+				default:
+				case ALL_APPLICATIONS:  moi = MobileOpenInSetting.ALL_APPLICATIONS; break;
+				case DISABLED:          moi = MobileOpenInSetting.DISABLED;         break;
+				case WHITE_LIST:        moi = MobileOpenInSetting.WHITE_LIST;       break;
+				}
+			}
+			mobileAppsConfig.setMobileOpenIn( moi );
+			MobileOpenInWhiteLists mwl = mobileAppsConfig.getMobileOpenInWhiteLists();
+			if ( null == mwl )
+			{
+				mwl = new MobileOpenInWhiteLists();
+				mobileAppsConfig.setMobileOpenInWhiteLists( mwl );
+			}
+			mwl.setMobileOpenInWhiteLists(
+				MiscUtil.sortStringList( gwtMobileAppsConfig.getAndroidApplications() ),
+				MiscUtil.sortStringList( gwtMobileAppsConfig.getIosApplications()   ) );
 			
 			adminModule.setMobileAppsConfig( mobileAppsConfig );
 	

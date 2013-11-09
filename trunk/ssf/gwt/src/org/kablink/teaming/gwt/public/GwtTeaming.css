@@ -5967,4 +5967,16 @@ td.datePickerMonth {
 
 /* End: Name Completion Settings dialog */
 
+/* Start:  Styles used in the "Configure Mobile Applications" dialog. */
+	.configMobileAppsDlg_AndroidPanel {padding-top: 5px; padding-left: 20px;}  
+	.configMobileAppsDlg_IosPanel     {padding-top: 5px; padding-left: 20px;}  
+	.configMobileAppsDlg_List         {width: 250px;}
+	.configMobileAppsDlg_ListButton   {min-width: 60px;}
+	.configMobileAppsDlg_ListButtons  {margin-left: 5px;}
+	.configMobileAppsDlg_ListHeader   {font-size: 13px;}
+	.configMobileAppsDlg_ListPanel    {padding-top: 5px;}
+	.configMobileAppsDlg_OpenInLabel  {font-size: 16px;}
+	.configMobileAppsDlg_OpenInSelect {font-size: 13px;}
+/* End:  Styles used in the "Configure Mobile Applications" dialog. */
+  
 /* End Of File */

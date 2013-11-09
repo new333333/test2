@@ -2703,16 +2703,30 @@ public interface GwtTeamingMessages extends Messages
 	String systemErrorLogReportRunReport();
 
 	// Strings used in the Configure Mobile Apps dialog
+	String configureMobileAppsDlgAddAndroid();
+	String configureMobileAppsDlgAddIos();
 	String configureMobileAppsDlgAllowAccess( String productName );
 	String configureMobileAppsDlgAllowCacheContent();
+	String configureMobileAppsDlgAllowCacheContentZone();
 	String configureMobileAppsDlgAllowCachePwd();
 	String configureMobileAppsDlgAllowPlayWithOtherApps();
+	String configureMobileAppsDlgButton_Add();
+	String configureMobileAppsDlgButton_Delete();
+	String configureMobileAppsDlgDisableApplicationsOnRootedOrJailBrokenDevices();
 	String configureMobileAppsDlgHeader();
 	String configureMobileAppsDlgHeader2();
 	String configureMobileAppsDlgHeader3();
+	String configureMobileAppsDlgCutCopyEnabled();
 	String configureMobileAppsDlgOnSaveUnknownException( String err );
+	String configureMobileAppsDlgOpenIn();
+	String configureMobileAppsDlgOpenIn_AllApps();
+	String configureMobileAppsDlgOpenIn_Disabled();
+	String configureMobileAppsDlgOpenIn_WhiteList();
+	String configureMobileAppsDlgScreenCaptureEnabledAndroid();
 	String configureMobileAppsDlgUseGlobalSettings();
 	String configureMobileAppsDlgUseUserSettings();
+	String configureMobileAppsDlgWhiteListAndroid();
+	String configureMobileAppsDlgWhiteListIos();
 	String configureMobileAppsSyncIntervalLabel();
 	String configureMobileAppsSyncMinutesLabel();
 	
