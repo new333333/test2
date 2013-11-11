@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
+import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareAccessInfo;
 import org.kablink.teaming.gwt.client.util.ShareDateInfo;
@@ -80,6 +81,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, EntryTitleInfo>				m_rowEntryTitles;			// A map of column names to EntryTitleInfo's                      possibly stored for a column.
 	private Map<String, GuestInfo>					m_rowGuests;				// A map of column names to GuestInfo's                           possibly stored for a column.
 	private Map<String, List<AssignmentInfo>>		m_rowAssigneeInfos;			// A map of column names to List<AssignmentInfo>'s                possibly stored for a column.
+	private Map<String, MobileDevicesInfo>			m_rowMobileDevices;			// A map of column names to MobileDevicesInfo's                   possibly stored for a column.
 	private Map<String, PrincipalInfo>				m_rowPrincipals;			// A map of column names to PrincipalInfo's                       possibly stored for a column.
 	private Map<String, PrincipalInfoId>			m_rowPrincipalIds;			// A map of column names to PrincipalInfoId's                     possibly stored for a column.
 	private Map<String, List<TaskFolderInfo>>		m_rowTaskFolderInfos;		// A map of column names to List<TaskFolderInfo>'s                possibly stored for a column.
@@ -184,6 +186,7 @@ public class FolderRow implements IsSerializable {
 	public Map<String, EntryTitleInfo>			getRowEntryTitlesMap()                 {validateMapTitles();           return m_rowEntryTitles;     }
 	public Map<String, GuestInfo>				getRowGuestsMap()                      {validateMapGuests();           return m_rowGuests;          }
 	public Map<String, List<AssignmentInfo>>	getRowAssigneeInfoListsMap()           {validateMapAssignees();        return m_rowAssigneeInfos;   }
+	public Map<String, MobileDevicesInfo>		getRowMobileDevicesMap()               {validateMapMobileDevices();    return m_rowMobileDevices;   } 
 	public Map<String, PrincipalInfo>			getRowPrincipalsMap()                  {validateMapPrincipals();       return m_rowPrincipals;      }
 	public Map<String, PrincipalInfoId>			getRowPrincipalIdsMap()                {validateMapPrincipalIds();     return m_rowPrincipalIds;    }
 	public Map<String, List<TaskFolderInfo>>	getRowTaskFolderInfoListsMap()         {validateMapTaskFolders();      return m_rowTaskFolderInfos; } 
@@ -229,6 +232,7 @@ public class FolderRow implements IsSerializable {
 		else if (v instanceof EntryLinkInfo)       {validateMapLinks();            m_rowEntryLinks.put(      vk, ((EntryLinkInfo)       v));}
 		else if (v instanceof EntryTitleInfo)      {validateMapTitles();           m_rowEntryTitles.put(     vk, ((EntryTitleInfo)      v));}
 		else if (v instanceof GuestInfo)           {validateMapGuests();           m_rowGuests.put(          vk, ((GuestInfo)           v));}
+		else if (v instanceof MobileDevicesInfo)   {validateMapMobileDevices();    m_rowMobileDevices.put(   vk, ((MobileDevicesInfo)   v));}
 		else if (v instanceof PrincipalInfo)       {validateMapPrincipals();       m_rowPrincipals.put(      vk, ((PrincipalInfo)       v));}
 		else if (v instanceof PrincipalInfoId)     {validateMapPrincipalIds();     m_rowPrincipalIds.put(    vk, ((PrincipalInfoId)     v));}
 		else if (v instanceof UserType)            {validateMapUserTypes();        m_rowUserTypes.put(       vk, ((UserType)            v));}
@@ -364,6 +368,17 @@ public class FolderRow implements IsSerializable {
 	 */
 	public GuestInfo getColumnValueAsGuestInfo(FolderColumn fc) {
 		return ((null == m_rowGuests) ? null : m_rowGuests.get(getValueKey(fc)));
+	}
+
+	/**
+	 * Returns the MobileDevicesInfo value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public MobileDevicesInfo getColumnValueAsMobileDevices(FolderColumn fc) {
+		return ((null == m_rowMobileDevices) ? null : m_rowMobileDevices.get(getValueKey(fc)));
 	}
 
 	/**
@@ -724,6 +739,7 @@ public class FolderRow implements IsSerializable {
 	private void validateMapEvents()           {if (null == m_rowEntryEvents)			m_rowEntryEvents			= new HashMap<String, EntryEventInfo>();           }
 	private void validateMapGuests()           {if (null == m_rowGuests)		    	m_rowGuests			    	= new HashMap<String, GuestInfo>();                }
 	private void validateMapLinks()            {if (null == m_rowEntryLinks)			m_rowEntryLinks				= new HashMap<String, EntryLinkInfo>();            }
+	private void validateMapMobileDevices()    {if (null == m_rowMobileDevices)			m_rowMobileDevices			= new HashMap<String, MobileDevicesInfo>();        }
 	private void validateMapPrincipals()       {if (null == m_rowPrincipals)			m_rowPrincipals				= new HashMap<String, PrincipalInfo>();            }
 	private void validateMapPrincipalIds()     {if (null == m_rowPrincipalIds)			m_rowPrincipalIds			= new HashMap<String, PrincipalInfoId>();          }
 	private void validateMapTaskFolders()      {if (null == m_rowTaskFolderInfos)		m_rowTaskFolderInfos		= new HashMap<String, List<TaskFolderInfo>>();     }

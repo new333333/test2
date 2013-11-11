@@ -91,6 +91,8 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
+import org.kablink.teaming.domain.MobileDevices;
+import org.kablink.teaming.domain.MobileDevices.MobileDevice;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -167,6 +169,7 @@ import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.ShareInfo;
 import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
+import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
@@ -1205,89 +1208,6 @@ public class GwtViewHelper {
 	}
 	
 	/*
-	 * Scans the List<FolderRow> and completes the PrincipalInfo's for
-	 * each row.
-	 */
-	private static void completePIs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList, boolean isManageUsers, boolean isFilr) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completePIs()");
-		try {
-			// If we don't have any FolderRow's to complete...
-			if (!(MiscUtil.hasItems(frList))) {
-				// ..bail.
-				return;
-			}
-	
-			List<Long> principalIds = new ArrayList<Long>();
-			SimpleProfiler.start("GwtViewHelper.completePIs(Collect IDs)");
-			try {
-				// Collect the principal IDs of the rows from the
-				// List<FolderRow>.
-				for (FolderRow fr:  frList) {
-					Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
-					for (String k:  pIdsMap.keySet()) {
-						ListUtil.addLongToListLongIfUnique(principalIds, pIdsMap.get(k).getId());
-					}
-				}
-			}
-			
-			finally {
-				SimpleProfiler.stop("GwtViewHelper.completePIs(Collect IDs)");
-			}
-			
-			try {
-				SimpleProfiler.start("GwtViewHelper.completePIs(Fixup Principals)");
-				try {
-					// Build a List<PrincipalInfo> from the List<Long> of
-					// principal IDs. 
-					List<PrincipalInfo> piList = getPIsFromPIds(bs, request, principalIds);
-					for (PrincipalInfo pi:  piList) {
-						if (pi.isUserPerson() || isManageUsers || (!isFilr)) {
-							continue;
-						}
-						piList.remove(pi);
-					}
-					
-					// Scan the List<FolderRow> again.
-					for (FolderRow fr:  frList) {
-						// Scan this row's PrincipalInfoId's.
-						Map<String, PrincipalInfo>   piMap   = fr.getRowPrincipalsMap();
-						Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
-						for (String k:  pIdsMap.keySet()) {
-							// Scan the List<PrincipalInfo> map.
-							PrincipalInfoId pId = pIdsMap.get(k);
-							for (PrincipalInfo pi:  piList) {
-								// Is this the PrincipalInfo for the
-								// PrincipalInfoId?
-								if (pId.getId().equals(pi.getId())) {
-									// Yes!  Add it to the principals map
-									// and break out of the inner loop.
-									piMap.put(k, pi);
-									break;
-								}
-							}
-						}
-						
-						// Once we've processed all the
-						// PrincipalInfoId's in the row, we clear the
-						// map of them since we won't need them again. 
-						pIdsMap.clear();
-					}
-				}
-				
-				finally {
-					SimpleProfiler.stop("GwtViewHelper.completePIs(Fixup Principals)");
-				}
-			}
-			
-			catch (Exception ex) {/* Ignored. */}
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-
-	/*
 	 * When initially built, the AssignmentInfo's in the
 	 * List<ShareInfo>'s in the FolderEntryDetails only contain the
 	 * assignee IDs.  We need to complete them with each assignee's
@@ -1404,6 +1324,116 @@ public class GwtViewHelper {
 		}
 	}
 	
+	/*
+	 * Scans the List<FolderRow> and completes user information
+	 * including the PrincipalInfo's and MobileDevicesInfo's for each
+	 * row.
+	 */
+	private static void completeUserInfo(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList, boolean isManageUsers, boolean isFilr) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeUserInfo()");
+		try {
+			// If we don't have any FolderRow's to complete...
+			if (!(MiscUtil.hasItems(frList))) {
+				// ..bail.
+				return;
+			}
+	
+			List<Long> principalIds = new ArrayList<Long>();
+			SimpleProfiler.start("GwtViewHelper.completeUserInfo(Collect IDs)");
+			try {
+				// Collect the principal IDs of the rows from the
+				// List<FolderRow>.
+				for (FolderRow fr:  frList) {
+					Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
+					for (String k:  pIdsMap.keySet()) {
+						ListUtil.addLongToListLongIfUnique(principalIds, pIdsMap.get(k).getId());
+					}
+				}
+			}
+			
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.completeUserInfo(Collect IDs)");
+			}
+			
+			try {
+				SimpleProfiler.start("GwtViewHelper.completeUserInfo(Fixup Principals)");
+				try {
+					// Build a List<PrincipalInfo> from the List<Long> of
+					// principal IDs.
+					List<PrincipalInfo>     piList =                  new ArrayList<PrincipalInfo>();
+					List<MobileDevicesInfo> mdList = (isManageUsers ? new ArrayList<MobileDevicesInfo>() : null);
+					getUserInfoFromPIds(bs, request, piList, mdList, principalIds);
+					for (PrincipalInfo pi:  piList) {
+						if (pi.isUserPerson() || isManageUsers || (!isFilr)) {
+							continue;
+						}
+						piList.remove(pi);
+					}
+					
+					// Scan the List<FolderRow> again.
+					for (FolderRow fr:  frList) {
+						// Scan this row's PrincipalInfoId's.
+						Map<String, PrincipalInfo>   piMap   = fr.getRowPrincipalsMap();
+						Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
+						for (String k:  pIdsMap.keySet()) {
+							// Scan the List<PrincipalInfo> map.
+							PrincipalInfoId pId = pIdsMap.get(k);
+							for (PrincipalInfo pi:  piList) {
+								// Is this the PrincipalInfo for the
+								// PrincipalInfoId?
+								if (pId.getId().equals(pi.getId())) {
+									// Yes!  Add it to the principals map
+									// and break out of the inner loop.
+									piMap.put(k, pi);
+									break;
+								}
+							}
+						}
+						
+						// Once we've processed all the
+						// PrincipalInfoId's in the row, we clear the
+						// map of them since we won't need them again. 
+						pIdsMap.clear();
+
+						// Are we completing the user information for
+						// the manage users page?
+						if (isManageUsers) {
+							// Yes!  Scan the row's MobileDevicesInfo
+							// map.
+							Map<String, MobileDevicesInfo> mdMap = fr.getRowMobileDevicesMap();
+							for (String k: mdMap.keySet()) {
+								// Scan the List<MobileDevicesInfo> we
+								// read.
+								MobileDevicesInfo mdi       = mdMap.get(k);
+								Long              mdiUserId = mdi.getUserId();
+								for (MobileDevicesInfo mdiScan: mdList) {
+									// Is this the MobileDevicesInfo
+									// for the one from row?
+									if (mdiScan.getUserId().equals(mdiUserId)) {
+										// Yes!  Transfer the count and
+										// stop looking.
+										mdi.setMobileDevicesCount(mdiScan.getMobileDevicesCount());
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.completeUserInfo(Fixup Principals)");
+				}
+			}
+			
+			catch (Exception ex) {/* Ignored. */}
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+
 	/*
 	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
 	 * representing the 'Shared by Me' items.
@@ -2721,6 +2751,7 @@ public class GwtViewHelper {
 			else if (colName.equals("date"))             {fc.setColumnSearchKey(dateCSK);                                                                                        }
 			else if (colName.equals("description"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
 			else if (colName.equals("descriptionHtml"))  {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
+			else if (colName.equals("mobileDevices"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_MOBILE_DEVICES);                                                             }
 			else if (colName.equals("download"))         {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                       }
 			else if (colName.equals("dueDate"))          {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                       }
 			else if (colName.equals("emailAddress"))     {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                          }
@@ -3697,8 +3728,8 @@ public class GwtViewHelper {
 				// Yes!
 				baseNameKey = "profiles.column.";
 				if (folderInfo.isBinderProfilesRootWSManagement())
-				     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress", "loginId"});
-				else columnNames = getColumnsLHMFromAS(new String[]{"fullName",             "emailAddress", "loginId"});
+				     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress", "mobileDevices", "loginId"});
+				else columnNames = getColumnsLHMFromAS(new String[]{"fullName",             "emailAddress",                  "loginId"});
 			}
 			
 			// No, we aren't showing the root profiles binder
@@ -4512,6 +4543,7 @@ public class GwtViewHelper {
 			boolean isMilestone      = false;
 			boolean isSurvey         = false;
 			boolean isProfilesRootWS = folderInfo.isBinderProfilesRootWS();
+			boolean isManageUsers    = folderInfo.isBinderProfilesRootWSManagement();
 			boolean isTrash          = folderInfo.isBinderTrash();
 			switch (folderInfo.getFolderType()) {
 			case GUESTBOOK:  isGuestbook = true; break;
@@ -4535,11 +4567,9 @@ public class GwtViewHelper {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
 			// Are we populating the profiles root binder?
-			boolean isManageUsers = false;
 			if (isProfilesRootWS) {
 				// Yes!  Is it for the manage users feature of the
 				// administration console?
-				isManageUsers = folderInfo.isBinderProfilesRootWSManagement();
 				if (isManageUsers) {
 					// Yes!  If the filters are such that we wouldn't
 					// get any results...
@@ -4915,6 +4945,20 @@ public class GwtViewHelper {
 									// No, we aren't working on a 'Shared by/with Me' collection!
 									smItem = null;
 								}
+
+								// Is this the mobileDevices column in
+								// the manage users page?
+								if (isManageUsers && csk.equalsIgnoreCase(FolderColumn.COLUMN_MOBILE_DEVICES)) {
+									// Yes!  Store a MobileDevicesInfo
+									// object that will fill in with
+									// the correct count before we
+									// return.
+									fr.setColumnValue(
+										fc,
+										new MobileDevicesInfo(
+											entityId.getEntityId(),
+											(-1)));
+								}
 								
 								GuestInfo       gi  = null;
 								PrincipalInfoId pId = null;
@@ -4939,7 +4983,7 @@ public class GwtViewHelper {
 									else {
 										// No, we aren't looking at the 'guest' column in a guest
 										// book folder!  Simply track the principal's ID.  We'll
-										// resolve it later to a PrincipalInfo in completePIs().
+										// resolve it later to a PrincipalInfo in completeUserInfo().
 										pId = new PrincipalInfoId(p.getId());
 										fr.setColumnValue(fc, pId);
 									}
@@ -5228,7 +5272,7 @@ public class GwtViewHelper {
 			
 			// Walk the List<FolderRow>'s performing any remaining
 			// fixups on each as necessary.
-			completePIs(bs, request, folderRows, isManageUsers, isFilr);
+			completeUserInfo(bs, request, folderRows, isManageUsers, isFilr);
 
 			// Is the user viewing pinned entries?
 			if (viewPinnedEntries) {
@@ -5787,12 +5831,9 @@ public class GwtViewHelper {
 	 * Given a List<Long> of principal IDs read from entry maps,
 	 * returns an equivalent List<PrincipalInfo> object.
 	 */
-	private static List<PrincipalInfo> getPIsFromPIds(AllModulesInjected bs, HttpServletRequest request, List<Long> principalIds) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getPIsFromPIds()");
+	private static void getUserInfoFromPIds(AllModulesInjected bs, HttpServletRequest request, List<PrincipalInfo> piList, List<MobileDevicesInfo> mdList, List<Long> principalIds) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserInfoFromPIds()");
 		try {
-			// Allocate the List<PrincipalInfo> we'll return.
-			List<PrincipalInfo> reply = new ArrayList<PrincipalInfo>();
-			
 			// Can we map the List<Long> of principal IDs to any
 			// UserWorkspacePair's?
 			List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(principalIds, false);
@@ -5804,7 +5845,7 @@ public class GwtViewHelper {
 					Long pId  = user.getId();
 					String perUserProfile;
 					if (PROFILE_PER_USER) {
-						perUserProfile = "GwtViewHelper.getPIsFromPIds(Process User:  " + pId + ")";
+						perUserProfile = "GwtViewHelper.getUserInfoFromPIds(Process User:  " + pId + ")";
 						SimpleProfiler.start(perUserProfile);
 					}
 					else {
@@ -5833,7 +5874,7 @@ public class GwtViewHelper {
 					}
 					
 					if (PROFILE_PER_USER) {
-						perUserProfile = "GwtViewHelper.getPIsFromPIds(Process User Presence:  " + pId + ")";
+						perUserProfile = "GwtViewHelper.getUserInfoFromPIds(Process User Presence:  " + pId + ")";
 						SimpleProfiler.start(perUserProfile);
 					}
 					try {
@@ -5855,16 +5896,33 @@ public class GwtViewHelper {
 							SimpleProfiler.stop(perUserProfile);
 						}
 					}
+
+					// Is the user's mobile device information being
+					// requested?
+					if (null != mdList) {
+						// Yes!  Do they have a MobileDevices object?
+						int mdCount = 0;
+						MobileDevices md = user.getMobileDevices();
+						if (null != md) {
+							// Yes!  Does it contain a
+							// List<MobileDevices>?
+							List<MobileDevice> mds = md.getMobileDeviceList();
+							if (null != mds) {
+								// Yes!  How many MobileDevice's are
+								// in it?
+								mdCount = mds.size();
+							}
+						}
+						
+						// Add a MobileDevicesInfo to the
+						// List<MobileDevicesInfo> we were given.
+						mdList.add(new MobileDevicesInfo(user.getId(), mdCount));
+					}
 					
 					// ...and add the PrincipalInfo to the reply list.
-					reply.add(pi);
+					piList.add(pi);
 				}
 			}
-			
-			// If we get here, reply refers to the List<PrincipalInfo>
-			// objects for the principal IDs we received or is an empty
-			// list.  Return it.
-			return reply;
 		}
 		
 		finally {
@@ -5879,7 +5937,8 @@ public class GwtViewHelper {
 	private static PrincipalInfo getPIFromPId(AllModulesInjected bs, HttpServletRequest request, Long pId) {
 		List<Long> pIds = new ArrayList<Long>();
 		pIds.add(pId);
-		List<PrincipalInfo> piList = getPIsFromPIds(bs, request, pIds);
+		List<PrincipalInfo> piList = new ArrayList<PrincipalInfo>();
+		getUserInfoFromPIds(bs, request, piList, null, pIds);
 		PrincipalInfo reply;
 		if (MiscUtil.hasItems(piList))
 		     reply = piList.get(0);	// There will only ever be one.
