@@ -211,6 +211,10 @@ public class SearchFilterRequestParser {
 			for (int i = 0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeEntry)) {
 					String entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]).concat("_selected"), "");
+					if (entryTypeId.equals("")) {
+						//See if there was an initial value
+						entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]).concat("_initialized"), "");
+					}
 					
 					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat(numbers[i].concat("_selected")), SearchFilter.AllEntries);
 					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("_selected"));
@@ -269,6 +273,10 @@ public class SearchFilterRequestParser {
 			for (int i = 0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeWorkflow)) {
 					String workflowId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]).concat("_selected"), "");
+					if (workflowId.equals("")) {
+						//See if there was an initial value
+						workflowId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]).concat("_initialized"), "");
+					}
 					String[] workflowSteps =  PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchWorkflowStep.concat(numbers[i]));
 					if (!workflowId.equals("")) {
 						if (workflowsMap.containsKey(workflowId)) {

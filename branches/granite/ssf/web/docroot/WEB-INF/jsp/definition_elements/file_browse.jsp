@@ -228,7 +228,7 @@ var ${eName}_ok = 1;
 			return true;			
 		}
 	
-		ss_createOnSubmitObj('${eName}onsub', '${formName}', ${eName}_onAtatchmentFormSubmit);
+		//ss_createOnSubmitObj('${eName}onsub', '${formName}', ${eName}_onAtatchmentFormSubmit);
 		 
 	</script> 
 
