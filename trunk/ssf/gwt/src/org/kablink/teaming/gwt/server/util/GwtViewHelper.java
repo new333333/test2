@@ -2751,7 +2751,7 @@ public class GwtViewHelper {
 			else if (colName.equals("date"))             {fc.setColumnSearchKey(dateCSK);                                                                                        }
 			else if (colName.equals("description"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
 			else if (colName.equals("descriptionHtml"))  {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
-			else if (colName.equals("mobileDevices"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_MOBILE_DEVICES);                                                             }
+			else if (colName.equals("mobileDevices"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_MOBILE_DEVICES);     fc.setColumnSortable(false);                            }
 			else if (colName.equals("download"))         {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                       }
 			else if (colName.equals("dueDate"))          {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                       }
 			else if (colName.equals("emailAddress"))     {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                          }
