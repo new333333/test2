@@ -2345,15 +2345,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
                 if (flagElement.attributeValue("apply").equals("true")) {
                 	String fieldBuilder = flagElement.attributeValue("fieldBuilder");
 					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
-					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
-					args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
-                	Field[] fields = FieldBuilderUtil.buildField(entity,
-                         nameValue, fieldBuilder, args);
-                	if (fields != null) {
-                		for (int i = 0; i < fields.length; i++) {
-                			indexDoc.add(fields[i]);
-                		}
-                    }
+                	String excludeFromSearchIndex = DefinitionUtils.getPropertyValue(entryElement, "excludeFromSearchIndex");
+                	if (excludeFromSearchIndex == null || !excludeFromSearchIndex.equals("true")) {
+						if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
+						args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
+	                	Field[] fields = FieldBuilderUtil.buildField(entity,
+	                         nameValue, fieldBuilder, args);
+	                	if (fields != null) {
+	                		for (int i = 0; i < fields.length; i++) {
+	                			indexDoc.add(fields[i]);
+	                		}
+	                    }
+                	}
                 }
 			}
 			public String getFlagElementName() { return "index"; }
