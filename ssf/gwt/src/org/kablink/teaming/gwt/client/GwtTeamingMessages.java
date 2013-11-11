@@ -702,6 +702,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ManageNetFolderServersDlg();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
+	String codeSplitFailure_ManageUserDevicesDlg();
 	String codeSplitFailure_ManageUsersDlg();
 	String codeSplitFailure_MicroBlogFolderView();
 	String codeSplitFailure_MilestoneFolderView();
@@ -1816,6 +1817,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_InternalUser_System();
 	String vibeDataTable_Alt_Ldap_Group();
 	String vibeDataTable_Alt_Local_Group();
+	String vibeDataTable_Alt_MobileDevices();
 	String vibeDataTable_Alt_UnknownGroupType();
 	String vibeDataTable_Alt_UnknownUser();
 	String vibeDataTable_Alt_Unread();
@@ -3155,5 +3157,8 @@ public interface GwtTeamingMessages extends Messages
 	String nameCompletionSettingsDlg_SavingSettings();
 	String nameCompletionSettingsDlg_SecondaryDisplayLabel();
 	String nameCompletionSettingsDlg_Title();
+	
+	// Strings used in the Manage User Devices dialog.
+	String manageUserDevicesDlgDevices(int dCount);
 	
 }// end GwtTeamingMessages

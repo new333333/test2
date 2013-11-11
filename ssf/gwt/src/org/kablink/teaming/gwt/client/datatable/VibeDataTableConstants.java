@@ -70,6 +70,7 @@ public class VibeDataTableConstants {
 	public final static String CELL_WIDGET_GROUP_ID						= "n-groupId";
 	public final static String CELL_WIDGET_INDEX						= "n-cellWidgetIndex";
 	public final static String CELL_WIDGET_GUEST_AVATAR					= "guestAvatar";
+	public final static String CELL_WIDGET_MOBILE_DEVICES_PANEL			= "mobileDevicesPanel";
 	public final static String CELL_WIDGET_PRESENCE						= "presenceControl";
 	public final static String CELL_WIDGET_PRESENCE_LABEL				= "presenceLabel";
 	public final static String CELL_WIDGET_TASK_FOLDER					= "taskFolder";

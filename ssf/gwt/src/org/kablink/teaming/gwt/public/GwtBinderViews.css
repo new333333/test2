@@ -141,15 +141,16 @@
 	/* ...End:  Generic folder view styles. */
 	
 	/* ...Start:  Generic data table folder view styles. */
-		.vibe-dataTableFolderColumn              {}
-		.vibe-dataTableFolderColumn-headerCenter {text-align: center !important;}
-		.vibe-dataTableFolderColumn-select       {}
-		.vibe-dataTableFolderDataTableBase       {}
-		.vibe-dataTableFolderFlowPanelBase       {}
-		.vibe-dataTableFolderRow                 {}
-		.vibe-dataTableFolderRow-select          {}
-		.vibe-dataTableFolderViewBase            {}
-		.vibe-dataTableFolderVerticalPanelBase   {}
+		.vibe-dataTableFolderColumn               {}
+		.vibe-dataTableFolderColumn-headerCenter  {text-align: center !important;}
+		.vibe-dataTableFolderColumn-mobileDevices {height: 25px; width: 25px;}
+		.vibe-dataTableFolderColumn-select        {}
+		.vibe-dataTableFolderDataTableBase        {}
+		.vibe-dataTableFolderFlowPanelBase        {}
+		.vibe-dataTableFolderRow                  {}
+		.vibe-dataTableFolderRow-select           {}
+		.vibe-dataTableFolderViewBase             {}
+		.vibe-dataTableFolderVerticalPanelBase    {}
 	/* ...End:  Generic data table folder view styles. */
 	
 	/* ...Start:  Data table cell styles. */
@@ -209,6 +210,12 @@
 		.vibe-dataTableItem-Img                   {vertical-align: middle; margin-right: 2px;}
 		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-dataTableLink-hoverNoLPad           {padding-left: 0px !important;}
+		.vibe-dataTableMobileDevices-bubble       {color: #135c8f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline;}
+		.vibe-dataTableMobileDevices-bubbleBig    {background: url(images/devices_25_wide.png) no-repeat scroll center center transparent;}
+		.vibe-dataTableMobileDevices-bubbleSmall  {background: url(images/devices_25.png)      no-repeat scroll center center transparent;}
+		.vibe-dataTableMobileDevices-headerBubble {color: #135c8f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 4px; padding-right: 4px; text-align: center; display: inline; background: url(images/devices_sm.png) no-repeat scroll center center transparent;}
+		.vibe-dataTableMobileDevices-panel        {text-align: center; display: block;}
+		.vibe-dataTableMobileDevices-panel0       {}
 		.vibe-dataTablePresence-control           {vertical-align: text-bottom;}
 		.vibe-dataTablePresence-label             {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTablePresence-disabled          {color: #c4c4c4;}
@@ -490,6 +497,20 @@
 	.vibe-manageCommentsDlg-panel         {}
 	.vibe-manageCommentsDlg-headerCaption {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 420px;}
 /* End:  Manage comments dialog styles. */
+
+/* Start:  Manage user devices dialog styles. */
+	.vibe-manageUserDevicesDlg .popupContent {background-color: white !important;}
+	.vibe-manageUserDevicesDlg-captionCount  {
+		position: absolute;
+		top: 8px;
+		right: 0px;
+		padding-left: 10px;
+		padding-right: 20px;
+		font-size: 13px;
+	}
+	.vibe-manageUserDevicesDlg-panel         {margin: 10px 10px 10px 13px;}
+	.vibe-manageUserDevicesDlg-headerCaption {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 420px;}
+/* End:  Manage user devices dialog styles. */
 
 /* Start:  Size columns dialog styles. */
 	.vibe-sizeColumnsDlg-colCaptionImg {}

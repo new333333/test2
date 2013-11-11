@@ -66,6 +66,7 @@ import org.kablink.teaming.gwt.client.datatable.EmailAddressColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.GuestColumn;
+import org.kablink.teaming.gwt.client.datatable.MobileDevicesColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceCell.PresenceClickAction;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
@@ -157,6 +158,7 @@ import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntryPinInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
@@ -841,6 +843,20 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/*
+	 * Constructs a SafeHtml object containing the HTML for the mobile
+	 * devices column's header.
+	 */
+	private SafeHtml buildMobileDevicesHeaderHtml(FolderColumn fc) {
+		VibeFlowPanel deviceBubble = new VibeFlowPanel();
+		deviceBubble.addStyleName("vibe-dataTableMobileDevices-headerBubble");
+		deviceBubble.setTitle(fc.getColumnTitle());
+		deviceBubble.getElement().setInnerHTML("&nbsp;&nbsp;");
+		VibeFlowPanel html = new VibeFlowPanel();
+		html.add(deviceBubble);
+		return SafeHtmlUtils.fromTrustedString(html.getElement().getInnerHTML());
+	}
+	
+	/*
 	 * Returns true if entries can be pinned in the current view and
 	 * false otherwise.
 	 */
@@ -1297,6 +1313,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
+	 * Scans the current columns looking for the full name column.  If
+	 * it is found, it's returned.  Otherwise, null is returned.
+	 */
+	private FolderColumn getFullNameColumn() {
+		for (FolderColumn fc:  m_folderColumnsList) {
+			if (FolderColumn.isColumnFullName(fc.getColumnName())) {
+				return fc;
+			}
+		}
+		return null;
+	}
+	
+	/*
 	 * Scans the current columns looking for the title column.  If it
 	 * is found, it's returned.  Otherwise, null is returned.
 	 */
@@ -1687,7 +1716,40 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 			
 			// No, this column isn't a comments count either!  Is it a
-			// user type?
+			// mobile devices count?
+			else if (FolderColumn.isColumnMobileDevices(cName)) {
+				// Yes!  Create a MobileDevicesColumn for it.
+				column = new MobileDevicesColumn<FolderRow>(fc) {
+					@Override
+					public MobileDevicesInfo getValue(FolderRow fr) {
+						FolderColumn		fullNameFC = getFullNameColumn();
+						PrincipalInfo		pi         = ((null == fullNameFC) ? null : fr.getColumnValueAsPrincipalInfo(fullNameFC));
+						MobileDevicesInfo	reply      = fr.getColumnValueAsMobileDevices(fc);
+						if (null != reply) {
+							// Create an Image widget for the manage
+							// mobile devices dialog...
+							String userUrl = pi.getAvatarUrl();
+							if (!(GwtClientHelper.hasString(userUrl))) {
+								userUrl = m_images.userPhoto().getSafeUri().asString();
+							}
+							Image rowImg = GwtClientHelper.buildImage(userUrl);
+							rowImg.addStyleName("vibe-dataTableFolderColumn-mobileDevices");
+
+							// ...and store the Image and user's title
+							// ...in the reply.
+							reply.setClientItemImage(rowImg);
+							reply.setClientItemTitle(pi.getTitle());
+						}
+						return reply;
+					}
+				};
+				column.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				columnHeaderHtml = buildMobileDevicesHeaderHtml(fc);
+				columnHeaderStyle = "vibe-dataTableFolderColumn-headerCenter";
+			}
+			
+			// No, this column isn't a mobile devices count either!  Is
+			// it a user type?
 			else if (FolderColumn.isColumnUserType(cName)) {
 				// Yes!  Create a UserTypeColumn for it.
 				column = new UserTypeColumn<FolderRow>(fc) {
