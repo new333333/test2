@@ -187,11 +187,18 @@ public interface AclResourceSession extends ResourceSession {
 	/**
 	 * Returns a set of <code>ResourceChange</code> objects representing the changes occurred on the file
 	 * system since the specified time at or below the folder denoted by the current path. 
-	 * The result is sorted in ascending order of timestamp. If there's no changes meeting the criteria, 
+	 * The result is sorted in ascending order of timestamp. If there's no change logs meeting the criteria, 
 	 * this method returns an empty set. If the resource driver does not support "change since" capability,
 	 * this method should return a <code>null</code>.
+	 * <p>
+	 * When Filr calls this method with a certain timestamp value, it also serves as acknowledging that
+	 * the changes occurred BEFORE the timestamp value have been processed successfully by the Filr side.
+	 * At that point, the implementation of this method, if it chooses to do so, can purge or remove
+	 * the corresponding change logs occurred prior to that timestamp. The implementation must NEVER 
+	 * purge those change logs corresponding to the result of the latest invocation of this method
+	 * until the next call is made.
 	 * 
-	 * @param timestamp information about the changes occurred since this time (inclusive) is being requested
+	 * @param timestamp information about the changes occurred since this time (inclusive) should be returned
 	 * @param maxResults maximum number of <code>ResourceChange</code> objects allowed in the result.
 	 * IMPORTANT: If the number of changes found on the file system is greater than the specified
 	 * <code>maxResults</code>, it is crucially important that the implementation must cut off the
