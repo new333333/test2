@@ -1225,6 +1225,10 @@ public static void resumeTimers(WorkflowSupport entry) {
 		String name, value;
 		if ((props == null) || props.isEmpty()) return null;
 		WfAcl result = new WfAcl(type);
+		DefinableEntity topEntry = null;
+		if (entity instanceof FolderEntry && !((FolderEntry)entity).isTop()) {
+			topEntry = ((FolderEntry)entity).getTopEntry();
+		}
 		for (Element prop:props) {
 			name = prop.attributeValue("name","");
 			value = prop.attributeValue("value","");
@@ -1239,6 +1243,11 @@ public static void resumeTimers(WorkflowSupport entry) {
 			        User user = RequestContextHolder.getRequestContext().getUser();
 					List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
 							entity.getEntryDefId() + "']");
+					if ((userLists == null || userLists.isEmpty()) && topEntry != null && topEntry.getEntryDefId() != null) {
+						//There are no user lists here, try looking in the top entry
+						userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
+								topEntry.getEntryDefId() + "']");
+					}
 					if (userLists != null && !userLists.isEmpty()) {
 						for (Element element:userLists) {
 							String userListName = element.attributeValue("elementName"); //custom attribute name
@@ -1250,6 +1259,10 @@ public static void resumeTimers(WorkflowSupport entry) {
 	    						userListName = userListName.substring(userListName.indexOf(":")+1);
 	    					}
 							CustomAttribute attr = entity.getCustomAttribute(userListName); 
+							if (attr == null && topEntry != null) {
+								//The current entry is a reply. So also check if the custom attribute is from the top entry
+								attr = topEntry.getCustomAttribute(userListName); 
+							}
 							if (attr != null) {
 								//comma separated value
 								if (listType.equals("user_list") || listType.equals("group_list") || 
