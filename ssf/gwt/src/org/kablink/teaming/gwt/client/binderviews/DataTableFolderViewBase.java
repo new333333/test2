@@ -1743,6 +1743,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						return reply;
 					}
 				};
+				column.setSortable(false);	// false -> Can't be sorted.  Value's not in the search index.
 				column.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 				columnHeaderHtml = buildMobileDevicesHeaderHtml(fc);
 				columnHeaderStyle = "vibe-dataTableFolderColumn-headerCenter";
