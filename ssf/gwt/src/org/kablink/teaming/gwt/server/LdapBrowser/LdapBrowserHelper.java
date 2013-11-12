@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.NoRouteToHostException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -273,6 +274,10 @@ public final class LdapBrowserHelper {
 					     msgKey = "ldapBrowserError.anonymousNotSupported.ssl";
 					else msgKey = "ldapBrowserError.anonymousNotSupported";
 					msgPatches  = new String[]{ds.getAddress()};
+				}
+				else if (rootCause instanceof NoRouteToHostException) {
+					msgKey     = "ldapBrowserError.noRouteToHost";
+					msgPatches = new String[]{ds.getAddress()};
 				}
 				else {
 					msgKey     = "ldapBrowserError.otherException2";
@@ -611,7 +616,7 @@ public final class LdapBrowserHelper {
 					details.contains("a successful bind must be completed"));
 			}
 		}
-		return true;
+		return reply;
 	}
 	
 	/*
