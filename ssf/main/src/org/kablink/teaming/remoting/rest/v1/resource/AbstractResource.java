@@ -519,35 +519,42 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             spec.setRecipients(null, null, recipientId);
         }
 
-        List<ShareItem> shares = getShareItems(spec, true);
+        List<ShareItem> shares = getShareItems(spec, true, true, true);
         if (shares.size()==0) {
             return null;
         }
         return shares.get(0);
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, boolean includeExpired) {
-        return getShareItems(spec, null, includeExpired, false);
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, boolean includeExpired, boolean includePublic, boolean includeNonPublic) {
+        return getShareItems(spec, null, includeExpired, includePublic, includeNonPublic, true);
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired) {
-        return getShareItems(spec, excludedSharer, includeExpired, false);
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired,
+                                            boolean includePublic, boolean includeNonPublic) {
+        return getShareItems(spec, excludedSharer, includeExpired, includePublic, includeNonPublic, true);
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired, boolean includeAllPublic) {
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired,
+                                            boolean includePublic, boolean includeNonPublic, boolean mergePublicParts) {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         List<ShareItem> filteredItems = new ArrayList<ShareItem>(shareItems.size());
         Map<String, Boolean> publicIncludedMap = new HashMap<String, Boolean>();
         for (ShareItem item : shareItems) {
             if ((!item.isExpired() || includeExpired) && item.isLatest() &&
                     (excludedSharer==null || !excludedSharer.equals(item.getSharerId()))) {
-                if (!includeAllPublic && item.getIsPartOfPublicShare()) {
-                    Boolean publicIncluded = publicIncludedMap.get(item.getSharedEntityIdentifier().toString());
-                    if (publicIncluded==null || !publicIncluded) {
+                boolean partOfPublicShare = item.getIsPartOfPublicShare();
+                if (includePublic && partOfPublicShare){
+                    if (mergePublicParts) {
+                        Boolean publicIncluded = publicIncludedMap.get(item.getSharedEntityIdentifier().toString());
+                        if (publicIncluded==null || !publicIncluded) {
+                            filteredItems.add(item);
+                            publicIncludedMap.put(item.getSharedEntityIdentifier().toString(), Boolean.TRUE);
+                        }
+                    } else {
                         filteredItems.add(item);
-                        publicIncludedMap.put(item.getSharedEntityIdentifier().toString(), Boolean.TRUE);
                     }
-                } else {
+                } else if (includeNonPublic && !partOfPublicShare) {
                     filteredItems.add(item);
                 }
             }
@@ -1062,7 +1069,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         // Include deleted entries as well.
         spec.deleted = null;
-        List<ShareItem> shareItems = getShareItems(spec, userId, true);
+        List<ShareItem> shareItems = getShareItems(spec, userId, true, false, true);
         Date libraryModifiedDateForShareItems = getLibraryModifiedDateForShareItems(recursive, shareItems);
         Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
         return max(hideDate, libraryModifiedDateForShareItems);
@@ -1104,7 +1111,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         // Include deleted entries as well.
         spec.deleted = null;
-        List<ShareItem> shareItems = getShareItems(spec, userId, true);
+        List<ShareItem> shareItems = getShareItems(spec, userId, true, false, true);
         LibraryInfo info = getLibraryInfoForShareItems(shareItems);
         Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
         info.setModifiedDate(max(hideDate, info.getModifiedDate()));
@@ -1341,6 +1348,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
     }
 
+    protected Boolean getEffectivePublicCollectionSetting(org.kablink.teaming.domain.User user) {
+        return SearchUtils.getEffectivePublicCollectionSetting(this, user);
+    }
+
     protected BinderBrief getFakeMyFileFolders() {
         org.kablink.teaming.domain.User user = getLoggedInUser();
         Binder folderParent = getMyFilesFolderParent();
@@ -1427,6 +1438,30 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         //binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri);
         //binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
+        return binder;
+    }
+
+    protected BinderBrief getFakePublicShares() {
+        BinderBrief binder = new BinderBrief();
+
+        Binder netFoldersBinder = SearchUtils.getNetFoldersRootBinder();
+        //TODO: localize
+        binder.setId(ObjectKeys.NET_FOLDERS_ID);
+        binder.setTitle("Public");
+        binder.setPath(netFoldersBinder.getPathName());
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        Long userId = getLoggedInUserId();
+        binder.setLink("/self/public_shares");
+        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
+        String baseUri = "/shares/public";
+        binder.addAdditionalLink("child_binders", baseUri + "/binders");
+        binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
+        binder.addAdditionalLink("child_files", baseUri + "/files");
+        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
+        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
+        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }

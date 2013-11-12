@@ -1429,7 +1429,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		boolean includeNestedBinders;
    		Integer searchMode = null;
     	Binder searchBinder = binder;
-   		
+
         if (options != null) {
         	if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
         		maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
