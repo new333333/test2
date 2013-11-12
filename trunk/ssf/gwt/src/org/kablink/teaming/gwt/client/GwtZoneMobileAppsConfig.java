@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -61,35 +62,6 @@ public class GwtZoneMobileAppsConfig
     private GwtMobileOpenInSetting	m_mobileOpenIn;								//
     private List<String>			m_androidApplications;						//
     private List<String>			m_iosApplications;							//
-    
-    /**
-     * Enumeration mapping of the Integer stored for mobileOpenIn.
-     * 
-     * Note:  The ordinal numbers for these MUST MATCH EXACTLY
-     * those defined in MobileAppsConfig.MobileOpenInSetting.
-     */
-    public enum GwtMobileOpenInSetting implements IsSerializable
-    {
-    	DISABLED,
-    	ALL_APPLICATIONS,
-    	WHITE_LIST;
-    	
-    	/**
-    	 * Returns a GwtMobileOpenInSetting mapped from an integer.
-    	 * 
-    	 * @param setting
-    	 * 
-    	 * @return
-    	 */
-    	public static GwtMobileOpenInSetting valueOf( int setting )
-    	{
-    		GwtMobileOpenInSetting reply;
-    		if      ( DISABLED.ordinal()   == setting ) reply = GwtMobileOpenInSetting.DISABLED;
-    		else if ( WHITE_LIST.ordinal() == setting ) reply = GwtMobileOpenInSetting.WHITE_LIST;
-    		else                                        reply = GwtMobileOpenInSetting.ALL_APPLICATIONS;
-    		return reply;
-    	}
-    }
     
 	/**
 	 * 

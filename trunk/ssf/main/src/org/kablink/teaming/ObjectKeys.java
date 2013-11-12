@@ -578,6 +578,12 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT = "userMobileApps_CacheContent";
     public static final String USER_PROPERTY_MOBILE_APPS_CACHE_PWD = "userMobileApps_CachePwd";
     public static final String USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS = "userMobileApps_PlayWithOtherApps";
+    public static final String USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED = "userMobileApps_cutCopyEnabled";
+    public static final String USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED = "userMobileApps_androidScreenCaptureEnabled";
+    public static final String USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES = "userMobileApps_disableOnJailBroken";
+    public static final String USER_PROPERTY_MOBILE_APPS_OPEN_IN = "userMobileApps_openIn";
+    public static final String USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS = "userMobileApps_androidApplications";
+    public static final String USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS = "userMobileApps_iosApplications";
     public static final String USER_PROPERTY_MOBILE_BINDER_IDS = "userMobileBinderIds";
     public static final String USER_PROPERTY_PERMALINK_URL = "userPermalinkUrl";
     public static final String USER_PROPERTY_PINNED_ENTRIES = "userPinnedEntries";

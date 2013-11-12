@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,16 +32,18 @@
  */
 package org.kablink.teaming.gwt.client;
 
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * This class is used to hold the Mobile applications Configuration data stored in a user's properties.
+ * This class is used to hold the Mobile applications Configuration
+ * data stored in a user's properties.
+ * 
  * @author jwootton
- *
  */
 public class GwtUserMobileAppsConfig
 	implements IsSerializable, VibeRpcResponseData
@@ -52,6 +54,15 @@ public class GwtUserMobileAppsConfig
 	private boolean m_allowCacheContent = false;
 	private boolean m_allowPlayWithOtherApps = false;
 	
+	// The following are the data members for the Mobile Application
+	// Management (MAM) settings.
+    private boolean					m_mobileCutCopyEnabled;						//
+    private boolean					m_mobileAndroidScreenCaptureEnabled;		//
+    private boolean					m_mobileDisableOnRootedOrJailBrokenDevices;	//
+    private GwtMobileOpenInSetting	m_mobileOpenIn;								//
+    private List<String>			m_androidApplications;						//
+    private List<String>			m_iosApplications;							//
+    
 	/**
 	 * 
 	 */
@@ -102,6 +113,54 @@ public class GwtUserMobileAppsConfig
 	/**
 	 * 
 	 */
+    public boolean getMobileCutCopyEnabled()
+    {
+    	return m_mobileCutCopyEnabled;
+    }
+    
+	/**
+	 * 
+	 */
+    public boolean getMobileAndroidScreenCaptureEnabled()
+    {
+    	return m_mobileAndroidScreenCaptureEnabled;
+    }
+    
+	/**
+	 * 
+	 */
+    public boolean getMobileDisableOnRootedOrJailBrokenDevices()
+    {
+    	return m_mobileDisableOnRootedOrJailBrokenDevices;
+    }
+    
+	/**
+	 * 
+	 */
+    public GwtMobileOpenInSetting getMobileOpenIn()
+    {
+    	return m_mobileOpenIn;
+    }
+    
+	/**
+	 * 
+	 */
+    public List<String> getAndroidApplications()
+    {
+    	return m_androidApplications;
+    }
+    
+	/**
+	 * 
+	 */
+    public List<String> getIosApplications()
+    {
+    	return m_iosApplications;
+    }
+
+	/**
+	 * 
+	 */
 	public void setAllowCacheContent( boolean allow )
 	{
 		m_allowCacheContent = allow;
@@ -138,4 +197,52 @@ public class GwtUserMobileAppsConfig
 	{
 		m_useGlobalSettings = useGlobal;
 	}
+	
+	/**
+	 * 
+	 */
+    public void setMobileCutCopyEnabled(boolean mobileCutCopyEnabled)
+    {
+    	m_mobileCutCopyEnabled = mobileCutCopyEnabled;
+    }
+    
+	/**
+	 * 
+	 */
+    public void setMobileAndroidScreenCaptureEnabled(boolean mobileAndroidScreenCaptureEnabled)
+    {
+    	m_mobileAndroidScreenCaptureEnabled = mobileAndroidScreenCaptureEnabled;
+    }
+    
+	/**
+	 * 
+	 */
+    public void setMobileDisableOnRootedOrJailBrokenDevices(boolean mobileDisableOnRootedOrJailBrokenDevices)
+    {
+    	m_mobileDisableOnRootedOrJailBrokenDevices = mobileDisableOnRootedOrJailBrokenDevices;
+    }
+    
+	/**
+	 * 
+	 */
+    public void setMobileOpenIn(GwtMobileOpenInSetting mobileOpenIn)
+    {
+    	m_mobileOpenIn = mobileOpenIn;
+    }
+    
+	/**
+	 * 
+	 */
+    public void setAndroidApplications(List<String> androidApplications)
+    {
+    	m_androidApplications = androidApplications;
+    }
+    
+	/**
+	 * 
+	 */
+    public void setIosApplications(List<String> iosApplications)
+    {
+    	m_iosApplications = iosApplications;
+    }
 }

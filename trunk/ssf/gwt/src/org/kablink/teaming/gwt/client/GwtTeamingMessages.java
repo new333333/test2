@@ -2716,7 +2716,6 @@ public interface GwtTeamingMessages extends Messages
 	String configureMobileAppsDlgAllowCacheContent();
 	String configureMobileAppsDlgAllowCacheContentZone();
 	String configureMobileAppsDlgAllowCachePwd();
-	String configureMobileAppsDlgAllowPlayWithOtherApps();
 	String configureMobileAppsDlgButton_Add();
 	String configureMobileAppsDlgButton_Delete();
 	String configureMobileAppsDlgDisableApplicationsOnRootedOrJailBrokenDevices();

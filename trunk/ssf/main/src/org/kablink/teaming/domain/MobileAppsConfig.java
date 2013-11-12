@@ -60,7 +60,7 @@ public class MobileAppsConfig
      * Enumeration mapping of the Integer stored for mobileOpenIn. 
      * 
      * Note:  The ordinal numbers for these MUST MATCH EXACTLY
-     * those defined in GwtZoneMobileAppsConfig.GwtMobileOpenInSetting.
+     * those defined in GwtMobileOpenInSetting.
      */
     public enum MobileOpenInSetting
     {
