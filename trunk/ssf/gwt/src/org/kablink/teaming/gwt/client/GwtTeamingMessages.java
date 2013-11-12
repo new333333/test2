@@ -2268,6 +2268,10 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_AddHeader();
 	String modifyNetFolderServerDlg_AllowSelfSignedCertsLabel();
 	String modifyNetFolderServerDlg_AuthenticationTab();
+	String modifyNetFolderServerDlg_AuthTypeLabel();
+	String modifyNetFolderServerDlg_AuthType_Kerberos();
+	String modifyNetFolderServerDlg_AuthType_KerberosThenNtlm();
+	String modifyNetFolderServerDlg_AuthType_Ntlm();
 	String modifyNetFolderServerDlg_ConfigTab();
 	String modifyNetFolderServerDlg_CreatingNetFolderServer();
 	String modifyNetFolderServerDlg_EditHeader( String name );
@@ -2302,6 +2306,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_SyncAllNetFoldersPrompt();
 	String modifyNetFolderServerDlg_SyncOfNetFolderServerStarted();
 	String modifyNetFolderServerDlg_SyncOnlyDirStructureCB();
+	String modifyNetFolderServerDlg_SyncScheduleCaption();
 	String modifyNetFolderServerDlg_SyncTab();
 	String modifyNetFolderServerDlg_TestConnectionLabel();
 	String modifyNetFolderServerDlg_TypeLabel();
@@ -2314,7 +2319,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_Type_Undefined();
 	String modifyNetFolderServerDlg_Type_WebDav();
 	String modifyNetFolderServerDlg_Type_Windows();
-	String modifyNetFolderServerDlg_SyncScheduleCaption();
+	String modifyNetFolderServerDlg_UseDirectoryRightsCB();
 	String modifyNetFolderServerDlg_User();
 	
 	// Strings used in the Manage Net Folders dialog

@@ -319,6 +319,26 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   		newResourceDriver.setFullSyncDirOnly( value );
 			   	}
 			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE) )
+			   	{
+			   		ResourceDriverConfig.AuthenticationType value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE ) != null )
+			   			value = (ResourceDriverConfig.AuthenticationType) options.get( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE );
+			   		
+			   		newResourceDriver.setAuthenticationType( value );
+			   	}
+			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) )
+			   	{
+			   		Boolean value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) != null )
+			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS );
+			   		
+			   		newResourceDriver.setUseDirectoryRights( value );
+			   	}
+			   	
 			   	newResourceDriver.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(newResourceDriver);
 				
@@ -419,6 +439,26 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY );
 			   		
 			   		rdc.setFullSyncDirOnly( value );
+			   	}
+
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE) )
+			   	{
+			   		ResourceDriverConfig.AuthenticationType value = null;
+
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE ) != null )
+			   			value = (ResourceDriverConfig.AuthenticationType) options.get( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE );
+			   		
+			   		rdc.setAuthenticationType( value );
+			   	}
+			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) )
+			   	{
+			   		Boolean value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) != null )
+			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS );
+			   		
+			   		rdc.setUseDirectoryRights( value );
 			   	}
 
 			   	rdc.setModifiedOn(new Date());	//Set the date of last modification to "now"

@@ -433,4 +433,16 @@ update SS_Principals set domainName=LOWER(domainName);
         </addColumn>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="37">
+        <comment>New fields for resource driver</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="authenticationType" type="SMALLINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="useDirectoryRights" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

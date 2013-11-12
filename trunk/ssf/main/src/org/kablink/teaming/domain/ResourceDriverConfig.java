@@ -62,6 +62,8 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private String volume;
 	private Date modifiedOn;
 	private ChangeDetectionMechanism changeDetectionMechanism;
+	private Short authenticationType;
+	private Boolean useDirectoryRights;
 		
 	public enum DriverType {
 		filesystem (0),
@@ -109,6 +111,57 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		log
 	}
 
+	/**
+	 * 
+	 */
+	public enum AuthenticationType
+	{
+		kerberos( (short)1 ),
+		
+		ntlm( (short)2 ),
+		
+		kerberos_then_ntlm( (short)3 );
+		
+		private short m_value;
+
+		/**
+		 * 
+		 */
+		AuthenticationType( short value )
+		{
+			m_value = value;
+		}
+		
+		/**
+		 * 
+		 */
+		public short getValue()
+		{
+			return m_value;
+		}
+		
+		/**
+		 * 
+		 */
+		public static AuthenticationType valueOf( short value )
+		{
+			switch(value)
+			{
+			case 1:
+				return AuthenticationType.kerberos;
+				
+			case 2:
+				return AuthenticationType.ntlm;
+				
+			case 3:
+				return AuthenticationType.kerberos_then_ntlm;
+
+			default:
+				throw new IllegalArgumentException( "Invalid db value " + value + " for enum AuthenticationType" );
+			}
+		}
+	}
+
     public boolean equals(Object obj) {
     	if(!(obj instanceof ResourceDriverConfig))
     		return false;
@@ -151,6 +204,13 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     		return false;
     	if(!objectEquals(getChangeDetectionMechanism(), config.getChangeDetectionMechanism()))
     		return false;
+    	
+    	if ( !objectEquals( getAuthenticationType(), config.getAuthenticationType() ) )
+    		return false;
+
+    	if ( !objectEquals( getUseDirectoryRights(), config.getUseDirectoryRights() ) )
+    		return false;
+
     	return true;
     }
     
@@ -412,6 +472,45 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		this.modifiedOn = modifiedOn;
 	}
 	
+	/**
+	 * 
+	 */
+	public AuthenticationType getAuthenticationType()
+	{
+		if ( authenticationType == null )
+			return null;
+		
+		return AuthenticationType.valueOf( authenticationType.shortValue() );
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAuthenticationType( AuthenticationType type )
+	{
+		if ( type == null )
+			authenticationType = null;
+		else
+			authenticationType = type.getValue();
+	}
+
+	/**
+	 * 
+	 */
+	public Boolean getUseDirectoryRights()
+	{
+		return useDirectoryRights;
+	}
+
+	/**
+	 * 
+	 */
+	public void setUseDirectoryRights( Boolean value )
+	{
+		useDirectoryRights = value;
+	}
+
+
 	// Used by application
 	public ChangeDetectionMechanism getChangeDetectionMechanism() {
 		if(changeDetectionMechanism == null)

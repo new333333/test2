@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -171,6 +172,8 @@ public class NetFolderHelper
 													null,
 													false,
 													false,
+													null,
+													null,
 													null,
 													scheduleInfo );
 		
@@ -572,6 +575,8 @@ public class NetFolderHelper
 		boolean allowSelfSignedCerts,
 		boolean isSharePointServer,
 		Boolean fullSyncDirOnly,
+		AuthenticationType authType,
+		Boolean useDirectoryRights,
 		ScheduleInfo scheduleInfo ) throws RDException
 	{
 		Map options;
@@ -593,6 +598,8 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, proxyName ); 
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
 		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
+		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
+		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
 		
 		// Is the root type WebDAV?
 		if ( driverType == DriverType.webdav )
@@ -943,6 +950,8 @@ public class NetFolderHelper
 		boolean isSharePointServer,
 		Set<Long> listOfPrincipals,
 		Boolean fullSyncDirOnly,
+		AuthenticationType authType,
+		Boolean useDirectoryRights,
 		ScheduleInfo scheduleInfo )
 	{
 		Map options;
@@ -968,6 +977,8 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, proxyName ); 
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
 		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
+		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
+		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
 
 		// Always prevent the top level folder from being deleted
 		// This is forced so that the folder could not accidentally be deleted if the 

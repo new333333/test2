@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
@@ -80,6 +81,7 @@ import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolder.NetFolderSyncStatus;
 import org.kablink.teaming.gwt.client.NetFolderDataSyncSettings;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
+import org.kablink.teaming.gwt.client.NetFolderRoot.GwtAuthenticationType;
 import org.kablink.teaming.gwt.client.NetFolderRoot.NetFolderRootStatus;
 import org.kablink.teaming.gwt.client.NetFolderSyncStatistics;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderResult;
@@ -305,6 +307,10 @@ public class GwtNetFolderHelper
 		scheduleInfo = GwtServerHelper.getScheduleInfoFromGwtSchedule( netFolderRoot.getSyncSchedule() );
 		try
 		{
+			AuthenticationType authType = null;
+			
+			authType = getAuthType( netFolderRoot.getAuthType() );
+			
 			rdConfig = NetFolderHelper.createNetFolderRoot(
 													ami.getAdminModule(),
 													ami.getResourceDriverModule(),
@@ -318,6 +324,8 @@ public class GwtNetFolderHelper
 													netFolderRoot.getAllowSelfSignedCerts(),
 													netFolderRoot.getIsSharePointServer(),
 													netFolderRoot.getFullSyncDirOnly(),
+													authType,
+													netFolderRoot.getUseDirectoryRights(),
 													scheduleInfo );
 		}
 		catch ( RDException ex )
@@ -342,6 +350,14 @@ public class GwtNetFolderHelper
 			newRoot.setIsSharePointServer( rdConfig.isPutRequiresContentLength() );
 			newRoot.setSyncSchedule( netFolderRoot.getSyncSchedule() );
 			newRoot.setFullSyncDirOnly( rdConfig.getFullSyncDirOnly() );
+			
+			{
+				AuthenticationType authType;
+				
+				authType = rdConfig.getAuthenticationType();
+				if ( authType != null )
+					newRoot.setAuthType( GwtAuthenticationType.getType( authType.getValue() ) );
+			}
 
 			// Get the list of principals that can use the net folder root
 			getListOfPrincipals( ami, rdConfig, newRoot );
@@ -517,7 +533,16 @@ public class GwtNetFolderHelper
 				nfRoot.setAllowSelfSignedCerts( driver.isAllowSelfSignedCertificate() );
 				nfRoot.setIsSharePointServer( driver.isPutRequiresContentLength() );
 				nfRoot.setFullSyncDirOnly( driver.getFullSyncDirOnly() );
+				nfRoot.setUseDirectoryRights( driver.getUseDirectoryRights() );
 				
+				{
+					AuthenticationType authType;
+					
+					authType = driver.getAuthenticationType();
+					if ( authType != null )
+						nfRoot.setAuthType( GwtAuthenticationType.getType( authType.getValue() ) );
+				}
+
 				// Get the list of principals that can use the net folder root
 				getListOfPrincipals( ami, driver, nfRoot );
 
@@ -530,6 +555,30 @@ public class GwtNetFolderHelper
 		}
 		
 		return listOfNetFolderRoots;
+	}
+	
+	/**
+	 * 
+	 */
+	private static AuthenticationType getAuthType( GwtAuthenticationType gwtAuthType )
+	{
+		if ( gwtAuthType == null )
+			return AuthenticationType.kerberos;
+		
+		switch( gwtAuthType )
+		{
+		case KERBEROS:
+			return AuthenticationType.kerberos;
+		
+		case NTLM:
+			return AuthenticationType.ntlm;
+			
+		case KERBEROS_THEN_NTLM:
+			return AuthenticationType.kerberos_then_ntlm;
+			
+		default:
+			return AuthenticationType.kerberos;
+		}
 	}
 	
 	/**
@@ -1290,10 +1339,14 @@ public class GwtNetFolderHelper
 		try
 		{
 			ScheduleInfo scheduleInfo;
+			AuthenticationType authType;
 			
 			scheduleInfo = GwtServerHelper.getScheduleInfoFromGwtSchedule( netFolderRoot.getSyncSchedule() );
 
 			driverType = getDriverType( netFolderRoot.getRootType() );
+			
+			authType = getAuthType( netFolderRoot.getAuthType() );
+			
 			NetFolderHelper.modifyNetFolderRoot(
 											ami.getAdminModule(),
 											ami.getResourceDriverModule(),
@@ -1310,6 +1363,8 @@ public class GwtNetFolderHelper
 											netFolderRoot.getIsSharePointServer(),
 											netFolderRoot.getListOfPrincipalIds(),
 											netFolderRoot.getFullSyncDirOnly(),
+											authType,
+											netFolderRoot.getUseDirectoryRights(),
 											scheduleInfo );
 		}
 		catch ( Exception ex )
