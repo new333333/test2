@@ -206,6 +206,9 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 				VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,
 				VibeDataTableConstants.CELL_WIDGET_MOBILE_DEVICES_PANEL);
 		}
+		else {
+			devicesBubble.setTitle(m_messages.vibeDataTable_Alt_MobileDevices_None());
+		}
 
 		// ...store the device count in the bubble...
 		String devices;

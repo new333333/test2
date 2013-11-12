@@ -1818,6 +1818,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_Ldap_Group();
 	String vibeDataTable_Alt_Local_Group();
 	String vibeDataTable_Alt_MobileDevices();
+	String vibeDataTable_Alt_MobileDevices_None();
 	String vibeDataTable_Alt_UnknownGroupType();
 	String vibeDataTable_Alt_UnknownUser();
 	String vibeDataTable_Alt_Unread();
@@ -2722,13 +2723,13 @@ public interface GwtTeamingMessages extends Messages
 	String configureMobileAppsDlgHeader();
 	String configureMobileAppsDlgHeader2();
 	String configureMobileAppsDlgHeader3();
-	String configureMobileAppsDlgCutCopyEnabled();
+	String configureMobileAppsDlgCutCopy();
 	String configureMobileAppsDlgOnSaveUnknownException( String err );
 	String configureMobileAppsDlgOpenIn();
 	String configureMobileAppsDlgOpenIn_AllApps();
 	String configureMobileAppsDlgOpenIn_Disabled();
 	String configureMobileAppsDlgOpenIn_WhiteList();
-	String configureMobileAppsDlgScreenCaptureEnabledAndroid();
+	String configureMobileAppsDlgScreenCaptureAndroid();
 	String configureMobileAppsDlgUseGlobalSettings();
 	String configureMobileAppsDlgUseUserSettings();
 	String configureMobileAppsDlgWhiteListAndroid();

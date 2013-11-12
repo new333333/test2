@@ -174,6 +174,60 @@ public class ConfigureMobileAppsDlg extends DlgBox
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_allowOfflineContentCB );
 		ckboxPanel.add( tmpPanel );
+
+		// Create the "Mobile Application Management (MAM)" settings.
+		{
+			// Create the "Cut/Copy enabled"
+			m_cutCopyEnabledCB = new CheckBox( messages.configureMobileAppsDlgCutCopy() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_cutCopyEnabledCB );
+			ckboxPanel.add( tmpPanel );
+			
+			// Create the "Screen capture enabled (Android only)"
+			m_screenCaptureEnabledAndroidCB = new CheckBox( messages.configureMobileAppsDlgScreenCaptureAndroid() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_screenCaptureEnabledAndroidCB );
+			ckboxPanel.add( tmpPanel );
+			
+			// Create the "Disable applications on rooted or jail broken devices"
+			m_disableJailBrokenCB = new CheckBox( messages.configureMobileAppsDlgDisableApplicationsOnRootedOrJailBrokenDevices() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_disableJailBrokenCB );
+			ckboxPanel.add( tmpPanel );		
+			
+			// Create the controls for open in
+			HorizontalPanel hp = new HorizontalPanel();
+			hp.addStyleName( "margintop3" );
+			
+			Label oiLabel = new Label( messages.configureMobileAppsDlgOpenIn() );
+			oiLabel.addStyleName( "configMobileAppsDlg_OpenInLabel" );
+			hp.add( oiLabel );
+			
+			m_openInLB = new ListBox( false );	// false -> Not a multi-select ListBox.
+			m_openInLB.addStyleName( "configMobileAppsDlg_OpenInSelect" );
+			m_openInLB.setVisibleItemCount(1);
+			m_openInLB.addItem( messages.configureMobileAppsDlgOpenIn_Disabled(),  "0" );
+			m_openInLB.addItem( messages.configureMobileAppsDlgOpenIn_AllApps(),   "1" );
+			m_openInLB.addItem( messages.configureMobileAppsDlgOpenIn_WhiteList(), "2" );
+			m_openInLB.addChangeHandler( new ChangeHandler()
+			{
+				@Override
+				public void onChange( ChangeEvent event )
+				{
+					danceDlg();
+				}
+			} );
+			hp.add( m_openInLB );
+			
+			ckboxPanel.add( hp );
+			
+			// Create the controls for the open in White Lists
+			m_androidApplicationsPanel = createAndroidWhiteList( messages );
+			ckboxPanel.add( m_androidApplicationsPanel );
+			
+			m_iosApplicationsPanel = createIosWhiteList( messages );
+			ckboxPanel.add( m_iosApplicationsPanel );
+		}
 		
 		// Create the controls for sync interval
 		{
@@ -204,59 +258,6 @@ public class ConfigureMobileAppsDlg extends DlgBox
 			mainPanel.add( hPanel );
 		}
 
-		// Create the "Cut/Copy enabled"
-		m_cutCopyEnabledCB = new CheckBox( messages.configureMobileAppsDlgCutCopyEnabled() );
-		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_cutCopyEnabledCB );
-		mainPanel.add( tmpPanel );
-		
-		// Create the "Screen capture enabled (Android only)"
-		m_screenCaptureEnabledAndroidCB = new CheckBox( messages.configureMobileAppsDlgScreenCaptureEnabledAndroid() );
-		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_screenCaptureEnabledAndroidCB );
-		mainPanel.add( tmpPanel );
-		
-		// Create the "Disable applications on rooted or jail broken devices"
-		m_disableJailBrokenCB = new CheckBox( messages.configureMobileAppsDlgDisableApplicationsOnRootedOrJailBrokenDevices() );
-		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_disableJailBrokenCB );
-		mainPanel.add( tmpPanel );		
-		
-		// Create the controls for open in
-		{
-			HorizontalPanel hp = new HorizontalPanel();
-			hp.addStyleName( "margintop3" );
-			
-			Label oiLabel = new Label( messages.configureMobileAppsDlgOpenIn() );
-			oiLabel.addStyleName( "configMobileAppsDlg_OpenInLabel" );
-			hp.add( oiLabel );
-			
-			m_openInLB = new ListBox( false );	// false -> Not a multi-select ListBox.
-			m_openInLB.addStyleName( "configMobileAppsDlg_OpenInSelect" );
-			m_openInLB.setVisibleItemCount(1);
-			m_openInLB.addItem( messages.configureMobileAppsDlgOpenIn_Disabled(),  "0" );
-			m_openInLB.addItem( messages.configureMobileAppsDlgOpenIn_AllApps(),   "1" );
-			m_openInLB.addItem( messages.configureMobileAppsDlgOpenIn_WhiteList(), "2" );
-			m_openInLB.addChangeHandler( new ChangeHandler()
-			{
-				@Override
-				public void onChange( ChangeEvent event )
-				{
-					danceDlg();
-				}
-			} );
-			hp.add( m_openInLB );
-			
-			mainPanel.add( hp );
-			
-			// Create the controls for the open in White Lists
-			m_androidApplicationsPanel = createAndroidWhiteList( messages );
-			mainPanel.add( m_androidApplicationsPanel );
-			
-			m_iosApplicationsPanel = createIosWhiteList( messages );
-			mainPanel.add( m_iosApplicationsPanel );
-		}
-		
 		return mainPanel;
 	}
 	

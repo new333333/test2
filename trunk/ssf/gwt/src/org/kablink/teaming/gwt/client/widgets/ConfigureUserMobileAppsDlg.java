@@ -214,14 +214,14 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		// Create the Mobile Application Management (MAM) widgets.
 		
 		// Create the "Cut/Copy enabled"
-		m_cutCopyEnabledCB = new CheckBox( messages.configureMobileAppsDlgCutCopyEnabled() );
+		m_cutCopyEnabledCB = new CheckBox( messages.configureMobileAppsDlgCutCopy() );
 		m_cutCopyEnabledCB.addClickHandler( clickHandler );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_cutCopyEnabledCB );
 		ckboxPanel.add( tmpPanel );
 		
 		// Create the "Screen capture enabled (Android only)"
-		m_screenCaptureEnabledAndroidCB = new CheckBox( messages.configureMobileAppsDlgScreenCaptureEnabledAndroid() );
+		m_screenCaptureEnabledAndroidCB = new CheckBox( messages.configureMobileAppsDlgScreenCaptureAndroid() );
 		m_screenCaptureEnabledAndroidCB.addClickHandler( clickHandler );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_screenCaptureEnabledAndroidCB );
