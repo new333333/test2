@@ -119,6 +119,9 @@ public class SelfResource extends AbstractFileResource {
         user.addAdditionalLink("net_folders", "/self/net_folders");
         user.addAdditionalLink("shared_with_me", "/self/shared_with_me");
         user.addAdditionalLink("shared_by_me", "/self/shared_by_me");
+        if (getEffectivePublicCollectionSetting((org.kablink.teaming.domain.User) entry)) {
+            user.addAdditionalLink("public_shares", "/self/public_shares");
+        }
         user.addAdditionalPermaLink("my_files", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
         user.addAdditionalPermaLink("net_folders", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
         user.addAdditionalPermaLink("shared_with_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
@@ -195,6 +198,13 @@ public class SelfResource extends AbstractFileResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderBrief getNetFolders() {
         return getFakeNetFolders();
+    }
+
+    @GET
+    @Path("/public_shares")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public BinderBrief getPublicShares() {
+        return getFakePublicShares();
     }
 
     @GET

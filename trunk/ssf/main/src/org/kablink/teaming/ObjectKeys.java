@@ -210,6 +210,8 @@ public interface ObjectKeys {
 	public static final Long SHARED_BY_ME_ID = Long.valueOf(-102);
     // Reserved id used by the REST API for the "Net Folders" virtual binder
 	public static final Long NET_FOLDERS_ID = Long.valueOf(-103);
+    // Reserved id used by the REST API for the "Public" virtual binder
+	public static final Long PUBLIC_SHARES_ID = Long.valueOf(-104);
 	//Use -1 to reserve binderId field.  Shouldn't be generated as real binderId. Used for global definitions cause mysql won't enforce the namekey unique
 	//constraint if field is null.  Also used for global userProperties, cause null cannot be used in key field.
 	public static final Long RESERVED_BINDER_ID=Long.valueOf(-1);

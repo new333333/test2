@@ -160,7 +160,7 @@ public class ShareResource extends AbstractResource {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedBySpec(userId);
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getShareItems(spec, true);
+        List<ShareItem> shareItems = getShareItems(spec, true, true, true);
         for (ShareItem shareItem : shareItems) {
             results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
         }
@@ -173,7 +173,7 @@ public class ShareResource extends AbstractResource {
                                                                       @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                       @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedByBinders(userId, false, true, showHidden, showUnhidden));
+        results.appendAll(getSharedByBinders(userId, false, true, showHidden, showUnhidden, true, true));
         return results;
     }
 
@@ -183,7 +183,7 @@ public class ShareResource extends AbstractResource {
                                                 @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                 @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        SharedBinderBrief [] sharedBinders = getSharedByBinders(userId, false, false, showHidden, showUnhidden);
+        SharedBinderBrief [] sharedBinders = getSharedByBinders(userId, false, false, showHidden, showUnhidden, true, true);
         return getSubBinderTree(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
 
@@ -193,7 +193,7 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                              @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedByBinders(userId, true, true, showHidden, showUnhidden));
+        results.appendAll(getSharedByBinders(userId, true, true, showHidden, showUnhidden, true, true));
         return results;
     }
 
@@ -205,7 +205,7 @@ public class ShareResource extends AbstractResource {
                                                                            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedBySpec(userId);
-        return _getSharedEntries(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, includeParentPaths, showHidden, showUnhidden);
+        return _getSharedEntries(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, includeParentPaths, showHidden, showUnhidden, true, true);
     }
 
     @GET
@@ -217,9 +217,9 @@ public class ShareResource extends AbstractResource {
                                                                  @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
-        results.appendAll(getSharedByFiles(userId, false, showHidden, showUnhidden));
+        results.appendAll(getSharedByFiles(userId, false, showHidden, showUnhidden, true, true));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedByBinders(userId, false, false, showHidden, showUnhidden), fileName, false));
+            results.appendAll(getSubFiles(getSharedByBinders(userId, false, false, showHidden, showUnhidden, true, true), fileName, false));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -247,7 +247,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_BY_ME_ID, null, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
                 toDomainFormat(descriptionFormatStr), offset, maxCount, "/shares/by_user/" + userId + "/library_entities", spec,
-                showHidden, showUnhidden);
+                showHidden, showUnhidden, true, true);
         return results;
     }
 
@@ -260,9 +260,9 @@ public class ShareResource extends AbstractResource {
                                                                         @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                         @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
-        results.appendAll(getSharedByFiles(userId, true, showHidden, showUnhidden));
+        results.appendAll(getSharedByFiles(userId, true, showHidden, showUnhidden, true, true));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedByBinders(userId, true, false, showHidden, showUnhidden), fileName, true));
+            results.appendAll(getSubFiles(getSharedByBinders(userId, true, false, showHidden, showUnhidden, true, true), fileName, true));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -287,7 +287,7 @@ public class ShareResource extends AbstractResource {
 
         ShareItemSelectSpec spec = getSharedBySpec(userId);
         return _getRecentActivity(ObjectKeys.SHARED_BY_ME_ID, includeParentPaths, toDomainFormat(descriptionFormatStr), offset, maxCount, spec,
-                null, "/shares/by_user/" + userId + "/recent_activity", nextParams, showHidden, showUnhidden);
+                null, "/shares/by_user/" + userId + "/recent_activity", nextParams, showHidden, showUnhidden, true, true);
     }
 
     @GET
@@ -296,7 +296,7 @@ public class ShareResource extends AbstractResource {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getShareItems(spec, userId, false);
+        List<ShareItem> shareItems = getShareItems(spec, userId, false, false, true);
         for (ShareItem shareItem : shareItems) {
             results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
         }
@@ -309,7 +309,7 @@ public class ShareResource extends AbstractResource {
                                                                         @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                         @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedWithBinders(userId, false, true, showHidden, showUnhidden));
+        results.appendAll(getSharedWithBinders(userId, false, true, showHidden, showUnhidden, false, true));
         return results;
     }
 
@@ -319,7 +319,7 @@ public class ShareResource extends AbstractResource {
                                                   @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                   @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, false, false, showHidden, showUnhidden);
+        SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, false, false, showHidden, showUnhidden, false, true);
         return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
 
@@ -327,7 +327,7 @@ public class ShareResource extends AbstractResource {
     @Path("/with_user/{id}/library_info")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public LibraryInfo getLibraryModTime(@PathParam("id") Long userId) {
-        return getSharedWithLibraryInfo(getLoggedInUserId());
+        return getSharedWithLibraryInfo(userId);
     }
 
     @GET
@@ -342,7 +342,7 @@ public class ShareResource extends AbstractResource {
             throw new NotModifiedException();
         }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedWithBinders(userId, true, true, showHidden, showUnhidden));
+        results.appendAll(getSharedWithBinders(userId, true, true, showHidden, showUnhidden, false, true));
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
         } else {
@@ -370,7 +370,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_WITH_ME_ID, userId, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
                 toDomainFormat(descriptionFormatStr), offset, maxCount, "/shares/with_user/" + userId + "/library_entities", spec,
-                showHidden, showUnhidden);
+                showHidden, showUnhidden, false, true);
         return results;
     }
 
@@ -382,7 +382,7 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        return _getSharedEntries(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, includeParentPaths, showHidden, showUnhidden);
+        return _getSharedEntries(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, includeParentPaths, showHidden, showUnhidden, false, true);
     }
 
     @GET
@@ -400,9 +400,10 @@ public class ShareResource extends AbstractResource {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
-        results.appendAll(getSharedWithFiles(userId, false, showHidden, showUnhidden));
+        results.appendAll(getSharedWithFiles(userId, false, showHidden, showUnhidden, false, true));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedWithBinders(userId, false, false, showHidden, showUnhidden), fileName, false));
+            results.appendAll(getSubFiles(getSharedWithBinders(userId, false, false, showHidden, showUnhidden, false, true),
+                                          fileName, false));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -429,9 +430,9 @@ public class ShareResource extends AbstractResource {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
-        results.appendAll(getSharedWithFiles(userId, true, showHidden, showUnhidden));
+        results.appendAll(getSharedWithFiles(userId, true, showHidden, showUnhidden, false, true));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedWithBinders(userId, true, false, showHidden, showUnhidden), fileName, true));
+            results.appendAll(getSubFiles(getSharedWithBinders(userId, true, false, showHidden, showUnhidden, false, true), fileName, true));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -449,7 +450,7 @@ public class ShareResource extends AbstractResource {
                                                    @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                    @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                    @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, true, false, showHidden, showUnhidden);
+        SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, true, false, showHidden, showUnhidden, false, true);
         return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders,
                 buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
     }
@@ -472,16 +473,165 @@ public class ShareResource extends AbstractResource {
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         return _getRecentActivity(ObjectKeys.SHARED_WITH_ME_ID, includeParentPaths, toDomainFormat(descriptionFormatStr),
                 offset, maxCount, spec, userId, "/shares/with_user/" + userId + "/recent_activity", nextParams,
-                showHidden, showUnhidden);
+                showHidden, showUnhidden, false, true);
+    }
+
+    @GET
+    @Path("/public")
+    public SearchResultList<Share> getSharedWithUser() {
+        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+        SearchResultList<Share> results = new SearchResultList<Share>();
+        List<ShareItem> shareItems = getShareItems(spec, getLoggedInUserId(), false, true, false);
+        for (ShareItem shareItem : shareItems) {
+            results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
+        }
+        return results;
+    }
+
+    @GET
+    @Path("/public/binders")
+    public SearchResultList<SharedBinderBrief> getPublicSharesBinders(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                                      @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
+        if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
+        results.appendAll(getPublicBinders(false, true, showHidden, showUnhidden));
+        return results;
+    }
+
+    @GET
+    @Path("/public/binder_tree")
+    public BinderTree getPublicSharesBinderTree(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        SharedBinderBrief [] sharedBinders = getPublicBinders(false, false, showHidden, showUnhidden);
+        return getSubBinderTree(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", sharedBinders, null, toDomainFormat(descriptionFormatStr));
+    }
+
+    @GET
+    @Path("/public/library_folders")
+    public SearchResultList<SharedBinderBrief> getPublicSharesLibraryFolders(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                                             @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
+        if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
+        results.appendAll(getPublicBinders(true, true, showHidden, showUnhidden));
+        return results;
+    }
+
+    @GET
+    @Path("/public/entries")
+    public SearchResultList<SharedFolderEntryBrief> getPublicSharesEntries(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                                           @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+                                                                           @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
+        if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+        return _getSharedEntries(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, null, includeParentPaths, showHidden, showUnhidden, true, false);
+    }
+
+    @GET
+    @Path("/public/files")
+    public SearchResultList<FileProperties> getPublicSharesFiles(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                                 @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+                                                                 @QueryParam("file_name") String fileName,
+                                                                 @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                 @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
+        if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
+        results.appendAll(getPublicFiles(false, showHidden, showUnhidden));
+        if (recursive) {
+            results.appendAll(getSubFiles(getPublicBinders(false, false, showHidden, showUnhidden), fileName, false));
+        }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+        return results;
+    }
+
+    @GET
+    @Path("/public/library_entities")
+    public SearchResultList<SearchableObject> getPublicSharesLibraryEntities(@QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                             @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
+                                                                             @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
+                                                                             @QueryParam("files") @DefaultValue("true") boolean includeFiles,
+                                                                             @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
+                                                                             @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                                             @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+                                                                             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+                                                                             @QueryParam("keyword") String keyword,
+                                                                             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                                                             @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                                             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+        SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.PUBLIC_SHARES_ID, null, recursive,
+                includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
+                toDomainFormat(descriptionFormatStr), offset, maxCount, "/shares/public/library_entities", spec,
+                showHidden, showUnhidden, true, false);
+        return results;
+    }
+
+    @GET
+    @Path("/public/library_files")
+    public SearchResultList<FileProperties> getPublicSharesLibraryFiles(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                                        @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+                                                                        @QueryParam("file_name") String fileName,
+                                                                        @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                        @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
+        if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
+        results.appendAll(getPublicFiles(true, showHidden, showUnhidden));
+        if (recursive) {
+            results.appendAll(getSubFiles(getPublicBinders(true, false, showHidden, showUnhidden), fileName, true));
+        }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+        return results;
+    }
+
+    @GET
+    @Path("/public/recent_activity")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<RecentActivityEntry> getRecentActivityInPublicShares(
+            @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+            @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+            @QueryParam("first") @DefaultValue("0") Integer offset,
+            @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        nextParams.put("description_format", descriptionFormatStr);
+
+        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+        return _getRecentActivity(ObjectKeys.PUBLIC_SHARES_ID, includeParentPaths, toDomainFormat(descriptionFormatStr), offset, maxCount, spec,
+                null, "/shares/public/recent_activity", nextParams, showHidden, showUnhidden, true, false);
     }
 
     private SearchResultList<RecentActivityEntry> _getRecentActivity(Long topId, boolean includeParentPaths, int descriptionFormat,
                                                                   Integer offset, Integer maxCount, ShareItemSelectSpec spec,
                                                                   Long excludedSharerId, String nextUrl, Map<String, Object> nextParams,
-                                                                  boolean showHidden, boolean showUnhidden) {
+                                                                  boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic) {
         List<String> binderIds = new ArrayList<String>();
         List<String> entryIds = new ArrayList<String>();
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID);
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
         if (shareItems.size()==0) {
             return new SearchResultList<RecentActivityEntry>();
         }
@@ -503,39 +653,57 @@ public class ShareResource extends AbstractResource {
         return _getRecentActivity(includeParentPaths, descriptionFormat, offset, maxCount, criteria, nextUrl, nextParams);
     }
 
-    protected SharedBinderBrief [] getSharedByBinders(Long userId, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
+    protected SharedBinderBrief [] getSharedByBinders(Long userId, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden,
+                                                      boolean showPublic, boolean showNonPublic)  {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedBySpec(userId);
         if (replaceParent) {
-            return _getSharedBinders(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, onlyLibrary, showHidden, showUnhidden);
+            return _getSharedBinders(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
         }
-        return _getSharedBinders(null, null, spec, null, onlyLibrary, showHidden, showUnhidden);
+        return _getSharedBinders(null, null, spec, null, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
     }
 
-    protected SharedFileProperties [] getSharedByFiles(Long userId, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
+    protected SharedFileProperties [] getSharedByFiles(Long userId, boolean onlyLibrary, boolean showHidden, boolean showUnhidden,
+                                                       boolean showPublic, boolean showNonPublic)  {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedBySpec(userId);
-        return _getSharedFiles(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, onlyLibrary, showHidden, showUnhidden);
+        return _getSharedFiles(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
     }
 
-    protected SharedBinderBrief [] getSharedWithBinders(Long userId, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
+    protected SharedBinderBrief [] getSharedWithBinders(Long userId, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden,
+                                                        boolean showPublic, boolean showNonPublic)  {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         if (replaceParent) {
-            return _getSharedBinders(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, onlyLibrary, showHidden, showUnhidden);
+            return _getSharedBinders(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
         }
-        return _getSharedBinders(null, null, spec, userId, onlyLibrary, showHidden, showUnhidden);
+        return _getSharedBinders(null, null, spec, userId, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
     }
 
-    protected SharedFileProperties [] getSharedWithFiles(Long userId, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
+    protected SharedFileProperties [] getSharedWithFiles(Long userId, boolean onlyLibrary, boolean showHidden, boolean showUnhidden,
+                                                         boolean showPublic, boolean showNonPublic)  {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        return _getSharedFiles(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, onlyLibrary, showHidden, showUnhidden);
+        return _getSharedFiles(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
     }
 
-    private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths, boolean showHidden, boolean showUnhidden) {
+    protected SharedBinderBrief [] getPublicBinders(boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
+        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+        if (replaceParent) {
+            return _getSharedBinders(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, getLoggedInUserId(), onlyLibrary, showHidden, showUnhidden, true, false);
+        }
+        return _getSharedBinders(null, null, spec, getLoggedInUserId(), onlyLibrary, showHidden, showUnhidden, true, false);
+    }
+
+    protected SharedFileProperties [] getPublicFiles(boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
+        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+        return _getSharedFiles(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, getLoggedInUserId(), onlyLibrary, showHidden, showUnhidden, true, false);
+    }
+
+    private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths,
+                                                                       boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic) {
         Map<Long, SharedFolderEntryBrief> resultMap = new LinkedHashMap<Long, SharedFolderEntryBrief>();
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId == ObjectKeys.SHARED_BY_ME_ID);
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId == ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
         for (ShareItem shareItem : shareItems) {
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                 try {
@@ -563,9 +731,10 @@ public class ShareResource extends AbstractResource {
         return results;
     }
 
-    protected SharedBinderBrief [] _getSharedBinders(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
+    protected SharedBinderBrief [] _getSharedBinders(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
+                                                     boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic)  {
         Map<Long, SharedBinderBrief> resultMap = new LinkedHashMap<Long, SharedBinderBrief>();
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId == ObjectKeys.SHARED_BY_ME_ID);
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId == ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
         for (ShareItem shareItem : shareItems) {
             if (shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
                 try {
@@ -592,9 +761,10 @@ public class ShareResource extends AbstractResource {
         return results.toArray(new SharedBinderBrief[results.size()]);
     }
 
-    protected SharedFileProperties [] _getSharedFiles(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
+    protected SharedFileProperties [] _getSharedFiles(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
+                                                      boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic)  {
         Map<String, SharedFileProperties> resultMap = new LinkedHashMap<String, SharedFileProperties>();
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID);
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
         for (ShareItem shareItem : shareItems) {
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                 try {
@@ -719,8 +889,9 @@ public class ShareResource extends AbstractResource {
                                                                    boolean includeParentPaths, String keyword,
                                                                    int descriptionFormat, Integer offset,
                                                                    Integer maxCount, String nextUrl,
-                                                                   ShareItemSelectSpec spec, boolean showHidden, boolean showUnhidden) {
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID);
+                                                                   ShareItemSelectSpec spec, boolean showHidden, boolean showUnhidden,
+                                                                   boolean showPublic, boolean showNonPublic) {
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
         SearchResultList<SearchableObject> results;
         if (shareItems.size()>0) {
             Junction searchContext = Restrictions.disjunction();
@@ -761,17 +932,11 @@ public class ShareResource extends AbstractResource {
         spec.setSharerId(item.getSharerId());
         spec.setLatest(true);
         spec.setSharedEntityIdentifier(item.getSharedEntityIdentifier());
-        List<ShareItem> allShareItems = getShareItems(spec, null, false, true);
-        List<ShareItem> filteredShareItems = new ArrayList<ShareItem>(2);
-        for (ShareItem shareItem : allShareItems) {
-            if (shareItem.getIsPartOfPublicShare()) {
-                filteredShareItems.add(shareItem);
-            }
-        }
-        if (filteredShareItems.size()==0) {
+        List<ShareItem> allShareItems = getShareItems(spec, null, false, true, false, false);
+        if (allShareItems.size()==0) {
             throw new IllegalStateException("Could not find public shares corresponding to share with id: " + item.getId());
         }
-        return filteredShareItems;
+        return allShareItems;
     }
 
     private ShareItem _getShareItem(Long id) {

@@ -312,7 +312,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         spec.setLatest(true);
         spec.setSharedEntityIdentifier(new EntityIdentifier(id, binder.getEntityType()));
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getShareItems(spec, true);
+        List<ShareItem> shareItems = getShareItems(spec, true, true, true);
         for (ShareItem shareItem : shareItems) {
             results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
         }
