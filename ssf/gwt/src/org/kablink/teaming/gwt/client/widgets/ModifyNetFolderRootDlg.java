@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
+import org.kablink.teaming.gwt.client.NetFolderRoot.GwtAuthenticationType;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderRootModifiedEvent;
@@ -110,6 +111,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private TextBox m_rootPathTxtBox;
 	private TextBox m_proxyNameTxtBox;
 	private PasswordTextBox m_proxyPwdTxtBox;
+	private ListBox m_authTypeListbox;
 	private FlowPanel m_webDavSpacerPanel;
 	private InlineLabel m_hostUrlLabel;
 	private TextBox m_hostUrlTxtBox;
@@ -120,6 +122,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private FlowPanel m_inProgressPanel;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private CheckBox m_fullSyncDirOnlyCB;
+	private CheckBox m_useDirectoryRightsCB;
+	private Label m_oesProxyNameHint;
+	private Label m_windowsProxyNameHint;
 	private TabPanel m_tabPanel;
 	private LdapBrowserDlg m_ldapBrowserDlg;
 	
@@ -256,10 +261,10 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				// Add a hint that describes the unc syntax
 				label = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint1() );
 				panel.add( label );
-				label = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint2() );
-				panel.add( label );
-				label = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint3() );
-				panel.add( label );
+				m_oesProxyNameHint = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint2() );
+				panel.add( m_oesProxyNameHint );
+				m_windowsProxyNameHint = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint3() );
+				panel.add( m_windowsProxyNameHint );
 				
 				cellFormatter.setColSpan( nextRow, 0, 2 );
 				table.setWidget( nextRow, 0, panel );
@@ -348,7 +353,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					img.getElement().setAttribute( "align", "absmiddle" );
 					m_inProgressPanel.add( img );
 
-					label = new InlineLabel( GwtTeaming.getMessages().testConnection_InProgressLabel() );
+					label = new InlineLabel( messages.testConnection_InProgressLabel() );
 					m_inProgressPanel.add( label );
 					
 					table.setWidget( nextRow, 1, m_inProgressPanel );
@@ -356,6 +361,40 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				
 				++nextRow;
 			}
+		}
+		
+		// Add controls for the authentication type
+		{
+			FlowPanel spacerPanel;
+			
+			spacerPanel = new FlowPanel();
+			spacerPanel.getElement().getStyle().setMarginTop( 16, Unit.PX );
+			table.setWidget( nextRow, 0, spacerPanel );
+			++nextRow;
+			
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_AuthTypeLabel() );
+			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
+
+			// Add the listbox where the user can select the authentication
+			m_authTypeListbox = new ListBox( false );
+			m_authTypeListbox.setVisibleItemCount( 1 );
+			
+			m_authTypeListbox.addItem(
+									messages.modifyNetFolderServerDlg_AuthType_Kerberos(),
+									GwtAuthenticationType.KERBEROS.toString() );
+		
+			m_authTypeListbox.addItem(
+									messages.modifyNetFolderServerDlg_AuthType_Ntlm(),
+									GwtAuthenticationType.NTLM.toString() );
+
+			m_authTypeListbox.addItem(
+									messages.modifyNetFolderServerDlg_AuthType_KerberosThenNtlm(),
+									GwtAuthenticationType.KERBEROS_THEN_NTLM.toString() );
+
+			m_authTypeListbox.setSelectedIndex( 0 );
+
+			table.setWidget( nextRow, 1, m_authTypeListbox );
+			++nextRow;
 		}
 
 		return mainPanel;
@@ -637,13 +676,21 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel;
+		FlowPanel tmpPanel;
 		
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		
+		tmpPanel = new FlowPanel();
 		m_fullSyncDirOnlyCB = new CheckBox( messages.modifyNetFolderServerDlg_SyncOnlyDirStructureCB() );
-		mainPanel.add( m_fullSyncDirOnlyCB );
+		tmpPanel.add( m_fullSyncDirOnlyCB );
+		mainPanel.add( tmpPanel );
+		
+		tmpPanel = new FlowPanel();
+		m_useDirectoryRightsCB = new CheckBox( messages.modifyNetFolderServerDlg_UseDirectoryRightsCB() );
+		tmpPanel.add( m_useDirectoryRightsCB );
+		mainPanel.add( tmpPanel );
 		
 		return mainPanel;
 	}
@@ -765,7 +812,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				if ( m_isSharePointServerCkbox != null )
 					m_isSharePointServerCkbox.setVisible( visible );
 				
-				// Update the server path hint
+				m_useDirectoryRightsCB.setVisible( false );
+				
+				// Update the server path and proxy name hint and show/hide controls.
 				{
 					GwtTeamingMessages messages;
 					Label label;
@@ -783,6 +832,11 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 						label = new Label( messages.modifyNetFolderServerDlg_ServerPathOESHint() );
 						m_serverPathHintPanel.add( label );
+						
+						m_windowsProxyNameHint.setVisible( false );
+						m_oesProxyNameHint.setVisible( true );
+						
+						m_useDirectoryRightsCB.setVisible( true );
 						break;
 						
 					case CIFS:
@@ -791,15 +845,23 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 						label = new Label( messages.modifyNetFolderServerDlg_ServerPathWindowsHint() );
 						m_serverPathHintPanel.add( label );
+						
+						m_windowsProxyNameHint.setVisible( true );
+						m_oesProxyNameHint.setVisible( false );
 						break;
 						
 					case FAMT:
+						m_windowsProxyNameHint.setVisible( false );
+						m_oesProxyNameHint.setVisible( false );
 						break;
 						
 					case SHARE_POINT_2010:
 					case SHARE_POINT_2013:
 						label = new Label( messages.modifyNetFolderServerDlg_SharePointPathHint() );
 						m_serverPathHintPanel.add( label );
+						
+						m_windowsProxyNameHint.setVisible( true );
+						m_oesProxyNameHint.setVisible( false );
 						break;
 						
 					default:
@@ -844,7 +906,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		NetFolderRootType serverType;
 		
 		// Is the root type WebDAV?
-		serverType = getSelectedRootType(); 
+		serverType = getSelectedRootType();
 		if ( serverType == NetFolderRootType.WEB_DAV )
 		{
 			// Yes, make sure they entered the host url
@@ -867,6 +929,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				public void execute()
 				{
 					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectServerTypePrompt() );
+					m_tabPanel.selectTab( 0 );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
@@ -1066,6 +1129,26 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private GwtAuthenticationType getAuthType()
+	{
+		int selectedIndex;
+		
+		selectedIndex = m_authTypeListbox.getSelectedIndex();
+		if ( selectedIndex >= 0 )
+		{
+			String value;
+
+			value = m_authTypeListbox.getValue( selectedIndex );
+			if ( value != null )
+				return GwtAuthenticationType.getType( value );
+		}
+		
+		return GwtAuthenticationType.KERBEROS;
+	}
+	
+	/**
 	 * Get the data from the controls in the dialog box.
 	 */
 	@Override
@@ -1156,7 +1239,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setRootPath( getRootPath() );
 		netFolderRoot.setProxyName( getProxyName() );
 		netFolderRoot.setProxyPwd( getProxyPwd() );
+		netFolderRoot.setAuthType( getAuthType() );
 		netFolderRoot.setFullSyncDirOnly( getFullSyncDirOnly() );
+		netFolderRoot.setUseDirectoryRights( getUseDirectoryRights() );
 		
 		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
 			netFolderRoot.setListOfPrincipals( getListOfPrivilegedPrincipals() );
@@ -1231,7 +1316,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			return NetFolderRootType.UNKNOWN;
 		}
 		
-		return NetFolderRootType.FAMT;
+		return NetFolderRootType.UNKNOWN;
 	}
 
 	/**
@@ -1242,6 +1327,17 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		return m_scheduleWidget.getSchedule( );
 	}
 
+	/**
+	 * Return the value of the "Use directory rights in addition to file system rights"
+	 */
+	public Boolean getUseDirectoryRights()
+	{
+		if ( m_useDirectoryRightsCB.isVisible() )
+			return m_useDirectoryRightsCB.getValue();
+		
+		return null;
+	}
+	
 	/**
 	 * This method gets called when the user selects the root type
 	 * Show/hide the appropriate controls based on the selected root type.
@@ -1284,6 +1380,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_rootPathTxtBox.setValue( "" );
 		m_proxyNameTxtBox.setValue( "" );
 		m_proxyPwdTxtBox.setValue( "" );
+		GwtClientHelper.selectListboxItemByValue( m_authTypeListbox, GwtAuthenticationType.KERBEROS.toString() );
 		if ( m_hostUrlTxtBox != null)
 			m_hostUrlTxtBox.setValue( "" );
 		if ( m_allowSelfSignedCertsCkbox != null )
@@ -1299,6 +1396,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_scheduleWidget.init( null );
 		
 		m_fullSyncDirOnlyCB.setValue( false );
+		m_useDirectoryRightsCB.setValue( false );
 		
 		// Forget about any list of LDAP servers.  The list may have
 		// changed since this dialog was last run and setting this to
@@ -1320,6 +1418,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			if ( m_rootTypeListbox != null )
 				initServerType( netFolderRoot.getRootType() );
 
+			// Select the appropriate auth type
+			initAuthType( netFolderRoot.getAuthType() );
+			
 			// If the root type is WebDAV, initialize the WebDAV specific controls
 			if ( netFolderRoot.getRootType() == NetFolderRootType.WEB_DAV )
 			{
@@ -1346,6 +1447,15 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				if ( value != null )
 					m_fullSyncDirOnlyCB.setValue( value );
 			}
+			
+			// Initialize the "use directory rights in addition to file system rights" checkbox.
+			{
+				Boolean value;
+				
+				value = m_netFolderRoot.getUseDirectoryRights();
+				if ( value != null )
+					m_useDirectoryRightsCB.setValue( value );
+			}
 		}
 		else
 		{
@@ -1360,6 +1470,15 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 		
 		danceDlg( false );
+	}
+
+	/**
+	 * Initialize the authentication type
+	 */
+	private void initAuthType( GwtAuthenticationType authType )
+	{
+		if ( authType != null )
+			GwtClientHelper.selectListboxItemByValue( m_authTypeListbox, authType.toString() );
 	}
 	
 	/**

@@ -62,6 +62,8 @@ public class NetFolderRoot
 	private ArrayList<GwtPrincipal> m_principals;
 	private NetFolderRootStatus m_status;
 	private String m_statusTicketId;
+	private GwtAuthenticationType m_authType;
+	private Boolean m_useDirectoryRights;
 	
 	// This information is specific to WebDAV
 	private boolean m_allowSelfSignedCerts = false;
@@ -80,6 +82,77 @@ public class NetFolderRoot
 	}
 	
 	/**
+	 * This class should mirror ResourceDriverConfig.AuthenticationType
+	 */
+	public enum GwtAuthenticationType implements IsSerializable
+	{
+		KERBEROS( (short) 1 ),
+		NTLM( (short) 2 ),
+		KERBEROS_THEN_NTLM( (short) 3 ),
+		UNKNOWN( (short) 4 );
+		
+		private short m_value;
+
+		/**
+		 * 
+		 */
+		GwtAuthenticationType( short value )
+		{
+			m_value = value;
+		}
+		
+		/**
+		 * 
+		 */
+		public short getValue()
+		{
+			return m_value;
+		}
+		
+		/**
+		 * 
+		 */
+		public static GwtAuthenticationType getType( short value )
+		{
+			switch( value )
+			{
+			case 1:
+				return GwtAuthenticationType.KERBEROS;
+				
+			case 2:
+				return GwtAuthenticationType.NTLM;
+				
+			case 3:
+				return GwtAuthenticationType.KERBEROS_THEN_NTLM;
+
+			default:
+				return GwtAuthenticationType.UNKNOWN;
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		public static GwtAuthenticationType getType( String value )
+		{
+			if ( value != null )
+			{
+				if ( value.equalsIgnoreCase( GwtAuthenticationType.KERBEROS.toString() ) )
+					return GwtAuthenticationType.KERBEROS;
+				
+				if ( value.equalsIgnoreCase( GwtAuthenticationType.NTLM.toString() ) )
+					return GwtAuthenticationType.NTLM;
+				
+				if ( value.equalsIgnoreCase( GwtAuthenticationType.KERBEROS_THEN_NTLM.toString() ) )
+					return GwtAuthenticationType.KERBEROS_THEN_NTLM;
+			}
+			
+			return GwtAuthenticationType.UNKNOWN;
+		}
+		
+	}
+	
+	/**
 	 * Constructor method. 
 	 * 
 	 * No parameters as per GWT serialization requirements.
@@ -88,6 +161,8 @@ public class NetFolderRoot
 	{
 		m_status = NetFolderRootStatus.READY;
 		m_fullSyncDirOnly = null;
+		m_authType = null;
+		m_useDirectoryRights = null;
 	}	
 	
 	/**
@@ -115,6 +190,8 @@ public class NetFolderRoot
 		m_principals = root.getListOfPrincipals();
 		m_syncSchedule = root.getSyncSchedule();
 		m_fullSyncDirOnly = root.getFullSyncDirOnly();
+		m_authType = root.getAuthType();
+		m_useDirectoryRights = root.getUseDirectoryRights();
 
 		m_statusTicketId = root.getStatusTicketId();
 
@@ -130,6 +207,14 @@ public class NetFolderRoot
 	public boolean getAllowSelfSignedCerts()
 	{
 		return m_allowSelfSignedCerts;
+	}
+	
+	/**
+	 * 
+	 */
+	public GwtAuthenticationType getAuthType()
+	{
+		return m_authType;
 	}
 	
 	/**
@@ -256,6 +341,14 @@ public class NetFolderRoot
 	}
 
 	/**
+	 * 
+	 */
+	public Boolean getUseDirectoryRights()
+	{
+		return m_useDirectoryRights;
+	}
+	
+	/**
 	 * Is this net folder root fully configured with server path and proxy credentials.
 	 */
 	public boolean isConfigured()
@@ -271,12 +364,21 @@ public class NetFolderRoot
 		
 		return true;
 	}
+	
 	/**
 	 * 
 	 */
 	public void setAllowSelfSignedCerts( boolean allow )
 	{
 		m_allowSelfSignedCerts = allow;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAuthType( GwtAuthenticationType type )
+	{
+		m_authType = type;
 	}
 	
 	/**
@@ -386,4 +488,13 @@ public class NetFolderRoot
 	{
 		m_syncSchedule = schedule;
 	}
+
+	/**
+	 * 
+	 */
+	public void setUseDirectoryRights( Boolean value )
+	{
+		m_useDirectoryRights = value;
+	}
+	
 }

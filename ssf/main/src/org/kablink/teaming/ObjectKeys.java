@@ -517,6 +517,7 @@ public interface ObjectKeys {
 	public static final String PI_SYNCH_TO_SOURCE = "_synchToSource";
 	
 	//Resource Drivers
+	public static final String RESOURCE_DRIVER_AUTHENTICATION_TYPE = "authenticationType";
 	public static final String RESOURCE_DRIVER_READ_ONLY = "readonly";
 	public static final String RESOURCE_DRIVER_SYNCH_TOP_DELETE = "synchTopDelete";
 	public static final String RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH = "putRequiresContentLength";
@@ -528,6 +529,7 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_SHARE_NAME = "shareName";
 	public static final String RESOURCE_DRIVER_SERVER_NAME = "serverName";
 	public static final String RESOURCE_DRIVER_SERVER_IP = "serverIP";
+	public static final String RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS = "useDirectoryRights";
 	public static final String RESOURCE_DRIVER_VOLUME = "volume";
 	public static final String RESOURCE_DRIVER_MODIFIED_ON = "modifiedOn";
 	
