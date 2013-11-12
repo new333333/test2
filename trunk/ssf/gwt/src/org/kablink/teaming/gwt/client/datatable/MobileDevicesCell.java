@@ -58,13 +58,13 @@ import com.google.gwt.user.client.DOM;
  */
 public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implements MobileDeviceRemovedCallback {
 	private GwtTeamingMessages		m_messages;				// Access to the Vibe string resources we need for this cell.
-	private ManageUserDevicesDlg	m_manageUserDevicesDlg;	//
+	private ManageUserDevicesDlg	m_manageUserDevicesDlg;	// A manage user devices dialog, once one is instantiated.
 	
 	/**
 	 * Constructor method.
 	 */
 	public MobileDevicesCell() {
-		// Sink the events we need to process an action menu...
+		// Sink the events we need to process selecting the cell...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN);
@@ -179,19 +179,26 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 			return;
 		}
 
+		// Create the HTML for the row's devices bubble...
 		VibeFlowPanel html = new VibeFlowPanel();
 		VibeFlowPanel devicesPanel = new VibeFlowPanel();
 		devicesPanel.addStyleName("vibe-dataTableMobileDevices-panel");
 		VibeFlowPanel devicesBubble = new VibeFlowPanel();
 		devicesBubble.addStyleName("vibe-dataTableMobileDevices-bubble");
+		
+		// ...we use a wider bubble for >=1000 devices...
 		int deviceCount = mdInfo.getMobileDevicesCount();
 		String addedBubbleStyle;
 		if (1000 <= deviceCount)
 		     addedBubbleStyle = "vibe-dataTableMobileDevices-bubbleBig";
 		else addedBubbleStyle = "vibe-dataTableMobileDevices-bubbleSmall";
 		devicesBubble.addStyleName(addedBubbleStyle);
+		
+		// ...and if there are any devices...
 		Element dpE = devicesBubble.getElement();
 		if (0 < deviceCount) {
+			// ...we make the bubble clickable so that the device list
+			// ...can be managed...
 			devicesBubble.addStyleName("cursorPointer"                             );
 			devicesBubble.setTitle(    m_messages.vibeDataTable_Alt_MobileDevices());
 			dpE.setId("mobileDevices-" + mdInfo.getUserId());
@@ -199,9 +206,11 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 				VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,
 				VibeDataTableConstants.CELL_WIDGET_MOBILE_DEVICES_PANEL);
 		}
-		
+
+		// ...store the device count in the bubble...
 		String devices;
 		if (0 == deviceCount) {
+			// ...for no devices, we store spaces, not a 0...
 			dpE.addClassName("vibe-dataTableMobileDevices-panel0");
 			devices = "&nbsp;&nbsp;";
 		}
@@ -210,7 +219,7 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 		}
 		dpE.setInnerHTML(devices);
 		
-		// ...and render it as the cell's HTML.
+		// ...add the bubble to the HTML panel...
 		devicesPanel.add(devicesBubble);
 		html.add(devicesPanel);
 		
