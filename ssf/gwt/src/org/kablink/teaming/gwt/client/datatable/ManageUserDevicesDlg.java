@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -56,10 +55,10 @@ import com.google.gwt.user.client.ui.UIObject;
  */
 @SuppressWarnings("unused")
 public class ManageUserDevicesDlg extends DlgBox {
-	private Label						m_mobileDevicesCountLabel;	//
-	private MobileDeviceRemovedCallback	m_removedCallback;			// Interface used to tell who is running the dialog that a device was removed .
-	private MobileDevicesInfo			m_mdInfo;					// The MobileDevicesInfo the ManageUserDevicesDlg is running against.
-	private UIObject					m_showRelativeTo;			// The UIObject to show the dialog relative to.
+	private Label						m_mobileDevicesCountLabel;	// The mobile devices count Label that's stored in the dialog's caption.
+	private MobileDeviceRemovedCallback	m_removedCallback;			// Interface used to tell who's running the dialog that a device was removed .
+	private MobileDevicesInfo			m_mdInfo;					// The MobileDevicesInfo this ManageUserDevicesDlg is running against.
+	private UIObject					m_showRelativeTo;			// The UIObject to show the dialog relative to.  null -> Center the dialog.
 	private VibeFlowPanel				m_fp;						// The panel that holds the dialog's contents.
 
 	/*
@@ -76,10 +75,10 @@ public class ManageUserDevicesDlg extends DlgBox {
 		// ...and create the dialog's content.
 		addStyleName("vibe-manageUserDevicesDlg");
 		createAllDlgContent(
-			"",				// The dialog's caption will be set each time it is run.
-			DlgBox.getSimpleSuccessfulHandler(),
-			DlgBox.getSimpleCanceledHandler(),
-			null);			// The callbackData object passed into createContent(). 
+			"",										// The dialog's caption will be set each time it is run.
+			DlgBox.getSimpleSuccessfulHandler(),	// The dialog's editSuccessful() handler.
+			DlgBox.getSimpleCanceledHandler(),		// The dialog's editCanceled()   handler.
+			null);									// null -> No callback data is required by createContent(). 
 	}
 
 	/**
@@ -233,10 +232,10 @@ public class ManageUserDevicesDlg extends DlgBox {
 	 * operation against the code.
 	 */
 	private static void doAsyncOperation(
-			// Parameters used to create the dialog.
+			// createAsync() parameters.
 			final ManageUserDevicesDlgClient mudDlgClient,
 			
-			// Parameters used to initialize and show an instance of the dialog.
+			// initAndShow() parameters.
 			final ManageUserDevicesDlg			mudDlg,
 			final MobileDevicesInfo				mdInfo,
 			final UIObject						showRelativeTo,
@@ -244,7 +243,7 @@ public class ManageUserDevicesDlg extends DlgBox {
 		GWT.runAsync(ManageUserDevicesDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ManageUserDevicesDlg());
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_ManageUserDevicesDlg());
 				if (null != mudDlgClient) {
 					mudDlgClient.onUnavailable();
 				}
@@ -280,7 +279,8 @@ public class ManageUserDevicesDlg extends DlgBox {
 	}
 	
 	/**
-	 * Initializes and shows the manage user devices dialog.
+	 * Initializes and shows the manage user devices dialog via its
+	 * split point.
 	 * 
 	 * @param mudDlg
 	 * @param mdInfo
@@ -293,6 +293,6 @@ public class ManageUserDevicesDlg extends DlgBox {
 	
 	public static void initAndShow(ManageUserDevicesDlg mudDlg, MobileDevicesInfo mdInfo, UIObject showRelativeTo) {
 		// Always use the initial form of the method.
-		doAsyncOperation(null, mudDlg, mdInfo, showRelativeTo, null);
+		initAndShow(mudDlg, mdInfo, showRelativeTo, null);
 	}
 }
