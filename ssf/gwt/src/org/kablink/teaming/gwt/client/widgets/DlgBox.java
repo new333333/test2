@@ -776,6 +776,16 @@ public abstract class DlgBox extends TeamingPopupPanel
 		}
 	}
 	
+	/**
+	 * Returns true if the error panel is visible and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isErrorPanelVisible()
+	{
+		return m_errorPanelWrapper.isVisible();
+	}
+	
 	/*
 	 * Asynchronously makes the dialog dragable.
 	 */
