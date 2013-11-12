@@ -57,7 +57,6 @@
 		advancedSearchUrl:					'<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true" windowState="maximized"><ssf:param name="action" value="advancedSearch"/><ssf:param name="tabTitle" value="SEARCH FORM"/><ssf:param name="newTab" value="0"/></ssf:url></ssf:escapeJavaScript>',
 		allExternalUsersGroupId:			'${allExternalUsersGroupId}',
 		allInternalUsersGroupId:			'${allInternalUsersGroupId}',
-		allowSelectNetFolderServerDataSource: '${allowSelectNetFolderServerDataSource}',
 		allowShowPeople:					'${allowShowPeople}',
 		baseVibeUrl:						'<ssf:escapeJavaScript><ssf:url></ssf:url></ssf:escapeJavaScript>',
 		canSeeOtherUsers:					'<ssf:escapeJavaScript>${canSeeOtherUsers}</ssf:escapeJavaScript>',
