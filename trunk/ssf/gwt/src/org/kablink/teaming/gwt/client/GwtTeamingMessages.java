@@ -1316,6 +1316,7 @@ public interface GwtTeamingMessages extends Messages
 	String adminInfoDlgHeader();
 	String adminInfoDlgLoginAsAdmin();
 	String adminInfoDlgRelease();
+	String adminInfoDlgSelectNetFolderServerType( String serverName );
 	String adminInfoDlgUpgradeDefinitions();
 	String adminInfoDlgUpgradeSearchIndex();
 	String adminInfoDlgUpgradeTasksNotDone();

@@ -65,6 +65,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -113,6 +114,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtEnterProxyCredentialsTask;
+import org.kablink.teaming.gwt.client.admin.GwtSelectNetFolderServerTypeTask;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
@@ -225,6 +227,7 @@ import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.SelectNetFolderServerTypeTask;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -5040,12 +5043,34 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			String xmlStr;
 			FilrAdminTasks filrAdminTasks;
 			ArrayList<EnterProxyCredentialsTask> listOfTasks;
-			
+			ArrayList<SelectNetFolderServerTypeTask> listOfTasks2;
+			boolean saveNeeded = false;
+			List<ResourceDriverConfig> drivers;
+
 			// Get the FilrAdminTasks from the administrator's user properties
 			userProperties = getProfileModule().getUserProperties( user.getId() );
 			xmlStr = (String)userProperties.getProperty( ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS );
 			filrAdminTasks = new FilrAdminTasks( xmlStr );
 
+			// Get a list of the currently defined Net Folder Roots
+			drivers = getResourceDriverModule().getAllNetFolderResourceDriverConfigs();
+			
+			// Go through the list of net folder servers and see if there are any who are still using
+			// famt as their net folder server type.
+			if ( drivers != null )
+			{
+				for ( ResourceDriverConfig driver : drivers )
+				{
+					DriverType driverType;
+					
+					driverType = driver.getDriverType();
+					if ( driverType == null || driverType == DriverType.famt )
+					{
+						filrAdminTasks.addSelectNetFolderServerTypeTask( driver.getId() );
+					}
+				}
+			}
+			
 			// Get the list of "enter proxy credentials" tasks
 			listOfTasks = filrAdminTasks.getAllEnterProxyCredentialsTasks();
 			if ( listOfTasks != null )
@@ -5054,16 +5079,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				{
 					GwtEnterProxyCredentialsTask gwtTask;
 					ResourceDriverConfig rdConfig;
-					String serverName;
 					
 					// Get the net folder server object with the given id
-					rdConfig = NetFolderHelper.findNetFolderRootById(
-																getAdminModule(),
-																getResourceDriverModule(),
-																nextTask.getNetFolderServerId() );
-					serverName = nextTask.getNetFolderServerId();
+					rdConfig = NetFolderHelper.findNetFolderRootById( drivers, nextTask.getNetFolderServerId() ); 
 					if ( rdConfig != null )
 					{
+						String serverName;
+
 						serverName = rdConfig.getName();
 					
 						gwtTask = new GwtEnterProxyCredentialsTask();
@@ -5079,32 +5101,71 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 						// Remove the task for the administrator to enter the proxy credentials for this net folder server.
 						netFolderServerId = new Long( nextTask.getNetFolderServerId() );
 						filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( netFolderServerId );
+						
+						saveNeeded = true;
 					}
 				}
-				
-				// Save the FilrAdminTasks to the administrator's user properties
+			}
+
+			// Get the list of "Select net folder server type" tasks
+			listOfTasks2 = filrAdminTasks.getAllSelectNetFolderServerTypeTasks();
+			if ( listOfTasks2 != null )
+			{
+				for ( SelectNetFolderServerTypeTask nextTask : listOfTasks2 )
 				{
-					RunasCallback callback;
-					final String tmpXmlStr;
-					final Long adminId;
+					GwtSelectNetFolderServerTypeTask gwtTask;
+					ResourceDriverConfig rdConfig;
 					
-					tmpXmlStr = filrAdminTasks.toString();
-					adminId = user.getId();
-					
-					callback = new RunasCallback()
+					// Get the net folder server object with the given id
+					rdConfig = NetFolderHelper.findNetFolderRootById( drivers, nextTask.getNetFolderServerId() ); 
+					if ( rdConfig != null )
 					{
-						@Override
-						public Object doAs()
-						{
-							getProfileModule().setUserProperty(
-														adminId,
-														ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
-														tmpXmlStr );
-							return null;
-						}
-					};
-					RunasTemplate.runasAdmin( callback, RequestContextHolder.getRequestContext().getZoneName() );
+						String serverName;
+
+						serverName = rdConfig.getName();
+					
+						gwtTask = new GwtSelectNetFolderServerTypeTask();
+						gwtTask.setServerId( nextTask.getNetFolderServerId() );
+						gwtTask.setServerName( serverName );
+						
+						upgradeInfo.addFilrAdminTask( gwtTask );
+					}
+					else
+					{
+						Long netFolderServerId;
+						
+						// Remove the task for the administrator to enter the proxy credentials for this net folder server.
+						netFolderServerId = new Long( nextTask.getNetFolderServerId() );
+						filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( netFolderServerId );
+						
+						saveNeeded = true;
+					}
 				}
+			}
+
+			// Save the FilrAdminTasks to the administrator's user properties
+			if ( saveNeeded )
+			{
+				RunasCallback callback;
+				final String tmpXmlStr;
+				final Long adminId;
+				
+				tmpXmlStr = filrAdminTasks.toString();
+				adminId = user.getId();
+				
+				callback = new RunasCallback()
+				{
+					@Override
+					public Object doAs()
+					{
+						getProfileModule().setUserProperty(
+													adminId,
+													ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
+													tmpXmlStr );
+						return null;
+					}
+				};
+				RunasTemplate.runasAdmin( callback, RequestContextHolder.getRequestContext().getZoneName() );
 			}
 		}
 		

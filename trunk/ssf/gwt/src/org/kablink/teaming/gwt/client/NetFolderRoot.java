@@ -362,6 +362,9 @@ public class NetFolderRoot
 		if ( m_proxyPwd == null || m_proxyPwd.length() == 0 )
 			return false;
 		
+		if ( m_rootType == null || m_rootType == NetFolderRootType.FAMT || m_rootType == NetFolderRootType.UNKNOWN )
+			return false;
+		
 		return true;
 	}
 	

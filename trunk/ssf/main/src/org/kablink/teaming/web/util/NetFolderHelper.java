@@ -697,6 +697,23 @@ public class NetFolderHelper
 		
 		// Get a list of the currently defined Net Folder Roots
 		drivers = resourceDriverModule.getAllNetFolderResourceDriverConfigs();
+		
+		return findNetFolderRootById( drivers, id );
+	}
+
+	/**
+	 * 
+	 */
+	public static ResourceDriverConfig findNetFolderRootById(
+		List<ResourceDriverConfig> drivers,
+		String id )
+	{
+		if ( id == null )
+			return null;
+		
+		if ( drivers == null )
+			return null;
+		
 		for ( ResourceDriverConfig driver : drivers )
 		{
 			String driverId;
