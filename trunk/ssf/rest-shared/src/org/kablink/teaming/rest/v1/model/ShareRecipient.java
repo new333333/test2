@@ -47,6 +47,7 @@ public class ShareRecipient extends LongIdLinkPair {
     public static String INTERNAL_USER = "user";
     public static String EXTERNAL_USER = "external_user";
     public static String PUBLIC = "public";
+    public static String PUBLIC_LINK = "public_link";
 
     private String type;
     private String emailAddress;

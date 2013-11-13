@@ -9137,16 +9137,8 @@ public class GwtViewHelper {
 		if (!(MiscUtil.hasString(fName))) {
 			return false;
 		}
-		
-		boolean reply = SsfsUtil.supportsViewAsHtml(fName);
-		if (!reply) {
-			int pPos = fName.lastIndexOf('.');
-			if (0 < pPos) {
-				reply = fName.substring(pPos).toLowerCase().equals(".pdf");
-			}
-		}
-		
-		return reply;
+
+        return SsfsUtil.supportsViewAsHtml(fName) || MiscUtil.isPdf(fName);
 	}
 	
 	/*

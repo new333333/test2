@@ -97,7 +97,7 @@ public class ShareResource extends AbstractResource {
     @Path("/{id}")
     public Share getShare(@PathParam("id") Long id) {
         ShareItem share = _getShareItem(id);
-        return ResourceUtil.buildShare(share, buildShareRecipient(share));
+        return ResourceUtil.buildShare(share, findDefinableEntity(share.getSharedEntityIdentifier()), buildShareRecipient(share));
     }
 
     @POST
@@ -119,13 +119,18 @@ public class ShareResource extends AbstractResource {
         // these values and they don't match?
         share.setSharedEntity(new EntityId(item.getSharedEntityIdentifier().getEntityId(), item.getSharedEntityIdentifier().getEntityType().name(), null));
         share.setRecipient(buildShareRecipient(item));
+        if (item.getRecipientType() == ShareItem.RecipientType.publicLink) {
+            Access access = new Access();
+            access.setRole(ShareItem.Role.VIEWER.name());
+            share.setAccess(access);
+        }
         ShareItem newShareItem = toShareItem(share);
         ShareItem shareItem = null;
         for (ShareItem origItem : origItems) {
             shareItem = new ShareItem(newShareItem);
             shareItem.setRecipientType(origItem.getRecipientType());
             shareItem.setRecipientId(origItem.getRecipientId());
-            getSharingModule().modifyShareItem(shareItem, origItem.getId());
+            shareItem = getSharingModule().modifyShareItem(shareItem, origItem.getId());
         }
         if (notifyRecipient) {
             try {
@@ -134,7 +139,7 @@ public class ShareResource extends AbstractResource {
                 logger.warn("Failed to send share notification email", e);
             }
         }
-        return ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem));
+        return ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem));
     }
 
     @DELETE
@@ -162,7 +167,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, true, true, true);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
+            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem)));
         }
         return results;
     }
@@ -298,7 +303,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, userId, false, false, true);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
+            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem)));
         }
         return results;
     }
@@ -483,7 +488,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, getLoggedInUserId(), false, true, false);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
+            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem)));
         }
         return results;
     }
@@ -711,7 +716,7 @@ public class ShareResource extends AbstractResource {
                     if (showToUser(entry, topId, showHidden, showUnhidden)) {
                         SharedFolderEntryBrief binderBrief = resultMap.get(entry.getId());
                         if (binderBrief!=null) {
-                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem)));
                         } else {
                             binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), entry);
                             binderBrief.setParentBinder(new ParentBinder(topId, topHref));
@@ -742,7 +747,7 @@ public class ShareResource extends AbstractResource {
                     if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden)) {
                         SharedBinderBrief binderBrief = resultMap.get(binder.getId());
                         if (binderBrief!=null) {
-                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, binder, buildShareRecipient(shareItem)));
                         } else {
                             binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, buildShareRecipient(shareItem), binder);
                             if (topId!=null) {
@@ -775,7 +780,7 @@ public class ShareResource extends AbstractResource {
                             if (attachment instanceof FileAttachment) {
                                 SharedFileProperties fileProps = resultMap.get(attachment.getId());
                                 if (fileProps!=null) {
-                                    fileProps.addShare(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
+                                    fileProps.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem)));
                                 } else {
                                     fileProps = ResourceUtil.buildSharedFileProperties(shareItem, buildShareRecipient(shareItem), (FileAttachment) attachment);
                                     fileProps.setBinder(new ParentBinder(topId, topHref));

@@ -56,9 +56,11 @@ import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.dom4j.Element;
 import org.kablink.util.Validator;
@@ -763,7 +765,7 @@ public class ResourceUtil {
    		return definitionModule;
    	}
 
-    public static Share buildShare(ShareItem shareItem, ShareRecipient recipient) {
+    public static Share buildShare(ShareItem shareItem, org.kablink.teaming.domain.DefinableEntity sharedEntity, ShareRecipient recipient) {
         Share model = new Share();
         model.setComment(shareItem.getComment());
         model.setSharer(new LongIdLinkPair(shareItem.getSharerId(), LinkUriUtil.getUserLinkUri(shareItem.getSharerId())));
@@ -792,6 +794,15 @@ public class ResourceUtil {
         model.setCanShare(sharing.getPublic() || sharing.getExternal() || sharing.getInternal());
 
         model.setLink(LinkUriUtil.getShareLinkUri(model.getId()));
+
+        if (model.getRecipient().getType().equals(ShareRecipient.PUBLIC_LINK)) {
+            String fileName = MiscUtil.getPrimaryFileName(sharedEntity);
+            model.addAdditionalPermaLink("download", PermaLinkUtil.getSharedPublicFileDownloadPermalink(shareItem.getId(), shareItem.getPassKey(), fileName));
+            if (SsfsUtil.supportsViewAsHtml(fileName) || MiscUtil.isPdf(fileName)) {
+                model.addAdditionalPermaLink("view", PermaLinkUtil.getSharedPublicFileViewPermalink(shareItem.getId(), shareItem.getPassKey(), fileName));
+            }
+        }
+
         return model;
     }
 
@@ -812,21 +823,21 @@ public class ResourceUtil {
     public static SharedBinderBrief buildSharedBinderBrief(ShareItem shareItem, ShareRecipient recipient, org.kablink.teaming.domain.Binder binder) {
         SharedBinderBrief model = new SharedBinderBrief();
         populateBinderBrief(model, binder);
-        model.addShare(buildShare(shareItem, recipient));
+        model.addShare(buildShare(shareItem, binder, recipient));
         return model;
     }
 
     public static SharedFileProperties buildSharedFileProperties(ShareItem shareItem, ShareRecipient recipient, FileAttachment attachment) {
         SharedFileProperties model = new SharedFileProperties();
         populateFileProperties(model, attachment);
-        model.addShare(buildShare(shareItem, recipient));
+        model.addShare(buildShare(shareItem, attachment.getOwner().getEntity(), recipient));
         return model;
     }
 
     public static SharedFolderEntryBrief buildSharedFolderEntryBrief(ShareItem shareItem, ShareRecipient recipient, org.kablink.teaming.domain.FolderEntry entry) {
         SharedFolderEntryBrief model = new SharedFolderEntryBrief();
         populateEntryBrief(model, entry);
-        model.addShare(buildShare(shareItem, recipient));
+        model.addShare(buildShare(shareItem, entry, recipient));
         return model;
     }
 

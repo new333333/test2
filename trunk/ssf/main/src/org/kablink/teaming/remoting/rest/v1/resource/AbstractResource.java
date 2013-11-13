@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.fi.AccessDeniedException;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
@@ -224,6 +225,34 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if(!(entry instanceof org.kablink.teaming.domain.Group))
             throw new NoGroupByTheIdException(groupId);
         return (org.kablink.teaming.domain.Group) entry;
+    }
+
+    protected org.kablink.teaming.domain.DefinableEntity findDefinableEntity(EntityIdentifier ei) {
+        if (ei==null) {
+            return null;
+        }
+        return findDefinableEntity(ei.getEntityType(), ei.getEntityId());
+    }
+
+    protected org.kablink.teaming.domain.DefinableEntity findDefinableEntity(EntityIdentifier.EntityType et, long entityId)
+            throws BadRequestException, NotFoundException {
+        org.kablink.teaming.domain.DefinableEntity entity;
+        if (et == EntityIdentifier.EntityType.folderEntry) {
+            entity = getFolderModule().getEntry(null, entityId);
+        } else if (et == EntityIdentifier.EntityType.user) {
+            entity = getProfileModule().getEntry(entityId);
+            if (!(entity instanceof User))
+                throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
+        } else if (et == EntityIdentifier.EntityType.group) {
+            entity = getProfileModule().getEntry(entityId);
+            if (!(entity instanceof Group))
+                throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
+        } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
+            entity = getBinderModule().getBinder(entityId, false, true);
+        } else {
+            throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + et.name() + "' is unknown or not supported by this method");
+        }
+        return entity;
     }
 
     protected SearchResultList<SearchableObject> searchForLibraryEntities(String keyword, Criterion searchContext,
@@ -493,7 +522,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         for (ShareItem item : shareItems) {
             ShareItem existing = findExistingShare(getLoggedInUserId(), entity.getEntityIdentifier(), item.getRecipientId(), item.getRecipientType());
             if (existing!=null) {
-                getSharingModule().modifyShareItem(item, existing.getId());
+                shareItem = getSharingModule().modifyShareItem(item, existing.getId());
             } else {
                 getSharingModule().addShareItem(item);
             }
@@ -505,7 +534,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 logger.warn("Failed to send share notification email", e);
             }
         }
-        return ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem));
+        return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem));
     }
 
     protected ShareItem findExistingShare(Long sharer, EntityIdentifier sharedEntity, Long recipientId, ShareItem.RecipientType recipientType) {
@@ -566,7 +595,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Long id = shareItem.getRecipientId();
         String type = null;
         String email = null;
-        if (shareItem.getIsPartOfPublicShare()) {
+        if (shareItem.getRecipientType()== ShareItem.RecipientType.publicLink) {
+            type = ShareRecipient.PUBLIC_LINK;
+            id = null;
+        } else if (shareItem.getIsPartOfPublicShare()) {
             type = ShareRecipient.PUBLIC;
             id = null;
         } else {
@@ -780,15 +812,23 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
         if (!type.equals(ShareRecipient.EXTERNAL_USER) && !type.equals(ShareRecipient.INTERNAL_USER) &&
                 !type.equals(ShareRecipient.EXTERNAL_USER) && !type.equals(ShareRecipient.GROUP) &&
-                !type.equals(ShareRecipient.PUBLIC) && !type.equals(ShareRecipient.TEAM)) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.type' value must be one of the following: user, external_user, group, team, public.");
+                !type.equals(ShareRecipient.PUBLIC) && !type.equals(ShareRecipient.TEAM) &&
+                !type.equals(ShareRecipient.PUBLIC_LINK)) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.type' value must be one of the following: user, external_user, group, team, public, public_link.");
         }
         if (type.equals(ShareRecipient.PUBLIC)) {
             if (recipient.getId()!=null) {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.id' cannot be supplied with 'recipient.type'=='public'.");
             }
             if (recipient.getEmailAddress()!=null) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' can be supplied with 'recipient.type'=='external_user'.");
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' can be supplied with 'recipient.type'=='public'.");
+            }
+        } else if (type.equals(ShareRecipient.PUBLIC_LINK)) {
+            if (recipient.getId()!=null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.id' cannot be supplied with 'recipient.type'=='public_link'.");
+            }
+            if (recipient.getEmailAddress()!=null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' can be supplied with 'recipient.type'=='public_link'.");
             }
         } else if (type.equals(ShareRecipient.EXTERNAL_USER)){
             if (recipient.getId()==null && recipient.getEmailAddress()==null) {
@@ -806,8 +846,24 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (access==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'access' value.");
         }
-        if (access.getRole()==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'access.role' value.");
+        if (type.equals(ShareRecipient.PUBLIC_LINK)) {
+            if (access.getRole()!=null && !access.getRole().equals(ShareItem.Role.VIEWER.name())) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'access.role' can only be 'VIEWER' for public link shares.");
+            }
+            access.setRole(ShareItem.Role.VIEWER.name());
+        } else {
+            if (access.getRole()==null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'access.role' value.");
+            }
+        }
+        if (type.equals(ShareRecipient.PUBLIC_LINK) || type.equals(ShareRecipient.PUBLIC)) {
+            SharingPermission sharePerms = access.getSharing();
+            if (sharePerms!=null) {
+                if (Boolean.TRUE.equals(sharePerms.getExternal()) || Boolean.TRUE.equals(sharePerms.getGrantReshare()) ||
+                        Boolean.TRUE.equals(sharePerms.getPublic()) || Boolean.TRUE.equals(sharePerms.getInternal())) {
+                    throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Cannot specify 'access.sharing' permissions for public shares.");
+                }
+            }
         }
 
         EntityIdentifier.EntityType entityType;
@@ -833,6 +889,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } else if (type.equals(ShareRecipient.PUBLIC)) {
             recType = ShareItem.RecipientType.group;
             recipient.setId(Utils.getAllUsersGroupId());
+        } else if (type.equals(ShareRecipient.PUBLIC_LINK)) {
+            recType = ShareItem.RecipientType.publicLink;
+            recipient.setId(0L);
         }
         ShareItem.Role role;
         try {

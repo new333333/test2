@@ -16,9 +16,12 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * User: david
@@ -38,6 +41,9 @@ public class Share extends BaseRestObject {
     private String role;
     private Boolean canShare;
     private Access access;
+    @XmlElementWrapper(name="permalinks")
+    @XmlElement(name="permalink")
+    private List<Link> additionalPermaLinks;
 
     public String getComment() {
         return comment;
@@ -131,5 +137,24 @@ public class Share extends BaseRestObject {
 
     public void setAccess(Access access) {
         this.access = access;
+    }
+
+    public List<Link> getAdditionalPermaLinks() {
+        return additionalPermaLinks;
+    }
+
+    public void addAdditionalPermaLink(String relation, String uri) {
+        addAdditionalPermaLink(new Link(relation, uri));
+    }
+
+    public void addAdditionalPermaLink(String uri) {
+        addAdditionalPermaLink(new Link(null, uri));
+    }
+
+    public void addAdditionalPermaLink(Link link) {
+        if (additionalPermaLinks ==null) {
+            additionalPermaLinks = new ArrayList<Link>();
+        }
+        additionalPermaLinks.add(link);
     }
 }

@@ -762,7 +762,7 @@ public class WebUrlUtil {
 	 */
 	public static String getSharedPublicFileUrl(HttpServletRequest hRequest, Long shareItemId, String passKey, String operation, String fileName) {
 		// Always use the implementation form of the method.
-		return getSharedPublicFileUrlImpl(WebUrlUtil.getServletRootURL(hRequest), shareItemId, passKey, operation, fileName);
+		return getSharedPublicFileUrlImpl(WebUrlUtil.getServletRootURL(hRequest, null), shareItemId, passKey, operation, fileName);
 	}
 
 	/**
