@@ -34,6 +34,7 @@ package org.kablink.teaming.module.sharing.impl;
 
 import java.util.*;
 
+import org.kablink.teaming.InvalidEmailAddressException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -658,8 +659,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                 shareItem.getRecipientType()==RecipientType.publicLink) {
             throw new IllegalArgumentException("Public links are only allowed for folder entries.");
         }
-		
-		getTransactionTemplate().execute(new TransactionCallback<Object>() {
+
+        verifyExternalEmail(shareItem);
+
+        getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				getCoreDao().save(shareItem);
@@ -731,8 +734,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		
 		// Access check (throws error if not allowed)
 		checkAccess(latestShareItem, SharingOperation.modifyShareItem);
-		
-		ShareItem retItem = getTransactionTemplate().execute(new TransactionCallback<ShareItem>() {
+
+        verifyExternalEmail(latestShareItem);
+
+        ShareItem retItem = getTransactionTemplate().execute(new TransactionCallback<ShareItem>() {
 			@Override
 			public ShareItem doInTransaction(TransactionStatus status) {
 				// Are we dealing with a "public link" share item?
@@ -797,6 +802,21 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		indexSharedEntity(retItem);
         return retItem;
 	}
+
+    private void verifyExternalEmail(ShareItem shareItem) {
+        if (shareItem.getRecipientType()==RecipientType.user) {
+            Principal recipient = getProfileModule().getEntry(shareItem.getRecipientId());
+            if (!recipient.getEntityType().equals(EntityType.user)) {
+                throw new NoUserByTheIdException(shareItem.getRecipientId());
+            }
+            if (!recipient.getIdentityInfo().isInternal()) {
+                String email = recipient.getEmailAddress();
+                if (!isExternalAddressValid(email)) {
+                    throw new InvalidEmailAddressException(email);
+                }
+            }
+        }
+    }
 
     private void determineExpiration(ShareItem latestShareItem) {
         int daysToExpire = latestShareItem.getDaysToExpire();

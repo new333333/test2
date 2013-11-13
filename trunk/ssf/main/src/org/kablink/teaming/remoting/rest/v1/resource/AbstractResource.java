@@ -45,6 +45,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.kablink.teaming.InvalidEmailAddressException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -509,6 +510,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                                 + recipient.getEmailAddress());
                     }
                 } else {
+                    if (!getSharingModule().isExternalAddressValid(share.getRecipient().getEmailAddress())) {
+                        throw new InvalidEmailAddressException(share.getRecipient().getEmailAddress());
+                    }
                     user = getProfileModule().findOrAddExternalUser(share.getRecipient().getEmailAddress());
                 }
             }
