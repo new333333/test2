@@ -73,6 +73,8 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -123,6 +125,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private CheckBox m_fullSyncDirOnlyCB;
 	private CheckBox m_useDirectoryRightsCB;
+	private TextBox m_cachedRightsRefreshIntervalTB;
 	private Label m_oesProxyNameHint;
 	private Label m_windowsProxyNameHint;
 	private TabPanel m_tabPanel;
@@ -692,6 +695,46 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		tmpPanel.add( m_useDirectoryRightsCB );
 		mainPanel.add( tmpPanel );
 		
+		// Add the controls for "Refresh cached rights information every: xxx minutes"
+		{
+			InlineLabel label;
+			
+			tmpPanel = new FlowPanel();
+			tmpPanel.getElement().getStyle().setMarginTop( 4, Unit.PX );
+			
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_RefreshRightsLabel() );
+			label.getElement().getStyle().setMarginRight( 6, Unit.PX );
+			tmpPanel.add( label );
+			
+			m_cachedRightsRefreshIntervalTB = new TextBox();
+			m_cachedRightsRefreshIntervalTB.addKeyPressHandler( new KeyPressHandler()
+			{
+				@Override
+				public void onKeyPress( KeyPressEvent event )
+				{
+			        int keyCode;
+
+			        // Get the key the user pressed
+			        keyCode = event.getNativeEvent().getKeyCode();
+			        
+			        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
+			        {
+		        		// Suppress the current keyboard event.
+		        		m_cachedRightsRefreshIntervalTB.cancelKey();
+			        }
+				}
+			} );
+
+			m_cachedRightsRefreshIntervalTB.setVisibleLength( 3 );
+			tmpPanel.add( m_cachedRightsRefreshIntervalTB );
+			
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_Minutes() );
+			label.getElement().getStyle().setMarginLeft( 6, Unit.PX );
+			tmpPanel.add( label );
+			
+			mainPanel.add( tmpPanel );
+		}
+		
 		return mainPanel;
 	}
 	
@@ -1017,6 +1060,21 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 	}
 
+	/**
+	 * Returns the "cached rights refresh interval" entered by the user.
+	 */
+	private Integer getCachedRightsRefreshInterval()
+	{
+		String intervalStr;
+		Integer interval = null;
+		
+		intervalStr = m_cachedRightsRefreshIntervalTB.getValue();
+		if ( intervalStr != null && intervalStr.length() > 0 )
+			interval = Integer.valueOf( intervalStr );
+		
+		return interval;
+	}
+	
 	/*
 	 * Gets the list of LDAP servers and runs the browser on them.
 	 */
@@ -1242,6 +1300,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setAuthType( getAuthType() );
 		netFolderRoot.setFullSyncDirOnly( getFullSyncDirOnly() );
 		netFolderRoot.setUseDirectoryRights( getUseDirectoryRights() );
+		netFolderRoot.setCachedRightsRefreshInterval( getCachedRightsRefreshInterval() );
 		
 		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
 			netFolderRoot.setListOfPrincipals( getListOfPrivilegedPrincipals() );
@@ -1397,6 +1456,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		
 		m_fullSyncDirOnlyCB.setValue( false );
 		m_useDirectoryRightsCB.setValue( false );
+		m_cachedRightsRefreshIntervalTB.setValue( "" );
 		
 		// Forget about any list of LDAP servers.  The list may have
 		// changed since this dialog was last run and setting this to
@@ -1455,6 +1515,15 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				value = m_netFolderRoot.getUseDirectoryRights();
 				if ( value != null )
 					m_useDirectoryRightsCB.setValue( value );
+			}
+			
+			// Initialize the "cached rights refresh interval"
+			{
+				Integer value;
+				
+				value = m_netFolderRoot.getCachedRightsRefreshInterval();
+				if ( value != null )
+					m_cachedRightsRefreshIntervalTB.setValue( value.toString() );
 			}
 		}
 		else

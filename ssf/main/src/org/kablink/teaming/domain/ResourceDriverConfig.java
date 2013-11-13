@@ -64,6 +64,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private ChangeDetectionMechanism changeDetectionMechanism;
 	private Short authenticationType;
 	private Boolean useDirectoryRights;
+	private Integer cachedRightsRefreshInterval;
 		
 	public enum DriverType {
 		filesystem (0),
@@ -209,6 +210,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     		return false;
 
     	if ( !objectEquals( getUseDirectoryRights(), config.getUseDirectoryRights() ) )
+    		return false;
+    	
+    	if ( !objectEquals( getCachedRightsRefreshInterval(), config.getCachedRightsRefreshInterval() ) )
     		return false;
 
     	return true;
@@ -508,6 +512,22 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	public void setUseDirectoryRights( Boolean value )
 	{
 		useDirectoryRights = value;
+	}
+	
+	/**
+	 * 
+	 */
+	public Integer getCachedRightsRefreshInterval()
+	{
+		return cachedRightsRefreshInterval;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCachedRightsRefreshInterval( Integer value )
+	{
+		cachedRightsRefreshInterval = value;
 	}
 
 

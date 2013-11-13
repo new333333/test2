@@ -414,4 +414,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="33">
+        <comment>Cached rights refresh interval</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="cachedRightsRefreshInterval" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
