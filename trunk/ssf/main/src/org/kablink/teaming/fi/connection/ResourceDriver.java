@@ -47,6 +47,9 @@ import org.kablink.teaming.fi.FIException;
  *
  */
 public interface ResourceDriver {
+	
+	@Deprecated
+	public void initialize()  throws FIException, UncheckedIOException;
 
 	/**
 	 * Initialize the driver. 
