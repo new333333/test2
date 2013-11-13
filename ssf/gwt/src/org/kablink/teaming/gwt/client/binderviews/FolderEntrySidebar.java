@@ -196,9 +196,15 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		// If the logged in user isn't Guest or an external user...
 		m_sharingAreaShown = (!(GwtClientHelper.isGuestUser() || GwtClientHelper.isExternalUser()));
 		if (m_sharingAreaShown) {
-			// ...create the sharing components.
+			// ...create the sharing components...
 			createSharingCaption();
 			createSharingArea();
+		}
+		
+		else {
+			// ...otherwise, make an extra call into the view so that
+			// ...its component counts are correct.
+			m_fec.viewComponentReady();
 		}
 		
 		// Create the sidebar's slider components.
