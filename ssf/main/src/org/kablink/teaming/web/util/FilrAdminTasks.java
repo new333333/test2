@@ -45,7 +45,9 @@ import org.dom4j.Node;
 
 /**
  * A FilrAdminTasks object contains a list of tasks that the Filr administrator needs to do.
- * At this time the only task would be "Enter the proxy credentials for a Net Folder Server"
+ * At this time there are only 2 tasks:
+ * 	1. Enter the proxy credentials for a Net Folder Server
+ * 	2. Select the server type for a net folder server.
  * 
  * The xml looks like the following xml:
  *	<FilrAdminTasks>
@@ -53,6 +55,10 @@ import org.dom4j.Node;
  *			<NetFolderServer id="some value" />
  *			<NetFolderServer id="some value" />
  *		</EnterNetFolderServerProxyCredentials>
+ *		<SelectNetFolderServerType>
+ *			<NetFolderServer id="some value" />
+ *			<NetFolderServer id="some value" />
+ *		</SelectNetFolderServerType>
  *	</FilrAdminTasks>
  * 
  * @author jwootton
@@ -129,6 +135,41 @@ public class FilrAdminTasks
 	}
 
 	/**
+	 * Add a "select net folder server type" task. 
+	 */
+	public Document addSelectNetFolderServerTypeTask( Long netFolderServerId )
+	{
+		Element taskElement;
+		Element parentElement;
+		String idStr;
+		
+		if ( netFolderServerId == null )
+			return null;
+		
+		idStr = String.valueOf( netFolderServerId );
+		
+		// Make sure we have a document to work with.
+		getAdminTasksDoc();
+		
+		// Does a <NetFolderServer id="xxx" /> exists under <SelectNetFolderServerType>?
+		taskElement = getSelectNetFolderServerTypeTask( idStr );
+		if ( taskElement != null )
+		{
+			// Yes
+			return m_adminTasksDoc;
+		}
+		
+		// Get the <SelectNetFolderServerType> element
+		parentElement = getSelectNetFolderServerTypeElement();
+		
+		// Add <NetFolderServer id="some value" />
+		taskElement = parentElement.addElement( "NetFolderServer" );
+		taskElement.addAttribute( "id", idStr );
+		
+		return m_adminTasksDoc;
+	}
+
+	/**
 	 * 
 	 */
 	private Document createAdminTasksRootDocument()
@@ -155,6 +196,28 @@ public class FilrAdminTasks
 		
 		// Does a <NetFolderServer id="xxx" /> exists under <EnterNetFolderServerProxyCredentials>?
 		taskElement = getEnterProxyCredentialsTask( idStr );
+		if ( taskElement != null )
+		{
+			taskElement.getParent().remove( taskElement );
+		}
+		
+		return m_adminTasksDoc;
+	}
+
+	/**
+	 * 
+	 */
+	public Document deleteSelectNetFolderServerTypeTask( Long netFolderServerId )
+	{
+		Element taskElement;
+		String idStr;
+		
+		getAdminTasksDoc();
+		
+		idStr = String.valueOf( netFolderServerId );
+		
+		// Does a <NetFolderServer id="xxx" /> exists under <SelectNetFolderServerType>?
+		taskElement = getSelectNetFolderServerTypeTask( idStr );
 		if ( taskElement != null )
 		{
 			taskElement.getParent().remove( taskElement );
@@ -222,6 +285,51 @@ public class FilrAdminTasks
 	}
 	
 	/**
+	 * Return all of the "select net folder server type" tasks
+	 */
+	@SuppressWarnings("rawtypes")
+	public ArrayList<SelectNetFolderServerTypeTask> getAllSelectNetFolderServerTypeTasks()
+	{
+		ArrayList<SelectNetFolderServerTypeTask> listOfTasks;
+		List listOfElements;
+		
+		listOfTasks = new ArrayList<SelectNetFolderServerTypeTask>();
+		
+		getAdminTasksDoc();
+		
+		// Get all of the <NetFolderServer> elements that live under <SelectNetFolderServerType>
+		listOfElements = m_adminTasksDoc.selectNodes( "/FilrAdminTasks/SelectNetFolderServerType/NetFolderServer" ); 
+		
+		if ( listOfElements != null )
+		{
+			Iterator iter;
+			
+			iter = listOfElements.iterator();
+			while ( iter.hasNext() ) 
+			{
+				Element nextElement;
+				Node node;
+				
+				nextElement = (Element) iter.next();
+				node = nextElement.selectSingleNode( "@id" );
+				if ( node != null && node instanceof Attribute )
+				{
+					Attribute attrib;
+					SelectNetFolderServerTypeTask task;
+
+					attrib = (Attribute) node;
+					task = new SelectNetFolderServerTypeTask();
+					task.setNetFolderServerId( attrib.getValue() );
+					
+					listOfTasks.add( task );
+				}
+			}
+		}
+		
+		return listOfTasks;
+	}
+	
+	/**
 	 * See if a <NetFolderServer id="xxx" /> exists under <EnterNetFolderServerProxyCredentials>
 	 */
 	private Element getEnterProxyCredentialsTask( String netFolderServerId )
@@ -264,8 +372,51 @@ public class FilrAdminTasks
 	}
 
 	/**
+	 * See if a <NetFolderServer id="xxx" /> exists under <SelectNetFolderServerType>
+	 */
+	private Element getSelectNetFolderServerTypeTask( String netFolderServerId )
+	{
+		Element rootElement;
+		Element serverElement;
+
+		if ( netFolderServerId == null )
+			return null;
+		
+		rootElement = m_adminTasksDoc.getRootElement();
+		
+		// Look for the <NetFolderServer> element
+		serverElement = (Element)rootElement.selectSingleNode( "/FilrAdminTasks/SelectNetFolderServerType/NetFolderServer[@id='" + netFolderServerId + "']" ); 
+			
+		return serverElement;
+	}
+	
+	/**
+	 * Find the <SelectNetFolderServerType> element.  If it doesn't exist, create it.
+	 */
+	private Element getSelectNetFolderServerTypeElement()
+	{
+		Element rootElement;
+		Element selectNetFolderServerTypeElement;
+		
+		rootElement = m_adminTasksDoc.getRootElement();
+		
+		// Look for the <SelectNetFolderServerType> element
+		selectNetFolderServerTypeElement = (Element)rootElement.selectSingleNode( "/FilrAdminTasks/SelectNetFolderServerType" ); 
+			
+		// Did we find a <SelectNetFolderServerType> element?
+		if ( selectNetFolderServerTypeElement == null )
+		{
+			// No, create one.
+			selectNetFolderServerTypeElement = rootElement.addElement( "SelectNetFolderServerType" );
+		}
+		
+		return selectNetFolderServerTypeElement;
+	}
+
+	/**
 	 * 
 	 */
+	@Override
 	public String toString()
 	{
 		return getAdminTasksDoc().asXML();
