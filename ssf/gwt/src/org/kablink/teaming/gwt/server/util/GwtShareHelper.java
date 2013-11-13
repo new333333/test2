@@ -2972,12 +2972,7 @@ public class GwtShareHelper
 						// attached to this entry?
 						FolderEntry fe      = bs.getFolderModule().getEntry( null, eid.getEntityId() );
 						            feTitle = fe.getTitle();
-						FileAttachment fa   = MiscUtil.getPrimaryFileAttachment( fe );
-						FileItem       fi   = fa.getFileItem();
-						String         fName;
-						if ( null != fi )
-						     fName = fi.getName();
-						else fName = null;
+						String         fName = MiscUtil.getPrimaryFileName(fe);
 						if ( ! ( MiscUtil.hasString( fName ) ) )
 						{
 							// No!  Then we can't build links for it.

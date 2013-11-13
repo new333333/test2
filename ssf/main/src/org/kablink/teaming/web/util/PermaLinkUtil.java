@@ -196,6 +196,14 @@ public class PermaLinkUtil {
 		return adapterUrl.toString();
 	}
 
+    public static String getSharedPublicFileDownloadPermalink(Long shareItemId, String passKey, String fileName) {
+        return WebUrlUtil.getSharedPublicFileUrl((HttpServletRequest)null, shareItemId, passKey, WebKeys.URL_SHARE_PUBLIC_LINK, fileName);
+    }
+
+    public static String getSharedPublicFileViewPermalink(Long shareItemId, String passKey, String fileName) {
+        return WebUrlUtil.getSharedPublicFileUrl((HttpServletRequest)null, shareItemId, passKey, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fileName);
+    }
+
 	protected static void getPermalinkURL(AdaptedPortletURL adapterUrl, Long entityId, EntityIdentifier.EntityType entityType) {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entityType.name());

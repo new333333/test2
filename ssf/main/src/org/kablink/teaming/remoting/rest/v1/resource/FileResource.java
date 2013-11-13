@@ -233,9 +233,9 @@ public class FileResource extends AbstractFileResource {
         if (entity instanceof FolderEntry) {
             FolderUtils.deleteFileInFolderEntry((FolderEntry)entity, fa, !purge);
         } else if (entity instanceof Binder) {
-            deleteFile(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
+            deleteFile(entity.getEntityType(), entity.getId(), fa.getFileItem().getName());
         } else {
-            deleteFile(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
+            deleteFile(entity.getEntityType(), entity.getId(), fa.getFileItem().getName());
         }
     }
 

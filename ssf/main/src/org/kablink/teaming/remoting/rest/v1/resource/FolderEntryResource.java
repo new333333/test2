@@ -226,7 +226,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, true, true, true);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
+            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem)));
         }
         return results;
     }

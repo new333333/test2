@@ -119,7 +119,7 @@ public interface SharingModule {
      * @param latestShareItem the new snapshot being added
      * @param previousShareItemId the ID of the previous snapshot of the share
      */
-    public void modifyShareItem(ShareItem latestShareItem, Long previousShareItemId);
+    public ShareItem modifyShareItem(ShareItem latestShareItem, Long previousShareItemId);
     
     /**
      * Delete an existing share item.

@@ -57,17 +57,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.AuthenticationConfig;
-import org.kablink.teaming.domain.CustomAttribute;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
-import org.kablink.teaming.domain.UserProperties;
-import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -1200,6 +1190,16 @@ public final class MiscUtil
 		return reply;
 	}
 
+    public static String getPrimaryFileName(DefinableEntity de) {
+        String fName = null;
+        FileAttachment fa = MiscUtil.getPrimaryFileAttachment( de );
+        FileItem fi = fa.getFileItem();
+        if ( null != fi ) {
+            fName = fi.getName();
+        }
+        return fName;
+    }
+
 	/**
 	 * Returns the display string for the product name.
 	 * 
@@ -1239,4 +1239,16 @@ public final class MiscUtil
 		}
 		return ls;
 	}
+
+    public static boolean isPdf(String filename) {
+        boolean isPdf = false;
+        if (hasString(filename)) {
+            int pPos = filename.lastIndexOf('.');
+            if (0 < pPos) {
+                isPdf = filename.substring(pPos).toLowerCase().equals(".pdf");
+            }
+        }
+        return isPdf;
+    }
+
 }// end MiscUtil

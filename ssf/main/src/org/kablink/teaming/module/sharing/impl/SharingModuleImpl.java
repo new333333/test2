@@ -714,7 +714,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
     //NO transaction
 	@Override
-	public void modifyShareItem(final ShareItem latestShareItem, final Long previousShareItemId) {
+	public ShareItem modifyShareItem(final ShareItem latestShareItem, final Long previousShareItemId) {
 		if(latestShareItem == null)
 			throw new IllegalArgumentException("Latest share item must be specified");
 		if(previousShareItemId == null)
@@ -727,9 +727,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		// Access check (throws error if not allowed)
 		checkAccess(latestShareItem, SharingOperation.modifyShareItem);
 		
-		getTransactionTemplate().execute(new TransactionCallback<Object>() {
+		ShareItem retItem = getTransactionTemplate().execute(new TransactionCallback<ShareItem>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public ShareItem doInTransaction(TransactionStatus status) {
 				// Are we dealing with a "public link" share item?
 				if ( latestShareItem.getRecipientType() != RecipientType.publicLink )
 				{
@@ -772,6 +772,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
 						// Log this share action in the change log
 						addShareItemChangeLogEntry( previousShareItem, ChangeLog.SHARE_MODIFY );
+                        return previousShareItem;
 					}
 					catch( NoShareItemByTheIdException e )
 					{
@@ -783,9 +784,13 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				return null;
 			}
 		});
+        if (retItem==null) {
+            retItem = latestShareItem;
+        }
 
 		//Index the entity that is being shared
-		indexSharedEntity(latestShareItem);		
+		indexSharedEntity(retItem);
+        return retItem;
 	}
 
     private void determineExpiration(ShareItem latestShareItem) {
