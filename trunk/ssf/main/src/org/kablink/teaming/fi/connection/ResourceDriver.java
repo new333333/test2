@@ -33,6 +33,7 @@
 package org.kablink.teaming.fi.connection;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -49,11 +50,17 @@ public interface ResourceDriver {
 
 	/**
 	 * Initialize the driver. 
+	 * <p>
+	 * The method must perform full initialization if the <code>properties</code> passed in
+	 * is not <code>null</code>. If it is <code>null</code>, then it must perform minimal
+	 * initialization just enough to support <code>testConnection</code> method on the driver.
 	 * 
+	 * @param properties A map of input properties or <code>null</code>
+	 * @return A map of output properties
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public void initialize() throws FIException, UncheckedIOException;
+	public Map<String,String> initialize(Map<String,String> properties) throws FIException, UncheckedIOException;
 	
 	/**
 	 * Shutdown the driver. 
