@@ -137,6 +137,7 @@ public class FolderEntryDocument extends VibeFlowPanel {
 			// Add the appropriate image. 
 			m_contentImage = GwtClientHelper.buildImage(imgUrl);
 			m_contentImage.addStyleName(imgStyle);
+			m_contentImage.setWidth(IMAGE_MINIMUM + "px");	// Will get corrected on the first resize cycle.  See onResize() below.
 			int rotation = m_fed.getContentImageRotation();
 			if (0 != rotation) {
 				Style  styles = m_contentImage.getElement().getStyle();
