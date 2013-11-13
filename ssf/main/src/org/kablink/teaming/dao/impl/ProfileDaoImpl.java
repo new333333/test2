@@ -2839,6 +2839,9 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                                     crit.add(Restrictions.isNull("deletedDate"));
                                 }
                             }
+                            if (selectSpec.recipientType != null) {
+                                crit.add(Restrictions.eq("recipientType", selectSpec.recipientType.getValue()));
+                            }
 	                    	if(selectSpec.orderByFieldName != null) {
 	                    		if(selectSpec.orderByDescending)
 	                    			crit.addOrder(Order.desc(selectSpec.orderByFieldName));
