@@ -520,6 +520,7 @@ public interface ObjectKeys {
 	
 	//Resource Drivers
 	public static final String RESOURCE_DRIVER_AUTHENTICATION_TYPE = "authenticationType";
+	public static final String RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL = "cachedRightsRefreshInterval";
 	public static final String RESOURCE_DRIVER_READ_ONLY = "readonly";
 	public static final String RESOURCE_DRIVER_SYNCH_TOP_DELETE = "synchTopDelete";
 	public static final String RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH = "putRequiresContentLength";

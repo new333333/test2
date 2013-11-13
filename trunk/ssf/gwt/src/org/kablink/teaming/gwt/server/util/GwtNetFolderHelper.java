@@ -326,6 +326,7 @@ public class GwtNetFolderHelper
 													netFolderRoot.getFullSyncDirOnly(),
 													authType,
 													netFolderRoot.getUseDirectoryRights(),
+													netFolderRoot.getCachedRightsRefreshInterval(),
 													scheduleInfo );
 		}
 		catch ( RDException ex )
@@ -350,6 +351,8 @@ public class GwtNetFolderHelper
 			newRoot.setIsSharePointServer( rdConfig.isPutRequiresContentLength() );
 			newRoot.setSyncSchedule( netFolderRoot.getSyncSchedule() );
 			newRoot.setFullSyncDirOnly( rdConfig.getFullSyncDirOnly() );
+			newRoot.setUseDirectoryRights( rdConfig.getUseDirectoryRights() );
+			newRoot.setCachedRightsRefreshInterval( rdConfig.getCachedRightsRefreshInterval() );
 			
 			{
 				AuthenticationType authType;
@@ -534,6 +537,7 @@ public class GwtNetFolderHelper
 				nfRoot.setIsSharePointServer( driver.isPutRequiresContentLength() );
 				nfRoot.setFullSyncDirOnly( driver.getFullSyncDirOnly() );
 				nfRoot.setUseDirectoryRights( driver.getUseDirectoryRights() );
+				nfRoot.setCachedRightsRefreshInterval( driver.getCachedRightsRefreshInterval() );
 				
 				{
 					AuthenticationType authType;
@@ -1365,6 +1369,7 @@ public class GwtNetFolderHelper
 											netFolderRoot.getFullSyncDirOnly(),
 											authType,
 											netFolderRoot.getUseDirectoryRights(),
+											netFolderRoot.getCachedRightsRefreshInterval(),
 											scheduleInfo );
 		}
 		catch ( Exception ex )

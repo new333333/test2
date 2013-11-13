@@ -175,6 +175,7 @@ public class NetFolderHelper
 													null,
 													null,
 													null,
+													null,
 													scheduleInfo );
 		
 		// Add a task for the administrator to enter the proxy credentials for this server.
@@ -577,6 +578,7 @@ public class NetFolderHelper
 		Boolean fullSyncDirOnly,
 		AuthenticationType authType,
 		Boolean useDirectoryRights,
+		Integer cachedRightsRefreshInterval,
 		ScheduleInfo scheduleInfo ) throws RDException
 	{
 		Map options;
@@ -600,6 +602,7 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
 		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
 		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
+		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
 		
 		// Is the root type WebDAV?
 		if ( driverType == DriverType.webdav )
@@ -969,6 +972,7 @@ public class NetFolderHelper
 		Boolean fullSyncDirOnly,
 		AuthenticationType authType,
 		Boolean useDirectoryRights,
+		Integer cachedRightsRefreshInterval,
 		ScheduleInfo scheduleInfo )
 	{
 		Map options;
@@ -996,6 +1000,7 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
 		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
 		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
+		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
 
 		// Always prevent the top level folder from being deleted
 		// This is forced so that the folder could not accidentally be deleted if the 

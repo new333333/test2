@@ -2285,6 +2285,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_HostUrlRequired();
 	String modifyNetFolderServerDlg_InsufficientRights();
 	String modifyNetFolderServerDlg_IsSharePointServerLabel();
+	String modifyNetFolderServerDlg_Minutes();
 	String modifyNetFolderServerDlg_ModifyingNetFolderServer();
 	String modifyNetFolderServerDlg_NameLabel();
 	String modifyNetFolderServerDlg_NameRequired();
@@ -2297,6 +2298,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_ProxyNameHint3();
 	String modifyNetFolderServerDlg_ProxyNameLabel();
 	String modifyNetFolderServerDlg_ProxyPwdLabel();
+	String modifyNetFolderServerDlg_RefreshRightsLabel();
 	String modifyNetFolderServerDlg_ScheduleTab();
 	String modifyNetFolderServerDlg_SelectServerTypePrompt();
 	String modifyNetFolderServerDlg_ServerAlreadyExists();
