@@ -58,6 +58,6 @@ public class InvalidEmailAddressException extends UncheckedCodedException {
 
     @Override
     public int getHttpStatusCode() {
-        return 400;
+        return 403;
     }
 }
