@@ -544,8 +544,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             spec.setRecipients(recipientId, null, null);
         } else if (recipientType== ShareItem.RecipientType.group) {
             spec.setRecipients(null, recipientId, null);
-        } else {
+        } else if (recipientType == ShareItem.RecipientType.team) {
             spec.setRecipients(null, null, recipientId);
+        } else if (recipientType == ShareItem.RecipientType.publicLink) {
+            spec.recipientType = ShareItem.RecipientType.publicLink;
         }
 
         List<ShareItem> shares = getShareItems(spec, true, true, true);
@@ -843,15 +845,17 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
         }
         Access access = share.getAccess();
-        if (access==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'access' value.");
-        }
         if (type.equals(ShareRecipient.PUBLIC_LINK)) {
-            if (access.getRole()!=null && !access.getRole().equals(ShareItem.Role.VIEWER.name())) {
+            if (access!=null && access.getRole()!=null && !access.getRole().equals(ShareItem.Role.VIEWER.name())) {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'access.role' can only be 'VIEWER' for public link shares.");
             }
+            access = new Access();
             access.setRole(ShareItem.Role.VIEWER.name());
+            share.setAccess(access);
         } else {
+            if (access==null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'access' value.");
+            }
             if (access.getRole()==null) {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'access.role' value.");
             }
@@ -892,6 +896,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } else if (type.equals(ShareRecipient.PUBLIC_LINK)) {
             recType = ShareItem.RecipientType.publicLink;
             recipient.setId(0L);
+
+            if (entity.getEntityType() != EntityIdentifier.EntityType.folderEntry) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient'.'type' of 'public_link' is only valid for 'folderEntry' recipients.");
+            }
         }
         ShareItem.Role role;
         try {

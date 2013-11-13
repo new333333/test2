@@ -653,6 +653,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
 		// Access check (throws error if not allowed)
 		checkAccess(shareItem, SharingOperation.addShareItem);
+
+        if(shareItem.getSharedEntityIdentifier().getEntityType() != EntityType.folderEntry &&
+                shareItem.getRecipientType()==RecipientType.publicLink) {
+            throw new IllegalArgumentException("Public links are only allowed for folder entries.");
+        }
 		
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
