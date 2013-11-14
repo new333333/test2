@@ -58,41 +58,46 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	private String			m_columnType;			// The type for this column (only used for custom columns.)
 
 	// The following are the various predefined names used for columns.
-	public final static String COLUMN_AUTHOR			= "author";
-	public final static String COLUMN_COMMENTS			= "comments";
-	public final static String COLUMN_DATE				= "date";
-	public final static String COLUMN_DESCRIPTION		= "description";
-	public final static String COLUMN_DESCRIPTION_HTML	= "descriptionHtml";
-	public final static String COLUMN_DOWNLOAD			= "download";
-	public final static String COLUMN_DUE_DATE			= "dueDate";
-	public final static String COLUMN_EMAIL_ADDRESS		= "emailAddress";
-	public final static String COLUMN_FAMILY			= "family";
-	public final static String COLUMN_FULL_NAME			= "fullName";
-	public final static String COLUMN_GUEST				= "guest";
-	public final static String COLUMN_HTML				= "html";
-	public final static String COLUMN_LOCATION			= "location";
-	public final static String COLUMN_LOGIN_ID			= "loginId";
-	public final static String COLUMN_MOBILE_DEVICES	= "mobileDevices";
-	public final static String COLUMN_NETFOLDER_ACCESS	= "netfolder_access";
-	public final static String COLUMN_NUMBER			= "number";
-	public final static String COLUMN_RATING			= "rating";
-	public final static String COLUMN_RESPONSIBLE		= "responsible";
-	public final static String COLUMN_SHARE_ACCESS		= "share_access";
-	public final static String COLUMN_SHARE_DATE		= "share_date";
-	public final static String COLUMN_SHARE_EXPIRATION	= "share_expiration";
-	public final static String COLUMN_SHARE_MESSAGE		= "share_message";
-	public final static String COLUMN_SHARE_SHARED_BY	= "share_sharedBy";
-	public final static String COLUMN_SHARE_SHARED_WITH	= "share_sharedWith";
-	public final static String COLUMN_SIZE				= "size";
-	public final static String COLUMN_STATE				= "state";
-	public final static String COLUMN_STATUS			= "status";
-	public final static String COLUMN_TASKS				= "tasks";
-	public final static String COLUMN_TITLE				= "title";
-	public final static String COLUMN_USER_TYPE			= "userType";
+	public final static String COLUMN_AUTHOR				= "author";
+	public final static String COLUMN_COMMENTS				= "comments";
+	public final static String COLUMN_DATE					= "date";
+	public final static String COLUMN_DESCRIPTION			= "description";
+	public final static String COLUMN_DESCRIPTION_HTML		= "descriptionHtml";
+	public final static String COLUMN_DEVICE_DESCRIPTION	= "deviceDescription";
+	public final static String COLUMN_DEVICE_LAST_LOGIN		= "deviceLastLogin";
+	public final static String COLUMN_DEVICE_USER			= "deviceUser";
+	public final static String COLUMN_DEVICE_WIPE_DATE		= "deviceWipeDate";
+	public final static String COLUMN_DEVICE_WIPE_SCHEDULED	= "deviceWipeScheduled";
+	public final static String COLUMN_DOWNLOAD				= "download";
+	public final static String COLUMN_DUE_DATE				= "dueDate";
+	public final static String COLUMN_EMAIL_ADDRESS			= "emailAddress";
+	public final static String COLUMN_FAMILY				= "family";
+	public final static String COLUMN_FULL_NAME				= "fullName";
+	public final static String COLUMN_GUEST					= "guest";
+	public final static String COLUMN_HTML					= "html";
+	public final static String COLUMN_LOCATION				= "location";
+	public final static String COLUMN_LOGIN_ID				= "loginId";
+	public final static String COLUMN_MOBILE_DEVICES		= "mobileDevices";
+	public final static String COLUMN_NETFOLDER_ACCESS		= "netfolder_access";
+	public final static String COLUMN_NUMBER				= "number";
+	public final static String COLUMN_RATING				= "rating";
+	public final static String COLUMN_RESPONSIBLE			= "responsible";
+	public final static String COLUMN_SHARE_ACCESS			= "share_access";
+	public final static String COLUMN_SHARE_DATE			= "share_date";
+	public final static String COLUMN_SHARE_EXPIRATION		= "share_expiration";
+	public final static String COLUMN_SHARE_MESSAGE			= "share_message";
+	public final static String COLUMN_SHARE_SHARED_BY		= "share_sharedBy";
+	public final static String COLUMN_SHARE_SHARED_WITH		= "share_sharedWith";
+	public final static String COLUMN_SIZE					= "size";
+	public final static String COLUMN_STATE					= "state";
+	public final static String COLUMN_STATUS				= "status";
+	public final static String COLUMN_TASKS					= "tasks";
+	public final static String COLUMN_TITLE					= "title";
+	public final static String COLUMN_USER_TYPE				= "userType";
 	
 	// The following are the various internal names used for columns.
-	public final static String COLUMN_SELECT			= "--select--";
-	public final static String COLUMN_PIN				= "--pin--";
+	public final static String COLUMN_SELECT				= "--select--";
+	public final static String COLUMN_PIN					= "--pin--";
 	
 	/**
 	 * Constructor method.

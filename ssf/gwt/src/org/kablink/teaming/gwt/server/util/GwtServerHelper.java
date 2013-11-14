@@ -203,6 +203,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.Sys
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
+import org.kablink.teaming.gwt.client.rpc.shared.ManageDevicesInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigRpcResponseData;
@@ -6524,6 +6525,40 @@ public class GwtServerHelper {
 		}
 	}
 	
+	/**
+	 * Returns a ManageDevicesInfoRpcResponseData object
+	 * containing the information for managing devices.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param systemDevices
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ManageDevicesInfoRpcResponseData getManageDevicesInfo(AllModulesInjected bs, HttpServletRequest request, boolean systemDevices) throws GwtTeamingException {
+		try {
+			// Construct the ManageDevicesInfoRpcResponseData
+			// object we'll fill in and return.
+			BinderInfo bi = getBinderInfo(bs, request, bs.getProfileModule().getProfileBinderId());
+			if (!(bi.getWorkspaceType().isProfileRoot())) {
+				GwtLogHelper.error(m_logger, "GwtServerHelper.getManageDevicesInformation():  The workspace type of the profile root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.PROFILE_ROOT.name());
+			}
+			bi.setWorkspaceType(WorkspaceType.PROFILE_ROOT_MANAGEMENT);
+			ManageDevicesInfoRpcResponseData reply = new ManageDevicesInfoRpcResponseData(bi);
+
+			// If we get here, reply refers to the
+			// ManageDevicesInfoRpcResponseData object
+			// containing the information about managing user.  Return
+			// it.
+			return reply;
+		}
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}		
+	}
+
 	/**
 	 * Returns a ManageUsersInfoRpcResponseData object
 	 * containing the information for managing users.

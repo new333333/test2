@@ -1844,7 +1844,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void loadFolderColumnsNow() {
 		GwtClientHelper.executeCommand(
-				new GetFolderColumnsCmd(getFolderInfo()),
+				new GetFolderColumnsCmd(getFolderInfo(), getMobileDevicesViewSpec()),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -2028,8 +2028,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				seList = getSelectedEntityIds();
 			}
 			
-			
-			final List<EntityId>	selectedEntities = seList;
+			final List<EntityId> selectedEntities = seList;
 			GwtClientHelper.executeCommand(
 					new GetEntityRightsCmd(selectedEntities),
 					new AsyncCallback<VibeRpcResponse>() {
@@ -2393,8 +2392,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				seList = getSelectedEntityIds();
 			}
 			
-			
-			final List<EntityId>	selectedEntities = seList;
+			final List<EntityId> selectedEntities = seList;
 			GwtClientHelper.executeCommand(
 					new GetEntityRightsCmd(selectedEntities),
 					new AsyncCallback<VibeRpcResponse>() {
@@ -2972,6 +2970,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				new GetFolderRowsCmd(
 					getFolderInfo(),
 					m_folderColumnsList,
+					getMobileDevicesViewSpec(),
 					range.getStart(),
 					rowsRequested,
 					m_quickFilter,
@@ -3142,7 +3141,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				seList = getSelectedEntityIds();
 			}
 			
-			final List<EntityId>	selectedEntities = seList;
+			final List<EntityId> selectedEntities = seList;
 			GwtClientHelper.executeCommand(
 					new GetEntityRightsCmd(selectedEntities),
 					new AsyncCallback<VibeRpcResponse>() {

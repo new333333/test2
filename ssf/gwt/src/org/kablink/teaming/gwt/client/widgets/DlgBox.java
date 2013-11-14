@@ -1051,6 +1051,20 @@ public abstract class DlgBox extends TeamingPopupPanel
 		// Always use the show method.
 		show( true );
 	}// end center()
+
+	/**
+	 * Sets the dialog as being of a fixed size.
+	 * 
+	 * @param width
+	 * @param height
+	 */
+	public void setFixedSize(int width, int height) {
+		m_fixedSize = true;
+		m_height = height;
+
+		setWidth(  String.valueOf( width  ) + "px" );
+		setHeight( String.valueOf( height ) + "px" );
+	}
 	
 	/**
 	 * 

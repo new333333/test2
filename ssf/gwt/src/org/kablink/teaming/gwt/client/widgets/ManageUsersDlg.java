@@ -44,7 +44,7 @@ import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
-import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
+import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
@@ -92,7 +92,7 @@ public class ManageUsersDlg extends DlgBox
 		AdministrationExitEvent.Handler,
 		CheckManageUsersActiveEvent.Handler,
 		FullUIReloadEvent.Handler,
-		GetManageUsersTitleEvent.Handler,
+		GetManageTitleEvent.Handler,
 		ManageUsersFilterEvent.Handler,
 		InvokeImportProfilesDlgEvent.Handler,
 		InvokeUserPropertiesDlgEvent.Handler,
@@ -129,7 +129,7 @@ public class ManageUsersDlg extends DlgBox
 		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.CHECK_MANAGE_USERS_ACTIVE,
 		TeamingEvents.FULL_UI_RELOAD,
-		TeamingEvents.GET_MANAGE_USERS_TITLE,
+		TeamingEvents.GET_MANAGE_TITLE,
 		TeamingEvents.MANAGE_USERS_FILTER,
 		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
 		TeamingEvents.INVOKE_USER_PROPERTIES_DLG,
@@ -331,15 +331,19 @@ public class ManageUsersDlg extends DlgBox
 	}
 	
 	/**
-	 * Handles GetManageUsersTitleEvent's received by this class.
+	 * Handles GetManageTitleEvent's received by this class.
 	 * 
-	 * Implements the GetManageUsersTitleEvent.Handler.onGetManageUsersTitle() method.
+	 * Implements the GetManageTitleEvent.Handler.onGetManageTitle() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onGetManageUsersTitle(GetManageUsersTitleEvent event) {
-		event.getManageUsersTitleCallback().manageUsersTitle(m_manageUsersInfo.getAdminActionTitle());
+	public void onGetManageTitle(GetManageTitleEvent event) {
+		// If this event is targeted to this dialog...
+		if (event.getBinderInfo().isEqual(m_manageUsersInfo.getProfilesRootWSInfo()) && (null == event.getMobileDevicesViewSpec())) {
+			// ...respond to it.
+			event.getManageTitleCallback().manageTitle(m_manageUsersInfo.getAdminActionTitle());
+		}
 	}
 
 	/**
