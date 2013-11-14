@@ -1011,6 +1011,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		netFolder = new NetFolder();
 		netFolder.setName( getName() );
+		netFolder.setDisplayName( getName() );
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
 		netFolder.setIndexContent( getIndexContent() );

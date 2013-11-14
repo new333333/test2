@@ -122,7 +122,7 @@ public class NetFolderNameCell extends AbstractCell<NetFolder>
 			
 			// Add the group's title
 			sb.appendHtmlConstant( "<span class=\"netFolder_Name\">" );
-			safeValue = SafeHtmlUtils.fromString( value.getName() );
+			safeValue = SafeHtmlUtils.fromString( value.getDisplayName() );
 			sb.append( safeValue );
 			sb.appendHtmlConstant( "</span>" );
 			
