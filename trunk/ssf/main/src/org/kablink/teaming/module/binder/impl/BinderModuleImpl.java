@@ -64,6 +64,7 @@ import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.comparator.PrincipalComparator;
+import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
@@ -101,6 +102,7 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
+import org.kablink.teaming.fi.connection.ResourceSession;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
@@ -134,6 +136,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -677,11 +680,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames) {
 		IndexErrors errors = new IndexErrors();
-		return indexTree(binderIds, statusTicket, nodeNames, errors);
+		return indexTree(binderIds, statusTicket, nodeNames, errors, false);
 	}
 
 	@Override
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
+			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads) {
+		if(allowUseOfHelperThreads && SPropsUtil.getBoolean("index.tree.allow.helper.threads", true))
+			return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors);
+		else
+			return indexTreeWithoutHelper(binderIds, statusTicket, nodeNames, errors);			
+	}
+
+	private Set<Long> indexTreeWithoutHelper(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames, IndexErrors errors) {
 		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
@@ -735,6 +746,117 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						done.addAll(loadBinderProcessor(binder).indexTree(binder,
 								done, statusTicket, errors));
 					}
+					// Normally, all updates to the index are managed by the
+					// framework so that
+					// the index update won't be made until after the related
+					// database transaction
+					// has committed successfully. This is to avoid the index going
+					// out of synch
+					// with the database under rollback situation. However, in this
+					// particular
+					// case, we need to take an exception and flush out all index
+					// changes before
+					// returning from the method so that the select node ids set
+					// above can be
+					// applied during the flush. This does not violate the original
+					// design intention
+					// because, unlike other business operations, this operation is
+					// specifically
+					// written for index update only, and there is no corresponding
+					// update transaction
+					// on the database.
+					IndexSynchronizationManager.applyChanges();
+					
+					// If complete re-indexing, put the index files in an optimized
+					// state for subsequent searches. It will also help cut down on
+					// the number of file descriptors opened during the indexing.
+					if (clearAll) {
+						LuceneWriteSession luceneSession = getLuceneSessionFactory()
+								.openWriteSession(nodeNames);
+						try {
+							luceneSession.optimize();
+						} catch (Exception e) {
+							logger.warn("Exception:" + e);
+						} finally {
+							luceneSession.close();
+						}
+					}					
+				} finally {
+					IndexSynchronizationManager.clearNodeNames();
+				}
+			}
+			logger.info("indexTree took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
+			return done;
+		} finally {
+			// It is important to call this at the end of the processing no
+			// matter how it went.
+			if (statusTicket != null)
+				statusTicket.done();
+		}
+	}
+
+	private Set<Long> indexTreeWithHelper(Collection binderIds, StatusTicket statusTicket,
+			String[] nodeNames, IndexErrors errors) {
+		long startTime = System.nanoTime();
+		getCoreDao().flush(); // just incase
+		try {
+			// make list of binders we have access to first
+			boolean clearAll = false;
+			List<Binder> binders = getCoreDao().loadObjects(binderIds,
+					Binder.class,
+					RequestContextHolder.getRequestContext().getZoneId());
+			List<Binder> checked = new ArrayList();
+			for (Binder binder : binders) {
+				try {
+					checkAccess(binder, BinderOperation.indexTree);
+					if (binder.isDeleted())
+						continue;
+					if (binder.isZone())
+						clearAll = true;
+					checked.add(binder);
+				} catch (AccessControlException ex) {
+					// Skip the ones we cannot access
+				} catch (Exception ex) {
+					logger.error("Error indexing binder " + binder, ex);
+					errors.addError(binder);
+				}
+
+			}
+			Set<Long> done = new HashSet();
+			if (!checked.isEmpty()) {
+				IndexSynchronizationManager.setNodeNames(nodeNames);
+				try {
+					if (clearAll) {
+						LuceneWriteSession luceneSession = getLuceneSessionFactory()
+								.openWriteSession(nodeNames);
+						try {
+							luceneSession.clearIndex();
+						} catch (Exception e) {
+							logger.warn("Exception:" + e);
+						} finally {
+							luceneSession.close();
+						}
+					} else {
+						// delete all sub-binders - walk the ancestry list
+						// and delete all the entries under each folderid.
+						for (Binder binder : checked) {
+							IndexSynchronizationManager.deleteDocuments(new Term(
+									Constants.ENTRY_ANCESTRY, binder.getId()
+											.toString()));
+						}
+					}
+					// $$$
+					Thread helper = new Thread(new IndexHelper(checked, done, statusTicket, errors, RequestContextHolder.getRequestContext()));
+					helper.start();
+					try {
+						helper.join();
+					} catch (InterruptedException e) {}
+					/*$$$
+					for (Binder binder : checked) {
+						done.addAll(loadBinderProcessor(binder).indexTree(binder,
+								done, statusTicket, errors));
+					}
+					*/
 					// Normally, all updates to the index are managed by the
 					// framework so that
 					// the index update won't be made until after the related
@@ -3455,5 +3577,44 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	            luceneSession.close();
 	        }
 		}
+	}
+	
+	class IndexHelper implements Runnable {
+		
+		private List<Binder> checked;
+		private Set<Long> done;
+		private StatusTicket statusTicket;
+		private IndexErrors errors;
+		private RequestContext parentRequestContext;
+		
+		IndexHelper(List<Binder> checked, Set<Long> done, StatusTicket statusTicket, IndexErrors errors, RequestContext parentRequestContext) {
+			this.checked = checked;
+			this.done = done;
+			this.statusTicket = statusTicket;
+			this.errors = errors;
+			this.parentRequestContext = parentRequestContext;
+		}
+
+		@Override
+		public void run() {
+			SessionUtil.sessionStartup();	// Set up Hibernate session (for database)
+			try {
+				// Copy parent/calling thread's request context
+				RequestContextHolder.setRequestContext(parentRequestContext);
+				try {
+					for (Binder binder : checked) {
+						done.addAll(loadBinderProcessor(binder).indexTree(binder, done, statusTicket, errors));
+					}
+				}
+				finally {
+					RequestContextHolder.clear();
+				}
+			}
+			finally {
+				SessionUtil.sessionStop();
+			}
+
+		}
+		
 	}
 }

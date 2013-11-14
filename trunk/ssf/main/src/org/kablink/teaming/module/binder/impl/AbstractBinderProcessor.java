@@ -1664,8 +1664,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	org.dom4j.Document queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), searchOptions);
       	
       	SearchUtils.getQueryFields(queryTree, searchOptions); 
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Query is: " + queryTree.asXML());
+    	if(logger.isTraceEnabled()) {
+    		logger.trace("Query is: " + queryTree.asXML());
     	}
        	
        	//Create the Lucene query
@@ -2026,6 +2026,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	}
    	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
    		//get all the ids of child binders. order for statusTicket to make some sense
+   		if(logger.isDebugEnabled())
+   			logger.debug("Fetching IDs of all binders at or below [" + binder.getPathName() + "]");
    		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
 				binder.getBinderKey().getSortKey() + "%' order by x.binderKey.sortKey", null);
 		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
@@ -2035,7 +2037,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		for (int i=0; i<ids.size(); i+=inClauseLimit) {
 			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
 			params.put("pList", subList);
+			if(logger.isDebugEnabled())
+				logger.debug("Loading " + subList.size() + " binder objects");
 			List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
+			if(logger.isDebugEnabled())
+				logger.debug("Bulk loading collections for " + binders.size() + " binders");
 			getCoreDao().bulkLoadCollections(binders);
 			List<EntityIdentifier> folderIds = new ArrayList();
 			List<EntityIdentifier> workspaceIds = new ArrayList();
@@ -2048,8 +2054,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				else 
 					otherIds.add(e.getEntityIdentifier());
 			}
+			if(logger.isDebugEnabled())
+				logger.debug("Loading tags for " + folderIds.size() + " folders");
 			Map tagMap = getCoreDao().loadAllTagsByEntity(folderIds);
+			if(logger.isDebugEnabled())
+				logger.debug("Loading tags for " + folderIds.size() + " workspaces");
 			tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
+			if(logger.isDebugEnabled())
+				logger.debug("Loading tags for " + folderIds.size() + " others");
 			tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
 
 			for (Binder b:binders) {
@@ -2059,14 +2071,23 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
 	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
 	   	   		
+				if(logger.isDebugEnabled())
+					logger.debug("Indexing binder [" + b.getPathName() + "]");
 	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags);
 	   	    	errors.add(binderErrors);
+	   	    	
+				if(logger.isDebugEnabled())
+					logger.debug("Evicting tags and binder");
 	   	    	getCoreDao().evict(tags);
 	   	    	getCoreDao().evict(b);
 	   	    	bindersIndexed++;
 			}
+			if(logger.isDebugEnabled())
+				logger.debug("Applying changes to index");
 	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 		}
+		if(logger.isDebugEnabled())
+			logger.debug("Processed " + ids.size() + " binders");
    		return ids;
 
    	}
