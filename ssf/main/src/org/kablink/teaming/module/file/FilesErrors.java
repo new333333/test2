@@ -36,6 +36,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.HttpStatusCodeSupport;
 import org.kablink.util.api.ApiErrorCode;
@@ -45,6 +47,8 @@ import org.kablink.util.api.ApiErrorCodeSupport;
 public class FilesErrors implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
+	private static final Log logger = LogFactory.getLog(FilesErrors.class);
 	
 	private List<Problem> problems;
 	
@@ -151,16 +155,26 @@ public class FilesErrors implements Serializable {
 		
 		public Problem(String repositoryName, String fileName, 
 				int type) {
+			this(fileName, type);
 			// Don't include repository name in the error any longer. It has no meaning to end users.
 			//this.repositoryName = repositoryName;
-			this.fileName = fileName;
-			this.type = type;
+			if(logger.isDebugEnabled())
+				logger.error("Error (type=" + type + ") on file '" + fileName + "'");
 		}
 		
 		public Problem(String repositoryName, String fileName, 
 				int type, Exception exception) {
-			this(repositoryName, fileName, type);
-			this.exception = exception;
+			this(fileName, type);
+			// Don't include repository name in the error any longer. It has no meaning to end users.
+			//this.repositoryName = repositoryName;
+			this.exception = exception;		
+			if(logger.isDebugEnabled())
+				logger.error("Error (type=" + type + ") on file '" + fileName + "'", exception);
+		}
+		
+		private Problem(String fileName, int type) {
+			this.fileName = fileName;
+			this.type = type;
 		}
 		
 		public Exception getException() {
