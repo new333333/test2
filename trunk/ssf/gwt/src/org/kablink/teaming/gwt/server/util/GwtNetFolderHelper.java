@@ -801,6 +801,7 @@ public class GwtNetFolderHelper
 	{
 		NetFolder netFolder;
 		String name;
+		String displayName;
 		
 		netFolder = new NetFolder();
 		netFolder.setId( binder.getId() );
@@ -812,6 +813,7 @@ public class GwtNetFolderHelper
 		
 		// Is this a home dir net folder?
 		name = binder.getTitle();
+		displayName = name;
 		if ( binder.isHomeDir() )
 		{
 			Principal owner;
@@ -824,11 +826,12 @@ public class GwtNetFolderHelper
 				
 				title = owner.getTitle();
 				if ( title != null && title.length() > 0 )
-					name = binder.getTitle() + " (" + title + ")";
+					displayName = binder.getTitle() + " (" + title + ")";
 			}
 		}
 		
 		netFolder.setName( name );
+		netFolder.setDisplayName( displayName );
 		
 		netFolder.setIndexContent( binder.getIndexContent() );
 		netFolder.setFullSyncDirOnly( binder.getFullSyncDirOnly() );

@@ -51,6 +51,7 @@ public class NetFolder
 {
 	private Long m_id;
 	private String m_name;
+	private String m_displayName;
 	private String m_relativePath;
 	private String m_netFolderRootName;
 	private NetFolderSyncStatus m_status;
@@ -96,6 +97,7 @@ public class NetFolder
 	{
 		m_id = netFolder.getId();
 		m_name = netFolder.getName();
+		m_displayName = netFolder.getDisplayName();
 		m_relativePath = netFolder.getRelativePath();
 		m_netFolderRootName = netFolder.getNetFolderRootName();
 		m_syncScheduleConfig = netFolder.getSyncScheduleConfig();
@@ -117,6 +119,14 @@ public class NetFolder
 	public NetFolderDataSyncSettings getDataSyncSettings()
 	{
 		return m_dataSyncSettings;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getDisplayName()
+	{
+		return m_displayName;
 	}
 	
 	/**
@@ -218,6 +228,14 @@ public class NetFolder
 	{
 		m_dataSyncSettings = new NetFolderDataSyncSettings();
 		m_dataSyncSettings.copy( settings );
+	}
+	
+	/**
+	 * 
+	 */
+	public void setDisplayName( String value )
+	{
+		m_displayName = value;
 	}
 	
 	/**
