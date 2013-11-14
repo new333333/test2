@@ -219,7 +219,7 @@ public class FolderEntryDocument extends VibeFlowPanel {
 			}
 			else {
 				// ...otherwise, remove any scaling we may have had.
-			    DOM.setStyleAttribute(getElement(), "width", "");
+			    DOM.setStyleAttribute(m_contentImage.getElement(), "width", "");
 			}
 		}
 	}
