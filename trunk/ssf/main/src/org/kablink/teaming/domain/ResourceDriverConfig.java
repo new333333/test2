@@ -69,9 +69,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	public enum DriverType {
 		filesystem (0),
 		webdav (1),
-		cifs (2),
-		ncp_netware (3),
-		ncp_oes (4),
+		windows_server (2),
+		netware (3),
+		oes (4),
 		famt (5),
 		cloud_folders (6),
 		share_point_2010 (7),
@@ -85,9 +85,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 			switch (type) {
 			case 0: return DriverType.filesystem;
 			case 1: return DriverType.webdav;
-			case 2: return DriverType.cifs;
-			case 3: return DriverType.ncp_netware;
-			case 4: return DriverType.ncp_oes;
+			case 2: return DriverType.windows_server;
+			case 3: return DriverType.netware;
+			case 4: return DriverType.oes;
 			case 5: return DriverType.famt;
 			case 6: return DriverType.cloud_folders;
 			case 7: return DriverType.share_point_2010;
