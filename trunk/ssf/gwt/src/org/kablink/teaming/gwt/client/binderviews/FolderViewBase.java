@@ -527,6 +527,19 @@ public abstract class FolderViewBase extends ViewBase
 		return MINIMUM_CONTENT_HEIGHT;
 	}
 
+	/**
+	 * Returns an indicator of whether this view is a mobile devices
+	 * view and if so, which type.
+	 * 
+	 * Classes that extend this that manage mobile devices must
+	 * override this to provide the correct view information.
+	 * 
+	 * @return
+	 */
+	public MobileDevicesViewSpec getMobileDevicesViewSpec() {
+		return null;
+	}
+
 	/*
 	 * Ensures an integer value is >= 0.
 	 */
@@ -842,7 +855,7 @@ public abstract class FolderViewBase extends ViewBase
 	 * Loads the BreadCrumbPanel.
 	 */
 	private void loadPart5Now() {
-		BreadCrumbPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		BreadCrumbPanel.createAsync(this, m_folderInfo, getMobileDevicesViewSpec(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous

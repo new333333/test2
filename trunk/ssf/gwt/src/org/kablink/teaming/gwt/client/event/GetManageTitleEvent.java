@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,34 +32,38 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The GetManageUsersTitleEvent is used to the title to the 'Manage
- * Users' administration console feature.
+ * The GetManageTitleEvent is used to get the title to the management
+ * component within the administration console feature.
  * 
  * @author drfoster@novell.com
  */
-public class GetManageUsersTitleEvent extends VibeEventBase<GetManageUsersTitleEvent.Handler> {
+public class GetManageTitleEvent extends VibeEventBase<GetManageTitleEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
-    
-    private ManageUsersTitleCallback m_mutCallback;	//
+
+    private BinderInfo				m_binderInfo;	//
+    private ManageTitleCallback 	m_mutCallback;	//
+    private MobileDevicesViewSpec	m_mvSpec;		//
 
     /**
-     * Interface used by the implementor to return the manage user's
-     * title.
+     * Interface used by the implementor to return the title.
      */
-    public interface ManageUsersTitleCallback {
-    	public void manageUsersTitle(String title);
+    public interface ManageTitleCallback {
+    	public void manageTitle(String title);
     }
     
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onGetManageUsersTitle(GetManageUsersTitleEvent event);
+		void onGetManageTitle(GetManageTitleEvent event);
 	}
 	
 	/**
@@ -67,12 +71,24 @@ public class GetManageUsersTitleEvent extends VibeEventBase<GetManageUsersTitleE
 	 * 
 	 * @param mutCallback
 	 */
-	public GetManageUsersTitleEvent(ManageUsersTitleCallback mutCallback) {
+	public GetManageTitleEvent(BinderInfo bi, MobileDevicesViewSpec mvSpec, ManageTitleCallback mutCallback) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameter.
-		setManageUsersTitleCallback(mutCallback);
+		setBinderInfo(           bi         );
+		setManageTitleCallback(  mutCallback);
+		setMobileDevicesViewSpec(mvSpec     );
+	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param mutCallback
+	 */
+	public GetManageTitleEvent(BinderInfo bi, ManageTitleCallback mutCallback) {
+		// Initialize the this object.
+		this(bi, null, mutCallback);
 	}
 
 	/**
@@ -80,14 +96,18 @@ public class GetManageUsersTitleEvent extends VibeEventBase<GetManageUsersTitleE
 	 * 
 	 * @return
 	 */
-	public ManageUsersTitleCallback getManageUsersTitleCallback() {return m_mutCallback;}
+	public BinderInfo            getBinderInfo()            {return m_binderInfo; }
+	public ManageTitleCallback   getManageTitleCallback()   {return m_mutCallback;}
+	public MobileDevicesViewSpec getMobileDevicesViewSpec() {return m_mvSpec;     }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setManageUsersTitleCallback(ManageUsersTitleCallback mutCallback) {m_mutCallback = mutCallback;}
+	public void setBinderInfo(           BinderInfo            bi)          {m_binderInfo  = bi;         }
+	public void setManageTitleCallback(  ManageTitleCallback   mutCallback) {m_mutCallback = mutCallback;}
+	public void setMobileDevicesViewSpec(MobileDevicesViewSpec mvSpec)      {m_mvSpec      = mvSpec;     }
 	
 	/**
 	 * Dispatches this event when one is triggered.
@@ -98,7 +118,7 @@ public class GetManageUsersTitleEvent extends VibeEventBase<GetManageUsersTitleE
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-        handler.onGetManageUsersTitle(this);
+        handler.onGetManageTitle(this);
     }
 	
 	/**
@@ -123,7 +143,7 @@ public class GetManageUsersTitleEvent extends VibeEventBase<GetManageUsersTitleE
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.GET_MANAGE_USERS_TITLE;
+		return TeamingEvents.GET_MANAGE_TITLE;
 	}
 
 	/**

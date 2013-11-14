@@ -39,8 +39,8 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
-import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
-import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent.ManageUsersTitleCallback;
+import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
+import org.kablink.teaming.gwt.client.event.GetManageTitleEvent.ManageTitleCallback;
 import org.kablink.teaming.gwt.client.event.MenuLoadedEvent.MenuItem;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
@@ -113,9 +113,9 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private BreadCrumbPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private BreadCrumbPanel(RequiresResize containerResizer, BinderInfo binderInfo, MobileDevicesViewSpec mvSpec, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(containerResizer, binderInfo, toolPanelReady);
+		super(containerResizer, binderInfo, mvSpec, toolPanelReady);
 		
 		// ...construct the root panel...
 		VibeFlowPanel rootContainer = new VibeFlowPanel();
@@ -180,14 +180,15 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * 
 	 * @param containerResizer
 	 * @param binderInfo
+	 * @param mvSpec
 	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final MobileDevicesViewSpec mvSpec, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(BreadCrumbPanel.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				BreadCrumbPanel bcp = new BreadCrumbPanel(containerResizer, binderInfo, toolPanelReady);
+				BreadCrumbPanel bcp = new BreadCrumbPanel(containerResizer, binderInfo, mvSpec, toolPanelReady);
 				tpClient.onSuccess(bcp);
 			}
 			
@@ -387,12 +388,16 @@ public class BreadCrumbPanel extends ToolPanelBase
 			il.addStyleName("vibe-breadCrumbProfiles-label");
 			fp.add(il);
 			if (m_binderInfo.isBinderProfilesRootWS() && m_binderInfo.getWorkspaceType().isProfileRootManagement()) {
-				GwtTeaming.fireEvent(new GetManageUsersTitleEvent(new ManageUsersTitleCallback() {
-					@Override
-					public void manageUsersTitle(String title) {
-						il.setText(title);
-					}
-				}));
+				GwtTeaming.fireEvent(
+					new GetManageTitleEvent(
+						m_binderInfo,
+						m_mvSpec,
+						new ManageTitleCallback() {
+							@Override
+							public void manageTitle(String title) {
+								il.setText(title);
+							}
+						}));
 			}
 			
 			addProfileRootConfig(fp);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-
 
 /**
  * This class holds all of the information necessary to execute the
@@ -42,9 +42,10 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
  * @author drfoster@novell.com
  */
 public class GetFolderColumnsCmd extends VibeRpcCmd {
-	private BinderInfo	m_folderInfo;				//
-	private Boolean		m_includeConfigurationInfo;	//
-	
+	private BinderInfo				m_folderInfo;				//
+	private Boolean					m_includeConfigurationInfo;	//
+	private MobileDevicesViewSpec	m_mdvSpec;					//
+
 	/**
 	 * Constructor method.
 	 * 
@@ -59,12 +60,24 @@ public class GetFolderColumnsCmd extends VibeRpcCmd {
 	 * 
 	 * @param folderInfo
 	 * @param includeConfigurationInfo
+	 * @param mdvSpec
 	 */
-	public GetFolderColumnsCmd(BinderInfo folderInfo, Boolean includeConfigurationInfo) {
+	public GetFolderColumnsCmd(BinderInfo folderInfo, Boolean includeConfigurationInfo, MobileDevicesViewSpec mdvSpec) {
 		this();
 		
 		setFolderInfo(              folderInfo              );
 		setIncludeConfigurationInfo(includeConfigurationInfo);
+		setMobileDevicesViewSpec(   mdvSpec                 );
+	}
+	
+	/**
+	 * Constructor method
+	 * 
+	 * @param folderInfo
+	 * @param includeConfigurationInfo
+	 */
+	public GetFolderColumnsCmd(BinderInfo folderInfo, Boolean includeConfigurationInfo) {
+		this(folderInfo, includeConfigurationInfo, null);
 	}
 	
 	/**
@@ -73,7 +86,17 @@ public class GetFolderColumnsCmd extends VibeRpcCmd {
 	 * @param folderInfo
 	 */
 	public GetFolderColumnsCmd(BinderInfo folderInfo) {
-		this(folderInfo, Boolean.FALSE);
+		this(folderInfo, Boolean.FALSE, null);
+	}
+	
+	/**
+	 * Constructor method
+	 * 
+	 * @param folderInfo
+	 * @param mdvSpec
+	 */
+	public GetFolderColumnsCmd(BinderInfo folderInfo, MobileDevicesViewSpec mdvSpec) {
+		this(folderInfo, Boolean.FALSE, mdvSpec);
 	}
 	
 	/**
@@ -81,16 +104,18 @@ public class GetFolderColumnsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo getFolderInfo()              {return m_folderInfo;              }
-	public Boolean    isIncludeConfigurationInfo() {return m_includeConfigurationInfo;}
+	public BinderInfo            getFolderInfo()              {return m_folderInfo;              }
+	public Boolean               isIncludeConfigurationInfo() {return m_includeConfigurationInfo;}
+	public MobileDevicesViewSpec getMobileDevicesViewSpec()   {return m_mdvSpec;                 }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(              BinderInfo folderInfo)               {m_folderInfo               = folderInfo;              }
-	public void setIncludeConfigurationInfo(Boolean    includeConfigurationInfo) {m_includeConfigurationInfo = includeConfigurationInfo;}
+	public void setFolderInfo(              BinderInfo            folderInfo)               {m_folderInfo               = folderInfo;              }
+	public void setIncludeConfigurationInfo(Boolean               includeConfigurationInfo) {m_includeConfigurationInfo = includeConfigurationInfo;}
+	public void setMobileDevicesViewSpec(   MobileDevicesViewSpec mdvSpec)                  {m_mdvSpec                  = mdvSpec;                 }
 	
 	/**
 	 * Returns the command's enumeration value.

@@ -32,8 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
-import org.kablink.teaming.gwt.client.datatable.ManageUserDevicesDlg;
-import org.kablink.teaming.gwt.client.datatable.ManageUserDevicesDlg.ManageUserDevicesDlgClient;
+import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
+import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg;
+import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg.ManageMobileDevicesDlgClient;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.MobileDeviceRemovedCallback;
@@ -56,9 +57,10 @@ import com.google.gwt.user.client.DOM;
  * 
  * @author drfoster@novell.com
  */
+@SuppressWarnings("unused")
 public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implements MobileDeviceRemovedCallback {
-	private GwtTeamingMessages		m_messages;				// Access to the Vibe string resources we need for this cell.
-	private ManageUserDevicesDlg	m_manageUserDevicesDlg;	// A manage user devices dialog, once one is instantiated.
+	private GwtTeamingMessages		m_messages;			// Access to the Vibe string resources we need for this cell.
+	private ManageMobileDevicesDlg	m_manageMobileDevicesDlg;	// A manage mobile devices dialog, once one is instantiated.
 	
 	/**
 	 * Constructor method.
@@ -126,9 +128,9 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
     		if ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_MOBILE_DEVICES_PANEL)) {
     			// Yes!  What type of event are we processing?
 		    	if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
-		    		// A click!  Run the manage user devices dialog on
-		    		// the user.
-					showManageUsersDevicesDlg(mdInfo, eventTarget);
+		    		// A click!  Run the manage devices dialog on the
+		    		// user.
+					showManageMobileDevicesDlg(mdInfo, eventTarget);
 		    	}
     		}
     	}
@@ -154,8 +156,8 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
     	Element eventTarget = Element.as(event.getEventTarget());
 		String	wt           = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
 		if ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_MOBILE_DEVICES_PANEL)){
-			// ...run the manage user devices dialog on the entity.
-			showManageUsersDevicesDlg(mdInfo, eventTarget);
+			// ...run the manage devices dialog on the entity.
+			showManageMobileDevicesDlg(mdInfo, eventTarget);
 		}
     }
     
@@ -196,7 +198,7 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 		
 		// ...and if there are any devices...
 		Element dpE = devicesBubble.getElement();
-		if (0 < deviceCount) {
+		if (MobileDevicesView.SHOW_MOBILE_DEVICES && ((0 < deviceCount) || MobileDevicesView.ALWAYS_SHOW_MOBILE_DEVICES)) {
 			// ...we make the bubble clickable so that the device list
 			// ...can be managed...
 			devicesBubble.addStyleName("cursorPointer"                             );
@@ -232,13 +234,13 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 	}
 
 	/*
-	 * Runs the manage user devices dialog against the given user. 
+	 * Runs the manage devices dialog against the given user. 
 	 */
-	private void showManageUsersDevicesDlg(final MobileDevicesInfo mdInfo, final Element relativeToThis) {
-		// Have we instantiated a manage user devices dialog yet?
-		if (null == m_manageUserDevicesDlg) {
+	private void showManageMobileDevicesDlg(final MobileDevicesInfo mdInfo, final Element relativeToThis) {
+		// Have we instantiated a manage devices dialog yet?
+		if (null == m_manageMobileDevicesDlg) {
 			// No!  Instantiate one now.
-			ManageUserDevicesDlg.createAsync(new ManageUserDevicesDlgClient() {			
+			ManageMobileDevicesDlg.createAsync(new ManageMobileDevicesDlgClient() {			
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
@@ -246,39 +248,39 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 				}
 				
 				@Override
-				public void onSuccess(final ManageUserDevicesDlg mudDlg) {
+				public void onSuccess(final ManageMobileDevicesDlg mmdDlg) {
 					// ...and show it.
-					m_manageUserDevicesDlg = mudDlg;
-					showManageUserDevicesDlgAsync(mdInfo, relativeToThis);
+					m_manageMobileDevicesDlg = mmdDlg;
+					showManageMobileDevicesDlgAsync(mdInfo, relativeToThis);
 				}
 			});
 		}
 		
 		else {
-			// Yes, we've instantiated a manage user devices dialog
-			// already!  Simply show it.
-			showManageUserDevicesDlgAsync(mdInfo, relativeToThis);
+			// Yes, we've instantiated a manage devices dialog already!
+			// Simply show it.
+			showManageMobileDevicesDlgAsync(mdInfo, relativeToThis);
 		}
 	}
 	
 	/*
-	 * Asynchronously shows the manage user devices dialog.
+	 * Asynchronously shows the manage devices dialog.
 	 */
-	private void showManageUserDevicesDlgAsync(final MobileDevicesInfo mdInfo, final Element relativeToThis) {
+	private void showManageMobileDevicesDlgAsync(final MobileDevicesInfo mdInfo, final Element relativeToThis) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				showManageUserDevicesDlgNow(mdInfo, relativeToThis);
+				showManageMobileDevicesDlgNow(mdInfo, relativeToThis);
 			}
 		});
 	}
 	
 	/*
-	 * Synchronously shows the manage user devices dialog.
+	 * Synchronously shows the manage devices dialog.
 	 */
-	private void showManageUserDevicesDlgNow(final MobileDevicesInfo mdInfo, final Element relativeToThis) {
-		ManageUserDevicesDlg.initAndShow(
-			m_manageUserDevicesDlg,
+	private void showManageMobileDevicesDlgNow(final MobileDevicesInfo mdInfo, final Element relativeToThis) {
+		ManageMobileDevicesDlg.initAndShow(
+			m_manageMobileDevicesDlg,
 			mdInfo,
 			null,	// null -> Center the dialog.
 			this);	// Provides a MobileDeviceRemovedCallback.

@@ -107,6 +107,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
@@ -239,6 +240,7 @@ import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -2746,37 +2748,42 @@ public class GwtViewHelper {
 		else dateCSK = Constants.MODIFICATION_DATE_FIELD;
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-			if      (colName.equals("author"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);}
-			else if (colName.equals("comments"))         {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                }
-			else if (colName.equals("date"))             {fc.setColumnSearchKey(dateCSK);                                                                                        }
-			else if (colName.equals("description"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
-			else if (colName.equals("descriptionHtml"))  {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
-			else if (colName.equals("mobileDevices"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_MOBILE_DEVICES);     fc.setColumnSortable(false);                            }
-			else if (colName.equals("download"))         {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                       }
-			else if (colName.equals("dueDate"))          {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                       }
-			else if (colName.equals("emailAddress"))     {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                          }
-			else if (colName.equals("family"))           {fc.setColumnSearchKey(Constants.FAMILY_FIELD);                 fc.setColumnSortable(false);                            }
-			else if (colName.equals("fullName"))         {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);        }
-			else if (colName.equals("guest"))            {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);}
-			else if (colName.equals("html"))             {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                        }
-			else if (colName.equals("location"))         {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                    }
-			else if (colName.equals("loginId"))          {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                      }
-			else if (colName.equals("netfolder_access")) {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);   fc.setColumnSortable(false);                            }
-			else if (colName.equals("number"))           {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);        }
-			else if (colName.equals("rating"))           {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                         }
-			else if (colName.equals("responsible"))      {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                    }
-			else if (colName.equals("size"))             {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                      }
-			else if (colName.equals("share_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_ACCESS);                                                               }
-			else if (colName.equals("share_date"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_DATE);                                                                 }
-			else if (colName.equals("share_expiration")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_EXPIRATION);                                                           }
-			else if (colName.equals("share_message"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_MESSAGE);                                                              }
-			else if (colName.equals("share_sharedBy"))   {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_BY);                                                            }
-			else if (colName.equals("share_sharedWith")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_WITH);                                                          }
-			else if (colName.equals("state"))            {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);    }
-			else if (colName.equals("status"))           {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                         }
-			else if (colName.equals("tasks"))            {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                          }
-			else if (colName.equals("title"))            {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);        }
-			else if (colName.equals("userType"))         {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);      fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD); }
+			if      (colName.equals("author"))               {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);}
+			else if (colName.equals("comments"))             {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                }
+			else if (colName.equals("date"))                 {fc.setColumnSearchKey(dateCSK);                                                                                        }
+			else if (colName.equals("description"))          {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
+			else if (colName.equals("descriptionHtml"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
+			else if (colName.equals("deviceDescription"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);                                                         }
+			else if (colName.equals("deviceLastLogin"))      {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);                                                         }
+			else if (colName.equals("deviceUser"))           {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);                                                         }
+			else if (colName.equals("deviceWipeDate"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);                                                         }
+			else if (colName.equals("deviceWipeScheduled"))  {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);                                                         }
+			else if (colName.equals("mobileDevices"))        {fc.setColumnSearchKey(FolderColumn.COLUMN_MOBILE_DEVICES);     fc.setColumnSortable(false);                            }
+			else if (colName.equals("download"))             {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                       }
+			else if (colName.equals("dueDate"))              {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                       }
+			else if (colName.equals("emailAddress"))         {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                          }
+			else if (colName.equals("family"))               {fc.setColumnSearchKey(Constants.FAMILY_FIELD);                 fc.setColumnSortable(false);                            }
+			else if (colName.equals("fullName"))             {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);        }
+			else if (colName.equals("guest"))                {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);}
+			else if (colName.equals("html"))                 {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                        }
+			else if (colName.equals("location"))             {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                    }
+			else if (colName.equals("loginId"))              {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                      }
+			else if (colName.equals("netfolder_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);   fc.setColumnSortable(false);                            }
+			else if (colName.equals("number"))               {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);        }
+			else if (colName.equals("rating"))               {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                         }
+			else if (colName.equals("responsible"))          {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                    }
+			else if (colName.equals("size"))                 {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                      }
+			else if (colName.equals("share_access"))         {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_ACCESS);                                                               }
+			else if (colName.equals("share_date"))           {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_DATE);                                                                 }
+			else if (colName.equals("share_expiration"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_EXPIRATION);                                                           }
+			else if (colName.equals("share_message"))        {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_MESSAGE);                                                              }
+			else if (colName.equals("share_sharedBy"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_BY);                                                            }
+			else if (colName.equals("share_sharedWith"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_WITH);                                                          }
+			else if (colName.equals("state"))                {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);    }
+			else if (colName.equals("status"))               {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                         }
+			else if (colName.equals("tasks"))                {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                          }
+			else if (colName.equals("title"))                {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);        }
+			else if (colName.equals("userType"))             {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);      fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD); }
 			else {
 				// Does the column name contain multiple parts wrapped
 				// in a single value?
@@ -3319,6 +3326,22 @@ public class GwtViewHelper {
 	private static CoreDao getCoreDao() {
 		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
 	}
+	
+	/*
+	 * Returns the entries for the given device set.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getDeviceEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, MobileDevicesViewSpec mdvSpec) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getDeviceEntries()");
+		try {
+//!			...this needs to be implemented...
+			return buildEmptyEntryMap();
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
 
 	/**
 	 * Returns a Map<String, EntityRights> of the current users rights
@@ -3687,15 +3710,13 @@ public class GwtViewHelper {
 	 * @param bs
 	 * @param request
 	 * @param folderInfo
+	 * @param includeConfigurationInfo
+	 * @param mdvSpec
 	 * 
 	 * @return
 	 */
-	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
-		return getFolderColumns(bs, request, folderInfo, Boolean.FALSE);
-	}
-	
 	@SuppressWarnings("unchecked")
-	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, Boolean includeConfigurationInfo) throws GwtTeamingException {
+	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, Boolean includeConfigurationInfo, MobileDevicesViewSpec mdvSpec) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderColumns()");
 		try {
 			Long			folderId             = folderInfo.getBinderIdAsLong();
@@ -3712,9 +3733,10 @@ public class GwtViewHelper {
 			// Are we showing the trash on this folder?
 			String baseNameKey;
 			CollectionType collectionType = folderInfo.getCollectionType();
-			boolean        isFileFolder   = ((null != folder) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)));
-			boolean        isCollection   = folderInfo.isBinderCollection();
-			boolean        isTrash        = folderInfo.isBinderTrash();
+			boolean        isMobileDevicesView = (null != mdvSpec);
+			boolean        isFileFolder        = ((null != folder) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)));
+			boolean        isCollection        = folderInfo.isBinderCollection();
+			boolean        isTrash             = folderInfo.isBinderTrash();
 			if (isTrash) {
 				// Yes!  The columns in a trash view are not
 				// configurable.  Use the default trash columns.
@@ -3723,13 +3745,28 @@ public class GwtViewHelper {
 			}
 
 			// No, we aren't showing the trash on this folder!  Are we
-			// looking at the root profiles binder? 
+			// looking at mobile devices view? 
+			else if (isMobileDevicesView) {
+				// Yes!
+				baseNameKey = "mobileDevice.column.";
+				if (MobileDevicesViewSpec.SYSTEM.equals(mdvSpec))
+				     columnNames = getColumnsLHMFromAS(new String[]{"deviceUser", "deviceDescription", "deviceLastLogin", "deviceWipeScheduled", "deviceWipeDate"});
+				else columnNames = getColumnsLHMFromAS(new String[]{              "deviceDescription", "deviceLastLogin", "deviceWipeScheduled", "deviceWipeDate"});
+			}
+			
+			// No, we aren't showing a mobile devices view either!  Are
+			// we looking at the root profiles binder? 
 			else if (folderInfo.isBinderProfilesRootWS()) {
 				// Yes!
 				baseNameKey = "profiles.column.";
-				if (folderInfo.isBinderProfilesRootWSManagement())
-				     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress", "mobileDevices", "loginId"});
-				else columnNames = getColumnsLHMFromAS(new String[]{"fullName",             "emailAddress",                  "loginId"});
+				if (folderInfo.isBinderProfilesRootWSManagement()) {
+					if (ReleaseInfo.isLicenseRequiredEdition())
+					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress", "mobileDevices", "loginId"});
+					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress",                  "loginId"});
+				}
+				else {
+					columnNames = getColumnsLHMFromAS(new String[]{"fullName", "emailAddress", "loginId"});
+				}
 			}
 			
 			// No, we aren't showing the root profiles binder
@@ -3988,6 +4025,16 @@ public class GwtViewHelper {
 		finally {
 			gsp.stop();
 		}
+	}
+	
+	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
+		// Always use the initial form of the method.
+		return getFolderColumns(bs, request, folderInfo, Boolean.FALSE, null);
+	}
+
+	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, MobileDevicesViewSpec mdvSpec) throws GwtTeamingException {
+		// Always use the initial form of the method.
+		return getFolderColumns(bs, request, folderInfo, Boolean.FALSE, mdvSpec);
 	}
 
 	/**
@@ -4492,6 +4539,7 @@ public class GwtViewHelper {
 	 * @param request
 	 * @param folderInfo
 	 * @param folderColumns
+	 * @param mdvSpec
 	 * @param start
 	 * @param length
 	 * @param quickFilter
@@ -4500,7 +4548,7 @@ public class GwtViewHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter, String authenticationGuid) throws GwtTeamingException {
+	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, MobileDevicesViewSpec mdvSpec, int start, int length, String quickFilter, String authenticationGuid) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderRows()");
 		try {
 			// Is this a binder the user can view?
@@ -4539,12 +4587,13 @@ public class GwtViewHelper {
 			}
 			
 			// What type of folder are we dealing with?
-			boolean isGuestbook      = false;
-			boolean isMilestone      = false;
-			boolean isSurvey         = false;
-			boolean isProfilesRootWS = folderInfo.isBinderProfilesRootWS();
-			boolean isManageUsers    = folderInfo.isBinderProfilesRootWSManagement();
-			boolean isTrash          = folderInfo.isBinderTrash();
+			boolean isGuestbook             = false;
+			boolean isMilestone             = false;
+			boolean isSurvey                = false;
+			boolean isMobileDevicesViewSpec = (null != mdvSpec);
+			boolean isProfilesRootWS        = ((!isMobileDevicesViewSpec) && folderInfo.isBinderProfilesRootWS());
+			boolean isManageUsers           = ((!isMobileDevicesViewSpec) && folderInfo.isBinderProfilesRootWSManagement());
+			boolean isTrash                 = folderInfo.isBinderTrash();
 			switch (folderInfo.getFolderType()) {
 			case GUESTBOOK:  isGuestbook = true; break;
 			case MILESTONE:  isMilestone = true; break;
@@ -4667,9 +4716,10 @@ public class GwtViewHelper {
 				// No, the user isn't currently viewing pinned entries!
 				// Read the entries based on a search.
 				Map searchResults;
-				if      (isTrash)          searchResults = TrashHelper.getTrashEntities(bs, binder, options);
-				else if (isProfilesRootWS) searchResults = getUserEntries(      bs, request, binder, quickFilter, options                            );
-				else if (isCollection)     searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, collectionType, shareItems);
+				if      (isTrash)                 searchResults = TrashHelper.getTrashEntities(bs, binder, options);
+				else if (isProfilesRootWS)        searchResults = getUserEntries(      bs, request, binder, quickFilter, options                            );
+				else if (isCollection)            searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, collectionType, shareItems);
+				else if (isMobileDevicesViewSpec) searchResults = getDeviceEntries(    bs, request, binder, quickFilter, options, mdvSpec                   );
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
 					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
@@ -4941,8 +4991,19 @@ public class GwtViewHelper {
 									}
 								}
 								
+								// No, we aren't working on a
+								// 'Shared by/with Me' collection!  Are
+								// we working on a 'Mobile 'Devices' view?
+								else if (isMobileDevicesViewSpec) {
+									// Yes!
+									smItem = null;
+									
+//!									...this needs to be implemented...									
+								}
+								
 								else {
-									// No, we aren't working on a 'Shared by/with Me' collection!
+									// No, we aren't working on a
+									// 'Mobile Devices' view either!
 									smItem = null;
 								}
 

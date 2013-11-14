@@ -440,6 +440,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMainPageInfo();
+	String rpcFailure_GetManageDevicesInfo();
 	String rpcFailure_GetManageUsersInfo();
 	String rpcFailure_GetManageUsersState();
 	String rpcFailure_GetMobileAppsConfiguration();
@@ -698,15 +699,16 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ManageCommentsDlg();
 	String codeSplitFailure_ManageDatabasePruneDlg();
 	String codeSplitFailure_ManageGroupsDlg();
+	String codeSplitFailure_ManageMobileDevicesDlg();
 	String codeSplitFailure_ManageNetFoldersDlg();
 	String codeSplitFailure_ManageNetFolderServersDlg();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
-	String codeSplitFailure_ManageUserDevicesDlg();
 	String codeSplitFailure_ManageUsersDlg();
 	String codeSplitFailure_MicroBlogFolderView();
 	String codeSplitFailure_MilestoneFolderView();
 	String codeSplitFailure_MirroredFileFolderView();
+	String codeSplitFailure_MobileDevicesView();
 	String codeSplitFailure_ModifyGroupDlg();
 	String codeSplitFailure_ModifyNetFolderDlg();
 	String codeSplitFailure_ModifyNetFolderServerDlg();
@@ -2236,6 +2238,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used with Filr
 	String folders();
+	String mobileDevicesList();
 	String myFiles();
 	String netFolders();
 	String peopleList();
@@ -2621,6 +2624,12 @@ public interface GwtTeamingMessages extends Messages
 	String emptyFileFolder_Info_2( String company, String product );
 	String emptyFileFolder_Info_3( String product );
 	String emptyFileFolder_SubHead();
+	
+	// Strings used for the empty mobile devices view widget.
+	String emptyMobileDevices_Info_1_System( String company, String product );
+	String emptyMobileDevices_Info_1_User( String company, String product );
+	String emptyMobileDevices_Info_2( String company, String product );
+	String emptyMobileDevices_SubHead();
 	
 	// Strings used for the empty people view widget.
 	String emptyPeople_Info_1( String company, String product );
@@ -3166,7 +3175,9 @@ public interface GwtTeamingMessages extends Messages
 	String nameCompletionSettingsDlg_SecondaryDisplayLabel();
 	String nameCompletionSettingsDlg_Title();
 	
-	// Strings used in the Manage User Devices dialog.
-	String manageUserDevicesDlgDevices(int dCount);
+	// Strings used in the Manage Devices dialog.
+	String manageMobileDevicesDlgDevices(int dCount);
+	String manageMobileDevicesDlgSystem();
+	String manageMobileDevicesDlgUser();
 	
 }// end GwtTeamingMessages

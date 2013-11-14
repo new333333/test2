@@ -277,6 +277,11 @@
 		.vibe-mirroredFileFolderFlowPanel     {}
 		.vibe-mirroredFileFolderNotConfigured {color: red; font-weight: bold; font-size: 1.2em;}
 	/* ...End:  Mirrored file folder view styles. */
+	
+	/* ...Start:  Mobile Devices view styles. */
+		.vibe-mobileDevicesDataTable {}
+		.vibe-mobileDevicesFlowPanel {}
+	/* ...End:  Mobile Devices view styles. */
 
 	/* ...Start:  Personal Workspaces view styles. */
 		.vibe-personalWorkspacesDataTable {}
@@ -498,9 +503,10 @@
 	.vibe-manageCommentsDlg-headerCaption {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 420px;}
 /* End:  Manage comments dialog styles. */
 
-/* Start:  Manage user devices dialog styles. */
-	.vibe-manageUserDevicesDlg .popupContent {background-color: white !important;}
-	.vibe-manageUserDevicesDlg-captionCount  {
+/* Start:  Manage devices dialog styles. */
+	.vibe-manageMobileDevicesDlg               {width: 800px; height: 600px;}
+	.vibe-manageMobileDevicesDlg .popupContent {background-color: white !important;}
+	.vibe-manageMobileDevicesDlg-captionCount  {
 		position: absolute;
 		top: 8px;
 		right: 0px;
@@ -508,9 +514,9 @@
 		padding-right: 20px;
 		font-size: 13px;
 	}
-	.vibe-manageUserDevicesDlg-panel         {margin: 10px 10px 10px 13px;}
-	.vibe-manageUserDevicesDlg-headerCaption {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 420px;}
-/* End:  Manage user devices dialog styles. */
+	.vibe-manageMobileDevicesDlg-panel         {}
+	.vibe-manageMobileDevicesDlg-headerCaption {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 420px;}
+/* End:  Manage devices dialog styles. */
 
 /* Start:  Size columns dialog styles. */
 	.vibe-sizeColumnsDlg-colCaptionImg {}

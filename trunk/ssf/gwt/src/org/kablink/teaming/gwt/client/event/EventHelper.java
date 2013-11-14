@@ -804,12 +804,12 @@ public class EventHelper {
 				}
 				break;
 				
-			case GET_MANAGE_USERS_TITLE:
-				// An GetManageUsersTitleEvent!  Can the event handler
-				// we were given handle that?
-				if (eventHandler instanceof GetManageUsersTitleEvent.Handler) {
+			case GET_MANAGE_TITLE:
+				// An GetManageTitleEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof GetManageTitleEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = GetManageUsersTitleEvent.registerEvent(eventBus, ((GetManageUsersTitleEvent.Handler) eventHandler));
+					registrationHandler = GetManageTitleEvent.registerEvent(eventBus, ((GetManageTitleEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -2799,7 +2799,7 @@ public class EventHelper {
 			case ENABLE_SELECTED_USERS_WEBACCESS:              hasHandler = (eventHandler instanceof EnableSelectedUsersWebAccessEvent.Handler);           break;
 			case FIND_CONTROL_BROWSE:                          hasHandler = (eventHandler instanceof FindControlBrowseEvent.Handler);                      break;
 			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;
-			case GET_MANAGE_USERS_TITLE:                       hasHandler = (eventHandler instanceof GetManageUsersTitleEvent.Handler);                    break;
+			case GET_MANAGE_TITLE:                             hasHandler = (eventHandler instanceof GetManageTitleEvent.Handler);                         break;
 			case HIDE_SELECTED_SHARES:                         hasHandler = (eventHandler instanceof HideSelectedSharesEvent.Handler);                     break;
 			case LOCK_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof LockSelectedEntitiesEvent.Handler);                   break;
 			case MARK_READ_SELECTED_ENTITIES:                  hasHandler = (eventHandler instanceof MarkReadSelectedEntitiesEvent.Handler);               break;
