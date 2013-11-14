@@ -5141,11 +5141,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							{
 								Enumeration members;
 								String guid;
+								String objectSid;
 
 								// Get the ldap guid that was read from the ldap directory for this user.
 								guid = getLdapGuid( lAttrs, ldapGuidAttribute );
 								
-								members = getGroupMembershipFromAD( guid, zone, config, searchInfo );
+								// Get the group's object sid
+								objectSid = getObjectSid( lAttrs );
+								
+								members = getGroupMembershipFromAD( guid, objectSid, zone, config, searchInfo );
 								if ( members != null )
 									groupCoordinator.syncMembership( groupId, members );
 							}
@@ -5179,6 +5183,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 */
 	private Enumeration getGroupMembershipFromAD(
 		String guid,
+		String objectSid,
 		Binder zone,
 		LdapConnectionConfig ldapConfig,
 		LdapConnectionConfig.SearchInfo searchInfo )
@@ -5338,7 +5343,178 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}
 		
+		// Get the members of this group where this group is their primary group
+		getPrimaryGroupMembershipFromAD( listOfMembers, zone.getId(), guid, objectSid, ldapConfig );
+		
 		return listOfMembers.keys();
+	}
+	
+	/**
+	 * 
+	 */
+	private void getPrimaryGroupMembershipFromAD(
+		Hashtable listOfMembers,
+		Long zoneId,
+		String guid,
+		String objectSid,
+		LdapConnectionConfig ldapConfig )
+	{
+		int pageSize = 500;
+		String groupId = null;
+		LdapContext ldapContext = null;
+		boolean syncAll;
+		
+		if ( listOfMembers == null || guid == null || objectSid == null || ldapConfig == null )
+		{
+			logger.error( "in getPrimaryGroupMembershipFromAD(), invalid parameter" );
+			return;
+		}
+		
+		syncAll = SPropsUtil.getBoolean( "ldap.sync.all.primary.group.membership", false );
+
+		// Get the group id of the given group
+		{
+			int index;
+			
+			index = objectSid.lastIndexOf( '-' );
+			if ( index != -1 && (index+1) < objectSid.length() )
+				groupId = objectSid.substring( index + 1 );
+			
+			if ( groupId == null || groupId.length() == 0 )
+			{
+				logger.error( "in getPrimaryGroupMembershipFromAD(), unable to get the group id for group: " + objectSid );
+				return;
+			}
+			
+			// Are we supposed to try and sync the primary group membership for all groups?
+			if ( syncAll == false )
+			{
+				// No
+				// We are only going to retrieve the primary group membership for the "Domain Users" group.
+				if ( groupId.equalsIgnoreCase( "513" ) == false )
+					return;
+			}
+		}
+		
+		logger.info( "Getting primary group membership for group: " + objectSid );
+		
+		try
+		{
+			String[] attributesToRead;
+			
+			attributesToRead = new String[1];
+			attributesToRead[0] = SAM_ACCOUNT_NAME_ATTRIBUTE;
+			
+			ldapContext = getUserContext( zoneId, ldapConfig );
+
+			for ( LdapConnectionConfig.SearchInfo searchInfo : ldapConfig.getUserSearches() )
+			{
+				String userFilter;
+
+				userFilter = searchInfo.getFilterWithoutCRLF();
+				if ( Validator.isNotNull( userFilter ) )
+				{
+					byte[] cookie = null;
+					int scope;
+					String searchFilter;
+
+					searchFilter = "(primaryGroupID=" + groupId + ")";
+					searchFilter = "(&" + searchFilter + userFilter +")";
+
+					if ( searchInfo.isSearchSubtree() )
+						scope = SearchControls.SUBTREE_SCOPE;
+					else
+						scope = SearchControls.ONELEVEL_SCOPE;
+					
+					SearchControls sch = new SearchControls(
+														scope,
+														0,
+														0,
+														attributesToRead,
+														false,
+														false);
+		
+					logger.info( "\tSearching for primary group membership in base dn: " + searchInfo.getBaseDn() );
+					
+					// Request the paged results control
+					try
+					{
+						Control[] ctls = new Control[]{ new PagedResultsControl( pageSize, true ) };
+						ldapContext.setRequestControls( ctls );
+					}
+					catch ( IOException ex )
+					{
+						logger.error( "Call to new PagedResultsControl() threw an exception: " + ex.toString() );
+					}
+
+					do
+					{
+						NamingEnumeration results;
+
+						// Issue an ldap search for users in the given base dn.
+						results = ldapContext.search( searchInfo.getBaseDn(), searchFilter, sch );
+						
+						// loop through the results in each page
+						while ( hasMore( results ) )
+						{
+							String userName;
+							String relativeName;
+							String memberDN;
+							SearchResult sr;
+							
+							sr = (SearchResult)results.next();
+							userName = sr.getNameInNamespace();
+							
+							relativeName = userName.trim();
+							if ( sr.isRelative() && !"".equals( ldapContext.getNameInNamespace() ) )
+							{
+								memberDN = relativeName + "," + ldapContext.getNameInNamespace().trim();
+							}
+							else
+							{
+								memberDN = relativeName;
+							}
+							
+        					listOfMembers.put( memberDN, memberDN );
+						}
+		     
+						// examine the response controls
+						cookie = parseControls( ldapContext.getResponseControls() );
+
+						try
+						{
+							// pass the cookie back to the server for the next page
+							PagedResultsControl prCtrl;
+							
+							prCtrl = new PagedResultsControl( pageSize, cookie, Control.CRITICAL );
+							ldapContext.setRequestControls( new Control[]{ prCtrl } );
+						}
+						catch ( IOException ex )
+						{
+							cookie = null;
+							logger.error( "Call to PagedResultsControl() threw an exception: " + ex.toString() );
+						}
+
+					} while ( (cookie != null) && (cookie.length != 0) );
+				}
+			}
+		}
+		catch ( Exception ex )
+		{
+		}
+		finally
+		{
+			if ( ldapContext != null )
+			{
+				try
+				{
+					ldapContext.close();
+				}
+				catch ( NamingException namingEx )
+		  		{
+		  		}
+			}
+		}
 	}
 	
 	protected void doLog(String caption, Map<String, Map> names) {
