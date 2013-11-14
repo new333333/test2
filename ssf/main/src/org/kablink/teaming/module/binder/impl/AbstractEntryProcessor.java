@@ -1292,7 +1292,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			docs.clear();
        			// get 1000 entries, then build collections by hand 
        			//for performance
-       			while (query.hasNext() && (count < 1000)) {
+       			while (query.hasNext() && (count < SPropsUtil.getInt("index.entries.batch.size", 1000))) {
        				Object obj = query.next();
        				if (obj instanceof Object[])
        					obj = ((Object [])obj)[0];
@@ -1535,8 +1535,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	SortField[] fields = SearchUtils.getSortFields(options); 
     	so.setSortBy(fields);
     	
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Query is: " + queryTree.asXML());
+    	if(logger.isTraceEnabled()) {
+    		logger.trace("Query is: " + queryTree.asXML());
     	}
     	
     	if(searchMode == null) {
