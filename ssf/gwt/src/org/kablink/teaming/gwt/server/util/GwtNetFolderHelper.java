@@ -617,7 +617,7 @@ public class GwtNetFolderHelper
 	{
 		switch ( type )
 		{
-		case CIFS:
+		case WINDOWS:
 			return DriverType.windows_server;
 			
 		case CLOUD_FOLDERS:
@@ -629,10 +629,10 @@ public class GwtNetFolderHelper
 		case FILE_SYSTEM:
 			return DriverType.filesystem;
 			
-		case NCP_NETWARE:
+		case NETWARE:
 			return DriverType.netware;
 			
-		case NCP_OES:
+		case OES:
 			return DriverType.oes;
 			
 		case SHARE_POINT_2010:
@@ -1192,7 +1192,7 @@ public class GwtNetFolderHelper
 		switch ( driverType )
 		{
 		case windows_server:
-			return NetFolderRootType.CIFS;
+			return NetFolderRootType.WINDOWS;
 			
 		case cloud_folders:
 			return NetFolderRootType.CLOUD_FOLDERS;
@@ -1204,10 +1204,10 @@ public class GwtNetFolderHelper
 			return NetFolderRootType.FILE_SYSTEM;
 
 		case netware:
-			return NetFolderRootType.NCP_NETWARE;
+			return NetFolderRootType.NETWARE;
 			
 		case oes:
-			return NetFolderRootType.NCP_OES;
+			return NetFolderRootType.OES;
 			
 		case share_point_2010:
 			return NetFolderRootType.SHARE_POINT_2010;
