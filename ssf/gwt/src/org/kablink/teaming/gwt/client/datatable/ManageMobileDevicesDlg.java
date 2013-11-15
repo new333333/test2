@@ -80,26 +80,27 @@ public class ManageMobileDevicesDlg extends DlgBox
 		FullUIReloadEvent.Handler,
 		GetManageTitleEvent.Handler
 {
-	private boolean								m_dlgAttached;				// true when the dialog is attached to the document.     false otherwise.
-	private boolean								m_viewReady;				// true once the embedded mobile devices view is ready.  false otherwise.
-	private GwtTeamingMessages					m_messages;					// Access to Vibe's messages.
-	private int									m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
-	private int									m_showX;					//
-	private int									m_showY;					//
-	private Integer								m_showCX;					//
-	private Integer								m_showCY;					//
-	private Label								m_mobileDevicesCountLabel;	// The mobile devices count Label that's stored in the dialog's caption.
-	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private boolean									m_dlgAttached;				// true when the dialog is attached to the document.     false otherwise.
+	private boolean									m_viewReady;				// true once the embedded mobile devices view is ready.  false otherwise.
+	private GwtTeamingMessages						m_messages;					// Access to Vibe's messages.
+	private int										m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
+	private int										m_showX;					//
+	private int										m_showY;					//
+	private Integer									m_showCX;					//
+	private Integer									m_showCY;					//
+	private Label									m_mobileDevicesCountLabel;	// The mobile devices count Label that's stored in the dialog's caption.
+	private List<HandlerRegistration>				m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ManageMobileDevicesInfoRpcResponseData	m_manageMobileDevicesInfo;		// Information necessary to run the manage mobile devices dialog.
-	private MobileDeviceRemovedCallback			m_removedCallback;			// Interface used to tell who's running the dialog that a device was removed .
-	private MobileDevicesInfo					m_mdInfo;					// The MobileDevicesInfo this ManageMobileDevicesDlg is running against.
-	private MobileDevicesView					m_mdView;					// The mobile devices view.
-	private UIObject							m_showRelativeTo;			// The UIObject to show the dialog relative to.  null -> Center the dialog.
-	private VibeFlowPanel						m_rootPanel;				// The panel that holds the dialog's contents.
+	private MobileDeviceRemovedCallback				m_removedCallback;			// Interface used to tell who's running the dialog that a device was removed .
+	private MobileDevicesInfo						m_mdInfo;					// The MobileDevicesInfo this ManageMobileDevicesDlg is running against.
+	private MobileDevicesView						m_mdView;					// The mobile devices view.
+	private UIObject								m_showRelativeTo;			// The UIObject to show the dialog relative to.  null -> Center the dialog.
+	private VibeFlowPanel							m_rootPanel;				// The panel that holds the dialog's contents.
 
 	// Constant adjustments to the size of the mobile devices view so
 	// that it properly fits the dialog's content area.
-	private final static int DIALOG_HEIGHT_ADJUST		= 35;
+	private final static int DIALOG_HEIGHT_ADJUST_FLOAT	= 35;
+	private final static int DIALOG_HEIGHT_ADJUST_FIXED	= 45;
 	private final static int DIALOG_WIDTH_ADJUST_FLOAT	= 30;
 	private final static int DIALOG_WIDTH_ADJUST_FIXED	= 20;
 	
@@ -330,7 +331,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 		m_mdView      = null;
 		m_rootPanel.clear();
 		
-		// Create a MobileDevicesView widget.
+		// Create a MobileDevicesView widget...
 		MobileDevicesView.createAsync(m_manageMobileDevicesInfo.getProfilesRootWSInfo(), this, new ViewClient() {
 			@Override
 			public void onUnavailable() {
@@ -340,20 +341,18 @@ public class ManageMobileDevicesDlg extends DlgBox
 			
 			@Override
 			public void onSuccess(ViewBase pwsView) {
-				// Store the view and add it to the panel.
+				// ...storing it in the view and adding it to the
+				// ...panel...
 				m_mdView = ((MobileDevicesView) pwsView);
 				m_rootPanel.add(m_mdView);
 			}
 		});
 
-		
-//!		...this needs to be implemented...
-		
 		// ...and show the dialog.
 		setFixedSize(m_showCX, m_showCY);
-		if       (null != m_showRelativeTo)                showRelativeTo(  m_showRelativeTo );	// Unused?
-		else if ((null != m_showCX) && (null != m_showCY)) setPopupPosition(m_showX,  m_showY);	// For:  Manage system devices!
-		else                                               center();							// For:  Manage user devices!
+		if       (null != m_showRelativeTo)                 showRelativeTo(  m_showRelativeTo );			// Unused?
+		else if ((null != m_showCX) && (null != m_showCY)) {setPopupPosition(m_showX,  m_showY); show();}	// For:  Manage system devices!
+		else                                                center();										// For:  Manage user devices!
 	}
 	
 	/*
@@ -396,16 +395,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 	 * devices dialog.
 	 */
 	private void runDlgNow(MobileDevicesInfo mdInfo, UIObject showRelativeTo, int x, int y, Integer cx, Integer cy, MobileDeviceRemovedCallback removedCallback) {
-		// Set the style this dialog needs on the caption label.
-		Label hcl = getHeaderCaptionLabel();
-		hcl.setStyleName("vibe-manageMobileDevicesDlg-headerCaption");
-		
-		// Set the dialog's caption and caption image...
-		setCaption(             mdInfo.getClientItemTitle()   );
-		setCaptionImage((Image) mdInfo.getClientItemImage()   );
-		setCaptionDevicesCount( mdInfo.getMobileDevicesCount());
-		
-		// ...store the parameters...
+		// Store the parameters...
 		m_mdInfo          = mdInfo;
 		m_showRelativeTo  = showRelativeTo;
 		m_showX           = x;
@@ -414,14 +404,33 @@ public class ManageMobileDevicesDlg extends DlgBox
 		m_showCY          = cy;
 		m_removedCallback = removedCallback;
 
-		// ...update the ManageMobileDevicesInfo based on the
-		// ...parameters...
+		// ...update the dialog's styles, caption and
+		// ...ManageMobileDevicesInfo based on the parameters...
 		MobileDevicesViewSpec mdvSpec;
+		Label hcl = getHeaderCaptionLabel();
 		Long userId = mdInfo.getUserId();
 		if (null == userId) {
+			addStyleName(   "vibe-manageMobileDevicesDlg-system");
+			removeStyleName("vibe-manageMobileDevicesDlg-user"  );
+			
+			setAutoHideAndModality(true, false);					// true -> Auto hide.  false -> Not modal.
+			hcl.setStyleName("teamingDlgBoxHeader-captionLabel");	// Default style as originally set in DlgBox.createCaption().
+			
+			setCaption(m_messages.manageMobileDevicesDlgCaptionSystem());
+			
 			mdvSpec = MobileDevicesViewSpec.SYSTEM;
 		}
 		else {
+			removeStyleName("vibe-manageMobileDevicesDlg-system");
+			addStyleName(   "vibe-manageMobileDevicesDlg-user"  );
+			
+			setAutoHideAndModality(false, true);								// false -> Not auto hide.  true -> Modal.
+			hcl.setStyleName("vibe-manageMobileDevicesDlg-headerCaption-user");	// Style that accounts for the device count on the right of the caption.
+			
+			setCaption(             mdInfo.getClientItemTitle()   );
+			setCaptionImage((Image) mdInfo.getClientItemImage()   );
+			setCaptionDevicesCount( mdInfo.getMobileDevicesCount());
+			
 			mdvSpec = MobileDevicesViewSpec.USER;
 			mdvSpec.setUserId(userId);
 		}
@@ -482,18 +491,22 @@ public class ManageMobileDevicesDlg extends DlgBox
 	 */
 	private void setViewSizeNow() {
 		// If we don't have the height adjustment for the dialog yet...
+		boolean floatLayout = ((null == m_showCX) && (null == m_showCY));
 		if ((-1) == m_dlgHeightAdjust) {
 			// ...calculate it now...
-			m_dlgHeightAdjust =
-				(DIALOG_HEIGHT_ADJUST              +
+			m_dlgHeightAdjust = (
 				getHeaderPanel().getOffsetHeight() +
 				getFooterPanel().getOffsetHeight());
+			
+			if (floatLayout)
+			     m_dlgHeightAdjust += DIALOG_HEIGHT_ADJUST_FLOAT;
+			else m_dlgHeightAdjust += DIALOG_HEIGHT_ADJUST_FIXED;
 		}
 
 		// ...set the size of the mobile devices view.
 		int cx;
 		int cy;
-		if ((null == m_showCX) && (null == m_showCY)) {
+		if (floatLayout) {
 			cx = (getOffsetWidth()  - DIALOG_WIDTH_ADJUST_FLOAT);
 			cy = (getOffsetHeight() - m_dlgHeightAdjust);
 		}

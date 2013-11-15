@@ -90,7 +90,7 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_COLUMNS:				reply = new InvokeConfigureColumnsEvent();        break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
 		case INVOKE_CONFIGURE_MOBILE_APPS_DLG:		reply = new InvokeConfigureMobileAppsDlgEvent();  break;
-		case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	reply = new InvokeConfigureShareSettingsDlgEvent();  break;
+		case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	reply = new InvokeConfigureShareSettingsDlgEvent(); break;
 		case INVOKE_CONFIGURE_USER_ACCESS_DLG:		reply = new InvokeConfigureUserAccessDlgEvent();  break;
 		case INVOKE_DOWNLOAD_DESKTOP_APP:           reply = new InvokeDownloadDesktopAppEvent();      break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
@@ -103,7 +103,8 @@ public class EventHelper {
 		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
 		case INVOKE_MANAGE_USERS_DLG:				reply = new InvokeManageUsersDlgEvent();		  break;
-		case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	reply = new InvokeNameCompletionSettingsDlgEvent();	  break;
+		case INVOKE_MANAGE_MOBILE_DEVICES_DLG:		reply = new InvokeManageMobileDevicesDlgEvent();  break;
+		case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	reply = new InvokeNameCompletionSettingsDlgEvent(); break;
 		case INVOKE_RENAME_ENTITY:				    reply = new InvokeRenameEntityEvent();		      break;
 		case INVOKE_RUN_A_REPORT_DLG:				reply = new InvokeRunAReportDlgEvent();		      break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
@@ -1243,6 +1244,15 @@ public class EventHelper {
 				if (eventHandler instanceof InvokeManageUsersDlgEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeManageUsersDlgEvent.registerEvent(eventBus, ((InvokeManageUsersDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case INVOKE_MANAGE_MOBILE_DEVICES_DLG:
+				// An InvokeManageMobileDevicesDlgEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof InvokeManageMobileDevicesDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeManageMobileDevicesDlgEvent.registerEvent(eventBus, ((InvokeManageMobileDevicesDlgEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2649,6 +2659,7 @@ public class EventHelper {
 			case INVOKE_MANAGE_NET_FOLDERS_DLG:			       hasHandler = (eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler); 	           break;
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
 			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;
+			case INVOKE_MANAGE_MOBILE_DEVICES_DLG:			   hasHandler = (eventHandler instanceof InvokeManageMobileDevicesDlgEvent.Handler);		   break;
 			case INVOKE_MANAGE_USERS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageUsersDlgEvent.Handler);		           break;
 			case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	       hasHandler = (eventHandler instanceof InvokeNameCompletionSettingsDlgEvent.Handler);		   break;
 			case INVOKE_RENAME_ENTITY:					       hasHandler = (eventHandler instanceof InvokeRenameEntityEvent.Handler);                     break;

@@ -1074,6 +1074,18 @@ public abstract class DlgBox extends TeamingPopupPanel
 			setPopupPosition( 0, 0 );
 		}
 	}
+
+	/**
+	 * Modifies the dialog's auto hide and modal flags.
+	 * 
+	 * @param autoHide
+	 * @param modal
+	 */
+	public void setAutoHideAndModality(boolean autoHide, boolean modal)
+	{
+		setAutoHideEnabled( ( autoHide && (!modal) ));
+		m_modal = modal;
+	}
 	
 	/**
 	 * 
