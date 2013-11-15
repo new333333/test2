@@ -6572,13 +6572,9 @@ public class GwtServerHelper {
 				GwtLogHelper.error(m_logger, "GwtServerHelper.getManageMobileDevicesInformation():  The workspace type of the profile root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.PROFILE_ROOT.name());
 			}
 			MobileDevicesViewSpec mdvSpec;
-			if (null == userId) {
-				mdvSpec = MobileDevicesViewSpec.SYSTEM;
-			}
-			else {
-				mdvSpec = MobileDevicesViewSpec.USER;
-				mdvSpec.setUserId(userId);
-			}
+			if (null == userId)
+			     mdvSpec = new MobileDevicesViewSpec(MobileDevicesViewSpec.Mode.SYSTEM      );
+			else mdvSpec = new MobileDevicesViewSpec(MobileDevicesViewSpec.Mode.USER, userId);
 			bi.setWorkspaceType(        WorkspaceType.MOBILE_DEVICES);
 			bi.setMobileDevicesViewSpec(mdvSpec                     );
 			ManageMobileDevicesInfoRpcResponseData reply = new ManageMobileDevicesInfoRpcResponseData(bi);
@@ -10613,7 +10609,7 @@ public class GwtServerHelper {
 			}
 			
 			else if (binderInfo.isBinderMobileDevices()) {
-				String cName     = (".devices." + String.valueOf(binderInfo.getMobileDevicesViewSpec().ordinal()));
+				String cName     = (".devices." + String.valueOf(binderInfo.getMobileDevicesViewSpec().getMode().ordinal()));
 				propSortBy      += cName;
 				propSortDescend += cName;
 			}

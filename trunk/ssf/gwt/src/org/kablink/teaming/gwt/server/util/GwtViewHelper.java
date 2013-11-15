@@ -107,6 +107,8 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
+import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
@@ -4044,7 +4046,7 @@ public class GwtViewHelper {
 			}
 			
 			else if (folderInfo.isBinderMobileDevices()) {
-				String cName     = (".devices." + String.valueOf(folderInfo.getMobileDevicesViewSpec().ordinal()));
+				String cName     = (".devices." + String.valueOf(folderInfo.getMobileDevicesViewSpec().getMode().ordinal()));
 				propSortBy      += cName;
 				propSortDescend += cName;
 			}
@@ -5715,8 +5717,70 @@ public class GwtViewHelper {
 	private static Map getMobileDeviceEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, BinderInfo bi) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getDeviceEntries()");
 		try {
-//!			...this needs to be implemented...
-			return buildEmptyEntryMap();
+			// Are we being asked for system wide or a per user mobile
+			// device entries?
+			Map reply;
+			MobileDevicesViewSpec mdvSpec = bi.getMobileDevicesViewSpec();
+			if (mdvSpec.isSystem()) {
+				// System wide!
+//!				...this needs to be implemented...
+				reply = buildEmptyEntryMap();
+			}
+			
+			else {
+				// Per user!  Does this user have an devices defined?
+				Long               userId    = mdvSpec.getUserId();
+				User               user      = ((User) bs.getProfileModule().getEntry(userId));
+				MobileDevices      mds       = user.getMobileDevices();
+				List<MobileDevice> mdList    = ((null == mds) ? null : mds.getMobileDeviceList());
+				boolean            hasMDList = MiscUtil.hasItems(mdList);
+
+				// If the user doesn't have any devices and we're set
+				// to always show the user's mobile devices...
+				if ((!hasMDList) && MobileDevicesView.ALWAYS_SHOW_MOBILE_DEVICES_USER) {
+					// ...create a dummy one...
+					Date         now    = new Date();
+					String       nowStr = String.valueOf(now.getTime());
+					MobileDevice md     = new MobileDevice();
+					md.setWipeScheduled(true                          );
+					md.setLastActivity( now                           );
+					md.setLastLogin(    now                           );
+					md.setId(           nowStr                        );
+					md.setDescription(  user.getTitle() + ":" + nowStr);
+					
+					// ...add it to the MobileDevices object...
+					if (null == mds) {
+						mds = new MobileDevices();
+					}
+					mds.addMobileDevice(md);
+					
+					// ...store the MobileDevices object into the
+					// ...User...
+					bs.getProfileModule().setMobileDevices(userId, mds);
+					
+					// ...and use the current list to populate the
+					// ...entry map.
+					mdList    = mds.getMobileDeviceList();
+					hasMDList = MiscUtil.hasItems(mdList);
+				}
+
+				// Do we have any devices for this user?
+				if (hasMDList) {
+					// Yes!  Generate the entries.
+//!					...this needs to be implemented...
+					reply = buildEmptyEntryMap();
+				}
+				
+				else {
+					// No, we don't have any devices for this user!
+					// Return and empty entry map.
+					reply = buildEmptyEntryMap();
+				}
+			}
+			
+			// If we get here, reply refers to the entry map for the
+			// requested devices.  Return it.
+			return reply;
 		}
 		
 		finally {
