@@ -440,7 +440,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMainPageInfo();
-	String rpcFailure_GetManageDevicesInfo();
+	String rpcFailure_GetManageMobileDevicesInfo();
 	String rpcFailure_GetManageUsersInfo();
 	String rpcFailure_GetManageUsersState();
 	String rpcFailure_GetMobileAppsConfiguration();
@@ -1865,6 +1865,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
 	String vibeDataTable_InternalError_UnsupportedStructuredToolbar();
 	String vibeDataTable_MemberCount(String count);
+	String vibeDataTable_MobileDevices();
 	String vibeDataTable_People();
 	String vibeDataTable_Pin();
 	String vibeDataTable_Select();
@@ -3178,6 +3179,6 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Manage Devices dialog.
 	String manageMobileDevicesDlgDevices(int dCount);
 	String manageMobileDevicesDlgSystem();
-	String manageMobileDevicesDlgUser();
+	String manageMobileDevicesDlgUser(String title);
 	
 }// end GwtTeamingMessages

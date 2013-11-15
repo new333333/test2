@@ -44,10 +44,6 @@ import com.google.gwt.resources.client.ImageResource.RepeatStyle;
  */
 public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_devices_transparent_72.png")
-	public ImageResource devices_transparent_72();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/file.png")
 	public ImageResource entry();
 	
@@ -110,6 +106,22 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/MSWin-logo.png")
 	public ImageResource logoWindows();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/mobileDevices.png")
+	public ImageResource mobileDevices();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/mobileDevices_36.png")
+	public ImageResource mobileDevices_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/mobileDevices_48.png")
+	public ImageResource mobileDevices_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_mobileDevices_transparent_72.png")
+	public ImageResource mobileDevices_transparent_72();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_multiple_36.png")

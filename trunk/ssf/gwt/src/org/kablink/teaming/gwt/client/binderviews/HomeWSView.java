@@ -94,7 +94,7 @@ public class HomeWSView extends WorkspaceViewBase implements ToolPanelReady
 			m_breadCrumbPanel.addStyleName( "vibe-homeWSView_BreadCrumbPanel" );
 			m_mainPanel.add( m_breadCrumbPanel );
 	
-			BreadCrumbPanel.createAsync( this, getBinderInfo(), null, this, new ToolPanelClient()
+			BreadCrumbPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()

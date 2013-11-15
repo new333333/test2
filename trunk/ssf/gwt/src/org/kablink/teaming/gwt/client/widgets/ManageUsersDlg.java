@@ -340,7 +340,7 @@ public class ManageUsersDlg extends DlgBox
 	@Override
 	public void onGetManageTitle(GetManageTitleEvent event) {
 		// If this event is targeted to this dialog...
-		if (event.getBinderInfo().isEqual(m_manageUsersInfo.getProfilesRootWSInfo()) && (null == event.getMobileDevicesViewSpec())) {
+		if (event.getBinderInfo().isEqual(m_manageUsersInfo.getProfilesRootWSInfo())) {
 			// ...respond to it.
 			event.getManageTitleCallback().manageTitle(m_manageUsersInfo.getAdminActionTitle());
 		}

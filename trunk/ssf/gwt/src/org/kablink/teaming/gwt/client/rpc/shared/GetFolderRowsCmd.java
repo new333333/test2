@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
@@ -45,13 +44,12 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
  * @author drfoster@novell.com
  */
 public class GetFolderRowsCmd extends VibeRpcCmd {
-	private BinderInfo				m_folderInfo;			//
-	private int						m_length;				//
-	private int						m_start;				//
-	private List<FolderColumn>		m_folderColumns;		//
-	private MobileDevicesViewSpec	m_mdvSpec;				//
-	private String					m_authenticationGuid;	// Use when a Cloud Folder requires authentication.
-	private String					m_quickFilter;			//
+	private BinderInfo			m_folderInfo;			//
+	private int					m_length;				//
+	private int					m_start;				//
+	private List<FolderColumn>	m_folderColumns;		//
+	private String				m_authenticationGuid;	// Use when a Cloud Folder requires authentication.
+	private String				m_quickFilter;			//
 	
 	/**
 	 * Constructor method.
@@ -68,34 +66,27 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 	 * 
 	 * @param folderInfo
 	 * @param folderColumns
-	 * @param mdvSpec
 	 * @param start
 	 * @param length
 	 * @param quickFilter
 	 * @param authenticationGuid
 	 */
-	public GetFolderRowsCmd(BinderInfo folderInfo, List<FolderColumn> folderColumns, MobileDevicesViewSpec mdvSpec, int start, int length, String quickFilter, String authenticationGuid) {
+	public GetFolderRowsCmd(BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter, String authenticationGuid) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		setFolderInfo(           folderInfo        );
-		setFolderColumns(        folderColumns     );
-		setMobileDevicesViewSpec(mdvSpec           );
-		setStart(                start             );
-		setLength(               length            );
-		setQuickFilter(          quickFilter       );
-		setAuthenticationGuid(   authenticationGuid);
-	}
-	
-	public GetFolderRowsCmd(BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter, String authenticationGuid) {
-		// Always use the initial form of the constructor.
-		this(folderInfo, folderColumns, null, start, length, quickFilter, authenticationGuid);
+		setFolderInfo(        folderInfo        );
+		setFolderColumns(     folderColumns     );
+		setStart(             start             );
+		setLength(            length            );
+		setQuickFilter(       quickFilter       );
+		setAuthenticationGuid(authenticationGuid);
 	}
 	
 	public GetFolderRowsCmd(BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String authenticationGuid) {
 		// Always use the initial form of the constructor.
-		this(folderInfo, folderColumns, null, start, length, null, authenticationGuid);
+		this(folderInfo, folderColumns, start, length, null, authenticationGuid);
 	}
 	
 	/**
@@ -103,26 +94,24 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo            getFolderInfo()            {return m_folderInfo;        }
-	public int                   getLength()                {return m_length;            }
-	public int                   getStart()                 {return m_start;             }
-	public List<FolderColumn>    getFolderColumns()         {return m_folderColumns;     }
-	public MobileDevicesViewSpec getMobileDevicesViewSpec() {return m_mdvSpec;           }
-	public String                getAuthenticationGuid()    {return m_authenticationGuid;}
-	public String                getQuickFilter()           {return m_quickFilter;       }
+	public BinderInfo         getFolderInfo()         {return m_folderInfo;        }
+	public int                getLength()             {return m_length;            }
+	public int                getStart()              {return m_start;             }
+	public List<FolderColumn> getFolderColumns()      {return m_folderColumns;     }
+	public String             getAuthenticationGuid() {return m_authenticationGuid;}
+	public String             getQuickFilter()        {return m_quickFilter;       }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(           BinderInfo            folderInfo)         {m_folderInfo         = folderInfo;        }
-	public void setLength(               int                   length)             {m_length             = length;            }
-	public void setStart(                int                   start)              {m_start              = start;             }
-	public void setFolderColumns(        List<FolderColumn>    folderColumns)      {m_folderColumns      = folderColumns;     }
-	public void setMobileDevicesViewSpec(MobileDevicesViewSpec mdvSpec)            {m_mdvSpec            = mdvSpec;           }
-	public void setAuthenticationGuid(   String                authenticationGuid) {m_authenticationGuid = authenticationGuid;}
-	public void setQuickFilter(          String                quickFilter)        {m_quickFilter        = quickFilter;       }
+	public void setFolderInfo(        BinderInfo         folderInfo)         {m_folderInfo         = folderInfo;        }
+	public void setLength(            int                length)             {m_length             = length;            }
+	public void setStart(             int                start)              {m_start              = start;             }
+	public void setFolderColumns(     List<FolderColumn> folderColumns)      {m_folderColumns      = folderColumns;     }
+	public void setAuthenticationGuid(String             authenticationGuid) {m_authenticationGuid = authenticationGuid;}
+	public void setQuickFilter(       String             quickFilter)        {m_quickFilter        = quickFilter;       }
 	
 	/**
 	 * Returns the command's enumeration value.

@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.event.shared.EventHandler;
@@ -48,9 +47,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class GetManageTitleEvent extends VibeEventBase<GetManageTitleEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
-    private BinderInfo				m_binderInfo;	//
-    private ManageTitleCallback 	m_mutCallback;	//
-    private MobileDevicesViewSpec	m_mvSpec;		//
+    private BinderInfo			m_binderInfo;	//
+    private ManageTitleCallback	m_mutCallback;	//
 
     /**
      * Interface used by the implementor to return the title.
@@ -69,26 +67,16 @@ public class GetManageTitleEvent extends VibeEventBase<GetManageTitleEvent.Handl
 	/**
 	 * Class constructor.
 	 * 
+	 * @param bi
 	 * @param mutCallback
 	 */
-	public GetManageTitleEvent(BinderInfo bi, MobileDevicesViewSpec mvSpec, ManageTitleCallback mutCallback) {
+	public GetManageTitleEvent(BinderInfo bi, ManageTitleCallback mutCallback) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameter.
-		setBinderInfo(           bi         );
-		setManageTitleCallback(  mutCallback);
-		setMobileDevicesViewSpec(mvSpec     );
-	}
-
-	/**
-	 * Class constructor.
-	 * 
-	 * @param mutCallback
-	 */
-	public GetManageTitleEvent(BinderInfo bi, ManageTitleCallback mutCallback) {
-		// Initialize the this object.
-		this(bi, null, mutCallback);
+		setBinderInfo(         bi         );
+		setManageTitleCallback(mutCallback);
 	}
 
 	/**
@@ -96,18 +84,16 @@ public class GetManageTitleEvent extends VibeEventBase<GetManageTitleEvent.Handl
 	 * 
 	 * @return
 	 */
-	public BinderInfo            getBinderInfo()            {return m_binderInfo; }
-	public ManageTitleCallback   getManageTitleCallback()   {return m_mutCallback;}
-	public MobileDevicesViewSpec getMobileDevicesViewSpec() {return m_mvSpec;     }
+	public BinderInfo          getBinderInfo()          {return m_binderInfo; }
+	public ManageTitleCallback getManageTitleCallback() {return m_mutCallback;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderInfo(           BinderInfo            bi)          {m_binderInfo  = bi;         }
-	public void setManageTitleCallback(  ManageTitleCallback   mutCallback) {m_mutCallback = mutCallback;}
-	public void setMobileDevicesViewSpec(MobileDevicesViewSpec mvSpec)      {m_mvSpec      = mvSpec;     }
+	public void setBinderInfo(         BinderInfo          bi)          {m_binderInfo  = bi;         }
+	public void setManageTitleCallback(ManageTitleCallback mutCallback) {m_mutCallback = mutCallback;}
 	
 	/**
 	 * Dispatches this event when one is triggered.

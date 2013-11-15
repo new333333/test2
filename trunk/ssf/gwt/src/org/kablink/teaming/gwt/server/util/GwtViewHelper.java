@@ -107,7 +107,6 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
-import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
@@ -2754,10 +2753,10 @@ public class GwtViewHelper {
 			else if (colName.equals("description"))          {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
 			else if (colName.equals("descriptionHtml"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                           }
 			else if (colName.equals("deviceDescription"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);                                                         }
-			else if (colName.equals("deviceLastLogin"))      {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);                                                         }
-			else if (colName.equals("deviceUser"))           {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);                                                         }
-			else if (colName.equals("deviceWipeDate"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);                                                         }
-			else if (colName.equals("deviceWipeScheduled"))  {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);                                                         }
+			else if (colName.equals("deviceLastLogin"))      {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_LAST_LOGIN);                                                          }
+			else if (colName.equals("deviceUser"))           {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_USER);                                                                }
+			else if (colName.equals("deviceWipeDate"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_WIPE_DATE);                                                           }
+			else if (colName.equals("deviceWipeScheduled"))  {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_WIPE_SCHEDULED);                                                      }
 			else if (colName.equals("mobileDevices"))        {fc.setColumnSearchKey(FolderColumn.COLUMN_MOBILE_DEVICES);     fc.setColumnSortable(false);                            }
 			else if (colName.equals("download"))             {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                       }
 			else if (colName.equals("dueDate"))              {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                       }
@@ -3327,22 +3326,6 @@ public class GwtViewHelper {
 		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
 	}
 	
-	/*
-	 * Returns the entries for the given device set.
-	 */
-	@SuppressWarnings("unchecked")
-	private static Map getDeviceEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, MobileDevicesViewSpec mdvSpec) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getDeviceEntries()");
-		try {
-//!			...this needs to be implemented...
-			return buildEmptyEntryMap();
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-
 	/**
 	 * Returns a Map<String, EntityRights> of the current users rights
 	 * to the specified entities.
@@ -3711,12 +3694,11 @@ public class GwtViewHelper {
 	 * @param request
 	 * @param folderInfo
 	 * @param includeConfigurationInfo
-	 * @param mdvSpec
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, Boolean includeConfigurationInfo, MobileDevicesViewSpec mdvSpec) throws GwtTeamingException {
+	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, Boolean includeConfigurationInfo) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderColumns()");
 		try {
 			Long			folderId             = folderInfo.getBinderIdAsLong();
@@ -3733,7 +3715,7 @@ public class GwtViewHelper {
 			// Are we showing the trash on this folder?
 			String baseNameKey;
 			CollectionType collectionType = folderInfo.getCollectionType();
-			boolean        isMobileDevicesView = (null != mdvSpec);
+			boolean        isMobileDevicesView = folderInfo.getWorkspaceType().isMobileDevices();
 			boolean        isFileFolder        = ((null != folder) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)));
 			boolean        isCollection        = folderInfo.isBinderCollection();
 			boolean        isTrash             = folderInfo.isBinderTrash();
@@ -3749,7 +3731,7 @@ public class GwtViewHelper {
 			else if (isMobileDevicesView) {
 				// Yes!
 				baseNameKey = "mobileDevice.column.";
-				if (MobileDevicesViewSpec.SYSTEM.equals(mdvSpec))
+				if (folderInfo.getMobileDevicesViewSpec().isSystem())
 				     columnNames = getColumnsLHMFromAS(new String[]{"deviceUser", "deviceDescription", "deviceLastLogin", "deviceWipeScheduled", "deviceWipeDate"});
 				else columnNames = getColumnsLHMFromAS(new String[]{              "deviceDescription", "deviceLastLogin", "deviceWipeScheduled", "deviceWipeDate"});
 			}
@@ -4029,12 +4011,7 @@ public class GwtViewHelper {
 	
 	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
 		// Always use the initial form of the method.
-		return getFolderColumns(bs, request, folderInfo, Boolean.FALSE, null);
-	}
-
-	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, MobileDevicesViewSpec mdvSpec) throws GwtTeamingException {
-		// Always use the initial form of the method.
-		return getFolderColumns(bs, request, folderInfo, Boolean.FALSE, mdvSpec);
+		return getFolderColumns(bs, request, folderInfo, Boolean.FALSE);
 	}
 
 	/**
@@ -4062,6 +4039,12 @@ public class GwtViewHelper {
 			String propSortDescend = ObjectKeys.SEARCH_SORT_DESCEND;
 			if (folderInfo.isBinderCollection()) {
 				String cName     = ("." + String.valueOf(folderInfo.getCollectionType().ordinal()));
+				propSortBy      += cName;
+				propSortDescend += cName;
+			}
+			
+			else if (folderInfo.isBinderMobileDevices()) {
+				String cName     = ("." + String.valueOf(folderInfo.getMobileDevicesViewSpec().ordinal()));
 				propSortBy      += cName;
 				propSortDescend += cName;
 			}
@@ -4539,7 +4522,6 @@ public class GwtViewHelper {
 	 * @param request
 	 * @param folderInfo
 	 * @param folderColumns
-	 * @param mdvSpec
 	 * @param start
 	 * @param length
 	 * @param quickFilter
@@ -4548,7 +4530,7 @@ public class GwtViewHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, MobileDevicesViewSpec mdvSpec, int start, int length, String quickFilter, String authenticationGuid) throws GwtTeamingException {
+	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter, String authenticationGuid) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderRows()");
 		try {
 			// Is this a binder the user can view?
@@ -4590,9 +4572,9 @@ public class GwtViewHelper {
 			boolean isGuestbook             = false;
 			boolean isMilestone             = false;
 			boolean isSurvey                = false;
-			boolean isMobileDevicesViewSpec = (null != mdvSpec);
-			boolean isProfilesRootWS        = ((!isMobileDevicesViewSpec) && folderInfo.isBinderProfilesRootWS());
-			boolean isManageUsers           = ((!isMobileDevicesViewSpec) && folderInfo.isBinderProfilesRootWSManagement());
+			boolean isMobileDevicesViewSpec = folderInfo.isBinderMobileDevices();
+			boolean isProfilesRootWS        = folderInfo.isBinderProfilesRootWS();
+			boolean isManageUsers           = folderInfo.isBinderProfilesRootWSManagement();
 			boolean isTrash                 = folderInfo.isBinderTrash();
 			switch (folderInfo.getFolderType()) {
 			case GUESTBOOK:  isGuestbook = true; break;
@@ -4717,9 +4699,9 @@ public class GwtViewHelper {
 				// Read the entries based on a search.
 				Map searchResults;
 				if      (isTrash)                 searchResults = TrashHelper.getTrashEntities(bs, binder, options);
-				else if (isProfilesRootWS)        searchResults = getUserEntries(      bs, request, binder, quickFilter, options                            );
-				else if (isCollection)            searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, collectionType, shareItems);
-				else if (isMobileDevicesViewSpec) searchResults = getDeviceEntries(    bs, request, binder, quickFilter, options, mdvSpec                   );
+				else if (isProfilesRootWS)        searchResults = getUserEntries(        bs, request, binder, quickFilter, options                            );
+				else if (isCollection)            searchResults = getCollectionEntries(  bs, request, binder, quickFilter, options, collectionType, shareItems);
+				else if (isMobileDevicesViewSpec) searchResults = getMobileDeviceEntries(bs, request, binder, quickFilter, options, folderInfo                );
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
 					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
@@ -5724,6 +5706,22 @@ public class GwtViewHelper {
 		else if (v instanceof Long)   reply = ((Long) v);
 		else                          reply = -1L;
 		return reply;
+	}
+
+	/*
+	 * Returns the entries for the given mobile device set.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getMobileDeviceEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, BinderInfo bi) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getDeviceEntries()");
+		try {
+//!			...this needs to be implemented...
+			return buildEmptyEntryMap();
+		}
+		
+		finally {
+			gsp.stop();
+		}
 	}
 
 	/**

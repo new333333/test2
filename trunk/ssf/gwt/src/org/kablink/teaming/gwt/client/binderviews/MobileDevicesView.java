@@ -56,8 +56,6 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 	public final static boolean	SHOW_MOBILE_DEVICES			= false;	//! DRF (20131114):  Leave false on checkin until it's all working.
 	public final static boolean	ALWAYS_SHOW_MOBILE_DEVICES	= false;	//! DRF (20131114):  Leave false on checkin until it's all working.
 	
-	private Long	m_userId;	// null -> System mobile device view.  non-null -> Specific user device view.
-	
 	/*
 	 * Class constructor.
 	 * 
@@ -65,12 +63,9 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private MobileDevicesView(BinderInfo folderInfo, Long userId, ViewReady viewReady) {
-		// Initialize the base class...
+	private MobileDevicesView(BinderInfo folderInfo, ViewReady viewReady) {
+		// Initialize the super class.
 		super(folderInfo, viewReady, "vibe-mobileDevicesDataTable");
-		
-		// ...and store the remaining parameter.
-		m_userId = userId;
 	}
 	
 	/**
@@ -115,15 +110,14 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 	 * of it via the callback.
 	 * 
 	 * @param folderInfo
-	 * @param userId:	null -> System mobile device view.  non-null -> Specific user device view.
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final Long userId, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(MobileDevicesView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				MobileDevicesView dfView = new MobileDevicesView(folderInfo, userId, viewReady);
+				MobileDevicesView dfView = new MobileDevicesView(folderInfo, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			
@@ -151,27 +145,6 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 		return new EmptyMobileDevicesComposite(isSystemView());
 	}
 	
-	/**
-	 * Returns an indicator of which type of a mobile devices view this
-	 * is.
-	 * 
-	 * Overrides the FolderViewBase.getMobileDevicesViewSpec() method.
-	 * 
-	 * @return
-	 */
-	@Override
-	public MobileDevicesViewSpec getMobileDevicesViewSpec() {
-		MobileDevicesViewSpec reply;
-		if (isSystemView()) {
-			reply = MobileDevicesViewSpec.SYSTEM;
-		}
-		else {
-			reply = MobileDevicesViewSpec.USER;
-			reply.setUserId(m_userId);
-		}
-		return reply;
-	}
-
 	/**
 	 * Returns true for panels that are to be included and false
 	 * otherwise.
@@ -205,7 +178,7 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 	 * false otherwise.
 	 */
 	private boolean isSystemView() {
-		return (null == m_userId);
+		return getFolderInfo().getMobileDevicesViewSpec().isSystem();
 	}
 	
 	/**

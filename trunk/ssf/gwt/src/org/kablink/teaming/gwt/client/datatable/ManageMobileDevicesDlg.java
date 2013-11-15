@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
+import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
@@ -46,8 +47,8 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.rpc.shared.GetManageDevicesInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ManageDevicesInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetManageMobileDevicesInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ManageMobileDevicesInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.MobileDeviceRemovedCallback;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
@@ -89,7 +90,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 	private Integer								m_showCY;					//
 	private Label								m_mobileDevicesCountLabel;	// The mobile devices count Label that's stored in the dialog's caption.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private ManageDevicesInfoRpcResponseData	m_manageDevicesInfo;		// Information necessary to run the manage mobile devices dialog.
+	private ManageMobileDevicesInfoRpcResponseData	m_manageMobileDevicesInfo;		// Information necessary to run the manage mobile devices dialog.
 	private MobileDeviceRemovedCallback			m_removedCallback;			// Interface used to tell who's running the dialog that a device was removed .
 	private MobileDevicesInfo					m_mdInfo;					// The MobileDevicesInfo this ManageMobileDevicesDlg is running against.
 	private MobileDevicesView					m_mdView;					// The mobile devices view.
@@ -159,13 +160,13 @@ public class ManageMobileDevicesDlg extends DlgBox
 		// devices?
 		final ManageMobileDevicesDlg       mmdDlg       = this;
 		final ManageMobileDevicesDlgClient mmdDlgClient = ((ManageMobileDevicesDlgClient) callbackData);
-		GwtClientHelper.executeCommand(new GetManageDevicesInfoCmd(false), new AsyncCallback<VibeRpcResponse>() {
+		GwtClientHelper.executeCommand(new GetManageMobileDevicesInfoCmd(), new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				// No!  Tell the user about the problem...
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					m_messages.rpcFailure_GetManageDevicesInfo());
+					m_messages.rpcFailure_GetManageMobileDevicesInfo());
 
 				// ...and tell the caller that the dialog will be
 				// ...unavailable.
@@ -176,7 +177,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 			public void onSuccess(VibeRpcResponse result) {
 				// Yes!  Store it and tell the caller that the dialog
 				// is available.
-				m_manageDevicesInfo = ((ManageDevicesInfoRpcResponseData) result.getResponseData());
+				m_manageMobileDevicesInfo = ((ManageMobileDevicesInfoRpcResponseData) result.getResponseData());
 				mmdDlgClient.onSuccess(mmdDlg);
 			}
 		});
@@ -285,12 +286,12 @@ public class ManageMobileDevicesDlg extends DlgBox
 	@Override
 	public void onGetManageTitle(GetManageTitleEvent event) {
 		// If this event is targeted to this dialog...
-		if (event.getBinderInfo().isEqual(m_manageDevicesInfo.getProfilesRootWSInfo()) && (null != event.getMobileDevicesViewSpec())) {
+		if (event.getBinderInfo().isEqual(m_manageMobileDevicesInfo.getProfilesRootWSInfo())) {
 			// ...respond to it.
 			String txt;
 			if (null == m_mdInfo.getUserId())
 			     txt = m_messages.manageMobileDevicesDlgSystem();
-			else txt = m_messages.manageMobileDevicesDlgUser();
+			else txt = m_messages.manageMobileDevicesDlgUser(m_mdInfo.getClientItemTitle());
 			event.getManageTitleCallback().manageTitle(txt);
 		}
 	}
@@ -330,7 +331,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 		m_rootPanel.clear();
 		
 		// Create a MobileDevicesView widget.
-		MobileDevicesView.createAsync(m_manageDevicesInfo.getProfilesRootWSInfo(), m_mdInfo.getUserId(), this, new ViewClient() {
+		MobileDevicesView.createAsync(m_manageMobileDevicesInfo.getProfilesRootWSInfo(), this, new ViewClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -349,19 +350,10 @@ public class ManageMobileDevicesDlg extends DlgBox
 //!		...this needs to be implemented...
 		
 		// ...and show the dialog.
-		if (null != m_showRelativeTo) {
-			// Unused?
-			showRelativeTo(m_showRelativeTo);
-		}
-		else if ((null != m_showCX) && (null != m_showCY)) {
-			// For:  Manage system devices!
-			setFixedSize(    m_showCX, m_showCY);
-			setPopupPosition(m_showX,  m_showY );
-		}
-		else {
-			// For:  Manage user devices!
-			center();
-		}
+		setFixedSize(m_showCX, m_showCY);
+		if       (null != m_showRelativeTo)                showRelativeTo(  m_showRelativeTo );	// Unused?
+		else if ((null != m_showCX) && (null != m_showCY)) setPopupPosition(m_showX,  m_showY);	// For:  Manage system devices!
+		else                                               center();							// For:  Manage user devices!
 	}
 	
 	/*
@@ -409,9 +401,9 @@ public class ManageMobileDevicesDlg extends DlgBox
 		hcl.setStyleName("vibe-manageMobileDevicesDlg-headerCaption");
 		
 		// Set the dialog's caption and caption image...
-		setCaption(             mdInfo.getClientItemTitle()  );
-		setCaptionImage((Image) mdInfo.getClientItemImage()  );
-		setCaptionDevicesCount(mdInfo.getMobileDevicesCount());
+		setCaption(             mdInfo.getClientItemTitle()   );
+		setCaptionImage((Image) mdInfo.getClientItemImage()   );
+		setCaptionDevicesCount( mdInfo.getMobileDevicesCount());
 		
 		// ...store the parameters...
 		m_mdInfo          = mdInfo;
@@ -421,8 +413,21 @@ public class ManageMobileDevicesDlg extends DlgBox
 		m_showCX          = cx;
 		m_showCY          = cy;
 		m_removedCallback = removedCallback;
+
+		// ...update the ManageMobileDevicesInfo based on the
+		// ...parameters...
+		MobileDevicesViewSpec mdvSpec;
+		Long userId = mdInfo.getUserId();
+		if (null == userId) {
+			mdvSpec = MobileDevicesViewSpec.SYSTEM;
+		}
+		else {
+			mdvSpec = MobileDevicesViewSpec.USER;
+			mdvSpec.setUserId(userId);
+		}
+		m_manageMobileDevicesInfo.setMobileDeviceViewSpec(mdvSpec);
 		
-		// ...and start populating the dialog.
+		// ...and populate the dialog.
 		populateDlgAsync();
 	}
 

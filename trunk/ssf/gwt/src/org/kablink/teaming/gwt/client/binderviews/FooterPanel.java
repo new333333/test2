@@ -121,7 +121,7 @@ public class FooterPanel extends ToolPanelBase {
 	 */
 	private FooterPanel(RequiresResize containerResizer, BinderInfo binderInfo, EntityId entityId, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(containerResizer, binderInfo, entityId, null, toolPanelReady);
+		super(containerResizer, binderInfo, entityId, toolPanelReady);
 
 		// ...initialize the data members...
 		m_images   = GwtTeaming.getImageBundle();

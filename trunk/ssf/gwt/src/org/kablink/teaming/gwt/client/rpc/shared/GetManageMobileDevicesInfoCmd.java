@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,53 +32,61 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * This class holds the response data for the RPCs that return
- * information about managing devices.
+ * This class holds all of the information necessary to execute the
+ * 'get manage devices info' command.
  * 
  * @author drfoster@novell.com
  */
-public class ManageDevicesInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private BinderInfo	m_profilesRootWSInfo;	//
+public class GetManageMobileDevicesInfoCmd extends VibeRpcCmd {
+	private Long	m_userId;	//
 	
 	/**
-	 * Constructor method. 
+	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public ManageDevicesInfoRpcResponseData() {
+	public GetManageMobileDevicesInfoCmd() {
 		// Initialize the super class.
 		super();
 	}
-	
+
 	/**
-	 * Constructor method. 
+	 * Constructor method.
 	 * 
-	 * @param profilesRootWSInfo
+	 * @param userId
 	 */
-	public ManageDevicesInfoRpcResponseData(BinderInfo profilesRootWSInfo) {
-		// Initialize the super class...
-		super();
-		
+	public GetManageMobileDevicesInfoCmd(Long userId) {
+		// Initialize this object...
+		this();
+
 		// ...and store the parameter.
-		setProfilesRootWSInfo(profilesRootWSInfo);
+		setUserId(userId);
 	}
-	
+
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public BinderInfo getProfilesRootWSInfo() {return m_profilesRootWSInfo;}
-	
+	public Long getUserId() {return m_userId;}
+
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setProfilesRootWSInfo(BinderInfo profilesRootWSInfo) {m_profilesRootWSInfo = profilesRootWSInfo;}
+	public void setUserId(Long userId) {m_userId = userId;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_MANAGE_MOBILE_DEVICES_INFO.ordinal();
+	}
 }

@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 /**
@@ -42,9 +41,8 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
  * @author drfoster@novell.com
  */
 public class GetFolderColumnsCmd extends VibeRpcCmd {
-	private BinderInfo				m_folderInfo;				//
-	private Boolean					m_includeConfigurationInfo;	//
-	private MobileDevicesViewSpec	m_mdvSpec;					//
+	private BinderInfo	m_folderInfo;				//
+	private Boolean		m_includeConfigurationInfo;	//
 
 	/**
 	 * Constructor method.
@@ -60,24 +58,12 @@ public class GetFolderColumnsCmd extends VibeRpcCmd {
 	 * 
 	 * @param folderInfo
 	 * @param includeConfigurationInfo
-	 * @param mdvSpec
 	 */
-	public GetFolderColumnsCmd(BinderInfo folderInfo, Boolean includeConfigurationInfo, MobileDevicesViewSpec mdvSpec) {
+	public GetFolderColumnsCmd(BinderInfo folderInfo, Boolean includeConfigurationInfo) {
 		this();
 		
 		setFolderInfo(              folderInfo              );
 		setIncludeConfigurationInfo(includeConfigurationInfo);
-		setMobileDevicesViewSpec(   mdvSpec                 );
-	}
-	
-	/**
-	 * Constructor method
-	 * 
-	 * @param folderInfo
-	 * @param includeConfigurationInfo
-	 */
-	public GetFolderColumnsCmd(BinderInfo folderInfo, Boolean includeConfigurationInfo) {
-		this(folderInfo, includeConfigurationInfo, null);
 	}
 	
 	/**
@@ -86,17 +72,7 @@ public class GetFolderColumnsCmd extends VibeRpcCmd {
 	 * @param folderInfo
 	 */
 	public GetFolderColumnsCmd(BinderInfo folderInfo) {
-		this(folderInfo, Boolean.FALSE, null);
-	}
-	
-	/**
-	 * Constructor method
-	 * 
-	 * @param folderInfo
-	 * @param mdvSpec
-	 */
-	public GetFolderColumnsCmd(BinderInfo folderInfo, MobileDevicesViewSpec mdvSpec) {
-		this(folderInfo, Boolean.FALSE, mdvSpec);
+		this(folderInfo, Boolean.FALSE);
 	}
 	
 	/**
@@ -104,18 +80,16 @@ public class GetFolderColumnsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo            getFolderInfo()              {return m_folderInfo;              }
-	public Boolean               isIncludeConfigurationInfo() {return m_includeConfigurationInfo;}
-	public MobileDevicesViewSpec getMobileDevicesViewSpec()   {return m_mdvSpec;                 }
+	public BinderInfo getFolderInfo()              {return m_folderInfo;              }
+	public Boolean    isIncludeConfigurationInfo() {return m_includeConfigurationInfo;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(              BinderInfo            folderInfo)               {m_folderInfo               = folderInfo;              }
-	public void setIncludeConfigurationInfo(Boolean               includeConfigurationInfo) {m_includeConfigurationInfo = includeConfigurationInfo;}
-	public void setMobileDevicesViewSpec(   MobileDevicesViewSpec mdvSpec)                  {m_mdvSpec                  = mdvSpec;                 }
+	public void setFolderInfo(              BinderInfo folderInfo)               {m_folderInfo               = folderInfo;              }
+	public void setIncludeConfigurationInfo(Boolean    includeConfigurationInfo) {m_includeConfigurationInfo = includeConfigurationInfo;}
 	
 	/**
 	 * Returns the command's enumeration value.

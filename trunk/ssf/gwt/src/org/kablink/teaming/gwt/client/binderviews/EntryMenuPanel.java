@@ -1170,7 +1170,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case ENABLE_SELECTED_USERS_WEBACCESS:       event = new EnableSelectedUsersWebAccessEvent(    folderId      ); break;
 					case HIDE_ACCESSORIES:                      event = new HideAccessoriesEvent(                 folderId      ); break;
 					case HIDE_SELECTED_SHARES:                  event = new HideSelectedSharesEvent(              folderId      ); break;
-					case INVOKE_COLUMN_RESIZER:                 event = new InvokeColumnResizerEvent(             folderId      ); break;
+					case INVOKE_COLUMN_RESIZER:                 event = new InvokeColumnResizerEvent(             m_binderInfo  ); break;
 					case INVOKE_DROPBOX:                        event = new InvokeDropBoxEvent(                   folderId      ); break;
 					case INVOKE_SIGN_GUESTBOOK:                 event = new InvokeSignGuestbookEvent(             folderId      ); break;
 					case LOCK_SELECTED_ENTITIES:                event = new LockSelectedEntitiesEvent(            folderId      ); break;
