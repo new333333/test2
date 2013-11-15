@@ -162,12 +162,12 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	 */
 	public enum NetFolderRootType implements IsSerializable
 	{
-		CIFS,
+		WINDOWS,
 		CLOUD_FOLDERS,
 		FAMT,
 		FILE_SYSTEM,
-		NCP_NETWARE,
-		NCP_OES,
+		NETWARE,
+		OES,
 		SHARE_POINT_2010,
 		SHARE_POINT_2013,
 		WEB_DAV,
@@ -178,8 +178,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			if ( type == null )
 				return NetFolderRootType.FAMT;
 			
-			if ( type.equalsIgnoreCase( NetFolderRootType.CIFS.toString() ) )
-				return NetFolderRootType.CIFS;
+			if ( type.equalsIgnoreCase( NetFolderRootType.WINDOWS.toString() ) )
+				return NetFolderRootType.WINDOWS;
 			
 			if ( type.equalsIgnoreCase( NetFolderRootType.CLOUD_FOLDERS.toString() ) )
 				return NetFolderRootType.CLOUD_FOLDERS;
@@ -190,11 +190,11 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			if ( type.equalsIgnoreCase( NetFolderRootType.FILE_SYSTEM.toString() ) )
 				return NetFolderRootType.FILE_SYSTEM;
 			
-			if ( type.equalsIgnoreCase( NetFolderRootType.NCP_NETWARE.toString() ) )
-				return NetFolderRootType.NCP_NETWARE;
+			if ( type.equalsIgnoreCase( NetFolderRootType.NETWARE.toString() ) )
+				return NetFolderRootType.NETWARE;
 
-			if ( type.equalsIgnoreCase( NetFolderRootType.NCP_OES.toString() ) )
-				return NetFolderRootType.NCP_OES;
+			if ( type.equalsIgnoreCase( NetFolderRootType.OES.toString() ) )
+				return NetFolderRootType.OES;
 
 			if ( type.equalsIgnoreCase( NetFolderRootType.SHARE_POINT_2010.toString() ) )
 				return NetFolderRootType.SHARE_POINT_2010;
@@ -454,15 +454,15 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			
 			m_rootTypeListbox.addItem(
 					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_Windows(),
-					NetFolderRootType.CIFS.toString() );
+					NetFolderRootType.WINDOWS.toString() );
 		
 			m_rootTypeListbox.addItem(
 						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_OES(),
-						NetFolderRootType.NCP_OES.toString() );
+						NetFolderRootType.OES.toString() );
 			
 			m_rootTypeListbox.addItem(
 					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_Netware(),
-					NetFolderRootType.NCP_NETWARE.toString() );
+					NetFolderRootType.NETWARE.toString() );
 		
 			m_rootTypeListbox.addItem(
 					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2010(),
@@ -868,8 +868,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					
 					switch( type )
 					{
-					case NCP_OES:
-					case NCP_NETWARE:
+					case OES:
+					case NETWARE:
 						label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint1() );
 						m_serverPathHintPanel.add( label );
 
@@ -882,7 +882,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						m_useDirectoryRightsCB.setVisible( true );
 						break;
 						
-					case CIFS:
+					case WINDOWS:
 						label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint1() );
 						m_serverPathHintPanel.add( label );
 
@@ -1434,7 +1434,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_nameTxtBox.setValue( "" );
 		
 		if ( m_rootTypeListbox != null )
-			GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, NetFolderRootType.CIFS.toString() );
+			GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, NetFolderRootType.WINDOWS.toString() );
 		
 		m_rootPathTxtBox.setValue( "" );
 		m_proxyNameTxtBox.setValue( "" );
