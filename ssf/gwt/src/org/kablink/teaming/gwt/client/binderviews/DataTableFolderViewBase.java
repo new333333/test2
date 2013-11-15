@@ -216,7 +216,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public abstract class DataTableFolderViewBase extends FolderViewBase
 	implements ApplyColumnWidths,
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntitiesEvent.Handler,
 		ClearSelectedUsersAdHocFoldersEvent.Handler,
 		ClearSelectedUsersDownloadEvent.Handler,
@@ -1844,7 +1844,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void loadFolderColumnsNow() {
 		GwtClientHelper.executeCommand(
-				new GetFolderColumnsCmd(getFolderInfo(), getMobileDevicesViewSpec()),
+				new GetFolderColumnsCmd(getFolderInfo()),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -2638,8 +2638,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	@Override
 	public void onInvokeColumnResizer(InvokeColumnResizerEvent event) {
 		// Is the event targeted to this folder?
-		Long evenBinderId = event.getBinderId();
-		if (evenBinderId.equals(getFolderId())) {
+		BinderInfo evenBinderInfo = event.getBinderInfo();
+		if (evenBinderInfo.isEqual(getFolderInfo())) {
 			// Yes!  Invoke the column sizing dialog on the folder.
 			// Have we instantiated a size columns dialog yet?
 			if (null == m_sizeColumnsDlg) {
@@ -2970,7 +2970,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				new GetFolderRowsCmd(
 					getFolderInfo(),
 					m_folderColumnsList,
-					getMobileDevicesViewSpec(),
 					range.getStart(),
 					rowsRequested,
 					m_quickFilter,

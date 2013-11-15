@@ -178,6 +178,7 @@ import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
+import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
@@ -203,7 +204,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.Sys
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
-import org.kablink.teaming.gwt.client.rpc.shared.ManageDevicesInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ManageMobileDevicesInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigRpcResponseData;
@@ -6526,32 +6527,41 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Returns a ManageDevicesInfoRpcResponseData object
-	 * containing the information for managing devices.
+	 * Returns a ManageMobileDevicesInfoRpcResponseData object
+	 * containing the information for managing mobile devices.
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param systemDevices
+	 * @param userId
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ManageDevicesInfoRpcResponseData getManageDevicesInfo(AllModulesInjected bs, HttpServletRequest request, boolean systemDevices) throws GwtTeamingException {
+	public static ManageMobileDevicesInfoRpcResponseData getManageMobileDevicesInfo(AllModulesInjected bs, HttpServletRequest request, Long userId) throws GwtTeamingException {
 		try {
 			// Construct the ManageDevicesInfoRpcResponseData
 			// object we'll fill in and return.
 			BinderInfo bi = getBinderInfo(bs, request, bs.getProfileModule().getProfileBinderId());
 			if (!(bi.getWorkspaceType().isProfileRoot())) {
-				GwtLogHelper.error(m_logger, "GwtServerHelper.getManageDevicesInformation():  The workspace type of the profile root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.PROFILE_ROOT.name());
+				GwtLogHelper.error(m_logger, "GwtServerHelper.getManageMobileDevicesInformation():  The workspace type of the profile root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.PROFILE_ROOT.name());
 			}
-			bi.setWorkspaceType(WorkspaceType.PROFILE_ROOT_MANAGEMENT);
-			ManageDevicesInfoRpcResponseData reply = new ManageDevicesInfoRpcResponseData(bi);
+			MobileDevicesViewSpec mdvSpec;
+			if (null == userId) {
+				mdvSpec = MobileDevicesViewSpec.SYSTEM;
+			}
+			else {
+				mdvSpec = MobileDevicesViewSpec.USER;
+				mdvSpec.setUserId(userId);
+			}
+			bi.setWorkspaceType(        WorkspaceType.MOBILE_DEVICES);
+			bi.setMobileDevicesViewSpec(mdvSpec                     );
+			ManageMobileDevicesInfoRpcResponseData reply = new ManageMobileDevicesInfoRpcResponseData(bi);
 
 			// If we get here, reply refers to the
-			// ManageDevicesInfoRpcResponseData object
-			// containing the information about managing user.  Return
-			// it.
+			// ManageMobileDevicesInfoRpcResponseData object
+			// containing the information about managing mobile
+			// devices.  Return it.
 			return reply;
 		}
 		catch (Exception ex) {
@@ -10572,6 +10582,12 @@ public class GwtServerHelper {
 			String propSortDescend = ObjectKeys.SEARCH_SORT_DESCEND;
 			if (binderInfo.isBinderCollection()) {
 				String cName     = ("." + String.valueOf(binderInfo.getCollectionType().ordinal()));
+				propSortBy      += cName;
+				propSortDescend += cName;
+			}
+			
+			else if (binderInfo.isBinderMobileDevices()) {
+				String cName     = ("." + String.valueOf(binderInfo.getMobileDevicesViewSpec().ordinal()));
 				propSortBy      += cName;
 				propSortDescend += cName;
 			}

@@ -113,9 +113,9 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private BreadCrumbPanel(RequiresResize containerResizer, BinderInfo binderInfo, MobileDevicesViewSpec mvSpec, ToolPanelReady toolPanelReady) {
+	private BreadCrumbPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(containerResizer, binderInfo, mvSpec, toolPanelReady);
+		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...construct the root panel...
 		VibeFlowPanel rootContainer = new VibeFlowPanel();
@@ -184,11 +184,11 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final MobileDevicesViewSpec mvSpec, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(BreadCrumbPanel.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				BreadCrumbPanel bcp = new BreadCrumbPanel(containerResizer, binderInfo, mvSpec, toolPanelReady);
+				BreadCrumbPanel bcp = new BreadCrumbPanel(containerResizer, binderInfo, toolPanelReady);
 				tpClient.onSuccess(bcp);
 			}
 			
@@ -356,8 +356,8 @@ public class BreadCrumbPanel extends ToolPanelBase
 		
 		// No, we we aren't displaying a bread crumb panel for a
 		// collection!  Are we displaying it for the profile root
-		// workspace?
-		else if (m_binderInfo.isBinderWorkspace() && m_binderInfo.getWorkspaceType().isProfileRoot()) {
+		// workspace or a mobile devices view?
+		else if (m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderMobileDevices()) {
 			// Yes!  We don't need a tree, just the image and title.
 			// Create the panel for it...
 			VibeFlowPanel fp = new VibeFlowPanel();
@@ -365,11 +365,21 @@ public class BreadCrumbPanel extends ToolPanelBase
 
 			// ...create the image...
 			ImageResource iRes;
-			switch (BinderIconSize.getBreadCrumbIconSize()) {
-			default:
-			case SMALL:   iRes = m_filrImages.profileRoot();        break;
-			case MEDIUM:  iRes = m_filrImages.profileRoot_medium(); break;
-			case LARGE:   iRes = m_filrImages.profileRoot_large();  break;
+			if (m_binderInfo.isBinderProfilesRootWS()) {
+				switch (BinderIconSize.getBreadCrumbIconSize()) {
+				default:
+				case SMALL:   iRes = m_filrImages.profileRoot();        break;
+				case MEDIUM:  iRes = m_filrImages.profileRoot_medium(); break;
+				case LARGE:   iRes = m_filrImages.profileRoot_large();  break;
+				}
+			}
+			else {
+				switch (BinderIconSize.getBreadCrumbIconSize()) {
+				default:
+				case SMALL:   iRes = m_filrImages.mobileDevices();        break;
+				case MEDIUM:  iRes = m_filrImages.mobileDevices_medium(); break;
+				case LARGE:   iRes = m_filrImages.mobileDevices_large();  break;
+				}
 			}
 			Image i = GwtClientHelper.buildImage(iRes.getSafeUri().asString());
 			i.addStyleName("vibe-breadCrumbProfiles-image");
@@ -384,14 +394,17 @@ public class BreadCrumbPanel extends ToolPanelBase
 			fp.add(i);
 
 			// ...create the title label...
-			final InlineLabel il = new InlineLabel(m_messages.vibeDataTable_People());
+			String txt;
+			if (m_binderInfo.isBinderProfilesRootWS())
+			     txt = m_messages.vibeDataTable_People();
+			else txt = m_messages.vibeDataTable_MobileDevices();
+			final InlineLabel il = new InlineLabel(txt);
 			il.addStyleName("vibe-breadCrumbProfiles-label");
 			fp.add(il);
-			if (m_binderInfo.isBinderProfilesRootWS() && m_binderInfo.getWorkspaceType().isProfileRootManagement()) {
+			if (m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderMobileDevices()) {
 				GwtTeaming.fireEvent(
 					new GetManageTitleEvent(
 						m_binderInfo,
-						m_mvSpec,
 						new ManageTitleCallback() {
 							@Override
 							public void manageTitle(String title) {
@@ -442,12 +455,11 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * configuration menu and false otherwise.
 	 */
 	private boolean needsBinderConfig() {
-		boolean reply = (!(m_binderInfo.isBinderTrash()));
-		if (reply) {
-			reply = (
-				(!(m_binderInfo.isBinderProfilesRootWS())) ||
-				(!(m_binderInfo.getWorkspaceType().isProfileRootManagement())));
-		}
+		boolean reply = (
+			(!(m_binderInfo.isBinderProfilesRootWSManagement())) &&	// Not on manage users...
+			(!(m_binderInfo.isBinderMobileDevices()))            &&	// ...or the mobile devices view...
+			(!(m_binderInfo.isBinderTrash())));						// ...or the trash view.
+		
 		return reply;
 	}
 	
@@ -456,7 +468,12 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * false otherwise.
 	 */
 	private boolean needsTrashLink() {
-		boolean reply = ((!(m_binderInfo.isBinderTrash())) && (!(m_binderInfo.isBinderMirroredFolder())));
+		boolean reply = (
+			(!(m_binderInfo.isBinderProfilesRootWS())) &&	// Not on view of users...
+			(!(m_binderInfo.isBinderMirroredFolder())) &&	// ...or any mirrored/net folder...
+			(!(m_binderInfo.isBinderMobileDevices()))  &&	// ...or the mobile devices view...
+			(!(m_binderInfo.isBinderTrash())));				// ...or the trash view itself.
+		
 		if (reply) {
 			if (m_binderInfo.isBinderCollection()) {
 				switch (m_binderInfo.getCollectionType()) {
@@ -473,10 +490,11 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * link and false otherwise.
 	 */
 	private boolean needsWhatsNewLink() {
-		boolean reply = (!(m_binderInfo.isBinderTrash()));
-		if (reply) {
-			reply = (!(m_binderInfo.isBinderProfilesRootWS()));
-		}
+		boolean reply = (
+			(!(m_binderInfo.isBinderProfilesRootWS())) &&	// Not on any view of users...
+			(!(m_binderInfo.isBinderMobileDevices()))  &&	// ...or the mobile devices view...
+			(!(m_binderInfo.isBinderTrash())));				// ...or the trash view.
+		
 		return reply;
 	}
 	

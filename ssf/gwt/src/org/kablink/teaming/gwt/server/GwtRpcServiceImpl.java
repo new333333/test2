@@ -1474,8 +1474,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				this,
 				getRequest( ri ),
 				gfcCmd.getFolderInfo(),
-				gfcCmd.isIncludeConfigurationInfo(),
-				gfcCmd.getMobileDevicesViewSpec() );
+				gfcCmd.isIncludeConfigurationInfo() );
 			return new VibeRpcResponse( responseData );
 		}
 		
@@ -1519,7 +1518,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				getRequest( ri ),
 				gfrCmd.getFolderInfo(),
 				gfrCmd.getFolderColumns(),
-				gfrCmd.getMobileDevicesViewSpec(),
 				gfrCmd.getStart(),
 				gfrCmd.getLength(),
 				gfrCmd.getQuickFilter(),
@@ -1810,10 +1808,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_MANAGE_DEVICES_INFO:
+		case GET_MANAGE_MOBILE_DEVICES_INFO:
 		{
-			GetManageDevicesInfoCmd gmdiCmd = ((GetManageDevicesInfoCmd) cmd); 
-			ManageDevicesInfoRpcResponseData result = GwtServerHelper.getManageDevicesInfo( this, getRequest( ri ), gmdiCmd.isSystemDevices() );
+			GetManageMobileDevicesInfoCmd gmmdiCmd = ((GetManageMobileDevicesInfoCmd) cmd); 
+			ManageMobileDevicesInfoRpcResponseData result = GwtServerHelper.getManageMobileDevicesInfo( this, getRequest( ri ), gmmdiCmd.getUserId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

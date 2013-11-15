@@ -3066,9 +3066,10 @@ public class GwtMenuHelper {
 			// Are we returning the toolbar items for other than a
 			// trash or collections view and are we in other than Filr
 			// mode?
-			boolean isBinderCollection = folderInfo.isBinderCollection();
-			boolean isBinderTrash      = folderInfo.isBinderTrash();
-			if ((!isBinderTrash) && (!isBinderCollection) && (!(Utils.checkIfFilr()))) {
+			boolean isBinderCollection    = folderInfo.isBinderCollection();
+			boolean isBinderMobileDevices = folderInfo.isBinderMobileDevices();
+			boolean isBinderTrash         = folderInfo.isBinderTrash();
+			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderMobileDevices) && (!(Utils.checkIfFilr()))) {
 				// Yes!  Add the configure accessories item to the
 				// toolbar.
 				constructEntryConfigureAccessories(
@@ -3141,10 +3142,19 @@ public class GwtMenuHelper {
 					constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null), ct                 );
 				}
 			}
+
+			// No, we aren't returning the toolbar items for a
+			// collection view either!  Are we returning them for a
+			// mobile devices view?
+			else if (isBinderMobileDevices) {
+				// Yes!  Construct the appropriate menu items for
+				// it.
+//!				...this needs to be implemented...
+			}
 			
 			else {
 				// No, we aren't returning the toolbar items for a
-				// collection view either!  Is this is other than a
+				// mobile devices view either!  Is this is other than a
 				// mirrored folder, or if its a mirrored folder, is its
 				// resource driver configured?
 				boolean isMirrored           = (isFolder && folder.isMirrored());

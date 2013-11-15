@@ -93,7 +93,7 @@ public class EmptyMobileDevicesComposite extends ResizeComposite {
 		VibeFlowPanel fp = new VibeFlowPanel();
 		fp.addStyleName("vibe-emptyWidget-headImage");
 		m_rootPanel.add(fp);
-		Image i = GwtClientHelper.buildImage(m_filrImages.devices_transparent_72().getSafeUri().asString());
+		Image i = GwtClientHelper.buildImage(m_filrImages.mobileDevices_transparent_72().getSafeUri().asString());
 		fp.add(i);
 
 		// ...generate the header text...

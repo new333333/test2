@@ -97,7 +97,7 @@ public class DiscussionWSView extends WorkspaceViewBase implements ToolPanelRead
 			m_breadCrumbPanel.addStyleName( "vibe-discussionWSView_BreadCrumbPanel" );
 			m_mainPanel.add( m_breadCrumbPanel );
 
-			BreadCrumbPanel.createAsync( this, getBinderInfo(), null, this, new ToolPanelClient()
+			BreadCrumbPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()

@@ -51,7 +51,6 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 public abstract class ToolPanelBase extends ResizeComposite {
 	public    final        BinderInfo					m_binderInfo;									// Caches a  BinderInfo for use by this tool panel.
 	public    final        EntityId						m_entityId;										// Caches an EntityId   for use by this tool panel.
-	public    final        MobileDevicesViewSpec		m_mvSpec;										//
 	private   final        RequiresResize				m_containerResizer;								//
 	protected final static GwtTeamingFilrImageBundle	m_filrImages = GwtTeaming.getFilrImageBundle();	// Access to the GWT Filr image resources.
 	protected final static GwtTeamingImageBundle		m_images     = GwtTeaming.getImageBundle();		// Access to the GWT base image resources.
@@ -86,14 +85,13 @@ public abstract class ToolPanelBase extends ResizeComposite {
 	 * @param entityId
 	 * @param toolPanelReady
 	 */
-	public ToolPanelBase(RequiresResize containerResizer, BinderInfo binderInfo, EntityId entityId, MobileDevicesViewSpec mvSpec, ToolPanelReady toolPanelReady) {
+	public ToolPanelBase(RequiresResize containerResizer, BinderInfo binderInfo, EntityId entityId, ToolPanelReady toolPanelReady) {
 		// Initialize the superclass...
 		super();
 		
 		// ...and store the parameters.
 		m_binderInfo       = binderInfo;
 		m_entityId         = entityId;
-		m_mvSpec           = mvSpec;
 		m_containerResizer = containerResizer;
 		m_toolPanelReady   = toolPanelReady;
 	}
@@ -107,20 +105,7 @@ public abstract class ToolPanelBase extends ResizeComposite {
 	 */
 	public ToolPanelBase(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize this object.
-		this(containerResizer, binderInfo, null, null, toolPanelReady);
-	}
-
-	/**
-	 * Constructor method.
-	 *
-	 * @param containerResizer
-	 * @param binderInfo
-	 * @param mvSpec
-	 * @param toolPanelReady
-	 */
-	public ToolPanelBase(RequiresResize containerResizer, BinderInfo binderInfo, MobileDevicesViewSpec mvSpec, ToolPanelReady toolPanelReady) {
-		// Initialize this object.
-		this(containerResizer, binderInfo, null, mvSpec, toolPanelReady);
+		this(containerResizer, binderInfo, null, toolPanelReady);
 	}
 
 	/**
@@ -132,7 +117,7 @@ public abstract class ToolPanelBase extends ResizeComposite {
 	 */
 	public ToolPanelBase(RequiresResize containerResizer, EntityId entityId, ToolPanelReady toolPanelReady) {
 		// Initialize this object.
-		this(containerResizer, null, entityId, null, toolPanelReady);
+		this(containerResizer, null, entityId, toolPanelReady);
 	}
 
 	/*
