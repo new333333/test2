@@ -35,31 +35,85 @@ package org.kablink.teaming.gwt.client.binderviews;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Enumeration used to communicate the information about viewing mobile
- * devices between the client and the server as part of a GWT RPC
- * command.
+ * Class used to communicate information about viewing mobile devices
+ * between the client and the server as part of a GWT RPC command.
  * 
  * @author drfoster@novell.com
  */
-public enum MobileDevicesViewSpec implements IsSerializable {
-	SYSTEM,
-	USER;
-	
-	private Long m_userId;	// When value is USER, species which user.
+public class MobileDevicesViewSpec implements IsSerializable {
+	private Long 	m_userId;	// When m_mode is USER, species which user.
+	private Mode	m_mode;		// System vs. user view of mobile devices.
 
+	/**
+	 * Inner class used to specify which mode the view is in.
+	 */
+	public enum Mode implements IsSerializable {
+		SYSTEM,
+		USER;
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isSystem()  {return this.equals(SYSTEM);}
+		public boolean isUser()    {return this.equals(USER);  }
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * Zero parameter constructor as per GWT serialization
+	 * requirements.
+	 */
+	public MobileDevicesViewSpec() {
+		// Initialize the super class...
+		super();
+		
+		// ...and initialize everything else that requires it.
+		m_mode = Mode.SYSTEM;
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param mode
+	 * @param userId
+	 */
+	public MobileDevicesViewSpec(Mode mode, Long userId) {
+		// Initialize this object...
+		this();
+
+		// ...and store the parameters.
+		setMode(  mode  );
+		setUserId(userId);
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param mode
+	 */
+	public MobileDevicesViewSpec(Mode mode) {
+		// Initialize this object.
+		this(mode, null);
+	}
+	
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public boolean isSystem()  {return this.equals(SYSTEM);}
-	public boolean isUser()    {return this.equals(USER);  }
-	public Long    getUserId() {return m_userId;           }
+	public boolean isSystem()  {return m_mode.isSystem();}
+	public boolean isUser()    {return m_mode.isUser();  }
+	public Long    getUserId() {return m_userId;         }
+	public Mode    getMode()   {return m_mode;           }
 	
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param userId
+	 * @param
 	 */
 	public void setUserId(Long userId) {m_userId = userId;}
+	public void setMode(  Mode mode)   {m_mode   = mode;  }
 }

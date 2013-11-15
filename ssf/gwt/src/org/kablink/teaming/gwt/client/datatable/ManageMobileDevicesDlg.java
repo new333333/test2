@@ -418,7 +418,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 			
 			setCaption(m_messages.manageMobileDevicesDlgCaptionSystem());
 			
-			mdvSpec = MobileDevicesViewSpec.SYSTEM;
+			mdvSpec = new MobileDevicesViewSpec(MobileDevicesViewSpec.Mode.SYSTEM);
 		}
 		else {
 			removeStyleName("vibe-manageMobileDevicesDlg-system");
@@ -431,8 +431,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 			setCaptionImage((Image) mdInfo.getClientItemImage()   );
 			setCaptionDevicesCount( mdInfo.getMobileDevicesCount());
 			
-			mdvSpec = MobileDevicesViewSpec.USER;
-			mdvSpec.setUserId(userId);
+			mdvSpec = new MobileDevicesViewSpec(MobileDevicesViewSpec.Mode.USER, userId);
 		}
 		m_manageMobileDevicesInfo.setMobileDeviceViewSpec(mdvSpec);
 		

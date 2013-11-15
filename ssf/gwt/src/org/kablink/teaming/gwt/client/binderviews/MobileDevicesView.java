@@ -79,14 +79,14 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
 		if (isSystemView()) {
-			columnWidths.put(FolderColumn.COLUMN_DEVICE_DESCRIPTION, new ColumnWidth(100));
-		}
-		else {
 			columnWidths.put(FolderColumn.COLUMN_DEVICE_USER,        new ColumnWidth(24));
 			columnWidths.put(FolderColumn.COLUMN_DEVICE_DESCRIPTION, new ColumnWidth(76));
 		}
+		else {
+			columnWidths.put(FolderColumn.COLUMN_DEVICE_DESCRIPTION, new ColumnWidth(100));
+		}
 		columnWidths.put(FolderColumn.COLUMN_DEVICE_LAST_LOGIN,     new ColumnWidth(160, Unit.PX));	// Unless otherwise specified...
-		columnWidths.put(FolderColumn.COLUMN_DEVICE_WIPE_SCHEDULED, new ColumnWidth( 70, Unit.PX));	// ...the widths default to...
+		columnWidths.put(FolderColumn.COLUMN_DEVICE_WIPE_SCHEDULED, new ColumnWidth(100, Unit.PX));	// ...the widths default to...
 		columnWidths.put(FolderColumn.COLUMN_DEVICE_WIPE_DATE,      new ColumnWidth(160, Unit.PX));	// ...be a percentage value.
 	}
 
