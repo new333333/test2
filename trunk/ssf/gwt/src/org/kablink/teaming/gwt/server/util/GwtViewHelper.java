@@ -4038,13 +4038,13 @@ public class GwtViewHelper {
 			String propSortBy      = ObjectKeys.SEARCH_SORT_BY;
 			String propSortDescend = ObjectKeys.SEARCH_SORT_DESCEND;
 			if (folderInfo.isBinderCollection()) {
-				String cName     = ("." + String.valueOf(folderInfo.getCollectionType().ordinal()));
+				String cName     = (".collection." + String.valueOf(folderInfo.getCollectionType().ordinal()));
 				propSortBy      += cName;
 				propSortDescend += cName;
 			}
 			
 			else if (folderInfo.isBinderMobileDevices()) {
-				String cName     = ("." + String.valueOf(folderInfo.getMobileDevicesViewSpec().ordinal()));
+				String cName     = (".devices." + String.valueOf(folderInfo.getMobileDevicesViewSpec().ordinal()));
 				propSortBy      += cName;
 				propSortDescend += cName;
 			}

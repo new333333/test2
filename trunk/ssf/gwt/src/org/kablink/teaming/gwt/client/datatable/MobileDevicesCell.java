@@ -57,7 +57,6 @@ import com.google.gwt.user.client.DOM;
  * 
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implements MobileDeviceRemovedCallback {
 	private GwtTeamingMessages		m_messages;			// Access to the Vibe string resources we need for this cell.
 	private ManageMobileDevicesDlg	m_manageMobileDevicesDlg;	// A manage mobile devices dialog, once one is instantiated.
@@ -198,7 +197,8 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 		
 		// ...and if there are any devices...
 		Element dpE = devicesBubble.getElement();
-		if (MobileDevicesView.SHOW_MOBILE_DEVICES && ((0 < deviceCount) || MobileDevicesView.ALWAYS_SHOW_MOBILE_DEVICES)) {
+		boolean alwaysShow = MobileDevicesView.ALWAYS_SHOW_MOBILE_DEVICES_USER;
+		if ((0 < deviceCount) || alwaysShow) {
 			// ...we make the bubble clickable so that the device list
 			// ...can be managed...
 			devicesBubble.addStyleName("cursorPointer"                             );
@@ -237,6 +237,11 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 	 * Runs the manage devices dialog against the given user. 
 	 */
 	private void showManageMobileDevicesDlg(final MobileDevicesInfo mdInfo, final Element relativeToThis) {
+		if (!MobileDevicesView.SHOW_MOBILE_DEVICES_USER) {
+			GwtClientHelper.deferredAlert("MobileDevicesCell.showManageMobileDevicesDlg():  ...this needs to be implemented...");
+			return;
+		}
+		
 		// Have we instantiated a manage devices dialog yet?
 		if (null == m_manageMobileDevicesDlg) {
 			// No!  Instantiate one now.

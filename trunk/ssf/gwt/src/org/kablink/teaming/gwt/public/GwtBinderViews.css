@@ -504,18 +504,13 @@
 /* End:  Manage comments dialog styles. */
 
 /* Start:  Manage devices dialog styles. */
-	.vibe-manageMobileDevicesDlg               {width: 800px; height: 600px;}
-	.vibe-manageMobileDevicesDlg .popupContent {background-color: white !important;}
-	.vibe-manageMobileDevicesDlg-captionCount  {
-		position: absolute;
-		top: 8px;
-		right: 0px;
-		padding-left: 10px;
-		padding-right: 20px;
-		font-size: 13px;
-	}
-	.vibe-manageMobileDevicesDlg-panel         {}
-	.vibe-manageMobileDevicesDlg-headerCaption {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 420px;}
+	.vibe-manageMobileDevicesDlg                    {}
+	.vibe-manageMobileDevicesDlg .popupContent      {background-color: white !important;}
+	.vibe-manageMobileDevicesDlg-captionCount       {position: absolute; top: 8px; right: 0px; padding-left: 10px; padding-right: 20px; font-size: 13px;}
+	.vibe-manageMobileDevicesDlg-headerCaption-user {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 600px;}
+	.vibe-manageMobileDevicesDlg-panel              {}
+	.vibe-manageMobileDevicesDlg-system             {}
+	.vibe-manageMobileDevicesDlg-user               {width: 800px; height: 600px;}
 /* End:  Manage devices dialog styles. */
 
 /* Start:  Size columns dialog styles. */

@@ -2621,6 +2621,31 @@ public class GwtServerHelper {
 			}
 			catch(AccessControlException e) {}
 
+			// Are we running the Enterprise version?
+			if ( ReleaseInfo.isLicenseRequiredEdition() == true )
+			{
+				// Does the user have rights to "Manage Mobile Devices"?
+				try
+				{
+					if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
+					{
+						title = NLT.get( "administration.manage.mobileDevices" );
+						
+						adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+						adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_MOBILE_DEVICES );
+						url = adaptedUrl.toString();
+						
+						adminAction = new GwtAdminAction();
+						adminAction.init( title, url, AdminAction.MANAGE_MOBILE_DEVICES );
+						
+						// Add this action to the "Management" category
+						managementCategory.addAdminOption( adminAction );
+					}
+				}
+				catch( AccessControlException e )
+				{}
+			}
+
 //!			...this needs to be implemented..
 			// DRF (20131105):
 			//    As part of Lynn's redesign of the Management and
@@ -9960,6 +9985,7 @@ public class GwtServerHelper {
 		case GET_LOGGED_IN_USER_PERMALINK:
 		case GET_LOGIN_INFO:
 		case GET_MAIN_PAGE_INFO:
+		case GET_MANAGE_MOBILE_DEVICES_INFO:
 		case GET_MANAGE_USERS_INFO:
 		case GET_MANAGE_USERS_STATE:
 		case GET_MICRO_BLOG_URL:
@@ -10581,13 +10607,13 @@ public class GwtServerHelper {
 			String propSortBy      = ObjectKeys.SEARCH_SORT_BY;
 			String propSortDescend = ObjectKeys.SEARCH_SORT_DESCEND;
 			if (binderInfo.isBinderCollection()) {
-				String cName     = ("." + String.valueOf(binderInfo.getCollectionType().ordinal()));
+				String cName     = (".collection." + String.valueOf(binderInfo.getCollectionType().ordinal()));
 				propSortBy      += cName;
 				propSortDescend += cName;
 			}
 			
 			else if (binderInfo.isBinderMobileDevices()) {
-				String cName     = ("." + String.valueOf(binderInfo.getMobileDevicesViewSpec().ordinal()));
+				String cName     = (".devices." + String.valueOf(binderInfo.getMobileDevicesViewSpec().ordinal()));
 				propSortBy      += cName;
 				propSortDescend += cName;
 			}

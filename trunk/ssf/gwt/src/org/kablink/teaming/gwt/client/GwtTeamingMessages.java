@@ -3177,6 +3177,7 @@ public interface GwtTeamingMessages extends Messages
 	String nameCompletionSettingsDlg_Title();
 	
 	// Strings used in the Manage Devices dialog.
+	String manageMobileDevicesDlgCaptionSystem();
 	String manageMobileDevicesDlgDevices(int dCount);
 	String manageMobileDevicesDlgSystem();
 	String manageMobileDevicesDlgUser(String title);

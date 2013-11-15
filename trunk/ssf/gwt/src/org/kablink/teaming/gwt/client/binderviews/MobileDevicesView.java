@@ -53,8 +53,9 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class MobileDevicesView extends DataTableFolderViewBase {
-	public final static boolean	SHOW_MOBILE_DEVICES			= false;	//! DRF (20131114):  Leave false on checkin until it's all working.
-	public final static boolean	ALWAYS_SHOW_MOBILE_DEVICES	= false;	//! DRF (20131114):  Leave false on checkin until it's all working.
+	public final static boolean	SHOW_MOBILE_DEVICES_SYSTEM		= false;	//! DRF (20131114):  Leave false on checkin until it's all working.
+	public final static boolean	SHOW_MOBILE_DEVICES_USER		= false;	//! DRF (20131114):  Leave false on checkin until it's all working.
+	public final static boolean	ALWAYS_SHOW_MOBILE_DEVICES_USER	= false;	//! DRF (20131114):  Leave false on checkin until it's all working.
 	
 	/*
 	 * Class constructor.

@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg;
+import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg.ManageMobileDevicesDlgClient;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureAdhocFoldersDlgEvent;
@@ -46,6 +48,7 @@ import org.kablink.teaming.gwt.client.event.InvokeEditLdapConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeJitsZoneConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageMobileDevicesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
@@ -73,6 +76,7 @@ import org.kablink.teaming.gwt.client.admin.AdminConsoleHomePage;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
+import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
@@ -81,6 +85,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
@@ -153,6 +158,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
+		InvokeManageMobileDevicesDlgEvent.Handler,
 		InvokeManageUsersDlgEvent.Handler,
 		InvokeNameCompletionSettingsDlgEvent.Handler,
 		InvokeRunAReportDlgEvent.Handler,
@@ -180,6 +186,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
+	private ManageMobileDevicesDlg m_manageMobileDevicesDlg = null;
 	private ManageUsersDlg m_manageUsersDlg = null;
 	private RunAReportDlg m_runAReportDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
@@ -214,6 +221,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
 		TeamingEvents.INVOKE_NAME_COMPLETION_SETTINGS_DLG,
 		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
+		TeamingEvents.INVOKE_MANAGE_MOBILE_DEVICES_DLG,
 		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
 		TeamingEvents.INVOKE_USER_DESKTOP_SETTINGS_DLG,
@@ -389,8 +397,14 @@ public class AdminControl extends TeamingPopupPanel
 			actions = category.getActions();
 			if ( actions != null )
 			{
+				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
 				for (GwtAdminAction action : actions )
 				{
+					if ( action.getActionType().equals( AdminAction.MANAGE_MOBILE_DEVICES ) && ( ! showManageMobileDevices ) )
+					{
+						continue;
+					}
+					
 					AdminActionControl adminActionControl;
 					
 					// Add a ui widget for this administration action.
@@ -866,6 +880,12 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Manage users" dialog.
 			InvokeManageUsersDlgEvent.fireOne();
+		}
+		
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_MOBILE_DEVICES )
+		{
+			// Fire the event to invoke the "Manage mobile devices" dialog.
+			InvokeManageMobileDevicesDlgEvent.fireOne();
 		}
 		
 		else if ( adminAction.getActionType() == AdminAction.RUN_A_REPORT )
@@ -2608,6 +2628,64 @@ public class AdminControl extends TeamingPopupPanel
 			m_manageGroupsDlg.init();
 			m_manageGroupsDlg.setPopupPosition( x, y );
 			m_manageGroupsDlg.show();
+		}
+	}
+	
+	/**
+	 * Handles InvokeManageMobileDevicesDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeManageMobileDevicesDlgEvent.Handler.onInvokeManageMobileDevicesDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageMobileDevicesDlg( InvokeManageMobileDevicesDlgEvent event )
+	{
+		// Get the position of the content control.
+		final int x = m_contentControlX;
+		final int y = m_contentControlY;
+		
+		// Have we already created a "Manage Mobile Devices" dialog?
+		if ( m_manageMobileDevicesDlg == null )
+		{
+			// No, create one.
+			ManageMobileDevicesDlg.createAsync( new ManageMobileDevicesDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ManageMobileDevicesDlg mmdDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_manageMobileDevicesDlg = mmdDlg;
+							ManageMobileDevicesDlg.initAndShow( m_manageMobileDevicesDlg, new MobileDevicesInfo(), x, y, m_dlgWidth, m_dlgHeight );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			},
+			x, 
+			y,
+			m_dlgWidth,
+			m_dlgHeight );
+		}
+		
+		else
+		{
+			// Yes, we've already created a "Manage Mobile Devices" dialog!
+			// Simply initialize and show it.
+			m_manageMobileDevicesDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
+			ManageMobileDevicesDlg.initAndShow( m_manageMobileDevicesDlg, new MobileDevicesInfo(), x, y, m_dlgWidth, m_dlgHeight );
 		}
 	}
 	
