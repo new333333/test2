@@ -87,7 +87,6 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.util.UserType;
-import org.kablink.teaming.gwt.client.widgets.EditShareDlg.EditShareDlgClient;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
@@ -101,7 +100,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -172,13 +170,13 @@ public class ShareThisDlg2 extends DlgBox
 	private CheckBox m_notifyCheckbox;
 	private Image m_addExternalUserImg;
 	private FlowPanel m_mainPanel;
-	private FlowPanel m_editSharePanel;
 	private FlexTable m_addShareTable;
 	private InlineLabel m_shareWithTeamsLabel;
 	private InlineLabel m_manageSharesFindCtrlLabel;
 	private ShareSendToWidget m_sendToWidget;
 	private FlowPanel m_makePublicPanel;
 	private FlowPanel m_manageShareItemsPanel;
+	private FlowPanel m_editSharePanel;
 	private ListBox m_findByListbox;
 	private List<EntityId> m_entityIds;
 	private GwtSharingInfo m_sharingInfo;		// Holds all of the sharing info for the entities we are working with.
@@ -190,7 +188,7 @@ public class ShareThisDlg2 extends DlgBox
 	private AsyncCallback<VibeRpcResponse> m_sendNotificationEmailCallback;
 	private ShareExpirationValue m_defaultShareExpirationValue;
 	private ShareWithTeamsDlg m_shareWithTeamsDlg;
-	private EditShareDlg m_editShareDlg;
+	private EditShareWidget m_editShareWidget;
 	private EditSuccessfulHandler m_editShareHandler;
 	private EditSuccessfulHandler m_editShareWithTeamsHandler;
 	
@@ -995,10 +993,18 @@ public class ShareThisDlg2 extends DlgBox
 				leftPanel.setCellHeight( m_pager, "100%" );
 				leftPanel.add( m_pager );
 				
-				// Create a panel where the "edit share" dialog will be placed.
-				m_editSharePanel = new FlowPanel();
-				m_editSharePanel.setWidth( "350px" );
-				m_editSharePanel.setHeight( "400px" );
+				// Create a panel where the "edit share" widget will be placed.
+				{
+					m_editSharePanel = new FlowPanel();
+					m_editSharePanel.addStyleName( "shareThisDlg_EditSharePanel" );
+					m_editSharePanel.setWidth( "400px" );
+					m_editSharePanel.setHeight( "360px" );
+					
+					// Create the Edit Share widget
+					m_editShareWidget = new EditShareWidget();
+					m_editSharePanel.add( m_editShareWidget );
+					m_editShareWidget.setVisible( false );
+				}
 
 				hPanel = new HorizontalPanel();
 				hPanel.add( leftPanel );
@@ -1988,6 +1994,8 @@ public class ShareThisDlg2 extends DlgBox
 		hideStatusMsg();
 		setOkEnabled( true );
 
+		m_editShareWidget.setVisible( false );
+		
 		m_selectAllHeader.setValue( false );
 
 		// Set the widget that will be displayed when there are no shares
@@ -2174,7 +2182,7 @@ public class ShareThisDlg2 extends DlgBox
 					{
 						Boolean retValue;
 						
-						// Did the "Edit Share Rights" dialog successfully update
+						// Did the "Edit Share" widget successfully update
 						// our GwtShareItem.
 						retValue = (Boolean) obj;
 						if ( retValue == true )
@@ -2186,7 +2194,7 @@ public class ShareThisDlg2 extends DlgBox
 								@Override
 								public void execute() 
 								{
-									refreshShareInfoUI( m_editShareDlg.getListOfShareItems() );
+									refreshShareInfoUI( m_editShareWidget.getListOfShareItems() );
 								}
 							};
 							Scheduler.get().scheduleDeferred( cmd );
@@ -2198,70 +2206,50 @@ public class ShareThisDlg2 extends DlgBox
 			};
 		}
 
-		if ( m_editShareDlg == null )
-		{
-			int x;
-			int y;
+		ShareRights highestRightsPossible;
+		GwtShareItem shareItem;
+		boolean recipientIsExternal = false;
+		boolean recipientIsPublic = false;
+		boolean isPublicLink = false;
 
-			// Get the position of where the "edit share" dialog needs to be.
-			x = m_editSharePanel.getAbsoluteLeft();
-			y = m_editSharePanel.getAbsoluteTop();
-			
-			EditShareDlg.createAsync(
-								true, 
-								true,
-								x, 
-								y,
-								new EditShareDlgClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( final EditShareDlg esDlg )
-				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
-					{
-						@Override
-						public void execute() 
-						{
-							m_editShareDlg = esDlg;
-							
-							invokeEditShareDlg( listOfShareItems );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
+		shareItem = listOfShareItems.get( 0 );
+		
+		// Are we dealing with only 1 share item?
+		if ( listOfShareItems.size() == 1 )
+		{
+			// Yes
+			highestRightsPossible = m_sharingInfo.getShareRights( shareItem.getEntityId() );
+
+			// Is the recipient an external user?
+			if ( shareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
+			{
+				// Yes
+				recipientIsExternal = true;
+			}
+			else if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
+			{
+				recipientIsPublic = true;
+			}
+			else if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_LINK )
+			{
+				isPublicLink = true;
+			}
 		}
 		else
 		{
-			ShareRights highestRightsPossible;
-			GwtShareItem shareItem;
-			boolean recipientIsExternal = false;
-			boolean recipientIsPublic = false;
-			boolean isPublicLink = false;
-
-			shareItem = listOfShareItems.get( 0 );
+			// Look at each item being shared and return the highest rights possible
+			// that is available on all items being shared.
+			highestRightsPossible = calculateHighestRightsPossible( listOfShareItems );
 			
-			// Are we dealing with only 1 share item?
-			if ( listOfShareItems.size() == 1 )
+			// Go through the list of share items and see if a recipient is an external user
+			// or a public user.
+			for ( GwtShareItem nextShareItem : listOfShareItems )
 			{
-				// Yes
-				highestRightsPossible = m_sharingInfo.getShareRights( shareItem.getEntityId() );
-
-				// Is the recipient an external user?
-				if ( shareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
+				if ( nextShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
 				{
-					// Yes
 					recipientIsExternal = true;
 				}
-				else if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
+				else if ( nextShareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
 				{
 					recipientIsPublic = true;
 				}
@@ -2270,81 +2258,38 @@ public class ShareThisDlg2 extends DlgBox
 					isPublicLink = true;
 				}
 			}
-			else
-			{
-				// Look at each item being shared and return the highest rights possible
-				// that is available on all items being shared.
-				highestRightsPossible = calculateHighestRightsPossible( listOfShareItems );
-				
-				// Go through the list of share items and see if a recipient is an external user
-				// or a public user.
-				for ( GwtShareItem nextShareItem : listOfShareItems )
-				{
-					if ( nextShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
-					{
-						recipientIsExternal = true;
-					}
-					else if ( nextShareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
-					{
-						recipientIsPublic = true;
-					}
-					else if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_LINK )
-					{
-						isPublicLink = true;
-					}
-				}
-			}
-
-			// Is the recipient the public user or a public link?
-			if ( recipientIsPublic || isPublicLink )
-			{
-				// Yes, the public can only have "Viewer" rights.
-				highestRightsPossible = new ShareRights();
-				highestRightsPossible.setAccessRights( AccessRights.VIEWER );
-				highestRightsPossible.setCanShareForward( false );
-				highestRightsPossible.setCanShareWithExternalUsers( false );
-				highestRightsPossible.setCanShareWithInternalUsers( false );
-				highestRightsPossible.setCanShareWithPublic( false );
-			}
-			// Is the recipient of the share an external user?
-			else if ( recipientIsExternal )
-			{
-				AccessRights accessRights;
-				
-				accessRights = highestRightsPossible.getAccessRights();
-				
-				// Yes, don't let the external user do any re-share
-				highestRightsPossible = new ShareRights();
-				highestRightsPossible.setAccessRights( accessRights );
-				highestRightsPossible.setCanShareForward( false );
-				highestRightsPossible.setCanShareWithExternalUsers( false );
-				highestRightsPossible.setCanShareWithInternalUsers( false );
-				highestRightsPossible.setCanShareWithPublic( false );
-			}
-			
-			m_editShareDlg.init( listOfShareItems, highestRightsPossible, m_editShareHandler );
-			m_editShareDlg.show();
-			
-			// Make the right-hand panel the same width as the Edit Share dialog
-			// and the same height as the table that holds the list of shares.
-			{
-				Scheduler.ScheduledCommand cmd;
-
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						Style style;
-						
-						style = m_editSharePanel.getElement().getStyle();
-						style.setWidth( m_editShareDlg.getOffsetWidth(), Unit.PX );
-						style.setHeight( m_shareTable.getOffsetHeight(), Unit.PX );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
 		}
+
+		// Is the recipient the public user or a public link?
+		if ( recipientIsPublic || isPublicLink )
+		{
+			// Yes, the public can only have "Viewer" rights.
+			highestRightsPossible = new ShareRights();
+			highestRightsPossible.setAccessRights( AccessRights.VIEWER );
+			highestRightsPossible.setCanShareForward( false );
+			highestRightsPossible.setCanShareWithExternalUsers( false );
+			highestRightsPossible.setCanShareWithInternalUsers( false );
+			highestRightsPossible.setCanShareWithPublic( false );
+		}
+		// Is the recipient of the share an external user?
+		else if ( recipientIsExternal )
+		{
+			AccessRights accessRights;
+			
+			accessRights = highestRightsPossible.getAccessRights();
+			
+			// Yes, don't let the external user do any re-share
+			highestRightsPossible = new ShareRights();
+			highestRightsPossible.setAccessRights( accessRights );
+			highestRightsPossible.setCanShareForward( false );
+			highestRightsPossible.setCanShareWithExternalUsers( false );
+			highestRightsPossible.setCanShareWithInternalUsers( false );
+			highestRightsPossible.setCanShareWithPublic( false );
+		}
+		
+		m_editShareWidget.setWidgetHeight( m_editSharePanel.getOffsetHeight() );
+		m_editShareWidget.init( listOfShareItems, highestRightsPossible, m_editShareHandler );
+		m_editShareWidget.setVisible( true );
 	}
 	
 	/**
