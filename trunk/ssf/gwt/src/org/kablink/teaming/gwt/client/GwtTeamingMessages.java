@@ -222,6 +222,7 @@ public interface GwtTeamingMessages extends Messages
 	String _8();
 	String _9();
 	String _10();
+	String apply();
 	String betaWithProduct( String productName );
 	String cancel();
 	String cantAccessEntry();

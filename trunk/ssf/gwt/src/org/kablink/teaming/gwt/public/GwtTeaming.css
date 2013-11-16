@@ -634,6 +634,14 @@
 	font-style: italic;
 }
 
+.shareThisDlg_EditSharePanel
+{
+	background-color: #EDEDED;
+	height: 360px;
+	margin-left: 6px;
+	width: 400px;
+}
+
 .shareThisDlg_ExpiresLabel, .shareThisDlg_DefaultExpiresLabel
 {
 	color: #135c8f;
@@ -5967,7 +5975,7 @@ td.datePickerMonth {
 
 /* End: Name Completion Settings dialog */
 
-/* Start:  Styles used in the "Configure Mobile Applications" dialog. */
+/* Start:  Styles used in the "Edit Share" widget. */
 	.configMobileAppsDlg_AndroidPanel {padding-top: 5px; padding-left: 20px;}  
 	.configMobileAppsDlg_IosPanel     {padding-top: 5px; padding-left: 20px;}  
 	.configMobileAppsDlg_List         {width: 250px;}
@@ -5978,5 +5986,49 @@ td.datePickerMonth {
 	.configMobileAppsDlg_OpenInLabel  {font-size: 16px;}
 	.configMobileAppsDlg_OpenInSelect {font-size: 13px;}
 /* End:  Styles used in the "Configure Mobile Applications" dialog. */
-  
+
+
+/* Start:  Styles used in the "Configure Mobile Applications" dialog. */
+
+.editShareWidget_contentPanel
+{
+	background-color: white;
+    padding: 6px 10px;
+}
+
+.editShareWidget_footerPanel
+{
+	background-color: white;
+	text-align: left;
+	padding-bottom: 10px;
+	padding-left: 6px;
+}
+
+.editShareWidget_headerPanel
+{
+	color: #fff;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 5px;
+	white-space: nowrap;
+	vertical-align: middle;
+	
+	background-color: #81b2bd;
+	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
+}
+
+.editShareWidget_mainPanel
+{
+    border-color: #BABDB6;
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 1px;
+}
+
+/* End:  Styles used in the "Edit Share" widget. */
+
 /* End Of File */
