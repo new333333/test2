@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -62,6 +63,7 @@ import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.fi.connection.acl.AclItemPermissionMapper;
 import org.kablink.teaming.fi.connection.acl.AclItemPermissionMappingException;
+import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -1071,10 +1073,11 @@ public class AccessUtils  {
 		if(session == null)
 			return null; // cannot obtain session for the user
 		try {
+			Map<String, List<String>> groupIds = driver.getAclItemPrincipalMapper().toFileSystemGroupIds(user);
 			session.setPath(parentFolder.getResourcePath(), netFolderFile.getTitle());
 			String permissionName = null;
 			try {
-				permissionName = session.getPermissionName();
+				permissionName = session.getPermissionName(groupIds);
 			}
 			catch(Exception e) {
 				logger.error("Error getting permission name on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
@@ -1084,10 +1087,14 @@ public class AccessUtils  {
 			AclItemPermissionMapper permissionMapper = driver.getAclItemPermissionMapper();
 			return permissionMapper.toVibeRoleId(permissionName);
 		}
+		catch (AclItemPrincipalMappingException e) {
+			logger.error("Error mapping principal on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
+			return null;
+		}
 		catch (AclItemPermissionMappingException e) {
 			logger.error("Error mapping permission on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
 			return null;
-		}
+		} 
 		finally {
 			session.close();
 		}

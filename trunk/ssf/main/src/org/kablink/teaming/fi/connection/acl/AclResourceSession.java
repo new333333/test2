@@ -34,6 +34,7 @@
 package org.kablink.teaming.fi.connection.acl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -143,11 +144,12 @@ public interface AclResourceSession extends ResourceSession {
 	 * The permission name is specific to the resource driver implementing this interface and is defined
 	 * by the accompanying driver helper class implementing <code>AclItemPermissionMapper</code> interface. 
 	 * 
+	 * @param groupIds 
 	 * @return highest permission name or <code>null</code>
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public String getPermissionName() throws FIException, UncheckedIOException;
+	public String getPermissionName(Map<String, List<String>> groupIds) throws FIException, UncheckedIOException;
 
 	/**
 	 * Return whether or not the resource referred to by the current path is visible to the user owning this session.
