@@ -66,7 +66,9 @@ import org.kablink.teaming.gwt.client.datatable.EmailAddressColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.GuestColumn;
+import org.kablink.teaming.gwt.client.datatable.MobileDeviceWipeScheduleInfo;
 import org.kablink.teaming.gwt.client.datatable.MobileDevicesColumn;
+import org.kablink.teaming.gwt.client.datatable.MobileDeviceWipeScheduledColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceCell.PresenceClickAction;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
@@ -1476,7 +1478,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show a download link!  Does it
 			// show presence?
-			else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName)) {
+			else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName) || FolderColumn.isColumnDeviceUser(cName)) {
 				// Yes!  Create a PresenceColumn for it.
 				boolean userManagementCell = (FolderColumn.isColumnFullName(cName) && getFolderInfo().isBinderProfilesRootWSManagement());
 				PresenceClickAction clickAction;
@@ -1630,7 +1632,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 			// No, this column isn't a collection of task folders
 			// either!  Is it an HTML description column?
-			else if (FolderColumn.isColumnDescriptionHtml(cName)) {
+			else if (FolderColumn.isColumnDescriptionHtml(cName) || FolderColumn.isColumnDeviceDescription(cName)) {
 				// Yes!  Create a DescriptionHtmlColumn for it.
 				column = new DescriptionHtmlColumn<FolderRow>(fc) {
 					@Override
@@ -1749,7 +1751,24 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 			
 			// No, this column isn't a mobile devices count either!  Is
-			// it a user type?
+			// it a mobile devices wipe scheduled?
+			else if (FolderColumn.isColumnDeviceWipeScheduled(cName)) {
+				// Yes!  Create a MobileDeviceWipeScheduledColumn for
+				// it.
+				column = new MobileDeviceWipeScheduledColumn<FolderRow>(fc) {
+					@Override
+					public MobileDeviceWipeScheduleInfo getValue(FolderRow fr) {
+						return
+							new MobileDeviceWipeScheduleInfo(
+								fr.getEntityId(),
+								fr.getColumnWipeScheduled(fc),
+								fr.getColumnValueAsString(fc));
+					}
+				};
+			}
+			
+			// No, this column isn't a mobile device wipe scheduled
+			// either!  Is it a user type?
 			else if (FolderColumn.isColumnUserType(cName)) {
 				// Yes!  Create a UserTypeColumn for it.
 				column = new UserTypeColumn<FolderRow>(fc) {
@@ -1759,9 +1778,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					}
 				};
 			}
-			
-			// Handle the Manage Mobile Devices columns here.
-//!			...this needs to be implemented...
 			
 			else {
 				// No, this column isn't a user type either!  Define a

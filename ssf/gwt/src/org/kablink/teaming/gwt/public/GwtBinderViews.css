@@ -216,6 +216,8 @@
 		.vibe-dataTableMobileDevices-headerBubble {color: #135c8f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 4px; padding-right: 4px; text-align: center; display: inline; background: url(images/devices_sm.png) no-repeat scroll center center transparent;}
 		.vibe-dataTableMobileDevices-panel        {text-align: center; display: block;}
 		.vibe-dataTableMobileDevices-panel0       {}
+		.vibe-dataTableMobileDeviceWipe-panel     {text-align: center; display: block;}
+		.vibe-dataTableMobileDeviceWipe-text      {display: inline; text-decoration: none;}
 		.vibe-dataTablePresence-control           {vertical-align: text-bottom;}
 		.vibe-dataTablePresence-label             {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTablePresence-disabled          {color: #c4c4c4;}

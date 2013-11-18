@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderIcons;
@@ -73,6 +74,7 @@ public class FolderRow implements IsSerializable {
 	private EntityId								m_entityId;					// The entity ID of the FolderEntry this FolderRow corresponds to.
 	private List<FolderColumn>						m_columns;					// The FolderColumns that contribute to this FolderRow.
 	private Map<String, Boolean>					m_rowOverdueDates;			// A map of column names to Boolean indicators of an overdue date possibly stored for a column.
+	private Map<String, Boolean>					m_rowWipesScheduled;		// A map of column names to Boolean indicators of a wipe schedule possibly stored for a column.
 	private Map<String, CommentsInfo>				m_rowComments;				// A map of column names to CommentsInfo's                        possibly stored for a column.
 	private Map<String, DescriptionHtml>			m_rowDescriptionHtmls;		// A map of column names to DescriptionHtml's                     possibly stored for a column.
 	private Map<String, EmailAddressInfo>			m_rowEmailAddresses;		// A map of column names to EmailAddressInfo's                    possibly stored for a column.
@@ -93,6 +95,8 @@ public class FolderRow implements IsSerializable {
 	private Map<String, String>						m_rowStrings;				// A map of column names to String values                         possibly stored for a column.
 	private Map<String, UserType>					m_rowUserTypes;				// A map of column names to UserType values                       possibly stored for a column.
 	private String									m_rowFamily;				// Family type of this row's entity.
+	
+	private transient Object						m_serverMobileDevice;		// Used on the server side to refer a MobileDevice object when that's what the row represents.
 
 	/**
 	 * Inner class used to wrap a long for use as a specific object
@@ -178,6 +182,7 @@ public class FolderRow implements IsSerializable {
 	public EntityId								getEntityId()                          {                               return m_entityId;           }
 	public List<FolderColumn>					getColumns()                           {                               return m_columns;            }
 	public Map<String, Boolean>					getRowOverdueDates()                   {validateMapOverdueDates();     return m_rowOverdueDates;    }
+	public Map<String, Boolean>					getRowWipesScheduled()                 {validateMapWipesScheduled();   return m_rowWipesScheduled;  }
 	public Map<String, CommentsInfo>			getRowCommentsMap()                    {validateMapComments();         return m_rowComments;        } 
 	public Map<String, DescriptionHtml>			getRowDescriptionHtmlMap()             {validateMapDescriptionHtmls(); return m_rowDescriptionHtmls;}
 	public Map<String, EmailAddressInfo>		getRowEmailAddressMap()                {validateMapEmailAddresses();   return m_rowEmailAddresses;  }
@@ -193,6 +198,7 @@ public class FolderRow implements IsSerializable {
 	public Map<String, ViewFileInfo>			getRowViewFilesMap()                   {validateMapViews();            return m_rowViewFiles;       } 
 	public Map<String, String>					getRowStringsMap()                     {validateMapStrings();          return m_rowStrings;         }
 	public Map<String, UserType>				getRowUserTypesMap()                   {validateMapUserTypes();        return m_rowUserTypes;       }
+	public Object								getServerMobileDevice()                {                               return m_serverMobileDevice; }
 	public String								getBinderIcon(BinderIconSize iconSize) {return m_binderIcons.getBinderIcon(iconSize);               }
 	public String								getRowFamily()                         {return m_rowFamily;                                         }
 
@@ -201,13 +207,14 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @param
 	 */
-	public void setColumns(   List<FolderColumn> columns)                             {m_columns    = columns;                           }
-	public void setEntityId(  EntityId           entityId)                            {m_entityId   = entityId;                          }
-	public void setHomeDir(   boolean            homeDir)                             {m_homeDir    = homeDir;                           }
-	public void setMyFilesDir(boolean            myFilesDir)                          {m_myFilesDir = myFilesDir;                        }
-	public void setPinned(    boolean            pinned)                              {m_pinned     = pinned;                            }
-	public void setBinderIcon(String             binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}
-	public void setRowFamily( String             rowFamily)                           {m_rowFamily  = rowFamily;                         }
+	public void setColumns(           List<FolderColumn> columns)                             {m_columns            = columns;                   }
+	public void setEntityId(          EntityId           entityId)                            {m_entityId           = entityId;                  }
+	public void setHomeDir(           boolean            homeDir)                             {m_homeDir            = homeDir;                   }
+	public void setMyFilesDir(        boolean            myFilesDir)                          {m_myFilesDir         = myFilesDir;                }
+	public void setPinned(            boolean            pinned)                              {m_pinned             = pinned;                    }
+	public void setServerMobileDevice(Object             serverMobileDevice)                  {m_serverMobileDevice = serverMobileDevice;        }
+	public void setBinderIcon(        String             binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}
+	public void setRowFamily(         String             rowFamily)                           {m_rowFamily          = rowFamily;                 }
 	
 	/**
 	 * Clears the binder icons being tracked in this TreeInfo.
@@ -280,6 +287,18 @@ public class FolderRow implements IsSerializable {
 	public void setColumnOverdueDate(FolderColumn fc, Boolean overdueDate) {
 		validateMapOverdueDates();
 		m_rowOverdueDates.put(getValueKey(fc), overdueDate);
+	}
+
+	/**
+	 * Stores a wipe scheduled flag for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @param wipeScheduled
+	 */
+	public void setColumnWipeScheduled(FolderColumn fc, Boolean wipeScheduled) {
+		validateMapWipesScheduled();
+		m_rowWipesScheduled.put(getValueKey(fc), wipeScheduled);
 	}
 
 	/**
@@ -542,6 +561,13 @@ public class FolderRow implements IsSerializable {
 						if (null != emai) {
 							reply = emai.getEmailAddress(); 
 						}
+						
+						else {
+							Boolean wipeScheduled = ((null == m_rowWipesScheduled) ? null : m_rowWipesScheduled.get(vk));
+							if (null != wipeScheduled) {
+								reply = (wipeScheduled ? GwtTeaming.getMessages().yes() : GwtTeaming.getMessages().no());
+							}
+						}
 					}
 				}
 			}
@@ -558,6 +584,17 @@ public class FolderRow implements IsSerializable {
 	 */
 	public Boolean getColumnOverdueDate(FolderColumn fc) {
 		return ((null == m_rowOverdueDates) ? null : m_rowOverdueDates.get(getValueKey(fc)));
+	}
+	
+	/**
+	 * Returns the Boolean wipe scheduled status for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public Boolean getColumnWipeScheduled(FolderColumn fc) {
+		return ((null == m_rowWipesScheduled) ? null : m_rowWipesScheduled.get(getValueKey(fc)));
 	}
 	
 	/*
@@ -733,6 +770,7 @@ public class FolderRow implements IsSerializable {
 	 */
 	private void validateMapAssignees()        {if (null == m_rowAssigneeInfos)			m_rowAssigneeInfos			= new HashMap<String, List<AssignmentInfo>>();     }
 	private void validateMapOverdueDates()     {if (null == m_rowOverdueDates)  		m_rowOverdueDates			= new HashMap<String, Boolean>();                  }
+	private void validateMapWipesScheduled()   {if (null == m_rowWipesScheduled)  		m_rowWipesScheduled			= new HashMap<String, Boolean>();                  }
 	private void validateMapComments()         {if (null == m_rowComments)				m_rowComments				= new HashMap<String, CommentsInfo>();             }
 	private void validateMapDescriptionHtmls() {if (null == m_rowDescriptionHtmls)		m_rowDescriptionHtmls		= new HashMap<String, DescriptionHtml>();          }
 	private void validateMapEmailAddresses()   {if (null == m_rowEmailAddresses)		m_rowEmailAddresses			= new HashMap<String, EmailAddressInfo>();         }
