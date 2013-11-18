@@ -567,7 +567,7 @@ public class GwtNetFolderHelper
 	private static AuthenticationType getAuthType( GwtAuthenticationType gwtAuthType )
 	{
 		if ( gwtAuthType == null )
-			return AuthenticationType.kerberos;
+			return null;
 		
 		switch( gwtAuthType )
 		{
@@ -579,6 +579,9 @@ public class GwtNetFolderHelper
 			
 		case KERBEROS_THEN_NTLM:
 			return AuthenticationType.kerberos_then_ntlm;
+			
+		case NMAS:
+			return AuthenticationType.nmas;
 			
 		default:
 			return AuthenticationType.kerberos;

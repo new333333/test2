@@ -121,7 +121,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		
 		ntlm( (short)2 ),
 		
-		kerberos_then_ntlm( (short)3 );
+		kerberos_then_ntlm( (short)3 ),
+		
+		nmas( (short) 4 );
 		
 		private short m_value;
 
@@ -157,6 +159,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 			case 3:
 				return AuthenticationType.kerberos_then_ntlm;
 
+			case 4:
+				return AuthenticationType.nmas;
+				
 			default:
 				throw new IllegalArgumentException( "Invalid db value " + value + " for enum AuthenticationType" );
 			}
