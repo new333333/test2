@@ -90,7 +90,8 @@ public class NetFolderRoot
 		KERBEROS( (short) 1 ),
 		NTLM( (short) 2 ),
 		KERBEROS_THEN_NTLM( (short) 3 ),
-		UNKNOWN( (short) 4 );
+		NMAS( (short) 4 ),
+		UNKNOWN( (short) 10 );
 		
 		private short m_value;
 
@@ -125,6 +126,9 @@ public class NetFolderRoot
 				
 			case 3:
 				return GwtAuthenticationType.KERBEROS_THEN_NTLM;
+				
+			case 4:
+				return GwtAuthenticationType.NMAS;
 
 			default:
 				return GwtAuthenticationType.UNKNOWN;
@@ -146,6 +150,9 @@ public class NetFolderRoot
 				
 				if ( value.equalsIgnoreCase( GwtAuthenticationType.KERBEROS_THEN_NTLM.toString() ) )
 					return GwtAuthenticationType.KERBEROS_THEN_NTLM;
+				
+				if ( value.equalsIgnoreCase( GwtAuthenticationType.NMAS.toString() ) )
+					return GwtAuthenticationType.NMAS;
 			}
 			
 			return GwtAuthenticationType.UNKNOWN;

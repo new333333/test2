@@ -113,6 +113,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private TextBox m_rootPathTxtBox;
 	private TextBox m_proxyNameTxtBox;
 	private PasswordTextBox m_proxyPwdTxtBox;
+	private InlineLabel m_authTypeLabel;
 	private ListBox m_authTypeListbox;
 	private FlowPanel m_webDavSpacerPanel;
 	private InlineLabel m_hostUrlLabel;
@@ -375,8 +376,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			table.setWidget( nextRow, 0, spacerPanel );
 			++nextRow;
 			
-			label = new InlineLabel( messages.modifyNetFolderServerDlg_AuthTypeLabel() );
-			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
+			m_authTypeLabel = new InlineLabel( messages.modifyNetFolderServerDlg_AuthTypeLabel() );
+			table.setWidget( nextRow, 0, m_authTypeLabel );
 
 			// Add the listbox where the user can select the authentication
 			m_authTypeListbox = new ListBox( false );
@@ -389,6 +390,10 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_authTypeListbox.addItem(
 									messages.modifyNetFolderServerDlg_AuthType_Ntlm(),
 									GwtAuthenticationType.NTLM.toString() );
+
+			m_authTypeListbox.addItem(
+									messages.modifyNetFolderServerDlg_AuthType_NMAS(),
+									GwtAuthenticationType.NMAS.toString() );
 
 			m_authTypeListbox.addItem(
 									messages.modifyNetFolderServerDlg_AuthType_KerberosThenNtlm(),
@@ -857,7 +862,10 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				
 				m_useDirectoryRightsCB.setVisible( false );
 				
-				// Update the server path and proxy name hint and show/hide controls.
+				// Do the following work:
+				//	- Update the server path and proxy name hint
+				//	- show/hide controls.
+				//	- Update the options in the authentication type listbox.
 				{
 					GwtTeamingMessages messages;
 					Label label;
@@ -880,6 +888,47 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						m_oesProxyNameHint.setVisible( true );
 						
 						m_useDirectoryRightsCB.setVisible( true );
+
+						m_authTypeLabel.setVisible( true );
+						m_authTypeListbox.setVisible( true );
+						
+						// Remove Kerberos and "auto detect" and add "nmas" to the authentication type listbox
+						{
+							int index;
+							
+							// Is Kerberos in the listbox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.KERBEROS.toString() );
+							if ( index != -1 )
+							{
+								// Yes, remove it.
+								m_authTypeListbox.removeItem( index );
+							}
+							
+							// Is "auto detect" in the listbox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.KERBEROS_THEN_NTLM.toString() );
+							if ( index != -1 )
+							{
+								// Yes, remove it.
+								m_authTypeListbox.removeItem( index );
+							}
+							
+							// Is "NMAS" in the listbox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.NMAS.toString() );
+							if ( index == -1 )
+							{
+								// No, add it
+								m_authTypeListbox.insertItem(
+														messages.modifyNetFolderServerDlg_AuthType_NMAS(),
+														GwtAuthenticationType.NMAS.toString(),
+														1 );
+							}
+						}
 						break;
 						
 					case WINDOWS:
@@ -891,11 +940,56 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						
 						m_windowsProxyNameHint.setVisible( true );
 						m_oesProxyNameHint.setVisible( false );
+						m_authTypeLabel.setVisible( true );
+						m_authTypeListbox.setVisible( true );
+						
+						// Remove "nmas" and add "kerberos" and "auto detect" to the authentication type listbox
+						{
+							int index;
+							
+							// Is Kerberos in the listbox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.KERBEROS.toString() );
+							if ( index == -1 )
+							{
+								// No, add it
+								m_authTypeListbox.insertItem(
+														messages.modifyNetFolderServerDlg_AuthType_Kerberos(),
+														GwtAuthenticationType.KERBEROS.toString(),
+														0 );
+							}
+							
+							// Is "auto detect" in the listbox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.KERBEROS_THEN_NTLM.toString() );
+							if ( index == -1 )
+							{
+								// No, add it.
+								m_authTypeListbox.insertItem(
+														messages.modifyNetFolderServerDlg_AuthType_KerberosThenNtlm(),
+														GwtAuthenticationType.KERBEROS_THEN_NTLM.toString(),
+														2 );
+							}
+							
+							// Is "NMAS" in the listbox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.NMAS.toString() );
+							if ( index != -1 )
+							{
+								// Yes, remove it
+								m_authTypeListbox.removeItem( index );
+							}
+						}
 						break;
 						
 					case FAMT:
 						m_windowsProxyNameHint.setVisible( false );
 						m_oesProxyNameHint.setVisible( false );
+						m_authTypeLabel.setVisible( false );
+						m_authTypeListbox.setVisible( false );
 						break;
 						
 					case SHARE_POINT_2010:
@@ -905,6 +999,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						
 						m_windowsProxyNameHint.setVisible( true );
 						m_oesProxyNameHint.setVisible( false );
+						m_authTypeLabel.setVisible( false );
+						m_authTypeListbox.setVisible( false );
 						break;
 						
 					default:
@@ -912,6 +1008,13 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					}
 				}
 			}
+		}
+		
+		// Is an authentication type selected?
+		if ( m_authTypeListbox.getSelectedIndex() == -1 )
+		{
+			// No, select the first one.
+			m_authTypeListbox.setItemSelected( 0, true );
 		}
 	}
 	
@@ -1193,6 +1296,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	{
 		int selectedIndex;
 		
+		if ( m_authTypeListbox.isVisible() == false )
+			return null;
+		
 		selectedIndex = m_authTypeListbox.getSelectedIndex();
 		if ( selectedIndex >= 0 )
 		{
@@ -1203,7 +1309,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				return GwtAuthenticationType.getType( value );
 		}
 		
-		return GwtAuthenticationType.KERBEROS;
+		return GwtAuthenticationType.NTLM;
 	}
 	
 	/**
@@ -1439,7 +1545,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_rootPathTxtBox.setValue( "" );
 		m_proxyNameTxtBox.setValue( "" );
 		m_proxyPwdTxtBox.setValue( "" );
-		GwtClientHelper.selectListboxItemByValue( m_authTypeListbox, GwtAuthenticationType.KERBEROS.toString() );
+		GwtClientHelper.selectListboxItemByValue( m_authTypeListbox, GwtAuthenticationType.NTLM.toString() );
 		if ( m_hostUrlTxtBox != null)
 			m_hostUrlTxtBox.setValue( "" );
 		if ( m_allowSelfSignedCertsCkbox != null )

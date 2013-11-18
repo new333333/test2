@@ -2278,6 +2278,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_AuthTypeLabel();
 	String modifyNetFolderServerDlg_AuthType_Kerberos();
 	String modifyNetFolderServerDlg_AuthType_KerberosThenNtlm();
+	String modifyNetFolderServerDlg_AuthType_NMAS();
 	String modifyNetFolderServerDlg_AuthType_Ntlm();
 	String modifyNetFolderServerDlg_ConfigTab();
 	String modifyNetFolderServerDlg_CreatingNetFolderServer();
