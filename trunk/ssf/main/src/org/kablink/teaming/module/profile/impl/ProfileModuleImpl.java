@@ -65,6 +65,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
@@ -2719,6 +2720,21 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		// If we get here, reply refers to a Collection<User> of the
 		// external users.  Return it.
     	return reply;
+    }
+    
+    /**
+     * Returns a Collection<User> of all the users that have mobile
+     * devices.
+     *  
+     * @return
+     */
+    @Override
+    public Collection<User> getAllUsersWithMobileDevices() {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		FilterControls filter = new FilterControls();
+		filter.addNotNull("mobileDevices");
+		List<User> users = getCoreDao().loadObjects(User.class, filter, zoneId);
+		return users;
     }
     
     /**

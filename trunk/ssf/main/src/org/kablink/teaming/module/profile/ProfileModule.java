@@ -861,6 +861,14 @@ public interface ProfileModule {
     public Collection<User> getAllExternalUsers();
     
     /**
+     * Returns a Collection<User> of all the users that have mobile
+     * devices.
+     *  
+     * @return
+     */
+    public Collection<User> getAllUsersWithMobileDevices();
+    
+    /**
      * Get'er methods for the Mobile Application Management (MAM)
      * settings.
      * 

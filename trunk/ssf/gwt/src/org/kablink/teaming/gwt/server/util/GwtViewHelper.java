@@ -40,6 +40,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -621,6 +622,20 @@ public class GwtViewHelper {
 		reply.put(ObjectKeys.SEARCH_ENTRIES,     new ArrayList<Map>());
 		reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(0)      );
 		return reply;
+	}
+	
+	/*
+	 * Returns a FolderRowsRpcResponseData that represents no entries
+	 * available.
+	 */
+	private static FolderRowsRpcResponseData buildEmptyFolderRows() {
+		return
+			new FolderRowsRpcResponseData(
+				new ArrayList<FolderRow>(),	// FolderRows.
+				0,							// Start index.
+				0,							// Total count.
+				false,						// false -> Total is accurate.
+				new ArrayList<Long>());		// Contributor IDs.
 	}
 
 	/*
@@ -4538,13 +4553,7 @@ public class GwtViewHelper {
 			// Is this a binder the user can view?
 			if (!(GwtServerHelper.canUserViewBinder(bs, folderInfo))) {
 				// No!  Return an empty set of rows.
-				return
-					new FolderRowsRpcResponseData(
-						new ArrayList<FolderRow>(),	// FolderRows.
-						0,							// Start index.
-						0,							// Total count.
-						false,						// false -> Total is accurate.
-						new ArrayList<Long>());		// Contributor IDs.
+				return buildEmptyFolderRows();
 			}
 			
 			// Access the binder/folder.
@@ -4560,13 +4569,7 @@ public class GwtViewHelper {
 				String rdn = binder.getResourceDriverName();
 				if (!(MiscUtil.hasString(rdn))) {
 					// ...we don't read anything.
-					return
-						new FolderRowsRpcResponseData(
-							new ArrayList<FolderRow>(),
-							start,
-							0,
-							false,	// false -> Total is accurate.
-							new ArrayList<Long>());
+					return buildEmptyFolderRows();
 				}
 			}
 			
@@ -4614,13 +4617,7 @@ public class GwtViewHelper {
 					if (((!external) && (!internal)) ||
 						((!enabled)  && (!disabled))) {
 						// ...simply return an empty list.
-						return
-							new FolderRowsRpcResponseData(
-								new ArrayList<FolderRow>(),
-								start,
-								0,
-								false,	// false -> Total is accurate.
-								new ArrayList<Long>());
+						return buildEmptyFolderRows();
 						
 					}
 					
@@ -4700,10 +4697,10 @@ public class GwtViewHelper {
 				// No, the user isn't currently viewing pinned entries!
 				// Read the entries based on a search.
 				Map searchResults;
-				if      (isTrash)                 searchResults = TrashHelper.getTrashEntities(bs, binder, options);
-				else if (isProfilesRootWS)        searchResults = getUserEntries(        bs, request, binder, quickFilter, options                            );
-				else if (isCollection)            searchResults = getCollectionEntries(  bs, request, binder, quickFilter, options, collectionType, shareItems);
-				else if (isMobileDevicesViewSpec) searchResults = getMobileDeviceEntries(bs, request, binder, quickFilter, options, folderInfo                );
+				if      (isTrash)                 searchResults = TrashHelper.getTrashEntities(bs,          binder,              options                               );
+				else if (isProfilesRootWS)        searchResults = getUserEntries(              bs, request, binder, quickFilter, options                               );
+				else if (isCollection)            searchResults = getCollectionEntries(        bs, request, binder, quickFilter, options, collectionType, shareItems   );
+				else if (isMobileDevicesViewSpec) return getMobileDeviceRows(                  bs, request, binder, quickFilter, fdd,     folderInfo,     folderColumns);
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
 					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
@@ -4975,19 +4972,9 @@ public class GwtViewHelper {
 									}
 								}
 								
-								// No, we aren't working on a
-								// 'Shared by/with Me' collection!  Are
-								// we working on a 'Mobile 'Devices' view?
-								else if (isMobileDevicesViewSpec) {
-									// Yes!
-									smItem = null;
-									
-//!									...this needs to be implemented...									
-								}
-								
 								else {
 									// No, we aren't working on a
-									// 'Mobile Devices' view either!
+									// 'Shared by/with Me' collection!
 									smItem = null;
 								}
 
@@ -5711,26 +5698,49 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * Returns the entries for the given mobile device set.
+	 * Returns the rows for the given mobile device set.
 	 */
-	@SuppressWarnings("unchecked")
-	private static Map getMobileDeviceEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, BinderInfo bi) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getDeviceEntries()");
+	@SuppressWarnings("unused")
+	private static FolderRowsRpcResponseData getMobileDeviceRows(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, FolderDisplayDataRpcResponseData fdd, BinderInfo bi, List<FolderColumn> folderColumns) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getMobileDeviceRows()");
 		try {
 			// Are we being asked for system wide or a per user mobile
-			// device entries?
-			Map reply;
+			// device rows?
+			ProfileModule pm = bs.getProfileModule();
+			Map<User, List<MobileDevice>> userDevicesMap = new HashMap<User, List<MobileDevice>>();
 			MobileDevicesViewSpec mdvSpec = bi.getMobileDevicesViewSpec();
 			if (mdvSpec.isSystem()) {
-				// System wide!
-//!				...this needs to be implemented...
-				reply = buildEmptyEntryMap();
+				// System wide!  Can we find any users with mobile
+				// devices?
+				Collection<User> usersWithDevices = pm.getAllUsersWithMobileDevices();
+				if (MiscUtil.hasItems(usersWithDevices)) {
+					// Yes!  Scan them.
+					for (User user:  usersWithDevices) {
+						// Does this user have a MobileDevices object?
+						MobileDevices mds = user.getMobileDevices();
+						if (null != mds) {
+							// Yes!  Does that contain any mobile
+							// devices?
+							List<MobileDevice> mdList = mds.getMobileDeviceList();
+							if (MiscUtil.hasItems(mdList)) {
+								// Yes!  Add it to the user device map.
+								userDevicesMap.put(user, mdList);
+							}
+							else {
+								m_logger.error("GwtViewHelper.getMobileDeviceRows( *Internal Error* ):  User '" + user.getTitle() + "' has no List<MobileDevice>.");
+							}
+						}
+						else {
+							m_logger.error("GwtViewHelper.getMobileDeviceRows( *Internal Error* ):  User '" + user.getTitle() + "' has no MobileDevices.");
+						}
+					}
+				}
 			}
 			
 			else {
-				// Per user!  Does this user have an devices defined?
+				// Per user!  Does this user have any devices defined?
 				Long               userId    = mdvSpec.getUserId();
-				User               user      = ((User) bs.getProfileModule().getEntry(userId));
+				User               user      = ((User) pm.getEntry(userId));
 				MobileDevices      mds       = user.getMobileDevices();
 				List<MobileDevice> mdList    = ((null == mds) ? null : mds.getMobileDeviceList());
 				boolean            hasMDList = MiscUtil.hasItems(mdList);
@@ -5756,31 +5766,65 @@ public class GwtViewHelper {
 					
 					// ...store the MobileDevices object into the
 					// ...User...
-					bs.getProfileModule().setMobileDevices(userId, mds);
+					pm.setMobileDevices(userId, mds);
 					
 					// ...and use the current list to populate the
-					// ...entry map.
+					// ...rows.
 					mdList    = mds.getMobileDeviceList();
 					hasMDList = MiscUtil.hasItems(mdList);
 				}
 
 				// Do we have any devices for this user?
 				if (hasMDList) {
-					// Yes!  Generate the entries.
-//!					...this needs to be implemented...
-					reply = buildEmptyEntryMap();
+					// Yes!  Track them in the user device map.
+					userDevicesMap.put(user, mdList);
 				}
 				
 				else {
 					// No, we don't have any devices for this user!
-					// Return and empty entry map.
-					reply = buildEmptyEntryMap();
+					// Return an empty row set.
+					return buildEmptyFolderRows();
 				}
 			}
+
+			// Scan the user device map.
+			List<FolderRow> deviceRows = new ArrayList<FolderRow>();
+			Set<User> users = userDevicesMap.keySet();
+			for (User user:  users) {
+				List<MobileDevice> mdList = userDevicesMap.get(user);
+				if (MiscUtil.hasItems(mdList)) {
+					for (MobileDevice md:  mdList) {
+						for (FolderColumn fc:  folderColumns) {
+//!							...this needs to be implemented...
+						}
+					}
+				}
+			}
+
+			// If there are any rows and a quick filter...
+			int devices = deviceRows.size();
+			if ((0 < devices) && MiscUtil.hasString(quickFilter)) {
+				// ...apply the filter.
+//!				...this needs to be implemented...
+			}
 			
-			// If we get here, reply refers to the entry map for the
-			// requested devices.  Return it.
-			return reply;
+			// If there's more than one device...
+			if (1 < devices) {
+				// ...to sort them use the specified criteria.
+				String  sortBy      = fdd.getFolderSortBy();
+				boolean sortDescend = fdd.getFolderSortDescend();
+//!				...this needs to be implemented...
+			}
+			
+			// Return a FolderRowsRpcResponseData containing the row
+			// data.
+			return
+				new FolderRowsRpcResponseData(
+					deviceRows,				// FolderRows.
+					0,						// Start index.
+					devices,				// Total count.
+					false,					// false -> Total is accurate.
+					new ArrayList<Long>());	// Contributor IDs.
 		}
 		
 		finally {
