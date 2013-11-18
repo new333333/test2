@@ -178,7 +178,6 @@ import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
-import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
@@ -204,7 +203,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.Sys
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
-import org.kablink.teaming.gwt.client.rpc.shared.ManageMobileDevicesInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigRpcResponseData;
@@ -6552,45 +6550,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Returns a ManageMobileDevicesInfoRpcResponseData object
-	 * containing the information for managing mobile devices.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param userId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ManageMobileDevicesInfoRpcResponseData getManageMobileDevicesInfo(AllModulesInjected bs, HttpServletRequest request, Long userId) throws GwtTeamingException {
-		try {
-			// Construct the ManageDevicesInfoRpcResponseData
-			// object we'll fill in and return.
-			BinderInfo bi = getBinderInfo(bs, request, bs.getProfileModule().getProfileBinderId());
-			if (!(bi.getWorkspaceType().isProfileRoot())) {
-				GwtLogHelper.error(m_logger, "GwtServerHelper.getManageMobileDevicesInformation():  The workspace type of the profile root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.PROFILE_ROOT.name());
-			}
-			MobileDevicesViewSpec mdvSpec;
-			if (null == userId)
-			     mdvSpec = new MobileDevicesViewSpec(MobileDevicesViewSpec.Mode.SYSTEM      );
-			else mdvSpec = new MobileDevicesViewSpec(MobileDevicesViewSpec.Mode.USER, userId);
-			bi.setWorkspaceType(        WorkspaceType.MOBILE_DEVICES);
-			bi.setMobileDevicesViewSpec(mdvSpec                     );
-			ManageMobileDevicesInfoRpcResponseData reply = new ManageMobileDevicesInfoRpcResponseData(bi);
-
-			// If we get here, reply refers to the
-			// ManageMobileDevicesInfoRpcResponseData object
-			// containing the information about managing mobile
-			// devices.  Return it.
-			return reply;
-		}
-		catch (Exception ex) {
-			throw GwtLogHelper.getGwtClientException(m_logger, ex);
-		}		
-	}
-
-	/**
 	 * Returns a ManageUsersInfoRpcResponseData object
 	 * containing the information for managing users.
 	 * 
@@ -10126,6 +10085,7 @@ public class GwtServerHelper {
 		case SEND_SHARE_NOTIFICATION_EMAIL:
 		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
 		case SET_ENTRIES_PIN_STATE:
+		case SET_MOBILE_DEVICES_WIPE_SCHEDULED_STATE:
 		case SET_SEEN:
 		case SET_UNSEEN:
 		case SET_USER_SHARING_RIGHTS_INFO:

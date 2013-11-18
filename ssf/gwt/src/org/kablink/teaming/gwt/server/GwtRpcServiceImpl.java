@@ -182,6 +182,7 @@ import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
 import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
 import org.kablink.teaming.gwt.server.util.GwtLdapHelper;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
+import org.kablink.teaming.gwt.server.util.GwtMobileDeviceHelper;
 import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
@@ -1811,7 +1812,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_MANAGE_MOBILE_DEVICES_INFO:
 		{
 			GetManageMobileDevicesInfoCmd gmmdiCmd = ((GetManageMobileDevicesInfoCmd) cmd); 
-			ManageMobileDevicesInfoRpcResponseData result = GwtServerHelper.getManageMobileDevicesInfo( this, getRequest( ri ), gmmdiCmd.getUserId() );
+			ManageMobileDevicesInfoRpcResponseData result = GwtMobileDeviceHelper.getManageMobileDevicesInfo( this, getRequest( ri ), gmmdiCmd.getUserId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3404,6 +3405,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SetEntriesPinStateCmd sepsCmd = ((SetEntriesPinStateCmd) cmd);
 			Boolean result = GwtServerHelper.setEntriesPinState( this, getRequest( ri ), sepsCmd.getEntryIds(), sepsCmd.getPinned() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case SET_MOBILE_DEVICES_WIPE_SCHEDULED_STATE:
+		{
+			SetMobileDevicesWipeScheduledStateCmd smdwssCmd = ((SetMobileDevicesWipeScheduledStateCmd) cmd);
+			BooleanRpcResponseData result = GwtMobileDeviceHelper.saveMobileDevicesWipeScheduledState( this, getRequest( ri ), smdwssCmd.getEntityIds(), smdwssCmd.isWipeScheduled() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		

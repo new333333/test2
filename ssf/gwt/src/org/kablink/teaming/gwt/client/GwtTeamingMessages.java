@@ -575,6 +575,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SendNotificationEmail();
 	String rpcFailure_SetDesktopAppDownloadVisibility();
 	String rpcFailure_SetEntriesPinState();
+	String rpcFailure_SetMobileDevicesWipeScheduledState();
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetUnseen();

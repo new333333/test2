@@ -1791,13 +1791,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 
 			// Complete the initialization of the column.
-			fc.setDisplayIndex(   colIndex                                    );
-			column.setSortable(   fc.isColumnSortable()                       );
+			fc.setDisplayIndex(colIndex                                    );
+			column.setSortable(fc.isColumnSortable()                       );
 			if (null == columnHeaderHtml)
-			     m_dataTable.addColumn(column, fc.getColumnTitle()            );
-			else m_dataTable.addColumn(column, columnHeaderHtml               );
-		    setColumnStyles(      column, cName, colIndex++, columnHeaderStyle);
-		    setColumnWidth(               cName, column, pctTotal             );
+			     m_dataTable.addColumn(column, fc.getColumnTitle()         );
+			else m_dataTable.addColumn(column, columnHeaderHtml            );
+		    setColumnStyles(   column, cName, colIndex++, columnHeaderStyle);
+		    setColumnWidth(            cName, column, pctTotal             );
 
 		    // Do we have a support column for the column we just
 		    // added?
@@ -1818,7 +1818,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		    // Is this the column we're sorted on?
 		    if (fc.getColumnSortKey().equalsIgnoreCase(getFolderSortBy())) {
 		    	// Yes!  Tell the data table about it.
-				csl.push(new ColumnSortInfo(column, (!getFolderSortDescend())));
+				csl.push(
+					new ColumnSortInfo(
+						column,
+						(!(getFolderSortDescend()))));
 		    }
 		}
 	}
