@@ -1760,6 +1760,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				};
 			}
 			
+			// Handle the Manage Mobile Devices columns here.
+//!			...this needs to be implemented...
+			
 			else {
 				// No, this column isn't a user type either!  Define a
 				// StringColumn for it.
