@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.fi.connection.acl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -69,4 +70,13 @@ public interface AclItemPrincipalMapper {
 	 * @throws AclItemPrincipalMappingException
 	 */
 	public Map<String,String> toFileSystemPrincipalId(User vibeUser) throws AclItemPrincipalMappingException;
+	
+	/**
+	 * Returns the file system IDs of the groups that the specified Vibe user is a member of.
+	 * 
+	 * @param vibeUser
+	 * @return
+	 * @throws AclItemPrincipalMappingException
+	 */
+	public Map<String, List<String>> toFileSystemGroupIds(User vibeUser) throws AclItemPrincipalMappingException;
 }
