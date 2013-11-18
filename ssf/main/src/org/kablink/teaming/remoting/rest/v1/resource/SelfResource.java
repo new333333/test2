@@ -494,6 +494,20 @@ public class SelfResource extends AbstractFileResource {
         return results;
     }
 
+    private SearchResultList<SearchableObject> _getMyFilesLibraryChildren(boolean folders, boolean entries, boolean files,
+                                                                          int descriptionFormat, Integer offset, Integer maxCount, Date parentModTime) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        if (descriptionFormat==Description.FORMAT_HTML) {
+            nextParams.put("description_format", "html");
+        } else {
+            nextParams.put("description_format", "text");
+        }
+        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), folders, entries, false, true);
+        SearchResultList<SearchableObject> results = lookUpChildren(crit, descriptionFormat, offset, maxCount, "/self/my_files/library_folders", nextParams, parentModTime);
+        setMyFilesParents(results);
+        return results;
+    }
+
     private void setMyFilesParents(SearchResultList results) {
         List<Long> hiddenFolderIds = getEffectiveMyFilesFolderIds();
         Set<Long> allParentIds = new HashSet(hiddenFolderIds);
