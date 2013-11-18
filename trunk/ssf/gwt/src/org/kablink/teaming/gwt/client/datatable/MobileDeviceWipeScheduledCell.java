@@ -34,8 +34,10 @@ package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetMobileDevicesWipeScheduledStateCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.HoverHintPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -46,6 +48,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
@@ -106,7 +109,7 @@ public class MobileDeviceWipeScheduledCell extends AbstractCell<MobileDeviceWipe
 		    	if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
 		    		// A click!  Toggle the device's wipe scheduled
 		    		// status.
-					toggleWipeStatusAsync(wipeScheduled);
+					toggleWipeStatusAsync(wipeScheduled, eventTarget);
 		    	}
 		    	
 		    	else if (VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
@@ -144,7 +147,7 @@ public class MobileDeviceWipeScheduledCell extends AbstractCell<MobileDeviceWipe
 		String	wt           = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
 		if ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_MOBILE_WIPE_SCHEDULED)){
 			// ...toggle the device's wipe scheduled status.
-			toggleWipeStatusAsync(wipeScheduled);
+			toggleWipeStatusAsync(wipeScheduled, eventTarget);
 		}
     }
     
@@ -199,11 +202,11 @@ public class MobileDeviceWipeScheduledCell extends AbstractCell<MobileDeviceWipe
 	/*
 	 * Asynchronously toggles the wipe scheduled state of the device. 
 	 */
-	private void toggleWipeStatusAsync(final MobileDeviceWipeScheduleInfo wipeScheduled) {
+	private void toggleWipeStatusAsync(final MobileDeviceWipeScheduleInfo wipeScheduled, final Element wipeStatusElement) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				toggleWipeStatusNow(wipeScheduled);
+				toggleWipeStatusNow(wipeScheduled, wipeStatusElement);
 			}
 		});
 	}
@@ -211,8 +214,42 @@ public class MobileDeviceWipeScheduledCell extends AbstractCell<MobileDeviceWipe
 	/*
 	 * Synchronously toggles the wipe scheduled state of the device. 
 	 */
-	private void toggleWipeStatusNow(final MobileDeviceWipeScheduleInfo wipeScheduled) {
-//!		...this needs to be implemented...
-		GwtClientHelper.deferredAlert("MobileDeviceWipeScheduleCell.toggleWipeStatusNow():  ...this needs to be implemented...");
+	private void toggleWipeStatusNow(final MobileDeviceWipeScheduleInfo wipeScheduled, final Element wipeStatusElement) {
+		// Can we toggle this device's wipe scheduled state?
+		SetMobileDevicesWipeScheduledStateCmd cmd = new SetMobileDevicesWipeScheduledStateCmd(
+			wipeScheduled.getEntityId(),
+			(!(wipeScheduled.isWipeScheduled())));
+		
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_SetMobileDevicesWipeScheduledState());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				boolean reply = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+				if (reply) {
+					// Yes!  Update the display to reflect the change.
+					boolean newWipeScheduled = (!(wipeScheduled.isWipeScheduled()));
+					wipeScheduled.setWipeScheduled(newWipeScheduled);
+					String display;
+					String title;
+					if (newWipeScheduled) {
+						display = m_messages.yes();
+						title   = m_messages.vibeDataTable_Alt_CancelWipe();
+					}
+					else {
+						display = m_messages.no();
+						title   = m_messages.vibeDataTable_Alt_ScheduleWipe();
+					}
+					wipeScheduled.setDisplay(      display);
+					wipeStatusElement.setInnerText(display);
+					wipeStatusElement.setTitle(    title  );
+				}
+			}
+		});
 	}
 }
