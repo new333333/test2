@@ -214,6 +214,26 @@ public class FolderResource extends AbstractBinderResource {
         return Response.ok(subBinders).lastModified(lastModified).build();
     }
 
+    @GET
+    @Path("{id}/children")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getChildren(@PathParam("id") long id,
+                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                @QueryParam("first") @DefaultValue("0") Integer offset,
+                                @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                @Context HttpServletRequest request) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("description_format", descriptionFormatStr);
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
+        SearchResultList<SearchableObject> children = getChildren(id, null, true, false, true, offset, maxCount, "/folders/" + id + "/children",
+                nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
+        return Response.ok(children).lastModified(lastModified).build();
+    }
+
     // Read sub-folders
 	@GET
 	@Path("{id}/folders")

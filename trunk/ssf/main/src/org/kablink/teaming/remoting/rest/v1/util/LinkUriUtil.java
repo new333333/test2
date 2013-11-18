@@ -180,10 +180,12 @@ public class LinkUriUtil {
 
     public static void populateBinderLinks(BaseRestObject model) {
         populateDefinableEntityLinks(model);
+        model.addAdditionalLink("children", model.getLink() + "/children");
         model.addAdditionalLink("child_binders", model.getLink() + "/binders");
         model.addAdditionalLink("child_binder_tree", model.getLink() + "/binder_tree");
         model.addAdditionalLink("child_files", model.getLink() + "/files");
         if (isWorkspace(model) || isLibraryFolder(model)) {
+            model.addAdditionalLink("library_children", model.getLink() + "/library_children");
             model.addAdditionalLink("child_library_entities", model.getLink() + "/library_entities");
             model.addAdditionalLink("child_library_folders", model.getLink() + "/library_folders");
             model.addAdditionalLink("child_library_tree", model.getLink() + "/library_tree");
