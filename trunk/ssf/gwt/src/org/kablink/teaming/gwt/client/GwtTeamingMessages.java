@@ -1809,6 +1809,7 @@ public interface GwtTeamingMessages extends Messages
 	String folderColumnsDlgShow();
 	
 	// Strings used by various widgets of the Vibe Data table.
+	String vibeDataTable_Alt_CancelWipe();
 	String vibeDataTable_Alt_CollapseDescription();
 	String vibeDataTable_Alt_Comments();
 	String vibeDataTable_Alt_EntryActions();
@@ -1830,6 +1831,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_PinHeader();
 	String vibeDataTable_Alt_PinHeader_PinAll();
 	String vibeDataTable_Alt_PinHeader_UnpinAll();
+	String vibeDataTable_Alt_ScheduleWipe();
 	String vibeDataTable_Alt_StarGold();
 	String vibeDataTable_Alt_StarGray();
 	String vibeDataTable_Alt_System_Group();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,9 +33,11 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.comparator.StringComparator;
+import org.kablink.teaming.domain.MobileDevices.MobileDevice;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
@@ -49,6 +51,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+import org.kablink.teaming.util.NLT;
 
 /**
  * Class used to compare two FolderRow's using a given sort key.
@@ -64,7 +67,7 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 	
 	// The default sort key to use of the given one doesn't map to a
 	// defined column.
-	private final static String DEFAULT_SORT_BY	= "_sortTitle";
+	public final static String DEFAULT_SORT_BY	= "_sortTitle";
 
 	/**
 	 * Class constructor.
@@ -72,8 +75,9 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 	 * @param sortBy
 	 * @param sortDescending
 	 * @param folderColumns
+	 * @param defaultSortBy
 	 */
-	public FolderRowComparator(String sortBy, boolean sortDescending, List<FolderColumn> folderColumns) {
+	public FolderRowComparator(String sortBy, boolean sortDescending, List<FolderColumn> folderColumns, String defaultSortBy) {
 		// Initialize the super class...
 		super();
 
@@ -88,15 +92,27 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 		// Can we find the FolderColumn for the sort key were were
 		// given?
 		m_sortColumn = getColumn(m_sortBy);
-		if ((null == m_sortColumn) && (!(DEFAULT_SORT_BY.equals(m_sortBy)))) {
+		if ((null == m_sortColumn) && (!(defaultSortBy.equalsIgnoreCase(m_sortBy)))) {
 			// No!  Can we find it for the default sort key?
-			m_sortColumn = getColumn(DEFAULT_SORT_BY);
+			m_sortColumn = getColumn(defaultSortBy);
 			if (null != m_sortColumn) {
 				// Yes!  Use that as the sort key instead of the key we
 				// were given.
-				m_sortBy = DEFAULT_SORT_BY;
+				m_sortBy = defaultSortBy;
 			}
 		}
+	}
+	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param sortBy
+	 * @param sortDescending
+	 * @param folderColumns
+	 */
+	public FolderRowComparator(String sortBy, boolean sortDescending, List<FolderColumn> folderColumns) {
+		// Always use the initial form of the constructor.
+		this(sortBy, sortDescending, folderColumns, DEFAULT_SORT_BY);
 	}
 
 	/**
@@ -167,7 +183,7 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 		
 		// No, this column doesn't show a download link!  Does it
 		// show presence?
-		else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName)) {
+		else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName) || FolderColumn.isColumnDeviceUser(cName)) {
 			// Yes!  Return the PresenceInfo's title.
 			PrincipalInfo pi = fr.getColumnValueAsPrincipalInfo(fc);
 			if (null != pi) {
@@ -283,10 +299,60 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 				reply = emi.getEmailAddress();
 			}
 		}
+
+		// No, this column isn't an email address either!  Is the
+		// last login of a mobile device?
+		else if (FolderColumn.isColumnDeviceLastLogin(cName)) {
+			// Yes!  Do we have the row's MobileDevice?
+			MobileDevice md = ((MobileDevice) fr.getServerMobileDevice());
+			if (null != md) {
+				// Yes!  Does it have a last login date?
+				Date lastLogin = md.getLastLogin();
+				if (null != lastLogin) {
+					// Yes!  Return its MS count as a string.
+					reply = String.valueOf(lastLogin.getTime());
+				}
+			}
+		}
+
+		// No, this column isn't a mobile device's last login either!
+		// Is it the last wipe date of a mobile device?
+		else if (FolderColumn.isColumnDeviceWipeDate(cName)) {
+			// Yes!  Do we have the row's MobileDevice?
+			MobileDevice md = ((MobileDevice) fr.getServerMobileDevice());
+			if (null != md) {
+				// Yes!  Does it have a last wipe date?
+				Date wipeDate = md.getLastWipe();
+				if (null != wipeDate) {
+					// Yes!  Return its MS count as a string.
+					reply = String.valueOf(wipeDate.getTime());
+				}
+			}
+		}
+		
+		// No, this column isn't a mobile device's last wipe date of a
+		// mobile device either!  Is it the wipe scheduled status of a
+		// mobile device?
+		else if (FolderColumn.isColumnDeviceWipeScheduled(cName)) {
+			// Yes!  Do we have the row's MobileDevice?
+			MobileDevice md = ((MobileDevice) fr.getServerMobileDevice());
+			if (null != md) {
+				// Yes!  Does it have a wipe scheduled flag?
+				Boolean wipeScheduled = md.isWipeScheduled();
+				if (null != wipeScheduled) {
+					// Yes!  Return its appropriate display string.
+					String key;
+					if (wipeScheduled)
+					     key = "general.yes";
+					else key = "general.no";
+					reply = NLT.get(key);
+				}
+			}
+		}
 		
 		else {
-			// No, this column isn't an email address either!
-			// Simply return its string value.
+			// No, this column isn't the wipe scheduled status of a
+			// mobile device either!  Simply return its string value.
 			reply = fr.getColumnValueAsString(fc);
 		}
 

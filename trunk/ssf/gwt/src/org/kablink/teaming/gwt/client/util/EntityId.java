@@ -45,13 +45,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class EntityId implements IsSerializable {
-	private Long	m_binderId;		//
-	private Long	m_entityId;		//
-	private String	m_entityType;	// folderEntry, folder, workspace, ...
+	private Long	m_binderId;			//
+	private Long	m_entityId;			//
+	private String	m_entityType;		// folderEntry, folder, mobileDevice, workspace, ...
+	private String	m_mobileDeviceId;	//
 	
-	public final static String FOLDER		= "folder";
-	public final static String FOLDER_ENTRY	= "folderEntry";
-	public final static String WORKSPACE	= "workspace";
+	public final static String FOLDER			= "folder";
+	public final static String FOLDER_ENTRY		= "folderEntry";
+	public final static String MOBILE_DEVICE	= "mobileDevice";
+	public final static String WORKSPACE		= "workspace";
 
 	/**
 	 * Constructor method.
@@ -69,15 +71,29 @@ public class EntityId implements IsSerializable {
 	 * @param binderId
 	 * @param entityId
 	 * @param entityType
+	 * @param mobileDeviceId
 	 */
-	public EntityId(Long binderId, Long entityId, String entityType) {
+	public EntityId(Long binderId, Long entityId, String entityType, String mobileDeviceId) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		setBinderId(  binderId  );
-		setEntityId(  entityId  );
-		setEntityType(entityType);
+		setBinderId(      binderId      );
+		setEntityId(      entityId      );
+		setEntityType(    entityType    );
+		setMobileDeviceId(mobileDeviceId);
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param binderId
+	 * @param entityId
+	 * @param entityType
+	 */
+	public EntityId(Long binderId, Long entityId, String entityType) {
+		// Initialize this object.
+		this(binderId, entityId, entityType, null);
 	}
 
 	/**
@@ -85,18 +101,20 @@ public class EntityId implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public Long   getBinderId()   {return m_binderId;  }
-	public Long   getEntityId()   {return m_entityId;  }
-	public String getEntityType() {return m_entityType;}
+	public Long   getBinderId()       {return m_binderId;      }
+	public Long   getEntityId()       {return m_entityId;      }
+	public String getEntityType()     {return m_entityType;    }
+	public String getMobileDeviceId() {return m_mobileDeviceId;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderId(  Long   binderId)   {m_binderId   = binderId;  }
-	public void setEntityId(  Long   entityId)   {m_entityId   = entityId;  }
-	public void setEntityType(String entityType) {m_entityType = entityType;}
+	public void setBinderId(      Long   binderId)       {m_binderId       = binderId;      }
+	public void setEntityId(      Long   entityId)       {m_entityId       = entityId;      }
+	public void setEntityType(    String entityType)     {m_entityType     = entityType;    }
+	public void setMobileDeviceId(String mobileDeviceId) {m_mobileDeviceId = mobileDeviceId;}
 	
 	/**
 	 * Returns true if a List<EntityId> contains any binder references
@@ -330,7 +348,8 @@ public class EntityId implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true if this row refers to a binder and false otherwise.
+	 * Returns true if this entity refers to a binder and false
+	 * otherwise.
 	 * 
 	 * @return
 	 */
@@ -369,7 +388,8 @@ public class EntityId implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true if this row refers to an entry and false otherwise.
+	 * Returns true if this entity refers to an entry and false
+	 * otherwise.
 	 * 
 	 * @return
 	 */
@@ -380,7 +400,8 @@ public class EntityId implements IsSerializable {
 	}
 
 	/**
-	 * Returns true if this row refers to a folder and false otherwise.
+	 * Returns true if this entity refers to a folder and false
+	 * otherwise.
 	 * 
 	 * @return
 	 */
@@ -391,7 +412,20 @@ public class EntityId implements IsSerializable {
 	}
 
 	/**
-	 * Returns true if this row refers to a binder and false otherwise.
+	 * Returns true if this entity refers to a mobile device and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isMobileDevice() {
+		String entityType = m_entityType;
+		if (null == entityType) entityType = "";
+		return entityType.equals(EntityId.MOBILE_DEVICE);
+	}
+
+	/**
+	 * Returns true if this entity refers to a workspace and false
+	 * otherwise.
 	 * 
 	 * @return
 	 */

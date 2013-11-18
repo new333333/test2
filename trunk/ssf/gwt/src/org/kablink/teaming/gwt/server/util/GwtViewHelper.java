@@ -451,6 +451,7 @@ public class GwtViewHelper {
 		 * 
 		 * @return
 		 */
+		@SuppressWarnings("unused")
 		public Long      getWorkspaceId() {return m_wsId;}
 		public User      getUser()        {return m_user;}
 		@SuppressWarnings("unused")
@@ -2186,6 +2187,66 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Applies a quick filter to a List<FolderRow> of 'Mobile Device'
+	 * rows.  A List<FolderRow> of the the FolderRow's from the input
+	 * list that matches the filter is returned.
+	 */
+	public static List<FolderRow> filterMobileDeviceFolderRows(List<FolderColumn> folderColumns, List<FolderRow> folderRows, String quickFilter) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.filterMobileDeviceFolderRows()");
+		try {
+			// Do we have a string to filter with and some FolderRow's
+			// to be filtered?
+			if (null != quickFilter) {
+				quickFilter = quickFilter.trim().toLowerCase();
+			}
+			if (MiscUtil.hasString(quickFilter) && MiscUtil.hasItems(folderRows)) {
+				// Yes!  Yes!  Scan the rows.
+				List<FolderRow> reply = new ArrayList<FolderRow>();
+				for (FolderRow fr:  folderRows) {
+					// Scan the columns.
+					for (FolderColumn fc:  folderColumns) {
+						// What column is this?
+						String cName = fc.getColumnName();
+						if (FolderColumn.isColumnDeviceUser(cName)) {
+							// The user column!  If the user's title
+							// contains the quick filter...
+							PrincipalInfo pi = fr.getColumnValueAsPrincipalInfo(fc);
+							if (null != pi) {
+								if (valueContainsQuickFilter(pi.getTitle(), quickFilter)) {
+									// ...add it to the reply list.
+									reply.add(fr);
+									break;
+								}
+							}
+						}
+							
+						else if (FolderColumn.isColumnDeviceDescription(cName)) {
+							// A description column!  is there a value for it?
+							DescriptionHtml dh = fr.getColumnValueAsDescriptionHtml(fc);
+							if (null != dh) {
+								if (valueContainsQuickFilter(dh.getDescription(), quickFilter)) {
+									// ...add it to the reply list.
+									reply.add(fr);
+									break;
+								}
+							}
+						}
+					}
+				}
+				folderRows = reply;
+			}
+			
+			// If we get here, filterRows refers to the filtered list
+			// of rows.  Return it. 
+			return folderRows;
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+
+	/*
 	 * Applies a quick filter to a List<FolderRow> of
 	 * 'Shared by/with Me' rows.  A List<FolderRow> of the the
 	 * FolderRow's from the input list that matches the filter is
@@ -2276,8 +2337,8 @@ public class GwtViewHelper {
 				folderRows = reply;
 			}
 			
-			// If we get here, searchEntries refers to the filtered
-			// list of entry maps.  Return it. 
+			// If we get here, filterRows refers to the filtered list
+			// of rows.  Return it. 
 			return folderRows;
 		}
 		
@@ -4078,6 +4139,12 @@ public class GwtViewHelper {
 				if (folderInfo.isBinderProfilesRootWS() || folderInfo.isBinderCollection()) {
 					sortBy = Constants.SORT_TITLE_FIELD;
 				}
+				else if (folderInfo.isBinderMobileDevices()) {
+					sortBy =
+						(folderInfo.getMobileDevicesViewSpec().isSystem() ?
+							FolderColumn.COLUMN_DEVICE_USER               :	// For the system      device view, we default sort by user...
+							FolderColumn.COLUMN_DEVICE_DESCRIPTION);		// ...for the per user device view, we default sort by description.
+				}
 				else {
 					switch (folderInfo.getFolderType()) {
 					case FILE:
@@ -5786,7 +5853,7 @@ public class GwtViewHelper {
 					return buildEmptyFolderRows();
 				}
 			}
-
+			
 			// Scan the user device map.
 			List<FolderRow> deviceRows = new ArrayList<FolderRow>();
 			Set<User> users = userDevicesMap.keySet();
@@ -5794,8 +5861,87 @@ public class GwtViewHelper {
 				List<MobileDevice> mdList = userDevicesMap.get(user);
 				if (MiscUtil.hasItems(mdList)) {
 					for (MobileDevice md:  mdList) {
+						// Create the FolderRow for this device and add
+						// it to the list. 
+						EntityId  eid = new EntityId(binder.getId(), user.getId(), EntityId.MOBILE_DEVICE, md.getId());
+						FolderRow fr  = new FolderRow(eid, folderColumns);
+						fr.setServerMobileDevice(md);
+						deviceRows.add(fr);
+
+						// Scan the columns.
 						for (FolderColumn fc:  folderColumns) {
-//!							...this needs to be implemented...
+							// What mobile device column is this?
+							String cName = fc.getColumnName();
+							if (FolderColumn.isColumnDeviceDescription(cName)) {
+								// Description!  Generate a
+								// DescriptionHtml for it.
+								String desc = md.getDescription();
+								if (MiscUtil.hasString(desc)) {
+									fr.setColumnValue(
+										fc,
+										new DescriptionHtml(
+											desc,
+											false));	// false -> Description is not HTML.
+								}
+							}
+							
+							else if (FolderColumn.isColumnDeviceLastLogin(cName)) {
+								// Last login!  Generate a date/time
+								// string for it.
+								Date lastLogin = md.getLastLogin();
+								if (null != lastLogin) {
+									fr.setColumnValue(
+										fc,
+										GwtServerHelper.getDateTimeString(
+											lastLogin,
+											DateFormat.MEDIUM,
+											DateFormat.SHORT));
+								}
+							}
+							
+							else if (FolderColumn.isColumnDeviceUser(cName)) {
+								// User!  Generate a PrincipalInfo for
+								// it...
+								PrincipalInfo pi = getPIFromUser(bs, request, user);
+								
+								// ...setup an appropriate GwtPresenceInfo...
+								GwtPresenceInfo presenceInfo;
+								if (GwtServerHelper.isPresenceEnabled())
+								     presenceInfo = GwtServerHelper.getPresenceInfo(user);
+								else presenceInfo = null;
+								if (null == presenceInfo) {
+									presenceInfo = GwtServerHelper.getPresenceInfoDefault();
+								}
+								if (null != presenceInfo) {
+									pi.setPresence(presenceInfo);
+									pi.setPresenceDude(GwtServerHelper.getPresenceDude(presenceInfo));
+								}
+								
+								// ...and store it in the row.
+								fr.setColumnValue(fc, pi);
+							}
+							
+							else if (FolderColumn.isColumnDeviceWipeDate(cName)) {
+								// Wipe date!  Generate a date/time
+								// string for it.
+								Date wipeDate = md.getLastLogin();
+								if (null != wipeDate) {
+									fr.setColumnValue(
+										fc,
+										GwtServerHelper.getDateTimeString(
+											wipeDate,
+											DateFormat.MEDIUM,
+											DateFormat.SHORT));
+								}
+							}
+							
+							else if (FolderColumn.isColumnDeviceWipeScheduled(cName)) {
+								// Wipe scheduled!  Generate a Boolean
+								// wipe scheduled flag for it.
+								fr.setColumnWipeScheduled(
+									fc,
+									md.isWipeScheduled());
+							}
 						}
 					}
 				}
@@ -5805,15 +5951,26 @@ public class GwtViewHelper {
 			int devices = deviceRows.size();
 			if ((0 < devices) && MiscUtil.hasString(quickFilter)) {
 				// ...apply the filter.
-//!				...this needs to be implemented...
+				deviceRows = filterMobileDeviceFolderRows(
+					folderColumns,
+					deviceRows,
+					quickFilter);
+				devices = deviceRows.size();
 			}
 			
 			// If there's more than one device...
 			if (1 < devices) {
-				// ...to sort them use the specified criteria.
-				String  sortBy      = fdd.getFolderSortBy();
-				boolean sortDescend = fdd.getFolderSortDescend();
-//!				...this needs to be implemented...
+				// ...sort them using the defined criteria.
+				Comparator<FolderRow> comparator =
+					new FolderRowComparator(
+						fdd.getFolderSortBy(),
+						fdd.getFolderSortDescend(),
+						folderColumns,
+						(bi.getMobileDevicesViewSpec().isSystem() ?
+							FolderColumn.COLUMN_DEVICE_USER               :	// For the system      device view, we default sort by user...
+							FolderColumn.COLUMN_DEVICE_DESCRIPTION));		// ...for the per user device view, we default sort by description.
+				
+				Collections.sort(deviceRows, comparator);
 			}
 			
 			// Return a FolderRowsRpcResponseData containing the row
@@ -6006,7 +6163,6 @@ public class GwtViewHelper {
 			List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(principalIds, false);
 			if (MiscUtil.hasItems(uwsPairs)) {
 				// Yes!  Scan them.
-				Long profileBinderId = bs.getProfileModule().getProfileBinderId();
 				for (UserWorkspacePair uwsPair:  uwsPairs) {
 					User user = uwsPair.getUser();
 					Long pId  = user.getId();
@@ -6018,21 +6174,10 @@ public class GwtViewHelper {
 					else {
 						perUserProfile = null;
 					}
-					PrincipalInfo pi = PrincipalInfo.construct(pId);
+					PrincipalInfo pi;
 					try {
 						// Construct a PrincipalInfo for each...
-						pi.setTitle(user.getTitle());
-						Long    userWSId      = uwsPair.getWorkspaceId();
-						boolean userHasWS     = (null != userWSId);
-						boolean userWSInTrash = (userHasWS && user.isWorkspacePreDeleted());
-						pi.setUserDisabled( user.isDisabled()     );
-						pi.setUserHasWS(    userHasWS             );
-						pi.setUserPerson(   user.isPerson()       );
-						pi.setUserWSInTrash(userWSInTrash         );
-						pi.setEmailAddress( user.getEmailAddress());
-						pi.setViewProfileEntryUrl(getViewProfileEntryUrl(bs, request, pId, profileBinderId));
-						pi.setPresenceUserWSId(user.getWorkspaceId());
-						pi.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, user));
+						pi = getPIFromUser(bs, request, user);
 					}
 					finally {
 						if (PROFILE_PER_USER) {
@@ -6111,6 +6256,27 @@ public class GwtViewHelper {
 		     reply = piList.get(0);	// There will only ever be one.
 		else reply = null;
 		return reply;
+	}
+
+	/*
+	 * Constructs and returns a ProfileInfo object for the given user.f
+	 */
+	private static PrincipalInfo getPIFromUser(AllModulesInjected bs, HttpServletRequest request, User user) {
+		Long userId = user.getId();
+		PrincipalInfo pi = PrincipalInfo.construct(userId);
+		pi.setTitle(user.getTitle());
+		Long    userWSId      = user.getWorkspaceId();
+		boolean userHasWS     = (null != userWSId);
+		boolean userWSInTrash = (userHasWS && user.isWorkspacePreDeleted());
+		pi.setUserDisabled( user.isDisabled()     );
+		pi.setUserHasWS(    userHasWS             );
+		pi.setUserPerson(   user.isPerson()       );
+		pi.setUserWSInTrash(userWSInTrash         );
+		pi.setEmailAddress( user.getEmailAddress());
+		pi.setViewProfileEntryUrl(getViewProfileEntryUrl(bs, request, userId, bs.getProfileModule().getProfileBinderId()));
+		pi.setPresenceUserWSId(user.getWorkspaceId());
+		pi.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, user));
+		return pi;
 	}
 	
 	/**
