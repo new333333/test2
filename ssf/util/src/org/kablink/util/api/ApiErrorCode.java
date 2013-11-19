@@ -180,7 +180,10 @@ public enum ApiErrorCode {
 
 	// OpenID errors
 	OPENID_PROVIDER_NOT_FOUND, // No OpenID provider object found with this name or id
-	
+
+	// OpenID errors
+	LDAP_CONFIG_NOT_FOUND, // No ldap config object found with this name or id
+
 	// ShareItem errors
 	SHAREITEM_NOT_FOUND, // No share found with this name or id
     INVALID_EMAIL_ADDRESS, // Invalid definition

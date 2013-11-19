@@ -45,6 +45,11 @@ import org.kablink.teaming.rest.v1.model.*;
 
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
+import org.kablink.teaming.rest.v1.model.admin.KeyValuePair;
+import org.kablink.teaming.rest.v1.model.admin.LdapHomeDirConfig;
+import org.kablink.teaming.rest.v1.model.admin.LdapSearchInfo;
+import org.kablink.teaming.rest.v1.model.admin.LdapUserSource;
+import org.kablink.teaming.rest.v1.model.admin.NetFolderServer;
 
 /**
  * @author jong
@@ -117,6 +122,13 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             UserBrief.class,
             Workspace.class,
             ZoneConfig.class,
+
+            // Admin model objects
+            KeyValuePair.class,
+            LdapHomeDirConfig.class,
+            LdapSearchInfo.class,
+            LdapUserSource.class,
+            NetFolderServer.class,
     		};
     
     public DefaultJAXBContextResolver() throws Exception {

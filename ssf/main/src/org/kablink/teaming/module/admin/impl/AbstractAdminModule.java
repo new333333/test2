@@ -381,22 +381,29 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return (EntryProcessor)getProcessorManager().getProcessor(entry.getParentBinder(), entry.getParentBinder().getProcessorKey(EntryProcessor.PROCESSOR_KEY));
 	}
 
+    public boolean testAccess(AdminOperation operation) {
+        return testUserAccess(RequestContextHolder.getRequestContext().getUser(), operation);
+    }
+
+    public void checkAccess(AdminOperation operation) {
+        checkUserAccess(RequestContextHolder.getRequestContext().getUser(), operation);
+    }
+
    	/**
 	 * Use operation so we can keep the logic out of application
 	 * and easily change the required rights
    	 * 
    	 */
-  	@Override
-	public boolean testAccess(AdminOperation operation) {
+	public boolean testUserAccess(User user, AdminOperation operation) {
    		try {
-   			checkAccess(operation);
+   			checkUserAccess(user, operation);
    			return true;
    		} catch (AccessControlException ac) {
    			return false;
    		}
    	}
-  	@Override
-	public void checkAccess(AdminOperation operation) {
+
+	public void checkUserAccess(User user, AdminOperation operation) {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
 		switch (operation) {
 			case manageFunction:
@@ -414,14 +421,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   			case manageOpenID:
   			case manageExternalUser:
   			case manageMobileApps:
-  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+  				getAccessControlManager().checkOperation(user, getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			case report:
-   				if (getAccessControlManager().testOperation(top, WorkAreaOperation.GENERATE_REPORTS)) break;
- 				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+   				if (getAccessControlManager().testOperation(user, top, WorkAreaOperation.GENERATE_REPORTS)) break;
+ 				getAccessControlManager().checkOperation(user, getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			case manageExtensions:
-  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+  				getAccessControlManager().checkOperation(user, getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
 
   				//is this featured disabled
     			if( !SPropsUtil.getBoolean("extensions.manage.enabled", true) ) {
@@ -432,7 +439,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   			case manageIndex: 
   				// Or should we allow only 'admin' to be able to manage index since we display
   				// the UI only for admin??
-  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+  				getAccessControlManager().checkOperation(user, getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");

@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -100,6 +101,14 @@ public interface AdminModule {
 		manageExternalUser,
 		manageMobileApps
 	}
+	/**
+	 * The method name to be called is used as the operation.   This
+	 * allows the adminModule to check for multiple rights or change requirments in the future.
+	 * @param operation
+	 * @return
+	 */
+   	public boolean testUserAccess(User user, AdminOperation operation);
+   	public void checkUserAccess(User user, AdminOperation operation) throws AccessControlException;
 	/**
 	 * The method name to be called is used as the operation.   This
 	 * allows the adminModule to check for multiple rights or change requirments in the future.
