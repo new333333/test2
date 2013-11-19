@@ -65,6 +65,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.StartLdapSyncRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
+import org.kablink.teaming.gwt.client.util.RunAsyncCmd;
+import org.kablink.teaming.gwt.client.util.RunAsyncCreateDlgParams;
+import org.kablink.teaming.gwt.client.util.RunAsyncInitAndShowParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditLdapServerConfigDlg.EditLdapServerConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LdapSyncResultsDlg.LdapSyncResultsDlgClient;
@@ -2012,20 +2015,11 @@ public class EditLdapConfigDlg extends DlgBox
 	}
 	
 
-	
 	/**
-	 * Loads the EditLdapConfigDlg split point and returns an instance
-	 * of it via the callback.
-	 * 
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
 	 */
-	public static void createAsync(
-							final boolean autoHide,
-							final boolean modal,
-							final int left,
-							final int top,
-							final int width,
-							final int height,
-							final EditLdapConfigDlgClient elcDlgClient )
+	public static void runAsyncCmd( final RunAsyncCmd cmd, final EditLdapConfigDlgClient elcDlgClient )
 	{
 		GWT.runAsync( EditLdapConfigDlg.class, new RunAsyncCallback()
 		{
@@ -2042,17 +2036,52 @@ public class EditLdapConfigDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				EditLdapConfigDlg elcDlg;
-				
-				elcDlg = new EditLdapConfigDlg(
-											autoHide,
-											modal,
-											left,
-											top,
-											width,
-											height );
-				elcDlgClient.onSuccess( elcDlg );
+				switch ( cmd.getCmdType() )
+				{
+				case CREATE:
+				{
+					EditLdapConfigDlg elcDlg;
+					RunAsyncCreateDlgParams params;
+					
+					params = (RunAsyncCreateDlgParams) cmd.getParams();
+					elcDlg = new EditLdapConfigDlg(
+												params.getAutoHide(),
+												params.getModal(),
+												params.getLeft(),
+												params.getTop(),
+												params.getWidth(),
+												params.getHeight() );
+					
+					if ( elcDlgClient != null )
+						elcDlgClient.onSuccess( elcDlg );
+					
+					break;
+				}
+					
+				case INIT_AND_SHOW:
+				{
+					RunAsyncInitAndShowParams params;
+					EditLdapConfigDlg dlg;
+					
+					params = (RunAsyncInitAndShowParams)cmd.getParams();
+					dlg = (EditLdapConfigDlg) params.getUIObj();
+
+					dlg.setPixelSize( params.getWidth(), params.getHeight() );
+					dlg.init();
+					dlg.setPopupPosition( params.getLeft(), params.getTop() );
+					dlg.show();
+					
+					if ( elcDlgClient != null )
+						elcDlgClient.onSuccess( dlg );
+					
+					break;
+				}
+					
+				case UNKNOWN:
+				default:
+					break;
+				}
 			}
-		});
+		} );
 	}
 }
