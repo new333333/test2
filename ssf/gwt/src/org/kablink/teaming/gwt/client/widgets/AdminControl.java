@@ -87,6 +87,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.RunAsyncCmd;
+import org.kablink.teaming.gwt.client.util.RunAsyncCmd.RunAsyncCmdType;
+import org.kablink.teaming.gwt.client.util.RunAsyncCreateDlgParams;
+import org.kablink.teaming.gwt.client.util.RunAsyncInitAndShowParams;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
@@ -1098,29 +1102,29 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private void invokeEditLdapConfigDlg()
 	{
-		int x;
-		int y;
-		
-		// Get the position of the content control.
-		x = m_contentControlX;
-		y = m_contentControlY;
-		
+		// Have we created the dialog yet?
 		if ( m_editLdapConfigDlg == null )
 		{
-			Integer width;
-			Integer height;
+			RunAsyncCmd createCmd;
+			RunAsyncCreateDlgParams params;
 			
-			height = new Integer( m_dlgHeight );
-			width = new Integer( m_dlgWidth );
+			// No, create it.
+			params = new RunAsyncCreateDlgParams(
+											null,
+											null,
+											true,
+											false,
+											new Integer( m_contentControlX ),
+											new Integer( m_contentControlY ),
+											new Integer( m_dlgHeight ),
+											new Integer( m_dlgWidth ) );
 
-			EditLdapConfigDlg.createAsync(
-										true, 
-										false,
-										x, 
-										y,
-										width,
-										height,
-										new EditLdapConfigDlgClient()
+			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
+			
+			// Run an async cmd to create the dialog.
+			EditLdapConfigDlg.runAsyncCmd(
+									createCmd,
+									new EditLdapConfigDlgClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -1129,19 +1133,18 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				
 				@Override
-				public void onSuccess( final EditLdapConfigDlg elcDlg )
+				public void onSuccess( EditLdapConfigDlg elcDlg )
 				{
 					ScheduledCommand cmd;
 					
+					m_editLdapConfigDlg = elcDlg;
+
 					cmd = new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
-							m_editLdapConfigDlg = elcDlg;
-							
-							m_editLdapConfigDlg.init();
-							m_editLdapConfigDlg.show();
+							showEditLdapConfigDlg();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1150,13 +1153,10 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_editLdapConfigDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_editLdapConfigDlg.init();
-			m_editLdapConfigDlg.setPopupPosition( x, y );
-			m_editLdapConfigDlg.show();
+			showEditLdapConfigDlg();
 		}
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -1736,6 +1736,46 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	private void showEditLdapConfigDlg()
+	{
+		RunAsyncCmd initAndShowCmd;
+		RunAsyncInitAndShowParams initAndShowParams;
+		
+		if ( m_editLdapConfigDlg == null )
+			return;
+		
+		initAndShowParams = new RunAsyncInitAndShowParams(
+													m_editLdapConfigDlg,
+													null,
+													null,
+													m_dlgWidth,
+													m_dlgHeight,
+													m_contentControlX,
+													m_contentControlY );
+		
+		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, initAndShowParams );
+
+		// Run an async cmd to show the dialog.
+		EditLdapConfigDlg.runAsyncCmd(
+								initAndShowCmd,
+								new EditLdapConfigDlgClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( EditLdapConfigDlg elcDlg )
+			{
+			}								
+		} );
+	}
+
 	/**
 	 * 
 	 */
