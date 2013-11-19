@@ -53,9 +53,9 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class MobileDevicesView extends DataTableFolderViewBase {
-	public final static boolean	SHOW_MOBILE_DEVICES_SYSTEM		= false;	//! DRF (20131114):  Leave false on checkin until it's all working.
-	public final static boolean	SHOW_MOBILE_DEVICES_USER		= false;	//! DRF (20131114):  Leave false on checkin until it's all working.
-	public final static boolean	ALWAYS_SHOW_MOBILE_DEVICES_USER	= false;	//! DRF (20131114):  Leave false on checkin until it's all working.
+	public final static boolean	CLICK_ON_ZERO_TO_CREATE_DUMMIES	= false;	//! DRF (20131119):  Leave false on checkin!  DEBUG ONLY:  Setting true will cause a device bubble that represents zero devices to create dummy devices when clicked. 
+	public final static boolean	SHOW_MOBILE_DEVICES_SYSTEM		= true;		// Setting false will eliminate the 'Administration Console -> Management -> Mobile Devices' option.
+	public final static boolean	SHOW_MOBILE_DEVICES_USER		= true;		// Setting false will disable the manage mobile devices dialog from displaying off the device count bubble in the manage user's view. 
 	
 	/*
 	 * Class constructor.
@@ -133,9 +133,6 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 	/**
 	 * Returns the widget to use for displaying the table empty message.
 	 * 
-	 * Provided as a convenience method.  Class that extend this may
-	 * override to provide whatever they want displayed.
-	 * 
 	 * Overrides the DataTableFolderViewBase.getEmptyTableWidget()
 	 * method.
 	 * 
@@ -159,7 +156,7 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 	@Override
 	protected boolean includePanel(FolderPanels folderPanel) {
 		// In the mobile devices view, we don't show the download,
-		// description, filter or footer panel beyond the default.
+		// description, filter or footer panel beyond the defaults.
 		boolean reply;
 		switch (folderPanel) {
 		case DOWNLOAD:

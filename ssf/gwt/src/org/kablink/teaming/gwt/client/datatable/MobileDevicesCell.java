@@ -263,8 +263,8 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 		
 		// ...and if there are any devices...
 		Element dpE = devicesBubble.getElement();
-		boolean alwaysShow = MobileDevicesView.ALWAYS_SHOW_MOBILE_DEVICES_USER;
-		if ((0 < deviceCount) || alwaysShow) {
+		boolean debugClickOnZero = MobileDevicesView.CLICK_ON_ZERO_TO_CREATE_DUMMIES;	//! DRF (20131119):  Should be false on checkin.
+		if ((0 < deviceCount) || debugClickOnZero) {
 			// ...we make the bubble clickable so that the device list
 			// ...can be managed...
 			devicesBubble.addStyleName("cursorPointer"                             );
