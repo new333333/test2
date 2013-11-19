@@ -39,5 +39,5 @@ package org.kablink.teaming.gwt.client.util;
  * @author drfoster@novell.com
  */
 public interface MobileDeviceRemovedCallback {
-	public void mobileDeviceRemoved(Object callbackData);
+	public void mobileDevicesRemoved(Object callbackData, int count);
 }

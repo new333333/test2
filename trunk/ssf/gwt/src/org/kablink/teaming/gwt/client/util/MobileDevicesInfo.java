@@ -73,6 +73,15 @@ public class MobileDevicesInfo implements IsSerializable {
 		setUserId(            userId            );
 		setMobileDevicesCount(mobileDevicesCount);
 	}
+
+	/**
+	 * Returns a clone of the  object.
+	 * 
+	 * @return
+	 */
+	public MobileDevicesInfo copyMobileDevicesInfo() {
+		return new MobileDevicesInfo(m_userId, m_mobileDevicesCount);
+	}
 	
 	/**
 	 * Get'er methods.

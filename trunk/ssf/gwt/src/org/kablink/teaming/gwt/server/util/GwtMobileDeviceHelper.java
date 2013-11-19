@@ -52,14 +52,13 @@ import org.kablink.teaming.domain.MobileDevices;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.MobileDevices.MobileDevice;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
 import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteMobileDevicesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageMobileDevicesInfoRpcResponseData;
@@ -89,6 +88,58 @@ public class GwtMobileDeviceHelper {
 	}
 	
 	/**
+	 * Creates the requested number of dummy mobile devices for the
+	 * given user.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userId
+	 * @param count
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData createDummyMobileDevices(AllModulesInjected bs, HttpServletRequest request, Long userId, int count) throws GwtTeamingException {
+		try {
+			ProfileModule pm   = bs.getProfileModule();
+			User          user = ((User) pm.getEntry(userId));
+			MobileDevices mds  = pm.getMobileDevices(userId);
+			if (null == mds) {
+				mds = new MobileDevices();
+			}
+			List<MobileDevice> mdList = mds.getMobileDeviceList();
+			if (null == mdList) {
+				mdList = new ArrayList<MobileDevice>();
+			}
+			for (int i = 0; i < count; i += 1) {
+				if (0 < i) {
+    				Thread.sleep(100);	// So the times change by at least 100ms.
+				}
+				Date         now    = new Date();
+				String       nowStr = String.valueOf(now.getTime());
+				MobileDevice md     = new MobileDevice();
+				md.setWipeScheduled((0 == (i % 2))                          );	// Mark every other one as having a wipe scheduled.
+				md.setLastActivity( now                                     );
+				md.setLastLogin(    now                                     );
+				md.setId(           nowStr                                  );
+				md.setDescription(  user.getTitle() + ":" + nowStr + ":" + i);
+				mdList.add(md);
+			}
+			mds.setMobileDevices(mdList     );
+			pm.setMobileDevices( userId, mds);
+				
+			return new BooleanRpcResponseData(true);
+		}
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(
+				m_logger,
+				ex,
+				"GwtMobileDeviceHelper.createDummyMobileDevices( SOURCE EXCEPTION ):  ");
+		}		
+	}
+
+	/**
 	 * Deletes the specified mobile devices.
 	 *
 	 * @param bs
@@ -99,18 +150,20 @@ public class GwtMobileDeviceHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData deleteMobileDevices(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
-		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+	public static DeleteMobileDevicesRpcResponseData deleteMobileDevices(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
+		DeleteMobileDevicesRpcResponseData reply = new DeleteMobileDevicesRpcResponseData(new ArrayList<ErrorInfo>());
 		deleteMobileDevicesImpl(bs, request, entityIds, reply);
 		return reply;
 	}
 	
-	private static void deleteMobileDevicesImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, ErrorListRpcResponseData reply) throws GwtTeamingException {
+	private static void deleteMobileDevicesImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, DeleteMobileDevicesRpcResponseData reply) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMobileDeviceHelper.deleteMobileDevicesImpl()");
 		try {
 			// Were we given any mobile devices to delete?
 			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Scan them.
+				List<EntityId> successfulDeletes = new ArrayList<EntityId>();
+				reply.setSuccessfulDeletes(successfulDeletes);
 				ProfileModule pm = bs.getProfileModule();
 				for (EntityId eid:  entityIds) {
 					// Can we access the MobileDevices for this user?
@@ -131,6 +184,10 @@ public class GwtMobileDeviceHelper {
 									// ...write out the change...
 									mds.setMobileDevices(mdList);
 									pm.setMobileDevices(userId, mds);
+									
+									// ...track it as having been
+									// ...successfully deleted...
+									successfulDeletes.add(eid);
 									
 									// ...and break out of the loop.
 									// ...We're done with this
@@ -304,7 +361,6 @@ public class GwtMobileDeviceHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	public static FolderRowsRpcResponseData getMobileDeviceRows(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, FolderDisplayDataRpcResponseData fdd, BinderInfo bi, List<FolderColumn> folderColumns) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMobileDeviceHelper.getMobileDeviceRows()");
 		try {
@@ -343,43 +399,11 @@ public class GwtMobileDeviceHelper {
 			
 			else {
 				// Per user!  Does this user have any devices defined?
-				Long               userId    = mdvSpec.getUserId();
-				User               user      = ((User) pm.getEntry(userId));
-				MobileDevices      mds       = user.getMobileDevices();
-				List<MobileDevice> mdList    = ((null == mds) ? null : mds.getMobileDeviceList());
-				boolean            hasMDList = MiscUtil.hasItems(mdList);
-
-				// If the user doesn't have any devices and we're set
-				// to always show the user's mobile devices...
-				if ((!hasMDList) && MobileDevicesView.ALWAYS_SHOW_MOBILE_DEVICES_USER) {
-					// ...create a dummy one...
-					Date         now    = new Date();
-					String       nowStr = String.valueOf(now.getTime());
-					MobileDevice md     = new MobileDevice();
-					md.setWipeScheduled(true                          );
-					md.setLastActivity( now                           );
-					md.setLastLogin(    now                           );
-					md.setId(           nowStr                        );
-					md.setDescription(  user.getTitle() + ":" + nowStr);
-					
-					// ...add it to the MobileDevices object...
-					if (null == mds) {
-						mds = new MobileDevices();
-					}
-					mds.addMobileDevice(md);
-					
-					// ...store the MobileDevices object into the
-					// ...User...
-					pm.setMobileDevices(userId, mds);
-					
-					// ...and use the current list to populate the
-					// ...rows.
-					mdList    = mds.getMobileDeviceList();
-					hasMDList = MiscUtil.hasItems(mdList);
-				}
-
-				// Do we have any devices for this user?
-				if (hasMDList) {
+				Long               userId = mdvSpec.getUserId();
+				User               user   = ((User) pm.getEntry(userId));
+				MobileDevices      mds    = user.getMobileDevices();
+				List<MobileDevice> mdList = ((null == mds) ? null : mds.getMobileDeviceList());
+				if (MiscUtil.hasItems(mdList)) {
 					// Yes!  Track them in the user device map.
 					userDevicesMap.put(user, mdList);
 				}

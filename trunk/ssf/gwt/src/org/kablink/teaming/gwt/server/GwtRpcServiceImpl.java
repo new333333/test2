@@ -409,6 +409,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CREATE_DUMMY_MOBILE_DEVICES:
+		{
+			CreateDummyMobileDevicesCmd cdmdCmd = ((CreateDummyMobileDevicesCmd) cmd);
+			BooleanRpcResponseData responseData = GwtMobileDeviceHelper.createDummyMobileDevices( this, getRequest( ri ), cdmdCmd.getUserId(), cdmdCmd.getCount() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case CREATE_EMAIL_REPORT:
 		{
 			CreateEmailReportCmd cerCmd = ((CreateEmailReportCmd) cmd);
@@ -550,7 +558,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_MOBILE_DEVICES:
 		{
 			DeleteMobileDevicesCmd dmdCmd = ((DeleteMobileDevicesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtMobileDeviceHelper.deleteMobileDevices( this, getRequest( ri ), dmdCmd.getEntityIds() );
+			DeleteMobileDevicesRpcResponseData responseData = GwtMobileDeviceHelper.deleteMobileDevices( this, getRequest( ri ), dmdCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

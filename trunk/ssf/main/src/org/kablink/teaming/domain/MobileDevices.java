@@ -254,15 +254,19 @@ public class MobileDevices {
 	 * Constructs the XML string that will be stored in the database. 
 	 */
 	private void constructXmlString() {
-		StringBuffer strBuff = new StringBuffer();
-		strBuff.append("<devices>");
-		if (null != m_mobileDeviceList) {
+		if ((null == m_mobileDeviceList) || (0 == m_mobileDeviceList.size())) {
+			m_mobileDevices = null;
+		}
+		
+		else {
+			StringBuffer strBuff = new StringBuffer();
+			strBuff.append("<devices>");
 			for (MobileDevice d:  m_mobileDeviceList) {
 				strBuff.append(d.constructXmlString());
 			}
+			strBuff.append("</devices>");
+			m_mobileDevices = new SSClobString(strBuff.toString());
 		}
-		strBuff.append("</devices>");
-		m_mobileDevices = new SSClobString(strBuff.toString());
 	}
 	
 	/**

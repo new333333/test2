@@ -52,6 +52,7 @@ import org.kablink.teaming.gwt.client.event.ScheduleWipeSelectedMobileDevicesEve
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteMobileDevicesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteMobileDevicesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetManageMobileDevicesInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageMobileDevicesInfoRpcResponseData;
@@ -64,6 +65,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
@@ -224,12 +226,18 @@ public class ManageMobileDevicesDlg extends DlgBox
 	/*
 	 * Synchronously deletes the selected mobile devices.
 	 */
-	private void deleteSelectedMobileDevicesNow(final List<EntityId> selectedmobileDevices) {
+	private void deleteSelectedMobileDevicesNow(final List<EntityId> selectedMobileDevices) {
+		// Show a busy spinner while we clear the adHoc folder
+		// settings.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
 		// Delete the selected mobile devices...
-		DeleteMobileDevicesCmd cmd = new DeleteMobileDevicesCmd(selectedmobileDevices);
+		DeleteMobileDevicesCmd cmd = new DeleteMobileDevicesCmd(selectedMobileDevices);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
+				busy.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					m_messages.rpcFailure_DeleteMobileDevices());
@@ -238,14 +246,49 @@ public class ManageMobileDevicesDlg extends DlgBox
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				// We're done.  If we had any errors...
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				DeleteMobileDevicesRpcResponseData erList = ((DeleteMobileDevicesRpcResponseData) response.getResponseData());
 				if (erList.hasErrors()) {
 					// ...display them...
-					GwtClientHelper.displayMultipleErrors(m_messages.manageMobileDevicesDlg_failureDeletingMobileDevices(), erList.getErrorList());
+					GwtClientHelper.displayMultipleErrors(
+						m_messages.manageMobileDevicesDlg_failureDeletingMobileDevices(),
+						erList.getErrorList());
 				}
+
+				// ...and hide the busy spinner.
+				busy.hide();
 				
-				// ...and reset the view to reflect any deletions.
-				resetViewAsync();
+				// Were any mobile devices successfully deleted?
+				List<EntityId> delList = erList.getSuccessfulDeletes();
+				final int count = ((null == delList) ? 0 : delList.size());
+				if (0 < count) {
+					// Yes!  If we have a removed callback...
+					if (null != m_removedCallback) {
+						final MobileDevicesInfo mdInfoClone = m_mdInfo.copyMobileDevicesInfo();	// Cloned so that the change below doesn't affect it.
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								// ...tell it how many were deleted...
+								m_removedCallback.mobileDevicesRemoved(mdInfoClone, count);
+							}
+						});
+					}
+
+					// If we're running in per user mode...
+					if (null != m_mdInfo.getUserId()) {
+						// ...we need to update the device count in the
+						// ...dialog's caption as well.
+						int devCount = m_mdInfo.getMobileDevicesCount();
+						devCount -= count;
+						if (0 > devCount) {
+							devCount = 0;
+						}
+						m_mdInfo.setMobileDevicesCount(devCount);
+						setCaptionDevicesCount(devCount);
+					}
+					
+					// and reset the view to reflect the deletions.
+					resetViewAsync();
+				}
 			}
 		});
 	}

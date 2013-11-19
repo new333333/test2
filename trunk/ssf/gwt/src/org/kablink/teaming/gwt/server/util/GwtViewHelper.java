@@ -4096,8 +4096,13 @@ public class GwtViewHelper {
 
 			// How many entries per page should the folder display?
 			int pageSize;
-			try                  {pageSize = Integer.parseInt(MiscUtil.entriesPerPage(userProperties));}
-			catch (Exception ex) {pageSize = 25;                                                       }
+			if (folderInfo.isBinderMobileDevices()) {
+				pageSize = Integer.MAX_VALUE;	// The mobile device views are not paged.
+			}
+			else {
+				try                  {pageSize = Integer.parseInt(MiscUtil.entriesPerPage(userProperties));}
+				catch (Exception ex) {pageSize = 25;                                                       }
+			}
 			
 			// What's the action to take when a file link is activated?
 			GwtFileLinkAction fla  = GwtServerHelper.gwtFileLinkActionFromFileLinkAction(
