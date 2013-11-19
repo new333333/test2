@@ -101,6 +101,7 @@ import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoBinderQuotaByTheIdException;
 import org.kablink.teaming.domain.NoDashboardByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
+import org.kablink.teaming.domain.NoLdapConnectionConfigByTheIdException;
 import org.kablink.teaming.domain.NoLibraryEntryByTheIdException;
 import org.kablink.teaming.domain.NoOpenIDProviderByTheIdException;
 import org.kablink.teaming.domain.NoPostingByTheIdException;
@@ -2844,6 +2845,42 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "loadLdapConnectionConfigs(Long)");
     	}	        
 	}
+	@Override
+	public LdapConnectionConfig loadLdapConnectionConfig(final String configId, final Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+            LdapConnectionConfig o =(LdapConnectionConfig)getHibernateTemplate().get(LdapConnectionConfig.class, configId);
+            if (o != null && o.getZoneId().equals(zoneId)) return o;
+            throw new NoLdapConnectionConfigByTheIdException(configId);
+    	}
+    	finally {
+    		end(begin, "loadLdapConnectionConfig(String,Long)");
+    	}
+	}
+    @Override
+    public int getMaxLdapConnectionConfigPosition(final Long zoneId) {
+        long begin = System.nanoTime();
+        try {
+            Integer position = (Integer) getHibernateTemplate().execute(
+                    new HibernateCallback() {
+                        @Override
+                        public Object doInHibernate(Session session) throws HibernateException {
+                            session.createQuery("select max(position) from org.kablink.teaming.domain.LdapConnectionConfig where zoneId=:zoneId")
+                                    .setLong("zoneId", zoneId)
+                                    .uniqueResult();
+                            return null;
+                        }
+                    }
+            );
+            if (position==null) {
+                position = 0;
+            }
+            return position;
+        }
+        finally {
+            end(begin, "purgeIndexNodeByIndexName(String)");
+        }
+    }
 	@Override
 	public ZoneConfig loadZoneConfig(Long zoneId) {
 		long begin = System.nanoTime();

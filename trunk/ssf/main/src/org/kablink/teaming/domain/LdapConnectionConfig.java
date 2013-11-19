@@ -62,7 +62,7 @@ public class LdapConnectionConfig extends ZonedObject {
 
 	protected int position;
 
-	protected LdapConnectionConfig() {
+	public LdapConnectionConfig() {
 
 	}
 
@@ -122,7 +122,7 @@ public class LdapConnectionConfig extends ZonedObject {
 	public String getLdapGuidAttribute()
 	{
 		return ldapGuidAttribute;
-	}// end getLdapGuidAttribute()
+	}// end getGuidAttribute()
 	
 	
 	/**
@@ -131,7 +131,7 @@ public class LdapConnectionConfig extends ZonedObject {
 	public void setLdapGuidAttribute( String ldapGuidAttribute )
 	{
 		this.ldapGuidAttribute = ldapGuidAttribute;
-	}// end setLdapGuidAttribute()
+	}// end setGuidAttribute()
 	
 	
 	public List<SearchInfo> getUserSearches() {

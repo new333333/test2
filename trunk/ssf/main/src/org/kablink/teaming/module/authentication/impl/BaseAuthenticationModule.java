@@ -55,12 +55,16 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class BaseAuthenticationModule extends CommonDependencyInjection
 		implements AuthenticationModule {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	private ZoneModule zoneModule;
+    private TransactionTemplate transactionTemplate;
 
 	public ZoneModule getZoneModule() {
 		return zoneModule;
@@ -70,6 +74,12 @@ public class BaseAuthenticationModule extends CommonDependencyInjection
 		this.zoneModule = zoneModule;
 	}
 
+    protected TransactionTemplate getTransactionTemplate() {
+        return transactionTemplate;
+    }
+    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
+    }
 
 	public boolean testAccess(AuthenticationOperation operation) {
 		try {
@@ -95,6 +105,39 @@ public class BaseAuthenticationModule extends CommonDependencyInjection
 	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId) {
 		return getCoreDao().loadLdapConnectionConfigs(zoneId);
 	}
+
+	public LdapConnectionConfig getLdapConnectionConfig(String id) {
+		return getCoreDao().loadLdapConnectionConfig(id, RequestContextHolder.getRequestContext().getZoneId());
+	}
+
+	public void saveLdapConnectionConfig(LdapConnectionConfig config) {
+        checkAccess(AuthenticationOperation.manageAuthentication);
+        if (config.getId() != null) {
+            LdapConnectionConfig existing = getLdapConnectionConfig(config.getId());
+            config.setPosition(existing.getPosition());
+        } else {
+            int position = getCoreDao().getMaxLdapConnectionConfigPosition(RequestContextHolder.getRequestContext().getZoneId());
+            config.setPosition(position + 10);
+        }
+        _saveLdapConnectionConfig(config);
+        ZoneConfig zoneConfig = getZoneModule().getZoneConfig(config.getZoneId());
+        zoneConfig.getAuthenticationConfig().markAsUpdated();
+    }
+
+	public void _saveLdapConnectionConfig(final LdapConnectionConfig config) {
+
+        getTransactionTemplate().execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                if (config.getId() != null) {
+                    getCoreDao().merge(config);
+                } else {
+                    getCoreDao().save(config);
+                }
+                return null;
+            }
+        });
+    }
 
 	public void setLdapConnectionConfigs(List<LdapConnectionConfig> configs) {
 		checkAccess(AuthenticationOperation.manageAuthentication);

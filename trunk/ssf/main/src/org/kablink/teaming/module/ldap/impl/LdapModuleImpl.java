@@ -1502,7 +1502,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     /**
      * For all users, sync the ldap attribute that holds the guid.  The name of the ldap
      * attribute that holds the guid is found in the ldap configuration data.  You can get the
-     * name of the attribute by calling config.getLdapGuidAttribute().  For eDirectory, the name of
+     * name of the attribute by calling config.getGuidAttribute().  For eDirectory, the name of
      * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
      * This method should be called whenever the user changes the the name of the ldap attribute
      * that holds the guid (in the ldap configuration).
@@ -1670,7 +1670,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     /**
      * For all groups, sync the ldap attribute that holds the guid.  The name of the ldap
      * attribute that holds the guid is found in the ldap configuration data.  You can get the
-     * name of the attribute by calling config.getLdapGuidAttribute().  For eDirectory, the name of
+     * name of the attribute by calling config.getGuidAttribute().  For eDirectory, the name of
      * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
      * This method should be called whenever the user changes the the name of the ldap attribute
      * that holds the guid (in the ldap configuration).
@@ -1780,7 +1780,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     /**
      * For all users and groups, sync the ldap attribute that holds the guid.  The name of the ldap
      * attribute that holds the guid is found in the ldap configuration data.  You can get the
-     * name of the attribute by calling config.getLdapGuidAttribute().  For eDirectory, the name of
+     * name of the attribute by calling config.getGuidAttribute().  For eDirectory, the name of
      * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
      * This method should be called whenever the user changes the the name of the ldap attribute
      * that holds the guid (in the ldap configuration).

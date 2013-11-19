@@ -159,6 +159,8 @@ public interface CoreDao {
 	public TemplateBinder loadTemplateByName(String name, Long zoneId);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public List<LdapConnectionConfig> loadLdapConnectionConfigs(Long zoneId);
+	public LdapConnectionConfig loadLdapConnectionConfig(String configId, Long zoneId);
+    public int getMaxLdapConnectionConfigPosition(final Long zoneId);
 	public ZoneConfig loadZoneConfig(Long zoneId);
 	public Object merge(Object obj); 
     public void move(Binder binder);
