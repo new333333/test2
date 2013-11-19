@@ -277,7 +277,11 @@ public class EntityId implements IsSerializable {
 	 * @return
 	 */
 	public String getEntityIdString() {
-		return (getBinderId() + ":" + getEntityId() + ":" + getEntityType());
+		String reply = (getBinderId() + ":" + getEntityId() + ":" + getEntityType());
+		if (isMobileDevice()) {
+			reply += (":" + getMobileDeviceId());
+		}
+		return reply;
 	}
 	
 	/**
@@ -445,11 +449,14 @@ public class EntityId implements IsSerializable {
 	 */
 	public static EntityId parseEntityIdString(String eidString) {
 		String[] parts = eidString.split(":");
-		return
-			new EntityId(
-				Long.parseLong(parts[0]),
-				Long.parseLong(parts[1]),
-				               parts[2]);
+		EntityId reply = new EntityId(
+			Long.parseLong(parts[0]),
+			Long.parseLong(parts[1]),
+			               parts[2]);
+		if (4 == parts.length) {
+			reply.setMobileDeviceId(parts[3]);
+		}
+		return reply;
 	}
 	
 	/**

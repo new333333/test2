@@ -59,9 +59,11 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageMobileDevicesInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
@@ -86,6 +88,74 @@ public class GwtMobileDeviceHelper {
 		// Nothing to do.
 	}
 	
+	/**
+	 * Deletes the specified mobile devices.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param entityIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData deleteMobileDevices(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+		deleteMobileDevicesImpl(bs, request, entityIds, reply);
+		return reply;
+	}
+	
+	private static void deleteMobileDevicesImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, ErrorListRpcResponseData reply) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMobileDeviceHelper.deleteMobileDevicesImpl()");
+		try {
+			// Were we given any mobile devices to delete?
+			if (MiscUtil.hasItems(entityIds)) {
+				// Yes!  Scan them.
+				ProfileModule pm = bs.getProfileModule();
+				for (EntityId eid:  entityIds) {
+					// Can we access the MobileDevices for this user?
+					String        mid    = eid.getMobileDeviceId();
+					Long          userId = eid.getEntityId();
+					MobileDevices mds    = pm.getMobileDevices(userId);
+					if (null != mds) {
+						// Yes!  Does it contain any MobileDevice's?
+						List<MobileDevice> mdList = mds.getMobileDeviceList();
+						if (MiscUtil.hasItems(mdList)) {
+							// Yes!  Scan them.
+							for (MobileDevice md:  mdList) {
+								// Is this the device in question?
+								if (md.getId().equalsIgnoreCase(mid)) {
+									// Yes!  Remove it from the list...
+									mdList.remove(md);
+									
+									// ...write out the change...
+									mds.setMobileDevices(mdList);
+									pm.setMobileDevices(userId, mds);
+									
+									// ...and break out of the loop.
+									// ...We're done with this
+									// ...user/mobile device.
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(
+				m_logger,
+				ex,
+				"GwtMobileDeviceHelper.deleteMobileDevicesImpl( SOURCE EXCEPTION ):  ");
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+
 	/*
 	 * Applies a quick filter to a List<FolderRow> of 'Mobile Device'
 	 * rows.  A List<FolderRow> of the the FolderRow's from the input
@@ -188,6 +258,40 @@ public class GwtMobileDeviceHelper {
 		}		
 	}
 
+	/**
+	 * Returns the MobileDevice identified by the given EntityId.
+	 * 
+	 * @param bs
+	 * @param eid
+	 * 
+	 * @return
+	 */
+	public static MobileDevice getMobileDevice(AllModulesInjected bs, EntityId eid) {
+		// Can we get the MobileDevices for this user?
+		MobileDevice reply = null;
+		MobileDevices mds = bs.getProfileModule().getMobileDevices(eid.getEntityId());
+		if (null != mds) {
+			// Yes!  Does it contain any MobileDevice's?
+			String mid = eid.getMobileDeviceId();
+			List<MobileDevice> mdList = mds.getMobileDeviceList();
+			if (MiscUtil.hasItems(mdList)) {
+				// Yes!  Scan them.
+				for (MobileDevice md:  mdList) {
+					// Is this the mobile device in question?
+					if (md.getId().equalsIgnoreCase(mid)) {
+						// Yes!  Return it.
+						reply = md;
+						break;
+					}
+				}
+			}
+		}
+
+		// If we get here, reply refers to the requested MobileDevice
+		// if it was found and null otherwise.  Return it.
+		return reply;
+	}
+	
 	/**
 	 * Returns the rows for the given mobile device set.
 	 * 
@@ -399,9 +503,7 @@ public class GwtMobileDeviceHelper {
 						fdd.getFolderSortBy(),
 						fdd.getFolderSortDescend(),
 						folderColumns,
-						(bi.getMobileDevicesViewSpec().isSystem() ?
-							FolderColumn.COLUMN_DEVICE_USER               :	// For the system      device view, we default sort by user...
-							FolderColumn.COLUMN_DEVICE_DESCRIPTION));		// ...for the per user device view, we default sort by description.
+						FolderColumn.COLUMN_DEVICE_DESCRIPTION);
 				
 				Collections.sort(deviceRows, comparator);
 			}

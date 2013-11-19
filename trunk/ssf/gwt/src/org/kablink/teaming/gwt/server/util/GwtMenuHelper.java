@@ -62,6 +62,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
+import org.kablink.teaming.domain.MobileDevices.MobileDevice;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
@@ -2567,6 +2568,32 @@ public class GwtMenuHelper {
 	}
 
 	/*
+	 * Constructs a ToolbarItem for wipe operations against the
+	 * selected mobile devices.
+	 */
+	private static void constructMobileDeviceWipeItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
+		// Create the wipe toolbar item...
+		ToolbarItem wipeTBI = new ToolbarItem("1_wipe");
+		markTBITitle(wipeTBI, "toolbar.wipe");
+
+		// ...add the schedule wipe command...
+		ToolbarItem mdTBI;
+		mdTBI = new ToolbarItem("1_scheduleWipe");
+		markTBITitle(mdTBI, "toolbar.mobileDevice.scheduleWipe.multi");
+		markTBIEvent(mdTBI, TeamingEvents.SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES);
+		wipeTBI.addNestedItem(mdTBI);
+		
+		// ...add the clear scheduled wipe command...
+		mdTBI = new ToolbarItem("1_clearWipe");
+		markTBITitle(mdTBI, "toolbar.mobileDevice.clearScheduledWipe.multi");
+		markTBIEvent(mdTBI, TeamingEvents.CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES);
+		wipeTBI.addNestedItem(mdTBI);
+
+		// ...and the wipe toolbar to the entry toolbar.
+		entryToolbar.addNestedItem(wipeTBI);
+	}
+
+	/*
 	 * Constructs a ToolbarItem to run the send e-mail to team members
 	 * (actually, contributors but I followed the naming that was used
 	 * in the JSP code) dialog. 
@@ -2949,9 +2976,37 @@ public class GwtMenuHelper {
 				constructEntryManageUserItems(actionToolbar, bs, request, entityId.getEntityId());
 			}
 			
+			// No, we aren't working on an entity from the
+			// administration console's manage users dialog!  Are we
+			// working with an entity from a mobile devices dialog?
+			else if (binderInfo.isBinderMobileDevices()) {
+				// Yes!  Add the items for the action menu on a mobile
+				// device.
+				MobileDevice md = GwtMobileDeviceHelper.getMobileDevice(bs, entityId);
+				if (null != md) {
+					ToolbarItem mdTBI;
+					mdTBI = new ToolbarItem("1_deleteSelected");
+					markTBITitle(mdTBI, "toolbar.mobileDevice.delete");
+					markTBIEvent(mdTBI, TeamingEvents.DELETE_SELECTED_MOBILE_DEVICES);
+					actionToolbar.addNestedItem(mdTBI);
+					
+					if (md.isWipeScheduled()) {
+						mdTBI = new ToolbarItem("1_clearWipe");
+						markTBITitle(mdTBI, "toolbar.mobileDevice.clearScheduledWipe");
+						markTBIEvent(mdTBI, TeamingEvents.CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES);
+					}
+					else {
+						mdTBI = new ToolbarItem("1_scheduleWipe");
+						markTBITitle(mdTBI, "toolbar.mobileDevice.scheduleWipe");
+						markTBIEvent(mdTBI, TeamingEvents.SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES);
+					}
+					actionToolbar.addNestedItem(mdTBI);
+				}
+			}
+			
 			else {
-				// No, we aren't working on an entity from the
-				// administration console's manage users dialog!
+				// No, we aren't working on an entity from a mobile
+				// devices dialog either!
 				String eidType = entityId.getEntityType();
 				if (eidType.equals(EntityType.folderEntry.name())) {
 					FolderEntry fe       = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
@@ -3149,7 +3204,11 @@ public class GwtMenuHelper {
 			else if (isBinderMobileDevices) {
 				// Yes!  Construct the appropriate menu items for
 				// it.
-//!				...this needs to be implemented...
+				ToolbarItem deleteMobileDeviceTBI = new ToolbarItem("1_deleteSelected");
+				markTBITitle(deleteMobileDeviceTBI, "toolbar.mobileDevice.delete.multi");
+				markTBIEvent(deleteMobileDeviceTBI, TeamingEvents.DELETE_SELECTED_MOBILE_DEVICES);
+				entryToolbar.addNestedItem(deleteMobileDeviceTBI);
+				constructMobileDeviceWipeItems(entryToolbar, bs, request);
 			}
 			
 			else {

@@ -517,6 +517,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES:
+				// A ClearScheduledWipeSelectedMobileDevicesEvent!  Can
+				// the event handler we were given handle that?
+				if (eventHandler instanceof ClearScheduledWipeSelectedMobileDevicesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ClearScheduledWipeSelectedMobileDevicesEvent.registerEvent(eventBus, ((ClearScheduledWipeSelectedMobileDevicesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:
 				// A ClearSelectedUsersAdHocFoldersEvent!  Can the
 				// event handler we were given handle that?
@@ -622,6 +631,15 @@ public class EventHelper {
 				if (eventHandler instanceof DeleteSelectedEntitiesEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = DeleteSelectedEntitiesEvent.registerEvent(eventBus, ((DeleteSelectedEntitiesEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case DELETE_SELECTED_MOBILE_DEVICES:
+				// A DeleteSelectedMobileDevicesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof DeleteSelectedMobileDevicesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DeleteSelectedMobileDevicesEvent.registerEvent(eventBus, ((DeleteSelectedMobileDevicesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1669,6 +1687,15 @@ public class EventHelper {
 				if (eventHandler instanceof RerootSidebarTreeEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = RerootSidebarTreeEvent.registerEvent(eventBus, ((RerootSidebarTreeEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES:
+				// A ScheduleWipeSelectedMobileDevicesEvent!  Can
+				// the event handler we were given handle that?
+				if (eventHandler instanceof ScheduleWipeSelectedMobileDevicesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ScheduleWipeSelectedMobileDevicesEvent.registerEvent(eventBus, ((ScheduleWipeSelectedMobileDevicesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2792,12 +2819,14 @@ public class EventHelper {
 			case CHANGE_ENTRY_TYPE_SELECTED_ENTITIES:          hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntitiesEvent.Handler);        break;
 			case CHANGE_FAVORITE_STATE:                        hasHandler = (eventHandler instanceof ChangeFavoriteStateEvent.Handler);                    break;
 			case CHECK_MANAGE_USERS_ACTIVE:                    hasHandler = (eventHandler instanceof CheckManageUsersActiveEvent.Handler);                 break;
+			case CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES: hasHandler = (eventHandler instanceof ClearScheduledWipeSelectedMobileDevicesEvent.Handler);break;
 			case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:           hasHandler = (eventHandler instanceof ClearSelectedUsersAdHocFoldersEvent.Handler);         break;
 			case CLEAR_SELECTED_USERS_DOWNLOAD:                hasHandler = (eventHandler instanceof ClearSelectedUsersDownloadEvent.Handler);             break;
 			case CLEAR_SELECTED_USERS_WEBACCESS:               hasHandler = (eventHandler instanceof ClearSelectedUsersWebAccessEvent.Handler);            break;
 			case COPY_PUBLIC_LINK_SELECTED_ENTITIES:           hasHandler = (eventHandler instanceof CopyPublicLinkSelectedEntitiesEvent.Handler);         break;
 			case COPY_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof CopySelectedEntitiesEvent.Handler);                   break;
 			case DELETE_SELECTED_ENTITIES:                     hasHandler = (eventHandler instanceof DeleteSelectedEntitiesEvent.Handler);                 break;
+			case DELETE_SELECTED_MOBILE_DEVICES:               hasHandler = (eventHandler instanceof DeleteSelectedMobileDevicesEvent.Handler);            break;
 			case DELETE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof DeleteSelectedUsersEvent.Handler);                    break;
 			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;
 			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
@@ -2817,6 +2846,7 @@ public class EventHelper {
 			case MARK_UNREAD_SELECTED_ENTITIES:                hasHandler = (eventHandler instanceof MarkUnreadSelectedEntitiesEvent.Handler);             break;
 			case MOVE_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof MoveSelectedEntitiesEvent.Handler);                   break;
 			case PUBLIC_COLLECTION_STATE_CHANGED:              hasHandler = (eventHandler instanceof PublicCollectionStateChangedEvent.Handler);           break;
+			case SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES:        hasHandler = (eventHandler instanceof ScheduleWipeSelectedMobileDevicesEvent.Handler);      break;
 			case SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY:  hasHandler = (eventHandler instanceof SetDesktopDownloadAppControlVisibilityEvent.Handler); break;
 			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;
 			case SET_SELECTED_USER_DESKTOP_SETTINGS:           hasHandler = (eventHandler instanceof SetSelectedUserDesktopSettingsEvent.Handler);         break;

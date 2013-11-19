@@ -40,12 +40,14 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.ClearScheduledWipeSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
@@ -67,6 +69,7 @@ import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent;
+import org.kablink.teaming.gwt.client.event.ScheduleWipeSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent.ManageUsersFilter;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
@@ -173,6 +176,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	private VibeMenuItem					m_trashPurgeSelectedMenu;	//
 	private VibeMenuItem					m_trashRestoreAllMenu;		//
 	private VibeMenuItem					m_trashRestoreSelectedMenu;	//
+	private VibeMenuItem					m_wipeMenu;					//
 
 	/**
 	 * Inner class used to encapsulate the manage users filter items.
@@ -1150,49 +1154,52 @@ public class EntryMenuPanel extends ToolPanelBase
 					
 					VibeEventBase<?> event;
 					switch (simpleEvent) {
-					default:                                    event = EventHelper.createSimpleEvent(            simpleEvent   ); break;
-					case CHANGE_ENTRY_TYPE_SELECTED_ENTITIES:   event = new ChangeEntryTypeSelectedEntitiesEvent( folderId      ); break;
-					case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:    event = new ClearSelectedUsersAdHocFoldersEvent(  folderId      ); break;
-					case CLEAR_SELECTED_USERS_DOWNLOAD:         event = new ClearSelectedUsersDownloadEvent(      folderId      ); break;
-					case CLEAR_SELECTED_USERS_WEBACCESS:        event = new ClearSelectedUsersWebAccessEvent(     folderId      ); break;
-					case COPY_PUBLIC_LINK_SELECTED_ENTITIES:    event = new CopyPublicLinkSelectedEntitiesEvent(  folderId      ); break;
-					case COPY_SELECTED_ENTITIES:                event = new CopySelectedEntitiesEvent(            folderId      ); break;
-					case DELETE_SELECTED_ENTITIES:              event = new DeleteSelectedEntitiesEvent(          folderId      ); break;
-					case DELETE_SELECTED_USERS:                 event = new DeleteSelectedUsersEvent(             folderId      ); break;
-					case DISABLE_SELECTED_USERS:                event = new DisableSelectedUsersEvent(            folderId      ); break;
-					case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:  event = new DisableSelectedUsersAdHocFoldersEvent(folderId      ); break;
-					case DISABLE_SELECTED_USERS_DOWNLOAD:       event = new DisableSelectedUsersDownloadEvent(    folderId      ); break;
-					case DISABLE_SELECTED_USERS_WEBACCESS:      event = new DisableSelectedUsersWebAccessEvent(   folderId      ); break;
-					case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:   event = new EmailPublicLinkSelectedEntitiesEvent( folderId      ); break;
-					case ENABLE_SELECTED_USERS:                 event = new EnableSelectedUsersEvent(             folderId      ); break;
-					case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:   event = new EnableSelectedUsersAdHocFoldersEvent( folderId      ); break;
-					case ENABLE_SELECTED_USERS_DOWNLOAD:        event = new EnableSelectedUsersDownloadEvent(     folderId      ); break;
-					case ENABLE_SELECTED_USERS_WEBACCESS:       event = new EnableSelectedUsersWebAccessEvent(    folderId      ); break;
-					case HIDE_ACCESSORIES:                      event = new HideAccessoriesEvent(                 folderId      ); break;
-					case HIDE_SELECTED_SHARES:                  event = new HideSelectedSharesEvent(              folderId      ); break;
-					case INVOKE_COLUMN_RESIZER:                 event = new InvokeColumnResizerEvent(             m_binderInfo  ); break;
-					case INVOKE_DROPBOX:                        event = new InvokeDropBoxEvent(                   folderId      ); break;
-					case INVOKE_SIGN_GUESTBOOK:                 event = new InvokeSignGuestbookEvent(             folderId      ); break;
-					case LOCK_SELECTED_ENTITIES:                event = new LockSelectedEntitiesEvent(            folderId      ); break;
-					case UNLOCK_SELECTED_ENTITIES:              event = new UnlockSelectedEntitiesEvent(          folderId      ); break;
-					case MANAGE_SHARES_SELECTED_ENTITIES:       event = new ManageSharesSelectedEntitiesEvent(    folderId      ); break;
-					case MARK_READ_SELECTED_ENTITIES:           event = new MarkReadSelectedEntitiesEvent(        folderId      ); break;
-					case MARK_UNREAD_SELECTED_ENTITIES:         event = new MarkUnreadSelectedEntitiesEvent(      folderId      ); break;
-					case MOVE_SELECTED_ENTITIES:                event = new MoveSelectedEntitiesEvent(            folderId      ); break;
-					case SET_SELECTED_USER_DESKTOP_SETTINGS:    event = new SetSelectedUserDesktopSettingsEvent(  folderId      ); break;
-					case SET_SELECTED_USER_MOBILE_SETTINGS:     event = new SetSelectedUserMobileSettingsEvent(   folderId      ); break;
-					case SET_SELECTED_USER_SHARE_RIGHTS:        event = new SetSelectedUserShareRightsEvent(      folderId      ); break;
-					case SHOW_ACCESSORIES:                      event = new ShowAccessoriesEvent(                 folderId      ); break;
-					case SHARE_SELECTED_ENTITIES:               event = new ShareSelectedEntitiesEvent(           folderId      ); break;
-					case SHOW_SELECTED_SHARES:                  event = new ShowSelectedSharesEvent(              folderId      ); break;
-					case SUBSCRIBE_SELECTED_ENTITIES:           event = new SubscribeSelectedEntitiesEvent(       folderId      ); break;
-					case TRASH_PURGE_ALL:                       event = new TrashPurgeAllEvent(                   folderId      ); break;
-					case TRASH_PURGE_SELECTED_ENTITIES:         event = new TrashPurgeSelectedEntitiesEvent(      folderId      ); break;
-					case TRASH_RESTORE_ALL:                     event = new TrashRestoreAllEvent(                 folderId      ); break;
-					case TRASH_RESTORE_SELECTED_ENTITIES:       event = new TrashRestoreSelectedEntitiesEvent(    folderId      ); break;
-					case VIEW_PINNED_ENTRIES:                   event = new ViewPinnedEntriesEvent(               folderId      ); break;
-					case VIEW_SELECTED_ENTRY:                   event = new ViewSelectedEntryEvent(               folderId      ); break;
-					case ZIP_AND_DOWNLOAD_SELECTED_FILES:       event = new ZipAndDownloadSelectedFilesEvent(     folderId, true); break;
+					default:                                            event = EventHelper.createSimpleEvent(                   simpleEvent   ); break;
+					case CHANGE_ENTRY_TYPE_SELECTED_ENTITIES:           event = new ChangeEntryTypeSelectedEntitiesEvent(        folderId      ); break;
+					case CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES:  event = new ClearScheduledWipeSelectedMobileDevicesEvent(m_binderInfo  ); break;
+					case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:            event = new ClearSelectedUsersAdHocFoldersEvent(         folderId      ); break;
+					case CLEAR_SELECTED_USERS_DOWNLOAD:                 event = new ClearSelectedUsersDownloadEvent(             folderId      ); break;
+					case CLEAR_SELECTED_USERS_WEBACCESS:                event = new ClearSelectedUsersWebAccessEvent(            folderId      ); break;
+					case COPY_PUBLIC_LINK_SELECTED_ENTITIES:            event = new CopyPublicLinkSelectedEntitiesEvent(         folderId      ); break;
+					case COPY_SELECTED_ENTITIES:                        event = new CopySelectedEntitiesEvent(                   folderId      ); break;
+					case DELETE_SELECTED_ENTITIES:                      event = new DeleteSelectedEntitiesEvent(                 folderId      ); break;
+					case DELETE_SELECTED_MOBILE_DEVICES:                event = new DeleteSelectedMobileDevicesEvent(            m_binderInfo  ); break;
+					case DELETE_SELECTED_USERS:                         event = new DeleteSelectedUsersEvent(                    folderId      ); break;
+					case DISABLE_SELECTED_USERS:                        event = new DisableSelectedUsersEvent(                   folderId      ); break;
+					case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:          event = new DisableSelectedUsersAdHocFoldersEvent(       folderId      ); break;
+					case DISABLE_SELECTED_USERS_DOWNLOAD:               event = new DisableSelectedUsersDownloadEvent(           folderId      ); break;
+					case DISABLE_SELECTED_USERS_WEBACCESS:              event = new DisableSelectedUsersWebAccessEvent(          folderId      ); break;
+					case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:           event = new EmailPublicLinkSelectedEntitiesEvent(        folderId      ); break;
+					case ENABLE_SELECTED_USERS:                         event = new EnableSelectedUsersEvent(                    folderId      ); break;
+					case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:           event = new EnableSelectedUsersAdHocFoldersEvent(        folderId      ); break;
+					case ENABLE_SELECTED_USERS_DOWNLOAD:                event = new EnableSelectedUsersDownloadEvent(            folderId      ); break;
+					case ENABLE_SELECTED_USERS_WEBACCESS:               event = new EnableSelectedUsersWebAccessEvent(           folderId      ); break;
+					case HIDE_ACCESSORIES:                              event = new HideAccessoriesEvent(                        folderId      ); break;
+					case HIDE_SELECTED_SHARES:                          event = new HideSelectedSharesEvent(                     folderId      ); break;
+					case INVOKE_COLUMN_RESIZER:                         event = new InvokeColumnResizerEvent(                    m_binderInfo  ); break;
+					case INVOKE_DROPBOX:                                event = new InvokeDropBoxEvent(                          folderId      ); break;
+					case INVOKE_SIGN_GUESTBOOK:                         event = new InvokeSignGuestbookEvent(                    folderId      ); break;
+					case LOCK_SELECTED_ENTITIES:                        event = new LockSelectedEntitiesEvent(                   folderId      ); break;
+					case UNLOCK_SELECTED_ENTITIES:                      event = new UnlockSelectedEntitiesEvent(                 folderId      ); break;
+					case MANAGE_SHARES_SELECTED_ENTITIES:               event = new ManageSharesSelectedEntitiesEvent(           folderId      ); break;
+					case MARK_READ_SELECTED_ENTITIES:                   event = new MarkReadSelectedEntitiesEvent(               folderId      ); break;
+					case MARK_UNREAD_SELECTED_ENTITIES:                 event = new MarkUnreadSelectedEntitiesEvent(             folderId      ); break;
+					case MOVE_SELECTED_ENTITIES:                        event = new MoveSelectedEntitiesEvent(                   folderId      ); break;
+					case SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES:         event = new ScheduleWipeSelectedMobileDevicesEvent(      m_binderInfo  ); break;
+					case SET_SELECTED_USER_DESKTOP_SETTINGS:            event = new SetSelectedUserDesktopSettingsEvent(         folderId      ); break;
+					case SET_SELECTED_USER_MOBILE_SETTINGS:             event = new SetSelectedUserMobileSettingsEvent(          folderId      ); break;
+					case SET_SELECTED_USER_SHARE_RIGHTS:                event = new SetSelectedUserShareRightsEvent(             folderId      ); break;
+					case SHOW_ACCESSORIES:                              event = new ShowAccessoriesEvent(                        folderId      ); break;
+					case SHARE_SELECTED_ENTITIES:                       event = new ShareSelectedEntitiesEvent(                  folderId      ); break;
+					case SHOW_SELECTED_SHARES:                          event = new ShowSelectedSharesEvent(                     folderId      ); break;
+					case SUBSCRIBE_SELECTED_ENTITIES:                   event = new SubscribeSelectedEntitiesEvent(              folderId      ); break;
+					case TRASH_PURGE_ALL:                               event = new TrashPurgeAllEvent(                          folderId      ); break;
+					case TRASH_PURGE_SELECTED_ENTITIES:                 event = new TrashPurgeSelectedEntitiesEvent(             folderId      ); break;
+					case TRASH_RESTORE_ALL:                             event = new TrashRestoreAllEvent(                        folderId      ); break;
+					case TRASH_RESTORE_SELECTED_ENTITIES:               event = new TrashRestoreSelectedEntitiesEvent(           folderId      ); break;
+					case VIEW_PINNED_ENTRIES:                           event = new ViewPinnedEntriesEvent(                      folderId      ); break;
+					case VIEW_SELECTED_ENTRY:                           event = new ViewSelectedEntryEvent(                      folderId      ); break;
+					case ZIP_AND_DOWNLOAD_SELECTED_FILES:               event = new ZipAndDownloadSelectedFilesEvent(            folderId, true); break;
 					
 					case CALENDAR_SHOW:
 						int calendarShow = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));
@@ -1237,6 +1244,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		switch (simpleTBI.getTeamingEvent()) {
 		case INVOKE_DROPBOX:                  m_addFilesMenu             = menuItem; break;
 		case DELETE_SELECTED_ENTITIES:        m_deleteMenu               = menuItem; break;
+		case DELETE_SELECTED_MOBILE_DEVICES:  m_deleteMenu               = menuItem; break;
 		case TRASH_PURGE_ALL:                 m_trashPurgeAllMenu        = menuItem; break;
 		case TRASH_PURGE_SELECTED_ENTITIES:   m_trashPurgeSelectedMenu   = menuItem; break;
 		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = menuItem; break;
@@ -1290,8 +1298,9 @@ public class EntryMenuPanel extends ToolPanelBase
 		
 		String structuredName = structuredTBI.getName();
 		if (GwtClientHelper.hasString(structuredName)) {
-			if      (structuredName.equals("1_more"))   m_moreMenu = structuredMenuItem;
+			if      (structuredName.equals("1_more"))   m_moreMenu  = structuredMenuItem;
 			else if (structuredName.equals("1_share")) {m_shareMenu = structuredMenuItem; m_shareMenuIsDropdown = true;}
+			else if (structuredName.equals("1_wipe"))   m_wipeMenu  = structuredMenuItem;
 		}
 		
 		// ...scan the nested items...
@@ -1398,6 +1407,23 @@ public class EntryMenuPanel extends ToolPanelBase
 			m_moreMenu.setHTML(
 				renderStructuredItemHTML(
 					m_moreMenu.getText(),
+					enable));
+		}
+		
+		// If we have a wipe menu item...
+		if (null != m_wipeMenu) {
+			// ...enable/disable it...
+			m_wipeMenu.setEnabled(enable);
+			if (enable)
+			     m_wipeMenu.removeStyleName("vibe-menuDisabled");
+			else m_wipeMenu.addStyleName(   "vibe-menuDisabled");
+
+			// ...and update its display to reflect the state of the
+			// ...menu item (in particular, the drop down image on the
+			// ...menu.)
+			m_wipeMenu.setHTML(
+				renderStructuredItemHTML(
+					m_wipeMenu.getText(),
 					enable));
 		}
 		

@@ -328,6 +328,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CreateLoginReport();
 	String rpcFailure_CreateUserAccessReport();
 	String rpcFailure_CreateUserActivityReport();
+	String rpcFailure_DeleteMobileDevices();
 	String rpcFailure_DeleteNetFolders();
 	String rpcFailure_DeleteNetFolderServers();
 	String rpcFailure_DeleteGroups();
@@ -3186,5 +3187,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageMobileDevicesDlgDevices(int dCount);
 	String manageMobileDevicesDlgSystem();
 	String manageMobileDevicesDlgUser(String title);
+	String manageMobileDevicesDlg_confirmDelete();
+	String manageMobileDevicesDlg_failureDeletingMobileDevices();
 	
 }// end GwtTeamingMessages

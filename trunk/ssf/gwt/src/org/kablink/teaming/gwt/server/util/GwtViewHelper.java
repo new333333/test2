@@ -3749,8 +3749,8 @@ public class GwtViewHelper {
 				// Yes!
 				baseNameKey = "mobileDevice.column.";
 				if (folderInfo.getMobileDevicesViewSpec().isSystem())
-				     columnNames = getColumnsLHMFromAS(new String[]{"deviceUser", "deviceDescription", "deviceLastLogin", "deviceWipeScheduled", "deviceWipeDate"});
-				else columnNames = getColumnsLHMFromAS(new String[]{              "deviceDescription", "deviceLastLogin", "deviceWipeScheduled", "deviceWipeDate"});
+				     columnNames = getColumnsLHMFromAS(new String[]{"deviceDescription", "deviceUser", "deviceLastLogin", "deviceWipeScheduled", "deviceWipeDate"});
+				else columnNames = getColumnsLHMFromAS(new String[]{"deviceDescription",               "deviceLastLogin", "deviceWipeScheduled", "deviceWipeDate"});
 			}
 			
 			// No, we aren't showing a mobile devices view either!  Are
@@ -4079,10 +4079,7 @@ public class GwtViewHelper {
 					sortBy = Constants.SORT_TITLE_FIELD;
 				}
 				else if (folderInfo.isBinderMobileDevices()) {
-					sortBy =
-						(folderInfo.getMobileDevicesViewSpec().isSystem() ?
-							FolderColumn.COLUMN_DEVICE_USER               :	// For the system      device view, we default sort by user...
-							FolderColumn.COLUMN_DEVICE_DESCRIPTION);		// ...for the per user device view, we default sort by description.
+					sortBy = FolderColumn.COLUMN_DEVICE_DESCRIPTION;
 				}
 				else {
 					switch (folderInfo.getFolderType()) {
