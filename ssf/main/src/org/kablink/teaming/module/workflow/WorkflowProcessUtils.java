@@ -1195,6 +1195,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 	public static WfAcl getStateAcl(Definition wfDef, DefinableEntity entity, String stateName, WfAcl.AccessType type) {
 		Document wfDoc = wfDef.getDefinition();
 		WfAcl acl = null;
+		Boolean aclFound = false;
 		//Find the current state in the definition
 		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
 		if (stateEle != null) {
@@ -1213,16 +1214,27 @@ public static void resumeTimers(WorkflowSupport entry) {
 				nodeString = "item[@name='transitionInAccess']";
 			} 
 			if (nodeString != null) {
-				acl = getAcl((Element)stateEle.selectSingleNode("./item[@name='accessControls']/" + nodeString), entity, type);
+				Element aclEle = (Element)stateEle.selectSingleNode("./item[@name='accessControls']/" + nodeString);
+				if (aclEle != null) aclFound = true;
+				acl = getAcl(aclEle, entity, type);
 			}
-			if (acl == null) {
+			if (!aclFound && acl == null) {
 				//check global settings
-				acl = getAcl((Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']/item[@name='accessControls']/" + nodeString), entity, type);
+				Element aclEle = (Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']/item[@name='accessControls']/" + nodeString);
+				if (aclEle != null) aclFound = true;
+				acl = getAcl(aclEle, entity, type);
 			}
 			if (acl != null) return acl;
 		} 
+		if (!aclFound && WfAcl.AccessType.modifyField.equals(type)) {
+			//If there is no explicit setting for modifyField, then use the modify setting.
+			return getStateAcl(wfDef, entity, stateName, WfAcl.AccessType.modify);
+		}
 		acl = new WfAcl(type);
-		acl.setUseDefault(true);
+		if (!aclFound) {
+			//If there was no specific ACL for this type, then mark that the ACL shoud use the default
+			acl.setUseDefault(true);
+		}
 		return acl;
 	}
 
