@@ -547,6 +547,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case DELETE_MOBILE_DEVICES:
+		{
+			DeleteMobileDevicesCmd dmdCmd = ((DeleteMobileDevicesCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtMobileDeviceHelper.deleteMobileDevices( this, getRequest( ri ), dmdCmd.getEntityIds() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case DELETE_SELECTED_USERS:
 		{
 			DeleteSelectedUsersCmd dsuCmd = ((DeleteSelectedUsersCmd) cmd);

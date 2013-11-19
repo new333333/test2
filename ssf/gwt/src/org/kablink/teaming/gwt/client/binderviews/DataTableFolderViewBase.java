@@ -1640,6 +1640,29 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						return fr.getColumnValueAsDescriptionHtml(fc);
 					}
 				};
+
+				// Is this description for a mobile device? 
+				if (FolderColumn.isColumnDeviceDescription(cName)) {
+					// Yes!  Create an ActionMenuColumn for it.
+					supportColumn = new ActionMenuColumn<FolderRow>(fc, getFolderInfo()) {
+						@Override
+						public EntryTitleInfo getValue(FolderRow fr) {
+							// The ActionMenuColumn requires an
+							// EntryTitleInfo.  For the device
+							// description column in the manage mobile
+							// devices dialog, we don't have one.
+							// Construct a dummy one with enough
+							// information for the ActionMenuColumn to
+							// work.
+							EntryTitleInfo dummyETI = new EntryTitleInfo();
+							dummyETI.setEntityId(fr.getEntityId());
+							return dummyETI;
+						}
+					};
+					supportColumn.setSortable(false);
+					supportColumnWidth  = m_actionMenuColumnWidth;
+					supportColumnStyles = (STYLE_COL_BASE + " vibe-dataTableActions-column");
+				}
 			}
 			
 			// No, this column isn't an HTML description column either!

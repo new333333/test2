@@ -270,12 +270,14 @@ public enum TeamingEvents implements IsSerializable {
 	CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,			// Changes the Entry Type of the Selected Entities.
 	CHANGE_FAVORITE_STATE,							// Changes the favorites state of a binder.
 	CHECK_MANAGE_USERS_ACTIVE,						// Event to detect if the the manage users facility is active.
+	CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES,	// Clears the scheduled wipe state from the selected mobile devices.
 	CLEAR_SELECTED_USERS_ADHOC_FOLDERS,				// Clears the adHoc folder setting for the Selected Users so they revert to the zone setting.
 	CLEAR_SELECTED_USERS_DOWNLOAD,					// Clears the download   setting for the Selected Users so they revert to the zone setting.
 	CLEAR_SELECTED_USERS_WEBACCESS,					// Clears the web access setting for the Selected Users so they revert to the zone setting.
 	COPY_PUBLIC_LINK_SELECTED_ENTITIES,				// Copies the Public Link of the Selected Entities.
 	COPY_SELECTED_ENTITIES,							// Copies the Selected Entities.
 	DELETE_SELECTED_ENTITIES,						// Deletes the Selected Entities.
+	DELETE_SELECTED_MOBILE_DEVICES,					// Deletes the Selected Mobile Devices.
 	DELETE_SELECTED_USERS,							// Deletes the Selected Users.
 	DISABLE_SELECTED_USERS,							// Disables the Selected Users.
 	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
@@ -298,6 +300,7 @@ public enum TeamingEvents implements IsSerializable {
 	PUBLIC_COLLECTION_STATE_CHANGED,				// The Visibility State of the Public Collection Changed.
 	RELOAD_DIALOG_CONTENT,							// Tells a dialog to reload its content.
 	RESET_ENTRY_MENU,								// Resets the Entry Menu on the Given Folder.
+	SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES,			// Schedules the selected mobile devices to be wiped.
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 
 	SET_FOLDER_SORT,								// Sets a folder sort options.
 	SET_SELECTED_USER_DESKTOP_SETTINGS,				// Sets the desktop application settings for the selected users.

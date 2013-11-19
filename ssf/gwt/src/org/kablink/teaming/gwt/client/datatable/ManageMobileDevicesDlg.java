@@ -43,18 +43,29 @@ import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.ClearScheduledWipeSelectedMobileDevicesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
+import org.kablink.teaming.gwt.client.event.ScheduleWipeSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteMobileDevicesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetManageMobileDevicesInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageMobileDevicesInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetMobileDevicesWipeScheduledStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.MobileDeviceRemovedCallback;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -77,7 +88,10 @@ public class ManageMobileDevicesDlg extends DlgBox
 	implements ViewReady,
 		// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler,
+		ClearScheduledWipeSelectedMobileDevicesEvent.Handler,
+		DeleteSelectedMobileDevicesEvent.Handler,
 		FullUIReloadEvent.Handler,
+		ScheduleWipeSelectedMobileDevicesEvent.Handler,
 		GetManageTitleEvent.Handler
 {
 	private boolean									m_dlgAttached;				// true when the dialog is attached to the document.     false otherwise.
@@ -109,8 +123,11 @@ public class ManageMobileDevicesDlg extends DlgBox
 	// this array is used.
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.ADMINISTRATION_EXIT,
+		TeamingEvents.CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES,
+		TeamingEvents.DELETE_SELECTED_MOBILE_DEVICES,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.GET_MANAGE_TITLE,
+		TeamingEvents.SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES,
 	};
 	
 	/*
@@ -191,6 +208,47 @@ public class ManageMobileDevicesDlg extends DlgBox
 		// ...the initAndShow() call.
 		return m_rootPanel;
 	}
+
+	/*
+	 * Asynchronously deletes the selected mobile devices.
+	 */
+	private void deleteSelectedMobileDevicesAsync(final List<EntityId> selectedMobileDevices) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				deleteSelectedMobileDevicesNow(selectedMobileDevices);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously deletes the selected mobile devices.
+	 */
+	private void deleteSelectedMobileDevicesNow(final List<EntityId> selectedmobileDevices) {
+		// Delete the selected mobile devices...
+		DeleteMobileDevicesCmd cmd = new DeleteMobileDevicesCmd(selectedmobileDevices);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_DeleteMobileDevices());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  If we had any errors...
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them...
+					GwtClientHelper.displayMultipleErrors(m_messages.manageMobileDevicesDlg_failureDeletingMobileDevices(), erList.getErrorList());
+				}
+				
+				// ...and reset the view to reflect any deletions.
+				resetViewAsync();
+			}
+		});
+	}
 	
 	/**
 	 * Unused.
@@ -249,6 +307,103 @@ public class ManageMobileDevicesDlg extends DlgBox
 	}
 	
 	/**
+	 * Handles ClearScheduledWipeSelectedMobileDevicesEvent's received by this class.
+	 * 
+	 * Implements the ClearScheduledWipeSelectedMobileDevicesEvent.Handler.onClearScheduledWipeSelectedMobileDevices() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onClearScheduledWipeSelectedMobileDevices(ClearScheduledWipeSelectedMobileDevicesEvent event) {
+		// If the event doesn't have any selected devices...
+		List<EntityId> selectedEntityIds = event.getSelectedEntities();
+		if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+			// ...use the ones selected in the view.
+			selectedEntityIds = m_mdView.getSelectedEntityIds();
+		}
+		if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+			return;
+		}
+		
+		// Clear the scheduled wipes...
+		SetMobileDevicesWipeScheduledStateCmd cmd = new SetMobileDevicesWipeScheduledStateCmd(selectedEntityIds, false);	// false -> Clear scheduled wipes.
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_SetMobileDevicesWipeScheduledState());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...and if successful...
+				boolean reply = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+				if (reply) {
+					resetViewAsync();
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Handles DeleteSelectedMobileDevicesEvent's received by this class.
+	 * 
+	 * Implements the DeleteSelectedMobileDevicesEvent.Handler.onDeleteSelectedMobileDevices() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDeleteSelectedMobileDevices(DeleteSelectedMobileDevicesEvent event) {
+		// If the event doesn't have any selected devices...
+		List<EntityId> selIds = event.getSelectedEntities();
+		if (!(GwtClientHelper.hasItems(selIds))) {
+			// ...use the ones selected in the view.
+			selIds = m_mdView.getSelectedEntityIds();
+		}
+		if (!(GwtClientHelper.hasItems(selIds))) {
+			return;
+		}
+		final List<EntityId> selectedEntityIds = selIds;
+
+		// Is the user sure about deleting the selected mobile devices?
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Delete the selected
+							// mobile devices.
+							deleteSelectedMobileDevicesAsync(selectedEntityIds);
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.manageMobileDevicesDlg_confirmDelete());
+			}
+		});
+		
+	}
+	
+	/**
 	 * Called when the manage mobile devices dialog is detached.
 	 * 
 	 * Overrides the Widget.onDetach() method.
@@ -297,6 +452,46 @@ public class ManageMobileDevicesDlg extends DlgBox
 		}
 	}
 
+	/**
+	 * Handles ScheduleWipeSelectedMobileDevicesEvent's received by this class.
+	 * 
+	 * Implements the ScheduleWipeSelectedMobileDevicesEvent.Handler.onScheduleWipeSelectedMobileDevices() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onScheduleWipeSelectedMobileDevices(ScheduleWipeSelectedMobileDevicesEvent event) {
+		// If the event doesn't have any selected devices...
+		List<EntityId> selectedEntityIds = event.getSelectedEntities();
+		if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+			// ...use the ones selected in the view.
+			selectedEntityIds = m_mdView.getSelectedEntityIds();
+		}
+		if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+			return;
+		}
+
+		// Schedule the wipes...
+		SetMobileDevicesWipeScheduledStateCmd cmd = new SetMobileDevicesWipeScheduledStateCmd(selectedEntityIds, true);	// true -> Schedule wipes.
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_SetMobileDevicesWipeScheduledState());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...and if successful...
+				boolean reply = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+				if (reply) {
+					resetViewAsync();
+				}
+			}
+		});
+	}
+	
 	/**
 	 * Called when the mobile devices view reaches the ready state.
 	 * 
@@ -377,6 +572,25 @@ public class ManageMobileDevicesDlg extends DlgBox
 		}
 	}
 
+	/*
+	 * Asynchronously reset's the view's contents.
+	 */
+	private void resetViewAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				resetViewNow();
+			}
+		} );
+	}
+	
+	/*
+	 * Synchronously reset's the view's contents.
+	 */
+	private void resetViewNow() {
+		m_mdView.resetView();
+	}
+	
 	/*
 	 * Asynchronously runs the given instance of the manage mobile
 	 * devices dialog.
