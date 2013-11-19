@@ -37,6 +37,8 @@ import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg;
 import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg.ManageMobileDevicesDlgClient;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.CreateDummyMobileDevicesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.MobileDeviceRemovedCallback;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -51,6 +53,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Data table cell that represents a mobile devices count on an user.
@@ -74,6 +77,46 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 		m_messages = GwtTeaming.getMessages();
 	}
 
+	/*
+	 * Asynchronously creates some dummy mobile devices and shows them
+	 * in the mobile devices dialog.
+	 */
+	private void createDummyMobileDevicesAsync(final MobileDevicesInfo mdInfo, final Element relativeToThis) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				createDummyMobileDevicesNow(mdInfo, relativeToThis);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously creates some dummy mobile devices and shows them
+	 * in the mobile devices dialog.
+	 */
+	private void createDummyMobileDevicesNow(final MobileDevicesInfo mdInfo, final Element relativeToThis) {
+		GwtClientHelper.executeCommand(new CreateDummyMobileDevicesCmd(mdInfo.getUserId(), 5), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem...
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_CreateDummyMobileDevices());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						mobileDevicesRemoved(mdInfo, (-5));	// Updates the display to reflect the change.
+						showManageMobileDevicesDlg(mdInfo, relativeToThis);
+					}
+				});
+			}
+		});
+	}
+	
 	/**
 	 * Called by the manage devices dialog saying a device was removed
 	 * from the user.
@@ -81,18 +124,37 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 	 * Implements the MobileDeviceRemovedCallback.mobileDeviceRemoved() method.
 	 * 
 	 * @param callbackData
+	 * @param count
 	 */
 	@Override
-	public void mobileDeviceRemoved(Object callbackData) {
+	public void mobileDevicesRemoved(Object callbackData, int count) {
 		// Decrement the count of devices in the MobileDevicesInfo...
 		MobileDevicesInfo mdi = ((MobileDevicesInfo) callbackData);
-		int deviceCount = (mdi.getMobileDevicesCount() - 1);
+		int deviceCount = (mdi.getMobileDevicesCount() - count);
+		if (0 > deviceCount) {
+			deviceCount = 0;
+		}
 		mdi.setMobileDevicesCount(deviceCount);
 
 		// ...and update the display of the device bubble.
 		Element cpE = DOM.getElementById("mobileDevices-" + mdi.getUserId());
-		cpE.removeClassName("vibe-dataTableMobileDevices-panel0");
-		cpE.setInnerHTML(String.valueOf(deviceCount));
+		if (0 == deviceCount) {
+			cpE.addClassName("vibe-dataTableMobileDevices-panel0");
+			cpE.removeClassName("cursorPointer");
+			cpE.setInnerHTML("&nbsp;&nbsp;");
+			cpE.setTitle(m_messages.vibeDataTable_Alt_MobileDevices_None());
+			cpE.removeAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+		}
+		
+		else {
+			cpE.removeClassName("vibe-dataTableMobileDevices-panel0");
+			cpE.addClassName("cursorPointer");
+			cpE.setInnerHTML(String.valueOf(deviceCount));
+			cpE.setTitle(m_messages.vibeDataTable_Alt_MobileDevices());
+			cpE.setAttribute(
+				VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,
+				VibeDataTableConstants.CELL_WIDGET_MOBILE_DEVICES_PANEL);
+		}
 	}
 	
 	/**
@@ -129,7 +191,9 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 		    	if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
 		    		// A click!  Run the manage devices dialog on the
 		    		// user.
-					showManageMobileDevicesDlg(mdInfo, eventTarget);
+		    		if (0 == mdInfo.getMobileDevicesCount())
+		    		     createDummyMobileDevicesAsync(mdInfo, eventTarget);
+		    		else showManageMobileDevicesDlg(   mdInfo, eventTarget);
 		    	}
     		}
     	}
@@ -156,7 +220,9 @@ public class MobileDevicesCell extends AbstractCell<MobileDevicesInfo> implement
 		String	wt           = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
 		if ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_MOBILE_DEVICES_PANEL)){
 			// ...run the manage devices dialog on the entity.
-			showManageMobileDevicesDlg(mdInfo, eventTarget);
+    		if (0 == mdInfo.getMobileDevicesCount())
+    		     createDummyMobileDevicesAsync(mdInfo, eventTarget);
+    		else showManageMobileDevicesDlg(   mdInfo, eventTarget);
 		}
     }
     

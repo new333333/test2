@@ -320,6 +320,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CreateApplicationAlreadyExists();
 	String rpcFailure_CreateApplicationGroupAlreadyExists();
 	String rpcFailure_CreateBlogPage();
+	String rpcFailure_CreateDummyMobileDevices();
 	String rpcFailure_CreateEmailReport();
 	String rpcFailure_CreateGroup();
 	String rpcFailure_CreateGroupAlreadyExists();
