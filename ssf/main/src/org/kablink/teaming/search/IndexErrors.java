@@ -38,10 +38,6 @@ import java.util.List;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Entry;
-import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.util.NLT;
-
 
 public class IndexErrors implements Serializable {
 	
@@ -50,56 +46,56 @@ public class IndexErrors implements Serializable {
 	private List<Binder> binders;
 	private List<Entry> entries;
 	private List<String> generalErrors;
-	private Integer errorCount;
+	private int errorCount;
 	
 	public IndexErrors() {
-		this.binders = new ArrayList();
-		this.entries = new ArrayList();
-		this.generalErrors = new ArrayList();
-		this.errorCount = new Integer(0);
+		this.binders = new ArrayList<Binder>();
+		this.entries = new ArrayList<Entry>();
+		this.generalErrors = new ArrayList<String>();
+		this.errorCount = 0;
 	}
 	
-	public void addError(Binder binder) {
+	public synchronized void addError(Binder binder) {
 		binders.add(binder);
 		errorCount++;
 	}
 	
-	public void addError(Entry entry) {
+	public synchronized void addError(Entry entry) {
 		entries.add(entry);
 		errorCount++;
 	}
 	
-	public void addError(String msg) {
+	public synchronized void addError(String msg) {
 		generalErrors.add(msg);
 		errorCount++;
 	}
 	
-	public List<Binder> getBinders() {
+	public synchronized List<Binder> getBinders() {
 		return binders;
 	}
 	
-	public List<Entry> getEntries() {
+	public synchronized List<Entry> getEntries() {
 		return entries;
 	}
 	
-	public List<String> getGeneralErrors() {
+	public synchronized List<String> getGeneralErrors() {
 		return generalErrors;
 	}
 	
-	public Integer getErrorCount() {
+	public synchronized int getErrorCount() {
 		return errorCount;
 	}
 	
-	public boolean checkIfErrors() {
+	public synchronized boolean checkIfErrors() {
 		if (errorCount == 0) return false;
 		else return true;
 	}
 	
-	public void add(Integer count) {
+	public synchronized void add(int count) {
 		errorCount += count;
 	}
 	
-	public void add(IndexErrors ie) {
+	public synchronized void add(IndexErrors ie) {
 		binders.addAll(ie.getBinders());
 		entries.addAll(ie.getEntries());
 		generalErrors.addAll(ie.getGeneralErrors());

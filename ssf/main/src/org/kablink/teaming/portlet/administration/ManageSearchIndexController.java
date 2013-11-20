@@ -119,7 +119,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 	    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
 				//SimpleProfiler.done(logger);
 				response.setRenderParameters(formData);
-				response.setRenderParameter(WebKeys.ERROR_INDEXING_COUNT, errors.getErrorCount().toString());
+				response.setRenderParameter(WebKeys.ERROR_INDEXING_COUNT, String.valueOf(errors.getErrorCount()));
 				if (errors.getErrorCount() > 0) {
 					List binderIds = new ArrayList();
 					for (Binder b : errors.getBinders()) {
