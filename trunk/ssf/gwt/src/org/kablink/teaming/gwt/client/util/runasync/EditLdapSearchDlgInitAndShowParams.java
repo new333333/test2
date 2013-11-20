@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,82 +30,89 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
-package org.kablink.teaming.gwt.client.util;
-
+package org.kablink.teaming.gwt.client.util.runasync;
 
 
+import org.kablink.teaming.gwt.client.GwtLdapSearchInfo;
+import org.kablink.teaming.gwt.client.ldapbrowser.DirectoryServer;
+import org.kablink.teaming.gwt.client.widgets.EditLdapSearchDlg;
 
 /**
- * Class used to hold all of the information needed to execute a "runAsync()" command
- * 
- * @author jwootton@novell.com
- *
+ * Class that holds all of the information necessary to initialize and show the
+ * Edit Ldap Search dialog.
  */
-public class RunAsyncCmd
+public class EditLdapSearchDlgInitAndShowParams extends RunAsyncInitAndShowParams
 {
-	private RunAsyncCmdType m_cmdType;
-	private RunAsyncParams m_params;
+	private DirectoryServer m_directoryServer;
+	private GwtLdapSearchInfo m_ldapSearch;
+	private Boolean m_showHomeDirInfoControls;
 	
 	/**
-	 * This class represent the type of "runAsync" command
+	 * 
 	 */
-	public enum RunAsyncCmdType
+	public EditLdapSearchDlgInitAndShowParams()
 	{
-		CREATE( (short) 1 ),
-		INIT_AND_SHOW( (short) 2 ),
-		UNKNOWN( (short) 10 );
+	}
+	
+	/**
+	 * 
+	 */
+	public DirectoryServer getDirectoryServer()
+	{
+		return m_directoryServer;
+	}
+	
+	/**
+	 * 
+	 */
+	public GwtLdapSearchInfo getLdapSearch()
+	{
+		return m_ldapSearch;
+	}
+	
+	/**
+	 * 
+	 */
+	public Boolean getShowHomeDirInfoControls()
+	{
+		return m_showHomeDirInfoControls;
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public EditLdapSearchDlg getUIObj()
+	{
+		if ( m_uiObj instanceof EditLdapSearchDlg )
+			return (EditLdapSearchDlg) m_uiObj;
 		
-		private short m_value;
-
-		/**
-		 * 
-		 */
-		RunAsyncCmdType( short value )
-		{
-			m_value = value;
-		}
-		
-		/**
-		 * 
-		 */
-		public short getValue()
-		{
-			return m_value;
-		}
+		return null;
 	}
-	
-	
-	/**
-	 * This class is the base class for the parameters needed to execute the "runAsync" command
-	 */
-	public interface RunAsyncParams
-	{
-	}
-	
 	
 	/**
 	 * 
 	 */
-	public RunAsyncCmd( RunAsyncCmdType type, RunAsyncParams params )
+	public void setDirectoryServer( DirectoryServer server )
 	{
-		m_cmdType = type;
-		m_params = params;
+		m_directoryServer = server;
 	}
-
+	
 	/**
 	 * 
 	 */
-	public RunAsyncCmdType getCmdType()
+	public void setLdapSearch( GwtLdapSearchInfo search )
 	{
-		return m_cmdType;
+		m_ldapSearch = search;
 	}
-
+	
 	/**
 	 * 
 	 */
-	public RunAsyncParams getParams()
+	public void setShowHomeDirInfoControls( Boolean show )
 	{
-		return m_params;
+		m_showHomeDirInfoControls = show;
 	}
+
 }
+

@@ -30,55 +30,60 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
 
-import org.kablink.teaming.gwt.client.util.RunAsyncCmd.RunAsyncParams;
+package org.kablink.teaming.gwt.client.util.runasync;
 
-import com.google.gwt.user.client.ui.UIObject;
+import org.kablink.teaming.gwt.client.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 
 /**
- * This class holds the data needed to execute the "InitAndShow" runAsync command
- * for a dialog
+ * This class holds the data needed to execute a "Create" runAsync command
+ * for a dialog.
+ * @author jwootton
+ *
  */
-public class RunAsyncInitAndShowParams  implements RunAsyncParams
+public class RunAsyncCreateDlgParams implements RunAsyncParams
 {
-	private UIObject m_uiObj;
-	private Object m_dataObj;
-	private UIObject m_showRelativeTo;
+	private EditCanceledHandler m_editCanceledHandler;
+	private EditSuccessfulHandler m_editSuccessfulHandler;
+	private Boolean m_autoHide;
+	private Boolean m_modal;
+	private Integer m_x;
+	private Integer m_y;
 	private Integer m_width;
 	private Integer m_height;
-	private Integer m_left;
-	private Integer m_top;
 	
 	/**
 	 * 
 	 */
-	public RunAsyncInitAndShowParams(
-		UIObject uiObj,
-		Object dataObj,
-		UIObject showRelativeTo,
-		Integer width,
-		Integer height,
-		Integer left,
-		Integer top )
+	public RunAsyncCreateDlgParams()
 	{
-		m_uiObj = uiObj;
-		m_dataObj = dataObj;
-		m_showRelativeTo = showRelativeTo;
-		m_width = width;
-		m_height = height;
-		m_left = left;
-		m_top = top;
 	}
-	
+
 	/**
 	 * 
 	 */
-	public Object getDataObj()
+	public Boolean getAutoHide()
 	{
-		return m_dataObj;
+		return m_autoHide;
 	}
-	
+
+	/**
+	 * 
+	 */
+	public EditCanceledHandler getEditCanceledHandler()
+	{
+		return m_editCanceledHandler;
+	}
+
+	/**
+	 * 
+	 */
+	public EditSuccessfulHandler getEditSuccessfulHandler()
+	{
+		return m_editSuccessfulHandler;
+	}
+
 	/**
 	 * 
 	 */
@@ -86,44 +91,100 @@ public class RunAsyncInitAndShowParams  implements RunAsyncParams
 	{
 		return m_height;
 	}
-	
+
 	/**
 	 * 
 	 */
 	public Integer getLeft()
 	{
-		return m_left;
-	}
-	
-	/**
-	 * 
-	 */
-	public UIObject getShowRelativeTo()
-	{
-		return m_showRelativeTo;
-	}
-	
-	/**
-	 * 
-	 */
-	public Integer getTop()
-	{
-		return m_top;
+		return m_x;
 	}
 
 	/**
 	 * 
 	 */
-	public UIObject getUIObj()
+	public Boolean getModal()
 	{
-		return m_uiObj;
+		return m_modal;
 	}
-	
+
+	/**
+	 * 
+	 */
+	public Integer getTop()
+	{
+		return m_y;
+	}
+
 	/**
 	 * 
 	 */
 	public Integer getWidth()
 	{
 		return m_width;
+	}
+
+	/**
+	 * 
+	 */
+	public void setAutoHide( Boolean autoHide )
+	{
+		m_autoHide = autoHide;
+	}
+
+	/**
+	 * 
+	 */
+	public void setEditCanceledHandler( EditCanceledHandler handler )
+	{
+		m_editCanceledHandler = handler;
+	}
+
+	/**
+	 * 
+	 */
+	public void setEditSuccessfulHandler( EditSuccessfulHandler handler )
+	{
+		m_editSuccessfulHandler = handler;
+	}
+
+	/**
+	 * 
+	 */
+	public void setHeight( Integer height )
+	{
+		m_height = height;
+	}
+
+	/**
+	 * 
+	 */
+	public void setLeft( Integer left )
+	{
+		m_x = left;
+	}
+
+	/**
+	 * 
+	 */
+	public void setModal( Boolean modal )
+	{
+		m_modal = modal;
+	}
+
+	/**
+	 * 
+	 */
+	public void setTop( Integer top )
+	{
+		m_y = top;
+	}
+
+	/**
+	 * 
+	 */
+	public void setWidth( Integer width )
+	{
+		m_width = width;
 	}
 }
