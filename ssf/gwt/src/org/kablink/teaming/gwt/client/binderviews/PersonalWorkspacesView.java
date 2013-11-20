@@ -200,9 +200,15 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 	 */
 	@Override
 	public void resetView() {
-		// Clear any existing content from the view and repopulate it.
+		// Clear any existing content from the view...
 		resetContent();
+		
+		// ...repopulate it...
 		populateContent();
+		
+		// ...and make sure the select column didn't reappear if it
+		// ...shouldn't be there.
+		validateSelectSupportAsync();
 	}
 	
 	/**
