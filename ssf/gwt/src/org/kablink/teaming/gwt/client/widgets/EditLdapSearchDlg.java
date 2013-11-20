@@ -52,6 +52,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.runasync.EditLdapSearchDlgInitAndShowParams;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowserDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
@@ -910,20 +913,11 @@ public class EditLdapSearchDlg extends DlgBox
 		}
 	}
 
-
-	
 	/**
-	 * Loads the EditLdapSearchDlg split point and returns an instance
-	 * of it via the callback.
-	 * 
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
 	 */
-	public static void createAsync(
-							final boolean autoHide,
-							final boolean modal,
-							final int left,
-							final int top,
-							final EditSuccessfulHandler editSuccessfulHandler,
-							final EditLdapSearchDlgClient elsDlgClient )
+	public static void runAsyncCmd( final RunAsyncCmd cmd, final EditLdapSearchDlgClient elsDlgClient )
 	{
 		GWT.runAsync( EditLdapSearchDlg.class, new RunAsyncCallback()
 		{
@@ -940,16 +934,47 @@ public class EditLdapSearchDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				EditLdapSearchDlg elsDlg;
-				
-				elsDlg = new EditLdapSearchDlg(
-											autoHide,
-											modal,
-											left,
-											top,
-											editSuccessfulHandler );
-				elsDlgClient.onSuccess( elsDlg );
+				switch ( cmd.getCmdType() )
+				{
+				case CREATE:
+				{
+					EditLdapSearchDlg elsDlg;
+					RunAsyncCreateDlgParams params;
+					
+					params = (RunAsyncCreateDlgParams) cmd.getParams();
+					elsDlg = new EditLdapSearchDlg(
+												params.getAutoHide(),
+												params.getModal(),
+												params.getLeft(),
+												params.getTop(),
+												params.getEditSuccessfulHandler() );
+					
+					if ( elsDlgClient != null )
+						elsDlgClient.onSuccess( elsDlg );
+					
+					break;
+				}
+					
+				case INIT_AND_SHOW:
+				{
+					EditLdapSearchDlgInitAndShowParams params;
+					EditLdapSearchDlg dlg;
+					
+					params = (EditLdapSearchDlgInitAndShowParams)cmd.getParams();
+					dlg = params.getUIObj();
+
+					dlg.init( params.getDirectoryServer(), params.getLdapSearch(), params.getShowHomeDirInfoControls() );
+					dlg.initHandlers( params.getEditSuccessfulHandler(), null );
+					dlg.show();
+					
+					break;
+				}
+					
+				case UNKNOWN:
+				default:
+					break;
+				}
 			}
-		});
+		} );
 	}
 }

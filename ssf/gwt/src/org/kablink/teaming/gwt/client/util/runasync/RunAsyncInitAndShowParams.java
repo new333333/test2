@@ -30,67 +30,32 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.util.runasync;
 
-package org.kablink.teaming.gwt.client.util;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.util.RunAsyncCmd.RunAsyncParams;
+
+import com.google.gwt.user.client.ui.UIObject;
 
 /**
- * This class holds the data needed to execute a "Create" runAsync command
- * for a dialog.
- * @author jwootton
- *
+ * This class holds the basic data needed to execute the "InitAndShow" runAsync command
+ * for a
  */
-public class RunAsyncCreateDlgParams implements RunAsyncParams
+public class RunAsyncInitAndShowParams implements RunAsyncParams
 {
-	private EditCanceledHandler m_editCanceledHandler;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
-	private boolean m_autoHide;
-	private boolean m_modal;
-	private Integer m_x;
-	private Integer m_y;
+	protected UIObject m_uiObj;
+	private UIObject m_showRelativeTo;
 	private Integer m_width;
 	private Integer m_height;
+	private Integer m_left;
+	private Integer m_top;
 	
 	/**
 	 * 
 	 */
-	public RunAsyncCreateDlgParams(
-		EditCanceledHandler editCanceledHandler,
-		EditSuccessfulHandler editSuccessfulHandler,
-		boolean autoHide,
-		boolean modal,
-		Integer x,
-		Integer y,
-		Integer width,
-		Integer height )
+	public RunAsyncInitAndShowParams()
 	{
-		m_editCanceledHandler = editCanceledHandler;
-		m_editSuccessfulHandler = editSuccessfulHandler;
-		m_autoHide = autoHide;
-		m_modal = modal;
-		m_x = x;
-		m_y = y;
-		m_width = width;
-		m_height = height;
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getAutoHide()
-	{
-		return m_autoHide;
-	}
-
-	/**
-	 * 
-	 */
-	public EditCanceledHandler getEditCanceledHandler()
-	{
-		return m_editCanceledHandler;
 	}
 
 	/**
@@ -100,7 +65,7 @@ public class RunAsyncCreateDlgParams implements RunAsyncParams
 	{
 		return m_editSuccessfulHandler;
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -108,36 +73,100 @@ public class RunAsyncCreateDlgParams implements RunAsyncParams
 	{
 		return m_height;
 	}
-
+	
 	/**
 	 * 
 	 */
 	public Integer getLeft()
 	{
-		return m_x;
+		return m_left;
 	}
-
+	
 	/**
 	 * 
 	 */
-	public boolean getModal()
+	public UIObject getShowRelativeTo()
 	{
-		return m_modal;
+		return m_showRelativeTo;
 	}
-
+	
 	/**
 	 * 
 	 */
 	public Integer getTop()
 	{
-		return m_y;
+		return m_top;
 	}
 
+	/**
+	 * 
+	 */
+	public UIObject getUIObj()
+	{
+		return m_uiObj;
+	}
+	
 	/**
 	 * 
 	 */
 	public Integer getWidth()
 	{
 		return m_width;
+	}
+
+	/**
+	 * 
+	 */
+	public void setEditSuccessfulHandler( EditSuccessfulHandler handler )
+	{
+		m_editSuccessfulHandler = handler;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeight( Integer height )
+	{
+		m_height = height;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setLeft( Integer left )
+	{
+		m_left = left;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setShowRelativeTo( UIObject obj )
+	{
+		m_showRelativeTo = obj;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setTop( Integer top )
+	{
+		m_top = top;
+	}
+
+	/**
+	 * 
+	 */
+	public void setUIObj( UIObject obj )
+	{
+		m_uiObj = obj;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWidth( Integer width )
+	{
+		m_width = width;
 	}
 }

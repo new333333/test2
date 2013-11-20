@@ -56,6 +56,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.runasync.LdapSyncResultsDlgInitAndShowParams;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.GwtLdapSyncMode;
 
@@ -1017,7 +1020,7 @@ public class LdapSyncResultsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init(
+	private void init(
 		List<GwtLdapConnectionConfig> listOfLdapServers,
 		String syncId,
 		boolean clearExistingResults,
@@ -1457,23 +1460,17 @@ public class LdapSyncResultsDlg extends DlgBox
 	}
 	
 	/**
-	 * Loads the LdapSyncResultsDlg split point and returns an instance
-	 * of it via the callback.
-	 * 
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
 	 */
-	public static void createAsync(
-							final boolean autoHide,
-							final boolean modal,
-							final int left,
-							final int top,
-							final LdapSyncResultsDlgClient lsrDlgClient )
+	public static void runAsyncCmd( final RunAsyncCmd cmd, final LdapSyncResultsDlgClient lsrDlgClient )
 	{
 		GWT.runAsync( LdapSyncResultsDlg.class, new RunAsyncCallback()
 		{
 			@Override
-			public void onFailure(Throwable reason)
+			public void onFailure( Throwable reason )
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LdapSyncResultsDlg() );
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EditLdapConfigDlg() );
 				if ( lsrDlgClient != null )
 				{
 					lsrDlgClient.onUnavailable();
@@ -1483,15 +1480,50 @@ public class LdapSyncResultsDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				LdapSyncResultsDlg lsrDlg;
-				
-				lsrDlg = new LdapSyncResultsDlg(
-												autoHide,
-												modal,
-												left,
-												top );
-				lsrDlgClient.onSuccess( lsrDlg );
+				switch ( cmd.getCmdType() )
+				{
+				case CREATE:
+				{
+					RunAsyncCreateDlgParams params;
+					LdapSyncResultsDlg lsrDlg;
+					
+					params = (RunAsyncCreateDlgParams) cmd.getParams();
+					lsrDlg = new LdapSyncResultsDlg(
+												params.getAutoHide(),
+												params.getModal(),
+												params.getLeft(),
+												params.getTop() );
+					
+					if ( lsrDlgClient != null )
+						lsrDlgClient.onSuccess( lsrDlg );
+					
+					break;
+				}
+					
+				case INIT_AND_SHOW:
+				{
+					LdapSyncResultsDlgInitAndShowParams params;
+					LdapSyncResultsDlg dlg;
+					
+					params = (LdapSyncResultsDlgInitAndShowParams) cmd.getParams();
+
+					dlg = params.getUIObj();
+
+					dlg.init(
+							params.getListOfLdapServers(),
+							params.getSyncId(),
+							params.getClearResults(),
+							params.getSyncMode() );
+					dlg.show();
+					
+					break;
+				}
+					
+				case UNKNOWN:
+				default:
+					break;
+				}
 			}
-		});
+		} );
 	}
 }
