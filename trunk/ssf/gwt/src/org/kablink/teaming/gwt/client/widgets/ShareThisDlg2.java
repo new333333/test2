@@ -87,6 +87,9 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.util.UserType;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
+import org.kablink.teaming.gwt.client.util.runasync.ShareThisDlgInitAndShowParams;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
@@ -3112,36 +3115,15 @@ public class ShareThisDlg2 extends DlgBox
 	}
 
 	/**
-	 * Loads the ShareThisDlg2 split point and returns an instance
-	 * of it via the callback.
-	 * 
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
 	 */
-	public static void createAsync(
-		final boolean autoHide,
-		final boolean modal,
-		final ShareThisDlg2Client stDlgClient )
-	{
-		createAsync( autoHide, modal, 0, 0, null, null, stDlgClient );
-	}
-
-	/**
-	 * Loads the ShareThisDlg2 split point and returns an instance
-	 * of it via the callback.
-	 * 
-	 */
-	public static void createAsync(
-		final boolean autoHide,
-		final boolean modal,
-		final int x,
-		final int y,
-		final Integer width,
-		final Integer height,
-		final ShareThisDlg2Client stDlgClient )
+	public static void runAsyncCmd( final RunAsyncCmd cmd, final ShareThisDlg2Client stDlgClient )
 	{
 		GWT.runAsync( ShareThisDlg2.class, new RunAsyncCallback()
 		{
 			@Override
-			public void onFailure(Throwable reason)
+			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ShareThisDlg() );
 				if ( stDlgClient != null )
@@ -3153,29 +3135,86 @@ public class ShareThisDlg2 extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				final ShareThisDlg2 stDlg;
-				final LoadAsyncControlsCallback callback;
-				
-				stDlg = new ShareThisDlg2( autoHide, modal, x, y, width, height );
-				
-				// createControlsAsync() will call callback.onSuccess() after it finishes creating
-				// the controls that need to be created via GWT.runAsync(...)
-				callback = new LoadAsyncControlsCallback()
+				switch ( cmd.getCmdType() )
 				{
-					@Override
-					public void onFailure()
+				case CREATE:
+				{
+					final ShareThisDlg2 stDlg;
+					int x = 0;
+					int y = 0;
+					RunAsyncCreateDlgParams params;
+					LoadAsyncControlsCallback callback;
+					
+					params = (RunAsyncCreateDlgParams) cmd.getParams();
+					
+					if ( params.getLeft() != null )
+						x = params.getLeft();
+					
+					if ( params.getTop() != null )
+						y = params.getTop();
+					
+					stDlg = new ShareThisDlg2(
+											params.getAutoHide(),
+											params.getModal(),
+											x,
+											y,
+											params.getWidth(),
+											params.getHeight() );
+					
+					// createControlsAsync() will call callback.onSuccess() after it finishes creating
+					// the controls that need to be created via GWT.runAsync(...)
+					callback = new LoadAsyncControlsCallback()
 					{
-						stDlgClient.onUnavailable();
-					}
+						@Override
+						public void onFailure()
+						{
+							stDlgClient.onUnavailable();
+						}
 
-					@Override
-					public void onSuccess()
-					{
-						stDlgClient.onSuccess( stDlg );
-					}
-				};
-				stDlg.createControlsAsync( callback );
+						@Override
+						public void onSuccess()
+						{
+							if ( stDlgClient != null )
+								stDlgClient.onSuccess( stDlg );
+						}
+					};
+					stDlg.createControlsAsync( callback );
+					
+					break;
+				}
+					
+				case INIT_AND_SHOW:
+				{
+					ShareThisDlgInitAndShowParams params;
+					ShareThisDlg2 dlg;
+					
+					params = (ShareThisDlgInitAndShowParams)cmd.getParams();
+					dlg = (ShareThisDlg2) params.getUIObj();
+
+					if ( params.getWidth() != null && params.getHeight() != null )
+						dlg.setPixelSize( params.getWidth(), params.getHeight() );
+					
+					dlg.init(
+							params.getCaption(),
+							params.getEntityIds(),
+							params.getMode() );
+					
+					if ( params.getLeft() != null && params.getTop() != null )
+						dlg.setPopupPosition( params.getLeft(), params.getTop() );
+					
+					if ( params.getShowCentered() != null && params.getShowCentered() == true )
+						dlg.showDlg( null );
+					else
+						dlg.showDlg();
+
+					break;
+				}
+					
+				case UNKNOWN:
+				default:
+					break;
+				}
 			}
-		});
+		} );
 	}
 }

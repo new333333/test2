@@ -62,6 +62,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
+import org.kablink.teaming.gwt.client.util.runasync.ModifyNetFolderDlgInitAndShowParams;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
 import org.kablink.teaming.gwt.client.widgets.NetFolderSelectPrincipalsWidget.NetFolderSelectPrincipalsWidgetClient;
@@ -1714,21 +1717,15 @@ public class ModifyNetFolderDlg extends DlgBox
 	}
 
 	/**
-	 * Loads the ModifyNetFolderDlg split point and returns an instance
-	 * of it via the callback.
-	 * 
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
 	 */
-	public static void createAsync(
-							final boolean autoHide,
-							final boolean modal,
-							final int left,
-							final int top,
-							final ModifyNetFolderDlgClient mnfDlgClient )
+	public static void runAsyncCmd( final RunAsyncCmd cmd, final ModifyNetFolderDlgClient mnfDlgClient )
 	{
 		GWT.runAsync( ModifyNetFolderDlg.class, new RunAsyncCallback()
 		{
 			@Override
-			public void onFailure(Throwable reason)
+			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ModifyNetFolderDlg() );
 				if ( mnfDlgClient != null )
@@ -1740,15 +1737,51 @@ public class ModifyNetFolderDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				ModifyNetFolderDlg mnfDlg;
-				
-				mnfDlg = new ModifyNetFolderDlg(
-											autoHide,
-											modal,
-											left,
-											top );
-				mnfDlgClient.onSuccess( mnfDlg );
+				switch ( cmd.getCmdType() )
+				{
+				case CREATE:
+				{
+					ModifyNetFolderDlg mnfDlg;
+					RunAsyncCreateDlgParams params;
+					
+					params = (RunAsyncCreateDlgParams) cmd.getParams();
+					mnfDlg = new ModifyNetFolderDlg(
+												params.getAutoHide(),
+												params.getModal(),
+												params.getLeft(),
+												params.getTop() );
+					
+					if ( mnfDlgClient != null )
+						mnfDlgClient.onSuccess( mnfDlg );
+					
+					break;
+				}
+					
+				case INIT_AND_SHOW:
+				{
+					ModifyNetFolderDlgInitAndShowParams params;
+					ModifyNetFolderDlg dlg;
+					
+					params = (ModifyNetFolderDlgInitAndShowParams) cmd.getParams();
+					dlg = params.getUIObj();
+
+					dlg.init( params.getNetFolder() );
+					if ( params.getShowRelativeTo() != null )
+						dlg.showRelativeTo( params.getShowRelativeTo() );
+					else
+					{
+						dlg.setPopupPosition( params.getLeft(), params.getTop() );
+						dlg.show();
+					}
+
+					break;
+				}
+					
+				case UNKNOWN:
+				default:
+					break;
+				}
 			}
-		});
+		} );
 	}
 }
