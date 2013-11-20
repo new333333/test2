@@ -87,10 +87,13 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.runasync.EditBrandingDlgInitAndShowParams;
+import org.kablink.teaming.gwt.client.util.runasync.ModifyNetFolderDlgInitAndShowParams;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncInitAndShowParams;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
+import org.kablink.teaming.gwt.client.util.runasync.ShareThisDlgInitAndShowParams;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
@@ -1236,11 +1239,20 @@ public class AdminControl extends TeamingPopupPanel
 		
 		if ( m_modifyNetFolderDlg == null )
 		{
-			ModifyNetFolderDlg.createAsync(
-										true, 
-										false,
-										x, 
-										y,
+			RunAsyncCmd createCmd;
+			RunAsyncCreateDlgParams params;
+			
+			// No, create it.
+			params = new RunAsyncCreateDlgParams();
+			params.setAutoHide( new Boolean( true ) );
+			params.setModal( new Boolean( false ) );
+			params.setLeft( new Integer( x ) );
+			params.setTop( new Integer( y ) );
+
+			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
+			
+			ModifyNetFolderDlg.runAsyncCmd(
+										createCmd,
 										new ModifyNetFolderDlgClient()
 			{			
 				@Override
@@ -1253,19 +1265,15 @@ public class AdminControl extends TeamingPopupPanel
 				public void onSuccess( final ModifyNetFolderDlg mnfDlg )
 				{
 					ScheduledCommand cmd;
-					
+
+					m_modifyNetFolderDlg = mnfDlg;
+
 					cmd = new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
-							m_modifyNetFolderDlg = mnfDlg;
-							
-							m_modifyNetFolderDlg.init( netFolder );
-							if ( showRelativeTo != null )
-								m_modifyNetFolderDlg.showRelativeTo( showRelativeTo );
-							else
-								m_modifyNetFolderDlg.show();
+							invokeEditNetFolderDlg( netFolder, showRelativeTo );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1274,14 +1282,18 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_modifyNetFolderDlg.init( netFolder );
-			if ( showRelativeTo != null )
-				m_modifyNetFolderDlg.showRelativeTo( showRelativeTo );
-			else
-			{
-				m_modifyNetFolderDlg.setPopupPosition( x, y );
-				m_modifyNetFolderDlg.show();
-			}
+			RunAsyncCmd initAndShowCmd;
+			ModifyNetFolderDlgInitAndShowParams params;
+		
+			params = new ModifyNetFolderDlgInitAndShowParams();
+			params.setUIObj( m_modifyNetFolderDlg );
+			params.setLeft( new Integer( m_contentControlX ) );
+			params.setTop( new Integer( m_contentControlY ) );
+			params.setShowRelativeTo( showRelativeTo );
+			params.setNetFolder( netFolder );
+		
+			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
+			ModifyNetFolderDlg.runAsyncCmd( initAndShowCmd, null );
 		}
 	}
 
@@ -1377,23 +1389,22 @@ public class AdminControl extends TeamingPopupPanel
 		// Have we already created an "Edit branding" dialog?
 		if ( m_editSiteBrandingDlg == null )
 		{
-			Integer width;
-			Integer height;
+			RunAsyncCmd createCmd;
+			RunAsyncCreateDlgParams params;
 			
-			height = new Integer( m_dlgHeight );
-			width = new Integer( m_dlgWidth );
+			// No, create it.
+			params = new RunAsyncCreateDlgParams();
+			params.setEditSuccessfulHandler( m_editBrandingSuccessHandler );
+			params.setAutoHide( new Boolean( false ) );
+			params.setModal( new Boolean( true ) );
+			params.setLeft( new Integer( x ) );
+			params.setTop( new Integer( y ) );
+			params.setHeight( new Integer( m_dlgHeight ) );
+			params.setWidth( new Integer( m_dlgWidth ) );
 
-			// No, create one.
-			EditBrandingDlg.createAsync(
-									m_editBrandingSuccessHandler,
-									null,
-									false,
-									true,
-									x,
-									y,
-									width,
-									height,
-									new EditBrandingDlgClient()
+			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
+
+			EditBrandingDlg.runAsyncCmd( createCmd, new EditBrandingDlgClient()
 			{				
 				@Override
 				public void onUnavailable()
@@ -1404,8 +1415,19 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( EditBrandingDlg ebDlg )
 				{
+					Scheduler.ScheduledCommand cmd;
+					
 					m_editSiteBrandingDlg = ebDlg;
-					invokeEditSiteBrandingDlgImpl( brandingData, x, y );
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							invokeEditSiteBrandingDlgImpl( brandingData, x, y );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			} );
 		}
@@ -1421,10 +1443,21 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private void invokeEditSiteBrandingDlgImpl( GwtBrandingData brandingData, int x, int y )
 	{
-		m_editSiteBrandingDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-		m_editSiteBrandingDlg.init( brandingData );
-		m_editSiteBrandingDlg.setPopupPosition( x, y );
-		m_editSiteBrandingDlg.show();
+		RunAsyncCmd initAndShowCmd;
+		EditBrandingDlgInitAndShowParams params;
+	
+		params = new EditBrandingDlgInitAndShowParams();
+		params.setUIObj( m_editSiteBrandingDlg );
+		params.setBrandingData( brandingData );
+		params.setWidth( new Integer( m_dlgWidth ) );
+		params.setHeight( new Integer( m_dlgHeight ) );
+		params.setLeft( new Integer( m_contentControlX ) );
+		params.setTop( new Integer( m_contentControlY ) );
+	
+		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
+
+		// Run an async cmd to show the dialog.
+		EditBrandingDlg.runAsyncCmd( initAndShowCmd, null );
 	}
 
 	/**
@@ -1436,8 +1469,20 @@ public class AdminControl extends TeamingPopupPanel
 		if ( m_shareDlg == null )
 		{
 			ShareThisDlg2Client client;
+			RunAsyncCmd createCmd;
+			RunAsyncCreateDlgParams params;
 			
-			// No!  Create one now...
+			// No, create it.
+			params = new RunAsyncCreateDlgParams();
+			params.setAutoHide( new Boolean( true ) );
+			params.setModal( new Boolean( false ) );
+			params.setLeft( new Integer( m_contentControlX ) );
+			params.setTop( new Integer( m_contentControlY ) );
+			params.setHeight( new Integer( m_dlgHeight ) );
+			params.setWidth( new Integer( m_dlgWidth ) );
+
+			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
+			
 			client = new ShareThisDlg2Client()
 			{
 				@Override
@@ -1449,19 +1494,23 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( ShareThisDlg2 stDlg )
 				{
+					Scheduler.ScheduledCommand cmd;
+					
 					// ...and show it with the given entity IDs.
 					m_shareDlg = stDlg;
-					invokeManageSharesDlg();
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							invokeManageSharesDlg();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
-			ShareThisDlg2.createAsync(
-									true,
-									false,
-									m_contentControlX,
-									m_contentControlY,
-									new Integer( m_dlgWidth ),
-									new Integer( m_dlgHeight ),
-									client );
+			ShareThisDlg2.runAsyncCmd( createCmd, client );
 		}
 		else
 		{
@@ -1473,13 +1522,21 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void execute() 
 				{
-					m_shareDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-					m_shareDlg.init(
-								GwtTeaming.getMessages().shareDlg_manageShares(),
-								null,
-								ShareThisDlg2.ShareThisDlgMode.MANAGE_ALL );
-					m_shareDlg.setPopupPosition( m_contentControlX, m_contentControlY );
-					m_shareDlg.showDlg();
+					RunAsyncCmd initAndShowCmd;
+					ShareThisDlgInitAndShowParams params;
+				
+					params = new ShareThisDlgInitAndShowParams();
+					params.setUIObj( m_shareDlg );
+					params.setWidth( new Integer( m_dlgWidth ) );
+					params.setHeight( new Integer( m_dlgHeight ) );
+					params.setCaption( GwtTeaming.getMessages().shareDlg_manageShares() );
+					params.setEntityIds( null );
+					params.setMode( ShareThisDlg2.ShareThisDlgMode.MANAGE_ALL );
+				
+					initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
+					
+					// Run the async command to show the dialog
+					ShareThisDlg2.runAsyncCmd( initAndShowCmd, null );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );

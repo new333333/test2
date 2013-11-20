@@ -72,6 +72,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
+import org.kablink.teaming.gwt.client.util.runasync.ModifyNetFolderDlgInitAndShowParams;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.NetFolderSyncStatisticsDlg.NetFolderSyncStatisticsDlgClient;
@@ -1249,11 +1253,20 @@ public class ManageNetFoldersDlg extends DlgBox
 		
 		if ( m_modifyNetFolderDlg == null )
 		{
-			ModifyNetFolderDlg.createAsync(
-										true, 
-										false,
-										x, 
-										y,
+			RunAsyncCmd createCmd;
+			RunAsyncCreateDlgParams params;
+			
+			// No, create it.
+			params = new RunAsyncCreateDlgParams();
+			params.setAutoHide( new Boolean( true ) );
+			params.setModal( new Boolean( false ) );
+			params.setLeft( new Integer( x ) );
+			params.setTop( new Integer( y ) );
+
+			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
+			
+			ModifyNetFolderDlg.runAsyncCmd(
+										createCmd,
 										new ModifyNetFolderDlgClient()
 			{			
 				@Override
@@ -1266,16 +1279,15 @@ public class ManageNetFoldersDlg extends DlgBox
 				public void onSuccess( final ModifyNetFolderDlg mnfDlg )
 				{
 					ScheduledCommand cmd;
-					
+
+					m_modifyNetFolderDlg = mnfDlg;
+
 					cmd = new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
-							m_modifyNetFolderDlg = mnfDlg;
-							
-							m_modifyNetFolderDlg.init( netFolder );
-							m_modifyNetFolderDlg.show();
+							invokeModifyNetFolderDlg( netFolder );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1284,9 +1296,17 @@ public class ManageNetFoldersDlg extends DlgBox
 		}
 		else
 		{
-			m_modifyNetFolderDlg.init( netFolder );
-			m_modifyNetFolderDlg.setPopupPosition( x, y );
-			m_modifyNetFolderDlg.show();
+			RunAsyncCmd initAndShowCmd;
+			ModifyNetFolderDlgInitAndShowParams params;
+		
+			params = new ModifyNetFolderDlgInitAndShowParams();
+			params.setUIObj( m_modifyNetFolderDlg );
+			params.setLeft( new Integer( x ) );
+			params.setTop( new Integer( y ) );
+			params.setNetFolder( netFolder );
+		
+			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
+			ModifyNetFolderDlg.runAsyncCmd( initAndShowCmd, null );
 		}
 	}
 

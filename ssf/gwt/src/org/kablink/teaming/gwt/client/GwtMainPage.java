@@ -133,6 +133,10 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfoHelper.BinderInfoCallback;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.runasync.EditBrandingDlgInitAndShowParams;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TreeMode;
@@ -1560,29 +1564,45 @@ public class GwtMainPage extends ResizeComposite
 		if ( m_editBrandingDlg == null )
 		{
 			// No, create one.
-			EditBrandingDlg.createAsync(
-					m_editBrandingSuccessHandler,
-					m_editBrandingCancelHandler,
-					false,
-					true,
-					x,
-					y,
-					null,
-					null,
-					new EditBrandingDlgClient() {				
+			RunAsyncCmd createCmd;
+			RunAsyncCreateDlgParams params;
+			
+			// No, create it.
+			params = new RunAsyncCreateDlgParams();
+			params.setEditSuccessfulHandler( m_editBrandingSuccessHandler );
+			params.setEditCanceledHandler( m_editBrandingCancelHandler );
+			params.setAutoHide( new Boolean( false ) );
+			params.setModal( new Boolean( true ) );
+			params.setLeft( new Integer( x ) );
+			params.setTop( new Integer( y ) );
+
+			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
+
+			EditBrandingDlg.runAsyncCmd( createCmd, new EditBrandingDlgClient()
+			{				
 				@Override
 				public void onUnavailable()
 				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
 				
 				@Override
 				public void onSuccess( EditBrandingDlg ebDlg )
 				{
+					Scheduler.ScheduledCommand cmd;
+					
 					m_editBrandingDlg = ebDlg;
-					editBrandingImpl( brandingData, x, y );
-				}// end onSuccess()
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							editBrandingImpl( brandingData, x, y );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
 			} );
 		}
 		
@@ -1598,9 +1618,19 @@ public class GwtMainPage extends ResizeComposite
 	 * 
 	 */
 	private void editBrandingImpl( GwtBrandingData brandingData, int x, int y ) {
-		m_editBrandingDlg.init( brandingData );
-		m_editBrandingDlg.setPopupPosition( x, y );
-		m_editBrandingDlg.show();
+		RunAsyncCmd initAndShowCmd;
+		EditBrandingDlgInitAndShowParams params;
+	
+		params = new EditBrandingDlgInitAndShowParams();
+		params.setUIObj( m_editBrandingDlg );
+		params.setBrandingData( brandingData );
+		params.setLeft( new Integer( x ) );
+		params.setTop( new Integer( y ) );
+	
+		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
+
+		// Run an async cmd to show the dialog.
+		EditBrandingDlg.runAsyncCmd( initAndShowCmd, null );
 	}
 
 	/*
