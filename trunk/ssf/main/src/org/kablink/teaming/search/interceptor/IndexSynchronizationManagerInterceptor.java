@@ -48,9 +48,13 @@ import org.kablink.teaming.search.IndexSynchronizationManager;
  */
 public class IndexSynchronizationManagerInterceptor implements MethodInterceptor, Serializable {
 
-    protected static final Log logger = LogFactory.getLog(IndexSynchronizationManagerInterceptor.class);
+	private static final long serialVersionUID = 1L;
 
-	private static final ThreadLocal depth = new ThreadLocal();
+	protected static final Log logger = LogFactory.getLog(IndexSynchronizationManagerInterceptor.class);
+
+	private static final ThreadLocal<Integer> depth = new ThreadLocal<Integer>();
+	
+	private static final ThreadLocal<Integer> threshold = new ThreadLocal<Integer>();
     
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		if(getDepth() == 0) {
@@ -88,7 +92,7 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 					if(logger.isTraceEnabled())
 						logger.trace("Commit index-synchronization session for the thread");
 			
-					IndexSynchronizationManager.applyChanges();
+					IndexSynchronizationManager.applyChanges(getThreshold());
 				}
 				else {
 					if(logger.isTraceEnabled())
@@ -125,5 +129,24 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 		else
 			depth.set(new Integer(d.intValue() - 1));
 	}	
+	
+	/*
+	 * Disable auto-apply for the current thread only
+	 */
+	public static int getThreshold() {
+		Integer t = threshold.get();
+		if(t == null)
+			return 1;
+		else
+			return t.intValue();
+	}
+	
+	public static void setThreshold(int t) {
+		threshold.set(Integer.valueOf(t));
+	}
+	
+	public static void clearThreshold() {
+		threshold.set(null);
+	}
 }
 
