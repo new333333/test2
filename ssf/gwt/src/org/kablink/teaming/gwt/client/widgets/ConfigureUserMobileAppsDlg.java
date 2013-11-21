@@ -130,7 +130,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
 
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().configureUserMobileAppsDlgHeader( "1" ), this, null, null ); 
+		createAllDlgContent( "", this, null, null );	// Caption filled in during the init().  
 	}
 	
 
@@ -743,7 +743,11 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		m_principalsAreUsers = principalsAreUsers;
 		m_principalIds = principalIds;
 		
-		setCaption( GwtTeaming.getMessages().configureUserMobileAppsDlgHeader( String.valueOf( principalIds.size() ) ) );
+		String caption;
+		if ( principalsAreUsers )
+		     caption = GwtTeaming.getMessages().configureUserMobileAppsDlgHeaderUsers(  String.valueOf( principalIds.size() ) );
+		else caption = GwtTeaming.getMessages().configureUserMobileAppsDlgHeaderGroups( String.valueOf( principalIds.size() ) );
+		setCaption( caption );
 		
 		// Create a callback that will be called when we get the mobile apps configuration.
 		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()

@@ -53,6 +53,8 @@ import org.kablink.teaming.gwt.client.event.GroupCreationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationFailedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
+import org.kablink.teaming.gwt.client.event.InvokePrincipalDesktopSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokePrincipalMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
@@ -1252,6 +1254,34 @@ public class ManageGroupsDlg extends DlgBox implements
 			},
 			null,
 			m_messages.manageGroupsDlgWebAccess_Clear());
+		
+		// Desktop Application and Mobile Application settings.
+		morePopup.addSeparator();
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);								// true  -> Ready only.
+					if (!(groups.isEmpty())) {
+						GwtTeaming.fireEventAsync(new InvokePrincipalDesktopSettingsDlgEvent(groups, false));	// false -> IDs are groups.
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgDesktopAppSettings());
+			
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);								// true  -> Ready only.
+					if (!(groups.isEmpty())) {
+						GwtTeaming.fireEventAsync(new InvokePrincipalMobileSettingsDlgEvent(groups, false));	// false -> IDs are groups.
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgMobileAppSettings());
 	}
 
 	/*

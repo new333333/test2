@@ -1728,7 +1728,8 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the Configure User File Sync App dialog
 	String configureUserFileSyncAppDlgErrorHeader();
-	String configureUserFileSyncAppDlgHeader( String numUsers );
+	String configureUserFileSyncAppDlgHeaderGroups( String numGroups );
+	String configureUserFileSyncAppDlgHeaderUsers( String numUsers );
 	String configureUserFileSyncAppDlgOnSaveUnknownException( String desc );
 	String configureUserFileSyncDlgSaving( String completed, String total );
 
@@ -2160,11 +2161,13 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgCreatingGroup();
 	String manageGroupsDlgDeleteGroupLabel();
 	String manageGroupsDlgDeletingGroup();
+	String manageGroupsDlgDesktopAppSettings();
 	String manageGroupsDlgDownload_Clear();
 	String manageGroupsDlgDownload_Disable();
 	String manageGroupsDlgDownload_Enable();
 	String manageGroupsDlgEditGroupLabel();
 	String manageGroupsDlgHeader();
+	String manageGroupsDlgMobileAppSettings();
 	String manageGroupsDlgModifyingGroup();
 	String manageGroupsDlgMoreLabel();
 	String manageGroupsDlgNameCol();
@@ -2759,7 +2762,8 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the Configure User Mobile Apps dialog
 	String configuerUserMobileAppsDlgErrorHeader();
-	String configureUserMobileAppsDlgHeader( String numUsers );
+	String configureUserMobileAppsDlgHeaderGroups( String numGroup );
+	String configureUserMobileAppsDlgHeaderUsers( String numUsers );
 	String configureUserMobileAppsDlgOnSaveUnknownException( String err );
 	String configuerUserMobileAppsDlgSaving( String completed, String total );
 
