@@ -108,7 +108,7 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
 
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().configureUserFileSyncAppDlgHeader( "1" ), this, null, null ); 
+		createAllDlgContent( "", this, null, null );	// Caption filled in during the init(). 
 	}
 	
 
@@ -338,7 +338,11 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 		m_principalIds = principalIds;
 		m_principalsAreUsers = principalsAreUsers;
 		
-		setCaption( GwtTeaming.getMessages().configureUserFileSyncAppDlgHeader( String.valueOf( principalIds.size() ) ) );
+		String caption;
+		if ( principalsAreUsers )
+		     caption = GwtTeaming.getMessages().configureUserFileSyncAppDlgHeaderUsers(  String.valueOf( principalIds.size() ) );
+		else caption = GwtTeaming.getMessages().configureUserFileSyncAppDlgHeaderGroups( String.valueOf( principalIds.size() ) );
+		setCaption( caption );
 		
 		// Create a callback that will be called when we get the file sync configuration.
 		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
