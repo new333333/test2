@@ -86,6 +86,7 @@ import org.kablink.teaming.domain.HistoryStampBrief;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
 import org.kablink.teaming.domain.MobileDevices;
+import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.domain.NoApplicationByTheNameException;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -126,6 +127,8 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
+import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
@@ -135,8 +138,10 @@ import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
+import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -409,6 +414,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}// end getGuestUser()
 	
 	
+	private Group getGroup(Long groupId, boolean modify) {
+  		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		Group group = getProfileDao().loadGroup(groupId, currentUser.getZoneId());
+		if (modify) AccessUtils.modifyCheck(group);
+		else AccessUtils.readCheck(group);
+		return group;
+	}
+	
 	private User getUser(Long userId, boolean modify, boolean checkActive) {
   		User currentUser = RequestContextHolder.getRequestContext().getUser();
    		User user;
@@ -472,10 +485,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 				uProps = new GuestProperties(gProps);
 			}
 		} else {
-			uProps = getProfileDao().loadUserProperties(user.getId());
+			uProps = getPrincipalProperties(user.getId());
 		}
 		return uProps;
 	}
+	
+	private UserProperties getPrincipalProperties(Long principalId) {
+		return getProfileDao().loadUserProperties(principalId);
+	}
+	
 	//RO transaction
 	@Override
 	public ProfileBinder getProfileBinder() {
@@ -604,6 +622,31 @@ public UserProperties setUserProperties(Long userId, Map<String, Object> values)
 public UserProperties getUserProperties(Long userId) {
 		User user = getUser(userId, false);
 		return getProperties(user);
+   }
+   
+   //RW transaction
+   @Override
+public UserProperties setGroupProperty(Long groupId, String property, Object value) {
+ 		getGroup(groupId, true);	// Validates access controls.
+		UserProperties uProps = getPrincipalProperties(groupId);
+		uProps.setProperty(property, value); 	
+		return uProps;
+    }
+   //RW transaction
+   @Override
+public UserProperties setGroupProperties(Long groupId, Map<String, Object> values) {
+		getGroup(groupId, true);	// Validates access controls.
+		UserProperties uProps = getPrincipalProperties(groupId);
+		for (Map.Entry<String, Object> me: values.entrySet()) {
+ 			uProps.setProperty(me.getKey(), me.getValue()); 
+ 		}
+		return uProps;
+	  
+   }
+	//RO transaction
+   @Override
+public UserProperties getGroupProperties(Long groupId) {
+		return getPrincipalProperties(groupId);
    }
  	//RO transaction
    @Override
@@ -2765,5 +2808,282 @@ public String[] getUsernameAndDecryptedPassword(String username) {
    		if (null != user) {
    			user.setMobileDevices(mobileDevices);
    		}
+    }
+    
+    /**
+     * Returns a PrincipalMobileAppsConfig for the user or group as
+     * read from its UserProperties.
+     * 
+     * @param principalId
+     * 
+     * @return
+     */
+    @Override
+	public PrincipalMobileAppsConfig getPrincipalMobileAppsConfig(Long principalId) {
+    	PrincipalMobileAppsConfig reply = new PrincipalMobileAppsConfig();
+    	reply.setUseDefaultSettings(true);
+    	
+    	UserProperties up = getPrincipalProperties(principalId);
+		if (null != up) {
+			Object accessValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR);
+			if ((null != accessValue) && (accessValue instanceof String)) {
+				reply.setMobileAppsEnabled(Boolean.valueOf((String) accessValue));
+			}
+
+			Object pwdValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD);
+			if ((null != pwdValue) && (pwdValue instanceof String)) {
+				reply.setAllowCachePwd(Boolean.valueOf((String) pwdValue));
+			}
+			
+			Object contentValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT);
+			if ((null != contentValue) && (contentValue instanceof String)) {
+				reply.setAllowCacheContent(Boolean.valueOf((String) contentValue));
+			}
+			
+			Object playValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS);
+			if ((null != playValue) && (playValue instanceof String)) {
+				reply.setAllowPlayWithOtherApps(Boolean.valueOf((String) playValue));
+			}
+
+			// Mobile Application Management (MAM) settings.
+			Object cutCopyEnabledValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED);
+			if ((null != cutCopyEnabledValue) && (cutCopyEnabledValue instanceof String)) {
+				reply.setMobileCutCopyEnabled(Boolean.valueOf((String) cutCopyEnabledValue));
+			}
+			
+			Object androidScreenCaptureEnabledValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED);
+			if ((null != androidScreenCaptureEnabledValue) && (androidScreenCaptureEnabledValue instanceof String)) {
+				reply.setMobileAndroidScreenCaptureEnabled(Boolean.valueOf((String) androidScreenCaptureEnabledValue));
+			}
+			
+			Object disableOnJailBrokenValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES);
+			if ((null != disableOnJailBrokenValue) && (disableOnJailBrokenValue instanceof String)) {
+				reply.setMobileDisableOnRootedOrJailBrokenDevices(Boolean.valueOf((String) disableOnJailBrokenValue));
+			}
+			
+			Object openInValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_OPEN_IN);
+			if ((null != openInValue) && (openInValue instanceof String)) {
+				reply.setMobileOpenIn(MobileOpenInSetting.valueOf(Integer.parseInt((String) openInValue)));
+			}
+			
+			Object androidApplicationsValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS);
+			if ((null != androidApplicationsValue) && (androidApplicationsValue instanceof String)) {
+				String[]     aaArray = StringUtil.unpack((String) androidApplicationsValue);
+				List<String> aaList = new ArrayList<String>();
+				ListUtil.arrayStringToListString(aaArray, aaList);
+				reply.setAndroidApplications(MiscUtil.sortStringList(aaList));
+			}
+			
+			Object iosApplicationsValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS);
+			if ((null != iosApplicationsValue) && (iosApplicationsValue instanceof String)) {
+				String[]     iosArray = StringUtil.unpack((String) iosApplicationsValue);
+				List<String> iosList = new ArrayList<String>();
+				ListUtil.arrayStringToListString(iosArray, iosList);
+				reply.setIosApplications(MiscUtil.sortStringList(iosList));
+			}
+
+			if ((null != accessValue)                          ||
+					(null != pwdValue)                         ||
+					(null != contentValue)                     ||
+					(null != playValue)                        ||
+					(null != cutCopyEnabledValue)              ||
+					(null != androidScreenCaptureEnabledValue) ||
+					(null != disableOnJailBrokenValue)         ||
+					(null != openInValue)                      ||
+					(null != androidApplicationsValue)         ||
+					(null != iosApplicationsValue)) {
+				reply.setUseDefaultSettings(false);
+			}
+		}
+		
+		return reply;
+    }
+    
+    /**
+     * Returns a PrincipalDesktopAppsConfig for the user or group as
+     * read from its UserProperties.
+     * 
+     * @param principalId
+     * 
+     * @return
+     */
+    @Override
+    public PrincipalDesktopAppsConfig getPrincipalDesktopAppsConfig(Long principalId) {
+    	PrincipalDesktopAppsConfig reply = new PrincipalDesktopAppsConfig();
+    	reply.setUseDefaultSettings(true);
+    	
+    	UserProperties up = getPrincipalProperties(principalId);
+		if (null != up)
+		{
+			Object accessValue = up.getProperty(ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR);
+			if ((null != accessValue) && (accessValue instanceof String)) {
+				reply.setIsFileSyncAppEnabled(Boolean.valueOf((String) accessValue));
+			}
+
+			Object pwdValue = up.getProperty(ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD);
+			if ((null != pwdValue) && (pwdValue instanceof String)) {
+				reply.setAllowCachePwd( Boolean.valueOf((String) pwdValue));
+			}
+			
+			if ((null != accessValue) || (null != pwdValue)) {
+				reply.setUseDefaultSettings(false);
+			}
+		}
+		
+    	return reply;
+    }
+    
+    /**
+     * Writes the settings from a PrincipalMobileAppsConfig to the
+     * user's or group's UserProperties.
+     * 
+     * @param principalId
+     * @param principalsAreUsers 
+     * 
+     * @param pConfig
+     */
+    @Override
+    public void savePrincipalMobileAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalMobileAppsConfig config) {
+    	// If we don't have anything to save...
+    	if (((!(MiscUtil.hasItems(principalIds)))) || (null == config)) {
+    		// ...bail.
+    		return;
+    	}
+
+    	// Extract the values from the PrincipalMobileAppsConfig.
+		String accessValue;
+		String pwdValue;
+		String contentValue;
+		String playValue;
+		
+		// Mobile Application Management (MAM) settings.
+		String cutCopyEnabledValue;
+		String androidScreenCaptureEnabledValue;
+		String disableOnJailBrokenValue;
+		String openInValue;
+		String androidApplicationsValue;
+		String iosApplicationsValue;
+		
+		if (config.getUseDefaultSettings()) {
+			accessValue  =
+			contentValue =
+			playValue    =
+			pwdValue     = null;
+			
+			// Mobile Application Management (MAM) settings.
+			cutCopyEnabledValue              =
+			androidScreenCaptureEnabledValue =
+			disableOnJailBrokenValue         =
+			openInValue                      =
+			androidApplicationsValue         =
+			iosApplicationsValue             = null;
+		}
+		
+		else {
+			accessValue  = String.valueOf(config.getMobileAppsEnabled()     );
+			contentValue = String.valueOf(config.getAllowCacheContent()     );
+			playValue    = String.valueOf(config.getAllowPlayWithOtherApps());
+			pwdValue     = String.valueOf(config.getAllowCachePwd()         );
+			
+			// Mobile Application Management (MAM) settings.
+			cutCopyEnabledValue              = String.valueOf(config.getMobileCutCopyEnabled()                    );
+			androidScreenCaptureEnabledValue = String.valueOf(config.getMobileAndroidScreenCaptureEnabled()       );
+			disableOnJailBrokenValue         = String.valueOf(config.getMobileDisableOnRootedOrJailBrokenDevices());
+			openInValue                      = String.valueOf(config.getMobileOpenIn().ordinal()                  );
+			
+			List<String> aaList = MiscUtil.sortStringList(config.getAndroidApplications());
+			String[] aaArray = ((null == aaList) ? new String[0] : aaList.toArray(new String[0]));
+			androidApplicationsValue = StringUtil.pack(aaArray);
+			
+			List<String> iosList = MiscUtil.sortStringList(config.getIosApplications());
+			String[] iosArray = ((null == iosList) ? new String[0] : iosList.toArray(new String[0]));
+			iosApplicationsValue = StringUtil.pack(iosArray);
+		}
+
+    	// Store the properties to save into a Map<String, Object> so
+    	// we can write them out in a single transaction...
+		Map<String, Object> propMap = new HashMap<String, Object>();
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR,          accessValue );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD,            pwdValue    );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT,        contentValue);
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS, playValue   );
+		
+		// Mobile Application Management (MAM) settings.
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED,                         cutCopyEnabledValue             );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED,           androidScreenCaptureEnabledValue);
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES, disableOnJailBrokenValue        );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_OPEN_IN,                                  openInValue                     );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS,                     androidApplicationsValue        );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS,                         iosApplicationsValue            );
+		
+		// ...and write them out to the appropriate object.
+		for (Long pId : principalIds) {
+			if (principalsAreUsers)
+			     setUserProperties( pId, propMap);
+			else setGroupProperties(pId, propMap);
+		}
+    }
+    
+    @Override
+    public void savePrincipalMobileAppsConfig(Long principalId, boolean principalIsUser, PrincipalMobileAppsConfig config) {
+    	// Always use the initial form of the method.
+    	if ((null != principalId) && (null != config)) {
+    		List<Long> principalIds = new ArrayList<Long>();
+    		principalIds.add(principalId);
+    		savePrincipalMobileAppsConfig(principalIds, principalIsUser, config);
+    	}
+    }
+    
+    /**
+     * Writes the settings from a PrincipalMobileAppsConfig to the
+     * user's or group's UserProperties.
+     * 
+     * @param principalId
+     * @param principalsAreUsers 
+     * 
+     * @param pConfig
+     */
+    @Override
+    public void savePrincipalDesktopAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalDesktopAppsConfig config) {
+    	// If we don't have anything to save...
+    	if (((!(MiscUtil.hasItems(principalIds)))) || (null == config)) {
+    		// ...bail.
+    		return;
+    	}
+
+    	// Extract the values from the PrincipalDesktopAppsConfig.
+		String accessValue;
+		String pwdValue;
+		if (config.getUseDefaultSettings()) {
+			accessValue =
+			pwdValue    = null;
+		}
+		else {
+			accessValue = String.valueOf(config.getIsFileSyncAppEnabled());
+			pwdValue    = String.valueOf(config.getAllowCachePwd()       );
+		}
+		
+    	// Store the properties to save into a Map<String, Object> so
+    	// we can write them out in a single transaction...
+		Map<String, Object> propMap = new HashMap<String, Object>();
+		propMap.put(ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR, accessValue);
+		propMap.put(ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD,   pwdValue   );
+
+		// ...and write them out to the appropriate object.
+		for (Long pId : principalIds) {
+			if (principalsAreUsers)
+			     setUserProperties( pId, propMap);
+			else setGroupProperties(pId, propMap);
+		}
+    }
+    
+    @Override
+    public void savePrincipalDesktopAppsConfig(Long principalId, boolean principalIsUser, PrincipalDesktopAppsConfig config) {
+    	// Always use the initial form of the method.
+    	if ((null != principalId) && (null != config)) {
+    		List<Long> principalIds = new ArrayList<Long>();
+    		principalIds.add(principalId);
+    		savePrincipalDesktopAppsConfig(principalIds, principalIsUser, config);
+    	}
     }
 }

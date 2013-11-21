@@ -310,6 +310,8 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
+import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
@@ -333,7 +335,6 @@ import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.CloudFolderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
-import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -341,7 +342,6 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
-import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
@@ -8417,41 +8417,37 @@ public class GwtServerHelper {
 	/**
 	 * Return a GwtUserFileSyncAppConfig object that holds the file sync app configuration data
 	 * 
+	 * @param bs
+	 * @param userId
+	 * 
 	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static GwtUserFileSyncAppConfig getUserFileSyncAppConfig(
-		AllModulesInjected ami,
-		Long userId )
-	{
-		GwtUserFileSyncAppConfig config;
-		UserProperties userProperties;
-		
-		config = new GwtUserFileSyncAppConfig();
-		config.setUseGlobalSettings( true );
-		
-		userProperties = ami.getProfileModule().getUserProperties( userId );
-		if ( userProperties != null )
-		{
-			Object accessValue;
-			Object pwdValue;
+	public static GwtUserFileSyncAppConfig getUserFileSyncAppConfig(AllModulesInjected bs, Long userId) throws GwtTeamingException {
+		try {
+			PrincipalDesktopAppsConfig pConfig = bs.getProfileModule().getPrincipalDesktopAppsConfig(userId);
 			
-			accessValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR );
-			if ( accessValue != null && accessValue instanceof String )
-			{
-				config.setIsFileSyncAppEnabled( Boolean.valueOf( (String) accessValue ) );
-			}
-
-			pwdValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD );
-			if ( pwdValue != null && pwdValue instanceof String )
-			{
-				config.setAllowCachePwd( Boolean.valueOf( (String) pwdValue ) );
+			GwtUserFileSyncAppConfig reply = new GwtUserFileSyncAppConfig();
+			boolean useDefault = pConfig.getUseDefaultSettings();
+			reply.setUseGlobalSettings(useDefault);
+			if (!useDefault) {
+				reply.setIsFileSyncAppEnabled(pConfig.getIsFileSyncAppEnabled());
+				reply.setAllowCachePwd(       pConfig.getAllowCachePwd()       );
 			}
 			
-			if ( accessValue != null || pwdValue != null )
-				config.setUseGlobalSettings( false );
+			return reply;
 		}
 		
-		return config;
+		catch (Exception ex) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					ex,
+					"GwtServerHelper.getUserFileSyncAppConfig( SOURCE EXCEPTION ):  ");
+		}
 	}
 	
 	/**
@@ -8477,112 +8473,44 @@ public class GwtServerHelper {
 	/**
 	 * Return a GwtUserMobileAppsConfig object that holds the mobile apps configuration data
 	 * 
-	 * @param ami
+	 * @param bs
 	 * @param userId
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static GwtUserMobileAppsConfig getUserMobileAppsConfig(
-		AllModulesInjected ami,
-		Long userId ) throws GwtTeamingException
-	{
-		try
-		{
-			GwtUserMobileAppsConfig gwtUserMobileAppsConfig;
-			UserProperties userProperties;
+	public static GwtUserMobileAppsConfig getUserMobileAppsConfig(AllModulesInjected bs, Long userId) throws GwtTeamingException {
+		try {
+			PrincipalMobileAppsConfig pConfig = bs.getProfileModule().getPrincipalMobileAppsConfig(userId);
 			
-			gwtUserMobileAppsConfig = new GwtUserMobileAppsConfig();
-			gwtUserMobileAppsConfig.setUseGlobalSettings( true );
-			
-			userProperties = ami.getProfileModule().getUserProperties( userId );
-			if ( userProperties != null )
-			{
-				Object accessValue;
-				Object pwdValue;
-				Object contentValue;
-				Object playValue;
-				
-				accessValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR );
-				if ( accessValue != null && accessValue instanceof String )
-				{
-					gwtUserMobileAppsConfig.setMobileAppsEnabled( Boolean.valueOf( (String) accessValue ) );
-				}
-	
-				pwdValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD );
-				if ( pwdValue != null && pwdValue instanceof String )
-				{
-					gwtUserMobileAppsConfig.setAllowCachePwd( Boolean.valueOf( (String) pwdValue ) );
-				}
-				
-				contentValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT );
-				if ( contentValue != null && contentValue instanceof String )
-				{
-					gwtUserMobileAppsConfig.setAllowCacheContent( Boolean.valueOf( (String) contentValue ) );
-				}
-				
-				playValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS );
-				if ( playValue != null && playValue instanceof String )
-				{
-					gwtUserMobileAppsConfig.setAllowPlayWithOtherApps( Boolean.valueOf( (String) playValue ) );
-				}
-	
-				// Mobile Application Management (MAM) settings.
-				Object cutCopyEnabledValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED );
-				if ( cutCopyEnabledValue != null && cutCopyEnabledValue instanceof String )
-				{
-					gwtUserMobileAppsConfig.setMobileCutCopyEnabled( Boolean.valueOf( (String) cutCopyEnabledValue ) );
-				}
-				Object androidScreenCaptureEnabledValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED );
-				if ( androidScreenCaptureEnabledValue != null && androidScreenCaptureEnabledValue instanceof String )
-				{
-					gwtUserMobileAppsConfig.setMobileAndroidScreenCaptureEnabled( Boolean.valueOf( (String) androidScreenCaptureEnabledValue ) );
-				}
-				Object disableOnJailBrokenValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES );
-				if ( disableOnJailBrokenValue != null && disableOnJailBrokenValue instanceof String )
-				{
-					gwtUserMobileAppsConfig.setMobileDisableOnRootedOrJailBrokenDevices( Boolean.valueOf( (String) disableOnJailBrokenValue ) );
-				}
-				Object openInValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_OPEN_IN );
-				if ( openInValue != null && openInValue instanceof String )
-				{
-					gwtUserMobileAppsConfig.setMobileOpenIn( GwtMobileOpenInSetting.valueOf( Integer.parseInt( (String) openInValue ) ) );
-				}
-				Object androidApplicationsValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS );
-				if ( androidApplicationsValue != null && androidApplicationsValue instanceof String )
-				{
-					String[]     aaArray = StringUtil.unpack( (String) androidApplicationsValue );
-					List<String> aaList = new ArrayList<String>();
-					ListUtil.arrayStringToListString( aaArray, aaList );
-					gwtUserMobileAppsConfig.setAndroidApplications( MiscUtil.sortStringList( aaList ) );
-				}
-				Object iosApplicationsValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS );
-				if ( iosApplicationsValue != null && iosApplicationsValue instanceof String )
-				{
-					String[]     iosArray = StringUtil.unpack( (String) iosApplicationsValue );
-					List<String> iosList = new ArrayList<String>();
-					ListUtil.arrayStringToListString( iosArray, iosList );
-					gwtUserMobileAppsConfig.setIosApplications( MiscUtil.sortStringList( iosList ) );
-				}
-	
-				if ( accessValue != null || pwdValue != null || contentValue != null || playValue != null ||
-					 cutCopyEnabledValue != null || androidScreenCaptureEnabledValue != null || disableOnJailBrokenValue != null || openInValue != null || androidApplicationsValue != null || iosApplicationsValue != null )
-					gwtUserMobileAppsConfig.setUseGlobalSettings( false );
+			GwtUserMobileAppsConfig reply = new GwtUserMobileAppsConfig();
+			boolean useDefault = pConfig.getUseDefaultSettings();
+			reply.setUseGlobalSettings(useDefault);
+			if (!useDefault) {
+				reply.setMobileAppsEnabled(                          pConfig.getMobileAppsEnabled()                       );
+				reply.setAllowCachePwd(                              pConfig.getAllowCachePwd()                           );
+				reply.setAllowCacheContent(                          pConfig.getAllowCacheContent()                       );
+				reply.setAllowPlayWithOtherApps(                     pConfig.getAllowPlayWithOtherApps()                  );
+				reply.setMobileCutCopyEnabled(                       pConfig.getMobileCutCopyEnabled()                    );
+				reply.setMobileAndroidScreenCaptureEnabled(          pConfig.getMobileAndroidScreenCaptureEnabled()       );
+				reply.setMobileDisableOnRootedOrJailBrokenDevices(   pConfig.getMobileDisableOnRootedOrJailBrokenDevices());
+				reply.setMobileOpenIn(GwtMobileOpenInSetting.valueOf(pConfig.getMobileOpenIn().ordinal() )                );
+				reply.setAndroidApplications(                        pConfig.getAndroidApplications()                     );
+				reply.setIosApplications(                            pConfig.getIosApplications()                         );
 			}
 			
-			return gwtUserMobileAppsConfig;
+			return reply;
 		}
 		
-		catch ( Exception ex )
-		{
+		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
 			throw
 				GwtLogHelper.getGwtClientException(
 					m_logger,
 					ex,
-					"GwtServerHelper.getUserMobileAppsConfig( SOURCE EXCEPTION ):  " );
+					"GwtServerHelper.getUserMobileAppsConfig( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -10883,72 +10811,53 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Save the given GwtUserFileSyncAppConfig settings for the given users.
+	 * Save the given GwtUserFileSyncAppConfig settings for the given
+	 * users.
 	 * 
+	 * @param bs
+	 * @param config
+	 * @param userIds
 	 */
-	public static SaveUserFileSyncAppConfigRpcResponseData saveUserFileSyncAppConfig(
-		AllModulesInjected ami,
-		GwtUserFileSyncAppConfig config,
-		List<Long> userIds )
-	{
-		ProfileModule profileModule;
-		SaveUserFileSyncAppConfigRpcResponseData responseData;
-		
-		responseData = new SaveUserFileSyncAppConfigRpcResponseData();
-		
-		if ( config == null || userIds == null )
-		{
+	public static SaveUserFileSyncAppConfigRpcResponseData saveUserFileSyncAppConfig(AllModulesInjected bs, GwtUserFileSyncAppConfig config, List<Long> userIds) {
+		SaveUserFileSyncAppConfigRpcResponseData responseData = new SaveUserFileSyncAppConfigRpcResponseData();
+		if ((null == config) || (!(MiscUtil.hasItems(userIds)))) {
 			responseData.addError( "Invalid parameters passed to saveUserFileSyncAppConfig()" );
 			return responseData;
 		}
-		
-		profileModule = ami.getProfileModule();
-		
-		for ( Long userId : userIds )
-		{
-			try
-			{
-				String accessValue;
-				String pwdValue;
-				
-				accessValue = null;
-				pwdValue = null;
-				if ( config.getUseGlobalSettings() == false )
-				{
-					accessValue = String.valueOf( config.getIsFileSyncAppEnabled() );
-					pwdValue = String.valueOf( config.getAllowCachePwd() );
-				}
-				
-				profileModule.setUserProperty(
-											userId,
-											ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR,
-											accessValue );
 
-				profileModule.setUserProperty(
-											userId,
-											ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD,
-											pwdValue );
+		// Map the GWT based configuration to a non-GWT one.
+		PrincipalDesktopAppsConfig pConfig = new PrincipalDesktopAppsConfig();
+		boolean useDefault = config.getUseGlobalSettings();
+		pConfig.setUseDefaultSettings(useDefault);
+		if (!useDefault) {
+			pConfig.setIsFileSyncAppEnabled(config.getIsFileSyncAppEnabled());
+			pConfig.setAllowCachePwd(       config.getAllowCachePwd()       );
+		}
+		
+		ProfileModule pm = bs.getProfileModule();
+		for (Long userId : userIds) {
+			try {
+				// We write them individually so that we can capture
+				// errors individually.
+				pm.savePrincipalDesktopAppsConfig(userId, true, pConfig);
 			}
-			catch ( Exception ex )
-			{
-				User user;
-				String errMsg;
+			
+			catch (Exception ex) {
+				// Save the error in the response...
+				User user = ((User) pm.getEntry(userId));
 				String cause;
-				String[] errorArgs;
-				String errorTag = "save.user.file.sync.app.config.error";
-				
-				user = (User) profileModule.getEntry( userId );
+				if (user.isDisabled())
+				     cause = NLT.get( "save.user.file.sync.app.config.error.disabled.user" );
+				else cause = ex.getLocalizedMessage();
+				String[] errorArgs = new String[] {user.getTitle(), cause};
+				String errMsg = NLT.get("save.user.file.sync.app.config.error", errorArgs);
+				responseData.addError(errMsg);
 
-				if ( user.isDisabled() == true )
-					cause = NLT.get( "save.user.file.sync.app.config.error.disabled.user" );
-				else
-					cause = ex.getLocalizedMessage();
-				errorArgs = new String[] { user.getTitle(), cause };
-				errMsg = NLT.get( errorTag, errorArgs );
-
-				responseData.addError( errMsg );
-				
-				GwtLogHelper.error(m_logger, "GwtServerHelper.saveUserFileSyncAppConfig( EXCEPTION ):  ", ex);
+				// ...and log it.
+				GwtLogHelper.error(
+					m_logger,
+					"GwtServerHelper.saveUserFileSyncAppConfig( EXCEPTION ):  ",
+					ex);
 			}
 		}
 		
@@ -10958,7 +10867,7 @@ public class GwtServerHelper {
 	/**
 	 * Save the given GwtUserMobileAppsConfig settings for the given users.
 	 *
-	 * @param ami
+	 * @param bs
 	 * @param config
 	 * @param userIds
 	 * 
@@ -10966,131 +10875,71 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static SaveUserMobileAppsConfigRpcResponseData saveUserMobileAppsConfig(
-		AllModulesInjected ami,
-		GwtUserMobileAppsConfig config,
-		List<Long> userIds ) throws GwtTeamingException
-	{
-		try
-		{
-			ProfileModule profileModule;
-			SaveUserMobileAppsConfigRpcResponseData responseData;
-			
-			responseData = new SaveUserMobileAppsConfigRpcResponseData();
-			
-			if ( config == null || userIds == null )
-			{
-				responseData.addError( "Invalid parameters passed to saveUserMobileAppsConfig()" );
+	public static SaveUserMobileAppsConfigRpcResponseData saveUserMobileAppsConfig(AllModulesInjected bs, GwtUserMobileAppsConfig config, List<Long> userIds) throws GwtTeamingException {
+		try {
+			SaveUserMobileAppsConfigRpcResponseData responseData = new SaveUserMobileAppsConfigRpcResponseData();
+			if ((null == config) || (!(MiscUtil.hasItems(userIds)))) {
+				responseData.addError("Invalid parameters passed to saveUserMobileAppsConfig()");
 				return responseData;
 			}
-			
-			profileModule = ami.getProfileModule();
-			
-			for ( Long userId : userIds )
-			{
-				try
-				{
-					String accessValue;
-					String pwdValue;
-					String contentValue;
-					String playValue;
-					
-					accessValue = null;
-					pwdValue = null;
-					contentValue = null;
-					playValue = null;
-					
-					// Mobile Application Management (MAM) settings.
-					String cutCopyEnabledValue              = null;
-					String androidScreenCaptureEnabledValue = null;
-					String disableOnJailBrokenValue         = null;
-					String openInValue                      = null;
-					String androidApplicationsValue         = null;
-					String iosApplicationsValue             = null;
-					
-					if ( config.getUseGlobalSettings() == false )
-					{
-						accessValue = String.valueOf( config.getMobileAppsEnabled() );
-						pwdValue = String.valueOf( config.getAllowCachePwd() );
-						contentValue = String.valueOf( config.getAllowCacheContent() );
-						playValue = String.valueOf( config.getAllowPlayWithOtherApps() );
-						
-						// Mobile Application Management (MAM) settings.
-						cutCopyEnabledValue              = String.valueOf( config.getMobileCutCopyEnabled()                     );
-						androidScreenCaptureEnabledValue = String.valueOf( config.getMobileAndroidScreenCaptureEnabled()        );
-						disableOnJailBrokenValue         = String.valueOf( config.getMobileDisableOnRootedOrJailBrokenDevices() );
-						openInValue                      = String.valueOf( config.getMobileOpenIn().ordinal()                   );
-						List<String> aaList = MiscUtil.sortStringList( config.getAndroidApplications() );
-						String[] aaArray = ((null == aaList) ? new String[0] : aaList.toArray(new String[0]));
-						androidApplicationsValue = StringUtil.pack(aaArray);
-						List<String> iosList = MiscUtil.sortStringList( config.getIosApplications() );
-						String[] iosArray = ((null == iosList) ? new String[0] : iosList.toArray(new String[0]));
-						iosApplicationsValue = StringUtil.pack(iosArray);
-					}
-	
-					profileModule.setUserProperty(
-												userId,
-												ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR,
-												accessValue );
-		
-					profileModule.setUserProperty(
-												userId,
-												ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD,
-												pwdValue );
-		
-					profileModule.setUserProperty(
-												userId,
-												ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT,
-												contentValue );
-		
-					profileModule.setUserProperty(
-												userId,
-												ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS,
-												playValue );
-	
-					// Mobile Application Management (MAM) settings.
-					profileModule.setUserProperty( userId, ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED,                         cutCopyEnabledValue              );
-					profileModule.setUserProperty( userId, ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED,           androidScreenCaptureEnabledValue );
-					profileModule.setUserProperty( userId, ObjectKeys.USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES, disableOnJailBrokenValue         );
-					profileModule.setUserProperty( userId, ObjectKeys.USER_PROPERTY_MOBILE_APPS_OPEN_IN,                                  openInValue                      );
-					profileModule.setUserProperty( userId, ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS,                     androidApplicationsValue         );
-					profileModule.setUserProperty( userId, ObjectKeys.USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS,                         iosApplicationsValue             );
+
+			// Map the GWT based configuration to a non-GWT one.
+			PrincipalMobileAppsConfig pConfig = new PrincipalMobileAppsConfig();
+			boolean useDefault = config.getUseGlobalSettings();
+			pConfig.setUseDefaultSettings(useDefault);
+			if (!useDefault) {
+				pConfig.setMobileAppsEnabled(     config.getMobileAppsEnabled()     );
+				pConfig.setAllowCachePwd(         config.getAllowCachePwd()         );
+				pConfig.setAllowCacheContent(     config.getAllowCacheContent()     );
+				pConfig.setAllowPlayWithOtherApps(config.getAllowPlayWithOtherApps());
+				
+				// Mobile Application Management (MAM) settings.
+				pConfig.setMobileCutCopyEnabled(                    config.getMobileCutCopyEnabled()                    );
+				pConfig.setMobileAndroidScreenCaptureEnabled(       config.getMobileAndroidScreenCaptureEnabled()       );
+				pConfig.setMobileDisableOnRootedOrJailBrokenDevices(config.getMobileDisableOnRootedOrJailBrokenDevices());
+				pConfig.setMobileOpenIn(MobileOpenInSetting.valueOf(config.getMobileOpenIn().ordinal())                 );
+				pConfig.setAndroidApplications(                     config.getAndroidApplications()                     );
+				pConfig.setIosApplications(                         config.getIosApplications()                         );
+			}
+
+			ProfileModule pm = bs.getProfileModule();
+			for (Long userId:  userIds) {
+				try {
+					// We write them individually so that we can capture
+					// errors individually.
+					pm.savePrincipalMobileAppsConfig(userId, true, pConfig);
 				}
-				catch ( Exception ex )
-				{
-					User user;
-					String errMsg;
+				
+				catch (Exception ex) {
+					// Save the error in the response...
+					User user = ((User) pm.getEntry(userId));
 					String cause;
-					String[] errorArgs;
-					String errorTag = "save.user.mobile.app.config.error";
-					
-					user = (User) profileModule.getEntry( userId );
-	
-					if ( user.isDisabled() == true )
-						cause = NLT.get( "save.user.mobile.app.config.error.disabled.user" );
-					else
-						cause = ex.getLocalizedMessage();
-					errorArgs = new String[] { user.getTitle(), cause };
-					errMsg = NLT.get( errorTag, errorArgs );
-	
+					if (user.isDisabled())
+					     cause = NLT.get("save.user.mobile.app.config.error.disabled.user");
+					else cause = ex.getLocalizedMessage();
+					String[] errorArgs = new String[] {user.getTitle(), cause};
+					String errMsg = NLT.get("save.user.mobile.app.config.error", errorArgs);
 					responseData.addError( errMsg );
-					
-					GwtLogHelper.error( m_logger, "GwtServerHelper.saveUserMobileAppConfig( EXCEPTION ):  ", ex );
+
+					// ...and log it.
+					GwtLogHelper.error(
+						m_logger,
+						"GwtServerHelper.saveUserMobileAppConfig( EXCEPTION ):  ",
+						ex);
 				}
 			}
 			
 			return responseData;
 		}
 		
-		catch ( Exception ex )
-		{
+		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
 			throw
 				GwtLogHelper.getGwtClientException(
 					m_logger,
 					ex,
-					"GwtServerHelper.saveUserMobileAppsConfig( SOURCE EXCEPTION ):  " );
+					"GwtServerHelper.saveUserMobileAppsConfig( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
