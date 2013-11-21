@@ -1610,9 +1610,14 @@ public class EditBrandingDlg extends DlgBox
 					params = (EditBrandingDlgInitAndShowParams)cmd.getParams();
 					dlg = params.getUIObj();
 
-					dlg.setPixelSize( params.getWidth(), params.getHeight());
+					if ( params.getWidth() != null && params.getHeight() != null )
+						dlg.setPixelSize( params.getWidth(), params.getHeight());
+					
 					dlg.init( params.getBrandingData() );
-					dlg.setPopupPosition( params.getLeft(), params.getTop() );
+					
+					if ( params.getLeft() != null && params.getTop() != null )
+						dlg.setPopupPosition( params.getLeft(), params.getTop() );
+					
 					dlg.show();
 					break;
 				}
