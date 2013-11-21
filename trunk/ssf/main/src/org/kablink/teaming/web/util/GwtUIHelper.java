@@ -633,7 +633,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getAdhocFolderSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return SearchUtils.getAdhocFolderSettingFromUserOrGroup(bs, upId);
+		return AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, upId);
 	}
 
 	/**
@@ -644,7 +644,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getAdhocFolderSettingFromZone(AllModulesInjected ami) {
-		return SearchUtils.getAdhocFolderSettingFromZone(ami);
+		return AdminHelper.getAdhocFolderSettingFromZone(ami);
 	}
 	
 	/**
@@ -658,7 +658,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getEffectiveAdhocFolderSetting(AllModulesInjected ami, User user) {
-		return SearchUtils.getEffectiveAdhocFolderSetting(ami, user);
+		return AdminHelper.getEffectiveAdhocFolderSetting(ami, user);
 	}
 	
 	/**
@@ -672,7 +672,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getEffectiveDownloadSetting(AllModulesInjected bs, User user) {
-		return SearchUtils.getEffectiveDownloadSetting(bs, user);
+		return AdminHelper.getEffectiveDownloadSetting(bs, user);
 	}
 	
 	/**
@@ -778,7 +778,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getEffectivePublicCollectionSetting(AllModulesInjected bs, User user) {
-		return SearchUtils.getEffectivePublicCollectionSetting(bs, user);
+		return AdminHelper.getEffectivePublicCollectionSetting(bs, user);
 	}
 	
 	/**
@@ -792,7 +792,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getEffectiveWebAccessSetting(AllModulesInjected bs, User user) {
-		return SearchUtils.getEffectiveWebAccessSetting(bs, user);
+		return AdminHelper.getEffectiveWebAccessSetting(bs, user);
 	}
 	
 	/**
@@ -874,7 +874,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getDownloadSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return SearchUtils.getDownloadSettingFromUserOrGroup(bs, upId);
+		return AdminHelper.getDownloadSettingFromUserOrGroup(bs, upId);
 	}
 
 	/**
@@ -885,7 +885,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getDownloadSettingFromZone(AllModulesInjected bs) {
-		return SearchUtils.getDownloadSettingFromZone(bs);
+		return AdminHelper.getDownloadSettingFromZone(bs);
 	}
 	
 	/**
@@ -1233,7 +1233,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getWebAccessSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return SearchUtils.getWebAccessSettingFromUserOrGroup(bs, upId);
+		return AdminHelper.getWebAccessSettingFromUserOrGroup(bs, upId);
 	}
 
 	/**
@@ -1244,7 +1244,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getWebAccessSettingFromZone(AllModulesInjected bs) {
-		return SearchUtils.getWebAccessSettingFromZone(bs);
+		return AdminHelper.getWebAccessSettingFromZone(bs);
 	}
 	
 	/*
