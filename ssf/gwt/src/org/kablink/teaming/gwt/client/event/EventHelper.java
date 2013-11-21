@@ -112,6 +112,7 @@ public class EventHelper {
 		case PREVIEW_LANDING_PAGE:					reply = new PreviewLandingPageEvent();			  break;
 		case MASTHEAD_HIDE:                     	reply = new MastheadHideEvent();                  break;
 		case MASTHEAD_SHOW:                     	reply = new MastheadShowEvent();                  break;
+		case MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS:     	reply = new MastheadUnhighlightAllActionsEvent(); break;
 		case MENU_HIDE:								reply = new MenuHideEvent();					  break;
 		case MENU_SHOW:								reply = new MenuShowEvent();					  break;
 		case REFRESH_SIDEBAR_TREE:					reply = new RefreshSidebarTreeEvent();			  break;
@@ -1627,6 +1628,16 @@ public class EventHelper {
 				}
 				break;
 			
+			case MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS:
+				// A MastheadUnhighlightAllActionsEvent!  Can the event handler we were
+				// given handle that?
+				if ( eventHandler instanceof MastheadUnhighlightAllActionsEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = MastheadUnhighlightAllActionsEvent.registerEvent( eventBus, ((MastheadUnhighlightAllActionsEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case MENU_HIDE:
 				// A MenuHideEvent.  Can the event handler we were
 				// given handle that?
@@ -2632,6 +2643,7 @@ public class EventHelper {
 			
 			case MASTHEAD_HIDE:                     	       hasHandler = (eventHandler instanceof MastheadHideEvent.Handler);                           break;
 			case MASTHEAD_SHOW:                     	       hasHandler = (eventHandler instanceof MastheadShowEvent.Handler);                           break;
+			case MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS:     	       hasHandler = (eventHandler instanceof MastheadUnhighlightAllActionsEvent.Handler);          break;
 			
 			case GET_MANAGE_MENU_POPUP:                        hasHandler = (eventHandler instanceof GetManageMenuPopupEvent.Handler);                     break;
 			case HIDE_MANAGE_MENU:						       hasHandler = (eventHandler instanceof HideManageMenuEvent.Handler);		                   break;

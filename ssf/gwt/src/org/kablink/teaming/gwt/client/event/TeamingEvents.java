@@ -162,6 +162,7 @@ public enum TeamingEvents implements IsSerializable {
 	
 	MASTHEAD_HIDE,									// Hides the masthead.
 	MASTHEAD_SHOW,									// Shows the masthead.
+	MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS,				// Signals that all actions in the mast head should be unhighlighted
 	
 	GET_MANAGE_MENU_POPUP,							// Returns the manage menu (Workspace or Folder) currently loaded in the main menu bar.
 	HIDE_MANAGE_MENU,								// Hides the manage menu loaded in the main menu bar.
@@ -314,7 +315,7 @@ public enum TeamingEvents implements IsSerializable {
 	WINDOW_TITLE_SET,								// Window Title has been Set.
 	ZIP_AND_DOWNLOAD_FOLDER,						// Zips and Downloads all files in a folder.
 	ZIP_AND_DOWNLOAD_SELECTED_FILES,				// Zips and Downloads the currently selected files.
-		
+
 	UNDEFINED;										// Undefined event - Should never be fired !!!
 
 	/**
