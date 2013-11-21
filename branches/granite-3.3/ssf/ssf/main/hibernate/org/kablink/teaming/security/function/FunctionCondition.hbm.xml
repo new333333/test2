@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" lazy="false" table="SS_FunctionConditions" name="org.kablink.teaming.security.function.Condition">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native"/>
+    </id>
+    <discriminator type="string" column="type" length="32"/>
+    <property name="zoneId" not-null="true" access="field"/>
+    <property name="encodedSpec" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+    <property name="title" length="255" not-null="true"/>
+    <component name="description">
+      <property name="HDescription" column="description_text" type="org.kablink.teaming.dao.util.SSClobStringType"/>
+      <property name="HFormat" column="description_format"/>
+    </component>
+    <subclass name="org.kablink.teaming.security.function.RemoteAddrCondition" discriminator-value="remoteAddr">
+    </subclass>
+  </class>
+</hibernate-mapping>
