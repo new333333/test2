@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,36 +40,40 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The InvokeUserDesktopSettingsDlgEvent is used invoke the 'User
+ * The InvokePrincipalDesktopSettingsDlgEvent is used invoke the 'User
  * Desktop Settings' dialog.
  * 
  * @author drfoster@novell.com
  */
-public class InvokeUserDesktopSettingsDlgEvent extends VibeEventBase<InvokeUserDesktopSettingsDlgEvent.Handler> {
+public class InvokePrincipalDesktopSettingsDlgEvent extends VibeEventBase<InvokePrincipalDesktopSettingsDlgEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private List<Long>	m_userIds;	//
+	private boolean		m_principalsAreUsers;	//
+	private List<Long>	m_principalIds;			//
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onInvokeUserDesktopSettingsDlg(InvokeUserDesktopSettingsDlgEvent event);
+		void onInvokePrincipalDesktopSettingsDlg(InvokePrincipalDesktopSettingsDlgEvent event);
 	}
 	
 	/**
 	 * Constructor methods.
 	 * 
-	 * @param userIds
+	 * @param principalIds
+	 * @param principalsAreUsers
 	 */
-	public InvokeUserDesktopSettingsDlgEvent(List<Long> userIds) {
+	public InvokePrincipalDesktopSettingsDlgEvent(List<Long> principalIds, boolean principalsAreUsers) {
 		super();
-		setUserIds(userIds);
+		
+		setPrincipalIds(      principalIds      );
+		setPrincipalsAreUsers(principalsAreUsers);
 	}
 	
-	public InvokeUserDesktopSettingsDlgEvent() {
+	public InvokePrincipalDesktopSettingsDlgEvent() {
 		// Always use the initial form of the constructor.
-		this(new ArrayList<Long>());
+		this(new ArrayList<Long>(), true);
 	}
 	
 	/**
@@ -77,14 +81,16 @@ public class InvokeUserDesktopSettingsDlgEvent extends VibeEventBase<InvokeUserD
 	 * 
 	 * @return
 	 */
-	public List<Long> getUserIds() {return m_userIds;}
+	public boolean    getPrincipalsAreUsers() {return m_principalsAreUsers;}
+	public List<Long> getPrincipalIds()       {return m_principalIds;      }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setUserIds(List<Long> userIds) {m_userIds = userIds;}
+	public void setPrincipalsAreUsers(boolean    principalsAreUsers) {m_principalsAreUsers = principalsAreUsers;}
+	public void setPrincipalIds(      List<Long> principalIds)       {m_principalIds       = principalIds;      }
 
 	/**
 	 * Dispatches this event when one is triggered.
@@ -95,7 +101,7 @@ public class InvokeUserDesktopSettingsDlgEvent extends VibeEventBase<InvokeUserD
 	 */
 	@Override
 	protected void doDispatch(Handler handler) {
-		handler.onInvokeUserDesktopSettingsDlg(this);
+		handler.onInvokePrincipalDesktopSettingsDlg(this);
 	}
 	
 	/**
@@ -120,7 +126,7 @@ public class InvokeUserDesktopSettingsDlgEvent extends VibeEventBase<InvokeUserD
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.INVOKE_USER_DESKTOP_SETTINGS_DLG;
+		return TeamingEvents.INVOKE_PRINCIPAL_DESKTOP_SETTINGS_DLG;
 	}
 		
 	/**

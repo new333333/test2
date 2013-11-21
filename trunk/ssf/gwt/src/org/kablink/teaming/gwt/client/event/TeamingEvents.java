@@ -133,6 +133,8 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_EDIT_NET_FOLDER_RIGHTS_DLG,				// Invokes the "edit net folder rights" dialog.
 	INVOKE_EDIT_SHARE_RIGHTS_DLG,					// Invokes the "edit share rights" dialog.
 	INVOKE_EDIT_USER_ZONE_SHARE_RIGHTS_DLG,			// Invokes the "edit user zone share rights" dialog.
+	INVOKE_PRINCIPAL_DESKTOP_SETTINGS_DLG,			// Invokes the 'principal desktop application settings' dialog.
+	INVOKE_PRINCIPAL_MOBILE_SETTINGS_DLG,			// Invokes the 'principal mobile  application settings' dialog.
 	INVOKE_RENAME_ENTITY,							// Invokes the Rename an Entity dialog.
 	INVOKE_REPLY,									// Invokes the 'reply to entry' UI.
 	INVOKE_RUN_A_REPORT_DLG,						// Invokes the "Run a Report" dialog.
@@ -144,8 +146,6 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_SIMPLE_PROFILE,							// Invokes the simple profile dialog.
 	INVOKE_SUBSCRIBE,								// Invokes the 'subscribe to this entry' UI.
 	INVOKE_TAG,										// Invokes the 'tag this entry' UI.
-	INVOKE_USER_DESKTOP_SETTINGS_DLG,				// Invokes the 'user desktop application settings' dialog.
-	INVOKE_USER_MOBILE_SETTINGS_DLG,				// Invokes the 'user mobile  application settings' dialog.
 	INVOKE_USER_PROPERTIES_DLG,						// Invokes the 'user properties'                   dialog.
 	INVOKE_USER_SHARE_RIGHTS_DLG,					// Invokes the 'user share rights'                 dialog.
 	

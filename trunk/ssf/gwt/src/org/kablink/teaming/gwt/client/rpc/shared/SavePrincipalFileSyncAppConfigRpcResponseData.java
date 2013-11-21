@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,65 +32,44 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
-
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds all of the information necessary to execute the "Save User Mobile Apps Configuration" command.
+ * This class holds the response data for the "save principal file sync
+ * app config" rpc command
  * 
  * @author jwootton
- *
  */
-public class SaveUserMobileAppsConfigCmd extends VibeRpcCmd
+public class SavePrincipalFileSyncAppConfigRpcResponseData
+	implements IsSerializable, VibeRpcResponseData
 {
-	private GwtUserMobileAppsConfig m_config = null;
-	private List<Long> m_userIds;
-	
-	/**
-	 * For GWT serialization, must have a zero param contructor
-	 */
-	public SaveUserMobileAppsConfigCmd()
-	{
-		super();
-	}
+	ArrayList<String> m_errors;
 	
 	/**
 	 * 
 	 */
-	public SaveUserMobileAppsConfigCmd( GwtUserMobileAppsConfig config, List<Long> userIds )
+	public SavePrincipalFileSyncAppConfigRpcResponseData()
 	{
-		m_config = config;
-		m_userIds = userIds;
 	}
 	
 	/**
-	 * Returns the command's enumeration value.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
 	 */
-	@Override
-	public int getCmdType()
+	public void addError( String err )
 	{
-		return VibeRpcCmdType.SAVE_USER_MOBILE_APPS_CONFIGURATION.ordinal();
+		if ( m_errors == null )
+			m_errors = new ArrayList<String>();
+		
+		m_errors.add( err );
 	}
-
+	
 	/**
 	 * 
 	 */
-	public GwtUserMobileAppsConfig getConfig()
+	public ArrayList<String> getErrors()
 	{
-		return m_config;
-	}
-
-	/**
-	 * 
-	 */
-	public List<Long> getUserIds()
-	{
-		return m_userIds;
+		return m_errors;
 	}
 }

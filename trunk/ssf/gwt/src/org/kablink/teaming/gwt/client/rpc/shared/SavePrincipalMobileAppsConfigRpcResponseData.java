@@ -39,11 +39,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class holds the response data for the "save user file sync app config" rpc command
+ * This class holds the response data for the "save principal mobile apps config" rpc command
  * @author jwootton
  *
  */
-public class SaveUserFileSyncAppConfigRpcResponseData
+public class SavePrincipalMobileAppsConfigRpcResponseData
 	implements IsSerializable, VibeRpcResponseData
 {
 	ArrayList<String> m_errors;
@@ -51,7 +51,7 @@ public class SaveUserFileSyncAppConfigRpcResponseData
 	/**
 	 * 
 	 */
-	public SaveUserFileSyncAppConfigRpcResponseData()
+	public SavePrincipalMobileAppsConfigRpcResponseData()
 	{
 	}
 	

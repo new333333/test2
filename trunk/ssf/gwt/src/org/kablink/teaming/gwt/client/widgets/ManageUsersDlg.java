@@ -46,8 +46,8 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokePrincipalDesktopSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokePrincipalMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
@@ -521,8 +521,9 @@ public class ManageUsersDlg extends DlgBox
 
 				// ...and use them to invoke the settings dialog.
 				GwtTeaming.fireEventAsync(
-					new InvokeUserDesktopSettingsDlgEvent(
-						selectedUserList));
+					new InvokePrincipalDesktopSettingsDlgEvent(
+						selectedUserList,
+						true));	// true -> IDs are users.
 			}
 		}
 	}
@@ -555,8 +556,9 @@ public class ManageUsersDlg extends DlgBox
 
 				// ...and use them to invoke the settings dialog.
 				GwtTeaming.fireEventAsync(
-					new InvokeUserMobileSettingsDlgEvent(
-						selectedUserList));
+					new InvokePrincipalMobileSettingsDlgEvent(
+						selectedUserList,
+						true));	// true -> IDs are users.
 			}
 		}
 	}

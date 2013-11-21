@@ -1285,6 +1285,24 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_PRINCIPAL_DESKTOP_SETTINGS_DLG:
+				// An InvokePrincipalDesktopSettingsDlgEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof InvokePrincipalDesktopSettingsDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokePrincipalDesktopSettingsDlgEvent.registerEvent(eventBus, ((InvokePrincipalDesktopSettingsDlgEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case INVOKE_PRINCIPAL_MOBILE_SETTINGS_DLG:
+				// An InvokePrincipalMobileSettingsDlgEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof InvokePrincipalMobileSettingsDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokePrincipalMobileSettingsDlgEvent.registerEvent(eventBus, ((InvokePrincipalMobileSettingsDlgEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_RENAME_ENTITY:
 				// An InvokeRenameEntityEvent!  Can the event handler
 				// we were given handle that?
@@ -1381,24 +1399,6 @@ public class EventHelper {
 				if (eventHandler instanceof InvokeTagEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeTagEvent.registerEvent(eventBus, ((InvokeTagEvent.Handler) eventHandler));
-				}
-				break;
-				
-			case INVOKE_USER_DESKTOP_SETTINGS_DLG:
-				// An InvokeUserDesktopSettingsDlgEvent!  Can the event
-				// handler we were given handle that?
-				if (eventHandler instanceof InvokeUserDesktopSettingsDlgEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = InvokeUserDesktopSettingsDlgEvent.registerEvent(eventBus, ((InvokeUserDesktopSettingsDlgEvent.Handler) eventHandler));
-				}
-				break;
-				
-			case INVOKE_USER_MOBILE_SETTINGS_DLG:
-				// An InvokeUserMobileSettingsDlgEvent!  Can the event
-				// handler we were given handle that?
-				if (eventHandler instanceof InvokeUserMobileSettingsDlgEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = InvokeUserMobileSettingsDlgEvent.registerEvent(eventBus, ((InvokeUserMobileSettingsDlgEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -2701,6 +2701,8 @@ public class EventHelper {
 			case INVOKE_MANAGE_MOBILE_DEVICES_DLG:			   hasHandler = (eventHandler instanceof InvokeManageMobileDevicesDlgEvent.Handler);		   break;
 			case INVOKE_MANAGE_USERS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageUsersDlgEvent.Handler);		           break;
 			case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	       hasHandler = (eventHandler instanceof InvokeNameCompletionSettingsDlgEvent.Handler);		   break;
+			case INVOKE_PRINCIPAL_DESKTOP_SETTINGS_DLG:        hasHandler = (eventHandler instanceof InvokePrincipalDesktopSettingsDlgEvent.Handler);      break;
+			case INVOKE_PRINCIPAL_MOBILE_SETTINGS_DLG:         hasHandler = (eventHandler instanceof InvokePrincipalMobileSettingsDlgEvent.Handler);       break;
 			case INVOKE_RENAME_ENTITY:					       hasHandler = (eventHandler instanceof InvokeRenameEntityEvent.Handler);                     break;
 			case INVOKE_REPLY:                      	       hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                            break;
 			case INVOKE_RUN_A_REPORT_DLG:				       hasHandler = (eventHandler instanceof InvokeRunAReportDlgEvent.Handler);		               break;
@@ -2712,8 +2714,6 @@ public class EventHelper {
 			case INVOKE_SIMPLE_PROFILE:             	       hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);                    break;
 			case INVOKE_SUBSCRIBE:                  	       hasHandler = (eventHandler instanceof InvokeSubscribeEvent.Handler);                        break;
 			case INVOKE_TAG:                        	       hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                              break;
-			case INVOKE_USER_DESKTOP_SETTINGS_DLG:             hasHandler = (eventHandler instanceof InvokeUserDesktopSettingsDlgEvent.Handler);           break;
-			case INVOKE_USER_MOBILE_SETTINGS_DLG:              hasHandler = (eventHandler instanceof InvokeUserMobileSettingsDlgEvent.Handler);            break;
 			case INVOKE_USER_PROPERTIES_DLG:				   hasHandler = (eventHandler instanceof InvokeUserPropertiesDlgEvent.Handler);		           break;
 			case INVOKE_USER_SHARE_RIGHTS_DLG:				   hasHandler = (eventHandler instanceof InvokeUserShareRightsDlgEvent.Handler);		       break;
 			
