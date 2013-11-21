@@ -36,12 +36,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
+import org.kablink.teaming.gwt.client.GwtPrincipalMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.rpc.shared.GetUserMobileAppsConfigCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPrincipalMobileAppsConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -80,6 +80,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class ConfigureUserMobileAppsDlg extends DlgBox
 	implements EditSuccessfulHandler
 {
+	private boolean m_principalsAreUsers;
 	private boolean m_initialAllowPlayWithOtherApps;
 	
 	private RadioButton m_useGlobalSettingsRB;
@@ -99,9 +100,9 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	private ListBox m_openInLB;
 	private PromptDlg m_pDlg;
 	
-	private List<Long> m_userIds;
-	private ArrayList<Long> m_listOfRemainingUserIds;	// This is the list we draw from when we are saving the config.
-	private ArrayList<Long> m_nextBatchOfUserIds;
+	private List<Long> m_principalIds;
+	private ArrayList<Long> m_listOfRemainingPrincipalIds;	// This is the list we draw from when we are saving the config.
+	private ArrayList<Long> m_nextBatchOfPrincipalIds;
 	
 	private static int BATCH_SIZE = 10;
 	
@@ -499,11 +500,11 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	@Override
 	public boolean editSuccessful( Object obj )
 	{
-		if ( m_userIds != null && m_userIds.size() > 0 )
+		if ( m_principalIds != null && m_principalIds.size() > 0 )
 		{
-			final GwtUserMobileAppsConfig mobileAppsConfig;
+			final GwtPrincipalMobileAppsConfig mobileAppsConfig;
 	
-			mobileAppsConfig = (GwtUserMobileAppsConfig) obj;
+			mobileAppsConfig = (GwtPrincipalMobileAppsConfig) obj;
 			
 			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
@@ -513,15 +514,15 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 					clearErrorPanel();
 					hideErrorPanel();
 					
-					// We save the config for users in a batch of 10.  m_listOfRemainingUserIds
+					// We save the config for users in a batch of 10.  m_listOfRemainingPrincipalIds
 					// is the list we work from.
-					if ( m_listOfRemainingUserIds == null )
-						m_listOfRemainingUserIds = new ArrayList<Long>();
+					if ( m_listOfRemainingPrincipalIds == null )
+						m_listOfRemainingPrincipalIds = new ArrayList<Long>();
 					else
-						m_listOfRemainingUserIds.clear();
-					for ( Long userId : m_userIds )
+						m_listOfRemainingPrincipalIds.clear();
+					for ( Long pId : m_principalIds )
 					{
-						m_listOfRemainingUserIds.add( userId );
+						m_listOfRemainingPrincipalIds.add( pId );
 					}
 					
 					// Disable the Ok button.
@@ -636,9 +637,9 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		GwtUserMobileAppsConfig mobileAppsConfig;
+		GwtPrincipalMobileAppsConfig mobileAppsConfig;
 		
-		mobileAppsConfig = new GwtUserMobileAppsConfig();
+		mobileAppsConfig = new GwtPrincipalMobileAppsConfig();
 
 		// Get whether to use the global settings
 		mobileAppsConfig.setUseGlobalSettings( getUseGlobalSettings() );
@@ -689,28 +690,28 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	}
 	
 	/**
-	 * Get the list of the next n userIds
+	 * Get the list of the next n principalIds
 	 */
-	private ArrayList<Long> getNextBatchOfUserIds()
+	private ArrayList<Long> getNextBatchOfPrincipalIds()
 	{
-		if ( m_listOfRemainingUserIds != null && m_listOfRemainingUserIds.size() > 0 )
+		if ( m_listOfRemainingPrincipalIds != null && m_listOfRemainingPrincipalIds.size() > 0 )
 		{
 			int cnt;
 			
-			if ( m_nextBatchOfUserIds == null )
-				m_nextBatchOfUserIds = new ArrayList<Long>();
+			if ( m_nextBatchOfPrincipalIds == null )
+				m_nextBatchOfPrincipalIds = new ArrayList<Long>();
 			else
-				m_nextBatchOfUserIds.clear();
+				m_nextBatchOfPrincipalIds.clear();
 			
-			for ( cnt = 0; cnt < BATCH_SIZE && m_listOfRemainingUserIds.size() > 0; ++cnt )
+			for ( cnt = 0; cnt < BATCH_SIZE && m_listOfRemainingPrincipalIds.size() > 0; ++cnt )
 			{
-				m_nextBatchOfUserIds.add( m_listOfRemainingUserIds.get( 0 ) );
+				m_nextBatchOfPrincipalIds.add( m_listOfRemainingPrincipalIds.get( 0 ) );
 				
 				// Remove this user id from the working list.
-				m_listOfRemainingUserIds.remove( 0 );
+				m_listOfRemainingPrincipalIds.remove( 0 );
 			}
 			
-			return m_nextBatchOfUserIds;
+			return m_nextBatchOfPrincipalIds;
 		}
 		
 		return null;
@@ -727,11 +728,11 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init( List<Long> userIds )
+	public void init( List<Long> principalIds, boolean principalsAreUsers )
 	{
 		AsyncCallback<VibeRpcResponse> rpcReadCallback;
 		
-		if ( userIds == null )
+		if ( principalIds == null )
 			return;
 
 		clearErrorPanel();
@@ -739,9 +740,10 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		hideStatusMsg();
 		setOkEnabled( true );
 
-		m_userIds = userIds;
+		m_principalsAreUsers = principalsAreUsers;
+		m_principalIds = principalIds;
 		
-		setCaption( GwtTeaming.getMessages().configureUserMobileAppsDlgHeader( String.valueOf( userIds.size() ) ) );
+		setCaption( GwtTeaming.getMessages().configureUserMobileAppsDlgHeader( String.valueOf( principalIds.size() ) ) );
 		
 		// Create a callback that will be called when we get the mobile apps configuration.
 		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
@@ -767,9 +769,9 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				final GwtUserMobileAppsConfig mobileAppsConfig;
+				final GwtPrincipalMobileAppsConfig mobileAppsConfig;
 				
-				mobileAppsConfig = (GwtUserMobileAppsConfig) response.getResponseData();
+				mobileAppsConfig = (GwtPrincipalMobileAppsConfig) response.getResponseData();
 				
 				initPart2Async( mobileAppsConfig );
 			}
@@ -777,18 +779,18 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 
 		// If we are only dealing with 1 user, issue an ajax request to get the
 		// User's Mobile Apps configuration.
-		if ( userIds.size() == 1 )
+		if ( principalIds.size() == 1 )
 		{
-			GetUserMobileAppsConfigCmd cmd;
+			GetPrincipalMobileAppsConfigCmd cmd;
 			
 			// Issue an ajax request to get the Mobile Apps configuration from the db.
-			cmd = new GetUserMobileAppsConfigCmd();
-			cmd.setUserId( userIds.get( 0 ) );
+			cmd = new GetPrincipalMobileAppsConfigCmd();
+			cmd.setPrincipalId( principalIds.get( 0 ) );
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
 		else
 		{
-			GwtUserMobileAppsConfig config = null;
+			GwtPrincipalMobileAppsConfig config = null;
 			
 			initUsingConfigData( config );
 		}
@@ -797,7 +799,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	/*
 	 * Asynchronously performs the next part of the initializations.
 	 */
-	private void initPart2Async( final GwtUserMobileAppsConfig mobileAppsConfig )
+	private void initPart2Async( final GwtPrincipalMobileAppsConfig mobileAppsConfig )
 	{
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
@@ -812,7 +814,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	/*
 	 * Synchronously performs the next part of the initializations.
 	 */
-	private void initPart2Now( final GwtUserMobileAppsConfig mobileAppsConfig )
+	private void initPart2Now( final GwtPrincipalMobileAppsConfig mobileAppsConfig )
 	{
 		// Have we created a prompt dialog yet?
 		if ( null == m_pDlg ) {
@@ -842,7 +844,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	/*
 	 * Initialize the controls in the dialog with the values from the given values.
 	 */
-	private void initUsingConfigData( GwtUserMobileAppsConfig mobileAppsConfig )
+	private void initUsingConfigData( GwtPrincipalMobileAppsConfig mobileAppsConfig )
 	{
 		if ( mobileAppsConfig != null )
 		{
@@ -937,16 +939,16 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	/**
 	 * Issue an rpc request to save the config for the next n users.
 	 */
-	private void saveConfigForNextBatchOfUsers( final GwtUserMobileAppsConfig config )
+	private void saveConfigForNextBatchOfUsers( final GwtPrincipalMobileAppsConfig config )
 	{
-		ArrayList<Long> userIds;
+		ArrayList<Long> principalIds;
 
 		// Get the next batch of user ids
-		userIds = getNextBatchOfUserIds();
-		if ( userIds != null && userIds.size() > 0 )
+		principalIds = getNextBatchOfPrincipalIds();
+		if ( principalIds != null && principalIds.size() > 0 )
 		{
 			AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
-			SaveUserMobileAppsConfigCmd cmd;
+			SavePrincipalMobileAppsConfigCmd cmd;
 
 			// Update the Saving n of nn message
 			updateStatusMsg();
@@ -992,13 +994,13 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 					VibeRpcResponseData data;
 					
 					data = response.getResponseData();
-					if ( data instanceof SaveUserMobileAppsConfigRpcResponseData )
+					if ( data instanceof SavePrincipalMobileAppsConfigRpcResponseData )
 					{
-						SaveUserMobileAppsConfigRpcResponseData responseData;
+						SavePrincipalMobileAppsConfigRpcResponseData responseData;
 						ArrayList<String> errors;
 						
 						// Get any errors that may have happened
-						responseData = (SaveUserMobileAppsConfigRpcResponseData) data;
+						responseData = (SavePrincipalMobileAppsConfigRpcResponseData) data;
 						errors = responseData.getErrors();
 						if ( errors != null && errors.size() > 0 )
 						{
@@ -1044,7 +1046,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 
 			// Issue an ajax request to save the user's Mobile apps configuration to the db.  rpcSaveCallback will
 			// be called when we get the response back.
-			cmd = new SaveUserMobileAppsConfigCmd( config, userIds );
+			cmd = new SavePrincipalMobileAppsConfigCmd( config, principalIds, m_principalsAreUsers );
 			GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
 		}
 		else
@@ -1070,14 +1072,14 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	 */
 	private void updateStatusMsg()
 	{
-		if ( m_userIds != null && m_listOfRemainingUserIds != null )
+		if ( m_principalIds != null && m_listOfRemainingPrincipalIds != null )
 		{
 			String msg;
 			int total;
 			int remaining;
 
-			total = m_userIds.size();
-			remaining = m_listOfRemainingUserIds.size();
+			total = m_principalIds.size();
+			remaining = m_listOfRemainingPrincipalIds.size();
 			msg = GwtTeaming.getMessages().configuerUserMobileAppsDlgSaving(
 																		String.valueOf( total-remaining ),
 																		String.valueOf( total ) );

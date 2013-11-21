@@ -54,9 +54,9 @@ import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeNameCompletionSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokePrincipalDesktopSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokePrincipalMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeRunAReportDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -168,9 +168,9 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeManageMobileDevicesDlgEvent.Handler,
 		InvokeManageUsersDlgEvent.Handler,
 		InvokeNameCompletionSettingsDlgEvent.Handler,
+		InvokePrincipalDesktopSettingsDlgEvent.Handler,
+		InvokePrincipalMobileSettingsDlgEvent.Handler,
 		InvokeRunAReportDlgEvent.Handler,
-		InvokeUserDesktopSettingsDlgEvent.Handler,
-		InvokeUserMobileSettingsDlgEvent.Handler,
 		ManageSharesSelectedEntitiesEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
@@ -227,12 +227,12 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
 		TeamingEvents.INVOKE_NAME_COMPLETION_SETTINGS_DLG,
-		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
+		TeamingEvents.INVOKE_PRINCIPAL_DESKTOP_SETTINGS_DLG,
+		TeamingEvents.INVOKE_PRINCIPAL_MOBILE_SETTINGS_DLG,
 		TeamingEvents.INVOKE_MANAGE_MOBILE_DEVICES_DLG,
 		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
-		TeamingEvents.INVOKE_USER_DESKTOP_SETTINGS_DLG,
-		TeamingEvents.INVOKE_USER_MOBILE_SETTINGS_DLG,
+		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -2915,20 +2915,20 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
-	 * Handles the InvokeUserDesktopSettingsDlgEvent
+	 * Handles the InvokePrincipalDesktopSettingsDlgEvent
 	 */
 	@Override
-	public void onInvokeUserDesktopSettingsDlg( InvokeUserDesktopSettingsDlgEvent event )
+	public void onInvokePrincipalDesktopSettingsDlg( final InvokePrincipalDesktopSettingsDlgEvent event )
 	{
 		int x;
 		int y;
-		final List<Long> userIds;
+		final List<Long> principalIds;
 
 		// Get the position of the content control.
 		x = m_contentControlX;
 		y = m_contentControlY;
 		
-		userIds = event.getUserIds();
+		principalIds = event.getPrincipalIds();
 		
 		// Have we already created a "Configure User Desktop App" dialog?
 		if ( m_configureUserFileSyncAppDlg == null )
@@ -2966,7 +2966,7 @@ public class AdminControl extends TeamingPopupPanel
 						{
 							m_configureUserFileSyncAppDlg = cufsaDlg;
 							
-							m_configureUserFileSyncAppDlg.init( userIds );
+							m_configureUserFileSyncAppDlg.init( principalIds, event.getPrincipalsAreUsers() );
 							m_configureUserFileSyncAppDlg.show();
 						}
 					};
@@ -2977,27 +2977,27 @@ public class AdminControl extends TeamingPopupPanel
 		else
 		{
 			m_configureUserFileSyncAppDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_configureUserFileSyncAppDlg.init( userIds );
+			m_configureUserFileSyncAppDlg.init( principalIds, event.getPrincipalsAreUsers() );
 			m_configureUserFileSyncAppDlg.setPopupPosition( x, y );
 			m_configureUserFileSyncAppDlg.show();
 		}
 	}
 	
 	/**
-	 * Handles the InvokeUserMobileSettingsDlgEvent
+	 * Handles the InvokePrincipalMobileSettingsDlgEvent
 	 */
 	@Override
-	public void onInvokeUserMobileSettingsDlg( InvokeUserMobileSettingsDlgEvent event )
+	public void onInvokePrincipalMobileSettingsDlg( final InvokePrincipalMobileSettingsDlgEvent event )
 	{
 		int x;
 		int y;
-		final List<Long> userIds;
+		final List<Long> principalIds;
 
 		// Get the position of the content control.
 		x = m_contentControlX;
 		y = m_contentControlY;
 		
-		userIds = event.getUserIds();
+		principalIds = event.getPrincipalIds();
 		
 		// Have we already created a "Configure User Mobile Apps" dialog?
 		if ( m_configureUserMobileAppsDlg == null )
@@ -3035,7 +3035,7 @@ public class AdminControl extends TeamingPopupPanel
 						{
 							m_configureUserMobileAppsDlg = cumaDlg;
 							
-							m_configureUserMobileAppsDlg.init( userIds );
+							m_configureUserMobileAppsDlg.init( principalIds, event.getPrincipalsAreUsers() );
 							m_configureUserMobileAppsDlg.show();
 						}
 					};
@@ -3046,7 +3046,7 @@ public class AdminControl extends TeamingPopupPanel
 		else
 		{
 			m_configureUserMobileAppsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_configureUserMobileAppsDlg.init( userIds );
+			m_configureUserMobileAppsDlg.init( principalIds, event.getPrincipalsAreUsers() );
 			m_configureUserMobileAppsDlg.setPopupPosition( x, y );
 			m_configureUserMobileAppsDlg.show();
 		}

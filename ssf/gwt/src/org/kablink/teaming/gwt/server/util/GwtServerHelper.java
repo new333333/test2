@@ -157,12 +157,12 @@ import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtNameCompletionSettings;
 import org.kablink.teaming.gwt.client.GwtNameCompletionSettings.GwtDisplayField;
+import org.kablink.teaming.gwt.client.GwtPrincipalFileSyncAppConfig;
+import org.kablink.teaming.gwt.client.GwtPrincipalMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtTimeZones;
 import org.kablink.teaming.gwt.client.GwtUser.ExtUserProvState;
-import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
-import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
@@ -204,8 +204,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveUserFileSyncAppConfigRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersStateRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUserSharingRightsInfoCmd.CombinedPerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
@@ -8415,20 +8415,21 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Return a GwtUserFileSyncAppConfig object that holds the file sync app configuration data
+	 * Return a GwtPrincipalFileSyncAppConfig object that holds the
+	 * file sync app configuration data
 	 * 
 	 * @param bs
-	 * @param userId
+	 * @param principalId
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static GwtUserFileSyncAppConfig getUserFileSyncAppConfig(AllModulesInjected bs, Long userId) throws GwtTeamingException {
+	public static GwtPrincipalFileSyncAppConfig getPrincipalFileSyncAppConfig(AllModulesInjected bs, Long principalId) throws GwtTeamingException {
 		try {
-			PrincipalDesktopAppsConfig pConfig = bs.getProfileModule().getPrincipalDesktopAppsConfig(userId);
+			PrincipalDesktopAppsConfig pConfig = bs.getProfileModule().getPrincipalDesktopAppsConfig(principalId);
 			
-			GwtUserFileSyncAppConfig reply = new GwtUserFileSyncAppConfig();
+			GwtPrincipalFileSyncAppConfig reply = new GwtPrincipalFileSyncAppConfig();
 			boolean useDefault = pConfig.getUseDefaultSettings();
 			reply.setUseGlobalSettings(useDefault);
 			if (!useDefault) {
@@ -8446,7 +8447,7 @@ public class GwtServerHelper {
 				GwtLogHelper.getGwtClientException(
 					m_logger,
 					ex,
-					"GwtServerHelper.getUserFileSyncAppConfig( SOURCE EXCEPTION ):  ");
+					"GwtServerHelper.getPrincipalFileSyncAppConfig( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -8471,20 +8472,22 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Return a GwtUserMobileAppsConfig object that holds the mobile apps configuration data
+	 * Return a GwtPrincipalMobileAppsConfig object that holds the
+	 * mobile application configuration data for the given user or
+	 * group.
 	 * 
 	 * @param bs
-	 * @param userId
+	 * @param principalId
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static GwtUserMobileAppsConfig getUserMobileAppsConfig(AllModulesInjected bs, Long userId) throws GwtTeamingException {
+	public static GwtPrincipalMobileAppsConfig getPrincipalMobileAppsConfig(AllModulesInjected bs, Long principalId) throws GwtTeamingException {
 		try {
-			PrincipalMobileAppsConfig pConfig = bs.getProfileModule().getPrincipalMobileAppsConfig(userId);
+			PrincipalMobileAppsConfig pConfig = bs.getProfileModule().getPrincipalMobileAppsConfig(principalId);
 			
-			GwtUserMobileAppsConfig reply = new GwtUserMobileAppsConfig();
+			GwtPrincipalMobileAppsConfig reply = new GwtPrincipalMobileAppsConfig();
 			boolean useDefault = pConfig.getUseDefaultSettings();
 			reply.setUseGlobalSettings(useDefault);
 			if (!useDefault) {
@@ -8510,7 +8513,7 @@ public class GwtServerHelper {
 				GwtLogHelper.getGwtClientException(
 					m_logger,
 					ex,
-					"GwtServerHelper.getUserMobileAppsConfig( SOURCE EXCEPTION ):  ");
+					"GwtServerHelper.getPrincipalMobileAppsConfig( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -9887,6 +9890,8 @@ public class GwtServerHelper {
 		case GET_PARENT_BINDER_PERMALINK:
 		case GET_PERSONAL_PREFERENCES:
 		case GET_PRESENCE_INFO:
+		case GET_PRINCIPAL_FILE_SYNC_APP_CONFIG:
+		case GET_PRINCIPAL_MOBILE_APPS_CONFIG:
 		case GET_PROFILE_AVATARS:
 		case GET_PROFILE_ENTRY_INFO:
 		case GET_PROFILE_INFO:
@@ -9930,8 +9935,6 @@ public class GwtServerHelper {
 		case GET_UPGRADE_INFO:
 		case GET_USER_ACCESS_CONFIG:
 		case GET_USER_AVATAR:
-		case GET_USER_FILE_SYNC_APP_CONFIG:
-		case GET_USER_MOBILE_APPS_CONFIG:
 		case GET_USER_PERMALINK:
 		case GET_USER_PROPERTIES:
 		case GET_USER_SHARING_RIGHTS_INFO:
@@ -9992,6 +9995,8 @@ public class GwtServerHelper {
 		case SAVE_MULTIPLE_WEBACCESS_SETTINGS:
 		case SAVE_NAME_COMPLETION_SETTINGS:
 		case SAVE_PERSONAL_PREFERENCES:
+		case SAVE_PRINCIPAL_FILE_SYNC_APP_CONFIG:
+		case SAVE_PRINCIPAL_MOBILE_APPS_CONFIGURATION:
 		case SAVE_SHARE_LISTS:
 		case SAVE_SHARED_FILES_STATE:
 		case SAVE_SHARED_VIEW_STATE:
@@ -10006,8 +10011,6 @@ public class GwtServerHelper {
 		case SAVE_SEARCH:
 		case SAVE_TAG_SORT_ORDER:
 		case SAVE_USER_ACCESS_CONFIG:
-		case SAVE_USER_FILE_SYNC_APP_CONFIG:
-		case SAVE_USER_MOBILE_APPS_CONFIGURATION:
 		case SAVE_WEBACCESS_SETTING:
 		case SAVE_WHATS_NEW_SETTINGS:
 		case SAVE_ZONE_SHARE_RIGHTS:
@@ -10811,17 +10814,18 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Save the given GwtUserFileSyncAppConfig settings for the given
-	 * users.
+	 * Save the given GwtPrincipalFileSyncAppConfig settings for the given
+	 * users or groups.
 	 * 
 	 * @param bs
 	 * @param config
-	 * @param userIds
+	 * @param principalIds
+	 * @param principalsAreUsers
 	 */
-	public static SaveUserFileSyncAppConfigRpcResponseData saveUserFileSyncAppConfig(AllModulesInjected bs, GwtUserFileSyncAppConfig config, List<Long> userIds) {
-		SaveUserFileSyncAppConfigRpcResponseData responseData = new SaveUserFileSyncAppConfigRpcResponseData();
-		if ((null == config) || (!(MiscUtil.hasItems(userIds)))) {
-			responseData.addError( "Invalid parameters passed to saveUserFileSyncAppConfig()" );
+	public static SavePrincipalFileSyncAppConfigRpcResponseData savePrincipalFileSyncAppConfig(AllModulesInjected bs, GwtPrincipalFileSyncAppConfig config, List<Long> principalIds, boolean principalsAreUsers) {
+		SavePrincipalFileSyncAppConfigRpcResponseData responseData = new SavePrincipalFileSyncAppConfigRpcResponseData();
+		if ((null == config) || (!(MiscUtil.hasItems(principalIds)))) {
+			responseData.addError( "Invalid parameters passed to savePrincipalFileSyncAppConfig()" );
 			return responseData;
 		}
 
@@ -10835,11 +10839,11 @@ public class GwtServerHelper {
 		}
 		
 		ProfileModule pm = bs.getProfileModule();
-		for (Long userId : userIds) {
+		for (Long userId : principalIds) {
 			try {
 				// We write them individually so that we can capture
 				// errors individually.
-				pm.savePrincipalDesktopAppsConfig(userId, true, pConfig);
+				pm.savePrincipalDesktopAppsConfig(userId, principalsAreUsers, pConfig);
 			}
 			
 			catch (Exception ex) {
@@ -10856,7 +10860,7 @@ public class GwtServerHelper {
 				// ...and log it.
 				GwtLogHelper.error(
 					m_logger,
-					"GwtServerHelper.saveUserFileSyncAppConfig( EXCEPTION ):  ",
+					"GwtServerHelper.savePrincipalFileSyncAppConfig( EXCEPTION ):  ",
 					ex);
 			}
 		}
@@ -10865,21 +10869,23 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Save the given GwtUserMobileAppsConfig settings for the given users.
+	 * Save the given GwtPrincipalMobileAppsConfig settings for the
+	 * given users or groups.
 	 *
 	 * @param bs
 	 * @param config
-	 * @param userIds
+	 * @param principalIds
+	 * @param principalsAreUsers
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static SaveUserMobileAppsConfigRpcResponseData saveUserMobileAppsConfig(AllModulesInjected bs, GwtUserMobileAppsConfig config, List<Long> userIds) throws GwtTeamingException {
+	public static SavePrincipalMobileAppsConfigRpcResponseData savePrincipalMobileAppsConfig(AllModulesInjected bs, GwtPrincipalMobileAppsConfig config, List<Long> principalIds, boolean principalsAreUsers) throws GwtTeamingException {
 		try {
-			SaveUserMobileAppsConfigRpcResponseData responseData = new SaveUserMobileAppsConfigRpcResponseData();
-			if ((null == config) || (!(MiscUtil.hasItems(userIds)))) {
-				responseData.addError("Invalid parameters passed to saveUserMobileAppsConfig()");
+			SavePrincipalMobileAppsConfigRpcResponseData responseData = new SavePrincipalMobileAppsConfigRpcResponseData();
+			if ((null == config) || (!(MiscUtil.hasItems(principalIds)))) {
+				responseData.addError("Invalid parameters passed to savePrincipalMobileAppsConfig()");
 				return responseData;
 			}
 
@@ -10903,16 +10909,16 @@ public class GwtServerHelper {
 			}
 
 			ProfileModule pm = bs.getProfileModule();
-			for (Long userId:  userIds) {
+			for (Long pId:  principalIds) {
 				try {
 					// We write them individually so that we can capture
 					// errors individually.
-					pm.savePrincipalMobileAppsConfig(userId, true, pConfig);
+					pm.savePrincipalMobileAppsConfig(pId, principalsAreUsers, pConfig);
 				}
 				
 				catch (Exception ex) {
 					// Save the error in the response...
-					User user = ((User) pm.getEntry(userId));
+					User user = ((User) pm.getEntry(pId));
 					String cause;
 					if (user.isDisabled())
 					     cause = NLT.get("save.user.mobile.app.config.error.disabled.user");
@@ -10924,7 +10930,7 @@ public class GwtServerHelper {
 					// ...and log it.
 					GwtLogHelper.error(
 						m_logger,
-						"GwtServerHelper.saveUserMobileAppConfig( EXCEPTION ):  ",
+						"GwtServerHelper.savePrincipalMobileAppConfig( EXCEPTION ):  ",
 						ex);
 				}
 			}
@@ -10939,7 +10945,7 @@ public class GwtServerHelper {
 				GwtLogHelper.getGwtClientException(
 					m_logger,
 					ex,
-					"GwtServerHelper.saveUserMobileAppsConfig( SOURCE EXCEPTION ):  ");
+					"GwtServerHelper.savePrincipalMobileAppsConfig( SOURCE EXCEPTION ):  ");
 		}
 	}
 	

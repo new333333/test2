@@ -88,8 +88,8 @@ import org.kablink.teaming.gwt.client.GwtTimeZones;
 import org.kablink.teaming.gwt.client.NetFolderSyncStatistics;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
-import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
-import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
+import org.kablink.teaming.gwt.client.GwtPrincipalMobileAppsConfig;
+import org.kablink.teaming.gwt.client.GwtPrincipalFileSyncAppConfig;
 import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
@@ -2007,6 +2007,28 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_PRINCIPAL_FILE_SYNC_APP_CONFIG:
+		{
+			GwtPrincipalFileSyncAppConfig config;
+			GetPrincipalFileSyncAppConfigCmd gpfsacCmd;
+
+			gpfsacCmd = (GetPrincipalFileSyncAppConfigCmd) cmd;
+			config = GwtServerHelper.getPrincipalFileSyncAppConfig( this, gpfsacCmd.getPrincipalId() );
+			response = new VibeRpcResponse( config );
+			return response;
+		}
+		
+		case GET_PRINCIPAL_MOBILE_APPS_CONFIG:
+		{
+			GwtPrincipalMobileAppsConfig config;
+			GetPrincipalMobileAppsConfigCmd gpmacCmd;
+
+			gpmacCmd = (GetPrincipalMobileAppsConfigCmd) cmd;
+			config = GwtServerHelper.getPrincipalMobileAppsConfig( this, gpmacCmd.getPrincipalId() );
+			response = new VibeRpcResponse( config );
+			return response;
+		}
+		
 		case GET_PROFILE_AVATARS:
 		{
 			GetProfileAvatarsCmd gpaCmd;
@@ -2485,28 +2507,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 			responseData = new StringRpcResponseData( url );
 			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_USER_FILE_SYNC_APP_CONFIG:
-		{
-			GwtUserFileSyncAppConfig config;
-			GetUserFileSyncAppConfigCmd gufsacCmd;
-
-			gufsacCmd = (GetUserFileSyncAppConfigCmd) cmd;
-			config = GwtServerHelper.getUserFileSyncAppConfig( this, gufsacCmd.getUserId() );
-			response = new VibeRpcResponse( config );
-			return response;
-		}
-		
-		case GET_USER_MOBILE_APPS_CONFIG:
-		{
-			GwtUserMobileAppsConfig config;
-			GetUserMobileAppsConfigCmd gumacCmd;
-
-			gumacCmd = (GetUserMobileAppsConfigCmd) cmd;
-			config = GwtServerHelper.getUserMobileAppsConfig( this, gumacCmd.getUserId() );
-			response = new VibeRpcResponse( config );
 			return response;
 		}
 		
@@ -3276,6 +3276,36 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_PRINCIPAL_FILE_SYNC_APP_CONFIG:
+		{
+			SavePrincipalFileSyncAppConfigCmd spfsacCmd;
+			SavePrincipalFileSyncAppConfigRpcResponseData result;
+			
+			spfsacCmd = ((SavePrincipalFileSyncAppConfigCmd) cmd);
+			result = GwtServerHelper.savePrincipalFileSyncAppConfig(
+															this,
+															spfsacCmd.getConfig(),
+															spfsacCmd.getPrincipalIds(),
+															spfsacCmd.getPrincipalsAreUsers() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case SAVE_PRINCIPAL_MOBILE_APPS_CONFIGURATION:
+		{
+			SavePrincipalMobileAppsConfigCmd spmacCmd;
+			SavePrincipalMobileAppsConfigRpcResponseData result;
+			
+			spmacCmd = ((SavePrincipalMobileAppsConfigCmd) cmd);
+			result = GwtServerHelper.savePrincipalMobileAppsConfig(
+															this,
+															spmacCmd.getConfig(),
+															spmacCmd.getPrincipalIds(),
+															spmacCmd.getPrincipalsAreUsers());
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case SAVE_SEARCH:
 		{
 			SaveSearchCmd ssCmd = ((SaveSearchCmd) cmd);
@@ -3307,34 +3337,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = GwtServerHelper.saveUserAccessConfig( this, suacCmd.getConfig() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case SAVE_USER_FILE_SYNC_APP_CONFIG:
-		{
-			SaveUserFileSyncAppConfigCmd sufsacCmd;
-			SaveUserFileSyncAppConfigRpcResponseData result;
-			
-			sufsacCmd = ((SaveUserFileSyncAppConfigCmd) cmd);
-			result = GwtServerHelper.saveUserFileSyncAppConfig(
-															this,
-															sufsacCmd.getConfig(),
-															sufsacCmd.getUserIds() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
-		case SAVE_USER_MOBILE_APPS_CONFIGURATION:
-		{
-			SaveUserMobileAppsConfigCmd sumacCmd;
-			SaveUserMobileAppsConfigRpcResponseData result;
-			
-			sumacCmd = ((SaveUserMobileAppsConfigCmd) cmd);
-			result = GwtServerHelper.saveUserMobileAppsConfig(
-															this,
-															sumacCmd.getConfig(),
-															sumacCmd.getUserIds() );
-			response = new VibeRpcResponse( result );
 			return response;
 		}
 		

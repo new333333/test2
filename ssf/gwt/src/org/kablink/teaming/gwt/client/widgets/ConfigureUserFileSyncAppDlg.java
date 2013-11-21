@@ -38,10 +38,10 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
-import org.kablink.teaming.gwt.client.rpc.shared.GetUserFileSyncAppConfigCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveUserFileSyncAppConfigCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveUserFileSyncAppConfigRpcResponseData;
+import org.kablink.teaming.gwt.client.GwtPrincipalFileSyncAppConfig;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPrincipalFileSyncAppConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -69,14 +69,16 @@ import com.google.gwt.user.client.ui.RadioButton;
 public class ConfigureUserFileSyncAppDlg extends DlgBox
 	implements EditSuccessfulHandler
 {
+	private boolean m_principalsAreUsers;
+	
 	private RadioButton m_useGlobalSettingsRB;
 	private RadioButton m_useUserSettingsRB;
 	private CheckBox m_enableFileSyncAccessCB;
 	private CheckBox m_allowPwdCacheCB;
 
-	private List<Long> m_userIds;
-	private ArrayList<Long> m_listOfRemainingUserIds;	// This is the list we draw from when we are saving the config.
-	private ArrayList<Long> m_nextBatchOfUserIds;
+	private List<Long> m_principalIds;
+	private ArrayList<Long> m_listOfRemainingPrincipalIds;	// This is the list we draw from when we are saving the config.
+	private ArrayList<Long> m_nextBatchOfPrincipalIds;
 	
 	private static int BATCH_SIZE = 10;
 
@@ -190,12 +192,12 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 	@Override
 	public boolean editSuccessful( Object obj )
 	{
-		if ( m_userIds != null && m_userIds.size() > 0 )
+		if ( m_principalIds != null && m_principalIds.size() > 0 )
 		{
-			final GwtUserFileSyncAppConfig config;
+			final GwtPrincipalFileSyncAppConfig config;
 			Scheduler.ScheduledCommand cmd;
 
-			config = (GwtUserFileSyncAppConfig) obj;
+			config = (GwtPrincipalFileSyncAppConfig) obj;
 
 			cmd = new Scheduler.ScheduledCommand()
 			{
@@ -205,22 +207,22 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 					clearErrorPanel();
 					hideErrorPanel();
 					
-					// We save the config for users in a batch of 10.  m_listOfRemainingUserIds
+					// We save the config for users in a batch of 10.  m_listOfRemainingPrincipalIds
 					// is the list we work from.
-					if ( m_listOfRemainingUserIds == null )
-						m_listOfRemainingUserIds = new ArrayList<Long>();
+					if ( m_listOfRemainingPrincipalIds == null )
+						m_listOfRemainingPrincipalIds = new ArrayList<Long>();
 					else
-						m_listOfRemainingUserIds.clear();
-					for ( Long userId : m_userIds )
+						m_listOfRemainingPrincipalIds.clear();
+					for ( Long pId : m_principalIds )
 					{
-						m_listOfRemainingUserIds.add( userId );
+						m_listOfRemainingPrincipalIds.add( pId );
 					}
 					
 					// Disable the Ok button.
 					setOkEnabled( false );
 
 					// Issue an rpc request to save the config for the first n users.
-					saveConfigForNextBatchOfUsers( config );
+					saveConfigForNextBatchOfPrincipals( config );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
@@ -245,9 +247,9 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		GwtUserFileSyncAppConfig config;
+		GwtPrincipalFileSyncAppConfig config;
 		
-		config = new GwtUserFileSyncAppConfig();
+		config = new GwtPrincipalFileSyncAppConfig();
 		
 		// Get whether to use the global settings
 		config.setUseGlobalSettings( getUseGlobalSettings() );
@@ -283,28 +285,28 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 	}
 	
 	/**
-	 * Get the list of the next n userIds
+	 * Get the list of the next n principalIds
 	 */
-	private ArrayList<Long> getNextBatchOfUserIds()
+	private ArrayList<Long> getNextBatchOfPrincipalIds()
 	{
-		if ( m_listOfRemainingUserIds != null && m_listOfRemainingUserIds.size() > 0 )
+		if ( m_listOfRemainingPrincipalIds != null && m_listOfRemainingPrincipalIds.size() > 0 )
 		{
 			int cnt;
 			
-			if ( m_nextBatchOfUserIds == null )
-				m_nextBatchOfUserIds = new ArrayList<Long>();
+			if ( m_nextBatchOfPrincipalIds == null )
+				m_nextBatchOfPrincipalIds = new ArrayList<Long>();
 			else
-				m_nextBatchOfUserIds.clear();
+				m_nextBatchOfPrincipalIds.clear();
 			
-			for ( cnt = 0; cnt < BATCH_SIZE && m_listOfRemainingUserIds.size() > 0; ++cnt )
+			for ( cnt = 0; cnt < BATCH_SIZE && m_listOfRemainingPrincipalIds.size() > 0; ++cnt )
 			{
-				m_nextBatchOfUserIds.add( m_listOfRemainingUserIds.get( 0 ) );
+				m_nextBatchOfPrincipalIds.add( m_listOfRemainingPrincipalIds.get( 0 ) );
 				
 				// Remove this user id from the working list.
-				m_listOfRemainingUserIds.remove( 0 );
+				m_listOfRemainingPrincipalIds.remove( 0 );
 			}
 			
-			return m_nextBatchOfUserIds;
+			return m_nextBatchOfPrincipalIds;
 		}
 		
 		return null;
@@ -321,11 +323,11 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init( List<Long> userIds )
+	public void init( List<Long> principalIds, boolean principalsAreUsers )
 	{
 		AsyncCallback<VibeRpcResponse> rpcReadCallback;
 		
-		if ( userIds == null )
+		if ( principalIds == null )
 			return;
 
 		clearErrorPanel();
@@ -333,9 +335,10 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 		hideStatusMsg();
 		setOkEnabled( true );
 
-		m_userIds = userIds;
+		m_principalIds = principalIds;
+		m_principalsAreUsers = principalsAreUsers;
 		
-		setCaption( GwtTeaming.getMessages().configureUserFileSyncAppDlgHeader( String.valueOf( userIds.size() ) ) );
+		setCaption( GwtTeaming.getMessages().configureUserFileSyncAppDlgHeader( String.valueOf( principalIds.size() ) ) );
 		
 		// Create a callback that will be called when we get the file sync configuration.
 		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
@@ -358,9 +361,9 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 			public void onSuccess( VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
-				final GwtUserFileSyncAppConfig config;
+				final GwtPrincipalFileSyncAppConfig config;
 				
-				config = (GwtUserFileSyncAppConfig) response.getResponseData();
+				config = (GwtPrincipalFileSyncAppConfig) response.getResponseData();
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
@@ -376,18 +379,18 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 
 		// If we are only dealing with 1 user, issue an ajax request to get the
 		// User's file sync app configuration.
-		if ( userIds.size() == 1 )
+		if ( principalIds.size() == 1 )
 		{
-			GetUserFileSyncAppConfigCmd cmd;
+			GetPrincipalFileSyncAppConfigCmd cmd;
 			
 			// Issue an ajax request to get the user's file sync app configuration from the db.
-			cmd = new GetUserFileSyncAppConfigCmd();
-			cmd.setUserId( userIds.get( 0 ) );
+			cmd = new GetPrincipalFileSyncAppConfigCmd();
+			cmd.setPrincipalId( principalIds.get( 0 ) );
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
 		else
 		{
-			GwtUserFileSyncAppConfig config = null;
+			GwtPrincipalFileSyncAppConfig config = null;
 			
 			init( config );
 		}
@@ -396,7 +399,7 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 	/**
 	 * Initialize the controls in the dialog with the values from the given values.
 	 */
-	private void init( GwtUserFileSyncAppConfig config )
+	private void init( GwtPrincipalFileSyncAppConfig config )
 	{
 		if ( config != null )
 		{
@@ -423,16 +426,16 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 	/**
 	 * Issue an rpc request to save the config for the next n users.
 	 */
-	private void saveConfigForNextBatchOfUsers( final GwtUserFileSyncAppConfig config )
+	private void saveConfigForNextBatchOfPrincipals( final GwtPrincipalFileSyncAppConfig config )
 	{
-		ArrayList<Long> userIds;
+		ArrayList<Long> principalIds;
 
-		// Get the next batch of user ids
-		userIds = getNextBatchOfUserIds();
-		if ( userIds != null && userIds.size() > 0 )
+		// Get the next batch of principal IDs.
+		principalIds = getNextBatchOfPrincipalIds();
+		if ( principalIds != null && principalIds.size() > 0 )
 		{
 			AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
-			SaveUserFileSyncAppConfigCmd cmd;
+			SavePrincipalFileSyncAppConfigCmd cmd;
 
 			// Update the Saving n of nn message
 			updateStatusMsg();
@@ -480,13 +483,13 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 					VibeRpcResponseData data;
 					
 					data = response.getResponseData();
-					if ( data instanceof SaveUserFileSyncAppConfigRpcResponseData )
+					if ( data instanceof SavePrincipalFileSyncAppConfigRpcResponseData )
 					{
-						SaveUserFileSyncAppConfigRpcResponseData responseData;
+						SavePrincipalFileSyncAppConfigRpcResponseData responseData;
 						ArrayList<String> errors;
 						
 						// Get any errors that may have happened
-						responseData = (SaveUserFileSyncAppConfigRpcResponseData) data;
+						responseData = (SavePrincipalFileSyncAppConfigRpcResponseData) data;
 						errors = responseData.getErrors();
 						if ( errors != null && errors.size() > 0 )
 						{
@@ -524,7 +527,7 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 						{
 							// Call this method again to see if there are any users that we need
 							// to save the config for.
-							saveConfigForNextBatchOfUsers( config );
+							saveConfigForNextBatchOfPrincipals( config );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -533,7 +536,7 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 
 			// Issue an ajax request to save the user's file sync app configuration to the db.  rpcSaveCallback will
 			// be called when we get the response back.
-			cmd = new SaveUserFileSyncAppConfigCmd( config, userIds );
+			cmd = new SavePrincipalFileSyncAppConfigCmd( config, principalIds, m_principalsAreUsers );
 			GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
 		}
 		else
@@ -559,14 +562,14 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 	 */
 	private void updateStatusMsg()
 	{
-		if ( m_userIds != null && m_listOfRemainingUserIds != null )
+		if ( m_principalIds != null && m_listOfRemainingPrincipalIds != null )
 		{
 			String msg;
 			int total;
 			int remaining;
 
-			total = m_userIds.size();
-			remaining = m_listOfRemainingUserIds.size();
+			total = m_principalIds.size();
+			remaining = m_listOfRemainingPrincipalIds.size();
 			msg = GwtTeaming.getMessages().configureUserFileSyncDlgSaving(
 																		String.valueOf( total-remaining ),
 																		String.valueOf( total ) );

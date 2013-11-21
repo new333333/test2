@@ -41,11 +41,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * This class is used to hold the Mobile applications Configuration
- * data stored in a user's properties.
+ * data stored in a user's or group's UserProperties.
  * 
  * @author jwootton
  */
-public class GwtUserMobileAppsConfig
+public class GwtPrincipalMobileAppsConfig
 	implements IsSerializable, VibeRpcResponseData
 {
 	private boolean m_useGlobalSettings;
@@ -66,7 +66,7 @@ public class GwtUserMobileAppsConfig
 	/**
 	 * 
 	 */
-	public GwtUserMobileAppsConfig()
+	public GwtPrincipalMobileAppsConfig()
 	{
 	}
 
