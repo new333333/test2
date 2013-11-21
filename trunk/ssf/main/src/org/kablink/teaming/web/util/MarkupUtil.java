@@ -1183,7 +1183,7 @@ public class MarkupUtil {
 			        	titleLink.append(builder.getImagesRootUrl()).append("pics/media.gif) no-repeat center;\">");
 			        	titleLink.append("&nbsp;</a>");
 			        	titleLink.append("</a>");
-			    	} else if (s_url.startsWith("http://www.youtube.com/")) {
+			    	} else if (s_url.startsWith("http://www.youtube.com/") || s_url.startsWith("https://www.youtube.com/")) {
 			    		if (checkIfMobile(req, httpReq)) {
 				    		titleLink.append("<div>\n");
 				    		titleLink.append("<a href=\"");
@@ -1229,10 +1229,14 @@ public class MarkupUtil {
 				    		titleLink.append("//ss_createSpannedAreaObj(\"ss_videoDiv"+id.toString()+"\");\n");
 				    		titleLink.append("</script>\n");
 			    		}
-			    	} else if (s_url.startsWith("http://youtu.be/")) {
+			    	} else if (s_url.startsWith("http://youtu.be/") || s_url.startsWith("https://youtu.be/")) {
 			    		Integer id = ++youtubeDivId;
 			    		//Make this into an embed URL
-			    		s_url = s_url.replaceFirst("http://youtu.be/", "http://www.youtube.com/embed/");
+			    		if (s_url.startsWith("http://youtu.be/")) {
+			    			s_url = s_url.replaceFirst("http://youtu.be/", "http://www.youtube.com/embed/");
+			    		} else {
+			    			s_url = s_url.replaceFirst("https://youtu.be/", "https://www.youtube.com/embed/");
+			    		}
 			    		titleLink.append("<div id=\"youTubeIFrame" + id.toString() + "\"></div>");
 			        	//We have to set the iframe src after the page loads to avoid youtube wiping out following content
 			        	titleLink.append("\n<script type=\"text/javascript\">\n");
