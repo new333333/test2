@@ -104,7 +104,6 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
-import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
@@ -116,6 +115,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -2454,9 +2454,9 @@ public class GwtMenuHelper {
 		ToolbarItem manageGroupTBI;
 		if (Utils.checkIfFilr()) {
 			// Yes!  Add whether adHoc folders are accessible.
-			Boolean adHocFlag = SearchUtils.getAdhocFolderSettingFromUserOrGroup(bs, groupId);
+			Boolean adHocFlag = AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, groupId);
 			if (null == adHocFlag) {
-				adHocFlag = SearchUtils.getAdhocFolderSettingFromZone(bs);
+				adHocFlag = AdminHelper.getAdhocFolderSettingFromZone(bs);
 			}
 			boolean hasAdHocFolders = adHocFlag;
 			boolean perGroupAdHoc   = (null != group.isAdHocFoldersEnabled());
@@ -2493,9 +2493,9 @@ public class GwtMenuHelper {
 			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 	
 			// Add whether files can be downloaded.
-			Boolean dlFlag = SearchUtils.getDownloadSettingFromUserOrGroup(bs, groupId);
+			Boolean dlFlag = AdminHelper.getDownloadSettingFromUserOrGroup(bs, groupId);
 			if (null == dlFlag) {
-				dlFlag = SearchUtils.getDownloadSettingFromZone(bs);
+				dlFlag = AdminHelper.getDownloadSettingFromZone(bs);
 			}
 			boolean canDownload      = dlFlag;
 			boolean perGroupDownload = (null != group.isDownloadEnabled());
@@ -2532,9 +2532,9 @@ public class GwtMenuHelper {
 		}
 
 		// Add whether web access is enabled.
-		Boolean waFlag = SearchUtils.getWebAccessSettingFromUserOrGroup(bs, groupId);
+		Boolean waFlag = AdminHelper.getWebAccessSettingFromUserOrGroup(bs, groupId);
 		if (null == waFlag) {
-			waFlag = SearchUtils.getWebAccessSettingFromZone(bs);
+			waFlag = AdminHelper.getWebAccessSettingFromZone(bs);
 		}
 		boolean hasWebAccess      = waFlag;
 		boolean perGroupWebAccess = (null != group.isWebAccessEnabled());

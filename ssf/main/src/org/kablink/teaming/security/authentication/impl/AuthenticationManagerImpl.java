@@ -82,6 +82,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.api.ApiErrorCode;
@@ -332,7 +333,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 
 			// If this authentication is from the web client for a user
 			// that's restricted from using the web client...
-			if (webClient && (!(SearchUtils.getEffectiveWebAccessSetting(adminModule, profileModule, user)))) {
+			if (webClient && (!(AdminHelper.getEffectiveWebAccessSetting(adminModule, profileModule, user)))) {
 				// ...don't allow things to proceed.
 				UserAccountNotActiveException uaEx = new UserAccountNotActiveException(NLT.get("error.webAccessRestricted"));
 				uaEx.setApiErrorCode(ApiErrorCode.USERACCOUNT_WEBACCESS_BLOCKED);

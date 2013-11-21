@@ -80,6 +80,7 @@ import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.HttpHeaders;
@@ -1434,7 +1435,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected Boolean getEffectivePublicCollectionSetting(org.kablink.teaming.domain.User user) {
-        return SearchUtils.getEffectivePublicCollectionSetting(this, user);
+        return AdminHelper.getEffectivePublicCollectionSetting(this, user);
     }
 
     protected BinderBrief getFakeMyFileFolders() {
