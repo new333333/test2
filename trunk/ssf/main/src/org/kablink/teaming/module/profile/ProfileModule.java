@@ -71,6 +71,8 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
+import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 
 /**
  * ?
@@ -368,6 +370,13 @@ public interface ProfileModule {
      */
     public UserProperties getUserProperties(Long userId, Long folderId);
     
+	/**
+	 * Return general user properties
+	 * @param groupId
+	 * @return
+	 */
+    public UserProperties getGroupProperties(Long groupId);
+    
     /**
      * Get user by name
      * @param name
@@ -511,6 +520,24 @@ public interface ProfileModule {
      * @return
      */
     public UserProperties setUserProperties(Long userId, Map<String, Object> values);
+    
+    /**
+     * Set a general user property.
+     * @param groupId
+     * @param property
+     * @param value - null to remove value
+     * @return
+     */
+    public UserProperties setGroupProperty(Long groupId, String property, Object value);
+    /**
+     * Refer to {@link #setUserProperty(Long, String, Object) setUserProperty}
+     * This is an optimization to set multiple properties in 1 transaction.
+     * @param groupId
+     * @param values
+     * @return
+     */
+    public UserProperties setGroupProperties(Long groupId, Map<String, Object> values);
+    
     /**
      * Mark an entry as seen
      * @param userId
@@ -887,4 +914,48 @@ public interface ProfileModule {
      * @param
      */
     public void setMobileDevices(Long userId, MobileDevices mobileDevices);
+    
+    /**
+     * Returns a PrincipalMobileAppsConfig for the user or group as
+     * read from its UserProperties.
+     * 
+     * @param principalId
+     * 
+     * @return
+     */
+    public PrincipalMobileAppsConfig getPrincipalMobileAppsConfig(Long principalId);
+    
+    /**
+     * Returns a PrincipalDesktopAppsConfig for the user or group as
+     * read from its UserProperties.
+     * 
+     * @param principalId
+     * 
+     * @return
+     */
+    public PrincipalDesktopAppsConfig getPrincipalDesktopAppsConfig(Long principalId);
+
+    /**
+     * Writes the settings from a PrincipalMobileAppsConfig to the
+     * user's or group's UserProperties.
+     * 
+     * @param principalId
+     * @param principalsAreUsers 
+     * 
+     * @param pConfig
+     */
+    public void savePrincipalMobileAppsConfig(Long       principalId,  boolean principalIsUser,    PrincipalMobileAppsConfig config);
+    public void savePrincipalMobileAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalMobileAppsConfig config);
+    
+    /**
+     * Writes the settings from a PrincipalMobileAppsConfig to the
+     * user's or group's UserProperties.
+     * 
+     * @param principalId
+     * @param principalsAreUsers 
+     * 
+     * @param pConfig
+     */
+    public void savePrincipalDesktopAppsConfig(Long       principalId,  boolean principalIsUser,    PrincipalDesktopAppsConfig config);
+    public void savePrincipalDesktopAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalDesktopAppsConfig config);
 }
