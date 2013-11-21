@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.MastheadUnhighlightAllActionsEvent;
 import org.kablink.teaming.gwt.client.event.PublicCollectionStateChangedEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
@@ -73,6 +74,7 @@ public class FilrActionsCtrl extends Composite
 		ClickHandler,
 		ContextChangedEvent.Handler,
 		GetSidebarCollectionEvent.Handler,
+		MastheadUnhighlightAllActionsEvent.Handler,
 		PublicCollectionStateChangedEvent.Handler
 {
 	private FilrAction m_selectedAction;
@@ -92,6 +94,7 @@ public class FilrActionsCtrl extends Composite
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
 		TeamingEvents.CONTEXT_CHANGED,
 		TeamingEvents.GET_SIDEBAR_COLLECTION,
+		TeamingEvents.MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS,
 		TeamingEvents.PUBLIC_COLLECTION_STATE_CHANGED,
 	};
 
@@ -360,7 +363,7 @@ public class FilrActionsCtrl extends Composite
 	}
 	
 	/**
-	 * 
+	 * This method is called when the user clicks on an action
 	 */
 	@Override
 	public void onClick( ClickEvent event )
@@ -373,6 +376,9 @@ public class FilrActionsCtrl extends Composite
 			final FilrAction action;
 			Scheduler.ScheduledCommand cmd;
 
+			// Unhighlight all actions in the mast head
+			MastheadUnhighlightAllActionsEvent.fireOne();
+			
 			action = (FilrAction) src;
 
 			cmd = new Scheduler.ScheduledCommand()
@@ -399,6 +405,9 @@ public class FilrActionsCtrl extends Composite
 	 */
 	@Override
 	public void onActivityStreamExit(ActivityStreamExitEvent event) {
+		// Highlight the previously selected action.
+		if ( m_selectedAction != null )
+			m_selectedAction.setIsSelected( true );
 	}
 
 	/**
@@ -493,6 +502,15 @@ public class FilrActionsCtrl extends Composite
 	}
 
 	/**
+	 * Handles the MastheadUnhighlightAllActionsEvent received by this class.
+	 */
+	@Override
+	public void onMastheadUnhighlightAllActions( MastheadUnhighlightAllActionsEvent event )
+	{
+		unhighlightAllActions();
+	}
+
+	/**
 	 * Handles PublicCollectionStateChangedEvent's received by this class.
 	 * 
 	 * Implements the PublicCollectionStateChangedEvent.Handler.onPublicCollectionStateChanged() method.
@@ -545,5 +563,26 @@ public class FilrActionsCtrl extends Composite
 				filrAction.setFontColor( fontColor );
 			}
 		}
+	}
+	
+	/**
+	 * Unhighlight all actions
+	 */
+	private void unhighlightAllActions()
+	{
+		if ( m_myFilesAction != null )
+			m_myFilesAction.setIsSelected( false );
+		
+		if ( m_sharedWithMeAction != null )
+			m_sharedWithMeAction.setIsSelected( false );
+		
+		if ( m_netFoldersAction != null )
+			m_netFoldersAction.setIsSelected( false );
+		
+		if ( m_sharedByMeAction != null )
+			m_sharedByMeAction.setIsSelected( false );
+		
+		if ( m_sharedPublicAction != null )
+			m_sharedPublicAction.setIsSelected( false );
 	}
 }

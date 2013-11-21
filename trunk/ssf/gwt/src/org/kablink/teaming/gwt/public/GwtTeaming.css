@@ -2783,8 +2783,6 @@ body, table td, select
 	position: absolute;
 	left: 10px;
 	bottom: 0px;
-	background-image: url(images/trans15_black.png);
-	background-repeat: repeat;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
@@ -2799,8 +2797,6 @@ body, table td, select
 	position: absolute;
 	left: 60px;
 	bottom: 0px;
-	background-image: url(images/trans15_black.png);
-	background-repeat: repeat;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
@@ -2815,8 +2811,6 @@ body, table td, select
 	position: absolute;
 	left: 110px;
 	bottom: 0px;
-	background-image: url(images/trans15_black.png);
-	background-repeat: repeat;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
