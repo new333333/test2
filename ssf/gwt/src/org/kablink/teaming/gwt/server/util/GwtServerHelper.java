@@ -324,6 +324,7 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Clipboard;
 import org.kablink.teaming.web.util.EmailHelper;
@@ -736,7 +737,7 @@ public class GwtServerHelper {
 			addCollection(bs, request, userWS, ti, CollectionType.SHARED_BY_ME,   true );
 			addCollection(bs, request, userWS, ti, CollectionType.NET_FOLDERS,    false);
 		}
-		if (GwtUIHelper.getEffectivePublicCollectionSetting(bs, user)) {
+		if (AdminHelper.getEffectivePublicCollectionSetting(bs, user)) {
 			addCollection(bs, request, userWS, ti, CollectionType.SHARED_PUBLIC,  false);
 		}
 	}
@@ -7605,11 +7606,11 @@ public class GwtServerHelper {
 				personalPrefs.setNumEntriesPerPage(numEntriesPerPage);
 
 				// Set whether the user can download files.
-				personalPrefs.setCanDownload(GwtUIHelper.getEffectiveDownloadSetting(bs, user));
+				personalPrefs.setCanDownload(AdminHelper.getEffectiveDownloadSetting(bs, user));
 				
 				// Get the action to take when a file link is
 				// activated.
-				personalPrefs.setFileLinkAction(gwtFileLinkActionFromFileLinkAction(GwtUIHelper.getEffectiveFileLinkAction(bs, user)));
+				personalPrefs.setFileLinkAction(gwtFileLinkActionFromFileLinkAction(AdminHelper.getEffectiveFileLinkAction(bs, user)));
 				
 				// Set the flag that indicates whether 'editor
 				// overrides; are supported.

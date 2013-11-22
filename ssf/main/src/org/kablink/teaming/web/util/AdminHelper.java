@@ -49,6 +49,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
 import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.Utils;
@@ -61,6 +62,24 @@ import org.kablink.teaming.util.Utils;
 public class AdminHelper {
 	protected static Log m_logger = LogFactory.getLog(AdminHelper.class);
 
+	/**
+	 * Enumeration used to specify where a file link is being used.
+	 * 
+	 * See the implementation of getEffectiveFileLinkAction() below.
+	 */
+	public enum FileLinkLocation {
+		SEARCH_RESULTS,
+		OTHER;
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isSearchResults() {return SEARCH_RESULTS.equals(this);}
+		public boolean isOther()         {return OTHER.equals(         this);}
+	}
+	
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
@@ -69,12 +88,9 @@ public class AdminHelper {
 		// Nothing to do.
 	}
 
-	/**
+	/*
 	 * Applies any settings from one PrincipalDesktopAppsConfig to
 	 * another.
-	 * 
-	 * @param target
-	 * @param source
 	 */
 	private static void addPrincipalDACToPrincipalDAC(PrincipalDesktopAppsConfig target, PrincipalDesktopAppsConfig source) {
 		if ((null != target) && (null != source) && (!(source.getUseDefaultSettings()))) {
@@ -84,12 +100,9 @@ public class AdminHelper {
 		}
 	}
 
-	/**
+	/*
 	 * Applies any settings from one PrincipalMobileAppsConfig to
 	 * another.
-	 * 
-	 * @param target
-	 * @param source
 	 */
 	private static void addPrincipalMACToPrincipalMAC(PrincipalMobileAppsConfig target, PrincipalMobileAppsConfig source) {
 		if ((null != target) && (null != source) && (!(source.getUseDefaultSettings()))) {
@@ -499,6 +512,98 @@ public class AdminHelper {
 		// If we get here, reply contains true if downloads are
 		// enabled and false otherwise.  Return it.
 		return reply;
+	}
+	
+	/**
+	 * Return the effective 'File Link Action' setting from the given
+	 * user.
+	 * 
+	 * If the user has a value stored in their preferences, that value
+	 * will be validated against their effective download setting an the
+	 * appropriate enumeration will be returned.
+	 * 
+	 * If the user does NOT have a value stored in their preferences,
+	 * an appropriate default enumeration will be returned.
+	 * 
+	 * @param bs
+	 * @param user
+	 * @param fll
+	 * 
+	 * @return
+	 */
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user, FileLinkLocation fll) {
+		// Is this Filr?
+		FileLinkAction reply;
+		if (Utils.checkIfFilr()) {
+			// Yes!
+			boolean        canDownload   = getEffectiveDownloadSetting(bs, user);
+			FileLinkAction defaultFLA    = (canDownload ? FileLinkAction.DOWNLOAD : FileLinkAction.VIEW_HTML_ELSE_DETAILS);
+			FileLinkAction calculatedFLA = null;
+			if (!(user.isShared())) {
+				UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+				String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
+				if (!(MiscUtil.hasString(flaS))) {
+					flaS = String.valueOf(FileLinkAction.DOWNLOAD.ordinal());
+				}
+				try {
+					int flaI      = Integer.parseInt(      flaS);
+					calculatedFLA = FileLinkAction.getEnum(flaI);
+					if (!canDownload) {
+						switch (calculatedFLA) {
+						case DOWNLOAD:
+						case VIEW_HTML_ELSE_DOWNLOAD:
+							calculatedFLA = FileLinkAction.VIEW_HTML_ELSE_DETAILS;
+							break;
+							
+						default:
+							break;
+						}
+					}
+				}
+				catch (NumberFormatException nfe) {
+					m_logger.warn("AdminHelper.getEffectiveFileLinkAction():  file link action is not an integer.", nfe);
+				}
+			}
+			reply = ((null == calculatedFLA) ? defaultFLA : calculatedFLA);
+		}
+		
+		else {
+			// No, this isn't Filr!  For Vibe, we download from the
+			// search results and view details from everywhere else.
+			reply = 
+				(fll.isSearchResults()      ?
+					FileLinkAction.DOWNLOAD :
+					FileLinkAction.VIEW_DETAILS);
+		}
+
+		// If we get here, reply contains the user's effective
+		// FileLinkAction.  Return it.
+		return reply;
+	}
+	
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user) {
+		// Always use the initial form of the method.
+		return getEffectiveFileLinkAction(bs, user, FileLinkLocation.OTHER);
+	}
+	
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, Long userId, FileLinkLocation fll) {
+		// Always use the initial form of the method.
+		return getEffectiveFileLinkAction(bs, GwtUIHelper.getUserSafely(bs.getProfileModule(), userId), fll);
+	}
+	
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, Long userId) {
+		// Always use the initial form of the method.
+		return getEffectiveFileLinkAction(bs, GwtUIHelper.getUserSafely(bs.getProfileModule(), userId), FileLinkLocation.OTHER);
+	}
+	
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, FileLinkLocation fll) {
+		// Always use the initial form of the method.
+		return getEffectiveFileLinkAction(bs, RequestContextHolder.getRequestContext().getUser(), fll);
+	}
+	
+	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return getEffectiveFileLinkAction(bs, RequestContextHolder.getRequestContext().getUser(), FileLinkLocation.OTHER);
 	}
 	
 	/**

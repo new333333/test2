@@ -249,6 +249,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.SearchTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.CloudFolderHelper;
 import org.kablink.teaming.web.util.DashboardHelper;
@@ -2501,7 +2502,7 @@ public class GwtViewHelper {
 				if (null != fa) {
 					// Yes!  What's the user's preference to as to the
 					// action to perform?
-					FileLinkAction fla = GwtUIHelper.getEffectiveFileLinkAction(bs);
+					FileLinkAction fla = AdminHelper.getEffectiveFileLinkAction(bs);
 					switch (fla) {
 					case DOWNLOAD:
 						// Download the file!
@@ -4106,7 +4107,7 @@ public class GwtViewHelper {
 			
 			// What's the action to take when a file link is activated?
 			GwtFileLinkAction fla  = GwtServerHelper.gwtFileLinkActionFromFileLinkAction(
-				GwtUIHelper.getEffectiveFileLinkAction(
+				AdminHelper.getEffectiveFileLinkAction(
 					bs,
 					user));
 			
@@ -6808,7 +6809,7 @@ public class GwtViewHelper {
 			boolean canDownload     = user.isPerson();
 			boolean perUserDownload = false;
 			if (canDownload) {
-				canDownload     = GwtUIHelper.getEffectiveDownloadSetting(bs, user);
+				canDownload     = AdminHelper.getEffectiveDownloadSetting(bs, user);
 				perUserDownload = (null != user.isDownloadEnabled());
 			}
 			ai.setCanDownload(    canDownload    );
@@ -6818,7 +6819,7 @@ public class GwtViewHelper {
 			boolean hasWebAccess = user.isPerson();
 			boolean perUserWebAccess = false;
 			if (hasWebAccess) {
-				hasWebAccess     = GwtUIHelper.getEffectiveWebAccessSetting(bs, user);
+				hasWebAccess     = AdminHelper.getEffectiveWebAccessSetting(bs, user);
 				perUserWebAccess = (null != user.isWebAccessEnabled());
 			}
 			ai.setHasWebAccess(    hasWebAccess    );
