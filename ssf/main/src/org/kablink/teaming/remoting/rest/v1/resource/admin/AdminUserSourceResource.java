@@ -63,7 +63,7 @@ import java.util.Map;
 @Path("/admin/user_sources")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class AdminUserSourceResource extends AbstractResource {
+public class AdminUserSourceResource extends AbstractAdminResource {
 
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

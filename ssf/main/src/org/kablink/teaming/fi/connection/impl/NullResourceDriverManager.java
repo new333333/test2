@@ -112,7 +112,12 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 		return null;
 	}
 
-	@Override
+    @Override
+    public ResourceDriverConfig getDriverConfig(Long id) {
+        return null;
+    }
+
+    @Override
 	public ResourceSession getSession(ResourceDriver driver, FileOperation fileOperation, DefinableEntity ... entitiesToCheckPermissionOn)
 			throws FIException, UncheckedIOException {
 		return null;

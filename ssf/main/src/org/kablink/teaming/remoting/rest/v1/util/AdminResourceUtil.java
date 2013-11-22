@@ -32,19 +32,37 @@
  */
 package org.kablink.teaming.remoting.rest.v1.util;
 
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
+import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
+import org.kablink.teaming.rest.v1.model.Recipient;
+import org.kablink.teaming.rest.v1.model.SharingPermission;
+import org.kablink.teaming.rest.v1.model.admin.AssignedRight;
 import org.kablink.teaming.rest.v1.model.admin.KeyValuePair;
 import org.kablink.teaming.rest.v1.model.admin.LdapHomeDirConfig;
 import org.kablink.teaming.rest.v1.model.admin.LdapSearchInfo;
 import org.kablink.teaming.rest.v1.model.admin.LdapUserSource;
+import org.kablink.teaming.rest.v1.model.admin.NetFolder;
+import org.kablink.teaming.rest.v1.model.admin.NetFolderServer;
+import org.kablink.teaming.rest.v1.model.admin.Schedule;
+import org.kablink.teaming.rest.v1.model.admin.SelectedDays;
+import org.kablink.teaming.rest.v1.model.admin.Time;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.web.util.NetFolderHelper;
+import org.kablink.teaming.web.util.NetFolderRole;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * User: David
@@ -52,6 +70,63 @@ import java.util.Map;
  * Time: 12:43 PM
  */
 public class AdminResourceUtil {
+
+    public static NetFolderServer buildNetFolderServer(ResourceDriverConfig config, boolean fullDetails) {
+        NetFolderServer model = new NetFolderServer();
+        model.setAccountName(config.getAccountName());
+        model.setAuthenticationType(config.getAuthenticationType().name());
+        model.setChangeDetectionMechanism(config.getChangeDetectionMechanism().name());
+        model.setDriverType(config.getDriverType().name());
+        model.setFullSyncDirOnly(config.getFullSyncDirOnly());
+        model.setId(config.getId());
+        model.setModifiedOn(config.getModifiedOn());
+        model.setName(config.getName());
+        model.setPassword(config.getPassword());
+        model.setRootPath(config.getRootPath());
+        model.setCachedRightsRefreshInterval(config.getCachedRightsRefreshInterval());
+        model.setUseDirectoryRights(config.getUseDirectoryRights());
+        if (fullDetails) {
+            model.setSyncSchedule(buildSchedule(NetFolderHelper.getNetFolderServerSynchronizationSchedule(model.getId())));
+        }
+        model.setLink(AdminLinkUriUtil.getNetFolderServerLinkUri(config.getId()));
+        model.addAdditionalLink("net_folders", model.getLink() + "/net_folders");
+        return model;
+    }
+
+    public static NetFolder buildNetFolder(Folder folder, AllModulesInjected ami, boolean fullDetails) {
+        NetFolder model = new NetFolder();
+        model.setId(folder.getId());
+        model.setName(folder.getTitle());
+        model.setRelativePath(folder.getResourcePath());
+
+        ResourceDriverConfig driverConfig = NetFolderHelper.findNetFolderRootByName(ami.getAdminModule(), ami.getResourceDriverModule(), folder.getResourceDriverName());
+        if (driverConfig!=null) {
+            model.setServer(new LongIdLinkPair(driverConfig.getId(), AdminLinkUriUtil.getNetFolderServerLinkUri(driverConfig.getId())));
+        }
+        model.setHomeDir(folder.isHomeDir());
+
+        model.setIndexContent(folder.getIndexContent());
+
+        model.setJitsEnabled(folder.isJitsEnabled());
+        model.setJitsMaxACLAge(folder.getJitsMaxAge());
+        model.setJitsMaxAge(folder.getJitsAclMaxAge());
+
+        model.setInheritSyncSchedule(folder.getSyncScheduleOption() != Binder.SyncScheduleOption.useNetFolderSchedule);
+        if (fullDetails) {
+            ScheduleInfo scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( folder.getId() );
+            model.setSyncSchedule(buildSchedule(scheduleInfo));
+
+            model.setAssignedRights(buildAssignedRights(NetFolderHelper.getNetFolderRights(ami, folder)));
+        }
+
+        model.setAllowDesktopSync(folder.getAllowDesktopAppToSyncData());
+        model.setFullSyncDirOnly(folder.getFullSyncDirOnly());
+
+        model.setLink(AdminLinkUriUtil.getNetFolderLinkUri(folder.getId()));
+
+        return model;
+    }
+
     public static LdapUserSource buildUserSource(LdapConnectionConfig ldapConfig,
                                                  ResourceDriverModule resourceDriverModule) {
         LdapUserSource model = new LdapUserSource();
@@ -127,4 +202,88 @@ public class AdminResourceUtil {
         return model;
     }
 
+    private static Schedule buildSchedule(ScheduleInfo scheduleInfo) {
+        Schedule model = null;
+        if (scheduleInfo!=null) {
+            model = new Schedule();
+            model.setEnabled(scheduleInfo.isEnabled());
+            org.kablink.teaming.jobs.Schedule sch = scheduleInfo.getSchedule();
+            if (sch.isDaily()) {
+                model.setDayFrequency(Schedule.DayFrequency.daily.name());
+            } else {
+                model.setDayFrequency(Schedule.DayFrequency.selected_days.name());
+                SelectedDays days = new SelectedDays();
+                days.setSun(sch.isOnSunday());
+                days.setMon(sch.isOnMonday());
+                days.setTue(sch.isOnTuesday());
+                days.setWed(sch.isOnWednesday());
+                days.setThu(sch.isOnThursday());
+                days.setFri(sch.isOnFriday());
+                days.setSat(sch.isOnSaturday());
+                model.setSelectedDays(days);
+            }
+
+            if ( sch.isRepeatMinutes() ) {
+                Time every = new Time();
+                every.setHour(0);
+                every.setMinute(Integer.valueOf(sch.getMinutesRepeat()));
+                model.setEvery(every);
+            } else if ( sch.isRepeatHours() ) {
+                Time every = new Time();
+                every.setHour(Integer.valueOf( sch.getHoursRepeat() ));
+                every.setMinute(0);
+                model.setEvery(every);
+            } else {
+                Time at = new Time();
+                at.setHour(Integer.valueOf( sch.getHours() ));
+                at.setMinute(Integer.valueOf(sch.getMinutes()));
+                model.setAt(at);
+            }
+        }
+        return model;
+    }
+
+    public static List<AssignedRight> buildAssignedRights(List<NetFolderRole> roles) {
+        List<AssignedRight> model = new ArrayList<AssignedRight>();
+        for (NetFolderRole role : roles) {
+            AssignedRight right = buildAssignedRight(role);
+            if (right!=null) {
+                model.add(right);
+            }
+        }
+        return model;
+    }
+    public static AssignedRight buildAssignedRight(NetFolderRole role) {
+        AssignedRight model = new AssignedRight();
+        Recipient recipient = new Recipient();
+        Principal principal = role.getPrincipal();
+        if (principal instanceof User) {
+            recipient.setType(Recipient.RecipientType.user.name());
+            recipient.setId(principal.getId());
+            recipient.setLink(LinkUriUtil.getUserLinkUri(principal.getId()));
+        } else if (principal instanceof Group) {
+            recipient.setType(Recipient.RecipientType.group.name());
+            recipient.setId(principal.getId());
+            recipient.setLink(LinkUriUtil.getGroupLinkUri(principal.getId()));
+        } else {
+            return null;
+        }
+        model.setPrincipal(recipient);
+
+        Set<NetFolderRole.RoleType> roles = role.getRoles();
+        Access access = new Access();
+        if (roles.contains(NetFolderRole.RoleType.AllowAccess)) {
+            access.setRole(Access.RoleType.ACCESS.name());
+            SharingPermission permission = new SharingPermission();
+            permission.setInternal(roles.contains(NetFolderRole.RoleType.ShareInternal));
+            permission.setExternal(roles.contains(NetFolderRole.RoleType.ShareExternal));
+            permission.setPublic(roles.contains(NetFolderRole.RoleType.SharePublic));
+            permission.setGrantReshare(roles.contains(NetFolderRole.RoleType.ShareForward));
+            access.setSharing(permission);
+        } else {
+            access.setRole(Access.RoleType.NONE.name());
+        }
+        model.setAccess(access);
+        return model;
+    }
 }

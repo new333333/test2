@@ -232,8 +232,13 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 					"checkAccess");
 		}
 	}
-	
-	@Override
+
+    @Override
+    public ResourceDriverConfig getResourceDriverConfig(Long id) {
+        return getResourceDriverManager().getDriverConfig(id);
+    }
+
+    @Override
 	public List<ResourceDriverConfig> getAllResourceDriverConfigs() {
 		return getResourceDriverManager().getAllResourceDriverConfigs();
 	}
@@ -552,36 +557,48 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		if (rdc == null) {
 			throw new RDException(NLT.get(RDException.NO_SUCH_RESOURCE_DRIVER_NAME, new String[] {name}), name);
 		}
-		
-		Long driverId = rdc.getId();
-		
-	   	//Modify this resource driver config
-    	SimpleProfiler.start("deleteResourceDriverConfig");
-    	// 	The following part requires update database transaction.
-    	getTransactionTemplate().execute(new TransactionCallback() {
-    		@Override
-			public Object doInTransaction(TransactionStatus status) {
-    	     	//remove ACLs to this driver config object
-    	    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
-    	    			RequestContextHolder.getRequestContext().getZoneId(), rdc);
 
-				//Now delete the actual config object
-    	    	getCoreDao().delete(rdc);
-    			return null;
-    		}
-    	});
-    	SimpleProfiler.stop("deleteResourceDriverConfig");
-		
-		//Remove this resource driver from the list of drivers
-		getResourceDriverManager().resetResourceDriverList();
-		
-		// Finally, delete the background job associated with this driver
-		
-		NetFolderServerSynchronization job = NetFolderHelper.getNetFolderServerSynchronizationScheduleObject();
-		job.deleteJob(driverId);
+        _deleteResourceDriverConfig(rdc);
 	}
 
-	/**
+	@Override
+	public void deleteResourceDriverConfig(final Long id)
+			throws AccessControlException, RDException {
+		//Check that the user has the right to do this operation
+		checkAccess(ResourceDriverOperation.manageResourceDrivers);
+        _deleteResourceDriverConfig(getResourceDriverManager().getDriverConfig(id));
+	}
+
+    private void _deleteResourceDriverConfig(final ResourceDriverConfig rdc) {
+        Long driverId = rdc.getId();
+
+        //Modify this resource driver config
+        SimpleProfiler.start("deleteResourceDriverConfig");
+        // 	The following part requires update database transaction.
+        getTransactionTemplate().execute(new TransactionCallback() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                 //remove ACLs to this driver config object
+                getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
+                        RequestContextHolder.getRequestContext().getZoneId(), rdc);
+
+                //Now delete the actual config object
+                getCoreDao().delete(rdc);
+                return null;
+            }
+        });
+        SimpleProfiler.stop("deleteResourceDriverConfig");
+
+        //Remove this resource driver from the list of drivers
+        getResourceDriverManager().resetResourceDriverList();
+
+        // Finally, delete the background job associated with this driver
+
+        NetFolderServerSynchronization job = NetFolderHelper.getNetFolderServerSynchronizationScheduleObject();
+        job.deleteJob(driverId);
+    }
+
+    /**
 	 * Set the sync schedule for this driver.
 	 */
 	@Override
