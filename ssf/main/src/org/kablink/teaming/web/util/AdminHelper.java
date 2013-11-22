@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -43,6 +44,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
@@ -91,7 +93,101 @@ public class AdminHelper {
 	 */
 	private static void addPrincipalMACToPrincipalMAC(PrincipalMobileAppsConfig target, PrincipalMobileAppsConfig source) {
 		if ((null != target) && (null != source) && (!(source.getUseDefaultSettings()))) {
-//!			...this needs to be implemented...
+			target.setUseDefaultSettings(false);
+			target.setAllowCacheContent(     target.getAllowCacheContent()      || source.getAllowCacheContent()     );
+			target.setAllowCachePwd(         target.getAllowCachePwd()          || source.getAllowCachePwd()         );
+			target.setAllowPlayWithOtherApps(target.getAllowPlayWithOtherApps() || source.getAllowPlayWithOtherApps());
+			target.setMobileAppsEnabled(     target.getMobileAppsEnabled()      || source.getMobileAppsEnabled()     );
+
+			// Mobile Application Management (MAM) settings.
+			target.setMobileCutCopyEnabled(                    target.getMobileCutCopyEnabled()                     || source.getMobileCutCopyEnabled()                    );
+			target.setMobileAndroidScreenCaptureEnabled(       target.getMobileAndroidScreenCaptureEnabled()        || source.getMobileAndroidScreenCaptureEnabled()       );
+			target.setMobileDisableOnRootedOrJailBrokenDevices(target.getMobileDisableOnRootedOrJailBrokenDevices() || source.getMobileDisableOnRootedOrJailBrokenDevices());
+			
+			MobileOpenInSetting targetMOI = target.getMobileOpenIn(); if (null == targetMOI) targetMOI = MobileOpenInSetting.ALL_APPLICATIONS;
+			MobileOpenInSetting sourceMOI = source.getMobileOpenIn(); if (null == sourceMOI) sourceMOI = MobileOpenInSetting.ALL_APPLICATIONS;
+			switch (targetMOI) {
+			default:
+			case ALL_APPLICATIONS:
+				// 'All Applications' is is the highest level and we
+				// stay with it.  Note the assignment here is to
+				// cover the default case so that we use a KNOWN,
+				// specific value.
+				targetMOI = MobileOpenInSetting.ALL_APPLICATIONS;
+				break;
+				
+			case DISABLED:
+				switch (sourceMOI) {
+				default:
+				case ALL_APPLICATIONS:
+					// Upgrade the 'Disabled' target to 'All
+					// Applications'.
+					targetMOI = MobileOpenInSetting.ALL_APPLICATIONS;
+					break;
+					
+				case DISABLED:
+					// Target stays 'Disabled'.
+					break;
+					
+				case WHITE_LIST:
+					// Upgrade the 'Disabled' target to 'White List',
+					// using the white lists from the source.
+					targetMOI = MobileOpenInSetting.WHITE_LIST;
+					target.setAndroidApplications(source.getAndroidApplications());
+					target.setIosApplications(    source.getIosApplications()    );
+					break;
+				}
+				break;
+				
+			case WHITE_LIST:
+				switch (sourceMOI) {
+				default:
+				case ALL_APPLICATIONS:
+					// Upgrade the 'White List' target to 'All
+					// Applications'.
+					targetMOI = MobileOpenInSetting.ALL_APPLICATIONS;
+					break;
+					
+				case DISABLED:
+					// Target stays 'White List'.
+					break;
+					
+				case WHITE_LIST:
+					// Target stays 'White List', but we merge the
+					// source's white lists into the target's.  First,
+					// merge the Android applications...
+					List<String> targetAppList = target.getAndroidApplications();
+					if (null == targetAppList) {
+						targetAppList = new ArrayList<String>();
+						target.setAndroidApplications(targetAppList);
+					}
+					List<String> sourceAppList = source.getAndroidApplications();
+					if (MiscUtil.hasItems(sourceAppList)) {
+						for (String sourceApp:  sourceAppList) {
+							ListUtil.addStringToListStringIfUniqueIgnoreCase(targetAppList, sourceApp);
+						}
+					}
+
+					// ...then merge the iOS applications.
+					targetAppList = target.getIosApplications();
+					if (null == targetAppList) {
+						targetAppList = new ArrayList<String>();
+						target.setIosApplications(targetAppList);
+					}
+					sourceAppList = source.getIosApplications();
+					if (MiscUtil.hasItems(sourceAppList)) {
+						for (String sourceApp:  sourceAppList) {
+							ListUtil.addStringToListStringIfUniqueIgnoreCase(targetAppList, sourceApp);
+						}
+					}
+					break;
+				}
+				break;
+			}
+			
+			// Finally, make sure the target contains the correct
+			// MobileOpenInSetting. 
+			target.setMobileOpenIn(targetMOI);
 		}
 	}
 
