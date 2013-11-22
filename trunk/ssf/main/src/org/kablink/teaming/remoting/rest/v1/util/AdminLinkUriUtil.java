@@ -6,12 +6,16 @@ package org.kablink.teaming.remoting.rest.v1.util;
  * Time: 1:31 PM
  */
 public class AdminLinkUriUtil {
+    public static String getNetFolderLinkUri(Long id) {
+        return "/admin/net_folders/" + id;
+    }
+
     public static String getNetFolderServerLinkUri(Long id) {
-        return "/net_folder_servers/" + id;
+        return "/admin/net_folder_servers/" + id;
     }
 
     public static String getUserSourceLinkUri(String id) {
-        return "/user_sources/" + id;
+        return "/admin/user_sources/" + id;
     }
 
 

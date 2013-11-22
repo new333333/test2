@@ -222,6 +222,7 @@ public interface AdminModule {
      * @return
      */
     public Function getFunction(Long functionId);
+    public Function getFunctionByInternalId(String internalId);
     public List<Function> getFunctions();
     public List<Function> getFunctions(String scope);
     /**

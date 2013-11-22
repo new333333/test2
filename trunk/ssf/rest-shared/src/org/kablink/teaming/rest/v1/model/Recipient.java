@@ -40,31 +40,28 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Date: 5/30/12
  * Time: 4:29 PM
  */
-@XmlRootElement(name = "share_recipient")
-public class ShareRecipient extends Recipient {
-    public static String GROUP = "group";
-    public static String TEAM = "team";
-    public static String INTERNAL_USER = "user";
-    public static String EXTERNAL_USER = "external_user";
-    public static String PUBLIC = "public";
-    public static String PUBLIC_LINK = "public_link";
-
-    private String emailAddress;
-
-    public ShareRecipient() {
+@XmlRootElement(name = "recipient")
+public class Recipient extends LongIdLinkPair {
+    public enum RecipientType {
+        group,
+        user
     }
 
-    public ShareRecipient(Long id, String type, String email) {
-        super(id, type);
-        this.emailAddress = email;
+    private String type;
+
+    public Recipient() {
     }
 
-    @XmlElement(name="email")
-    public String getEmailAddress() {
-        return emailAddress;
+    public Recipient(Long id, String type) {
+        super(id, null);
+        this.type = type;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

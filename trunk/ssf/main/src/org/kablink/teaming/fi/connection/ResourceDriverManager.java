@@ -67,6 +67,7 @@ public interface ResourceDriverManager {
 	
 	public ResourceDriver getDriver(String driverName) throws FIException;
 	public ResourceDriverConfig getDriverConfig(String driverName);
+	public ResourceDriverConfig getDriverConfig(Long id);
 
 	public ResourceSession getSession(ResourceDriver driver, FileOperation fileOperation, DefinableEntity ... entitiesToCheckPermissionOn)
 	throws FIException, UncheckedIOException;

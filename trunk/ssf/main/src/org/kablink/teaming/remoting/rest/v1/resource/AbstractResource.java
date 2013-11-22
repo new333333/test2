@@ -77,6 +77,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
+import org.kablink.teaming.util.InvokeException;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -91,9 +92,13 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.annotation.XmlElement;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -1533,13 +1538,12 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
         Binder netFoldersBinder = SearchUtils.getNetFoldersRootBinder();
         //TODO: localize
-        binder.setId(ObjectKeys.NET_FOLDERS_ID);
+        binder.setId(ObjectKeys.PUBLIC_SHARES_ID);
         binder.setTitle("Public");
-        binder.setPath(netFoldersBinder.getPathName());
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
         Long userId = getLoggedInUserId();
         binder.setLink("/self/public_shares");
-        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
+        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_SHARED_PUBLIC));
         String baseUri = "/shares/public";
         binder.addAdditionalLink("child_binders", baseUri + "/binders");
         binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
@@ -1635,6 +1639,110 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
     }
 
+    protected void validateMandatoryField(Object obj, String... methodNames) {
+        validateField(obj, true, false, null, methodNames);
+    }
+
+    protected void validateDisallowedField(Object obj, String reason, String... methodNames) {
+        validateField(obj, false, true, reason, methodNames);
+    }
+
+    protected boolean isDefined(Object obj, String... methodNames) {
+        Object currObj = obj;
+        for (String methodName : methodNames) {
+            try {
+                Method method = currObj.getClass().getMethod(methodName);
+                Object value = method.invoke(obj);
+                if (value==null || (value instanceof String && ((String)value).length()==0)) {
+                    return false;
+                }
+                currObj = value;
+            } catch (NoSuchMethodException e) {
+                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
+            } catch (InvocationTargetException e) {
+                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
+            } catch (IllegalAccessException e) {
+                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
+            }
+        }
+        return true;
+    }
+
+    protected void validateField(Object obj, boolean failIfMissing, boolean failIfExists, String disallowedReason, String... methodNames) {
+        Object currObj = obj;
+        String fieldName = null;
+        for (String methodName : methodNames) {
+            try {
+                Method method = currObj.getClass().getMethod(methodName);
+                String currFieldName = getFieldName(method, methodName);
+                if (fieldName!=null) {
+                    fieldName = fieldName + ".'" + currFieldName + "'";
+                } else {
+                    fieldName = "'" + currFieldName + "'";
+                }
+                Object value = method.invoke(currObj);
+                if (failIfMissing) {
+                    if (value==null || (value instanceof String && ((String)value).length()==0)) {
+                        throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing mandatory field: " + fieldName );
+                    }
+                }
+                if (failIfExists) {
+                    if (value!=null && (value instanceof String && ((String)value).length()>0)) {
+                        throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Field is not allowed: " + fieldName + ".  Reason: " + disallowedReason);
+                    }
+                }
+                currObj = value;
+            } catch (NoSuchMethodException e) {
+                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
+            } catch (InvocationTargetException e) {
+                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
+            } catch (IllegalAccessException e) {
+                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
+            }
+        }
+    }
+
+    private String getFieldName(Method method, String methodName) {
+        String field = null;
+        Annotation[] annotations = method.getAnnotations();
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof XmlElement) {
+                field = ((XmlElement)annotation).name();
+            }
+        }
+        if (field==null) {
+            if (methodName.startsWith("get")) {
+                field = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+            } else if (methodName.startsWith("get")) {
+                field = Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
+            } else {
+                field = methodName;
+            }
+        }
+        return field;
+    }
+
+    protected <T extends Enum<T>> T toEnum(Class<T> enumType, String fieldName, String value) {
+        try {
+            if (value==null) {
+                return null;
+            }
+            return Enum.valueOf(enumType, value);
+        } catch (Exception e) {
+            StringBuilder builder = new StringBuilder('\'').append(fieldName).append(" must be one of: ");
+            T[] vals = enumType.getEnumConstants();
+            boolean first = true;
+            for (T val : vals) {
+                if (first) {
+                    first = false;
+                } else {
+                    builder.append(',');
+                }
+                builder.append(val.name());
+            }
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, builder.toString());
+        }
+    }
 
     protected static CoreDao getCoreDao() {
         return (CoreDao) SpringContextUtil.getBean("coreDao");

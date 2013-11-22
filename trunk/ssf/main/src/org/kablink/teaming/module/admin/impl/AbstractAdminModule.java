@@ -1062,6 +1062,27 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	// let anyone read it
     	return functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), functionId);
     }
+
+    @Override
+    public Function getFunctionByInternalId(String internalId) {
+        List<Function> listOfFunctions = getFunctions();
+        Function function = null;
+        // For the given internal function id, get the function's real id.
+        for ( Function nextFunction : listOfFunctions )
+        {
+            String nextInternalId;
+
+            nextInternalId = nextFunction.getInternalId();
+            if ( internalId.equalsIgnoreCase(nextInternalId) )
+            {
+                function = nextFunction;
+                break;
+            }
+        }
+
+        return function;
+    }
+
     @Override
 	public List<Function> getFunctions() {
 		//let anyone read them			

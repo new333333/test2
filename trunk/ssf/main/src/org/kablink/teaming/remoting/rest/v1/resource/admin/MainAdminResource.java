@@ -73,6 +73,9 @@ public class MainAdminResource extends AbstractResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	public RootRestObject getRootObject() {
         RootRestObject obj = new RootRestObject();
+        obj.addAdditionalLink("net_folder_servers", "/admin/net_folder_servers");
+        obj.addAdditionalLink("net_folders", "/admin/net_folders");
+        obj.addAdditionalLink("user_sources", "/admin/user_sources");
    		return obj;
    	}
 }

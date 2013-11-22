@@ -51,6 +51,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
@@ -92,6 +93,9 @@ public class MiscResource extends AbstractResource {
         obj.addAdditionalLink("templates", "/templates");
         obj.addAdditionalLink("users", "/users");
         obj.addAdditionalLink("zone_config", "/zone_config");
+        if (getAdminModule().testAccess(AdminModule.AdminOperation.manageFunction)) {
+            obj.addAdditionalLink("admin", "/admin");
+        }
    		return obj;
    	}
 

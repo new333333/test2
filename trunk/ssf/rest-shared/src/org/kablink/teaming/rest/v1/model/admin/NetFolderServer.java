@@ -18,7 +18,9 @@ package org.kablink.teaming.rest.v1.model.admin;
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.SharingPermission;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 /**
  * User: david
@@ -27,4 +29,146 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="net_folder_server")
 public class NetFolderServer extends BaseRestObject {
+    private Long id; // This is primary key
+    private String name;
+    private String driverType;
+    private Boolean fullSyncDirOnly;
+    private String rootPath;
+    private String accountName;
+    private String password; //set by hibernate access="field" type="encrypted"
+    private Date modifiedOn;
+    private String changeDetectionMechanism;
+    private String authenticationType;
+    private Boolean useDirectoryRights;
+    private Integer cachedRightsRefreshInterval;
+    private Schedule syncSchedule;
+
+    public void replaceNullValues(NetFolderServer server) {
+        id = (id==null) ? server.id : id;
+        name = (name==null) ? server.name : name;
+        driverType = (driverType==null) ? server.driverType : driverType;
+        fullSyncDirOnly = (fullSyncDirOnly==null) ? server.fullSyncDirOnly : fullSyncDirOnly;
+        rootPath = (rootPath==null) ? server.rootPath : rootPath;
+        accountName = (accountName==null) ? server.accountName : accountName;
+        password = (password==null) ? server.password : password;
+        changeDetectionMechanism = (changeDetectionMechanism==null) ? server.changeDetectionMechanism : changeDetectionMechanism;
+        authenticationType = (authenticationType==null) ? server.authenticationType : authenticationType;
+        useDirectoryRights = (useDirectoryRights==null) ? server.useDirectoryRights : useDirectoryRights;
+        cachedRightsRefreshInterval = (cachedRightsRefreshInterval==null) ? server.cachedRightsRefreshInterval : cachedRightsRefreshInterval;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @XmlElement(name="driver_type")
+    public String getDriverType() {
+        return driverType;
+    }
+
+    public void setDriverType(String driverType) {
+        this.driverType = driverType;
+    }
+
+    @XmlElement(name="only_sync_dirs")
+    public Boolean getFullSyncDirOnly() {
+        return fullSyncDirOnly!=null && fullSyncDirOnly;
+    }
+
+    public void setFullSyncDirOnly(Boolean fullSyncDirOnly) {
+        this.fullSyncDirOnly = fullSyncDirOnly;
+    }
+
+    @XmlElement(name="server_path")
+    public String getRootPath() {
+        return rootPath;
+    }
+
+    public void setRootPath(String rootPath) {
+        this.rootPath = rootPath;
+    }
+
+    @XmlElement(name="proxy_dn")
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
+    @XmlElement(name="proxy_password")
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @XmlElement(name="last_modified")
+    public Date getModifiedOn() {
+        return modifiedOn;
+    }
+
+    public void setModifiedOn(Date modifiedOn) {
+        this.modifiedOn = modifiedOn;
+    }
+
+    @XmlElement(name="change_detection_mechanism")
+    public String getChangeDetectionMechanism() {
+        return changeDetectionMechanism;
+    }
+
+    public void setChangeDetectionMechanism(String changeDetectionMechanism) {
+        this.changeDetectionMechanism = changeDetectionMechanism;
+    }
+
+    @XmlElement(name="auth_type")
+    public String getAuthenticationType() {
+        return authenticationType;
+    }
+
+    public void setAuthenticationType(String authenticationType) {
+        this.authenticationType = authenticationType;
+    }
+
+    @XmlElement(name="use_directory_rights")
+    public Boolean getUseDirectoryRights() {
+        return useDirectoryRights==null ? Boolean.FALSE : useDirectoryRights;
+    }
+
+    public void setUseDirectoryRights(Boolean useDirectoryRights) {
+        this.useDirectoryRights = useDirectoryRights;
+    }
+
+    @XmlElement(name="cached_rights_refresh_interval")
+    public Integer getCachedRightsRefreshInterval() {
+        return cachedRightsRefreshInterval;
+    }
+
+    public void setCachedRightsRefreshInterval(Integer cachedRightsRefreshInterval) {
+        this.cachedRightsRefreshInterval = cachedRightsRefreshInterval;
+    }
+
+    @XmlElement(name="sync_schedule")
+    public Schedule getSyncSchedule() {
+        return syncSchedule;
+    }
+
+    public void setSyncSchedule(Schedule syncSchedule) {
+        this.syncSchedule = syncSchedule;
+    }
 }

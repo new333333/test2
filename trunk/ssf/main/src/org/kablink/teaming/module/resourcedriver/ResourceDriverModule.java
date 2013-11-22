@@ -86,7 +86,8 @@ public interface ResourceDriverModule {
    	public List<ResourceDriverConfig> getAllResourceDriverConfigs();
    	public List<ResourceDriverConfig> getAllNetFolderResourceDriverConfigs();
    	public List<ResourceDriverConfig> getAllCloudFolderResourceDriverConfigs();
-   	
+
+    public ResourceDriverConfig getResourceDriverConfig(Long id);
     /**
      * Create a <code>ResourceDriver</code> 
      * 
@@ -122,6 +123,16 @@ public interface ResourceDriverModule {
          * returns null if driver not found
          */
           public void deleteResourceDriver(String name) 
+         	throws AccessControlException, RDException;
+
+        /**
+         * Delete a <code>ResourceDriverConfig</code>
+         *
+         * @param id
+         * @throws AccessControlException
+         * returns null if driver not found
+         */
+          public void deleteResourceDriverConfig(Long id)
          	throws AccessControlException, RDException;
 
     /**
