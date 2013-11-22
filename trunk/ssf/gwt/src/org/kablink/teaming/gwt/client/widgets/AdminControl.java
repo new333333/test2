@@ -87,6 +87,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.runasync.ConfigureFileSyncAppDlgInitAndShowParams;
 import org.kablink.teaming.gwt.client.util.runasync.EditBrandingDlgInitAndShowParams;
 import org.kablink.teaming.gwt.client.util.runasync.ModifyNetFolderDlgInitAndShowParams;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
@@ -1559,18 +1560,26 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			Integer width;
 			Integer height;
+			RunAsyncCmd createCmd;
+			RunAsyncCreateDlgParams params;
 			
 			height = new Integer( m_dlgHeight );
 			width = new Integer( m_dlgWidth );
 
-			NameCompletionSettingsDlg.createAsync(
-												true, 
-												false,
-												x, 
-												y,
-												width,
-												height,
-												new NameCompletionSettingsDlgClient()
+			params = new RunAsyncCreateDlgParams();
+			params.setAutoHide( new Boolean( true ) );
+			params.setModal( new Boolean( false ) );
+			params.setLeft( new Integer( x ) );
+			params.setTop( new Integer( y ) );
+			params.setHeight( height );
+			params.setWidth( width );
+
+			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
+			
+			// Run an async cmd to create the dialog.
+			NameCompletionSettingsDlg.runAsyncCmd(
+											createCmd,
+											new NameCompletionSettingsDlgClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -1583,13 +1592,13 @@ public class AdminControl extends TeamingPopupPanel
 				{
 					ScheduledCommand cmd;
 					
+					m_nameCompletionSettingsDlg = ncsDlg;
+					
 					cmd = new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
-							m_nameCompletionSettingsDlg = ncsDlg;
-							
 							// Now that we have created the dialog,
 							// fire the event to invoke the "Name Completion Settings" dialog.
 							InvokeNameCompletionSettingsDlgEvent.fireOne();
@@ -1598,13 +1607,24 @@ public class AdminControl extends TeamingPopupPanel
 					Scheduler.get().scheduleDeferred( cmd );
 				}
 			} );
+
 		}
 		else
 		{
-			m_nameCompletionSettingsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_nameCompletionSettingsDlg.init();
-			m_nameCompletionSettingsDlg.setPopupPosition( x, y );
-			m_nameCompletionSettingsDlg.show();
+			RunAsyncCmd initAndShowCmd;
+			RunAsyncInitAndShowParams params;
+		
+			params = new RunAsyncInitAndShowParams();
+			params.setUIObj( m_nameCompletionSettingsDlg );
+			params.setWidth( new Integer( m_dlgWidth ) );
+			params.setHeight( new Integer( m_dlgHeight ) );
+			params.setLeft( new Integer( x ) );
+			params.setTop( new Integer( y ) );
+		
+			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
+
+			// Run an async cmd to show the dialog.
+			NameCompletionSettingsDlg.runAsyncCmd( initAndShowCmd, null );
 		}
 	}
 
@@ -1885,8 +1905,8 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onInvokeConfigureAdhocFoldersDlg( InvokeConfigureAdhocFoldersDlgEvent event )
 	{
-		int x;
-		int y;
+		final int x;
+		final int y;
 		
 		// Get the position of the content control.
 		x = m_contentControlX;
@@ -1897,18 +1917,28 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			int width;
 			int height;
+			RunAsyncCmd createCmd;
+			RunAsyncCreateDlgParams params;
 			
 			// No, create one.
 			height = m_dlgHeight;
 			width = m_dlgWidth;
-			ConfigureAdhocFoldersDlg.createAsync(
-											true, 
-											false,
-											x, 
-											y,
-											width,
-											height,
-											new ConfigureAdhocFoldersDlgClient()
+			
+			// No, create it.
+			params = new RunAsyncCreateDlgParams();
+			params.setAutoHide( new Boolean( true ) );
+			params.setModal( new Boolean( false ) );
+			params.setLeft( new Integer( x ) );
+			params.setTop( new Integer( y ) );
+			params.setHeight( new Integer( height ) );
+			params.setWidth( new Integer( width ) );
+
+			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
+			
+			// Run an async cmd to create the dialog.
+			ConfigureAdhocFoldersDlg.runAsyncCmd(
+									createCmd,
+									new ConfigureAdhocFoldersDlgClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -1917,19 +1947,18 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				
 				@Override
-				public void onSuccess( final ConfigureAdhocFoldersDlg cafDlg )
+				public void onSuccess( ConfigureAdhocFoldersDlg cafDlg )
 				{
 					ScheduledCommand cmd;
+					
+					m_configureAdhocFoldersDlg = cafDlg;
 					
 					cmd = new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
-							m_configureAdhocFoldersDlg = cafDlg;
-							
-							m_configureAdhocFoldersDlg.init( null );
-							m_configureAdhocFoldersDlg.show();
+							invokeConfigureAdhocFoldersDlg( x, y );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1938,10 +1967,31 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureAdhocFoldersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_configureAdhocFoldersDlg.init( null );
-			m_configureAdhocFoldersDlg.setPopupPosition( x, y );
-			m_configureAdhocFoldersDlg.show();
+			invokeConfigureAdhocFoldersDlg( x, y );
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void invokeConfigureAdhocFoldersDlg( int x, int y )
+	{
+		if ( m_configureAdhocFoldersDlg != null )
+		{
+			RunAsyncCmd initAndShowCmd;
+			RunAsyncInitAndShowParams params;
+		
+			params = new RunAsyncInitAndShowParams();
+			params.setUIObj( m_configureAdhocFoldersDlg );
+			params.setWidth( new Integer( m_dlgWidth ) );
+			params.setHeight( new Integer( m_dlgHeight ) );
+			params.setLeft( new Integer( x ) );
+			params.setTop( new Integer( y ) );
+		
+			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
+
+			// Run an async cmd to show the dialog.
+			ConfigureAdhocFoldersDlg.runAsyncCmd( initAndShowCmd, null );
 		}
 	}
 	
@@ -1978,68 +2028,81 @@ public class AdminControl extends TeamingPopupPanel
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				int x;
-				int y;
 				final GwtFileSyncAppConfiguration fileSyncAppConfiguration;
-
+				ScheduledCommand cmd1;
 
 				fileSyncAppConfiguration = (GwtFileSyncAppConfiguration) response.getResponseData();
 				
-				// Get the position of the content control.
-				x = m_contentControlX;
-				y = m_contentControlY;
-				
-				// Have we already created a "Configure File Sync App" dialog?
-				if ( m_configureFileSyncAppDlg == null )
+				cmd1 = new Scheduler.ScheduledCommand()
 				{
-					int width;
-					int height;
-					
-					// No, create one.
-					height = m_dlgHeight;
-					width = m_dlgWidth;
-					ConfigureFileSyncAppDlg.createAsync(
-							true, 
-							false,
-							x, 
-							y,
-							width,
-							height,
-							new ConfigureFileSyncAppDlgClient()
-					{			
-						@Override
-						public void onUnavailable()
-						{
-							// Nothing to do.  Error handled in asynchronous provider.
-						}
+					@Override
+					public void execute()
+					{
+						final int x;
+						final int y;
+
+						// Get the position of the content control.
+						x = m_contentControlX;
+						y = m_contentControlY;
 						
-						@Override
-						public void onSuccess( final ConfigureFileSyncAppDlg cfsaDlg )
+						// Have we already created a "Configure File Sync App" dialog?
+						if ( m_configureFileSyncAppDlg == null )
 						{
-							ScheduledCommand cmd;
+							int width;
+							int height;
+							RunAsyncCmd createCmd;
+							RunAsyncCreateDlgParams params;
 							
-							cmd = new ScheduledCommand()
-							{
+							// No, create it.
+							height = m_dlgHeight;
+							width = m_dlgWidth;
+							params = new RunAsyncCreateDlgParams();
+							params.setAutoHide( new Boolean( true ) );
+							params.setModal( new Boolean( false ) );
+							params.setLeft( new Integer( x ) );
+							params.setTop( new Integer( y ) );
+							params.setWidth( new Integer( width ) );
+							params.setHeight( new Integer( height ) );
+
+							createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
+							
+							// Run an async cmd to create the dialog.
+							ConfigureFileSyncAppDlg.runAsyncCmd(
+															createCmd,
+															new ConfigureFileSyncAppDlgClient()
+							{			
 								@Override
-								public void execute() 
+								public void onUnavailable()
 								{
-									m_configureFileSyncAppDlg = cfsaDlg;
-									
-									m_configureFileSyncAppDlg.init( fileSyncAppConfiguration );
-									m_configureFileSyncAppDlg.show();
+									// Nothing to do.  Error handled in asynchronous provider.
 								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
+								
+								@Override
+								public void onSuccess( ConfigureFileSyncAppDlg cfsaDlg )
+								{
+									ScheduledCommand cmd;
+									
+									m_configureFileSyncAppDlg = cfsaDlg;
+
+									cmd = new ScheduledCommand()
+									{
+										@Override
+										public void execute() 
+										{
+											invokeConfigureFileSyncAppDlg( x, y, fileSyncAppConfiguration );
+										}
+									};
+									Scheduler.get().scheduleDeferred( cmd );
+								}
+							} );
 						}
-					} );
-				}
-				else
-				{
-					m_configureFileSyncAppDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-					m_configureFileSyncAppDlg.init( fileSyncAppConfiguration );
-					m_configureFileSyncAppDlg.setPopupPosition( x, y );
-					m_configureFileSyncAppDlg.show();
-				}
+						else
+						{
+							invokeConfigureFileSyncAppDlg( x, y, fileSyncAppConfiguration );
+						}
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd1 );
 			}
 		};
 
@@ -2052,6 +2115,28 @@ public class AdminControl extends TeamingPopupPanel
 			cmd = new GetFileSyncAppConfigurationCmd();
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void invokeConfigureFileSyncAppDlg( int x, int y, GwtFileSyncAppConfiguration fileSyncAppConfig )
+	{
+		RunAsyncCmd initAndShowCmd;
+		ConfigureFileSyncAppDlgInitAndShowParams params;
+	
+		params = new ConfigureFileSyncAppDlgInitAndShowParams();
+		params.setConfig( fileSyncAppConfig );
+		params.setUIObj( m_configureFileSyncAppDlg );
+		params.setWidth( new Integer( m_dlgWidth ) );
+		params.setHeight( new Integer( m_dlgHeight ) );
+		params.setLeft( new Integer( x ) );
+		params.setTop( new Integer( y ) );
+	
+		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
+
+		// Run an async cmd to show the dialog.
+		ConfigureFileSyncAppDlg.runAsyncCmd( initAndShowCmd, null );
 	}
 	
 

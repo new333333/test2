@@ -46,13 +46,15 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
+import org.kablink.teaming.gwt.client.util.runasync.RunAsyncInitAndShowParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -412,23 +414,15 @@ public class NameCompletionSettingsDlg extends DlgBox
 	}
 	
 	/**
-	 * Loads the NameCompletionSettingsDlg split point and returns an instance
-	 * of it via the callback.
-	 * 
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
 	 */
-	public static void createAsync(
-							final boolean autoHide,
-							final boolean modal,
-							final int left,
-							final int top,
-							final int width,
-							final int height,
-							final NameCompletionSettingsDlgClient ncsDlgClient )
+	public static void runAsyncCmd( final RunAsyncCmd cmd, final NameCompletionSettingsDlgClient ncsDlgClient )
 	{
 		GWT.runAsync( NameCompletionSettingsDlg.class, new RunAsyncCallback()
 		{
 			@Override
-			public void onFailure(Throwable reason)
+			public void onFailure( Throwable reason )
 			{
 				if ( ncsDlgClient != null )
 				{
@@ -439,17 +433,54 @@ public class NameCompletionSettingsDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				NameCompletionSettingsDlg ncsDlg;
-				
-				ncsDlg = new NameCompletionSettingsDlg(
-												autoHide,
-												modal,
-												left,
-												top,
-												width,
-												height );
-				ncsDlgClient.onSuccess( ncsDlg );
+				switch ( cmd.getCmdType() )
+				{
+				case CREATE:
+				{
+					NameCompletionSettingsDlg ncsDlg;
+					RunAsyncCreateDlgParams params;
+					
+					params = (RunAsyncCreateDlgParams) cmd.getParams();
+					ncsDlg = new NameCompletionSettingsDlg(
+														params.getAutoHide(),
+														params.getModal(),
+														params.getLeft(),
+														params.getTop(),
+														params.getWidth(),
+														params.getHeight() );
+					
+					if ( ncsDlgClient != null )
+						ncsDlgClient.onSuccess( ncsDlg );
+					
+					break;
+				}
+					
+				case INIT_AND_SHOW:
+				{
+					RunAsyncInitAndShowParams params;
+					NameCompletionSettingsDlg dlg;
+					
+					params = (RunAsyncInitAndShowParams)cmd.getParams();
+					dlg = (NameCompletionSettingsDlg) params.getUIObj();
+					
+					if ( params.getWidth() != null && params.getHeight() != null )
+						dlg.setPixelSize( params.getWidth(), params.getHeight() );
+					
+					dlg.init();
+					
+					if ( params.getLeft() != null && params.getTop() != null )
+						dlg.setPopupPosition( params.getLeft(), params.getTop() );
+					
+					dlg.show();
+
+					break;
+				}
+					
+				case UNKNOWN:
+				default:
+					break;
+				}
 			}
-		});
+		} );
 	}
 }
