@@ -75,9 +75,11 @@ import org.kablink.util.search.Restrictions;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -395,6 +397,29 @@ public class SelfResource extends AbstractFileResource {
         }
         SearchResultList<FileProperties> resultList = _getMyFilesLibraryFiles(fileName, recursive, includeParentPaths, offset, maxCount);
         return Response.ok(resultList).lastModified(lastModified).build();
+    }
+
+    @POST
+    @Path("/my_files/library_files")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public FileProperties copyFile(@FormParam("file_name") String fileName,
+                                   @FormParam("source_id") String sourceId,
+                                   @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        Folder folder = getMyFilesFileParent();
+        FileAttachment existing = findFileAttachment(sourceId);
+        org.kablink.teaming.domain.DefinableEntity origEntry = existing.getOwner().getEntity();
+        org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().copyEntry(origEntry.getParentBinder().getId(),
+                origEntry.getId(), folder.getId(), new String[] {fileName}, null);
+        Set<Attachment> attachments = newEntry.getAttachments();
+        for (Attachment attachment : attachments) {
+            if (attachment instanceof FileAttachment) {
+                FileProperties file = ResourceUtil.buildFileProperties((FileAttachment) attachment);
+                file.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+                return file;
+            }
+        }
+        return null;
     }
 
     @POST
