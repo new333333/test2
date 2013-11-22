@@ -133,7 +133,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().edirDomain());
 					}
 					
-					else if (value.isObjectClassFound("organizationalunit") || value.isObjectClassFound("container")) {
+					else if (value.isObjectClassFound("organizationalunit") || value.isObjectClassFound("container") || value.isObjectClassFound("builtinDomain")) {
 						// Show Container icon.
 						img = GwtClientHelper.buildImage(GwtTeaming.getLdapBrowserImageBundle().organizationalUnit());
 					}
