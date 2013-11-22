@@ -93,6 +93,7 @@ import org.kablink.teaming.util.FileIconsHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListUtil;
@@ -2246,7 +2247,7 @@ public class GwtActivityStreamHelper {
 				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_BY_ME)  );
 				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.NET_FOLDERS)   );
 			}
-			if (GwtUIHelper.getEffectivePublicCollectionSetting(bs, currentUser)) {
+			if (AdminHelper.getEffectivePublicCollectionSetting(bs, currentUser)) {
 				rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_PUBLIC ));
 			}
 			

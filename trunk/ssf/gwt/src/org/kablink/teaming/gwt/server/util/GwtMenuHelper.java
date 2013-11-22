@@ -1004,7 +1004,7 @@ public class GwtMenuHelper {
 		}
 		
 		// ...for My Files, Shared by/with Me lists and file folders...
-		boolean canDownload = GwtUIHelper.getEffectiveDownloadSetting(bs, user);
+		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, user);
 		if (canDownload && isEntryContainer && (isMyFilesCollection || isSharedCollection || GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)))) {
 			// ...allow the user to zip and download the selected
 			// ...files...
@@ -1729,7 +1729,7 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for zipping and downloading a file.
 	 */
 	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
-		boolean canDownload = GwtUIHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
+		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
 		if (canDownload && (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true))) {
 			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload"              );
 			markTBITitle(   zipAndDownloadTBI, "toolbar.zipAndDownload"                     );
@@ -1743,7 +1743,7 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for zipping and downloading a folder.
 	 */
 	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
-		boolean canDownload = GwtUIHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
+		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
 		if (canDownload && bs.getBinderModule().testAccess(folder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder))) {
 			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload");
 			markTBITitle(         zipAndDownloadTBI, "toolbar.menu.zipAndDownloadFolder"  );
@@ -1879,7 +1879,7 @@ public class GwtMenuHelper {
 			}
 			
 			// Is this a folder whose entries can be read by the user?
-			boolean canDownload = GwtUIHelper.getEffectiveDownloadSetting(bs, user);
+			boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, user);
 			if (canDownload && isFolder && bm.testAccess(binder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, binder))) {
 				// Yes!  Add a ToolbarItem for for zipping and
 				// downloading its files.
@@ -3792,7 +3792,7 @@ public class GwtMenuHelper {
 			}
 			
 			// Is this a file entry?
-			boolean canDownload = GwtUIHelper.getEffectiveDownloadSetting(bs, user);
+			boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, user);
 			if (canDownload && (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true))) {
 				// Yes!  Allow the user to zip and download it.
 				actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD                            );

@@ -61,7 +61,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -72,7 +71,6 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
@@ -145,24 +143,6 @@ public class GwtUIHelper {
 	// here.
 	private final static int	UNKNOWN_ACTIVITY_STREAM	= 0;	// ActivityStream.UNKNOWN.
 
-	/**
-	 * Enumeration used to specify where a file link is being used.
-	 * 
-	 * See the implementation of getEffectiveFileLinkAction() below.
-	 */
-	public enum FileLinkLocation {
-		SEARCH_RESULTS,
-		OTHER;
-		
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public boolean isSearchResults() {return SEARCH_RESULTS.equals(this);}
-		public boolean isOther()         {return OTHER.equals(         this);}
-	}
-	
 	/**
 	 * Inner class used by addTrackBinderToToolbar() to assist in
 	 * building the toolbar items to support tracking.
@@ -645,154 +625,6 @@ public class GwtUIHelper {
 	 */
 	public static Boolean getAdhocFolderSettingFromZone(AllModulesInjected ami) {
 		return AdminHelper.getAdhocFolderSettingFromZone(ami);
-	}
-	
-	/**
-	 * Return the effective 'AdHoc folder' setting from the given user.
-	 * We will look in the user's properties first for a value.  If one
-	 * is not found we will get the setting from the zone.
-	 * 
-	 * @param ami
-	 * @param user
-	 * 
-	 * @return
-	 */
-	public static Boolean getEffectiveAdhocFolderSetting(AllModulesInjected ami, User user) {
-		return AdminHelper.getEffectiveAdhocFolderSetting(ami, user);
-	}
-	
-	/**
-	 * Return the effective 'Download' setting from the given user.  We
-	 * will look in the user's properties first for a value.  If one is
-	 * not found we will get the setting from the zone.
-	 * 
-	 * @param bs
-	 * @param user
-	 * 
-	 * @return
-	 */
-	public static Boolean getEffectiveDownloadSetting(AllModulesInjected bs, User user) {
-		return AdminHelper.getEffectiveDownloadSetting(bs, user);
-	}
-	
-	/**
-	 * Return the effective 'File Link Action' setting from the given
-	 * user.
-	 * 
-	 * If the user has a value stored in their preferences, that value
-	 * will be validated against their effective download setting an the
-	 * appropriate enumeration will be returned.
-	 * 
-	 * If the user does NOT have a value stored in their preferences,
-	 * an appropriate default enumeration will be returned.
-	 * 
-	 * @param bs
-	 * @param user
-	 * @param fll
-	 * 
-	 * @return
-	 */
-	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user, FileLinkLocation fll) {
-		// Is this Filr?
-		FileLinkAction reply;
-		if (Utils.checkIfFilr()) {
-			// Yes!
-			boolean        canDownload   = getEffectiveDownloadSetting(bs, user);
-			FileLinkAction defaultFLA    = (canDownload ? FileLinkAction.DOWNLOAD : FileLinkAction.VIEW_HTML_ELSE_DETAILS);
-			FileLinkAction calculatedFLA = null;
-			if (!(user.isShared())) {
-				UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
-				String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
-				if (!(MiscUtil.hasString(flaS))) {
-					flaS = String.valueOf(FileLinkAction.DOWNLOAD.ordinal());
-				}
-				try {
-					int flaI      = Integer.parseInt(      flaS);
-					calculatedFLA = FileLinkAction.getEnum(flaI);
-					if (!canDownload) {
-						switch (calculatedFLA) {
-						case DOWNLOAD:
-						case VIEW_HTML_ELSE_DOWNLOAD:
-							calculatedFLA = FileLinkAction.VIEW_HTML_ELSE_DETAILS;
-							break;
-							
-						default:
-							break;
-						}
-					}
-				}
-				catch (NumberFormatException nfe) {
-					m_logger.warn("GwtUIHelper.getEffectiveFileLinkAction():  file link action is not an integer.", nfe);
-				}
-			}
-			reply = ((null == calculatedFLA) ? defaultFLA : calculatedFLA);
-		}
-		
-		else {
-			// No, this isn't Filr!  For Vibe, we download from the
-			// search results and view details from everywhere else.
-			reply = 
-				(fll.isSearchResults()      ?
-					FileLinkAction.DOWNLOAD :
-					FileLinkAction.VIEW_DETAILS);
-		}
-
-		// If we get here, reply contains the user's effective
-		// FileLinkAction.  Return it.
-		return reply;
-	}
-	
-	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user) {
-		// Always use the initial form of the method.
-		return getEffectiveFileLinkAction(bs, user, FileLinkLocation.OTHER);
-	}
-	
-	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, Long userId, FileLinkLocation fll) {
-		// Always use the initial form of the method.
-		return getEffectiveFileLinkAction(bs, getUserSafely(bs.getProfileModule(), userId), fll);
-	}
-	
-	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, Long userId) {
-		// Always use the initial form of the method.
-		return getEffectiveFileLinkAction(bs, getUserSafely(bs.getProfileModule(), userId), FileLinkLocation.OTHER);
-	}
-	
-	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, FileLinkLocation fll) {
-		// Always use the initial form of the method.
-		return getEffectiveFileLinkAction(bs, RequestContextHolder.getRequestContext().getUser(), fll);
-	}
-	
-	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs) {
-		// Always use the initial form of the method.
-		return getEffectiveFileLinkAction(bs, RequestContextHolder.getRequestContext().getUser(), FileLinkLocation.OTHER);
-	}
-	
-	/**
-	 * Return the effective 'Public Collection' setting from the given
-	 * user.  We will look in the user's properties first for a value.
-	 * If one is not found we will get the setting from the zone.
-	 * 
-	 * @param bs
-	 * @param user
-	 * 
-	 * @return
-	 */
-	public static Boolean getEffectivePublicCollectionSetting(AllModulesInjected bs, User user) {
-		return AdminHelper.getEffectivePublicCollectionSetting(bs, user);
-	}
-	
-	/**
-	 * Return the effective 'WebAccess' setting from the given user.
-	 * We will look in the user's properties first for a value.  If one
-	 * is not found we will get the setting from the zone.
-	 * 
-	 * @param bs
-	 * @param user
-	 * 
-	 * @return
-	 */
-	public static Boolean getEffectiveWebAccessSetting(AllModulesInjected bs, User user) {
-		return AdminHelper.getEffectiveWebAccessSetting(bs, user);
 	}
 	
 	/**
@@ -1646,7 +1478,7 @@ public class GwtUIHelper {
 		
 		// Put out a flag indicating if the user should see a 'Public'
 		// collection.
-		model.put("showPublicCollection", getEffectivePublicCollectionSetting(bs, currentUser));
+		model.put("showPublicCollection", AdminHelper.getEffectivePublicCollectionSetting(bs, currentUser));
 		
 		// Put out the flag that tells us if the tinyMCE editor will
 		// work on the device we are running on.  Get the list of user
