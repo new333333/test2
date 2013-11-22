@@ -66,7 +66,7 @@ public class LdapSearchInfo implements IsSerializable {
 	public static final String RETURN_GROUPS_AD = "(|"
 			+ "(objectclass=container)(objectclass=domain)(objectclass=organization)(objectclass=organizationalUnit)(objectclass=organizationalRole)(objectclass=country)(objectclass=locality)(&(objectCategory=group)(!(groupType:1.2.840.113556.1.4.803:=2147483648)))(objectclass=groupWiseDistributionList)(objectclass=groupOfNames))";
 
-	public static final String RETURN_CONTAINERS_ONLY = "(|(objectclass=organization)(objectclass=organizationalUnit)(objectclass=container)(objectclass=domain)(objectclass=country)(objectclass=locality))";
+	public static final String RETURN_CONTAINERS_ONLY = "(|(objectclass=organization)(objectclass=organizationalUnit)(objectclass=container)(objectclass=domain)(objectclass=country)(objectclass=locality)(objectclass=builtinDomain))";
 
 	/**
 	 * Constructor method.
