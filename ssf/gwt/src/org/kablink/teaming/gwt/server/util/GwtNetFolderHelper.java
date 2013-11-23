@@ -250,6 +250,7 @@ public class GwtNetFolderHelper
 
 			newNetFolder = new NetFolder();
 			newNetFolder.setName( netFolder.getName() );
+			newNetFolder.setDisplayName( netFolder.getName() );
 			newNetFolder.setNetFolderRootName( netFolder.getNetFolderRootName() );
 			newNetFolder.setRelativePath( netFolder.getRelativePath() );
 			newNetFolder.setId( binder.getId() );
@@ -1157,8 +1158,11 @@ public class GwtNetFolderHelper
     						status = NetFolderSyncStatus.SYNC_STOPPED;
     						break;
     						
-    					case interrupted:
     					case deleting:
+    						status = NetFolderSyncStatus.DELETE_IN_PROGRESS;
+    						break;
+
+    					case interrupted:
     						status = NetFolderSyncStatus.UNKNOWN;
     						break;
     					}
