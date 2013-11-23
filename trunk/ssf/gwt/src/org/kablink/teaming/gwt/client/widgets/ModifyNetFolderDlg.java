@@ -706,14 +706,24 @@ public class ModifyNetFolderDlg extends DlgBox
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				NetFolderCreatedEvent event;
-				NetFolder netFolder;
+				ScheduledCommand cmd;
+				final NetFolder netFolder;
 				
 				netFolder = (NetFolder) result.getResponseData();
 				
-				// Fire an event that lets everyone know a net folder was created.
-				event = new NetFolderCreatedEvent( netFolder );
-				GwtTeaming.fireEvent( event );
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						NetFolderCreatedEvent event;
+
+						// Fire an event that lets everyone know a net folder was created.
+						event = new NetFolderCreatedEvent( netFolder );
+						GwtTeaming.fireEvent( event );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 
 				hideStatusMsg();
 				setOkEnabled( true );

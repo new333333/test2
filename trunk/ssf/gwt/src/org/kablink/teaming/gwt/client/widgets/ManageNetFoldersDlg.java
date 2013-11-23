@@ -110,7 +110,6 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.view.client.Range;
 
 /**
  * ?
@@ -752,6 +751,12 @@ public class ManageNetFoldersDlg extends DlgBox
 			DeleteNetFoldersCmd cmd;
 			AsyncCallback<VibeRpcResponse> rpcCallback = null;
 	
+			// Mark each of the selected net folders as "deleting"
+			for ( NetFolder nextNetFolder : listOfNetFoldersToDelete )
+			{
+				nextNetFolder.setStatus( NetFolderSyncStatus.DELETE_IN_PROGRESS );
+			}
+
 			// Create the callback that will be used when we issue an ajax call
 			// to delete the net folders.
 			rpcCallback = new AsyncCallback<VibeRpcResponse>()
@@ -787,8 +792,6 @@ public class ManageNetFoldersDlg extends DlgBox
 						@Override
 						public void execute()
 						{
-							int numDeleted = 0;
-
 							if ( response != null &&
 								 response.getResponseData() instanceof DeleteNetFolderRpcResponseData )
 							{
@@ -815,9 +818,11 @@ public class ManageNetFoldersDlg extends DlgBox
 										for ( Entry<NetFolder,DeleteNetFolderResult> nextEntry : entrySet )
 										{
 											NetFolder nextNetFolder;
+											NetFolder ourNetFolder;
 											DeleteNetFolderResult result;
 											
 											nextNetFolder = nextEntry.getKey();
+											ourNetFolder = findNetFolderById( nextNetFolder.getId() );
 											result = nextEntry.getValue();
 											
 											switch ( result.getStatus() )
@@ -828,17 +833,15 @@ public class ManageNetFoldersDlg extends DlgBox
 												label = new Label( GwtTeaming.getMessages().manageNetFoldersDlg_DeleteNetFolderErrorMsg( nextNetFolder.getName(), result.getErrorMsg() ) );
 												label.addStyleName( "dlgErrorLabel" );
 												errorPanel.add( label );
+												
+												if ( ourNetFolder != null )
+													ourNetFolder.setStatus( NetFolderSyncStatus.DELETE_FAILED );
+												
 												break;
 											
 											case SUCCESS:
-												NetFolder netFolder;
-												
-												netFolder = findNetFolderById( nextNetFolder.getId() );
-												if ( netFolder != null )
-												{
-													m_listOfNetFolders.remove( netFolder );
-													++numDeleted;
-												}
+												if ( ourNetFolder != null )
+													m_listOfNetFolders.remove( ourNetFolder );
 												
 												break;
 											}
@@ -854,9 +857,6 @@ public class ManageNetFoldersDlg extends DlgBox
 							// Clear all selections.
 							m_selectionModel.clear();
 							
-							// Tell the table how many net folders we have.
-							m_netFoldersTable.setRowCount( m_netFoldersTable.getRowCount()-numDeleted, true );
-
 							// Update the table to reflect the fact that we deleted a net folder.
 							refresh();
 						}
@@ -936,10 +936,6 @@ public class ManageNetFoldersDlg extends DlgBox
 						if ( responseData != null )
 						{
 							List<NetFolder> listOfNetFolders;
-							int count;
-
-							count = responseData.getTotalCount();
-							m_netFoldersTable.setRowCount( count, true );
 
 							listOfNetFolders = responseData.getListOfNetFolders();
 							addNetFolders( startIndex, listOfNetFolders );
@@ -1413,9 +1409,6 @@ public class ManageNetFoldersDlg extends DlgBox
 					// Select the newly created folder.
 					m_selectionModel.setSelected( netFolder, true );
 
-					// Tell the table how many folders we have.
-					m_netFoldersTable.setRowCount( m_netFoldersTable.getRowCount()+1, true );
-					
 					// Update the table to reflect the new folder we just created.
 					refresh();
 					
@@ -1502,16 +1495,8 @@ public class ManageNetFoldersDlg extends DlgBox
 	 */
 	private void refresh()
 	{
-		Range[] ranges;
-		
-		ranges = m_dataProvider.getRanges();
-		if ( ranges != null && ranges.length == 1 )
-		{
-			int start;
-			
-			start = ranges[0].getStart();
-			m_dataProvider.updateRowData( start, m_listOfNetFolders );
-		}
+		m_dataProvider.updateRowData( 0, m_listOfNetFolders );
+		m_dataProvider.updateRowCount( m_listOfNetFolders.size(), true );
 	}
 
 	/**
@@ -1679,6 +1664,30 @@ public class ManageNetFoldersDlg extends DlgBox
 							listOfNetFolders = responseData.getListOfNetFolders();
 							
 							updateFolderStatus( listOfNetFolders );
+							
+							// The sync has started.  Now issue a request to get the sync status
+							{
+								Timer timer;
+								
+								timer = new Timer()
+								{
+									@Override
+									public void run()
+									{
+										HashSet<NetFolder> listOfNetFoldersToCheck;
+										
+										listOfNetFoldersToCheck = new HashSet<NetFolder>();
+										
+										for ( NetFolder nextFolder : selectedFolders )
+										{
+											listOfNetFoldersToCheck.add( nextFolder );
+										}
+
+										checkSyncStatus( listOfNetFoldersToCheck );
+									}
+								};
+								timer.schedule( 5000 );
+							}
 						}
 					}
 				};

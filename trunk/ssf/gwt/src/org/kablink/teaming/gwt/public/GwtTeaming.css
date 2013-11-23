@@ -4548,7 +4548,7 @@ td.datePickerMonth {
 	padding-right: 10px;
 }
 
-.groupStatus, .ldapSyncStatus
+.groupStatus, .ldapSyncStatus, .netFolderStatus
 {
 	color: #949494;
 	font-family: Arial,sans-serif;

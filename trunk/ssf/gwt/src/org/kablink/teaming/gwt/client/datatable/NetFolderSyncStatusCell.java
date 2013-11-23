@@ -227,6 +227,20 @@ public class NetFolderSyncStatusCell extends AbstractCell<NetFolder>
 				sb.appendHtmlConstant( m_waitingForSyncImgHtml );
 				break;
 				
+			case DELETE_FAILED:
+				// Add a status message
+				sb.appendHtmlConstant( "<span class=\"netFolderStatus\">" );
+				sb.appendEscaped( GwtTeaming.getMessages().manageNetFoldersDlg_DeleteFailed() );
+				sb.appendHtmlConstant( "</span>" );
+				break;
+				
+			case DELETE_IN_PROGRESS:
+				// Add a status message
+				sb.appendHtmlConstant( "<span class=\"netFolderStatus\">" );
+				sb.appendEscaped( GwtTeaming.getMessages().manageNetFoldersDlg_DeleteInProgress() );
+				sb.appendHtmlConstant( "</span>" );
+				break;
+				
 			default:
 				sb.appendHtmlConstant( m_syncStatusUnknownImgHtml );
 			}

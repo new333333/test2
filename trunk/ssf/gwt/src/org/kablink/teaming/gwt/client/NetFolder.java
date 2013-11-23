@@ -74,6 +74,8 @@ public class NetFolder
 		SYNC_COMPLETED,
 		SYNC_NEVER_RUN,
 		SYNC_CANCELED,		// The net folder was waiting to be sync'd and the admin canceled the sync.
+		DELETE_IN_PROGRESS,
+		DELETE_FAILED,
 		UNKNOWN
 	}
 	
@@ -126,6 +128,9 @@ public class NetFolder
 	 */
 	public String getDisplayName()
 	{
+		if ( m_displayName == null || m_displayName.length() == 0 )
+			return m_name;
+		
 		return m_displayName;
 	}
 	
