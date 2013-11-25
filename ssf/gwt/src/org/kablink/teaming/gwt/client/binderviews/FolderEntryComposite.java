@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.event.EventsHandledBySourceMarker;
 import org.kablink.teaming.gwt.client.event.FolderEntryActionCompleteEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
@@ -116,6 +117,7 @@ public class FolderEntryComposite extends ResizeComposite
 		FolderEntryActionCompleteEvent.Handler,
 		InvokeEditInPlaceEvent.Handler,
 		LockSelectedEntitiesEvent.Handler,
+		MailToPublicLinkEntityEvent.Handler,
 		MarkReadSelectedEntitiesEvent.Handler,
 		MarkUnreadSelectedEntitiesEvent.Handler,
 		MoveSelectedEntitiesEvent.Handler,
@@ -135,7 +137,8 @@ public class FolderEntryComposite extends ResizeComposite
 	private FolderEntryMenu					m_menuArea;					// The menu     portion of the view.
 	private FolderEntrySidebar				m_sidebarArea;				// The sidebar  portion of the view.
 	private FooterPanel						m_footerPanel;				// Footer at the bottom of the view with the permalink, ...
-	private FormPanel						m_downloadForm;				// A <FORM> used for downloading a file.
+	private FormPanel						m_downloadForm;				// A <FORM> used for download URLs.
+	private FormPanel						m_mailToForm;				// A <FORM> used for mail to  URLs.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private int								m_readyComponents;			// Components that are ready, incremented as they callback.
@@ -186,6 +189,7 @@ public class FolderEntryComposite extends ResizeComposite
 		TeamingEvents.FOLDER_ENTRY_ACTION_COMPLETE,
 		TeamingEvents.INVOKE_EDIT_IN_PLACE,
 		TeamingEvents.LOCK_SELECTED_ENTITIES,
+		TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY,
 		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
 		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
 		TeamingEvents.MOVE_SELECTED_ENTITIES,
@@ -232,8 +236,9 @@ public class FolderEntryComposite extends ResizeComposite
 		m_contentGridFCF.setWidth(            CONTENT_ROW, CONTENT_CELL, "100%"                        );
 		m_contentGridFCF.setVerticalAlignment(CONTENT_ROW, CONTENT_CELL, HasVerticalAlignment.ALIGN_TOP);
 		m_rootPanel.add(m_contentGrid);
-		m_downloadForm = new FormPanel();
-		m_downloadForm.setMethod(FormPanel.METHOD_POST);
+		m_mailToForm = MailToPanel.createMailToForm();
+		m_contentPanel.add(m_mailToForm);
+		m_downloadForm = DownloadPanel.createDownloadForm();
 		m_contentPanel.add(m_downloadForm);
 		initWidget(m_rootPanel);
 
@@ -1009,6 +1014,44 @@ public class FolderEntryComposite extends ResizeComposite
 			new FolderEntryActionCompleteEvent(
 				m_vfei.getEntityId(),
 				false));
+	}
+	
+	/**
+	 * Handles MailToPublicLinkEntityEvent's received by this class.
+	 * 
+	 * Implements the MailToPublicLinkEntityEvent.Handler.onMailToPublicLinkEntity() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMailToPublicLinkEntity(MailToPublicLinkEntityEvent event) {
+		// Is the event targeted to this entry?
+		EntityId entityId = event.getEntityId();
+		if (isCompositeEntry(entityId)) {
+			// Yes!  Run the mail public link on it.
+			onMailToPublicLinkEntityAsync(entityId);
+		}
+	}
+
+	/*
+	 * Asynchronously handles mailing the public link of the folder
+	 * entry.
+	 */
+	private void onMailToPublicLinkEntityAsync(final EntityId entityId) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onMailToPublicLinkEntityNow(entityId);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously handles mailing the public link of the folder
+	 * entry.
+	 */
+	private void onMailToPublicLinkEntityNow(EntityId entityId) {
+		BinderViewsHelper.mailToPublicLink(m_mailToForm, entityId);
 	}
 	
 	/**

@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -83,6 +84,8 @@ import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData.MailToPublicLinkInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PublicLinksRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateShareListsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -739,6 +742,46 @@ public class GwtShareHelper
 		}		
 		
 		return shareItem;
+	}
+
+	/*
+	 * Returns a List<ShareItem> of all the public link shares for the
+	 * given entity.
+	 */
+	private static List<ShareItem> getPublicLinkShareItems( AllModulesInjected bs, Long sharerId, EntityId entityId )
+	{
+				
+		// Set up the search criteria to get the shares on this entity.
+		ShareItemSelectSpec spec = new ShareItemSelectSpec();
+		spec.setSharerId( Long.valueOf( sharerId ) );
+		EntityIdentifier entityIdentifier = getEntityIdentifierFromEntityId( entityId );
+		spec.setSharedEntityIdentifier( entityIdentifier );
+		spec.setLatest( true );
+		
+		// Are there shares on it?
+		List<ShareItem> reply = bs.getSharingModule().getShareItems( spec );
+		if ( MiscUtil.hasItems( reply ))
+		{
+			// Yes!  Scan them.
+			for ( ShareItem si:  reply )
+			{
+				// Should we return this as public link share?
+				boolean ignore = (
+					si.isDeleted()          ||							// Not if it's deleted...
+					( ! ( si.isLatest() ) ) ||							// ...or if it's not the latest version of this share...
+					( ! (MiscUtil.hasString(si.getPassKey() ) ) ) );	// ...or if it's not a public link share.
+				
+				if ( ignore )
+				{
+					// No!  Remove it from the list.
+					reply.remove( si );
+				}
+			}
+		}
+
+		// If we get here, reply refers to a List<ShareItem> of the
+		// public link shares against the entity.  Return it. 
+		return reply;
 	}
 	
 	/**
@@ -2972,7 +3015,7 @@ public class GwtShareHelper
 						// attached to this entry?
 						FolderEntry fe      = bs.getFolderModule().getEntry( null, eid.getEntityId() );
 						            feTitle = fe.getTitle();
-						String         fName = MiscUtil.getPrimaryFileName(fe);
+						String      fName   = MiscUtil.getPrimaryFileName(fe);
 						if ( ! ( MiscUtil.hasString( fName ) ) )
 						{
 							// No!  Then we can't build links for it.
@@ -3046,6 +3089,157 @@ public class GwtShareHelper
 					m_logger,
 					e,
 					"GwtShareHelper.getPublicLinks( SOURCE EXCEPTION ):  " );
+		}
+		
+		finally
+		{
+			gsp.stop();
+		}
+	}
+	
+	/**
+	 * Returns a MailToPublicLinksRpcResponseData object containing the
+	 * public links for the specified entity.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param eid
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static MailToPublicLinksRpcResponseData getMailToPublicLinks( AllModulesInjected bs, HttpServletRequest request, EntityId eid ) throws GwtTeamingException
+	{
+		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.getMailToPublicLinks()" );
+		try
+		{
+			// Create a MailToPublicLinksRpcResponseData we can return.
+			MailToPublicLinksRpcResponseData reply = new MailToPublicLinksRpcResponseData();
+
+			// Prepare the common things we need to build public links. 
+			User user                    = GwtServerHelper.getCurrentUser();
+			Long userId                  = user.getId();
+			ShareExpirationValue expires = new ShareExpirationValue();
+			expires.setType( ShareExpirationType.NEVER );
+			
+			// We'll default to using the entity's ID in any
+			// error we generate until we have its title.
+			String feTitle = String.valueOf( eid.getEntityId() );
+			
+			// Is this entity an en entry?
+			if ( ! ( eid.isEntry() ) )
+			{
+				// No!  This should never happen.  Generate an
+				// error and skip it.
+				reply.setError( NLT.get( "mailtoPublicLink.internalError.NotAnEntry", new String[]{ feTitle } ) );
+				return reply;
+			}
+
+			try
+			{
+				// Can we get the name of the primary file
+				// attached to this entry?
+				FolderEntry fe      = bs.getFolderModule().getEntry( null, eid.getEntityId() );
+				            feTitle = fe.getTitle();
+				String      fName   = MiscUtil.getPrimaryFileName(fe);
+				if ( ! ( MiscUtil.hasString( fName ) ) )
+				{
+					// No!  Then we can't build links for it.
+					// Generate an error and skip it.
+					reply.setError( NLT.get( "mailtoPublicLink.error.NoFile", new String[]{ feTitle } ) );
+					return reply;
+				}
+
+				// Synthesize the subject for the mail.
+				String subject = NLT.get( "mailtoPublicLink.subject", new String[] { user.getTitle(), feTitle } );
+				reply.setSubject(subject);
+
+				// Does the current user have any public shares already
+				// available for this file?
+				List<ShareItem> plShares = getPublicLinkShareItems( bs, userId, eid );
+				if ( ! ( MiscUtil.hasItems( plShares )))
+				{
+					// No!  Generate a public link 'share' on the
+					// entry...
+					ShareItem si = buildPublicLinkShareItem( bs, userId, eid, expires, "" );
+					if ( null == si )
+					{
+						reply.setError( NLT.get( "mailtoPublicLink.error.CantShare", new String[]{ feTitle } ) );
+						return reply;
+					}
+					bs.getSharingModule().addShareItem( si );
+
+					// ...and track it.
+					if ( null == plShares )
+					{
+						plShares = new ArrayList<ShareItem>();
+					}
+					plShares.add( si );
+				}
+
+				// Scan the public shares on this file...
+				for ( ShareItem plShare:  plShares )
+				{
+					// ...construct a download link URL for it...
+					Long   siId = plShare.getId();
+					String siPK = plShare.getPassKey();
+					String downloadUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK, fName );
+	
+					// ...and it we support viewing it as HTML,
+					// ...construct a view link URL for it...
+					String viewUrl;
+					if ( GwtViewHelper.supportsViewAsHtml( fName ) )
+					     viewUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fName );
+					else viewUrl = null;
+
+					// ...if the share expires, return its expiration
+					// ...date...
+					String expiration;
+					Date expirationDate = plShare.getEndDate();
+					if ( null == expirationDate )
+					     expiration = null;
+					else expiration = GwtServerHelper.getDateTimeString( expirationDate, DateFormat.MEDIUM, DateFormat.SHORT );
+	
+					// ...and add the mail to public link information
+					// ...to the reply.
+					MailToPublicLinkInfo plLink = new MailToPublicLinkInfo(
+						downloadUrl,
+						viewUrl,
+						plShare.getComment(),
+						expiration );
+					reply.addMailToPublicLink( plLink );
+				}
+			}
+			
+			catch ( Exception e )
+			{
+				// No!  Add an error to the error list...
+				String messageKey;
+				if (e instanceof AccessControlException) messageKey = "mailtoPublicLink.error.AccssControlException";
+				else                                     messageKey = "mailtoPublicLink.error.OtherException";
+				reply.setError( NLT.get( messageKey, new String[]{ feTitle } ) );
+				
+				// ...and log it.
+				GwtLogHelper.error( m_logger, "GwtShareHelper.getMailToPublicLinks( Entry:  '" + feTitle + "', EXCEPTION ):  ", e );
+			}
+			
+			// If we get here, reply refers to a
+			// MailToPublicLinksRpcResponseData containing the results
+			// of obtaining the mail to public links for the entity. 
+			// Return it.
+			return reply;
+		}
+		
+		catch ( Exception e )
+		{
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtShareHelper.getMailToPublicLinks( SOURCE EXCEPTION ):  " );
 		}
 		
 		finally

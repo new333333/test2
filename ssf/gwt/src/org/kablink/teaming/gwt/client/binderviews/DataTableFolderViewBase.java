@@ -111,6 +111,7 @@ import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
 import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
@@ -243,6 +244,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		InvokeDropBoxEvent.Handler,
 		InvokeSignGuestbookEvent.Handler,
 		LockSelectedEntitiesEvent.Handler,
+		MailToPublicLinkEntityEvent.Handler,
 		ManageSharesSelectedEntitiesEvent.Handler,
 		MarkReadSelectedEntitiesEvent.Handler,
 		MarkUnreadSelectedEntitiesEvent.Handler,
@@ -308,7 +310,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	private static final TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD,
@@ -333,6 +335,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
 		TeamingEvents.LOCK_SELECTED_ENTITIES,
+		TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY,
 		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
 		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
 		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
@@ -1909,6 +1912,29 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		});
 	}
 	
+	/*
+	 * Asynchronously mails the public link of the entity using a
+	 * 'mailto://...' URL.
+	 */
+	private void mailToPublicLinkAsync(final EntityId entityId) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				mailToPublicLinkNow(entityId);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously mails the public link of the entity using a
+	 * 'mailto://...' URL.
+	 */
+	private void mailToPublicLinkNow(EntityId entityId) {
+		BinderViewsHelper.mailToPublicLink(
+			getMailToPanel().getForm(),
+			entityId);
+	}
+
 	/**
 	 * Called when the data table is attached.
 	 * 
@@ -2819,6 +2845,24 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
+	 * Handles MailToPublicLinkEntityEvent's received by this class.
+	 * 
+	 * Implements the MailToPublicLinkEntityEvent.Handler.onMailToPublicLinkEntity() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMailToPublicLinkEntity(MailToPublicLinkEntityEvent event) {
+		// Is the event targeted to this folder?
+		EntityId entityId = event.getEntityId();
+		Long eventFolderId = entityId.getBinderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Mail the public link.
+			mailToPublicLinkAsync(entityId);
+		}
+	}
+
+	/**
 	 * Handles ManageSharesSelectedEntitiesEvent's received by this class.
 	 * 
 	 * Implements the ManageSharesSelectedEntitiesEvent.Handler.onManageSharesSelectedEntities() method.
@@ -3591,7 +3635,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.zipAndDownloadFiles(
-				getDownloadPanel().getDownloadForm(),
+				getDownloadPanel().getForm(),
 				selectedEntityIds,
 				event.isRecursive());
 		}
@@ -3615,7 +3659,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the zip and download.
 			BinderViewsHelper.zipAndDownloadFolder(
-				getDownloadPanel().getDownloadForm(),
+				getDownloadPanel().getForm(),
 				dlFolderId,
 				event.isRecursive());
 		}
@@ -3776,7 +3820,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// ...register the events.
 			EventHelper.registerEventHandlers(
 				GwtTeaming.getEventBus(),
-				m_registeredEvents,
+				REGISTERED_EVENTS,
 				this,
 				m_registeredEventHandlers);
 		}

@@ -442,6 +442,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetLdapSyncResults();
 	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
+	String rpcFailure_GetMailToPublicLinks();
 	String rpcFailure_GetMainPageInfo();
 	String rpcFailure_GetManageMobileDevicesInfo();
 	String rpcFailure_GetManageUsersInfo();
@@ -697,6 +698,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_LdapBrowserDlg();
 	String codeSplitFailure_LdapSyncResultsDlg();
 	String codeSplitFailure_LoginDlg();
+	String codeSplitFailure_MailToPanel();
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();
 	String codeSplitFailure_ManageCommentsComposite();
@@ -2033,10 +2035,13 @@ public interface GwtTeamingMessages extends Messages
 	String zipDownloadUrlError();
 	
 	// String used within BinderViewsHelper.
+	String binderViewsHelper_download();
+	String binderViewsHelper_failureMailToPublicLink(String cause);
 	String binderViewsHelper_failureSettingAdHocFolders();
 	String binderViewsHelper_failureSettingDownload();
 	String binderViewsHelper_failureSettingPublicCollection();
 	String binderViewsHelper_failureSettingWebAccess();
+	String binderViewsHelper_view();
 	
 	// Strings used by ChangeEntryTypesDlg.
 	String changeEntryTypesDlgCurrent();
