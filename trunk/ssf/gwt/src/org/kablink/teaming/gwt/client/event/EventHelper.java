@@ -1556,6 +1556,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case MAILTO_PUBLIC_LINK_ENTITY:
+				// A MailToPublicLinkEntityEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof MailToPublicLinkEntityEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MailToPublicLinkEntityEvent.registerEvent(eventBus, ((MailToPublicLinkEntityEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case MANAGE_SHARES_SELECTED_ENTITIES:
 				// A ManageSharesSelectedEntitiesEvent!  Can the event
 				// handler we were given handle that?
@@ -2854,6 +2863,7 @@ public class EventHelper {
 			case GET_MANAGE_TITLE:                             hasHandler = (eventHandler instanceof GetManageTitleEvent.Handler);                         break;
 			case HIDE_SELECTED_SHARES:                         hasHandler = (eventHandler instanceof HideSelectedSharesEvent.Handler);                     break;
 			case LOCK_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof LockSelectedEntitiesEvent.Handler);                   break;
+			case MAILTO_PUBLIC_LINK_ENTITY:                    hasHandler = (eventHandler instanceof MailToPublicLinkEntityEvent.Handler);                 break;
 			case MARK_READ_SELECTED_ENTITIES:                  hasHandler = (eventHandler instanceof MarkReadSelectedEntitiesEvent.Handler);               break;
 			case MARK_UNREAD_SELECTED_ENTITIES:                hasHandler = (eventHandler instanceof MarkUnreadSelectedEntitiesEvent.Handler);             break;
 			case MOVE_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof MoveSelectedEntitiesEvent.Handler);                   break;

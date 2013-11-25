@@ -45,13 +45,13 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 
 /**
- * Class used for the content of the download form in the binder views.  
+ * Class used for the content of the mail to form in the binder views.  
  * 
  * @author drfoster@novell.com
  */
-public class DownloadPanel extends ToolPanelBase {
-	private FormPanel		m_downloadForm;	//
-	private VibeFlowPanel	m_fp;			// The panel holding the DownloadPanel's contents.
+public class MailToPanel extends ToolPanelBase {
+	private FormPanel		m_mailToForm;	//
+	private VibeFlowPanel	m_fp;			// The panel holding the MailToPanel's contents.
 
 	/*
 	 * Constructor method.
@@ -60,9 +60,11 @@ public class DownloadPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private DownloadPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private MailToPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
+		
+		// ...initialize the data members...
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -71,7 +73,7 @@ public class DownloadPanel extends ToolPanelBase {
 	}
 
 	/**
-	 * Loads the DownloadPanel split point and returns an instance
+	 * Loads the MailToPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 * @param containerResizer
@@ -80,31 +82,32 @@ public class DownloadPanel extends ToolPanelBase {
 	 * @param tpClient
 	 */
 	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		GWT.runAsync(DownloadPanel.class, new RunAsyncCallback()
+		GWT.runAsync(MailToPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				DownloadPanel fp = new DownloadPanel(containerResizer, binderInfo, toolPanelReady);
+				MailToPanel fp = new MailToPanel(containerResizer, binderInfo, toolPanelReady);
 				tpClient.onSuccess(fp);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_DownloadPanel());
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_MailToPanel());
 				tpClient.onUnavailable();
 			}
 		});
 	}
 
 	/**
-	 * Creates a FormPanel appropriate for use for downloading files.
+	 * Creates a FormPanel appropriate for use for 'mailto:' URLs.
 	 * 
 	 * @return
 	 */
-	public static FormPanel createDownloadForm() {
-		FormPanel reply = new FormPanel();
-		reply.setMethod(FormPanel.METHOD_POST);
-		return reply;
+	public static FormPanel createMailToForm() {
+		FormPanel m_reply = new FormPanel("_blank");	// Form target is always '_blank'.
+		m_reply.setMethod(FormPanel.METHOD_POST);		// Default to post...
+		m_reply.setEncoding("text/plain");				// ...with plain text encoding.
+		return m_reply;
 	}
 	
 	/**
@@ -112,7 +115,11 @@ public class DownloadPanel extends ToolPanelBase {
 	 * 
 	 * @return
 	 */
-	public FormPanel getForm() {return m_downloadForm;}
+	public FormPanel getForm() {
+		// Clear the <FORM>'s content and return it.
+		m_mailToForm.clear();
+		return m_mailToForm;
+	}
 	
 	/*
 	 * Asynchronously construct's the contents of the entry menu panel.
@@ -127,11 +134,11 @@ public class DownloadPanel extends ToolPanelBase {
 	}
 	
 	/*
-	 * Synchronously construct's the contents of the download panel.
+	 * Synchronously construct's the contents of the mail to panel.
 	 */
 	private void loadPart1Now() {
-		m_downloadForm = createDownloadForm();
-		m_fp.add(m_downloadForm);
+		m_mailToForm = createMailToForm();
+		m_fp.add(m_mailToForm);
 		toolPanelReady();
 	}
 
@@ -143,9 +150,9 @@ public class DownloadPanel extends ToolPanelBase {
 	 */
 	@Override
 	public void resetPanel() {
-		// Reset the widgets and reload the download panel.
+		// Reset the widgets and reload the mail to panel.
 		m_fp.clear();
-		m_fp.removeStyleName("vibe-binderViewTools vibe-DownloadPanel");
+		m_fp.removeStyleName("vibe-binderViewTools vibe-MailToPanel");
 		loadPart1Async();
 	}
 }

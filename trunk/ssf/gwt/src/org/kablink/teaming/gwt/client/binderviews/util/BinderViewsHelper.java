@@ -59,6 +59,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.DisableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMailToPublicLinksCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData.MailToPublicLinkInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFilesUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFolderUrlCmd;
@@ -99,6 +102,7 @@ import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
@@ -1388,6 +1392,107 @@ public class BinderViewsHelper {
 	}
 
 	/**
+	 * Mails the public link of a folder entry using a 'mailto://...'
+	 * URL.
+	 * 
+	 * @param mailToForm
+	 * @param entityId
+	 */
+	public static void mailToPublicLink(final FormPanel mailToForm, final EntityId entityId) {
+		// ...and request the links.
+		GetMailToPublicLinksCmd cmd = new GetMailToPublicLinksCmd(entityId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetMailToPublicLinks());
+			}
+	
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Extract the link information from the response.
+				MailToPublicLinksRpcResponseData plData = ((MailToPublicLinksRpcResponseData) response.getResponseData());
+				
+				// Did we get any messages (errors, ...) from the
+				// request?
+				if (plData.hasError()) {
+					// Yes!  Display them.
+					GwtClientHelper.deferredAlert(
+						m_messages.binderViewsHelper_failureMailToPublicLink(
+							plData.getError()));
+				}
+
+				// How many links to we have for the entity?
+				List<MailToPublicLinkInfo> plList = plData.getMailToPublicLinks();
+				switch ((null == plList) ? 0 : plList.size()) {
+				case 0:
+					// None!  Nothing to do.
+					break;
+					
+				case 1:
+					// One!  Simply mail it.
+					mailToPublicLinkAsync(mailToForm, plData.getSubject(), plList.get(0));
+					break;
+					
+				default:
+					// More than one!  We need to ask the user which
+					// one to mail.
+//!					...this needs to be implemented...
+					GwtClientHelper.deferredAlert("BinderViewsHelper.mailToPublicLink( *Multiple Links* ):  ...this needs to be implemented...");
+					break;
+				}
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously mails the public link using a 'mailto://...' URL.
+	 */
+	private static void mailToPublicLinkAsync(final FormPanel mailToForm, final String subject, final MailToPublicLinkInfo plLink) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				mailToPublicLinkNow(mailToForm, subject, plLink);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously mails the public link using a 'mailto://...' URL.
+	 */
+	private static void mailToPublicLinkNow(final FormPanel mailToForm, final String subject, final MailToPublicLinkInfo plLink) {
+		// Initialize the form by clearing it (we don't know what's
+		// there from any previous usage)...
+		mailToForm.clear();
+		
+		// ...create the 'mailto:' URL, that includes the subject...
+		StringBuffer mtURL = new StringBuffer("mailto:?subject=");
+		mtURL.append(GwtClientHelper.jsEncodeURIComponent(subject));
+		mailToForm.setAction(mtURL.toString());
+		
+		// ...add a hidden <INPUT> for the body...
+		StringBuffer body = new StringBuffer(); 
+		String url = plLink.getViewUrl();
+		if (GwtClientHelper.hasString(url)) {
+			body.append(m_messages.binderViewsHelper_view());
+			body.append("  ");
+			body.append(url);
+			body.append("\n\n");
+		}
+		body.append(m_messages.binderViewsHelper_download());
+		body.append("  ");
+		body.append(plLink.getDownloadUrl());
+		Hidden hInput = new Hidden();
+		hInput.setName("body");
+		hInput.setValue(GwtClientHelper.jsEncodeURIComponent(body.toString()));
+		mailToForm.add(hInput);
+		
+		// ...and finally, submit the form.
+		mailToForm.submit();
+	}
+	
+	/**
 	 * Marks the entries read based on a List<Long> of their entity
 	 * IDs.
 	 *
@@ -2099,6 +2204,7 @@ public class BinderViewsHelper {
 	 * Zips and downloads the selected files and folder based on a
 	 * List<EntityId> of their entity IDs.
 	 *
+	 * @param downloadForm
 	 * @param entityIds
 	 * @param recursive
 	 * @param reloadEvent
@@ -2159,6 +2265,7 @@ public class BinderViewsHelper {
 	/**
 	 * Zips and downloads the files in a folder.
 	 *
+	 * @param downloadForm
 	 * @param folderId
 	 * @param recursive
 	 * @param reloadEvent

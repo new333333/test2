@@ -74,6 +74,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
+import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -111,6 +112,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -168,6 +170,7 @@ public class GwtMenuHelper {
 	private final static String ICALENDAR				= "iCalendar";
 	private final static String IMPORT_EXPORT			= "importExport";
 	private final static String LOCK					= "lock"; 
+	private final static String MAILTO_PUBLIC_LINK		= "mailToPublicLink";
 	private final static String MANAGE_DEFINITIONS		= "manageDefinitions";
 	private final static String MANAGE_TEMPLATES		= "manageTemplates";
 	private final static String MANUAL_SYNC				= "manualSync";
@@ -1371,6 +1374,14 @@ public class GwtMenuHelper {
 				markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
 				markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
 				entryToolbar.addNestedItem(shareTBI);
+				
+				boolean sMT = MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES;
+				if (sMT && (!(shareListsDefined(bs)))) {
+					shareTBI = new ToolbarItem("1_mailtoPublicLink");
+					markTBITitle(shareTBI, "toolbar.mailtoPublicLink." + keyTail);
+					markTBIEvent(shareTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
+					entryToolbar.addNestedItem(shareTBI);
+				}
 			}
 		}
 	}
@@ -3678,6 +3689,15 @@ public class GwtMenuHelper {
 					markTBIEntryIds(actionTBI, fe);
 					shareItemsTBI.addNestedItem(actionTBI);
 					
+					boolean sMT = MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES;
+					if (sMT && (!(shareListsDefined(bs)))) {
+						actionTBI = new ToolbarItem(MAILTO_PUBLIC_LINK);
+						markTBITitle(   actionTBI, "toolbar.mailtoPublicLink." + keyTail);
+						markTBIEvent(   actionTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
+						markTBIEntryIds(actionTBI, fe);
+						shareItemsTBI.addNestedItem(actionTBI);
+					}
+					
 					// ...and the share toolbar to the view toolbar.
 					reply.add(shareItemsTBI);
 				}
@@ -4312,5 +4332,28 @@ public class GwtMenuHelper {
 	private static void markTBIUrlAsTargetedAnchor(ToolbarItem tbi, AdaptedPortletURL url) {
 		// Always use the initial form of the method.
 		markTBIUrlAsTargetedAnchor(tbi, url.toString(), null);
+	}
+	
+	/*
+	 * Returns true if there are any share lists defined against the
+	 * zone and false otherwise.
+	 */
+	private static boolean shareListsDefined(AllModulesInjected bs) {
+		// Is there a ShareList defined?
+		ShareLists sl = bs.getSharingModule().getShareLists();
+		if (null != sl) {
+			// Yes!  Is it disabled?
+			if (!(sl.isDisable())) {
+				// No!  Return true if it contains any domains or email
+				// addresses and false otherwise.
+				return (
+					MiscUtil.hasItems(sl.getDomains()) ||
+					MiscUtil.hasItems(sl.getEmailAddresses()));
+			}
+		}
+
+		// If we get here, there are no share lists active.  Return
+		// false.
+		return false;
 	}
 }

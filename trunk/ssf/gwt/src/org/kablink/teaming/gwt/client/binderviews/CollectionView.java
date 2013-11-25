@@ -175,11 +175,12 @@ public class CollectionView extends DataTableFolderViewBase {
 	@Override
 	protected boolean includePanel(FolderPanels folderPanel) {
 		// In the collection view, the only panels we need are the
-		// bread crumbs, download and entry menu.
+		// bread crumbs, submit, mail to and entry menu.
 		boolean reply;
 		switch (folderPanel) {
 		case BREADCRUMB:
 		case DOWNLOAD:
+		case MAILTO:
 		case ENTRY_MENU:  reply = true;   break;
 		default:          reply = false;  break;
 		}

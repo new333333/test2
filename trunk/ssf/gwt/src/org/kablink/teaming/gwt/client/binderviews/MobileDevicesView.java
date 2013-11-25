@@ -154,10 +154,12 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 	@Override
 	protected boolean includePanel(FolderPanels folderPanel) {
 		// In the mobile devices view, we don't show the download,
-		// description, filter or footer panel beyond the defaults.
+		// mail to, description, filter or footer panel beyond the
+		// defaults.
 		boolean reply;
 		switch (folderPanel) {
 		case DOWNLOAD:
+		case MAILTO:
 		case DESCRIPTION:
 		case FILTER:
 		case FOOTER:  reply = false;                           break;

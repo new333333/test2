@@ -294,6 +294,7 @@ public enum TeamingEvents implements IsSerializable {
 	GET_MANAGE_TITLE,								// Event to request the management component's title.
 	HIDE_SELECTED_SHARES,							// Marks the selected shares as being hidden.
 	LOCK_SELECTED_ENTITIES,							// Locks the Selected Entities.
+	MAILTO_PUBLIC_LINK_ENTITY,						// Mails the Public Link of the Entity Using a 'mailto://...' URL.
 	MANAGE_SHARES_SELECTED_ENTITIES,				// Invokes the Share dialog in administrative mode.
 	MARK_READ_SELECTED_ENTITIES,					// Marks the Selected Entities as     Having Been Read.
 	MARK_UNREAD_SELECTED_ENTITIES,					// Marks the Selected Entities as Not Having Been Read.
