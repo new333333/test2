@@ -703,6 +703,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		getCoreDao().flush(); // just incase
 		try {
 			// make list of binders we have access to first
+			if(logger.isDebugEnabled())
+				logger.debug("Validating binders " + binderIds);
 			boolean clearAll = false;
 			List<Binder> binders = getCoreDao().loadObjects(binderIds,
 					Binder.class,
@@ -726,9 +728,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 			Set<Long> done = new HashSet();
 			if (!checked.isEmpty()) {
+				if(logger.isDebugEnabled())
+					logger.debug("Setting indexers to " + toString(nodeNames));
 				IndexSynchronizationManager.setNodeNames(nodeNames);
 				try {
 					if (clearAll) {
+						if(logger.isDebugEnabled())
+							logger.debug("Purging indexes on " + toString(nodeNames));
 						LuceneWriteSession luceneSession = getLuceneSessionFactory()
 								.openWriteSession(nodeNames);
 						try {
@@ -741,6 +747,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					} else {
 						// delete all sub-binders - walk the ancestry list
 						// and delete all the entries under each folderid.
+						if(logger.isDebugEnabled())
+							logger.debug("Deleting from indexes all binders at or below " + checked);
 						for (Binder binder : checked) {
 							IndexSynchronizationManager.deleteDocuments(new Term(
 									Constants.ENTRY_ANCESTRY, binder.getId()
@@ -770,12 +778,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					// written for index update only, and there is no corresponding
 					// update transaction
 					// on the database.
+					if(logger.isDebugEnabled())
+						logger.debug("Applying remaining changes to index if any");
 					IndexSynchronizationManager.applyChanges();
 					
 					// If complete re-indexing, put the index files in an optimized
 					// state for subsequent searches. It will also help cut down on
 					// the number of file descriptors opened during the indexing.
 					if (clearAll) {
+						if(logger.isDebugEnabled())
+							logger.debug("Optimizing indexes");
 						LuceneWriteSession luceneSession = getLuceneSessionFactory()
 								.openWriteSession(nodeNames);
 						try {
@@ -787,10 +799,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						}
 					}					
 				} finally {
+					if(logger.isDebugEnabled())
+						logger.debug("Unsetting indexers");
 					IndexSynchronizationManager.clearNodeNames();
 				}
 			}
-			logger.info("indexTreeWithoutHelper took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
+			logger.info("indexTree took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
 			return done;
 		} finally {
 			// It is important to call this at the end of the processing no
