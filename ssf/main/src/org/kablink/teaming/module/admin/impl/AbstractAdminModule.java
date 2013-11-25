@@ -3692,6 +3692,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	    	}
     	}
     	catch(Exception e) {
+    		getCoreDao().clear(); // without this, we seem to get the notorious NonUniqueObjectException on Definition object when running with helpers.
     		logger.error("Error reindexing binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""), e);
     		errors.addError(NLT.get("error.indexing.string", new String[] {e.getMessage()}));
     	}
