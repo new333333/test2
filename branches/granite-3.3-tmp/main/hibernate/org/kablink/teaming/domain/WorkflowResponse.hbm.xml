@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" lazy="false" table="SS_WorkflowResponses" name="org.kablink.teaming.domain.WorkflowResponse">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="zoneId" access="field"/>
+    <component name="owner" class="org.kablink.teaming.domain.AnyOwner">
+      <many-to-one name="folderEntry" index="ownerFolderEntry"/>
+      <many-to-one name="principal" index="ownerPrincipal"/>
+      <many-to-one name="binder" index="ownerBinder"/>
+      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner">
+        <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
+        <meta-value class="org.kablink.teaming.domain.User" value="user"/>
+        <meta-value class="org.kablink.teaming.domain.Group" value="group"/>
+        <meta-value class="org.kablink.teaming.domain.Folder" value="folder"/>
+        <meta-value class="org.kablink.teaming.domain.Workspace" value="workspace"/>
+        <meta-value class="org.kablink.teaming.domain.ProfileBinder" value="profileBinder"/>
+        <meta-value class="org.kablink.teaming.domain.TemplateBinder" value="template"/>
+        <column name="ownerType" length="16"/>
+        <column name="ownerId"/>
+      </any>
+      <property name="ownerType" update="false" insert="false"/>
+      <property name="ownerId" update="false" insert="false"/>
+      <property name="owningBinderKey" length="255"/>
+      <property name="owningBinderId" index="owningBinder"/>
+    </component>
+    <property name="name" length="64"/>
+    <property name="response" length="2000"/>
+    <property name="definitionId" length="32"/>
+    <property name="responderId"/>
+    <property name="responseDate"/>
+ </class>
+</hibernate-mapping>

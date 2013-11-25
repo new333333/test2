@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Controllers -->
+	
+	<bean id="deprecatedController" class="org.kablink.teaming.liferaylight.portlet.DeprecatedController" />
+
+	<!-- Handlers -->
+	
+	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+						<!-- As long as we map all the keys to the same single controller, 
+						     we do not actually need this mapping. But just in case that
+						     is not the case, I'm leaving these old keys in place for now. -->
+						<entry key="build_filter"><ref bean="deprecatedController"/></entry>
+						<entry key="close_window"><ref bean="deprecatedController"/></entry>
+						<entry key="applet_response"><ref bean="deprecatedController"/></entry>
+						<entry key="configure_access_control"><ref bean="deprecatedController"/></entry>
+						<entry key="configure_definitions"><ref bean="deprecatedController"/></entry>
+						<entry key="definition_builder"><ref bean="deprecatedController"/></entry>
+						<entry key="modify_binder"><ref bean="deprecatedController"/></entry>
+						<entry key="modify_dashboard"><ref bean="deprecatedController"/></entry>
+						<entry key="reload_opener"><ref bean="deprecatedController"/></entry>
+						<entry key="reload_opener_parent"><ref bean="deprecatedController"/></entry>
+						<entry key="advanced_search"><ref bean="deprecatedController"/></entry>
+												
+						<entry key="add_folder_entry"><ref bean="deprecatedController"/></entry>
+						<entry key="add_folder_reply"><ref bean="deprecatedController"/></entry>
+						
+						<entry key="add_folder_attachment"><ref bean="deprecatedController"/></entry>
+						
+						<entry key="add_profile_entry"><ref bean="deprecatedController"/></entry>
+						<entry key="add_binder"><ref bean="deprecatedController"/></entry>
+						<entry key="modify_folder_entry"><ref bean="deprecatedController"/></entry>
+						<entry key="add_entry_attachment"><ref bean="deprecatedController"/></entry>
+						<entry key="lock_folder_entry"><ref bean="deprecatedController"/></entry>
+						<entry key="unlock_folder_entry"><ref bean="deprecatedController"/></entry>
+						<entry key="start_workflow"><ref bean="deprecatedController"/></entry>
+						<entry key="stop_workflow"><ref bean="deprecatedController"/></entry>
+						<entry key="modify_profile_entry"><ref bean="deprecatedController"/></entry>
+						<entry key="view_folder_entry"><ref bean="deprecatedController"/></entry>
+						<entry key="view_permalink"><ref bean="deprecatedController"/></entry>
+						<entry key="view_profile_entry"><ref bean="deprecatedController"/></entry>
+						<entry key="view_folder_listing"><ref bean="deprecatedController"/></entry>
+						<entry key="view_profile_listing"><ref bean="deprecatedController"/></entry>
+						<entry key="view_ws_listing"><ref bean="deprecatedController"/></entry>
+						<entry key="__view_presence"><ref bean="deprecatedController"/></entry>
+						<entry key="__ajax_request"><ref bean="deprecatedController"/></entry>
+						<entry key="config_email"><ref bean="deprecatedController"/></entry>
+						<entry key="send_email"><ref bean="deprecatedController"/></entry>
+						<entry key="add_meeting"><ref bean="deprecatedController"/></entry>					
+						<entry key="add_team_member"><ref bean="deprecatedController"/></entry>					
+						<entry key="send_entry_email"><ref bean="deprecatedController"/></entry>
+						<entry key="view_editable_history"><ref bean="deprecatedController"/></entry>
+						<entry key="view_credits"><ref bean="deprecatedController"/></entry>
+
+						<entry key="import_definition"><ref bean="deprecatedController"/></entry>
+						<entry key="import_profiles"><ref bean="deprecatedController"/></entry>
+						<entry key="import_templates"><ref bean="deprecatedController"/></entry>
+						<entry key="import_template"><ref bean="deprecatedController"/></entry>
+						<entry key="login_report"><ref bean="deprecatedController"/></entry>
+						<entry key="license_report"><ref bean="deprecatedController"/></entry>
+						<entry key="manage_license"><ref bean="deprecatedController"/></entry>
+						<entry key="activity_report"><ref bean="deprecatedController"/></entry>
+						<entry key="quota_report"><ref bean="deprecatedController"/></entry>
+						<entry key="workflow_report"><ref bean="deprecatedController"/></entry>
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="portletModeHandlerMapping" parent="portletModeHandlerMappingTemplate">
+		<property name="portletModeMap">
+			<map>
+				<entry key="view"><ref bean="deprecatedController"/></entry>
+				<entry key="edit"><ref bean="deprecatedController"/></entry>
+			</map>
+		</property>
+	</bean>
+
+</beans>

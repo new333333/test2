@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+    <class discriminator-value="N" dynamic-update="true" table="SS_TokenInfo" lazy="false" name="org.kablink.teaming.security.accesstoken.impl.TokenInfo">
+    	<!--<cache usage="read-write"/>-->
+	    <id unsaved-value="null" name="id">
+	      <column name="id" sql-type="char(32)"/>
+	      <generator class="uuid.hex"/>
+	    </id>	    
+    	<discriminator type="char" column="type"/>
+    	<property name="zoneId" access="field"/>
+    	<property name="seed" length="128"/>
+	    <property name="lastAccessTime" type="timestamp"/>
+
+		<subclass name="org.kablink.teaming.security.accesstoken.impl.TokenInfoSession" discriminator-value="S">
+    		<property name="userId" index="userId_tokenInfoSession"/>
+		</subclass>
+    	
+		<subclass name="org.kablink.teaming.security.accesstoken.impl.TokenInfoRequest" discriminator-value="R">
+	    	<property name="applicationId"/>
+	    	<property name="userId"/>
+	    	<property name="binderId"/>
+	    	<property name="binderAccessConstraints" type="integer" access="field"/>
+	    </subclass>
+    	
+		<subclass name="org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication" discriminator-value="A">
+	    	<property name="applicationId"/>
+	    	<property name="userId"/>
+	    	<property name="requesterId"/>
+	    	<property name="binderId"/>
+	    	<property name="binderAccessConstraints" type="integer" access="field"/>
+	    	<property name="clientAddr" length="128"/>
+	    </subclass>
+	</class>
+</hibernate-mapping>
