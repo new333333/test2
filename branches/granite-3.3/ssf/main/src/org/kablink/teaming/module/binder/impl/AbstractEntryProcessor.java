@@ -704,9 +704,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    			SimpleProfiler.start("modifyEntry_fillIn");
 	    			modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
 	    			SimpleProfiler.stop("modifyEntry_fillIn");
-	    			SimpleProfiler.start("modifyEntry_startWorkflow");
-	    			modifyEntry_startWorkflow(entry, ctx);
-	    			SimpleProfiler.stop("modifyEntry_startWorkflow");
 	    			SimpleProfiler.start("modifyEntry_postFillIn");
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
 	    			SimpleProfiler.stop("modifyEntry_postFillIn");
@@ -763,6 +760,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	SimpleProfiler.start("modifyEntry_indexRemoveFiles");
 	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex, ctx);
 	    	SimpleProfiler.stop("modifyEntry_indexRemoveFiles");
+
+	    	//After all parts of the modification process has finished, see if there is a workflow to be added or changed.
+	    	SimpleProfiler.start("modifyEntry_transactionExecute3");
+	    	getTransactionTemplate().execute(new TransactionCallback() {
+	    		@Override
+				public Object doInTransaction(TransactionStatus status) {
+	    			SimpleProfiler.start("modifyEntry_startWorkflow");
+	    			modifyEntry_startWorkflow(entry, ctx);
+	    			SimpleProfiler.stop("modifyEntry_startWorkflow");
+	    			return null;
+	    		}});
+	    	SimpleProfiler.stop("modifyEntry_transactionExecute3");
 
 	    	// Can the entry be running a workflow?
 	    	if (entry instanceof WorkflowSupport) {
