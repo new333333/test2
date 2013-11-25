@@ -2058,10 +2058,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				logger.debug("Loading tags for " + folderIds.size() + " folders");
 			Map tagMap = getCoreDao().loadAllTagsByEntity(folderIds);
 			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + folderIds.size() + " workspaces");
+				logger.debug("Loading tags for " + workspaceIds.size() + " workspaces");
 			tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
 			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + folderIds.size() + " others");
+				logger.debug("Loading tags for " + otherIds.size() + " others");
 			tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
 
 			for (Binder b:binders) {
