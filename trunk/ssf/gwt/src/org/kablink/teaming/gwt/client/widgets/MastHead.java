@@ -881,9 +881,6 @@ public class MastHead extends Composite
 	 */
 	private void invokeUsersPage()
 	{
-		// Highlight the "Show People" panel.
-		highlightSelectedAction( "mastheadFilr_PeoplePanel" );
-		
 		// Do we have the url to the "personal workspaces" binder?
 		if ( m_personalWorkspacesUrl == null )
 		{
@@ -957,6 +954,9 @@ public class MastHead extends Composite
 										m_personalWorkspacesUrl,
 										Instigator.GOTO_CONTENT_URL );
 			GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
+
+			// Highlight the "Show People" panel.
+			highlightSelectedAction( "mastheadFilr_PeoplePanel" );
 		}
 	}
 	
