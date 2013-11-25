@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_ZoneConfig" name="org.kablink.teaming.domain.ZoneConfig">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="zoneId">
+      <generator class="assigned"/>
+	</id>
+	<property name="upgradeVersion"/>
+	<property name="mobileAccessEnabled" access="field"/>
+	<property name="diskQuotasEnabled" access="field"/>
+	<property name="diskQuotaUserDefault" access="field"/>
+	<property name="diskQuotasHighwaterPercentage" access="field"/>
+	<property name="fileSizeLimitUserDefault" access="field"/>
+	<property name="binderQuotasInitialized" access="field"/>
+	<property name="binderQuotasEnabled" access="field"/>
+	<property name="binderQuotasAllowOwner" access="field"/>
+	<property name="fileVersionsMaxAge" access="field"/>
+	<property name="fsaEnabled" access="field"/>
+	<property name="fsaSynchInterval" access="field"/>
+	<property name="fsaAutoUpdateUrl" access="field" length="255"/>
+    <component name="mailConfig" class="org.kablink.teaming.domain.MailConfig">
+		<property name="postingEnabled"/>
+		<property name="simpleUrlPostingEnabled"/>
+   		<property name="sendMailEnabled"/>
+    </component>
+    <component name="homePageConfig" class="org.kablink.teaming.domain.HomePageConfig">
+		<property name="defaultHomePageId"/>
+		<property name="defaultGuestHomePageId"/>
+    </component>
+    <component name="weekendsAndHolidaysConfig" class="org.kablink.teaming.domain.WeekendsAndHolidaysConfig">
+		<property name="holidays" length="4000"/>	<!-- Allows for 250 holidays. Note: The maximum size is 4000 bytes for Oracle. -->
+		<property name="weekendDays" length="128"/>
+    </component>
+     <component name="authenticationConfig" class="org.kablink.teaming.domain.AuthenticationConfig">
+ 		 <property name="allowLocalLogin" />
+ 		 <property name="allowAnonymousAccess"/>
+	     <property name="allowSelfRegistration"/>
+    	 <property name="lastUpdate"/>
+    </component>
+   </class>
+</hibernate-mapping>

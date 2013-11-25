@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_task_workflow" caption="__task_workflow" type="2" nextId="46" definitionType="2" databaseId="24e350dd203897f40120389be0c80007"> 
+  <item name="workflowProcess" caption="__workflow_process" id="1"> 
+    <item name="state" caption="__state" type="data" id="2" x="307" y="27"> 
+      <properties> 
+        <property name="caption" value="__task_workflow_in_process"/>  
+        <property name="name" value="in_process"/>  
+        <property name="description"/> 
+      </properties>  
+      <item name="transitions" caption="__transitions" id="3"> 
+        <properties/>  
+        <item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" id="6"> 
+          <properties> 
+            <property name="allMustMatch" value="true"/>  
+            <property name="toState" value="completed"/> 
+          </properties>  
+          <item name="workflowEntryDataValue" caption="__workflow_entry_data_value" id="7"> 
+            <properties> 
+              <property name="condition" caption="__workflow_entry_data_value" type="workflowCondition"> 
+                <workflowCondition definitionId="402883c1129b1f8101129b28bbe50002" elementName="status" operation="equals"> 
+                  <value>s3</value> 
+                </workflowCondition> 
+              </property> 
+            </properties> 
+          </item> 
+        </item>  
+        <item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" id="10"> 
+          <properties> 
+            <property name="allMustMatch" value="true"/>  
+            <property name="toState" value="cancelled"/> 
+          </properties>  
+          <item name="workflowEntryDataValue" caption="__workflow_entry_data_value" id="11"> 
+            <properties> 
+              <property name="condition" caption="__workflow_entry_data_value" type="workflowCondition"> 
+                <workflowCondition definitionId="402883c1129b1f8101129b28bbe50002" elementName="status" operation="equals"> 
+                  <value>s4</value> 
+                </workflowCondition> 
+              </property> 
+            </properties> 
+          </item> 
+        </item>  
+        <item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" id="33"> 
+          <properties> 
+            <property name="allMustMatch" value="true"/>  
+            <property name="toState" value="overdue"/> 
+          </properties>  
+          <item name="workflowEntryDataValue" caption="__workflow_entry_data_value" id="34"> 
+            <properties> 
+              <property name="condition" caption="__workflow_entry_data_value" type="workflowCondition"> 
+                <workflowCondition definitionId="402883c1129b1f8101129b28bbe50002" elementName="start_end" operation="ended"/> 
+              </property> 
+            </properties> 
+          </item> 
+        </item> 
+      </item>  
+      <item name="accessControls" caption="__accessControls" unique="./item[@name='accessControls']" multipleAllowedInParent="false" id="22"> 
+        <item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="23"> 
+          <properties> 
+            <property name="folderDefault" value="true"/>  
+            <property name="entryCreator" value="false"/>  
+            <property name="team" value="false"/>  
+            <property name="userGroupAccess" value=""/>  
+            <property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList"> 
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="user_list:assignment"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="group_list:assignment_groups"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="team_list:assignment_teams"/> 
+            </property> 
+          </properties> 
+        </item>  
+        <item name="readAccess" caption="__readAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="28"> 
+          <properties> 
+            <property name="folderDefault" value="true"/>  
+            <property name="entryCreator" value="false"/>  
+            <property name="team" value="false"/>  
+            <property name="userGroupAccess" value=""/>  
+            <property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList"> 
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="user_list:assignment"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName=" group_list:assignment_groups"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName=" team_list:assignment_teams"/> 
+            </property> 
+          </properties> 
+        </item> 
+      </item> 
+    </item>  
+    <item name="state" caption="__state" type="data" id="4" x="301" y="321"> 
+      <properties> 
+        <property name="caption" value="__task_workflow_completed"/>  
+        <property name="name" value="completed"/>  
+        <property name="description"/> 
+      </properties>  
+      <item name="transitions" caption="__transitions" id="5"> 
+        <properties/>  
+        <item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" id="12"> 
+          <item name="workflowEntryDataValue" caption="__workflow_entry_data_value" id="13"> 
+            <properties> 
+              <property name="condition" caption="__workflow_entry_data_value" type="workflowCondition"> 
+                <workflowCondition definitionId="402883c1129b1f8101129b28bbe50002" elementName="status" operation="equals"> 
+                  <value>s2</value> 
+                </workflowCondition> 
+              </property> 
+            </properties> 
+          </item>  
+          <properties> 
+            <property name="allMustMatch" value="false"/>  
+            <property name="toState" value="in_process"/> 
+          </properties>  
+          <item name="workflowEntryDataValue" caption="__workflow_entry_data_value" id="14"> 
+            <properties> 
+              <property name="condition" caption="__workflow_entry_data_value" type="workflowCondition"> 
+                <workflowCondition definitionId="402883c1129b1f8101129b28bbe50002" elementName="status" operation="equals"> 
+                  <value>s1</value> 
+                </workflowCondition> 
+              </property> 
+            </properties> 
+          </item> 
+        </item>  
+        <item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" id="20"> 
+          <properties> 
+            <property name="allMustMatch" value="false"/>  
+            <property name="toState" value="cancelled"/> 
+          </properties>  
+          <item name="workflowEntryDataValue" caption="__workflow_entry_data_value" id="21"> 
+            <properties> 
+              <property name="condition" caption="__workflow_entry_data_value" type="workflowCondition"> 
+                <workflowCondition definitionId="402883c1129b1f8101129b28bbe50002" elementName="status" operation="equals"> 
+                  <value>s4</value> 
+                </workflowCondition> 
+              </property> 
+            </properties> 
+          </item> 
+        </item> 
+      </item>  
+      <item name="accessControls" caption="__accessControls" unique="./item[@name='accessControls']" multipleAllowedInParent="false" id="24"> 
+        <item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="25"> 
+          <properties> 
+            <property name="folderDefault" value="true"/>  
+            <property name="entryCreator" value="false"/>  
+            <property name="team" value="false"/>  
+            <property name="userGroupAccess" value=""/>  
+            <property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList"> 
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="user_list:assignment"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="group_list:assignment_groups"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="team_list:assignment_teams"/> 
+            </property> 
+          </properties> 
+        </item>  
+        <item name="readAccess" caption="__readAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="29"> 
+          <properties> 
+            <property name="folderDefault" value="true"/>  
+            <property name="entryCreator" value="false"/>  
+            <property name="team" value="false"/>  
+            <property name="userGroupAccess" value=""/>  
+            <property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList"> 
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="user_list:assignment"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="group_list:assignment_groups"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="team_list:assignment_teams"/> 
+            </property> 
+          </properties> 
+        </item> 
+      </item>  
+      <item name="onEntry" caption="__onEntry" unique="./item[@name='onEntry']" multipleAllowedInParent="false" id="41">
+        <item name="setEntryData" caption="__setEntryData" id="42">
+          <properties>
+            <property name="dataValue" caption="__entry_data_value" type="workflowSetEntryDataValue">
+              <workflowSetEntryDataValue definitionId="402883c1129b1f8101129b28bbe50002" elementName="status" operation="set">
+                <value>s3</value>
+              </workflowSetEntryDataValue>
+            </property>
+          </properties>
+        </item>
+        <item name="setEntryData" caption="__setEntryData" id="43">
+          <properties>
+            <property name="dataValue" caption="__entry_data_value" type="workflowSetEntryDataValue">
+              <workflowSetEntryDataValue definitionId="402883c1129b1f8101129b28bbe50002" elementName="completed" operation="set">
+                <value>c100</value>
+              </workflowSetEntryDataValue>
+            </property>
+          </properties>
+        </item>
+      </item>
+    </item>  
+    <item name="state" caption="__state" type="data" id="8" x="157" y="249"> 
+      <properties> 
+        <property name="caption" value="__task_workflow_cancelled"/>  
+        <property name="name" value="cancelled"/>  
+        <property name="description"/> 
+      </properties>  
+      <item name="transitions" caption="__transitions" id="9"> 
+        <properties/>  
+        <item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" id="15"> 
+          <item name="workflowEntryDataValue" caption="__workflow_entry_data_value" id="16"> 
+            <properties> 
+              <property name="condition" caption="__workflow_entry_data_value" type="workflowCondition"> 
+                <workflowCondition definitionId="402883c1129b1f8101129b28bbe50002" elementName="status" operation="equals"> 
+                  <value>s2</value> 
+                </workflowCondition> 
+              </property> 
+            </properties> 
+          </item>  
+          <properties> 
+            <property name="allMustMatch" value="false"/>  
+            <property name="toState" value="in_process"/> 
+          </properties>  
+          <item name="workflowEntryDataValue" caption="__workflow_entry_data_value" id="19"> 
+            <properties> 
+              <property name="condition" caption="__workflow_entry_data_value" type="workflowCondition"> 
+                <workflowCondition definitionId="402883c1129b1f8101129b28bbe50002" elementName="status" operation="equals"> 
+                  <value>s1</value> 
+                </workflowCondition> 
+              </property> 
+            </properties> 
+          </item> 
+        </item>  
+        <item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" id="17"> 
+          <properties> 
+            <property name="allMustMatch" value="false"/>  
+            <property name="toState" value="completed"/> 
+          </properties>  
+          <item name="workflowEntryDataValue" caption="__workflow_entry_data_value" id="18"> 
+            <properties> 
+              <property name="condition" caption="__workflow_entry_data_value" type="workflowCondition"> 
+                <workflowCondition definitionId="402883c1129b1f8101129b28bbe50002" elementName="status" operation="equals"> 
+                  <value>s3</value> 
+                </workflowCondition> 
+              </property> 
+            </properties> 
+          </item> 
+        </item> 
+      </item>  
+      <item name="accessControls" caption="__accessControls" unique="./item[@name='accessControls']" multipleAllowedInParent="false" id="26"> 
+        <item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="27"> 
+          <properties> 
+            <property name="folderDefault" value="true"/>  
+            <property name="entryCreator" value="false"/>  
+            <property name="team" value="false"/>  
+            <property name="userGroupAccess" value=""/>  
+            <property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList"> 
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="user_list:assignment"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="group_list:assignment_groups"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="team_list:assignment_teams"/> 
+            </property> 
+          </properties>  
+          <operations> 
+            <operation name="copyItem" caption="__copy"/>  
+            <operation name="deleteItem" caption="__delete"/>  
+            <operation name="modifyItem" caption="__modify"/>  
+            <operation name="moveItem" caption="__move"/> 
+          </operations> 
+        </item>  
+        <item name="readAccess" caption="__readAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="30"> 
+          <properties> 
+            <property name="folderDefault" value="true"/>  
+            <property name="entryCreator" value="false"/>  
+            <property name="team" value="false"/>  
+            <property name="userGroupAccess" value=""/>  
+            <property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList"> 
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="user_list:assignment"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="group_list:assignment_groups"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="team_list:assignment_teams"/> 
+            </property> 
+          </properties>  
+          <operations> 
+            <operation name="copyItem" caption="__copy"/>  
+            <operation name="deleteItem" caption="__delete"/>  
+            <operation name="modifyItem" caption="__modify"/>  
+            <operation name="moveItem" caption="__move"/> 
+          </operations> 
+        </item> 
+      </item>  
+      <item name="onEntry" caption="__onEntry" unique="./item[@name='onEntry']" multipleAllowedInParent="false" id="44">
+        <item name="setEntryData" caption="__setEntryData" id="45">
+          <properties>
+            <property name="dataValue" caption="__entry_data_value" type="workflowSetEntryDataValue">
+              <workflowSetEntryDataValue definitionId="402883c1129b1f8101129b28bbe50002" elementName="status" operation="set">
+                <value>s4</value>
+              </workflowSetEntryDataValue>
+            </property>
+          </properties>
+        </item>
+      </item>
+    </item>  
+    <properties> 
+      <property name="initialState" value="in_process"/>  
+      <property name="runAs" value="binderowner"/> 
+    </properties>  
+    <item name="state" caption="__state" type="data" id="31" x="446" y="121"> 
+      <item name="transitions" caption="__transitions" id="32"> 
+        <properties/>  
+        <item name="transitionOnModify" caption="__transition_on_modify" type="transition" id="35"> 
+          <properties> 
+            <property name="toState" value="in_process"/> 
+          </properties> 
+        </item>  
+        <item name="transitionManual" caption="__transitionManual" type="transition" id="36"> 
+          <properties> 
+            <property name="toState" value="completed"/> 
+          </properties> 
+        </item>  
+        <item name="transitionManual" caption="__transitionManual" type="transition" id="37"> 
+          <properties> 
+            <property name="toState" value="cancelled"/> 
+          </properties> 
+        </item> 
+      </item>  
+      <properties> 
+        <property name="caption" value="__task_status_overdue"/>  
+        <property name="name" value="overdue"/>  
+        <property name="description"/> 
+      </properties>  
+      <item name="accessControls" caption="__accessControls" unique="./item[@name='accessControls']" multipleAllowedInParent="false" id="38"> 
+        <item name="readAccess" caption="__readAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="39"> 
+          <properties> 
+            <property name="folderDefault" value="true"/>  
+            <property name="entryCreator" value="false"/>  
+            <property name="team" value="false"/>  
+            <property name="userGroupAccess" value=""/>  
+            <property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList"> 
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="user_list:assignment"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="group_list:assignment_groups"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="team_list:assignment_teams"/> 
+            </property> 
+          </properties> 
+        </item>  
+        <item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="40"> 
+          <properties> 
+            <property name="folderDefault" value="true"/>  
+            <property name="entryCreator" value="false"/>  
+            <property name="team" value="false"/>  
+            <property name="userGroupAccess" value=""/>  
+            <property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList"> 
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="user_list:assignment"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="group_list:assignment_groups"/>  
+              <workflowEntryDataUserList definitionId="402883c1129b1f8101129b28bbe50002" elementName="team_list:assignment_teams"/> 
+            </property> 
+          </properties>  
+          <operations> 
+            <operation name="copyItem" caption="__copy"/>  
+            <operation name="deleteItem" caption="__delete"/>  
+            <operation name="modifyItem" caption="__modify"/>  
+            <operation name="moveItem" caption="__move"/> 
+          </operations>  
+          <operations> 
+            <operation name="copyItem" caption="__copy"/>  
+            <operation name="deleteItem" caption="__delete"/>  
+            <operation name="modifyItem" caption="__modify"/>  
+            <operation name="moveItem" caption="__move"/> 
+          </operations> 
+        </item> 
+      </item> 
+    </item> 
+  </item>  
+  <properties> 
+    <property name="caption" value="__task_workflow"/>  
+    <property name="name" value="_task_workflow"/> 
+  </properties>  
+  <export-mappings>
+    <export definitionId="402883c1129b1f8101129b28bbe50002">_taskEntry</export>
+  </export-mappings>
+</definition>
