@@ -88,11 +88,4 @@ public class LandingPageConfig extends JavaScriptObject
 	 */
 	public final native String getMashupPropertiesXML() /*-{ return this.propertiesXML; }-*/;
 	
-
-	/**
-	 * Return the language the tinyMCE editor should use
-	 */
-	public final native String getTinyMCELanguage() /*-{ return this.tinyMCELang; }-*/;
-	
-	
 }// end LandingPageConfig

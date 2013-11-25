@@ -66,7 +66,6 @@ import org.quartz.Scheduler;
 public abstract class CommonDependencyInjection {
 
 	protected Log logger = LogFactory.getLog(getClass());
-	protected boolean traceEnabled = logger.isTraceEnabled();
 	protected boolean debugEnabled = logger.isDebugEnabled();
 	protected boolean infoEnabled = logger.isInfoEnabled();
 
@@ -189,13 +188,6 @@ public abstract class CommonDependencyInjection {
 		if(debugEnabled) {
 			double diff = (System.nanoTime() - beginInNanoseconds)/1000000.0;
 			logger.debug(diff + " ms, " + methodName);
-		}	
-	}
-
-	protected void end(long beginInNanoseconds, String methodName, String extra) {
-		if(debugEnabled) {
-			double diff = (System.nanoTime() - beginInNanoseconds)/1000000.0;
-			logger.debug(diff + " ms, " + ((extra == null)? methodName : methodName + "/" + extra));
 		}	
 	}
 

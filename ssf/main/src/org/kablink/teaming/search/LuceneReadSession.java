@@ -33,14 +33,11 @@
 package org.kablink.teaming.search;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
-import org.kablink.teaming.search.postfilter.PostFilterCallback;
 
 
 /**
@@ -71,13 +68,41 @@ import org.kablink.teaming.search.postfilter.PostFilterCallback;
  *
  */
 public interface LuceneReadSession extends LuceneSession {
-		
-	/*
+	/**
 	 * Search and return the entire result set.
 	 * 
 	 * @throws LuceneException
 	 */
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) throws LuceneException;
+	public Hits search(Query query) throws LuceneException;
+
+	/**
+	 * Search and return only the portion of the result specified.
+	 * 
+	 * @param query
+	 * @param offset
+	 * @param size
+	 * @return
+	 * @throws LuceneException
+	 */
+	public Hits search(Query query, int offset, int size)
+			throws LuceneException;
+
+	/**
+	 * Force the <code>LuceneSession</code> to flush.
+	 * <p>
+	 * Flushing is the process of synchronizing the underlying persistent store
+	 * (ie, index files on disk) with persistable state held in memory.
+	 * 
+	 * @throws LuceneException
+	 *
+	 */
+
+	/**
+	 * Search and return the entire result set.
+	 * 
+	 * @throws LuceneException
+	 */
+	public Hits search(Query query, Sort sort) throws LuceneException;
 
 	/**
 	 * Search and return only the portion of the result specified.
@@ -88,97 +113,31 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size)
+	public Hits search(Query query, Sort sort, int offset, int size)
 			throws LuceneException;
 	
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, PostFilterCallback callback)
-			throws LuceneException;
-	
-	/**
-	 * Return immediate children entities (entries and binders) of the specified parent
-	 * binder (which is not a net folder) where those entities are accessible/visible 
-	 * because the user has either direct/explicit access or inferred/implicit access to those.
-	 *
-	 * This method differs from other general purpose search method in that this implementation
-	 * takes into account implicit/inferred accesses. 
-	 * 
-	 * NOTE: This method is to be used on a binder where the hierarchy below the binder has 
-	 * all required ACLs indexed with them (e.g. adhoc folder, cloud folder, etc.).
-	 * This method should NEVER be used on a net folder.
-	 * 
-	 * @param contextUserId
-	 * @param aclQueryStr
-	 * @param mode
-	 * @param query
-	 * @param sort
-	 * @param offset
-	 * @param size
-	 * @param parentBinderId ID of the parent binder that is not a net folder
-	 * @param parentBinderPath
-	 * @return
-	 * @throws LuceneException
-	 */
-	public Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
-			Long parentBinderId, String parentBinderPath) throws LuceneException;
-
-	/**
-	 * Return immediate children entities (entries and binders) of the specified
-	 * parent net folder where those entities are accessible/visible to the user.
-	 * 
-	 * NOTE: This method is to be used only on a binder where the entries below the 
-	 * binder have no ACLs indexed with them (e.g. net folder exposed through FAMT).
-	 * 
-	 * @param contextUserId
-	 * @param aclQueryStr
-	 * @param titles
-	 * @param query
-	 * @param sort
-	 * @param offset
-	 * @param size
-	 * @return
-	 * @throws LuceneException
-	 */
-	public Hits searchNetFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException;
-	
-	/**
-     * Return whether or not the calling user can gain inferred access to the specified
-     * binder because the user has explicit access to at least one descendant binder of
-     * the specified binder. 
-     * 
-     * Note: This method does not take into account whether or not the user has explicit
-     * access to the specified binder. That is something that the caller hast to check
-     * separately before invoking this method. 
-     * 
-	 * @param contextUserId
-	 * @param aclQueryStr
-	 * @param binderPath
-	 * @return
-	 * @throws LuceneException
-	 */
-	public boolean testInferredAccessToNonNetFolder(Long contextUserId,  String aclQueryStr, String binderPath) throws LuceneException;
-
 	/**
 	 * Get all the unique tags that this user can see, based on the wordroot passed in.
 	 * 
-	 * @param aclQueryStr
+	 * @param query
 	 * @param wordroot
 	 * @param type  - if null or tags - all tags will be returnet, can be personalTags or communityTags
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getTags(String aclQueryStr, String tag, String type)
+	public ArrayList getTags(Query query, String tag, String type)
 			throws LuceneException;
 	
 	/**
 	 * Get all the unique tags and their frequencies that this user can see, based on the wordroot passed in.
 	 * 
-	 * @param aclQueryStr
+	 * @param query
 	 * @param wordroot
 	 * @param type  - if null or tags - all tags will be returnet, can be personalTags or communityTags
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getTagsWithFrequency(String aclQueryStr, String tag, String type)
+	public ArrayList getTagsWithFrequency(Query query, String tag, String type)
 			throws LuceneException;
 	
 	/**

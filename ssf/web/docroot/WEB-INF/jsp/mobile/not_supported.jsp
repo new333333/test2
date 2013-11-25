@@ -34,16 +34,10 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<ssf:ifFilr>
-  <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.notSupportedInFilr") %>' scope="request"/>
-  <c:set var="ss_pageTitle" value='<%= NLT.get("mobile.notSupportedInFilr") %>' scope="request"/>
-</ssf:ifFilr>
-<ssf:ifNotFilr>
-  <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.notEnabled") %>' scope="request"/>
-  <c:set var="ss_pageTitle" value='<%= NLT.get("mobile.notEnabled") %>' scope="request"/>
-</ssf:ifNotFilr>
+<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.notEnabled") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
+<c:set var="ss_pageTitle" value='<%= NLT.get("mobile.notEnabled") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
 <div class="content">
@@ -55,12 +49,7 @@
     <div class="folder-content">
       <div class="folder-head"><ssf:nlt tag="sidebar.history"/></div>
 	  <div>
-		  <ssf:ifFilr>
-		  	<ssf:nlt tag="mobile.notSupportedInFilr"/> 
-		  </ssf:ifFilr>
-		  <ssf:ifNotFilr>
-		  	<ssf:nlt tag="mobile.notEnabled"/> 
-		  </ssf:ifNotFilr>
+		  <ssf:nlt tag="mobile.notEnabled"/> 
 	  </div>
     </div>
   </div>

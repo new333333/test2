@@ -73,7 +73,6 @@ span.pad-left20 {
 	border: 1px solid #7abcba;
 	white-space:nowrap;
 	-moz-border-radius: 5px;
-	border-radius: 5px;	
 	-webkit-border-radius: 5px;	
 	}
 
@@ -88,7 +87,6 @@ span.pad-left20 {
 	border: 1px solid #7abcba;
 	white-space:nowrap;
 	-moz-border-radius: 5px;
-	border-radius: 5px;	
 	-webkit-border-radius: 5px;	
 	}
 
@@ -102,7 +100,6 @@ span.pad-left20 {
 	border: 1px solid #7abcba;
 	white-space:nowrap;
 	-moz-border-radius: 5px;
-	border-radius: 5px;	
 	-webkit-border-radius: 5px;	
 	}
 .lastupdated {
@@ -423,12 +420,10 @@ span.pad-left20 {
 /*  iPhone Specific CSS3 */
 
 .roundcorner {
-	border-radius: 10px;
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px
 	}
 .roundcornerLG {
-	border-radius: 40px;
 	-webkit-border-radius: 40px;
 	-moz-border-radius: 40px
 	}

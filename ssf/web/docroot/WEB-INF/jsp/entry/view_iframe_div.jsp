@@ -63,7 +63,7 @@
 
 <div id="ss_showentrydiv${renderResponse.namespace}" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
-  style="position:absolute; visibility:hidden; display:none; background-color:#fff;">
+  style="position:absolute; visibility:hidden; display:none;">
   <c:if test="${ssUser.displayStyle != 'newpage' && ssUser.displayStyle != 'accessible'}}">
 	  <ssf:box>
 	    <ssf:param name="box_id" value="ss_iframe_box_div${renderResponse.namespace}" />

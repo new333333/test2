@@ -153,17 +153,11 @@ public class EmailLog extends ZonedObject {
 	public void fillFromMimeMessage(MimeMessage mailMsg) {
   		String fromAddress = "";
 		try {
-			Address[] fromAdrs = mailMsg.getFrom();
-			if (fromAdrs != null && fromAdrs.length > 0) {
-				Address fromAdr = fromAdrs[0];
-				fromAddress = fromAdr.toString();
-			}
+			Address[] from = mailMsg.getFrom();
 		} catch (MessagingException e2) {
 			fromAddress = NLT.get("mail.noFromAddress");
 		}
-		if (this.getFrom().isEmpty() && !fromAddress.equals("")) {
-			this.setFrom(fromAddress);
-		}
+		this.setFrom(fromAddress);
   		try {
 			this.setSubj(mailMsg.getSubject());
 		} catch (MessagingException e1) {

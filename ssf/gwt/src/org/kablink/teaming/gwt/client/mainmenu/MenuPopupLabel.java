@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,37 +32,23 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
-import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
- * Class used for a simple label on a popup menu.  
+ * Class used for popup menu Label item.  
  * 
  * @author drfoster@novell.com
+ *
  */
-public class MenuPopupLabel extends VibeMenuItem {
+public class MenuPopupLabel extends Label {
 	/**
-	 * Constructor method..
+	 * Class constructor.
 	 * 
-	 * @param text
+	 * @param displayText
 	 */
-	public MenuPopupLabel(String text, boolean asHtml) {
-		super(
-			text,
-			asHtml,
-			new Command() {
-				@Override
-				public void execute() {}
-			},
-			"vibe-mainMenuPopup_Item vibe-mainMenuPopup_ItemText");
-	}
-	
-	/**
-	 * Constructor method..
-	 * 
-	 * @param text
-	 */
-	public MenuPopupLabel(String text) {
-		this(text, false);
+	public MenuPopupLabel(String displayText) {
+		super(displayText);
+		addStyleName("mainMenuPopup_Item mainMenuPopup_ItemText");
 	}
 }

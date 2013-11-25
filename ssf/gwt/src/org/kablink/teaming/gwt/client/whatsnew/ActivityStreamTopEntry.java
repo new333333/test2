@@ -36,18 +36,15 @@ package org.kablink.teaming.gwt.client.whatsnew;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryListRpcResponseData;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCommentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -57,12 +54,12 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -70,44 +67,42 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  */
 public class ActivityStreamTopEntry extends ActivityStreamUIEntry
-	implements ActivityStreamCommentsContainer
 {
 	private ArrayList<ActivityStreamComment> m_comments;
-	private FlowPanel m_numCommentsPanel;		// Shows the number of comments that exist for this entry.
+	private InlineLabel m_numCommentsLabel;		// Shows the number of comments that exist for this entry.
 	private Anchor m_parentBinderName;			// Name of the binder this entry comes from.
 	private String m_parentBinderId;			// Id of the binder this entry comes from.
 	private String m_parentBinderPermalink;
 	private Image m_breadSpaceImg;
 	private int m_numComments;
-	private boolean m_showingAllComments;
-	private boolean m_retrievedAllComments;
 	
 	/**
 	 * 
 	 */
-	public ActivityStreamTopEntry( ActivityStreamCtrl activityStreamCtrl, DescViewFormat descViewFormat )
+	public ActivityStreamTopEntry( ActivityStreamCtrl activityStreamCtrl )
 	{
-		super( activityStreamCtrl, descViewFormat );
+		super( activityStreamCtrl );
 		
 		m_parentBinderId = null;
 		m_parentBinderPermalink = null;
 		
 		// Create a list to hold the comments for this entry.
 		m_comments = new ArrayList<ActivityStreamComment>();
-
-		m_showingAllComments = false;
-		m_retrievedAllComments = false;
 	}
 
 	
 	/**
 	 * Add the name of the binder this entry comes from.
 	 */
-	@Override
 	public void addAdditionalHeaderUI( FlowPanel headerPanel )
 	{
 		ImageResource imageResource;
 
+		// Create a span for the number of comments text to live in.
+		m_numCommentsLabel = new InlineLabel();
+		m_numCommentsLabel.addStyleName( "activityStreamNumCommentsLabel" );
+		headerPanel.add( m_numCommentsLabel );
+		
 		imageResource = GwtTeaming.getImageBundle().breadSpace();
 		m_breadSpaceImg = new Image( imageResource );
 		m_breadSpaceImg.setVisible( false );
@@ -127,7 +122,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
-				@Override
 				public void onMouseOver( MouseOverEvent event )
 				{
 					m_parentBinderName.addStyleName( "activityStreamHover" );
@@ -146,7 +140,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
-				@Override
 				public void onMouseOut( MouseOutEvent event )
 				{
 					m_parentBinderName.removeStyleName( "activityStreamHover" );
@@ -164,7 +157,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
 					handleClickOnParentBinder();
@@ -190,8 +182,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		
 		// Add this ui widget to panel that holds all comments
 		commentsPanel = getCommentsPanel();
-		if ( commentsPanel != null )
-			commentsPanel.add( commentUI );
+		commentsPanel.add( commentUI );
 	}
 	
 	
@@ -234,7 +225,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	@Override
 	public void clearEntrySpecificInfo()
 	{
 		super.clearEntrySpecificInfo();
@@ -248,11 +238,8 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 			nextComment.removeFromParent();
 		}
 		
-		m_showingAllComments = false;
-		m_retrievedAllComments = false;
 		m_numComments = 0;
-		if ( m_numCommentsPanel != null )
-			m_numCommentsPanel.getElement().setInnerText( "" );
+		m_numCommentsLabel.setText( "" );
 		m_parentBinderName.setText( "" );
 		m_parentBinderName.setTitle( "" );
 		m_parentBinderId = null;
@@ -266,7 +253,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * Create the panel that all comments will live in.
 	 */
-	@Override
 	public FlowPanel createCommentsPanel()
 	{
 		return new FlowPanel();
@@ -296,7 +282,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		if ( commentUI == null )
 		{
 			// Create a new one.
-			commentUI = new ActivityStreamComment( getActivityStreamCtrl(), this, getDescViewFormat() );
+			commentUI = new ActivityStreamComment( getActivityStreamCtrl(), this );
 			m_comments.add( commentUI );
 		}
 		
@@ -306,13 +292,8 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	@Override
-	public String getAvatarImageStyleName( ActivityStreamEntry asEntry )
+	public String getAvatarImageStyleName()
 	{
-		// Is this entry a file entry?
-		if ( asEntry.isEntryFile() )
-			return "activityStreamTopEntryFileImg";
-		
 		return "activityStreamTopEntryAvatarImg";
 	}
 
@@ -320,80 +301,34 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * Return the name of the style used with the content panel.
 	 */
-	@Override
 	public String getContentPanelStyleName()
 	{
 		return "activityStreamTopEntryContentPanel";
 	}
+
+	
+	/**
+	 * Return the name of the style used with a top entry's description.
+	 */
+	@Override
+	public String getDescStyleName()
+	{
+		return "activityStreamTopEntryDesc";
+	}
+
 	
 	/**
 	 * 
 	 */
-	@Override
 	public String getEntryHeaderStyleName()
 	{
 		return "activityStreamTopEntryHeader";
 	}
 	
-	/**
-	 * If the given entry is a file, return the url to the image that matches the file.  Otherwise, return
-	 * the url to the author's avatar. 
-	 */
-	@Override
-	public String getEntryImgUrl( ActivityStreamEntry asEntry )
-	{
-		String url;
-		
-		// Is this entry a file entry?
-		if ( asEntry.isEntryFile() )
-		{
-			String fileImgUrl;
-			
-			// Yes
-			// Does the file have an image we can display?
-			fileImgUrl = asEntry.getEntryFileIcon();
-			if ( fileImgUrl != null && fileImgUrl.length() > 0 )
-			{
-				// Yes
-				url = GwtClientHelper.getRequestInfo().getImagesPath() + fileImgUrl;
-			}
-			else
-			{
-				// No, use default
-				url = GwtTeaming.getFilrImageBundle().entry_medium().getSafeUri().asString();
-			}
-		}
-		else
-		{
-			// No
-			// Get the url to the author's avatar
-			url = asEntry.getAuthorAvatarUrl();
-			
-			// Does the author have an avatar?
-			if ( url == null || url.length() == 0 )
-			{
-				// Default to the "no avatar" image.
-				url = GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png";
-			}
-		}
-		
-		return url;
-	}
-
-	/**
-	 * Return the name of the style used with a top entry's full description.
-	 */
-	@Override
-	public String getFullDescStyleName()
-	{
-		return "activityStreamTopEntryFullDesc";
-	}
-
 	
 	/**
 	 * Return the name of the style used with the div that holds the entry.
 	 */
-	@Override
 	public String getMainPanelStyleName()
 	{
 		return "activityStreamTopEntryMainPanel";
@@ -401,80 +336,8 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	
 	
 	/**
-	 * Return the panel that holds the number of comments
-	 */
-	@Override
-	public FlowPanel getNumCommentsPanel()
-	{
-		// Create a span for the number of comments text to live in.
-		m_numCommentsPanel = new FlowPanel();
-		m_numCommentsPanel.setTitle( GwtTeaming.getMessages().showAllComments() );
-		m_numCommentsPanel.addStyleName( "activityStreamNumCommentsPanel" );
-		
-		// Add a click handler.
-		{
-			ClickHandler clickHandler;
-			
-			clickHandler = new ClickHandler()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute() 
-						{
-							// Are we currently showing all comments?
-							if ( m_showingAllComments == false )
-							{
-								// No
-								showAllComments();
-								m_showingAllComments = true;
-
-								// Change the title on the "num comments" label to "hide comments"
-								m_numCommentsPanel.setTitle( GwtTeaming.getMessages().hideComments() );
-							}
-							else
-							{
-								// Yes
-								hideComments();
-								m_showingAllComments = false;
-								
-								// Change the title on the "num comments" label to "show comments"
-								m_numCommentsPanel.setTitle( GwtTeaming.getMessages().showAllComments() );
-							}
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-				
-			};
-			m_numCommentsPanel.addDomHandler( clickHandler, ClickEvent.getType() );
-		}
-
-		return m_numCommentsPanel;
-	}
-	
-	/**
-	 * Return the name of the style used with a top entry's partial description.
-	 */
-	@Override
-	public String getPartialDescStyleName()
-	{
-		return "activityStreamTopEntryPartialDesc";
-	}
-
-	
-	/**
 	 * 
 	 */
-	@Override
 	public String getTitlePanelStyleName()
 	{
 		return "activityStreamTopEntryTitlePanel";
@@ -484,7 +347,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	@Override
 	public String getTitleStyleName()
 	{
 		return "activityStreamTopEntryTitle";
@@ -496,25 +358,15 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	 */
 	private void gotoParentBinder()
 	{
+		OnSelectBinderInfo binderInfo;
+		
 		if ( m_parentBinderId != null && m_parentBinderPermalink != null )
 		{
-			EventHelper.fireChangeContextEventAsync(
-				m_parentBinderId,
-				m_parentBinderPermalink,
-				Instigator.ACTIVITY_STREAM_BINDER_SELECT );
+			binderInfo = new OnSelectBinderInfo( m_parentBinderId, m_parentBinderPermalink, false, Instigator.ACTIVITY_STREAM_BINDER_SELECT );
+			GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
 		}
 	}
 	
-	
-	/**
-	 * This method gets invoked when the user clicks on the avatar/file image.
-	 */
-	@Override
-	public void handleClickOnAvatar( Element element )
-	{
-		// Behave the same as if the user clicked on the title.
-		handleClickOnTitle();
-	}
 	
 	/**
 	 * The user clicked on the binder name.  Take the user to that binder.
@@ -541,7 +393,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
-				@Override
 				public void onFailure(Throwable t)
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -553,7 +404,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
-				@Override
 				public void onSuccess(  VibeRpcResponse response )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -564,7 +414,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
-						@Override
 						public void execute()
 						{
 							// Take the user to the parent binder.
@@ -580,26 +429,11 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 			GwtClientHelper.executeCommand( cmd, callback );
 		}
 	}
-	
-	/**
-	 * 
-	 */
-	private void hideComments()
-	{
-		FlowPanel commentsPanel;
-		
-		commentsPanel = getCommentsPanel();
-		if ( commentsPanel != null )
-		{
-			commentsPanel.setVisible( false );
-		}
-	}
 
 	
 	/**
 	 * Insert the given reply as the first reply to this entry.
 	 */
-	@Override
 	public void insertReply( ActivityStreamEntry reply )
 	{
 		FlowPanel commentsPanel;
@@ -611,7 +445,10 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		
 		// Add this ui widget to panel that holds all comments
 		commentsPanel = getCommentsPanel();
-		commentsPanel.add( commentUI );
+		if ( commentsPanel.getWidgetCount() > 0 )
+			commentsPanel.insert( commentUI, 0 );
+		else
+			commentsPanel.add( commentUI );
 		
 		// Update the number of comments on this top entry.
 		++m_numComments;
@@ -639,7 +476,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * Set the data this we should display from the given ActivityStreamEntry
 	 */
-	@Override
 	public void setData( ActivityStreamEntry entryItem )
 	{
 		List<ActivityStreamEntry> comments = null;
@@ -686,121 +522,22 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	}
 	
 	/**
-	 * Show all the comments for this entry
-	 */
-	private void showAllComments()
-	{
-		if ( m_numCommentsPanel != null )
-		{
-			// Have we already retrieved all the comments for this entry?
-			if ( m_retrievedAllComments == false )
-			{
-				GetEntryCommentsCmd cmd;
-				AsyncCallback<VibeRpcResponse> callback;
-				
-				// No
-				callback = new AsyncCallback<VibeRpcResponse>()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onFailure(Throwable t)
-					{
-						GwtClientHelper.handleGwtRPCFailure(
-												t,
-												GwtTeaming.getMessages().rpcFailure_GetEntryComments(),
-												getEntryTitle() );
-					}
-					
-					/**
-					 * 
-					 */
-					@Override
-					public void onSuccess(  VibeRpcResponse response )
-					{
-						Scheduler.ScheduledCommand cmd;
-						ActivityStreamEntryListRpcResponseData responseData;
-						final List<ActivityStreamEntry> listOfComments;
-
-						// Clear all data from the existing ui comment objects
-						if ( m_comments != null )
-						{
-							for (ActivityStreamComment nextComment : m_comments)
-							{
-								nextComment.clearEntrySpecificInfo();
-								
-								// Remove this comment from this entry.
-								nextComment.removeFromParent();
-							}
-						}
-						
-						// Get the list of comments from the response.
-						responseData = (ActivityStreamEntryListRpcResponseData) response.getResponseData();
-						listOfComments = responseData.getActivityStreamEntryList();
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								FlowPanel commentsPanel;
-								
-								m_retrievedAllComments = true;
-								
-								// Do we have a list of comments?
-								if ( listOfComments != null )
-								{
-									// Yes
-									for (ActivityStreamEntry nextComment: listOfComments)
-									{
-										addComment( nextComment );
-									}
-								}
-								
-								commentsPanel = getCommentsPanel();
-								commentsPanel.setVisible( true );
-								
-								m_numComments = listOfComments.size();
-								updateCommentsLabel();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
-				
-				// Issue a request to get all the comments for this entry.
-				cmd = new GetEntryCommentsCmd( getEntryId() );
-				GwtClientHelper.executeCommand( cmd, callback );
-			}
-			else
-			{
-				FlowPanel commentsPanel;
-				
-				// Yes, simply show the comments panel
-				commentsPanel = getCommentsPanel();
-				commentsPanel.setVisible( true );
-			}
-		}
-	}
-	
-	/**
 	 * Update the label that displays the number of comments there are on this entry.
 	 */
 	private void updateCommentsLabel()
 	{
-		if ( m_numCommentsPanel != null )
+		if ( m_numComments > 0 )
 		{
-			if ( m_numComments > 0 )
-			{
-				String text;
-
-				text = String.valueOf( m_numComments );
-				m_numCommentsPanel.getElement().setInnerText( text );
-				m_numCommentsPanel.setVisible( true );
-			}
+			String text;
+			
+			if ( m_numComments == 1 )
+				text = GwtTeaming.getMessages().oneComment();
 			else
-				m_numCommentsPanel.setVisible( false );
+				text = GwtTeaming.getMessages().multipleComments( m_numComments );
+			m_numCommentsLabel.setText( text );
+			m_numCommentsLabel.setVisible( true );
 		}
+		else
+			m_numCommentsLabel.setVisible( false );
 	}
 }

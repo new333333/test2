@@ -69,9 +69,10 @@ public class ExtensionsController extends  SAbstractController {
 		if (WebHelper.isMethodPost(request)) {
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
-		    	getAdminModule().checkAccess(AdminOperation.manageExtensions);
 				
-				//ZoneConfig zoneConfig = getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+		    	getAdminModule().checkAccess(AdminOperation.manageExtensions);
+
+		    	//ZoneConfig zoneConfig = getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 				//String zoneName = zoneConfig.;
 				
 				//String zoneName = PortletRequestUtils.getStringParameter(request,"zoneName");
@@ -118,7 +119,7 @@ public class ExtensionsController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		
     	getAdminModule().checkAccess(AdminOperation.manageExtensions);
-		Map model = new HashMap();
+    	Map model = new HashMap();
 		
 //		String extensionUpdate = PortletRequestUtils.getStringParameter( request, "extensions_updated", "" );
 //		if (extensionUpdate != null){

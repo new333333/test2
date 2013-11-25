@@ -6,32 +6,33 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
-    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
 
     <!-- ============================== Digest authentication ============================ -->
 
 	<bean id="digestProcessingFilter"
-		class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
+		class="org.springframework.security.ui.digestauth.DigestProcessingFilter">
+		<security:custom-filter position="BASIC_PROCESSING_FILTER" />
        	<property name="userDetailsService" ref="digestUserDetailsService"/>
 		<property name="authenticationEntryPoint" ref="digestProcessingFilterEntryPoint"/>
 	</bean>
 	
 	<bean id="digestProcessingFilterEntryPoint"
-		class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
-		<property name="realmName" value="Vibe"/>
+		class="org.springframework.security.ui.digestauth.DigestProcessingFilterEntryPoint">
+		<property name="realmName" value="Teaming"/>
 		<property name="key" value="U2l0ZVNjYXBl"/>
 	</bean>
 
 	<bean id="digestUserDetailsService" 
-		class="org.kablink.teaming.asmodule.spring.security.userdetails.DecryptedPasswordUserDetailsService">
+		class="org.kablink.teaming.asmodule.spring.security.userdetails.DigestUserDetailsService">
 	</bean>
 
 	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
-		<constructor-arg>
-		    <list>
-		        <ref bean="authenticationProvider"/>
-		    </list>
-		</constructor-arg>
+		<property name="providerBeanNames">
+			<list>
+				<value>authenticationProvider</value>
+			</list>
+		</property>
 		<property name="authenticator"><value>webdav</value></property>
 	</bean>
 
@@ -41,16 +42,13 @@
 	     value from the current security context. That is, the system doesn't end up re-authenticating
 	     the same user repeatedly for each and every request. The user's credential is checked only
 	     at the session boundary. 
-	     
 	     Unfortunately, the digest authentication loses this efficiency. Apparently the digest 
 	     authentication requires the server to re-authenticate the user if/when the user credential
 	     is present even when each request is accompanied by a still-valid session. There are two
-	     problems with this:
-	     
+	     problems with thisecurity:
 	     1) Because the authentication code is invoked for every request, it is difficult for the system
 	     to discern the login or session boundary. It acts more like a stateless web services requests
-	     than webdav requests.
-	      
+	     than webdav requests. 
 	     2) The repeated authentication results in inefficiency in the system. To alleviate this problem,
 	     we substitute a null authentication provider for the real one so as to avoid executing the
 	     regular authentication pipeline (which may involve additional interactions with the LDAP source 
@@ -64,11 +62,8 @@
 	      
 	<bean id="authenticationProvider" class="org.kablink.teaming.asmodule.spring.security.providers.DummyAuthenticationProvider"/>
 	
-    <security:http entry-point-ref="digestProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager"> 
-		<security:custom-filter position="BASIC_AUTH_FILTER" ref="digestProcessingFilter"/>
-        <security:session-management session-fixation-protection="newSession" />
+    <security:http session-fixation-protection="newSession" entry-point-ref="digestProcessingFilterEntryPoint">
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
-        <security:anonymous enabled="false" />
     </security:http>
 	
 </beans>

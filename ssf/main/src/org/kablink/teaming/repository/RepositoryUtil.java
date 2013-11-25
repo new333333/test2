@@ -47,10 +47,8 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.repository.impl.SessionWrappedInputStream;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
@@ -75,7 +73,7 @@ public class RepositoryUtil {
 	public static int fileInfo(String repositoryName,
 			Binder binder, DefinableEntity entry, String relativeFilePath)
 		throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 		try {
 			return session.fileInfo(binder, entry, relativeFilePath);
 		} finally {
@@ -83,21 +81,20 @@ public class RepositoryUtil {
 		}		
 	}
 	
-	public static String createVersionedFile(Binder binder, DefinableEntity entry,
+	public static String createVersioned(Binder binder, DefinableEntity entry,
 			FileUploadItem fui) throws RepositoryServiceException,
 			UncheckedIOException {
 		String repositoryName = fui.getRepositoryName();
 
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, binder);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			// TODO For now we ignore file path relative to the owning entry.
 			// We simply treat that the file path is identical to the file name.
 			InputStream is = fui.getInputStream();
 			try {
-				long size = fui.makeReentrant().getSize();
 				return session.createVersioned(binder, entry, fui
-					.getOriginalFilename(), is, size, fui.getModTime());
+					.getOriginalFilename(), is);
 			}
 			finally {
 				try {
@@ -113,33 +110,32 @@ public class RepositoryUtil {
 		}
 	}
 
-	public static void createUnversionedFile(String repositoryName,
-			Binder binder, DefinableEntity entry, String relativeFilePath, InputStream in, long size, Long lastModTime) 
+	public static void createUnversioned(String repositoryName,
+			Binder binder, DefinableEntity entry, String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, binder);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			// TODO For now we ignore file path relative to the owning entry.
 			// We simply treat that the file path is identical to the file name.
-			session.createUnversioned(binder, entry, relativeFilePath, in, size, lastModTime);
+			session.createUnversioned(binder, entry, relativeFilePath, in);
 		} finally {
 			session.close();
 		}
 	}
 
-	public static void updateFile(Binder binder, DefinableEntity entry,
+	public static void update(Binder binder, DefinableEntity entry,
 			FileUploadItem fui) throws RepositoryServiceException,
 			UncheckedIOException {
 		String repositoryName = fui.getRepositoryName();
 
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.UPDATE, entry);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			InputStream is = fui.getInputStream();
+			
 			try {
-				long size = fui.makeReentrant().getSize();
-				
-				session.update(binder, entry, fui.getOriginalFilename(), is, size, fui.getModTime());
+				session.update(binder, entry, fui.getOriginalFilename(), is);
 			}
 			finally {
 				try {
@@ -158,7 +154,7 @@ public class RepositoryUtil {
 	public static void delete(String repositoryName, Binder binder,
 			DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.DELETE, binder);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.delete(binder, entry, relativeFilePath);
@@ -167,10 +163,21 @@ public class RepositoryUtil {
 		}		
 	}
 
+	public static void delete(String repositoryName, Binder binder) 
+		throws RepositoryServiceException, UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
+
+		try {
+			session.delete(binder);
+		} finally {
+			session.close();
+		}		
+	}
+
 	public static void deleteVersion(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.DELETE, binder);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.deleteVersion(binder, entry, relativeFilePath, versionName);
@@ -179,7 +186,7 @@ public class RepositoryUtil {
 		}
 	}
 
-	public static void readVersionedFile(FileAttachment fa, Binder binder, 
+	public static void readVersioned(FileAttachment fa, Binder binder, 
 			DefinableEntity entry, String versionName, 
 			String latestVersionName, OutputStream out)
 			throws RepositoryServiceException, UncheckedIOException {
@@ -190,7 +197,7 @@ public class RepositoryUtil {
 			out = cfe.getEncryptionOutputDecryptedStream(out);
 		}
 
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.readVersioned(binder, entry, relativeFilePath, versionName, latestVersionName, out);
@@ -199,18 +206,18 @@ public class RepositoryUtil {
 		}
 	}
 
-	public static InputStream readVersionedFile(FileAttachment fa, Binder binder, 
+	public static InputStream readVersioned(FileAttachment fa, Binder binder, 
 			DefinableEntity entry, String versionName, String latestVersionName)
 			throws RepositoryServiceException, UncheckedIOException {
-		return readVersionedFile(fa, binder, entry, versionName, latestVersionName, false);
+		return readVersioned(fa, binder, entry, versionName, latestVersionName, false);
 	}
 	
-	public static InputStream readVersionedFile(FileAttachment fa, Binder binder, 
+	public static InputStream readVersioned(FileAttachment fa, Binder binder, 
 			DefinableEntity entry, String versionName, String latestVersionName, boolean readRawFile)
 			throws RepositoryServiceException, UncheckedIOException {
 		String repositoryName = fa.getRepositoryName();
 		String relativeFilePath = fa.getFileItem().getName();
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		InputStream in = null;
 		try {
@@ -226,10 +233,10 @@ public class RepositoryUtil {
 		}
 	}
 
-	public static void readUnversionedFile(String repositoryName, Binder binder, 
+	public static void readUnversioned(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, OutputStream out)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.readUnversioned(binder, entry, relativeFilePath, out);
@@ -238,10 +245,10 @@ public class RepositoryUtil {
 		}
 	}
 
-	public static InputStream readUnversionedFile(String repositoryName, Binder binder, 
+	public static InputStream readUnversioned(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		InputStream in = null;
 		try {
@@ -270,7 +277,7 @@ public class RepositoryUtil {
 	public static void checkout(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.checkout(binder, entry, relativeFilePath);
@@ -282,7 +289,7 @@ public class RepositoryUtil {
 	public static void checkin(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.checkin(binder, entry, relativeFilePath);
@@ -294,7 +301,7 @@ public class RepositoryUtil {
 	public static void uncheckout(String repositoryName, Binder binder, 
 			DefinableEntity entry,String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.uncheckout(binder, entry, relativeFilePath);
@@ -337,15 +344,15 @@ public class RepositoryUtil {
 			append(separator).
 			append(binder.getId()).
 			append(separator).
-			append(entry.getEntityTypedId()).
+			append(entry.getTypedId()).
 			append(separator).toString();
 	}
 	
-	public static void moveFile(String repositoryName, Binder binder, 
+	public static void move(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, Binder destBinder, 
 			DefinableEntity destEntry, String destRelativeFilePath)
 	throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.MOVE_FILE, binder, destBinder);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.move(binder, entry, relativeFilePath, destBinder, destEntry, destRelativeFilePath);
@@ -365,7 +372,7 @@ public class RepositoryUtil {
 	public static long getContentLengthUnversioned(String repositoryName, Binder binder, 
 				DefinableEntity entity, String relativeFilePath) 
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entity);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			return session.getContentLengthUnversioned(binder, entity, relativeFilePath);

@@ -53,8 +53,7 @@ public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
     public Binder copyBinder(Binder source, Binder destination, Map options) {
     	if (!(destination instanceof Workspace))
         	throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
-       	if (Integer.valueOf(Definition.USER_WORKSPACE_VIEW).equals(source.getDefinitionType()) ||
-       			Integer.valueOf(Definition.EXTERNAL_USER_WORKSPACE_VIEW).equals(source.getDefinitionType()))
+       	if (Integer.valueOf(Definition.USER_WORKSPACE_VIEW).equals(source.getDefinitionType()))
         	throw new NotSupportedException("errorcode.notsupported.copyBinder", new String[] {source.getPathName()});
     	return super.copyBinder(source, destination, options);
      }
@@ -63,8 +62,7 @@ public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
     	//User workspace - title change may come when userTitle changes,
     	//but definition does not include title as a form field
     	Integer type = binder.getDefinitionType();
-    	if ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
-    			(type.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
+    	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
     		//if provided but not convered by definition, handle title here
     		if (!entryData.containsKey(ObjectKeys.FIELD_ENTITY_TITLE) && inputData.exists(ObjectKeys.FIELD_ENTITY_TITLE)) {
     			binder.setTitle(inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_TITLE));    			

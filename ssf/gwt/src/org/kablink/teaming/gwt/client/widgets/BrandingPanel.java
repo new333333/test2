@@ -36,8 +36,6 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
-import org.kablink.teaming.gwt.client.GwtBrandingDataExt.BrandingRule;
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
@@ -73,7 +71,6 @@ public class BrandingPanel extends Composite
 	private Image m_defaultBgImg = null;
 	private Image m_bgImg = null;
 	private GwtBrandingData m_brandingData = null;
-	private int m_minHeight = 50;
 	
 	/**
 	 * This class displays the image or html defined in the branding
@@ -94,32 +91,26 @@ public class BrandingPanel extends Composite
 			m_panel = new FlowPanel();
 			m_panel.addStyleName( "brandingContentPanel" );
 	
-			// Are we running Filr
-			if ( m_requestInfo.isLicenseFilr() )
-			{
-				// Yes
-				// Create a Novell Filr image that will be used in case there is no branding.
-				imageResource = GwtTeaming.getImageBundle().mastHeadFilrGraphic();
-			}
 			// Are we running Novell Teaming?
-			else if ( m_requestInfo.isNovellTeaming() )
+			if ( m_requestInfo.isNovellTeaming() )
 			{
 				// Yes
 				// Create a Novell Teaming image that will be used in case there is no branding.
 				imageResource = GwtTeaming.getImageBundle().mastHeadNovellGraphic();
+				m_teamingImg = new Image( imageResource );
+				m_teamingImg.setWidth( "500" );
+				m_teamingImg.setHeight( "75" );
 			}
 			else
 			{
 				// No
 				// Create a Kablink Teaming image that will be used in case there is no branding.
 				imageResource = GwtTeaming.getImageBundle().mastHeadKablinkGraphic();
+				m_teamingImg = new Image( imageResource );
+				m_teamingImg.setWidth( "500" );
+				m_teamingImg.setHeight( "75" );
 			}
-
-			m_teamingImg = new Image( imageResource );
-			m_teamingImg.addStyleName( "brandingDefaultImg" );
-			m_teamingImg.setWidth( "500" );
-			m_teamingImg.setHeight( "75" );
-
+		
 			// All composites must call initWidget() in their constructors.
 			initWidget( m_panel );
 		}// end BrandingContentPanel()
@@ -129,7 +120,6 @@ public class BrandingPanel extends Composite
 		 * This method gets called when an image in the branding gets loaded.  We will need
 		 * to adjust the height of the BrandingPanel.
 		 */
-		@Override
 		public void onLoad( LoadEvent event )
 		{
 			Scheduler.ScheduledCommand cmd;
@@ -138,7 +128,6 @@ public class BrandingPanel extends Composite
 			// that has been loaded.
 			cmd = new Scheduler.ScheduledCommand()
 			{
-				@Override
 				public void execute()
 				{
 	    			adjustBrandingPanelHeight();
@@ -164,128 +153,94 @@ public class BrandingPanel extends Composite
 				brandingType = brandingData.getBrandingType();
 				
 				// Should we do branding using an image?  
-				if ( brandingType != null )
+				if ( brandingType != null && brandingType.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
 				{
-					boolean showPoweredBy = false;
+					String brandingImgUrl;
+					String brandingImgName;
+					boolean useDefaultTeamingImg = false;
+
+					// Yes
+					brandingImgName = brandingData.getBrandingImageName();
+					brandingImgUrl = brandingData.getBrandingImageUrl();
 					
-					if ( brandingType.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
+					// Do we have the name of a branding image to use?
+					if ( brandingImgName == null || brandingImgName.length() == 0 )
 					{
-						String brandingImgUrl;
-						String brandingImgName;
-						boolean useDefaultTeamingImg = false;
-	
-						// Yes
-						brandingImgName = brandingData.getBrandingImageName();
-						brandingImgUrl = brandingData.getBrandingImageUrl();
-						
-						// Do we have the name of a branding image to use?
-						if ( brandingImgName == null || brandingImgName.length() == 0 )
-						{
-							// No, use the default teaming image.
-							useDefaultTeamingImg = true;
-						}
-						else
-						{
-							// Yes
-							// Is the branding image name "__default teaming image__"?
-							if ( brandingImgName.equalsIgnoreCase( DEFAULT_TEAMING_IMAGE ) )
-							{
-								// Yes
-								useDefaultTeamingImg = true;
-							}
-							// Is the branding image name "__no image__"?
-							else if ( brandingImgName.equalsIgnoreCase( NO_IMAGE ) )
-							{
-								// Yes, nothing to do
-							}
-							// Do we have a url to the specified branding image?
-							else if ( brandingImgUrl != null && brandingImgUrl.length() > 0 )
-							{
-								Image img;
-								
-								// Yes, create the image and add it to the panel.
-								img = new Image( brandingImgUrl );
-								img.addLoadHandler( this );
-								m_panel.add( img );
-							}
-						}
-						
-						// Should we use the default Teaming image?
-						if ( useDefaultTeamingImg )
-						{
-							// Yes
-							m_panel.add( m_teamingImg );
-						}
-						else
-						{
-							// Are we running Filr?
-							if ( m_requestInfo.isLicenseFilr() )
-								showPoweredBy = true;
-						}
+						// No, use the default teaming image.
+						useDefaultTeamingImg = true;
 					}
 					else
 					{
-						String html;
-
-						// Default to advanced branding.  This is the branding that is defined in the "branding" field in the ss_forums table.
-						// Get the branding html.
-						html = brandingData.getBranding();
-						
-						// Are we running Filr?
-						if ( m_requestInfo.isLicenseFilr() )
-							showPoweredBy = true;
-
-						// Do we have any branding?
-						if ( html != null && html.length() > 0 )
+						// Yes
+						// Is the branding image name "__default teaming image__"?
+						if ( brandingImgName.equalsIgnoreCase( DEFAULT_TEAMING_IMAGE ) )
 						{
-							Element element;
-							Timer timer;
-							
 							// Yes
-							// Replace the content of this panel with the branding html.
-							m_panel.clear();
-							element = m_panel.getElement();
-							element.setInnerHTML( html );
-
-							GwtClientHelper.jsExecuteJavaScript( element );
-
-							// The html we just added to the branding may have images in it.
-							// We need to wait until the browser has rendered the new html
-							// we just added before we adjust the height of the branding panel.
-							timer = new Timer()
-							{
-								/**
-								 * 
-								 */
-								@Override
-								public void run()
-								{
-					    			adjustBrandingPanelHeight();
-								}// end run()
-							};
+							useDefaultTeamingImg = true;
+						}
+						// Is the branding image name "__no image__"?
+						else if ( brandingImgName.equalsIgnoreCase( NO_IMAGE ) )
+						{
+							// Yes, nothing to do
+						}
+						// Do we have a url to the specified branding image?
+						else if ( brandingImgUrl != null && brandingImgUrl.length() > 0 )
+						{
+							Image img;
 							
-							timer.schedule( 1500 );
+							// Yes, create the image and add it to the panel.
+							img = new Image( brandingImgUrl );
+							img.addLoadHandler( this );
+							m_panel.add( img );
 						}
 					}
 					
-					// Should we show the "powered by" image?
-					if ( showPoweredBy && brandingData.getBrandingRule() == BrandingRule.DISPLAY_SITE_BRANDING_ONLY )
+					// Should we use the default Teaming image?
+					if ( useDefaultTeamingImg )
 					{
-						Image img;
-						String imgUrl;
-						
 						// Yes
-						// Create the "Powered by Novell Filr" image.
-						imgUrl = GwtMainPage.m_requestInfo.getImagesPath() + "pics/masthead/PoweredByFilr.png";
-
-						img = new Image( imgUrl );
-						img.addStyleName( "poweredByImg" );
-						m_panel.add( img );
+						m_panel.add( m_teamingImg );
 					}
 				}
 				else
 				{
-					m_panel.add( m_teamingImg );
+					String html;
+
+					// Default to advanced branding.  This is the branding that is defined in the "branding" field in the ss_forums table.
+					// Get the branding html.
+					html = brandingData.getBranding();
+					
+					// Do we have any branding?
+					if ( html != null && html.length() > 0 )
+					{
+						Element element;
+						Timer timer;
+						
+						// Yes
+						// Replace the content of this panel with the branding html.
+						m_panel.clear();
+						element = m_panel.getElement();
+						element.setInnerHTML( html );
+
+						GwtClientHelper.jsExecuteJavaScript( element );
+
+						// The html we just added to the branding may have images in it.
+						// We need to wait until the browser has rendered the new html
+						// we just added before we adjust the height of the branding panel.
+						timer = new Timer()
+						{
+							/**
+							 * 
+							 */
+							@Override
+							public void run()
+							{
+				    			adjustBrandingPanelHeight();
+							}// end run()
+						};
+						
+						timer.schedule( 1500 );
+					}
 				}
 			}
 		}// end updatePanel()
@@ -353,8 +308,8 @@ public class BrandingPanel extends Composite
 		wrapperPanelHeight = m_wrapperPanel.getOffsetHeight();
 		contentPanelHeight = m_contentPanel.getOffsetHeight();
 		height = Math.max( wrapperPanelHeight, contentPanelHeight );
-		if ( height < m_minHeight )
-			height = m_minHeight;
+		if ( height < 50 )
+			height = 50;
 
 		// The max height of branding is 1/3 the height of the browser window.
 		browserHeight = Window.getClientHeight();
@@ -411,7 +366,6 @@ public class BrandingPanel extends Composite
 		// Issue a deferred command to notify all OnSizeChangeHandlers.
 		cmd = new Scheduler.ScheduledCommand()
 		{
-			@Override
 			public void execute()
 			{
 				// Calling each OnSizeChangeHandler
@@ -435,7 +389,6 @@ public class BrandingPanel extends Composite
 	 * This method gets called when an image in the branding gets loaded.  We will need
 	 * to adjust the height of the branding panel.
 	 */
-	@Override
 	public void onLoad( LoadEvent event )
 	{
 		// Adjust the height of the branding panel to take into consideration this new image
@@ -444,7 +397,6 @@ public class BrandingPanel extends Composite
 
 		cmd = new Scheduler.ScheduledCommand()
 		{
-			@Override
 			public void execute()
 			{
     			adjustBrandingPanelHeight();
@@ -453,14 +405,6 @@ public class BrandingPanel extends Composite
 		Scheduler.get().scheduleDeferred( cmd );
 	}// end onLoad()
 	
-	
-	/**
-	 * Set the minimum height this branding panel can be.
-	 */
-	public void setMinHeight( int minHeight )
-	{
-		m_minHeight = minHeight;
-	}
 	
 	/**
 	 * Update the branding panel with the branding information found in brandingData.
@@ -549,7 +493,6 @@ public class BrandingPanel extends Composite
 
 				cmd = new Scheduler.ScheduledCommand()
 				{
-					@Override
 					public void execute()
 					{
 		    			adjustBrandingPanelHeight();

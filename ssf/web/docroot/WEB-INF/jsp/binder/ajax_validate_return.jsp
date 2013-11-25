@@ -55,7 +55,7 @@
 		  <span class="ss_formError">
 		  <c:if test="${ssAjaxErrorMessageIsText}">${ssAjaxErrorMessage}</c:if> 
 		  <c:if test="${!ssAjaxErrorMessageIsText}"><ssf:nlt tag="${ssAjaxErrorMessage}"/></c:if> 
-		  <span style="padding-left:4px;" class="ss_bold">${ssAjaxErrorDetail}</span></span>
+		  <span class="ss_bold">${ssAjaxErrorDetail}</span></span>
 		</div>
     </taconite-replace>
     <taconite-set-attributes contextNodeID="${ss_ajaxLabelId}" 

@@ -84,7 +84,6 @@ ${exception.class}<br/>
 	</div>
 </c:if>
 </c:if>
-
 <ssf:ifnotadapter>
 	<c:if test="${!empty ssUser.workspaceId}">
 		<p style="text-align:center;"><a href="<ssf:url action="view_ws_listing"

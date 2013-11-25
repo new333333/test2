@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDynamicMembershipCriteriaCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TestGroupMembershipCriteriaCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -76,10 +77,8 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	private TextArea m_filterTextArea;
 	private CheckBox m_searchSubtreeCB;
 	private CheckBox m_updateCB;
-	private Button m_currentMembershipBtn;
+	private Label m_currentMembershipLabel;
 	private FlowPanel m_inProgressPanel;
-	private ShowDynamicMembershipDlg m_dynamicMembershipDlg;
-	private Long m_groupId;
 	
 	/**
 	 * 
@@ -101,7 +100,6 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
 		GwtTeamingMessages messages;
@@ -126,40 +124,9 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 		
 		// Add a label that will be used to display the current membership information.
 		{
-			ClickHandler clickHandler;
-			
-			m_currentMembershipBtn = new Button( "" );
-			m_currentMembershipBtn.getElement().getStyle().setMarginBottom( 8, Unit.PX );
-			
-			clickHandler = new ClickHandler()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						/**
-						 * 
-						 */
-						@Override
-						public void execute()
-						{
-							// Invoke the Show Dynamic Membership dialog.
-							invokeShowDynamicMembershipDlg();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-				
-			};
-			m_currentMembershipBtn.addClickHandler( clickHandler );
-
-			table.setWidget( nextRow, 0, m_currentMembershipBtn );
+			m_currentMembershipLabel = new Label( "" );
+			m_currentMembershipLabel.getElement().getStyle().setMarginBottom( 8, Unit.PX );
+			table.setWidget( nextRow, 0, m_currentMembershipLabel );
 			cellFormatter.setColSpan( nextRow, 0, 2 );
 			++nextRow;
 		}
@@ -234,7 +201,6 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 				/**
 				 * 
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -244,7 +210,6 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 						/**
 						 * 
 						 */
-						@Override
 						public void execute()
 						{
 							// Invoke the "Execute LDAP Query" dialog.  This dialog will
@@ -290,7 +255,6 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	/**
 	 * Return the criteria for group membership
 	 */
-	@Override
 	public Object getDataFromDlg()
 	{
 		GwtDynamicGroupMembershipCriteria membershipCriteria;
@@ -313,48 +277,6 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	}
 	
 	
-	/**
-	 * Return the widget that should get the focus when the dialog is shown. 
-	 */
-	@Override
-	public FocusWidget getFocusWidget()
-	{
-		return m_baseDnTxtBox;
-	}
-	
-	/**
-	 * 
-	 */
-	public void init( GwtDynamicGroupMembershipCriteria membershipCriteria, Integer currentMembershipCnt, Long groupId )
-	{
-		m_groupId = groupId;
-		
-		if ( membershipCriteria != null )
-		{
-			// Initialeze the base dn text box.
-			m_baseDnTxtBox.setValue( membershipCriteria.getBaseDn() );
-			
-			// Initialize the ldap filter text area
-			m_filterTextArea.setText( membershipCriteria.getLdapFilter() );
-			
-			// Update the "search subtree" checkbox.
-			m_searchSubtreeCB.setValue( membershipCriteria.getSearchSubtree() );
-			
-			// Update the "Update group membership during scheduled ldap synchronization" checkbox.
-			m_updateCB.setValue( membershipCriteria.getUpdateDuringLdapSync() );
-			
-			// Update the "current membership: xxx user/groups"
-			setCurrentMembershipCount( currentMembershipCnt );
-			
-			// If we are dealing with an existing group, enable the "Current membership" button.
-			// Otherwise, disable it.
-			if ( m_groupId != null )
-				m_currentMembershipBtn.setEnabled( true );
-			else
-				m_currentMembershipBtn.setEnabled( false );
-		}
-	}
-
 	/**
 	 * Invoke the "Execute ldap query" dialog.  This dialog will execute the ldap query
 	 * entered by the user and will tell the user how many users/groups were found
@@ -421,28 +343,37 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	}
 	
 	/**
-	 * Invoke the Show Dynamic Membership dialog.  This dialog will display a list of all the
-	 * dynamic members of a group.
+	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
-	private void invokeShowDynamicMembershipDlg()
+	public FocusWidget getFocusWidget()
 	{
-		int x;
-		int y;
-		
-		// Get the position of this dialog.
-		x = getAbsoluteLeft() + 50;
-		y = getAbsoluteTop() + 50;
-		
-		if ( m_dynamicMembershipDlg == null )
-		{
-			m_dynamicMembershipDlg = new ShowDynamicMembershipDlg( false, true, x, y );
-		}
-
-		m_dynamicMembershipDlg.init( "", m_groupId );
-		m_dynamicMembershipDlg.setPopupPosition( x, y );
-		m_dynamicMembershipDlg.show();
+		return m_baseDnTxtBox;
 	}
-
+	
+	/**
+	 * 
+	 */
+	public void init( GwtDynamicGroupMembershipCriteria membershipCriteria, Integer currentMembershipCnt )
+	{
+		if ( membershipCriteria != null )
+		{
+			// Initialeze the base dn text box.
+			m_baseDnTxtBox.setValue( membershipCriteria.getBaseDn() );
+			
+			// Initialize the ldap filter text area
+			m_filterTextArea.setText( membershipCriteria.getLdapFilter() );
+			
+			// Update the "search subtree" checkbox.
+			m_searchSubtreeCB.setValue( membershipCriteria.getSearchSubtree() );
+			
+			// Update the "Update group membership during scheduled ldap synchronization" checkbox.
+			m_updateCB.setValue( membershipCriteria.getUpdateDuringLdapSync() );
+			
+			// Update the "current membership: xxx user/groups"
+			setCurrentMembershipCount( currentMembershipCnt );
+		}
+	}
+	
 	/**
 	 * 
 	 */
@@ -452,12 +383,12 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 		if ( count != null )
 		{
 			// Yes
-			m_currentMembershipBtn.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipLabel( count ) );
+			m_currentMembershipLabel.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipLabel( count ) );
 		}
 		else
 		{
 			// No, update the label to say "Calculating..."
-			m_currentMembershipBtn.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipCalculatingLabel() );
+			m_currentMembershipLabel.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipCalculatingLabel() );
 		}
 	}
 }

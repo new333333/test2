@@ -61,19 +61,16 @@ public interface BinderProcessor {
     public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException;
     public Binder copyBinder(Binder source, Binder destination, Map options);
-    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, boolean skipDbLog) throws AccessControlException;
+    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) throws AccessControlException;
   	//return search results
   	public Map getBinders(Binder binder, Map options);
   	public Map getBinders(Binder binder, List binderIds, Map options);
-    public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries);
-    public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing);
+    public void indexFunctionMembership(Binder binder, boolean cascade);
     public void indexTeamMembership(Binder binder, boolean cascade);
     public void indexOwner(Collection<Binder>binders, Long ownerId);
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries);	
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags);
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing);
 	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries);
-	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean skipFileContentIndexing);
 	public Collection indexTree(Binder binder, Collection exclusions);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors);
@@ -94,8 +91,4 @@ public interface BinderProcessor {
      */
     public void moveBinderFixup(Binder binder);
 	public ChangeLog processChangeLog(Binder binder, String operation);
-	public ChangeLog processChangeLog(Binder binder, String operation, boolean skipDbLog);
-	
-    public void updateParentModTime(final Binder parentBinder, Map options);
-
 }

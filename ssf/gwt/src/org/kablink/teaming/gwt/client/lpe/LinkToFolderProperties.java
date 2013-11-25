@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
@@ -57,9 +56,8 @@ public class LinkToFolderProperties
 	private String m_folderId;
 	private String m_folderName;
 	private String m_zoneUUID;
-	private String m_url;
 	private AsyncCallback<VibeRpcResponse> m_folderCallback;
-	private GetterCallback<Boolean> m_getterCallback;
+	private boolean m_rpcInProgress;
 	
 	/**
 	 * 
@@ -71,8 +69,7 @@ public class LinkToFolderProperties
 		m_folderId = null;
 		m_folderName = null;
 		m_zoneUUID = null;
-		m_url = null;
-		m_getterCallback = null;
+		m_rpcInProgress = false;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
@@ -87,9 +84,7 @@ public class LinkToFolderProperties
 					GwtTeaming.getMessages().rpcFailure_GetFolder(),
 					m_folderId );
 				
-				// Inform the callback that the rpc request failed.
-				if ( m_getterCallback != null )
-					m_getterCallback.returnValue( Boolean.FALSE );
+				m_rpcInProgress = false;
 			}// end onFailure()
 	
 			/**
@@ -103,14 +98,9 @@ public class LinkToFolderProperties
 				gwtFolder = (GwtFolder) response.getResponseData();
 				
 				if ( gwtFolder != null )
-				{
 					m_folderName = gwtFolder.getFolderName();
-					setUrl( gwtFolder.getViewFolderUrl() );
-				}
 				
-				// Inform the callback that the rpc request finished.
-				if ( m_getterCallback != null )
-					m_getterCallback.returnValue( Boolean.TRUE );
+				m_rpcInProgress = false;
 			}// end onSuccess()
 		};
 	}// end LinkToFolderProperties()
@@ -140,7 +130,6 @@ public class LinkToFolderProperties
 			setFolderName( folderProps.getFolderName() );
 			setTitle( folderProps.getTitle() );
 			setOpenInNewWindow( folderProps.getOpenInNewWindow() );
-			setUrl( folderProps.getUrl() );
 		}
 	}// end copy()
 	
@@ -177,7 +166,7 @@ public class LinkToFolderProperties
 	/**
 	 * Issue an ajax request to get the folder's name from the server.
 	 */
-	public void getDataFromServer( GetterCallback<Boolean> callback )
+	public void getDataFromServer()
 	{
 		// Do we have a folder id?
 		if ( m_folderId != null )
@@ -185,7 +174,7 @@ public class LinkToFolderProperties
 			GetFolderCmd cmd;
 			
 			// Yes, Issue an ajax request to get the GwtFolder object for the given folder id.
-			m_getterCallback = callback;
+			m_rpcInProgress = true;
 			cmd = new GetFolderCmd( m_zoneUUID, m_folderId );
 			GwtClientHelper.executeCommand( cmd, m_folderCallback );
 		}
@@ -229,21 +218,21 @@ public class LinkToFolderProperties
 	
 	
 	/**
-	 * 
-	 */
-	public String getUrl()
-	{
-		return m_url;
-	}
-	
-	
-	/**
 	 * Return the zone uuid
 	 */
 	public String getZoneUUID()
 	{
 		return m_zoneUUID;
 	}// end getZoneUUID()
+	
+	
+	/**
+	 * Return whether an rpc call is in progress.
+	 */
+	public boolean isRpcInProgress()
+	{
+		return m_rpcInProgress;
+	}// end isRpcInProgress()
 	
 	
 	/**
@@ -288,15 +277,6 @@ public class LinkToFolderProperties
 	{
 		m_title = title;
 	}// end setTitle()
-	
-	
-	/**
-	 * 
-	 */
-	public void setUrl( String url )
-	{
-		m_url = url;
-	}
 
 
 	/**

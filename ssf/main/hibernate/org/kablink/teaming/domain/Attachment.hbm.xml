@@ -53,9 +53,6 @@
           	<column name="fileName"/>
         </property>
         <property name="length" column="fileLength"/>
-        <property name="md5" length="32">
-            <column name="fileMd5" sql-type="CHAR(32)"/>
-        </property>
         <component name="description">
           <!-- use length to force medium blog in mysql -->
           <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>

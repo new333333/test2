@@ -33,8 +33,6 @@
 package org.kablink.teaming.gwt.client;
 
 
-import java.util.ArrayList;
-
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -50,19 +48,10 @@ public class GwtFolderEntry extends GwtTeamingItem
 {
 	private String m_entryId;
 	private String m_entryName;
-	private String m_entryDesc;
-	private String m_author;
-	private String m_authorId;
-	private String m_authorWsId;		// Id of the author's workspace
-	private String m_modificationDate;
-	private String m_fileImgUrl;
 	
 	private Long m_parentBinderId;
 	private String m_parentBinderName;
 	private String m_viewUrl;
-	private ArrayList<String> m_replyIds;	// Ids of the first n replies.
-	
-	private ArrayList<GwtAttachment> m_fileAttachments;	// List of attachments this entry has
 	
 	/**
 	 * 
@@ -71,72 +60,11 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		m_entryId = null;
 		m_entryName = null;
-		m_entryDesc = null;
-		m_author = null;
-		m_authorId = null;
-		m_authorWsId = null;
-		m_modificationDate = null;
 		m_parentBinderId = null;
 		m_parentBinderName = null;
 		m_viewUrl = null;
-		m_replyIds = null;
-		m_fileAttachments = null;
-		m_fileImgUrl = null;
 	}// end GwtFolderEntry()
 	
-	/**
-	 * Add the given file to our list of file attachments. 
-	 */
-	public void addAttachment( GwtAttachment file )
-	{
-		if ( m_fileAttachments == null )
-			m_fileAttachments = new ArrayList<GwtAttachment>();
-		
-		m_fileAttachments.add( file );
-	}
-	
-	/**
-	 * Add the given reply id to our list or reply ids. 
-	 */
-	public void addReplyId( String replyId )
-	{
-		if ( m_replyIds == null )
-			m_replyIds = new ArrayList<String>();
-		
-		m_replyIds.add( replyId );
-	}
-	
-	/**
-	 * 
-	 */
-	public String getAuthor()
-	{
-		return m_author;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getAuthorId()
-	{
-		return m_authorId;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getAuthorWorkspaceId()
-	{
-		return m_authorWsId;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getEntryDesc()
-	{
-		return m_entryDesc;
-	}
 	
 	/**
 	 * 
@@ -155,42 +83,8 @@ public class GwtFolderEntry extends GwtTeamingItem
 	}// end getEntryName()
 	
 	/**
-	 * Return the list of file attachments for this entry
-	 */
-	public ArrayList<GwtAttachment> getFiles()
-	{
-		return m_fileAttachments;
-	}
-	
-	/**
-	 * Return the url that points to an image that corresponds to the file type
-	 */
-	public String getFileImgUrl()
-	{
-		return m_fileImgUrl;
-	}
-	
-	/**
 	 * 
 	 */
-	@Override
-	public String getImageUrl()
-	{
-		return getFileImgUrl();
-	}
-	
-	/**
-	 * 
-	 */
-	public String getModificationDate()
-	{
-		return m_modificationDate;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
 	public String getName()
 	{
 		return getEntryName();
@@ -214,17 +108,8 @@ public class GwtFolderEntry extends GwtTeamingItem
 
 
 	/**
-	 * Return the list of the reply ids
-	 */
-	public ArrayList<String> getReplyIds()
-	{
-		return m_replyIds;
-	}
-	
-	/**
 	 * Return the name of the parent binder.
 	 */
-	@Override
 	public String getSecondaryDisplayText()
 	{
 		String name;
@@ -241,7 +126,6 @@ public class GwtFolderEntry extends GwtTeamingItem
 	/**
 	 * Return the name that should be displayed when this entry is displayed.
 	 */
-	@Override
 	public String getShortDisplayName()
 	{
 		return m_entryName;
@@ -251,10 +135,9 @@ public class GwtFolderEntry extends GwtTeamingItem
 	/**
 	 * 
 	 */
-	@Override
 	public String getTitle()
 	{
-		return m_entryName;
+		return "";
 	}
 	
 	/**
@@ -264,39 +147,6 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		return m_viewUrl;
 	}// end getViewEntryUrl()
-	
-	
-	/**
-	 * 
-	 */
-	public void setAuthor( String author )
-	{
-		m_author = author;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAuthorId( String authorId )
-	{
-		m_authorId = authorId;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAuthorWorkspaceId( String workspaceId )
-	{
-		m_authorWsId = workspaceId;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setEntryDesc( String desc )
-	{
-		m_entryDesc = desc;
-	}
 	
 	
 	/**
@@ -314,22 +164,6 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		m_entryName = entryName;
 	}// end setEntryName()
-	
-	/**
-	 * Set the url that points to the image that corresponds to file type
-	 */
-	public void setFileImgUrl( String url )
-	{
-		m_fileImgUrl = url;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setModificationDate( String date )
-	{
-		m_modificationDate = date;
-	}
 	
 	/**
 	 * 

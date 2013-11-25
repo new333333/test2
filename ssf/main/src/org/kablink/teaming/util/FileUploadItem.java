@@ -41,7 +41,6 @@ import java.util.Date;
 
 import javax.mail.MessagingException;
 
-import org.apache.commons.io.output.NullOutputStream;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.module.mail.impl.DefaultEmailPoster.FileHandler;
@@ -92,7 +91,6 @@ public class FileUploadItem {
 	private boolean synchToRepository = true; // can be false only for mirrored entries/files
 	
 	private String fileName = null;
-    private String md5;
 
 	// path info?
 	
@@ -284,56 +282,24 @@ public class FileUploadItem {
 		if(mf instanceof SimpleMultipartFile)
 			((SimpleMultipartFile) mf).close();
 	}
-
-    public String getMd5() throws IOException {
-        if (md5==null) {
-            if (file!=null) {
-                DigestOutputStream os = new DigestOutputStream(new NullOutputStream());
-                InputStream is = new BufferedInputStream(new FileInputStream(file));
-                FileCopyUtils.copy(is, os);
-                md5 = os.getDigest();
-            } else if (mf instanceof SimpleMultipartFile) {
-                md5 = ((SimpleMultipartFile)mf).getMd5();
-            }
-        }
-        return md5;
-    }
 	
-	public SizeMd5Pair makeReentrant() throws IOException {
-        if (file==null) {
-            if (!(mf instanceof SimpleMultipartFile) || !((SimpleMultipartFile) mf).isReentrant()) {
-                transferToTempFile();
-            }
-        }
-        String md5 = getMd5();
-
+	public long makeReentrant() throws IOException {
+		if(mf instanceof SimpleMultipartFile) {
+			SimpleMultipartFile smp = (SimpleMultipartFile) mf;
+			if(smp.getFile() == null) {
+				if(file == null) {
+					file = TempFileUtil.createTempFile(TEMP_FILE_PREFIX);
+					mf.transferTo(file);
+					isTempFile = true;										
+				}
+			}
+		}
 		// Returns the length of the file
 		if(file != null)
-			return new SizeMd5Pair(file.length(), md5);
+			return file.length();
 		else
-			return new SizeMd5Pair(mf.getSize(), md5);
+			return mf.getSize();
 	}
-
-    public boolean verifyCheckSum() throws IOException {
-        if (mf instanceof FileExtendedSupport) {
-            String expectedMd5 = ((FileExtendedSupport)mf).getExpectedMd5();
-            if (expectedMd5!=null && !expectedMd5.equals(getMd5())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void transferToTempFile() throws IOException {
-        if(file == null) {
-            file = TempFileUtil.createTempFile(TEMP_FILE_PREFIX);
-            isTempFile = true;
-            mf.transferTo(file);
-            if (mf instanceof SimpleMultipartFile) {
-                md5 = ((SimpleMultipartFile) mf).getMd5();
-            }
-        }
-    }
 	
 	/**
 	 * Returns modification date or <code>null</code>.
@@ -341,46 +307,18 @@ public class FileUploadItem {
 	 * @return
 	 */
 	public Date getModDate() {
-		if(mf instanceof FileExtendedSupport)
-			return ((FileExtendedSupport) mf).getModDate();
+		if(mf instanceof FileModDateSupport)
+			return ((FileModDateSupport) mf).getModDate();
 		else
 			return null;
 	}
 
-	public Long getModTime() {
-		Date date = getModDate();
-		if(date != null)
-			return date.getTime();
-		else
-			return null;
-	}
-	
 	public String getModifierName() {
-		if(mf instanceof FileExtendedSupport)
-			return ((FileExtendedSupport) mf).getModifierName();
+		if(mf instanceof FileModDateSupport)
+			return ((FileModDateSupport) mf).getModifier();
 		else
 			return null;
 	}
-	public Long getModifierId() {
-		if(mf instanceof FileExtendedSupport)
-			return ((FileExtendedSupport) mf).getModifierId();
-		else
-			return null;
-	}
-	
-	public String getCreatorName() {
-		if(mf instanceof FileExtendedSupport)
-			return ((FileExtendedSupport) mf).getCreatorName();
-		else
-			return null;
-	}
-	public Long getCreatorId() {
-		if(mf instanceof FileExtendedSupport)
-			return ((FileExtendedSupport) mf).getCreatorId();
-		else
-			return null;
-	}
-	
 	public boolean isSynchToRepository() {
 		return synchToRepository;
 	}
@@ -389,24 +327,4 @@ public class FileUploadItem {
 		this.synchToRepository = synchToRepository;
 	}
 
-	/*
-	 * Return the content length, if any, that the caller of this facility specified.
-	 */
-	public Long getCallerSpecifiedContentLength() {
-		if(mf instanceof SimpleMultipartFile)
-			return ((SimpleMultipartFile)mf).getCallerSpecifiedContentLength();
-		else
-			return null;
-	}
-	
-	/*
-	 * Return whether or not the caller of this facility is the file sync process
-	 */
-	public boolean calledByFileSync() {
-		if(mf instanceof SimpleMultipartFile) {
-			SimpleMultipartFile smf = (SimpleMultipartFile) mf;
-			return (smf.getCallerSpecifiedContentLength() != null && !isSynchToRepository());
-		}
-		return false;
-	}
 }

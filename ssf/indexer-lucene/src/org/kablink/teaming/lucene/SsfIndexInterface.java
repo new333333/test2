@@ -34,7 +34,6 @@ package org.kablink.teaming.lucene;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
@@ -63,21 +62,22 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 
 	public void optimize(String indexname) throws RemoteException;
 
-	public org.kablink.teaming.lucene.Hits search(String indexname, Long contextUserId, String aclQueryStr, int mode, Query query,
-			Sort sort, int offset, int size) throws RemoteException;
-
-	public org.kablink.teaming.lucene.Hits searchNonNetFolderOneLevelWithInferredAccess(String indexname, Long contextUserId, String aclQueryStr, int mode, Query query,
-			Sort sort, int offset, int size, Long parentBinderId, String parentBinderPath) throws RemoteException;
-
-	public org.kablink.teaming.lucene.Hits searchNetFolderOneLevel(String indexname, Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) 
+	public org.kablink.teaming.lucene.Hits search(String indexname, Query query)
 			throws RemoteException;
 
-	public boolean testInferredAccessToNonNetFolder(String indexname, Long contextUserId,  String aclQueryStr, String binderPath) throws RemoteException;
+	public org.kablink.teaming.lucene.Hits search(String indexname, Query query,
+			int offset, int size) throws RemoteException;
 
-	public ArrayList getTags(String indexName, String aclQueryStr, Long id, String tag, String type, boolean isSuper)
+	public org.kablink.teaming.lucene.Hits search(String indexname, Query query,
+			Sort sort) throws RemoteException;
+
+	public org.kablink.teaming.lucene.Hits search(String indexname, Query query,
+			Sort sort, int offset, int size) throws RemoteException;
+
+	public ArrayList getTags(String indexName, Query query, Long id, String tag, String type, boolean isSuper)
 	throws RemoteException;
 
-	public ArrayList getTagsWithFrequency(String indexName, String aclQueryStr, Long id, String tag, String type, boolean isSuper)
+	public ArrayList getTagsWithFrequency(String indexName, Query query, Long id, String tag, String type, boolean isSuper)
 	throws RemoteException;
 	
 	public String[] getSortedTitles(String indexName, Query query, String sortTitleFieldName, String start, String end,
@@ -86,6 +86,4 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	public void clearIndex(String indexname) throws RemoteException;
 	
 	public void shutdown() throws RemoteException;
-	
-	public void test() throws RemoteException;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -105,14 +105,9 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 
-/**
- * ?
- * 
- * @author ?
- */
+
 @SuppressWarnings({"unchecked", "unused"})
 public class ViewEntryController extends  SAbstractController {
-	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		try {
@@ -208,7 +203,6 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}
 	}
-	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -462,6 +456,17 @@ public class ViewEntryController extends  SAbstractController {
 				Toolbar folderActionsToolbar = new Toolbar();
 				BinderHelper.buildFolderActionsToolbar(this, request, response, folderActionsToolbar, folderId.toString());
 				model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
+			}
+			
+			//Color themes (removed for now)
+			if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
+						NLT.get("ui.availableThemeIds") + "', '" +
+						NLT.get("ui.availableThemeNames") + "', '" +
+						NLT.get("sidebar.themeChange") + "'); return false;");
+				model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
+				model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
 			}
 			
 			//Build the navigation beans
@@ -737,7 +742,7 @@ public class ViewEntryController extends  SAbstractController {
 					accessControlEntryMap.put("deleteEntry", new Boolean(true));
 					Map qualifiers = new HashMap();
 					qualifiers.put("nosort", true);
-					qualifiers.put("onClick", "return ss_confirmDeleteEntry(this, '" + folderId + "', '" + entryId + "');");
+					qualifiers.put("onClick", "return ss_confirmDeleteEntry(this);");
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
@@ -831,22 +836,17 @@ public class ViewEntryController extends  SAbstractController {
 				}
 			}	
 			
-			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()) &&
-					entry.isTop()) {
-				boolean canShare = getFolderModule().testAccess(entry, FolderOperation.allowSharing);
-				if (!canShare) {
-					canShare = user.getId().equals(entry.getCreation().getPrincipal().getId());
-				}
-				if (canShare) {
-					Map qualifiers = new HashMap();
-					qualifiers.put("nosort", true);
-					qualifiers.put("onClick", "window.top.ss_invokeShareDlg('"+entryId+"');return false;");
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-					toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
-				}
+			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				Map qualifiers = new HashMap();
+				qualifiers.put("nosort", true);
+				qualifiers.put("popup", new Boolean(true));
+				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.shareThis");
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+				adapterUrl.setParameter(WebKeys.ACTION, "__ajax_relevance");
+				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHARE_THIS_BINDER);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
 			}
 
 			if ((!isEntryReserved || isLockedByAndLoginUserSame) && 
@@ -1011,7 +1011,7 @@ public class ViewEntryController extends  SAbstractController {
 				footerToolbar.addToolbarMenu("4_subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
 			}
 			
-			String[] contributorIds = ListFolderHelper.collectContributorIds(entry);
+			String[] contributorIds = collectContributorIds(entry);
 			
 			if (!user.getEmailAddresses().isEmpty() && 
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -1122,6 +1122,23 @@ public class ViewEntryController extends  SAbstractController {
 		}
 	}
 
+	private String[] collectContributorIds(FolderEntry entry) {		
+		Set principals = new HashSet();
+		collectCreatorAndMoficationIdsRecursive(entry, principals);
+		String[] as = new String[principals.size()];
+		principals.toArray(as);
+		return as;
+	}
+		
+	private void collectCreatorAndMoficationIdsRecursive(FolderEntry entry, Set principals) {		
+		principals.add(entry.getCreation().getPrincipal().getId().toString());
+		principals.add(entry.getModification().getPrincipal().getId().toString());
+		Iterator repliesIt = entry.getReplies().iterator();
+		while (repliesIt.hasNext()) {
+			collectCreatorAndMoficationIdsRecursive((FolderEntry)repliesIt.next(), principals);
+		}
+	}
+	
 	protected FolderEntry getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, 
 			Long folderId, Map model, String viewType)  {
 		Folder folder = null;

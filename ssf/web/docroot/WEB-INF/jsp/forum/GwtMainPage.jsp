@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,27 +43,7 @@
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_appConfig.jsp" /> 
 
-<% // The following javascript files are needed because the enhanced view widget on %>
-<% // a landing page may display a calendar. %>
-	<script type="text/javascript">
- 		ss_loadJsFile( ss_rootPath, "js/common/ss_calendar.js" );
-	</script>
-	<script type="text/javascript" src="<html:rootPath/>js/datepicker/CalendarPopup.js"></script>
-	<script type="text/javascript" src="<html:rootPath/>js/common/AnchorPosition.js"></script>
-	<script type="text/javascript" src="<html:rootPath/>js/common/PopupWindow.js"></script>
-	<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
-<% //------------------------------------------------------------------------------ %>
-
 	<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js?<%= ReleaseInfo.getContentVersion() %>"></script>
-
-<% // The DlgBox class uses JQuery to make dialogs draggable. %>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.draggable.js"></script>
-<script type="text/javascript">
-	// Relinquish jQuery's control of the $ variable.
-    jQuery.noConflict();
-</script>
 
 	<c:set var="gwtPage" value="main" scope="request"/>	
 	<%@ include file="/WEB-INF/jsp/common/GwtRequestInfo.jsp" %>
@@ -92,7 +72,7 @@
 			accessibility_focus : true,
 			entities :  "39,#39,34,quot,38,amp,60,lt,62,gt",
 			gecko_spellcheck : true,
-			plugins : "pdw,table,preelementfix,ss_addimage,preview,paste,ss_wikilink,ss_youtube", 
+			plugins : "compat2x,pdw,table,preelementfix,ss_addimage,preview,paste,ss_wikilink,ss_youtube", 
 			theme_advanced_toolbar_location : "top",
 			theme_advanced_toolbar_align : "left", 
 			theme_advanced_statusbar_location : "bottom", 
@@ -115,7 +95,7 @@
 			//This may fail if the iframe is showing something in another domain
 			//If so, the alternate method (via ss_communicationFrame) is used to set the window height
 			try {
-				var iframeDiv = document.getElementById('contentFlowPanel')
+				var iframeDiv = document.getElementById('contentControl')
 				var startOfContent = ss_getObjectTop(iframeDiv);
 				var windowHeight = ss_getWindowHeight();
 				var iframeMinimum = parseInt(windowHeight - startOfContent - ss_workareaIframeMinOffset);
@@ -140,22 +120,18 @@
 			//ss_debug("**** "+ss_debugTrace());
 			if (ss_isGwtUIActive && ss_getUserDisplayStyle() == "newpage") {
 				try {
-					var PANEL_PADDING = 8;
-					var contentIframe = document.getElementById('contentFlowPanel');
+					var contentIframe = document.getElementById('contentControl');
 					var startOfContent = ss_getObjectTop(contentIframe);
-					var entryIframeBoxDiv = document.getElementById('ss_iframe_box_div');
 					var entryIframeDiv = document.getElementById('ss_showentrydiv');
 					var entryIframeFrame = document.getElementById('ss_showentryframe');
 					if (entryIframeDiv == null || entryIframeFrame == null) return;
-					var top   = (Number(ss_getObjectTop(contentIframe)) + PANEL_PADDING);
-					var left  =  Number(ss_getObjectLeft(contentIframe));
-					var width = (Number(contentIframe.offsetWidth)      - PANEL_PADDING);
-					ss_setObjectTop(  entryIframeDiv,    top  );
-					ss_setObjectLeft( entryIframeDiv,    left );
-					ss_setObjectWidth(entryIframeBoxDiv, width);
-					ss_setObjectWidth(entryIframeFrame,  width);
+					var top = ss_getObjectTop(contentIframe);
+					var left = ss_getObjectLeft(contentIframe);
+					ss_setObjectTop(entryIframeDiv, top);
+					ss_setObjectLeft(entryIframeDiv, left);
+					ss_setObjectWidth(entryIframeFrame, contentIframe.style.width);
 					var windowHeight = parseInt(ss_getWindowHeight());
-					var iframeMinimum = (parseInt(windowHeight - startOfContent - ss_entryPopupBottomMargin) - PANEL_PADDING);
+					var iframeMinimum = parseInt(windowHeight - startOfContent - ss_entryPopupBottomMargin);
 					if (iframeMinimum < 100) iframeMinimum = 100;
 					if (window.frames['ss_showentryframe'] != null) {
 						if (parseInt(entryIframeFrame.style.height) != parseInt(iframeMinimum)) {
@@ -301,21 +277,11 @@
 		var ss_newTaskDisposition	= "";
 		var ss_selectedTaskId		= "";
 		var ss_showTaskGraphs		= false;
-		
-		// The following is used by the binder views to communicate
-		// with the entry viewer about whether it should show the
-		// next/previous buttons.
-		var ss_allowNextPrevOnView = false;
-		
-		// The following is used to store the Window opened to a user
-		// to authenticate to a Cloud Folder service.
-		var ss_cloudFolderAuthenticationPopup = null;
 	</script>
 	
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= ReleaseInfo.getContentVersion() %>"></script>
-	
   </head>
 
   <body>
@@ -332,11 +298,11 @@
     
     <!-- This form is used for logging out. -->
     <!-- The value of the action attribute will be filled in at runtime. -->
-	<form name="logoutForm" id="logoutForm" method="post" >
+	<form name="logoutForm" id="logoutForm" method="post" action="" >
 	</form> 
 	
 	<!--  This form is used for logging in. -->
-	<form name="loginFormName" id="loginFormId" method="post" action="${ss_loginPostUrl}" style="display: none;" accept-charset="UTF-8">
+	<form name="loginFormName" id="loginFormId" method="post" action="${ss_loginPostUrl}" style="display: none;">
 		<table cellspacing="4" class="dlgContent" style="margin: 10px;">
 			<colgroup>
 				<col>
@@ -366,20 +332,9 @@
 						<div class="gwt-Label loginAuthenticatingMsg" style="display: none;" id="authenticatingDiv"></div>
 					</td>
 				</tr>
-			</tbody>
-		</table>
-		
-		<table cellspacing="4" class="dlgContent" style="margin: 10px;">
-			<colgroup>
-				<col>
-			</colgroup>
-			<tbody>
 				<tr>
-					<td>
-						<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2" style="display: none;" id="forgottenPwdSpan"></span>
-					</td>
-					<td>
-						<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2" style="display: none;" id="createNewAccountSpan"></span>
+					<td colspan="2">
+						<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2 subhead-control-bg1 roundcornerSM" style="display: none;" id="createNewAccountSpan"></span>
 					</td>
 				</tr>
 			</tbody>
@@ -387,8 +342,6 @@
 
 		<div class="teamingDlgBoxFooter" id="loginDlgFooterId" style="margin: 0px !important;">
 			<button type="submit" class="gwt-Button teamingButton" id="loginOkBtn" ></button>
-			<button type="button" class="gwt-Button teamingButton" style="display: none;" id="loginRegisterBtn"></button>
-			<button type="button" class="gwt-Button teamingButton" style="display: none;" id="resetPwdBtn"></button>
 			<button type="button" class="gwt-Button teamingButton" style="" id="loginCancelBtn"></button>
 		</div>
 

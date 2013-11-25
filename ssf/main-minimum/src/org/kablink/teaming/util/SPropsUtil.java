@@ -83,13 +83,14 @@ public class SPropsUtil extends PropsUtil implements InitializingBean {
     	setProperties(config.getProperties());
     }
 
-	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(logger.isInfoEnabled()) {
+			logger.info(ReleaseInfo.getReleaseInfo());
 			logger.info("System properties" + Constants.NEWLINE + toStringML(System.getProperties()));
 			logger.info("System environment" + Constants.NEWLINE + toStringML(System.getenv()));
 		}
 		else {
+			System.out.println(ReleaseInfo.getReleaseInfo());
 			System.out.println("System properties" + Constants.NEWLINE + toStringML(System.getProperties()));
 			System.out.println("System environment" + Constants.NEWLINE + toStringML(System.getenv()));		
 		}	

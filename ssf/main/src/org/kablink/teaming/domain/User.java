@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,7 +43,6 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeSet;
@@ -51,68 +50,13 @@ import java.util.TreeSet;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
+import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.util.Validator;
 
-/**
- * ?
- *  
- * @author ?
- */
-@SuppressWarnings("unchecked")
 public class User extends UserPrincipal implements IndividualPrincipal {
-	public enum ExtProvState {
-		/**
-		 * The external user account was created as result of a sharing activity
-		 * performed by another user and an invitation has gone out.
-		 * 
-		 */
-		initial((short)1),
-		/**
-		 * The invited external user responded, and through self-provisioning interface
-		 * successfully supplied his credential to use with local Filr authentication
-		 * in the future. The account still needs to be confirmed/verified before
-		 * the user can actually log into Fir using the specified credential and
-		 * start accessing data. 
-		 */
-		credentialed((short)2),
-		/**
-		 * The user has been successfully verified and is ready to use the system.
-		 * Verification is needed/performed only once for each user account.
-		 */
-		verified((short)3),
-		
-		/**
-		 * The user has requested to reset their password.
-		 */
-		pwdResetRequested( (short) 4 ),
-		
-		/**
-		 * The user has reset their password but have not verified the reset
-		 */
-		pwdResetWaitingForVerification( (short) 5 );
-		
-		short value;
-		ExtProvState(short value) {
-			this.value = value;
-		}
-		public short getValue() {
-			return value;
-		}
-		public static ExtProvState valueOf(short value) {
-			switch(value) {
-			case 1: return ExtProvState.initial;
-			case 2: return ExtProvState.credentialed;
-			case 3: return ExtProvState.verified;
-			case 4: return ExtProvState.pwdResetRequested;
-			case 5: return ExtProvState.pwdResetWaitingForVerification;
-			default: throw new IllegalArgumentException("Invalid db value " + value + " for enum ExtProvState");
-			}
-		}
-	}
-
 	private final static int	WORK_DAY_START_DEFAULT	= 8;	// Original default was 6 in ss_calendar.js.
+	
 	
     protected String firstName="";//set by hibernate access="field"
     protected String middleName="";//set by hibernate access="field"
@@ -122,7 +66,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected String zonName="";
     protected Locale locale;//set by hibernate access="field"
 	protected TimeZone timeZone;//set by hibernate access="field"
-    protected Date firstLoginDate; // This indicates the date/time at which the user logged into Vibe for the first time
+    protected Date loginDate;
     protected String displayStyle;
     protected String password; //set by hibernate access="field"
     protected String pwdenc; // set by hibernate access="field"
@@ -135,36 +79,16 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Long diskSpaceUsed;
     protected Long maxGroupsQuota;
     protected Long maxGroupsFileSizeLimit;
-    protected MobileDevices mobileDevices;
     private SortedSet groupNames; // sorted set of group names; this field is computed
-    
-    protected Short extProvState; // applicable only to external users
-    protected Long extProvSeed; // applicable only to external users 
-    
-	protected Boolean workspacePreDeleted;
-	
-    private static Random random = new Random(System.currentTimeMillis());
-    
-    // For use by Hibernate only
-	protected User() {
+	public User() {
     }
-	
-	// For use by application
-	public User(IdentityInfo identityInfo) {
-		super(identityInfo);
-		this.mobileDevices = new MobileDevices();
-	}
-	
-	@Override
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.user;
 	}
-	
 	public TimeZone getTimeZone() {
 		if (timeZone != null) return TimeZoneHelper.fixTimeZone(timeZone);
 		return TimeZoneHelper.getDefault();
 	}
-	
 	public void setTimeZone(TimeZone timeZone) {
 		this.timeZone = TimeZoneHelper.fixTimeZone(timeZone);
 	}
@@ -173,7 +97,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
        if (locale != null) return locale;
        return NLT.getTeamingLocale();
    	}
-   
     public void setLocale(Locale locale) {
     	this.locale = locale;
     }
@@ -181,7 +104,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     public int getWeekFirstDayDefault() {
     	return new GregorianCalendar(getTimeZone(), getLocale()).getFirstDayOfWeek();
     }
-    
     public int getWorkDayStartDefault() {
     	String	wdsS = NLT.get("calendar.settings.workDayStartsAt.Default",String.valueOf(WORK_DAY_START_DEFAULT));
     	int wds;
@@ -194,7 +116,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	return wds;
     }
 
-	@Override
 	public String getTitle() {
 		// title is set by hibernate access=field
 		//title is only kept in the db for sql queries
@@ -204,15 +125,12 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	if (Validator.isNotNull(val)) return val;
     	return getName();		
 	}
-	
-	@Override
 	public void setTitle(String title) {
 		if (!isDeleted())
 			throw new NotSupportedException("errorcode.notsupported.setTitle");
 		//allow title to be changed when a user is deleted.
 		super.setTitle(title);
 	}
-	
 	public String getWSTitle() {
 		String val = super.getTitle();
     	if (Validator.isNotNull(val)) return val + " (" + getName() + ")";
@@ -221,7 +139,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	return getName()+ " (" + getName() + ")";
  
 	}
-	
     private String setupTitle() {
     	String val;
     	StringBuffer tBuf = new StringBuffer();
@@ -233,7 +150,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	if (Validator.isNotNull(val)) tBuf.append(val + " ");
     	return tBuf.toString().trim();   	
     }
-    
     public String getSearchTitle() {
     	//return lastname first
        	String val;
@@ -252,7 +168,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	return tBuf.toString().trim();   	
     	
     }
-    
 	/**
 	 * @hibernate.property length="32" 
 	 * @return
@@ -260,7 +175,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public String getDisplayStyle() {
 		return displayStyle;
 	}
-	
 	public void setDisplayStyle(String displayStyle) {
 		this.displayStyle = displayStyle;
 	}
@@ -269,13 +183,13 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * @hibernate.property 
 	 * @return
 	 */
-	public Date getFirstLoginDate() {
-		return firstLoginDate;
+	public Date getLoginDate() {
+		return loginDate;
 	}
-	
-	public void setFirstLoginDate(Date firstLoginDate) {
-		this.firstLoginDate = firstLoginDate;
+	public void setLoginDate(Date loginDate) {
+		this.loginDate = loginDate;
 	}
+
      
     /**
      * @return Returns the firstName.
@@ -283,7 +197,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     public String getFirstName() {
         return firstName;
     }
-    
     /**
      * @param firstName The firstName to set.
      */
@@ -291,6 +204,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
         this.firstName = firstName;
         super.setTitle(setupTitle());
     }
+
     
     /**
      * @return Returns the lastName.
@@ -298,7 +212,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     public String getLastName() {
         return lastName;
     }
-    
     /**
      * @param lastName The lastName to set.
      */
@@ -313,7 +226,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     public String getMiddleName() {
         return middleName;
     }
-    
     /**
      * @param middleName The middleName to set.
      */
@@ -322,6 +234,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
         super.setTitle(setupTitle());
     }
     
+
     /**
      * @hibernate.property length="256"
      * @return Returns the organization.
@@ -329,7 +242,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     public String getOrganization() {
         return organization;
     }
-    
     /**
      * @param organization The organization to set.
      */
@@ -344,7 +256,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     public String getPhone() {
         return this.phone;
     }
-    
     public void setPhone(String phone) {
         this.phone = phone;
     }
@@ -360,7 +271,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public String getZonName() {
 		return zonName;
 	}
-	
 	/**
 	 * @param zonName The zonName to set.
 	 */
@@ -374,7 +284,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public String getSkypeId() {
 		return skypeId;
 	}
-	
 	/**
 	 * @param skypeId The skypeId to set.
 	 */
@@ -388,7 +297,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public String getTwitterId() {
 		return twitterId;
 	}
-	
 	/**
 	 * @param twitterId The twitterId to set.
 	 */
@@ -402,7 +310,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public Long getMiniBlogId() {
 		return miniBlogId;
 	}
-	
 	/**
 	 * @param miniBlogId The miniBlogId to set.
 	 */
@@ -441,30 +348,20 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public void setMaxGroupsFileSizeLimit(Long maxGroupsFileSizeLimit) {
 		this.maxGroupsFileSizeLimit = maxGroupsFileSizeLimit;
 	}
-
-	/**
-     * @hibernate.component
-     */
-	public MobileDevices getMobileDevices() {
-		return this.mobileDevices;
-	}
-	
-	public void setMobileDevices(MobileDevices mobileDevices) {
-		this.mobileDevices = mobileDevices;
-	}
 	
 	/**
 	 * @param diskSpace to increment.
 	 */
+
 	public void incrementDiskSpaceUsed(Long diskSpace) {
 		if(diskSpace == null || diskSpace.longValue() == 0L)
 			return;
 		setDiskSpaceUsed(getDiskSpaceUsed().longValue() + diskSpace.longValue());
 	}
-	
 	/**
 	 * @param diskSpace to decrement.
 	 */
+
 	public void decrementDiskSpaceUsed(Long diskSpace) {
 		if(diskSpace == null || diskSpace.longValue() == 0L)
 			return;
@@ -497,7 +394,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public String getPwdenc() {
 		return pwdenc;
 	}
-	
 	public void setPwdenc(String pwdenc) {
 		this.pwdenc = pwdenc;
 	}
@@ -511,7 +407,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public String getStatus() {
 		return status;
 	}
-	
 	/**
 	 * @param status The status to set.
 	 */
@@ -529,7 +424,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public Date getStatusDate() {
 		return statusDate;
 	}
-	
 	public void setStatusDate(Date statusDate) {
 		this.statusDate = statusDate;
 	}
@@ -543,11 +437,9 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public Long getDigestSeed() {
 		return digestSeed;
 	}
-	
 	public void setDigestSeed(Long digestSeed) {
 		this.digestSeed = digestSeed;
-	}
-	
+	}	
 	/**
 	 * Increment digest seed value by one. Changing digest seed value results
 	 * in change to the password digest value computed from password value
@@ -555,52 +447,28 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * invalidate existing RSS urls previously created for the user. 
 	 *
 	 */
-	public Long incrementDigestSeed() {
+	public void incrementDigestSeed() {
 		if(digestSeed == null) // null value is equivalent to zero
 			digestSeed = new Long(1);
 		else
 			digestSeed = new Long(digestSeed.longValue() + 1);
-		return digestSeed;
-	}
-	
-	public Long getExtProvSeed() {
-		return extProvSeed;
-	}
-
-	public void setExtProvSeed(Long extProvSeed) {
-		this.extProvSeed = extProvSeed;
-	}
-
-	public Long reseedExtProvSeed() {
-		setExtProvSeed(random.nextLong());
-		return getExtProvSeed();
-	}
-	
-	public String computeExtProvHash() {
-		Long seed = getExtProvSeed();
-		if(seed == null)
-			seed = 0L;
-		return EncryptUtil.encryptSHA256(getId(), getName(), seed);
 	}
 	
 	public String getPrivateDigest(String binderId) {
-		Long seed = getDigestSeed();
-		if(seed == null)
-			seed = 0L;
-		if(binderId != null)
-			return EncryptUtil.encryptSHA1(getId().toString(), seed.toString(), binderId);
-		else
-			return EncryptUtil.encryptSHA1(getId().toString(), seed.toString());
+		
+		Long digestSeed = getDigestSeed();
+		if(digestSeed == null)
+			digestSeed = 0L;
+		
+		return EncryptUtil.encryptSHA1(getId().toString(), digestSeed.toString(), binderId);
 	}
  
-    @Override
-	public boolean isAllIndividualMember() {
+    public boolean isAllIndividualMember() {
     	if (!isReserved()) return true;
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(getInternalId())) return false;
     	if (ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(getInternalId())) return false;
     	if (ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(getInternalId())) return false;
     	if (ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(getInternalId())) return false;
-    	if (ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(getInternalId())) return false;
     	return true;
     }
  
@@ -611,33 +479,27 @@ public class User extends UserPrincipal implements IndividualPrincipal {
      * 
      * @return
      */
-    public SortedSet computeApplicationLevelGroupNames() {
+    public SortedSet computeGroupNames() {
         if (!isActive()) return new TreeSet();
         if(groupNames == null) {
     		SortedSet names = new TreeSet();
-    		addApplicationLevelGroupNames(this, names);
-    		if (!isShared()) {
-    			if(!getIdentityInfo().isInternal())
-    				names.add("allExtUsers");
-    			else
-    				names.add("allUsers");
-    		}
+    		addGroupNames(this, names);
+    		if (!isShared()) names.add("allUsers");
     		groupNames = names;
     	}
     	return groupNames;
     }
     
-    private void addApplicationLevelGroupNames(UserPrincipal principal, SortedSet names) {
+    private void addGroupNames(UserPrincipal principal, SortedSet names) {
         List memberOf = principal.getMemberOf();
     	for(Iterator i = memberOf.iterator(); i.hasNext();) {
     		Group group = (Group) i.next();
             if (!group.isActive()) continue;
     		if(names.add(group.getName())) {
-    			addApplicationLevelGroupNames(group, names);
+    			addGroupNames(group, names);
     		}
     	}
     }
-    
     public boolean isShared() {
     	if (ObjectKeys.GUEST_USER_INTERNALID.equals(internalId)) return true;
     	return false;
@@ -679,28 +541,5 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		}
 		
 		return reply;
-    }
-
-	public ExtProvState getExtProvState() {
-		if(extProvState == null)
-			return null;
-		else 
-			return ExtProvState.valueOf(extProvState.shortValue());
-	}
-
-	public void setExtProvState(ExtProvState extProvState) {
-		this.extProvState = (extProvState == null)? null : extProvState.getValue();
-	}
-    
-    /**
-     * @hibernate.property
-     * @return
-     */
-    public Boolean isWorkspacePreDeleted() {
-    	return ((null != workspacePreDeleted) && workspacePreDeleted);
-    }
-    
-    public void setWorkspacePreDeleted(Boolean workspacePreDeleted) {
-    	this.workspacePreDeleted = workspacePreDeleted;
     }
 }

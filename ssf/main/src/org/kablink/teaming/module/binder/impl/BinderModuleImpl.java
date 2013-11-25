@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,11 +46,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.servlet.http.HttpSession;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
@@ -59,7 +53,6 @@ import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.hibernate.CacheMode;
 import org.hibernate.NonUniqueObjectException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
@@ -68,7 +61,6 @@ import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.comparator.PrincipalComparator;
-import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
@@ -81,7 +73,6 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -92,7 +83,6 @@ import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NotificationDef;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -106,12 +96,11 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
-import org.kablink.teaming.fi.connection.ResourceSession;
-import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
@@ -135,26 +124,22 @@ import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.LuceneWriteSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
-import org.kablink.teaming.search.interceptor.IndexSynchronizationManagerInterceptor;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
-import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
-import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -170,11 +155,10 @@ import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
 
 /**
- * ?
- * 
  * @author Janet McCann
+ * 
  */
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings("unchecked")
 public class BinderModuleImpl extends CommonDependencyInjection implements
 		BinderModule {
 
@@ -207,16 +191,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}
 
-	protected BinderModule getBinderModule() {
-		// Can't use IoC due to circular dependency
-		return (BinderModule) SpringContextUtil.getBean("binderModule");
-	}
-
-	protected AdminModule getAdminModule() {
-		// Can't use IoC due to circular dependency
-		return (AdminModule) SpringContextUtil.getBean("adminModule");
-	}
-
 	protected ProfileModule getProfileModule() {
 		// Can't use IoC due to circular dependency
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
@@ -234,14 +208,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 * org.kablink.teaming.module.binder.BinderModule#checkAccess(org.kablink
 	 * .teaming.domain.Binder, java.lang.String)
 	 */
-	@Override
 	public boolean testAccess(Binder binder, BinderOperation operation) {
-		return testAccess(null, binder, operation, Boolean.FALSE);
-	}
-	@Override
-	public boolean testAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly) {
 		try {
-			checkAccess(user, binder, operation, thisLevelOnly);
+			checkAccess(binder, operation);
 			return true;
 		} catch (AccessControlException ac) {
 			return false;
@@ -257,226 +226,84 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 * @param operation
 	 * @throws AccessControlException
 	 */
-	@Override
 	public void checkAccess(Binder binder, BinderOperation operation)
 			throws AccessControlException {
-		checkAccess(null, binder, operation, Boolean.FALSE);
-	}
-	@Override
-	public void checkAccess(User user, Binder binder, BinderOperation operation)
-			throws AccessControlException {
-		checkAccess(null, binder, operation, Boolean.FALSE);
-	}
-	@Override
-	public void checkAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly)
-			throws AccessControlException {
-        _checkAccess(user, binder, operation, thisLevelOnly);
-    }
-
-	private boolean _checkAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly)
-			throws AccessControlException {
-        boolean fullAccess = true;
-		if (user == null) {
-			user = RequestContextHolder.getRequestContext().getUser();
-		}
 		if (binder instanceof TemplateBinder) {
-			getAccessControlManager().checkOperation(user, 
+			getAccessControlManager().checkOperation(
 					getCoreDao().loadZoneConfig(
 							RequestContextHolder.getRequestContext()
 									.getZoneId()),
 					WorkAreaOperation.ZONE_ADMINISTRATION);
 		} else {
-			if (user.isShared()) {
-				//See if the user is only allowed "read only" rights
-				ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-				if (zoneConfig.getAuthenticationConfig().isAnonymousReadOnly()) {
-					//This is the guest account and it is read only. Only allow checks for read rights
-					switch (operation) {
-						case readEntries:
-						case viewBinderTitle:
-							//Allow these rights to be checked. All other rights will fail
-							break;
-						default:
-							throw new AccessControlException(operation.toString(), new Object[] {});
-					}
-				}
-			}
 			switch (operation) {
 			case addFolder:
-				getAccessControlManager().checkOperation(user, binder,
+				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.CREATE_FOLDERS);
 				break;
 			case addWorkspace:
-				getAccessControlManager().checkOperation(user, binder,
+				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.CREATE_WORKSPACES);
 				break;
 			case deleteEntries:
-				getAccessControlManager().checkOperation(user, binder,
+				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.DELETE_ENTRIES);
 				break;
 			case restoreBinder:
 			case preDeleteBinder:
+			case deleteBinder:
 			case indexBinder:
 			case indexTree:
 			case manageMail:
+			case moveBinder:
+			case copyBinder:
 			case modifyBinder:
 			case setProperty:
 			case manageConfiguration:
+			case manageTeamMembers:
 			case manageSimpleName:
 			case changeEntryTimestamps:
-				getAccessControlManager().checkOperation(user, binder,
+				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.BINDER_ADMINISTRATION);
 				break;
-			case changeACL:
-				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.CHANGE_ACCESS_CONTROL);
-				break;
-			case moveBinder:
-				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
-					getAccessControlManager().checkOperation(user, binder.getParentBinder(), WorkAreaOperation.DELETE_ENTRIES);
-				}
-				else { // Legacy Vibe folder
-					getAccessControlManager().checkOperation(user, binder,
-							WorkAreaOperation.BINDER_ADMINISTRATION);
-				}
-				break;
-			case deleteBinder:
-				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
-					getAccessControlManager().checkOperation(user, binder.getParentBinder(), WorkAreaOperation.DELETE_ENTRIES);
-				}
-				else { // Legacy Vibe folder
-					getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
-				}
-				break;				
-			case copyBinder:
-				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
-					getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
-				}
-				else { // Legacy Vibe folder
-					getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
-				}
-				break;
-			case manageTeamMembers:
-				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.CHANGE_ACCESS_CONTROL);
-				break;
 			case manageTag:
-				getAccessControlManager().checkOperation(user, binder,
+				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.ADD_COMMUNITY_TAGS);
 				break;
 			case report:
-				getAccessControlManager().checkOperation(user, binder,
+				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.GENERATE_REPORTS);
 				break;
 			case export:
 				Boolean exportAllowedByBinderOwner = SPropsUtil.getBoolean("export.availableToBinderOwners", false);
 				if (exportAllowedByBinderOwner) {
 					try {
-						getAccessControlManager().checkOperation(user, binder,
+						getAccessControlManager().checkOperation(binder,
 								WorkAreaOperation.BINDER_ADMINISTRATION);
 						break;
 					} catch(AccessControlException e) {}
 				}
-				getAccessControlManager().checkOperation(user, 
+				getAccessControlManager().checkOperation(
 						getCoreDao().loadZoneConfig(
 								RequestContextHolder.getRequestContext()
 										.getZoneId()),
 						WorkAreaOperation.ZONE_ADMINISTRATION);
 				break;
 			case readEntries:
-				getAccessControlManager().checkOperation(user, binder,
+				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.READ_ENTRIES);
 				break;
+			case addEntry:
+				getAccessControlManager().checkOperation(binder,
+						WorkAreaOperation.CREATE_ENTRIES);
+				break;
 			case viewBinderTitle:
-				try {
-					if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
-						try {
-							getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.VIEW_BINDER_TITLE);
-						} catch(AccessControlException e) {
-							//If VIEW_BINDER_TITLE is not explicitly set, try READ_ENTRIES.
-							//  The READ_ENTRIES right also gives the user the right to view the binder title
-							getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
-						}
-					} else {
-						getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
-					}
-				} catch(AccessControlException e) {
-					if (!thisLevelOnly) {
-						//This check failed, so try to see if there is a sub-folder down the line the you can access
-						SimpleProfiler.start("BinderModule.CheckAccess.LookForSubFolders");
-						//First, see if we have cached this result from a previous call
-						HttpSession session = WebHelper.getCurrentHttpSession();
-						if (session != null) {
-							Long cacheUserId = (Long)session.getAttribute(ObjectKeys.SESSION_ACL_CACHE_USER_ID);
-							Map aclCache = (Map)session.getAttribute(ObjectKeys.SESSION_ACL_CACHE);
-							if (cacheUserId == null || aclCache == null || !user.getId().equals(cacheUserId)) {
-								cacheUserId = user.getId();
-								aclCache = new HashMap();
-								session.setAttribute(ObjectKeys.SESSION_ACL_CACHE_USER_ID, cacheUserId);
-								session.setAttribute(ObjectKeys.SESSION_ACL_CACHE, aclCache);
-							}
-							Date now = new Date();
-							if (user.getId().equals(cacheUserId) && aclCache.containsKey(binder.getId())) {
-								//If aclCache has an entry for a binder, it means the user had access to some sub-folder in it
-								Long time = (Long)aclCache.get(binder.getId());
-								if (now.getTime() < time + ObjectKeys.SESSION_ACL_CACHE_TIMEOUT) {
-									//There is a folder down below this and the acl check is within the cache time window
-									SimpleProfiler.start("BinderModule.CheckAccess.LookForSubFolders.Cached");
-									fullAccess = false;
-									SimpleProfiler.stop("BinderModule.CheckAccess.LookForSubFolders.Cached");
-								} else {
-									//This has aged too long, remove it cached value
-									aclCache.remove(binder.getId());
-									if (!getBinderModule().testInferredAccessToBinder(user, binder)) {
-										//There are no sub-binders to see, so return no access
-										throw e;
-									}
-			                        fullAccess = false;
-			                        //Add this into the cache
-			                        aclCache.put(binder.getId(), Long.valueOf(now.getTime()));
-								}
-							} else {
-								if (!getBinderModule().testInferredAccessToBinder(user, binder)) {
-									//There are no sub-binders to see, so return no access
-									throw e;
-								}
-		                        fullAccess = false;
-		                        //Add this into the cache
-		                        aclCache.put(binder.getId(), Long.valueOf(now.getTime()));
-							}
-						} else {
-							if(!getBinderModule().testInferredAccessToBinder(user, binder)) {
-								//There are no sub-binders to see, so return no access
-								throw e;
-							}
-	                        fullAccess = false;
-						}
-						SimpleProfiler.stop("BinderModule.CheckAccess.LookForSubFolders");
-					} else {
-						//We aren't looking for any potential sub-binders. So, just throw the access control error
-						throw e;
-					}
+				if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
+					getAccessControlManager().checkOperation(binder,
+						WorkAreaOperation.VIEW_BINDER_TITLE);
+				} else {
+					getAccessControlManager().checkOperation(binder,
+							WorkAreaOperation.READ_ENTRIES);
 				}
-				break;
-			case allowSharing:
-				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_INTERNAL);
-				break;
-			case allowSharingExternal:
-				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
-				break;
-			case allowSharingPublic:
-				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_PUBLIC);
-				break;
-			case allowSharingForward:
-				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_FORWARD);
-				break;
-			case allowAccessNetFolder:
-				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
 				break;
 			default:
 				throw new NotSupportedException(operation.toString(),
@@ -484,7 +311,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 			}
 		}
-        return fullAccess;
 	}
 
 	private Binder loadBinder(Long binderId) {
@@ -512,31 +338,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	}
 
-	@Override
 	public Binder getBinder(Long binderId) throws NoBinderByTheIdException,
-			AccessControlException {
-		return getBinder(binderId, Boolean.FALSE);
-	}
-	@Override
-	public Binder getBinder(Long binderId, boolean thisLevelOnly) throws NoBinderByTheIdException,
-            AccessControlException {
-        return getBinder(binderId, thisLevelOnly, Boolean.FALSE);
-    }
-
-	@Override
-	public Binder getBinder(Long binderId, boolean thisLevelOnly, boolean returnLimitedBinderIfInferredAccess) throws NoBinderByTheIdException,
 			AccessControlException {
 		Binder binder = loadBinder(binderId);
 		// Check if the user has "read" access to the binder.
 		if (!(binder instanceof TemplateBinder)) {
 			try {
-				checkAccess(null, binder, BinderOperation.readEntries, thisLevelOnly);
+				getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
 			} catch(AccessControlException ace) {
 				try {
-					boolean fullAccess = _checkAccess(null, binder, BinderOperation.viewBinderTitle, thisLevelOnly);
-                    if (!fullAccess && returnLimitedBinderIfInferredAccess) {
-                        binder = binder.asLimitedBinder(true);
-                    }
+					getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
 				} catch(AccessControlException ace2) {
 					throw ace;
 				}
@@ -551,7 +362,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return loadBinder(binderId);
 	}
 
-	@Override
 	public boolean checkAccess(Long binderId, User user) {
 		boolean value = false;
 		Binder binder = null;
@@ -570,12 +380,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return value;
 	}
 
-	@Override
 	public SortedSet<Binder> getBinders(Collection<Long> binderIds) {
-		return getBinders(binderIds, Boolean.TRUE);
-	}
-	@Override
-	public SortedSet<Binder> getBinders(Collection<Long> binderIds, boolean doAccessCheck) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Comparator c = new BinderComparator(user.getLocale(),
 				BinderComparator.SortByField.title);
@@ -583,11 +388,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		for (Long id : binderIds) {
 			try {// access check done by getBinder
 				// assume most binders are cached
-				if (doAccessCheck) {
-					result.add(getBinder(id));
-				} else {
-					result.add(getBinderWithoutAccessCheck(id));
-				}
+				result.add(getBinder(id));
 			} catch (NoObjectByTheIdException ex) {
 			} catch (AccessControlException ax) {
 			}
@@ -597,22 +398,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// Use search engine
-	@Override
 	public Map getBinders(Binder binder, Map options) {
 		// assume have access to binder cause have a reference
 		BinderProcessor processor = loadBinderProcessor(binder);
 		return processor.getBinders(binder, options);
 	}
 
-	@Override
 	public Map getBinders(Binder binder, List binderIds, Map options) {
 		// assume have access to binder cause have a reference
 		BinderProcessor processor = loadBinderProcessor(binder);
 		return processor.getBinders(binder, binderIds, options);
 	}
 
-    // no transaction by default
-	@Override
+	// no transaction by default
 	public Binder addBinder(Long parentBinderId, String definitionId,
 			InputDataAccessor inputData, Map fileItems, Map options)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
@@ -631,7 +429,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				&& (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || options
 						.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
 			checkAccess(parentBinder, BinderOperation.changeEntryTimestamps);
-
 		if (def.getType() == Definition.FOLDER_VIEW) {
 			checkAccess(parentBinder, BinderOperation.addFolder);
 			binder = loadBinderProcessor(parentBinder).addBinder(
@@ -647,7 +444,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// proxy, instead of local
 				// invocation.
 				((BinderModule) SpringContextUtil.getBean("binderModule"))
-						.setDefinitionsInherited(binder.getId(), true, false);
+						.setDefinitionsInherited(binder.getId(), true);
 			}
 		} else {
 			if (!(parentBinder instanceof Workspace))
@@ -658,8 +455,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					&& ObjectKeys.PROFILE_ROOT_INTERNALID.equals(parentBinder
 							.getInternalId())) {
 				if ((def == null)
-						|| ((def.getType() != Definition.USER_WORKSPACE_VIEW) 
-						&& (def.getType() != Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
+						|| (def.getType() != Definition.USER_WORKSPACE_VIEW)) {
 					checkAccess(parentBinder, BinderOperation.addWorkspace);
 				}
 			} else {
@@ -668,12 +464,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			binder = loadBinderProcessor(parentBinder).addBinder(parentBinder,
 					def, Workspace.class, inputData, fileItems, options);
 		}
-		
 		end(begin, "addBinder");
 		return binder;
 	}
 
-	@Override
 	public Set<Long> indexTree(Long binderId) {
 		Set<Long> ids = new HashSet();
 		ids.add(binderId);
@@ -681,30 +475,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// optimization so we can manage the deletion to the searchEngine
-	@Override
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames) {
 		IndexErrors errors = new IndexErrors();
-		return indexTree(binderIds, statusTicket, nodeNames, errors, false);
+		return indexTree(binderIds, statusTicket, nodeNames, errors);
 	}
 
-	@Override
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads) {
-		if(allowUseOfHelperThreads && SPropsUtil.getBoolean("index.tree.helper.threads.allow", true))
-			return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors);
-		else
-			return indexTreeWithoutHelper(binderIds, statusTicket, nodeNames, errors);			
-	}
-
-	private Set<Long> indexTreeWithoutHelper(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames, IndexErrors errors) {
 		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
 		try {
 			// make list of binders we have access to first
-			if(logger.isDebugEnabled())
-				logger.debug("Validating binders " + binderIds);
 			boolean clearAll = false;
 			List<Binder> binders = getCoreDao().loadObjects(binderIds,
 					Binder.class,
@@ -728,13 +510,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 			Set<Long> done = new HashSet();
 			if (!checked.isEmpty()) {
-				if(logger.isDebugEnabled())
-					logger.debug("Setting indexers to " + toString(nodeNames));
 				IndexSynchronizationManager.setNodeNames(nodeNames);
 				try {
 					if (clearAll) {
-						if(logger.isDebugEnabled())
-							logger.debug("Purging indexes on " + toString(nodeNames));
 						LuceneWriteSession luceneSession = getLuceneSessionFactory()
 								.openWriteSession(nodeNames);
 						try {
@@ -747,8 +525,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					} else {
 						// delete all sub-binders - walk the ancestry list
 						// and delete all the entries under each folderid.
-						if(logger.isDebugEnabled())
-							logger.debug("Deleting from indexes all binders at or below " + checked);
 						for (Binder binder : checked) {
 							IndexSynchronizationManager.deleteDocuments(new Term(
 									Constants.ENTRY_ANCESTRY, binder.getId()
@@ -778,16 +554,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					// written for index update only, and there is no corresponding
 					// update transaction
 					// on the database.
-					if(logger.isDebugEnabled())
-						logger.debug("Applying remaining changes to index if any");
 					IndexSynchronizationManager.applyChanges();
 					
 					// If complete re-indexing, put the index files in an optimized
 					// state for subsequent searches. It will also help cut down on
 					// the number of file descriptors opened during the indexing.
 					if (clearAll) {
-						if(logger.isDebugEnabled())
-							logger.debug("Optimizing indexes");
 						LuceneWriteSession luceneSession = getLuceneSessionFactory()
 								.openWriteSession(nodeNames);
 						try {
@@ -799,8 +571,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						}
 					}					
 				} finally {
-					if(logger.isDebugEnabled())
-						logger.debug("Unsetting indexers");
 					IndexSynchronizationManager.clearNodeNames();
 				}
 			}
@@ -814,290 +584,25 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-	private Set<Long> indexTreeWithHelper(Collection binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors) {
-		long startTime = System.nanoTime();
-		getCoreDao().flush(); // just in case
-		
-		CacheMode cacheModeOrig = SessionUtil.getCacheMode();
-		CacheMode cacheMode = CacheMode.parse(SPropsUtil.getString("index.tree.producer.secondlevel.cache.mode", "normal").toUpperCase());
-		if(logger.isDebugEnabled())
-			logger.debug("Changing cache mode from " + cacheModeOrig + " to " + cacheMode);
-		SessionUtil.setCacheMode(cacheMode);
-		
-		try {
-			// make list of binders we have access to first
-			if(logger.isDebugEnabled())
-				logger.debug("Validating binders " + binderIds);
-			boolean clearAll = false;
-			List<Binder> binders = getCoreDao().loadObjects(binderIds,
-					Binder.class,
-					RequestContextHolder.getRequestContext().getZoneId());
-			List<Binder> checked = new ArrayList<Binder>();
-			for (Binder binder : binders) {
-				try {
-					checkAccess(binder, BinderOperation.indexTree);
-					if (binder.isDeleted())
-						continue;
-					if (binder.isZone())
-						clearAll = true;
-					checked.add(binder);
-				} catch (AccessControlException ex) {
-					// Skip the ones we cannot access
-				} catch (Exception ex) {
-					logger.error("Error indexing binder " + binder, ex);
-					errors.addError(binder);
-				}
-
-			}
-			Set<Long> done = new HashSet<Long>();
-			if (!checked.isEmpty()) {
-				if(logger.isDebugEnabled())
-					logger.debug("Setting indexers to " + toString(nodeNames));
-				IndexSynchronizationManager.setNodeNames(nodeNames);
-				try {
-					if (clearAll) {
-						if(logger.isDebugEnabled())
-							logger.debug("Purging indexes on " + toString(nodeNames));
-						LuceneWriteSession luceneSession = getLuceneSessionFactory()
-								.openWriteSession(nodeNames);
-						try {
-							luceneSession.clearIndex();
-						} catch (Exception e) {
-							logger.warn("Exception:" + e);
-						} finally {
-							luceneSession.close();
-						}
-					} else {
-						// delete all sub-binders - walk the ancestry list
-						// and delete all the entries under each folderid.
-						if(logger.isDebugEnabled())
-							logger.debug("Deleting from indexes all binders at or below " + checked);
-						for (Binder binder : checked) {
-							IndexSynchronizationManager.deleteDocuments(new Term(
-									Constants.ENTRY_ANCESTRY, binder.getId()
-											.toString()));
-						}
-						if(logger.isDebugEnabled())
-							logger.debug("Applying changes to index");
-						IndexSynchronizationManager.applyChanges();
-					}
-					
-					int queueSize = SPropsUtil.getInt("index.tree.helper.threads.queue.size", 100);
-					BinderToIndexQueue queue = new BinderToIndexQueue(queueSize);
-					
-					int threadsSize = SPropsUtil.getInt("index.tree.helper.threads.size", 4);
-					Thread[] helperThreads = new Thread[threadsSize];
-					Thread helperThread;
-					long now = System.currentTimeMillis();
-					if(logger.isDebugEnabled())
-						logger.debug("Creating a queue with size " + queueSize + " and " + threadsSize + " helper threads");
-					CacheMode consumerCacheMode = CacheMode.parse(SPropsUtil.getString("index.tree.consumer.secondlevel.cache.mode", "normal").toUpperCase());
-					boolean consumerClearAfter = SPropsUtil.getBoolean("index.tree.consumer.clear.after", true);
-					for(int i = 0; i < threadsSize; i++) {
-						helperThread = new Thread(new IndexHelper(statusTicket, nodeNames, consumerCacheMode, consumerClearAfter, errors, queue, RequestContextHolder.getRequestContext()),
-								Thread.currentThread().getName() + "-(" + (i+1) + "-" + now + ")");
-						helperThreads[i] = helperThread;
-						helperThread.start();
-					}
-					
-					boolean producerClearAfter = SPropsUtil.getBoolean("index.tree.producer.clear.after", true);
-					if(logger.isDebugEnabled())
-						logger.debug("Producing work items for helper threads to consume");
-					for (Binder binder : checked) {
-						done.addAll(indexTree(binder, done, statusTicket, errors, queue, producerClearAfter));
-					}
-
-					if(logger.isDebugEnabled())
-						logger.debug("No more work items to produce for helper threads");
-					BinderToIndex poisonPill = new BinderToIndex(null, null);
-					for(int i = 0; i < threadsSize; i++) {
-						try {
-							queue.put(poisonPill);
-						} catch (InterruptedException e) {}
-					}
-					if(logger.isDebugEnabled())
-						logger.debug("Waiting for helper threads to terminate");
-					for(int i = 0; i < threadsSize; i++) {
-						try {
-							helperThreads[i].join();
-						} catch (InterruptedException e) {}
-					}
-
-					// Normally, all updates to the index are managed by the
-					// framework so that
-					// the index update won't be made until after the related
-					// database transaction
-					// has committed successfully. This is to avoid the index going
-					// out of synch
-					// with the database under rollback situation. However, in this
-					// particular
-					// case, we need to take an exception and flush out all index
-					// changes before
-					// returning from the method so that the select node ids set
-					// above can be
-					// applied during the flush. This does not violate the original
-					// design intention
-					// because, unlike other business operations, this operation is
-					// specifically
-					// written for index update only, and there is no corresponding
-					// update transaction
-					// on the database.
-					if(logger.isDebugEnabled())
-						logger.debug("Applying index changes if any");
-					IndexSynchronizationManager.applyChanges();
-					
-					// If complete re-indexing, put the index files in an optimized
-					// state for subsequent searches. It will also help cut down on
-					// the number of file descriptors opened during the indexing.
-					if (clearAll) {
-						if(logger.isDebugEnabled())
-							logger.debug("Optimizing indexes");
-						LuceneWriteSession luceneSession = getLuceneSessionFactory()
-								.openWriteSession(nodeNames);
-						try {
-							luceneSession.optimize();
-						} catch (Exception e) {
-							logger.warn("Exception:" + e);
-						} finally {
-							luceneSession.close();
-						}
-					}					
-				} finally {
-					if(logger.isDebugEnabled())
-						logger.debug("Unsetting indexers");
-					IndexSynchronizationManager.clearNodeNames();
-				}
-			}
-			logger.info("indexTreeWithHelper took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
-			return done;
-		} finally {
-			// It is important to call this at the end of the processing no matter how it went.
-			if (statusTicket != null)
-				statusTicket.done();
-			if(logger.isDebugEnabled())
-				logger.debug("Restoring cache mode from " + cacheMode + " back to " + cacheModeOrig);
-			SessionUtil.setCacheMode(cacheModeOrig);
-		}
-	}
-	
-    private static String toString(String[] strs) {
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("[");
-    	if(strs != null) {
-	    	for(String str:strs) {
-	    		if(sb.length() > 1)
-	    			sb.append(",");
-	    		sb.append(str);
-	    	}
-    	}
-    	sb.append("]");
-    	return sb.toString();
-    }
-
-   	private List<Long> indexTree(Binder binder, Set<Long> exclusions, StatusTicket statusTicket, IndexErrors errors, BinderToIndexQueue queue, boolean clearAfter) {
-   		//get all the ids of child binders. order for statusTicket to make some sense
-   		if(logger.isDebugEnabled())
-   			logger.debug("Fetching IDs of all binders at or below [" + binder.getPathName() + "]");
-		Map params = new HashMap();
-		params.put("deleted", false);
-   		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
-				binder.getBinderKey().getSortKey() + "%' and x.deleted=:deleted order by x.binderKey.sortKey", params);
-		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
-		if (exclusions != null) 
-			ids.removeAll(exclusions);
-		queue.incrementTotalExpectedCount(ids.size());
-		params.clear();
-		for (int i=0; i<ids.size(); i+=inClauseLimit) {
-			List<Long> subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
-			params.put("pList", subList);
-			if(logger.isDebugEnabled())
-				logger.debug("Loading " + subList.size() + " binder objects");
-			List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
-			if(logger.isDebugEnabled())
-				logger.debug("Bulk loading collections for " + binders.size() + " binders");
-			getCoreDao().bulkLoadCollections(binders);
-			List<EntityIdentifier> folderIds = new ArrayList();
-			List<EntityIdentifier> workspaceIds = new ArrayList();
-			List<EntityIdentifier> otherIds = new ArrayList();
-			for (Binder e: binders) {
-				if(EntityIdentifier.EntityType.folder.equals(e.getEntityType()))
-					folderIds.add(e.getEntityIdentifier());
-				else if(EntityIdentifier.EntityType.workspace.equals(e.getEntityType()))
-					workspaceIds.add(e.getEntityIdentifier());
-				else 
-					otherIds.add(e.getEntityIdentifier());
-			}
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + folderIds.size() + " folders");
-			Map<EntityIdentifier,List<Tag>> tagMap = getCoreDao().loadAllTagsByEntity(folderIds);
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + workspaceIds.size() + " workspaces");
-			tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + otherIds.size() + " others");
-			tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
-
-			List<Tag> tags;
-			for (Binder b:binders) {
-				tags = tagMap.get(b.getEntityIdentifier());
-				b.getEntryDef(); // Pre-load definitions
-				b.getCreation().getPrincipal().getTitle(); // Pre-load creator principal
-				b.getModification().getPrincipal().getTitle(); // Pre-load modification principal
-				if(logger.isDebugEnabled())
-					logger.debug("Evicting tags and binder");
-	   	    	getCoreDao().evict(tags);
-	   	    	getCoreDao().evict(b);
-				try {
-					if(logger.isDebugEnabled())
-						logger.debug("Putting binder [" + b.getPathName() + "] in the queue (size=" + queue.size() + ",putCount=" + queue.getPutCount() + ",takenCount=" + queue.getTakenCount() + ",totalExpectedCount=" + queue.getTotalExpectedCount() + ")");
-					queue.put(new BinderToIndex(b, tags));
-				} catch (InterruptedException e) {}   	    	
-			}
-			if(logger.isDebugEnabled())
-				logger.debug("Applying changes to index");
-	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
-
-	  		if(clearAfter) {
-   	    		if(logger.isDebugEnabled())
-   	    			logger.debug("Clearing Hibernate session");
-   	    		getCoreDao().clear();
-   	    	}
-		}
-		if(logger.isDebugEnabled())
-			logger.debug("Processed " + ids.size() + " binders");
-   		return ids;
-
-   	}
-
-	@Override
 	public IndexErrors indexBinder(Long binderId) {
 		return indexBinder(binderId, false);
 	}
 
-	@Override
 	public IndexErrors indexBinder(Long binderId, boolean includeEntries) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.indexBinder);
 		return loadBinderProcessor(binder).indexBinder(binder, includeEntries);
 	}
 
-	@Override
 	public IndexErrors indexBinderIncremental(Long binderId,
 			boolean includeEntries) {
-		return indexBinderIncremental(binderId, includeEntries, false);
-	}
-	
-	@Override
-	public IndexErrors indexBinderIncremental(Long binderId,
-			boolean includeEntries, boolean skipFileContentIndexing) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.indexBinder);
 		return loadBinderProcessor(binder).indexBinderIncremental(binder,
-				includeEntries, skipFileContentIndexing);
+				includeEntries);
 	}
 	
 	//Routine to look through all binders and validate that the quota data is correct
-	@Override
 	public Set<Long> validateBinderQuotaTree(Binder binder, StatusTicket statusTicket, List<Long> errorIds) 
 			throws AccessControlException {
 		long startTime = System.nanoTime();
@@ -1118,8 +623,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	
     //no transaction
-    @Override
-	public void modifyBinder(Long binderId, String fileDataItemName, String fileName, InputStream content)
+    public void modifyBinder(Long binderId, String fileDataItemName, String fileName, InputStream content)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	MultipartFile mf = new SimpleMultipartFile(fileName, content);
     	Map<String, MultipartFile> fileItems = new HashMap<String, MultipartFile>();
@@ -1130,7 +634,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     }
 
     // no transaction
-	@Override
 	public void modifyBinder(Long binderId, InputDataAccessor inputData,
 			Map fileItems, Collection<String> deleteAttachments, Map options)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
@@ -1144,7 +647,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// has no child binders.
 				// It is ok for the binder to have existing entries though.
 				throw new NotSupportedException(
-						"errorcode.notsupported.not.leaf." + (binder.isAclExternallyControlled() ? "net" : "mirrored"));
+						"errorcode.notsupported.not.leaf");
 			}
 		}
 
@@ -1152,20 +655,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		boolean oldLibrary = binder.isLibrary();
 		boolean oldUnique = binder.isUniqueTitles();
 
-		if(binder.isAclExternallyControlled() &&
-        		inputData.exists("title") &&
-        		!inputData.getSingleValue("title").equals(binder.getTitle())) { 
-        	// This is renaming of a Net Folder (or its sub-folder), which means that the user is attempting to rename a directory.
-			// Do the checking in a way that is consistent with the file system semantic.				
-        	// Renaming a directory (a -> b) is like deleting a directory (a) and then adding another with a different name
-        	// (b) when looking at it from the directory membership point of view. So, we require the user to
-        	// have CREATE_FOLDERS right on the parent folder to allow for this operation.
-			getAccessControlManager().checkOperation(binder.getParentBinder(), WorkAreaOperation.CREATE_FOLDERS);
-		}
-		else {
-			checkAccess(binder, BinderOperation.modifyBinder);
-		}
-	
+		checkAccess(binder, BinderOperation.modifyBinder);
 		List atts = new ArrayList();
 		if (deleteAttachments != null) {
 			for (String id : deleteAttachments) {
@@ -1182,7 +672,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			if (oldLibrary != newLibrary) {
 				// wrap in a transaction
 				getTransactionTemplate().execute(new TransactionCallback() {
-					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						// remove old reserved names
 						getCoreDao().clearFileNames(binder);
@@ -1236,7 +725,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			if (newUnique != oldUnique) {
 				// wrap in a transaction
 				getTransactionTemplate().execute(new TransactionCallback() {
-					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						// remove old reserved names
 						getCoreDao().clearTitles(binder);
@@ -1299,7 +787,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// inside write transaction
-	@Override
 	public void setProperty(Long binderId, String property, Object value) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.setProperty);
@@ -1307,22 +794,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// inside write transaction
-	@Override
 	public void restoreBinder(Long binderId, Object renameData) throws WriteEntryDataException, WriteFilesException {
 		restoreBinder(binderId, renameData, true);
 	}
-	@Override
 	public void restoreBinder(Long binderId, Object renameData, boolean reindex) throws WriteEntryDataException, WriteFilesException {
 		restoreBinder(binderId, renameData, true, null, reindex);
 	}
 
 	// inside write transaction
-	@Override
 	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options) throws WriteEntryDataException, WriteFilesException {
 		restoreBinder(binderId, renameData, deleteMirroredSource, options, true);
 	}
-	@Override
-	// in write transaction
 	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
 		// Can we access the Binder as a non-mirrored binder?
 		Binder binder = loadBinder(binderId);
@@ -1359,14 +841,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeleted(null);
 		        	ws.setPreDeletedWhen(null);
 		        	ws.setPreDeletedBy(null);
-		        	
-		        	if (BinderHelper.isBinderUserWorkspace(binder)) {
-		        		// Note:  Won't work for guest, but guest will
-		        		// never get here because of the
-		        		// isBinderSystemUserWS() check at the top of
-		        		// the method.
-		        		getProfileModule().setUserWorkspacePreDeleted(ws.getOwnerId(), false);
-		        	}
 		        }
 
 		        // ...log the restoration...
@@ -1382,13 +856,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			        // ...re-index the Binder.
 		        	processor.indexBinder(binder, true);
 		        }
-		        processor.updateParentModTime(binder.getParentBinder(), options);
 			}
 		}
 	}
 
 	//Check if this binder is over quota
-	@Override
 	public boolean isBinderDiskHighWaterMarkExceeded(Binder binder) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
@@ -1412,7 +884,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	//Check if quotas are enabled
-	@Override
 	public boolean isBinderDiskQuotaEnabled() {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
@@ -1424,13 +895,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 		
 	//Check if this binder is over quota
-	@Override
 	public boolean isBinderDiskQuotaExceeded(Binder binder) {
 		boolean result = isBinderDiskQuotaOk(binder, 0L);
 		return !result;
 	}
 	//Check if adding a file would exceed the quota
-	@Override
 	public boolean isBinderDiskQuotaOk(Binder binder, long fileSize) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
@@ -1460,7 +929,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	//Get the lowest parent quota
-	@Override
 	public Long getMinParentBinderQuota(Binder binder) {
 		Long leastQuota = null;
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -1487,7 +955,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	//Get the most that this binder will allow for disk usage
-	@Override
 	public Long getMinBinderQuotaLeft(Binder binder) {
 		Long leastQuotaLeft = null;
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -1519,7 +986,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	//Get the most that this binder will allow for disk usage
-	@Override
 	public Binder getMinBinderQuotaLeftBinder(Binder binder) {
 		Long leastQuotaLeft = null;
 		Binder result = null;
@@ -1553,7 +1019,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	//Increment the disk space used in this binder. Update the cumulative counts in the parent binders
-	@Override
 	public void incrementDiskSpaceUsed(Binder binder, long fileSize) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		try {
@@ -1581,7 +1046,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	//Decrement the disk space used in this binder. Update the cumulative counts in the parent binders
-	@Override
 	public void decrementDiskSpaceUsed(Binder binder, long fileSize) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		try {
@@ -1609,27 +1073,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// inside write transaction
-	@Override
 	public void preDeleteBinder(Long binderId, Long userId) {
 		preDeleteBinder(binderId, userId, true);
 	}
-	@Override
 	public void preDeleteBinder(Long binderId, Long userId, boolean reindex) {
 		preDeleteBinder(binderId, userId, true, null, reindex);
 	}
 
 	// inside write transaction
-	@Override
 	public void preDeleteBinder(Long binderId, Long userId, boolean deleteMirroredSource, Map options) {
 		preDeleteBinder(binderId, userId, deleteMirroredSource, options, true);
 	}
-	@Override
-	// in write transaction
 	public void preDeleteBinder(Long binderId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
 		Binder binder = loadBinder(binderId);
-		if (BinderHelper.isBinderSystemUserWS(binder)) {
-			throw new NotSupportedException("errorcode.notsupported.preDeleteBinder.systemUserWS");
-		}
 		if ((null != binder) && (!(binder.isMirrored()))) {
 			EntityType et = binder.getEntityType();
 			boolean isFolder    = (EntityType.folder    == et);
@@ -1648,133 +1104,75 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeleted(Boolean.TRUE);
 		        	ws.setPreDeletedWhen(System.currentTimeMillis());
 		        	ws.setPreDeletedBy(userId);
-		        	
-		        	if (BinderHelper.isBinderUserWorkspace(binder)) {
-		        		// Note:  Won't work for guest, but guest will
-		        		// never get here because of the
-		        		// isBinderSystemUserWS() check at the top of
-		        		// the method.
-		        		getProfileModule().setUserWorkspacePreDeleted(ws.getOwnerId(), true);
-		        	}
 		        }
 
-		        Binder parentBinder = binder.getParentBinder();
 		        BinderProcessor processor = loadBinderProcessor(binder);
 				TrashHelper.changeBinder_Log(processor, binder, ChangeLog.PREDELETEBINDER);
 		        TrashHelper.unRegisterBinderNames(getCoreDao(), binder);
 		        if (reindex) {
 		        	processor.indexBinder(binder, true);
 		        }
-		        processor.updateParentModTime(parentBinder, options);
 			}
 		}
 	}
 
 	// no transaction
-	@Override
 	public void deleteBinder(Long binderId) {
 		deleteBinder(binderId, true, null, false);
 	}
 
 	// no transaction
-	@Override
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource,
 			Map options) {
 		deleteBinder(binderId, deleteMirroredSource, options, false);
 	}
 	
 	// no transaction
-	@Override
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource,
 			Map options, boolean phase1Only) {
-		deleteBinder(binderId, deleteMirroredSource, options, phase1Only, false);
-	}
-	
-	// no transaction
-	@Override
-	public void deleteBinder(Long binderId, boolean deleteMirroredSource,
-			Map options, boolean phase1Only, boolean createDbLogForTopBinderOnly) {
-		Binder binder = loadBinder(binderId);
-		Binder parentBinder = null;
-		if(binder != null)
-			parentBinder = binder.getParentBinder();
-		
-		//Guard against deleting the whole mirrored source by accident
-		if (binder.isAclExternallyControlled() && 
-				parentBinder != null && parentBinder.isAclExternallyControlled() &&
-				parentBinder.getResourceDriverName().equals(binder.getResourceDriverName())) {
-			
-			//This is a sub-folder of a net folder. Check that it has a proper resource path
-			if (binder.getResourcePath() == null || binder.getResourcePath().equals("") || 
-					binder.getResourcePath().equals("/")) {
-				//Don't allow deleting of this source because it looks like the configuration wasn't properly completed.
-				deleteMirroredSource = false;
-			}
-		}
-		
-		deleteBinderPhase1(binderId, deleteMirroredSource, options, createDbLogForTopBinderOnly);
+		deleteBinderPhase1(binderId, deleteMirroredSource, options);
 		if (!phase1Only) {
 			deleteBinderPhase2();
 		}
 	}
 
 	// no transaction
-	@Override
 	public void deleteBinderFinish() {
 		deleteBinderPhase2();
 	}
 	
 	// inside write transaction
-	@Override
-	public Binder moveBinder(Long fromId, Long toId, Map options) throws NotSupportedException {
+	public void moveBinder(Long fromId, Long toId, Map options) throws NotSupportedException {
 		Binder source = loadBinder(fromId);
-		Binder sourceParent = source.getParentBinder();
 		checkAccess(source, BinderOperation.moveBinder);
 		Binder destination = loadBinder(toId);
-
-        Binder newBinder;
-		//See if moving from a regular folder to a mirrored folder
-		if (!source.isMirrored() && destination.isMirrored()) {
-			//This is a special case move. Do it by copying the folder then deleting it
-			newBinder = copyBinder(fromId, toId, true, options);
-			//Note that if the delete fails, the copied binder will still remain
-			//However, some of the original source binders may also be left behind
-			//It was felt that it is better to leave everything to the user to clean up.
-			deleteBinder(source.getId(), false, null);
-			
-		} else {
-            newBinder = source;
-			if (loadBinderProcessor(source).checkMoveBinderQuota(source, destination)) {
-				if (source.getEntityType().equals(EntityType.folder)) {
-					getAccessControlManager().checkOperation(destination,
-							WorkAreaOperation.CREATE_FOLDERS);
-				} else {
-					getAccessControlManager().checkOperation(destination,
-							WorkAreaOperation.CREATE_WORKSPACES);
-				}
-				// move whole tree at once
-				loadBinderProcessor(source).moveBinder(source, destination, options);
-				
-				if(sourceParent != null)
-					loadBinderProcessor(sourceParent).updateParentModTime(sourceParent, options);
-				
-				if(sourceParent != destination)
-					loadBinderProcessor(destination).updateParentModTime(destination, options);
-				
+		if (loadBinderProcessor(source).checkMoveBinderQuota(source, destination)) {
+			if (source.getEntityType().equals(EntityType.folder)) {
+				getAccessControlManager().checkOperation(destination,
+						WorkAreaOperation.CREATE_FOLDERS);
 			} else {
-				throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
+				getAccessControlManager().checkOperation(destination,
+						WorkAreaOperation.CREATE_WORKSPACES);
 			}
+			// move whole tree at once
+			loadBinderProcessor(source).moveBinder(source, destination, options);
+		} else {
+			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
 		}
-        return newBinder;
 	}
 
 	// no transaction
-	@Override
 	public Binder copyBinder(Long fromId, Long toId, boolean cascade,
 			Map options) throws NotSupportedException {
 		Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
+		// We don't allow copying of a mirrored folder as the starting point.
+		if(source.isMirrored())
+			throw new NotSupportedException("errorcode.notsupported.copyBinder", new String[] {source.getPathName()});
 		Binder destinationParent = loadBinder(toId);
+		// We don't allow copying of a binder into a mirrored folder.
+		if(destinationParent.isMirrored())
+			throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destinationParent.getPathName()});
 		//See if there is enough quota to do this
 		if (loadBinderProcessor(source).checkMoveBinderQuota(source, destinationParent)) {
 			if (source.getEntityType().equals(EntityType.folder)) {
@@ -1784,29 +1182,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				getAccessControlManager().checkOperation(destinationParent,
 						WorkAreaOperation.CREATE_WORKSPACES);
 			}
-    		//We must guard against invalid copy attempts (such as complex entries copied to mirrored folder)
-    		if (!source.isAclExternallyControlled() && destinationParent.isAclExternallyControlled()) {
-    			//This type of request could have invalid entries, so check each one
-    			Map getEntriesOptions = new HashMap();
-				//Specify if this request is to copy children binders, too.
-    			getEntriesOptions.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, new Boolean(cascade));
-          		Map folderEntries = getFolderModule().getEntries(source.getId(), getEntriesOptions);
-    	      	List<Map> searchEntries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-
-    			for (Map se : searchEntries) {
-    				String entryIdStr = (String)se.get(Constants.DOCID_FIELD);
-    				if (entryIdStr != null && !entryIdStr.equals("")) {
-        				Long entryId = Long.valueOf(entryIdStr);
-        				Entry entry = getFolderModule().getEntry(null, entryId);
-    					try {
-    						BinderHelper.copyEntryCheckMirrored(source, entry, destinationParent);
-    					} catch(Exception e) {
-    						//This entry cannot be copied, so don't copy this binder
-    						throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destinationParent.isAclExternallyControlled() ? "net" : "mirrored"));
-    					}
-    				}
-    			}
-    		}
 			Map params = new HashMap();
 			if (options != null)
 				params.putAll(options);
@@ -1817,7 +1192,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					destinationParent, params);
 			if (cascade)
 				doCopyChildren(source, binder);
-
 			return binder;
 		} else {
 			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
@@ -1830,6 +1204,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		params.put(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER, Boolean.TRUE);
 		List<Binder> children = source.getBinders();
 		for (Binder child : children) {
+			// Skip the child if it is a mirrored folder.
+			if(child.isMirrored()) {
+				logger.info("Skipping source binder '" + child.getPathName() + "' because it is a mirrored folder.");
+				continue;
+			}
 			// If the binder is not in the trash...
 			if (!(TrashHelper.isBinderPredeleted(child))) {
 				// ...recursively copy that too.
@@ -1842,7 +1221,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	
 	//Change entry types
 	// no transaction
-	@Override
 	public void changeEntryTypes(Long binderId, String oldDefId, final String newDefId) {
 		Binder binder = loadBinder(binderId);
 		if (!(binder instanceof Folder)) return;
@@ -1853,7 +1231,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if (!entryIds.isEmpty()) {
 			getTransactionTemplate().execute(
 					new TransactionCallback() {
-						@Override
 						public Object doInTransaction(TransactionStatus status) {
 							getFolderDao().setFolderEntryType(folder, entryIds, newDefId);
 							return null;
@@ -1865,17 +1242,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// inside write transaction
-	@Override
-	public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent) {
-		return setDefinitionsInherited(binderId, inheritFromParent, true);
-	}
-	// inside write transaction
-	@Override
-	public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent, boolean doAccessCheck) {
+	public Binder setDefinitionsInherited(Long binderId,
+			boolean inheritFromParent) {
 		Binder binder = loadBinder(binderId);
-		if (doAccessCheck) {
-			checkAccess(binder, BinderOperation.manageConfiguration);
-		}
+		checkAccess(binder, BinderOperation.manageConfiguration);
 		boolean oldInherit = binder.isDefinitionsInherited();
 		if (inheritFromParent != oldInherit) {
 			if (inheritFromParent) {
@@ -1901,7 +1271,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// inside write transaction
-	@Override
 	public Binder setDefinitions(Long binderId, List<String> definitionIds,
 			Map<String, String> workflowAssociations)
 			throws AccessControlException {
@@ -1954,7 +1323,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	/**
 	 * Get tags owned by this binder or current user
 	 */
-	@Override
 	public Collection<Tag> getTags(Binder binder) {
 		// have binder - so assume read access
 		// bulk load tags
@@ -1968,20 +1336,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 * Add a new tag, to binder
 	 */
 	// inside write transaction
-	@Override
-	public Tag [] setTag(Long binderId, String newTag, boolean community) {
+	public void setTag(Long binderId, String newTag, boolean community) {
 		Binder binder = loadBinder(binderId);
 		if (community)
 			checkAccess(binder, BinderOperation.manageTag);
 		if (Validator.isNull(newTag))
-			return null;
+			return;
 		Collection<String> newTags = TagUtil.buildTags(newTag);
 		if (newTags.size() == 0)
-			return null;
+			return;
 		User user = RequestContextHolder.getRequestContext().getUser();
 		EntityIdentifier uei = user.getEntityIdentifier();
 		EntityIdentifier bei = binder.getEntityIdentifier();
-        List<Tag> tags = new ArrayList<Tag>();
 		for (String tagName : newTags) {
 			Tag tag = new Tag();
 			// community tags belong to the binder - don't care who created it
@@ -1991,17 +1357,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			tag.setPublic(community);
 			tag.setName(tagName);
 			getCoreDao().save(tag);
-            tags.add(tag);
 		}
 		loadBinderProcessor(binder).indexBinder(binder, false);
-        return tags.toArray(new Tag[tags.size()]);
 	}
 
 	/**
 	 * Delete a tag on this binder
 	 */
 	// inside write transaction
-	@Override
 	public void deleteTag(Long binderId, String tagId) {
 		Binder binder = loadBinder(binderId);
 		Tag tag;
@@ -2020,7 +1383,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// inside write transaction
-	@Override
 	public void setSubscription(Long binderId, Map<Integer, String[]> styles) {
 		Binder binder = getBinder(binderId);
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -2037,83 +1399,81 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			s.setStyles(styles);
 	}
 
-	@Override
 	public Subscription getSubscription(Binder binder) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		return getProfileDao().loadSubscription(user.getId(),
 				binder.getEntityIdentifier());
 	}
 
-	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults) {
-		return executeSearchQuery(crit, searchMode, offset, maxResults, false);
+	public Map executeSearchQuery(Criteria crit, int offset, int maxResults) {
+		return executeSearchQuery(crit, offset, maxResults, false);
 	}
-	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, preDeleted);
+	public Map executeSearchQuery(Criteria crit, int offset, int maxResults, boolean preDeleted) {
+		return executeSearchQuery(crit.toQuery(), offset, maxResults, preDeleted);
 	}
 
-	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, preDeleted, ignoreAcls);
+	public Map executeSearchQuery(Criteria crit, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
+		return executeSearchQuery(crit.toQuery(), offset, maxResults, preDeleted, ignoreAcls);
 	}
 
-	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
 			Long asUserId) {
-		return executeSearchQuery(crit, searchMode, offset, maxResults, asUserId, false);
+		return executeSearchQuery(crit, offset, maxResults, asUserId, false);
 	}
-	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
 			Long asUserId, boolean preDeleted, boolean ignoreAcls) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, asUserId, preDeleted, ignoreAcls);
+		return executeSearchQuery(crit.toQuery(), offset, maxResults, asUserId, preDeleted, ignoreAcls);
 	}
 
-	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
 			Long asUserId, boolean preDeleted) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, asUserId, preDeleted);
+		return executeSearchQuery(crit.toQuery(), offset, maxResults, asUserId, preDeleted);
 	}
 
-	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, false);
+	public Map executeSearchQuery(Document query, int offset, int maxResults) {
+		return executeSearchQuery(query, offset, maxResults, false);
 	}
-	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, preDeleted, false);
+	public Map executeSearchQuery(Document query, int offset, int maxResults, boolean preDeleted) {
+		return executeSearchQuery(query, offset, maxResults, preDeleted, false);
 	}
-	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
+	public Map executeSearchQuery(Document query, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
 		// Create the Lucene query
-		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
-		SearchObject so = qb.buildQuery(query);
+		QueryBuilder qb = new QueryBuilder(true);
+		SearchObject so;
+		if (preDeleted) {
+			so = qb.buildQueryPreDeleted(query, ignoreAcls);
+		}
+		else {
+			so = qb.buildQuery(query, ignoreAcls);
+		}
 
-		return executeSearchQuery(so, searchMode, offset, maxResults);
+		return executeSearchQuery(so, offset, maxResults);
 	}
 
-	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int offset, int maxResults,
 			Long asUserId) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, false);
+		return executeSearchQuery(query, offset, maxResults, false);
 	}
-	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int offset, int maxResults,
 			Long asUserId, boolean preDeleted) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, asUserId, preDeleted, false);
+		return executeSearchQuery(query, offset, maxResults, asUserId, preDeleted, false);
 	}
-	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int offset, int maxResults,
 			Long asUserId, boolean preDeleted, boolean ignoreAcls) {
 		// Create the Lucene query
-		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted, asUserId);
-		SearchObject so = qb.buildQuery(query);
+		QueryBuilder qb = new QueryBuilder(true);
+		SearchObject so;
+		if (preDeleted) {
+			so = qb.buildQueryPreDeleted(query, asUserId, ignoreAcls);
+		}
+		else {
+			so = qb.buildQuery(query, asUserId, ignoreAcls);
+		}
 
-		return executeSearchQuery(so, searchMode, offset, maxResults);
+		return executeSearchQuery(so, offset, maxResults);
 	}
 
-	@Override
-	public Map executeSearchQuery(Document searchQuery, int searchMode, Map options) {
+	public Map executeSearchQuery(Document searchQuery, Map options) {
 		SearchObject so;
 		
 		Document qTree = SearchUtils.getInitalSearchDocument(searchQuery,
@@ -2121,21 +1481,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		SearchUtils.getQueryFields(qTree, options);
 
 		// Create the Lucene query
-		QueryBuilder qb;
+		QueryBuilder qb = new QueryBuilder(true);
 		if (options.containsKey(ObjectKeys.SEARCH_PRE_DELETED)) {
-			qb = new QueryBuilder(true, true);
+			so = qb.buildQueryPreDeleted(qTree);
 		} else {
-			qb = new QueryBuilder(true, false);
+			so = qb.buildQuery(qTree);
 		}
 
-		so = qb.buildQuery(qTree);
-		
 		// Set the sort order
 		SortField[] fields = SearchUtils.getSortFields(options);
 		so.setSortBy(fields);
 
-		if (logger.isTraceEnabled() && searchQuery != null) {
-			logger.trace("Query in executeSearchQuery: "
+		if (logger.isDebugEnabled() && searchQuery != null) {
+			logger.debug("Query is in executeSearchQuery: "
 					+ searchQuery.asXML());
 		}
 
@@ -2148,16 +1506,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
 		}
 
-		return executeSearchQuery(so, searchMode, offset, maxResults);
+		return executeSearchQuery(so, offset, maxResults);
 	}
 
-	protected Map executeSearchQuery(SearchObject so, int searchMode, int offset, int maxResults) {
-		Hits hits = executeLuceneQuery(so, searchMode, offset, maxResults);
-		return returnSearchQuery(hits);
-	}
-
-	protected Map returnSearchQuery(Hits hits) {
+	protected Map executeSearchQuery(SearchObject so, int offset, int maxResults) {
 		List entries = new ArrayList();
+		Hits hits = executeLuceneQuery(so, offset, maxResults);
 		entries = SearchUtils.getSearchEntries(hits);
 		SearchUtils.extendPrincipalsInfo(entries, getProfileDao(),
 				Constants.CREATORID_FIELD);
@@ -2170,30 +1524,28 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				.length()));
 
 		retMap.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
-
-        retMap.put(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE, new Boolean(hits.isTotalHitsApproximate()));
-        retMap.put(ObjectKeys.SEARCH_THERE_IS_MORE,           new Boolean(hits.getThereIsMore()        ));
 		
 		return retMap;
 	}
 
-	private Hits executeLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults) {
+	private Hits executeLuceneQuery(SearchObject so, int offset, int maxResults) {
 		Hits hits = new Hits(0);
 
 		Query soQuery = so.getLuceneQuery(); // Get the query into a variable to avoid
 		// doing this very slow operation twice
 
-		if (logger.isTraceEnabled()) {
-			logger.trace("Query in executeLuceneQuery: "
+		if (logger.isDebugEnabled()) {
+			logger.debug("Query is in executeSearchQuery: "
 					+ soQuery.toString());
 		}
 
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
 				.openReadSession();
 		try {
-			hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-					so.getAclQueryStr(), searchMode, soQuery, so.getSortBy(), offset,
+			hits = luceneSession.search(soQuery, so.getSortBy(), offset,
 					maxResults);
+		} catch (Exception e) {
+			logger.info("Exception:" + e);
 		} finally {
 			luceneSession.close();
 		}
@@ -2201,23 +1553,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	}
 
-	private Hits executeNetFolderLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults, Binder parentBinder) {
-		Hits hits = new Hits(0);
-
-		LuceneReadSession luceneSession = getLuceneSessionFactory()
-				.openReadSession();
-		try {
-			hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
-					so, searchMode, offset,
-					maxResults, parentBinder);
-		} finally {
-			luceneSession.close();
-		}
-		return hits;
-
-	}
-
-	@Override
 	public List<Map> getSearchTags(String wordroot, String type) {
 		ArrayList tags;
 
@@ -2228,14 +1563,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			Document qTree = DocumentHelper.createDocument();
 			qTree.addElement(Constants.QUERY_ELEMENT);
 			// Create the query
-			QueryBuilder qb = new QueryBuilder(true, false);
+			QueryBuilder qb = new QueryBuilder(true);
 			so = qb.buildQuery(qTree);
 		}
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
 				.openReadSession();
 
 		try {
-			tags = luceneSession.getTags(so != null ? so.getAclQueryStr() : null,
+			tags = luceneSession.getTags(so != null ? so.getLuceneQuery() : null,
 					wordroot, type);
 		} finally {
 			luceneSession.close();
@@ -2252,7 +1587,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return tagList;
 	}
 
-	@Override
 	public List<Map> getSearchTagsWithFrequencies(String wordroot, String type) {
 		ArrayList tags;
 
@@ -2263,14 +1597,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			Document qTree = DocumentHelper.createDocument();
 			qTree.addElement(Constants.QUERY_ELEMENT);
 			// Create the query
-			QueryBuilder qb = new QueryBuilder(true, false);
+			QueryBuilder qb = new QueryBuilder(true);
 			so = qb.buildQuery(qTree);
 		}
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
 				.openReadSession();
 
 		try {
-			tags = luceneSession.getTagsWithFrequency(so != null ? so.getAclQueryStr() : null, wordroot, type);
+			tags = luceneSession.getTagsWithFrequency(so != null ? so
+					.getLuceneQuery() : null, wordroot, type);
 		} finally {
 			luceneSession.close();
 		}
@@ -2286,14 +1621,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return tagList;
 	}
 
-	@Override
 	public Binder getBinderByPathName(String pathName)
 			throws AccessControlException {
 		List<Binder> binders = getCoreDao().loadBindersByPathName(pathName, 
 				RequestContextHolder.getRequestContext().getZoneId());
 
 		// only maximum of one matching non-deleted binder
-		Long binderId = null;
 		for (Binder binder : binders) {
 			if (binder.isDeleted())
 				continue;
@@ -2305,40 +1638,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				if(((Workspace) binder).isPreDeleted())
 					continue;						
 			}
-			binderId = binder.getId();
-			break;
+			try {
+				getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+			} catch(AccessControlException ace) {
+				try {
+					getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+				} catch(AccessControlException ace2) {
+					throw ace;
+				}
+			}
+			return binder;
 		}
 
-		if(binderId != null)
-			return this.getBinder(binderId); // This will do all the access checking necessary
-		else 
-			return null;
+		return null;
 	}
 
-    @Override
-	public Binder getBinderByParentAndTitle(Long parentBinderId, String title) throws AccessControlException {
-        Binder binder = getCoreDao().loadBinderByParentAndName(parentBinderId, title,
-                RequestContextHolder.getRequestContext().getZoneId());
-        if (binder!=null) {
-            if (binder.isDeleted() || (binder instanceof Folder && ((Folder)binder).isPreDeleted())
-                    || (binder instanceof Workspace && ((Workspace)binder).isPreDeleted())) {
-                binder = null;
-            } else {
-                try {
-                    getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
-                } catch(AccessControlException ace) {
-                    try {
-                        getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
-                    } catch(AccessControlException ace2) {
-                        throw ace;
-                    }
-                }
-            }
-        }
-        return binder;
-    }
-
-    @Override
 	public SortedSet<Principal> getTeamMembers(Binder binder,
 			boolean explodeGroups) {
 		// If have binder , can read so no more access checking is needed
@@ -2364,7 +1678,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return result;
 	}
 
-	@Override
 	public Set<Long> getTeamMemberIds(Long binderId, boolean explodeGroups) {
 		// getBinder does read check
 		Binder binder = getBinder(binderId);
@@ -2376,13 +1689,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// no transaction
-	@Override
 	public void setTeamMembershipInherited(Long binderId, final boolean inherit) {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageTeamMembers);
 		Boolean index = (Boolean) getTransactionTemplate().execute(
 				new TransactionCallback() {
-					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						Set oldMbrs = binder.getTeamMemberIds();
 						if (inherit) {
@@ -2428,7 +1739,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// no transaction
-	@Override
 	public void setTeamMembers(Long binderId, final Collection<Long> memberIds)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
@@ -2446,7 +1756,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		final BinderProcessor processor = loadBinderProcessor(binder);
 		Boolean index = (Boolean) getTransactionTemplate().execute(
 				new TransactionCallback() {
-					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						binder.setTeamMemberIds(new HashSet(memberIds));
 						binder.setTeamMembershipInherited(false);
@@ -2471,7 +1780,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// return binders this user is a team_member of
-	@Override
 	public List<Map> getTeamMemberships(Long userId) {
 
 		// We use search engine to get the list of binders.
@@ -2489,31 +1797,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				return Collections.EMPTY_LIST;
 			}
 		}
-		Set<Long> ids = getProfileDao().getApplicationLevelPrincipalIds(prin);
+		Set<Long> ids = getProfileDao().getPrincipalIds(prin);
 		if (ids.isEmpty())
 			return Collections.EMPTY_LIST;
 		crit.add(in(Constants.TEAM_MEMBERS_FIELD, LongIdUtil
 				.getIdsAsStringSet(ids)));
-		QueryBuilder qb = new QueryBuilder(true, false);
+		QueryBuilder qb = new QueryBuilder(true);
 		SearchObject so = qb.buildQuery(crit.toQuery());
 
-		Hits hits = executeLuceneQuery(so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, Integer.MAX_VALUE);
+		Hits hits = executeLuceneQuery(so, 0, Integer.MAX_VALUE);
 		if (hits == null)
 			return new ArrayList();
 		return SearchUtils.getSearchEntries(hits);
 	}
-	
-    //inside write transaction    	
-	@Override
-	public void setMyFilesDir(Long binderId, boolean value) {
-		//getBinder does read check
-		Binder binder = getBinder(binderId);
-		binder.setMyFilesDir(value);
-	}
-	
 
 	// inside write transaction
-	@Override
 	public void setPosting(Long binderId, String emailAddress, String password) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageMail);
@@ -2574,7 +1872,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 *            - if null, don't change list.
 	 */
 	// inside write transaction
-	@Override
 	public void modifyNotification(Long binderId,
 			Collection<Long> principalIds, Map updates) {
 		Binder binder = loadBinder(binderId);
@@ -2593,7 +1890,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		current.setDistribution(notifyUsers);
 	}
 
-	@Override
 	public org.dom4j.Document getDomBinderTree(Long id,
 			DomTreeBuilder domTreeHelper, int levels)
 			throws AccessControlException {
@@ -2609,7 +1905,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return wsTree;
 	}
 
-	@Override
 	public org.dom4j.Document getDomBinderTree(Long topId, Long bottomId,
 			DomTreeBuilder domTreeHelper) throws AccessControlException {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -2677,23 +1972,42 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		--levels;
 		TreeSet ws = new TreeSet(c);
 		List searchBinders = null;
-		//Always find the binders by searching.
-		//  This will get any intermediate binders that may be inaccessible
-		if (domTreeHelper.getPage().equals("")) {
-			Map options = new HashMap();
-			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer
-					.valueOf(SPropsUtil.getInt("wsTree.maxBucketSize")));
-			Map searchResults = getBinders(top, options);
-			searchBinders = (List) searchResults
-					.get(ObjectKeys.SEARCH_ENTRIES);
-			int results = (Integer) searchResults
-					.get(ObjectKeys.TOTAL_SEARCH_COUNT);
-			if (results > SPropsUtil.getInt("wsTree.maxBucketSize")) { // just
-				// to
-				// get
-				// started
-				searchResults = buildBinderVirtualTree(current, top,
-						domTreeHelper, results, maxBucketSize);
+		if (levels >= 0
+				&& (!domTreeHelper.getPage().equals("") || top.getBinderCount() > maxBucketSize)) { // what
+			// is
+			// the
+			// best
+			// number
+			// to
+			// avoid
+			// search??
+			// do search
+			if (domTreeHelper.getPage().equals("")) {
+				Map options = new HashMap();
+				options.put(ObjectKeys.SEARCH_MAX_HITS, Integer
+						.valueOf(SPropsUtil.getInt("wsTree.maxBucketSize")));
+				Map searchResults = getBinders(top, options);
+				searchBinders = (List) searchResults
+						.get(ObjectKeys.SEARCH_ENTRIES);
+				int results = (Integer) searchResults
+						.get(ObjectKeys.TOTAL_SEARCH_COUNT);
+				if (results > SPropsUtil.getInt("wsTree.maxBucketSize")) { // just
+					// to
+					// get
+					// started
+					searchResults = buildBinderVirtualTree(current, top,
+							domTreeHelper, results, maxBucketSize);
+					// If no results are returned, the work was completed in
+					// buildBinderVirtualTree and we can exit now
+					if (searchResults == null)
+						return;
+					searchBinders = (List) searchResults
+							.get(ObjectKeys.SEARCH_ENTRIES);
+				}
+			} else {
+				// We are looking for a virtual page
+				Map searchResults = buildBinderVirtualTree(current, top,
+						domTreeHelper, 0, maxBucketSize);
 				// If no results are returned, the work was completed in
 				// buildBinderVirtualTree and we can exit now
 				if (searchResults == null)
@@ -2701,28 +2015,45 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				searchBinders = (List) searchResults
 						.get(ObjectKeys.SEARCH_ENTRIES);
 			}
-		} else {
-			// We are looking for a virtual page
-			Map searchResults = buildBinderVirtualTree(current, top,
-					domTreeHelper, 0, maxBucketSize);
-			// If no results are returned, the work was completed in
-			// buildBinderVirtualTree and we can exit now
-			if (searchResults == null)
-				return;
-			searchBinders = (List) searchResults
-					.get(ObjectKeys.SEARCH_ENTRIES);
-		}
-		if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
-			// get folders
+			if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
+				// get folders
+				for (int i = 0; i < searchBinders.size(); ++i) {
+					Map search = (Map) searchBinders.get(i);
+					String entityType = (String) search
+							.get(Constants.ENTITY_FIELD);
+					if (EntityType.folder.name().equals(entityType)) {
+						String sId = (String) search.get(Constants.DOCID_FIELD);
+						try {
+							Long id = Long.valueOf(sId);
+							Object obj = getCoreDao().load(Folder.class, id);
+							if (obj != null)
+								ws.add(obj);
+						} catch (Exception ex) {
+							continue;
+						}
+					}
+				}
+				for (Iterator iter = ws.iterator(); iter.hasNext();) {
+					Folder f = (Folder) iter.next();
+					if (f.isDeleted() || f.isPreDeleted())
+						continue;
+					// Check if the user has "read" access to the folder.
+					next = current.addElement(DomTreeBuilder.NODE_CHILD);
+					if (domTreeHelper.setupDomElement(
+							DomTreeBuilder.TYPE_FOLDER, f, next) == null)
+						current.remove(next);
+				}
+			}
+			ws.clear();
+			// get workspaces
 			for (int i = 0; i < searchBinders.size(); ++i) {
 				Map search = (Map) searchBinders.get(i);
-				String entityType = (String) search
-						.get(Constants.ENTITY_FIELD);
-				if (EntityType.folder.name().equals(entityType)) {
+				String entityType = (String) search.get(Constants.ENTITY_FIELD);
+				if (EntityType.workspace.name().equals(entityType)) {
 					String sId = (String) search.get(Constants.DOCID_FIELD);
 					try {
 						Long id = Long.valueOf(sId);
-						Object obj = getCoreDao().load(Folder.class, id);
+						Object obj = getCoreDao().load(Workspace.class, id);
 						if (obj != null)
 							ws.add(obj);
 					} catch (Exception ex) {
@@ -2730,52 +2061,61 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					}
 				}
 			}
+
 			for (Iterator iter = ws.iterator(); iter.hasNext();) {
-				Folder f = (Folder) iter.next();
-				if (f.isDeleted() || f.isPreDeleted())
+				Workspace w = (Workspace) iter.next();
+				if (w.isDeleted() || w.isPreDeleted())
 					continue;
-				// Check if the user has "read" access to the folder.
 				next = current.addElement(DomTreeBuilder.NODE_CHILD);
-				if (domTreeHelper.setupDomElement(
-						DomTreeBuilder.TYPE_FOLDER, f, next) == null)
-					current.remove(next);
+				buildBinderDomTree(next, w, c, domTreeHelper, levels);
 			}
-		}
-		ws.clear();
-		// get workspaces and profiles binder
-		for (int i = 0; i < searchBinders.size(); ++i) {
-			Map search = (Map) searchBinders.get(i);
-			String entityType = (String) search.get(Constants.ENTITY_FIELD);
-			if (EntityType.workspace.name().equals(entityType)) {
-				String sId = (String) search.get(Constants.DOCID_FIELD);
-				try {
-					Long id = Long.valueOf(sId);
-					Object obj = getCoreDao().load(Workspace.class, id);
-					if (obj != null)
-						ws.add(obj);
-				} catch (Exception ex) {
-					continue;
+		} else {
+			if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
+				// get folders sorted
+				if (EntityIdentifier.EntityType.workspace.equals(top
+						.getEntityType())
+						|| EntityIdentifier.EntityType.profiles.equals(top
+								.getEntityType())) {
+					ws.addAll(((Workspace) top).getFolders());
+				} else if (EntityIdentifier.EntityType.folder.equals(top
+						.getEntityType())) {
+					ws.addAll(((Folder) top).getFolders());
 				}
-			} else if (EntityType.profiles.name().equals(entityType)) {
-				String sId = (String) search.get(Constants.DOCID_FIELD);
-				try {
-					Long id = Long.valueOf(sId);
-					Object obj = getCoreDao().load(ProfileBinder.class, id);
-					if (obj != null)
-						ws.add(obj);
-				} catch (Exception ex) {
-					continue;
+				for (Iterator iter = ws.iterator(); iter.hasNext();) {
+					Folder f = (Folder) iter.next();
+					if (f.isDeleted() || f.isPreDeleted())
+						continue;
+					// Check if the user has "read" access to the folder.
+					if (!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES) && 
+							!getAccessControlManager().testOperation(f, WorkAreaOperation.VIEW_BINDER_TITLE))
+						continue;
+					next = current.addElement(DomTreeBuilder.NODE_CHILD);
+					if (domTreeHelper.setupDomElement(
+							DomTreeBuilder.TYPE_FOLDER, f, next) == null)
+						current.remove(next);
+				}
+			}
+			ws.clear();
+			// handle sorted workspaces
+			if (EntityIdentifier.EntityType.workspace.equals(top
+					.getEntityType())
+					|| EntityIdentifier.EntityType.profiles.equals(top
+							.getEntityType())) {
+				ws.addAll(((Workspace) top).getWorkspaces());
+				for (Iterator iter = ws.iterator(); iter.hasNext();) {
+					Workspace w = (Workspace) iter.next();
+					if (w.isDeleted() || w.isPreDeleted())
+						continue;
+					// Check if the user has "read" access to the workspace.
+					if (!getAccessControlManager().testOperation(w, WorkAreaOperation.READ_ENTRIES) && 
+							!getAccessControlManager().testOperation(w, WorkAreaOperation.VIEW_BINDER_TITLE))
+						continue;
+					next = current.addElement(DomTreeBuilder.NODE_CHILD);
+					buildBinderDomTree(next, w, c, domTreeHelper, levels);
 				}
 			}
 		}
 
-		for (Iterator iter = ws.iterator(); iter.hasNext();) {
-			Workspace w = (Workspace) iter.next();
-			if (w.isDeleted() || w.isPreDeleted())
-				continue;
-			next = current.addElement(DomTreeBuilder.NODE_CHILD);
-			buildBinderDomTree(next, w, c, domTreeHelper, levels);
-		}
 	}
 
 	// Build a list of buckets (or get the final page)
@@ -2922,7 +2262,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			tuple1 = (String) tuple.get(0);
 			tuple2 = (String) tuple.get(1);
 		}
-		QueryBuilder qb = new QueryBuilder(true, false);
+		QueryBuilder qb = new QueryBuilder(true);
 
 		List results = new ArrayList();
 		Hits hits = null;
@@ -2939,12 +2279,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				// Create the Lucene query
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
+				Query query = searchObject.getLuceneQuery(); // Get the query into a
+				// variable to avoid
+				// doing this very slow
+				// operation twice
+				if (logger.isDebugEnabled()) {
+					logger.debug("Query is in executeSearchQuery: "
+							+ query.toString());
+				}
 
 				// We have to figure out the size of the pool before building
 				// the buckets
-				Hits testHits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(), 
-						searchObject, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
-						0, maxBucketSize, top);
+				Hits testHits = luceneSession.search(query, searchObject
+						.getSortBy(), 0, maxBucketSize);
 				totalHits = testHits.getTotalHits();
 				if (totalHits > maxBucketSize) {
 					skipLength = testHits.getTotalHits() / maxBucketSize;
@@ -2958,8 +2305,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// variable to avoid
 				// doing this very slow
 				// operation twice
-				if (logger.isTraceEnabled()) {
-					logger.trace("Query in buildBinderVirtualTree: " + searchObject.toString());
+				if (logger.isDebugEnabled()) {
+					logger.debug("Query is: " + searchObject.toString());
 				}
 				// no order here
 				results = luceneSession.getSortedTitles(query, bucketSortKey, tuple1, tuple2,
@@ -2976,9 +2323,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				}
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
-				hits = SearchUtils.searchFolderOneLevelWithInferredAccess
-						(luceneSession, RequestContextHolder.getRequestContext().getUserId(), searchObject, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0,
-						-1, top);
+				Query query = searchObject.getLuceneQuery(); // Get the query into a
+				// variable to avoid
+				// doing this very slow
+				// operation twice
+				if (logger.isDebugEnabled()) {
+					logger.debug("Query is in executeSearchQuery: "
+							+ query.toString());
+				}
+				hits = luceneSession.search(query, searchObject.getSortBy(), 0,
+						-1);
 			}
 		} finally {
 			luceneSession.close();
@@ -3022,14 +2376,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return binderMap;
 	}
 
-	@Override
 	public SimpleName getSimpleName(String name) {
 		// Do we need access check here or not?
 		return getCoreDao().loadSimpleName(name.toLowerCase(),
 				RequestContextHolder.getRequestContext().getZoneId());
 	}
 
-	@Override
 	public SimpleName getSimpleNameByEmailAddress(String emailAddress) {
 		// Do we need access check here or not?
 		return getCoreDao().loadSimpleNameByEmailAddress(
@@ -3037,30 +2389,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				RequestContextHolder.getRequestContext().getZoneId());
 	}
 
-	@Override
-	public void addSimpleName(String name, Long binderId, String binderType) 
-			throws SimpleNameAlreadyExistsException {
+	public void addSimpleName(String name, Long binderId, String binderType) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageSimpleName);
 		SimpleName simpleName = new SimpleName(RequestContextHolder
 				.getRequestContext().getZoneId(), name.toLowerCase(), binderId,
 				binderType);
-
-		//Make sure this name doesn't map into an email address that is already in use
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		SimpleName testName = getCoreDao().loadSimpleNameByEmailAddress(simpleName.getEmailAddress(), zoneId);
-		if (testName != null) {
-			//A simple name with this email address already exists. Make sure it is the same as what we are trying to create
-			if (!testName.getId().equals(simpleName.getId())) {
-				//There is already a different simple name with the same email address. Reject this new one.
-				throw new SimpleNameAlreadyExistsException(testName.getName());
-			}
-		}
-		
 		getCoreDao().save(simpleName);
 	}
 
-	@Override
 	public void deleteSimpleName(String name) {
 		SimpleName simpleName = getCoreDao().loadSimpleName(name.toLowerCase(),
 				RequestContextHolder.getRequestContext().getZoneId());
@@ -3069,21 +2406,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		getCoreDao().delete(simpleName);
 	}
 
-	@Override
 	public List<SimpleName> getSimpleNames(Long binderId) {
 		return getCoreDao().loadSimpleNames(binderId,
 				RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
 	// no transaction
-	@Override
 	public void setBinderVersionsInherited(Long binderId, final Boolean binderVersionsInherited)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		if (binderVersionsInherited) {
 			getTransactionTemplate().execute(new TransactionCallback() {
-				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					binder.setVersionsInherited();
 					return binderVersionsInherited;
@@ -3093,7 +2427,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	//Get the versionsEnabled setting from the first binder it is set in up the ancestor chain
-	@Override
 	public Boolean getBinderVersionsEnabled(Binder binder) {
 		Boolean result = binder.getVersionsEnabled();
 		Binder parent = binder;
@@ -3110,13 +2443,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// no transaction
-	@Override
 	public void setBinderVersionsEnabled(Long binderId, final Boolean binderVersionsEnabled)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				binder.setVersionsEnabled(binderVersionsEnabled);
 				return binderVersionsEnabled;
@@ -3125,11 +2456,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
     //Get the versionsToKeep setting from the first binder it is set in up the ancestor chain
-    @Override
-	public Long getBinderVersionsToKeep(Binder binder) {
+    public Long getBinderVersionsToKeep(Binder binder) {
     	Boolean versionsEnabled = binder.getVersionsEnabled();
-    	if (Utils.checkIfFilr() || (versionsEnabled != null && !versionsEnabled)) {
-    		//Filr systems do not support versions in V1
+    	if (versionsEnabled != null && !versionsEnabled) {
     		//Versions have been explicitly turned off. Simulate no versions by returning 0
     		return 0L;
     	} else if (versionsEnabled != null && versionsEnabled) {
@@ -3145,13 +2474,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 		return result;
     }
-    @Override
-	public void setBinderVersionsToKeep(Long binderId, final Long binderVersionsToKeep)
+    public void setBinderVersionsToKeep(Long binderId, final Long binderVersionsToKeep)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				binder.setVersionsToKeep(binderVersionsToKeep);
 				return binderVersionsToKeep;
@@ -3160,7 +2487,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	//Get the versionsEnabled setting from the first binder it is set in up the ancestor chain
-	@Override
 	public Boolean getBinderVersionAgingEnabled(Binder binder) {
 		Boolean result = binder.getVersionAgingEnabled();
 		if (result == null) {
@@ -3171,13 +2497,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// no transaction
-	@Override
 	public void setBinderVersionAgingEnabled(Long binderId, final Boolean enabled)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				binder.setVersionAgingEnabled(enabled);
 				return enabled;
@@ -3186,18 +2510,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	//Get the versionAgingDays setting from the binder
-    @Override
-	public Long getBinderVersionAgingDays(Binder binder) {
+    public Long getBinderVersionAgingDays(Binder binder) {
     	return binder.getVersionAgingDays();
     }
 
-    @Override
-	public void setBinderVersionAgingDays(Long binderId, final Long binderVersionAgingDays)
+    public void setBinderVersionAgingDays(Long binderId, final Long binderVersionAgingDays)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				binder.setVersionAgingDays(binderVersionAgingDays);
 				return binderVersionAgingDays;
@@ -3206,33 +2527,28 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
     
 	//Routine to calculate the aging date for each file in a binder
-	@Override
 	public void setBinderFileAgingDates(Binder binder) {
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		loadBinderProcessor(binder).setFileAgingDates(binder);
 	}
 	
 	//Routines to set the branding
-    @Override
-	public void setBinderBranding(Long binderId, final String branding)
+    public void setBinderBranding(Long binderId, final String branding)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				binder.setBranding(branding);
 				return branding;
 			}
 		});
 	}
-    @Override
-	public void setBinderBrandingExt(Long binderId, final String brandingExt)
+    public void setBinderBrandingExt(Long binderId, final String brandingExt)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				binder.setBrandingExt(brandingExt);
 				return brandingExt;
@@ -3243,7 +2559,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 
 	//Get the maxFileSize setting from the first binder it is set in up the ancestor chain
-	@Override
 	public Long getBinderMaxFileSize(Binder binder) {
 		Long result = binder.getMaxFileSize();
 		Binder parent = binder;
@@ -3255,13 +2570,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return result;
 	}
 
-    @Override
-	public void setBinderMaxFileSize(Long binderId, final Long maxFileSize)
+    public void setBinderMaxFileSize(Long binderId, final Long maxFileSize)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				binder.setMaxFileSize(maxFileSize);
 				return maxFileSize;
@@ -3270,14 +2583,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// no transaction
-	@Override
 	public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		if (binderEncryptionInherited) {
 			getTransactionTemplate().execute(new TransactionCallback() {
-				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					binder.setFileEncryptionInherited();
 					return binderEncryptionInherited;
@@ -3286,7 +2597,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-	@Override
 	public Set<Long> getUnEncryptedBinderEntryIds(Long binderId, boolean onlyCheckEncryptedFolders) {
 		final Binder binder = loadBinder(binderId);
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -3296,8 +2606,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.SORTNUMBER_FIELD));
-		Map binderMap = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
-		Map binderMapDeleted = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, true);
+		Map binderMap = executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMapDeleted = executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, true);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderMapListDeleted = (List)binderMapDeleted.get(ObjectKeys.SEARCH_ENTRIES); 
@@ -3322,7 +2632,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	// no transaction
-	@Override
 	public void setBinderFileEncryptionEnabled(Long binderId, final Boolean fileEncryptionEnabled, 
 			FilesErrors errors) throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
@@ -3333,7 +2642,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				binder.setFileEncryptionEnabled(fileEncryptionEnabled);
 				return fileEncryptionEnabled;
@@ -3371,7 +2679,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	//Get the fileEncryption setting from the first folder it is set in up the ancestor chain
-	@Override
 	public Boolean isBinderFileEncryptionEnabled(Binder binder) {
 		Boolean result = binder.isFileEncryptionEnabled();
 		if (!result && binder.getFileEncryptionEnabled() == null) {
@@ -3388,13 +2695,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 
 	// no transaction
-	@Override
 	public void setPostingEnabled(Long binderId, final Boolean postingEnabled)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.modifyBinder);
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				binder.setPostingEnabled(postingEnabled);
 				return postingEnabled;
@@ -3402,7 +2707,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		});
 	}
 
-	@Override
 	public void export(Long binderId, Long entityId, OutputStream out,
 			Map options, Collection<Long> binderIds, Boolean noSubBinders, 
 			StatusTicket statusTicket, Map reportMap) throws Exception {
@@ -3415,7 +2719,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	}
 
-	@Override
 	public String filename8BitSingleByteOnly(FileAttachment attachment,
 			boolean _8BitSingleByteOnly) {
 		String fileName = attachment.getFileItem().getName();
@@ -3439,7 +2742,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-	@Override
 	public String filename8BitSingleByteOnly(String fileName, String fallbackName, 
 			boolean _8BitSingleByteOnly) {
 		if (!_8BitSingleByteOnly) {
@@ -3474,7 +2776,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-	@Override
 	public Long getZoneBinderId(Long binderId, String zoneUUID, String entityType) {
 		if (Validator.isNull(zoneUUID)) return binderId;
 		List<Long> ids = getCoreDao().findZoneEntityIds(binderId, zoneUUID, entityType);
@@ -3488,13 +2789,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	
 	// no transaction
 	protected void deleteBinderPhase1(Long binderId, final boolean deleteMirroredSource,
-			final Map options, final boolean createDbLogForTopBinderOnly) {
+			final Map options) {
 		final Binder top = loadBinder(binderId);
-		if (BinderHelper.isBinderSystemUserWS(top)) {
-			throw new NotSupportedException("errorcode.notsupported.deleteBinder.systemUserWS");
-		}
 		checkAccess(top, BinderOperation.deleteBinder);
-		List<Long> ids = new ArrayList();// maintain order, bottom up
 		Map params = new HashMap();
 		params.put("deleted", Boolean.FALSE);
 		// get list of ids, so don't have to load large trees all at once
@@ -3505,6 +2802,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 								+ "%' and deleted=:deleted order by x.binderKey.sortKey desc",
 						params);
 		// convert to list of ids
+		List<Long> ids = new ArrayList();// maintain order, bottom up
 		for (Object row[] : objs) {
 			ids.add((Long) row[0]);
 		}
@@ -3534,10 +2832,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 				final boolean doMirrored = deleteMirroredSourceForChildren;
 				getTransactionTemplate().execute(new TransactionCallback() {
-					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						loadBinderProcessor(child).deleteBinder(child,
-								doMirrored, options, (createDbLogForTopBinderOnly)? true:false);
+								doMirrored, options);
 						return null;
 					}
 				});
@@ -3553,13 +2850,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		}
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				BinderProcessor processor = loadBinderProcessor(top);
-				// Need to save reference to parent binder before it gets nullified.
-				Binder parentBinder = top.getParentBinder();
-				processor.deleteBinder(top, deleteMirroredSource, options, false);
-				processor.updateParentModTime(parentBinder, options);			
+				loadBinderProcessor(top).deleteBinder(top,
+						deleteMirroredSource, options);
 				return null;
 			}
 		});
@@ -3567,26 +2860,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	protected void deleteBinderPhase2() {
-		// Do NOT set this property to true (see bug 815697)
-		if(SPropsUtil.getBoolean("binder.delete.immediate", false)) {
+		if(SPropsUtil.getBoolean("binder.delete.immediate", true)) {
 			// Initiate the phase 2 of the process needed for deleting a binder hierarchy. 
 			// This part is executed asynchronously and we do not check its outcome.
 			getRunAsyncManager().execute(new RunAsyncCallback() {
-				@Override
 				public Object doAsynchronously() throws Exception {
 			    	FolderModule folderModule = (FolderModule)SpringContextUtil.getBean("folderModule");
 			    	folderModule.cleanupFolders();
 			    	return null;
 				}
-				@Override
 				public String toString() {
 					return "folderModule.cleanupFolders()";
 				}
-			}, RunAsyncManager.TaskType.MISC);
+			});
 		}
 	}
 
-	@Override
 	public void incrementFileMajorVersion(DefinableEntity entity, FileAttachment fileAtt) {
 		checkModifyFileAccess(entity);
 		getFileModule().incrementMajorFileVersion(entity, fileAtt);
@@ -3597,7 +2886,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-	@Override
 	public void setFileVersionNote(DefinableEntity entity, FileAttachment fileAtt, String text) {
 		checkModifyFileAccess(entity);
 		Description description = new Description(text);
@@ -3609,7 +2897,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-	@Override
 	public void promoteFileVersionCurrent(DefinableEntity entity, VersionAttachment va) {
 		checkModifyFileAccess(entity);
 		if(entity.getParentBinder().isMirrored()) return;
@@ -3621,7 +2908,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-	@Override
 	public void deleteFileVersion(Binder binder, DefinableEntity entity, FileAttachment fileAtt) {
 		checkDeleteFileAccess(entity);
 		FilesErrors errors = new FilesErrors();
@@ -3647,7 +2933,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-	@Override
 	public void setFileVersionStatus(DefinableEntity entity, FileAttachment fa, int status) {
 		checkModifyFileAccess(entity);
 		FileStatus fileStatus = FileStatus.valueOf(status);
@@ -3659,7 +2944,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-	@Override
 	public boolean isBinderEmpty(Binder binder) {
 		BinderProcessor processor = loadBinderProcessor(binder);
 		return processor.isFolderEmpty(binder);
@@ -3686,241 +2970,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			checkAccess((Binder)entity, BinderOperation.deleteBinder);
 		} else {
 			throw new AccessControlException();
-		}
-	}
-		
-	@Override
-    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder) {
-		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.	
-    	boolean preDeleted = false;
-    	boolean ignoreAcls = false;
-    	
-		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
-		SearchObject so = qb.buildQuery(crit.toQuery());
-		
-		Hits hits = executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinder);
-
-		return returnSearchQuery(hits);
-    }
-
-	@Override
-	public boolean testInferredAccessToBinder(User user, Binder binder) {
-		if(binder.noAclDredgedWithEntries()) {
-			// This binder is a net folder which does not store file ACLs in the search index.
-			// Consequently inferred access computation is not always possible with the information
-			// stored in the search index. Specifically, when user has access to a file but not
-			// to any of its ancestor folders, the search index would not be able to compute it.
-			// So we have to ask the file system directly.
-			AclResourceSession session = SearchUtils.openAclResourceSession(binder.getResourceDriver());
-			if(session == null)
-				return false; // cannot obtain session for the user
-			try {
-				session.setPath(binder.getResourcePath());
-				return session.isVisible();
-			}
-			finally {
-				session.close();
-			}
-		}
-		else {
-	       	//Create the Lucene query
-	    	QueryBuilder qb = new QueryBuilder(true, false);
-	    	String aclQueryStr = qb.buildAclClause();
-
-	    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
-	        
-	        try {
-	        	return luceneSession.testInferredAccessToNonNetFolder(user.getId(), aclQueryStr, binder.getPathName());
-	        }
-	        finally {
-	            luceneSession.close();
-	        }
-		}
-	}
-	
-	class IndexHelper implements Runnable {
-		
-		private StatusTicket statusTicket;
-		String[] nodeNames;
-		CacheMode cacheMode;
-		boolean clearAfter;
-		private IndexErrors errors;
-		private BinderToIndexQueue queue;
-		private RequestContext parentRequestContext;
-		
-		IndexHelper(StatusTicket statusTicket, String[] nodeNames, CacheMode cacheMode, boolean clearAfter, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext) {
-			this.statusTicket = statusTicket;
-			this.nodeNames = nodeNames;
-			this.cacheMode = cacheMode;
-			this.clearAfter = clearAfter;
-			this.errors = errors;
-			this.queue = queue;
-			this.parentRequestContext = parentRequestContext;
-		}
-
-		@Override
-		public void run() {
-			if(logger.isTraceEnabled())
-				logger.trace("Setting up Hibernate session");
-			SessionUtil.sessionStartup();	// Set up Hibernate session (for database)
-			try {
-				// Copy parent/calling thread's request context
-				if(logger.isTraceEnabled())
-					logger.trace("Setting up request context");
-				RequestContextHolder.setRequestContext(parentRequestContext);
-				try {
-					int indexFlushThreshold = SPropsUtil.getInt("lucene.flush.threshold", 100);
-					if(logger.isDebugEnabled())
-						logger.debug("Setting index flush threshold to " + indexFlushThreshold + " with IndexSynchronizationManagerInterceptor");
-					IndexSynchronizationManagerInterceptor.setThreshold(indexFlushThreshold);
-					try {
-						if(logger.isDebugEnabled())
-							logger.debug("Setting indexers to " + BinderModuleImpl.toString(nodeNames));
-						IndexSynchronizationManager.setNodeNames(nodeNames);
-						try {
-							CacheMode cacheModeOrig = SessionUtil.getCacheMode();
-							if(logger.isDebugEnabled())
-								logger.debug("Changing cache mode from " + cacheModeOrig + " to " + cacheMode);
-							SessionUtil.setCacheMode(cacheMode);
-	
-							BinderToIndex binderToIndex;
-							Binder binder;
-							while(true) {
-								try {
-									if(logger.isDebugEnabled())
-										logger.debug("Calling take() on the queue (size=" + queue.size() + ",putCount=" + queue.getPutCount() + ",takenCount=" + queue.getTakenCount() + ",totalExpectedCount=" + queue.getTotalExpectedCount() + ")");
-									binderToIndex = queue.take();
-									binder = binderToIndex.binder;
-									if(binder == null) {
-										// poison pill
-										if(logger.isDebugEnabled())
-											logger.debug("Encountered poison pill");
-										break; // done
-									}	
-									/*
-									if(logger.isTraceEnabled())
-										logger.trace("Attaching binder object (id=" + binder.getId() + ") to current session");
-									getCoreDao().update(binder);
-									*/
-						   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(queue.getTakenCount()), String.valueOf(queue.getTotalExpectedCount())}));				   	   		
-									if(logger.isDebugEnabled())
-										logger.debug("Indexing binder [" + binder.getPathName() + "]");
-						   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));								
-						   	    	IndexErrors binderErrors = processor.indexBinder(binder, true, false, binderToIndex.tags);
-						   	    	errors.add(binderErrors);					   	    	
-						   	    	// No need to evict the binder just indexed, since it is not associated with the Hibernate session owned by this thread.
-						   	    	
-									if(logger.isDebugEnabled())
-										logger.debug("Applying changes to index if applicable");
-							  		IndexSynchronizationManager.applyChanges(indexFlushThreshold);
-	
-							  		if(clearAfter) {
-							  			// Clear everything in the session
-						   	    		if(logger.isDebugEnabled())
-						   	    			logger.debug("Clearing Hibernate session");
-						   	    		getCoreDao().clear();
-						   	    	}
-							  		/*
-							  		else {
-							  			// Only evict the binder
-							  			if(logger.isDebugEnabled())
-							  				logger.debug("Evincting binder object (id=" + binder.getId() + ") from current session");
-							  			getCoreDao().evict(binder);
-							  		}
-							  		*/
-								} catch (InterruptedException e) {
-									Thread.currentThread().interrupt(); // Restore the interrupt
-									continue;
-								}
-							}
-							if(logger.isDebugEnabled())
-								logger.debug("Applying remaining changes to index if any");
-							IndexSynchronizationManager.applyChanges();
-							
-							if(logger.isDebugEnabled())
-								logger.debug("Restoring cache mode from " + cacheMode + " back to " + cacheModeOrig);
-							SessionUtil.setCacheMode(cacheModeOrig);
-						}
-						finally {
-							if(logger.isDebugEnabled())
-								logger.debug("Unsetting indexers");
-							IndexSynchronizationManager.clearNodeNames();
-						}
-					}
-					finally {
-						IndexSynchronizationManagerInterceptor.clearThreshold();	
-					}
-				}
-				finally {
-					if(logger.isTraceEnabled())
-						logger.trace("Clearing request context");
-					RequestContextHolder.clear();
-				}
-			}
-			finally {
-				if(logger.isTraceEnabled())
-					logger.trace("Tearing down Hibernate session");
-				SessionUtil.sessionStop();
-			}
-
-		}
-		
-	}
-	
-	static class BinderToIndex {
-		private Binder binder;
-		private List<Tag> tags;
-		BinderToIndex(Binder binder, List<Tag> tags) {
-			this.binder = binder;
-			this.tags = tags;
-		}
-	}
-
-	static class BinderToIndexQueue extends LinkedBlockingQueue<BinderToIndex> {
-		private static final long serialVersionUID = 1L;
-		
-		// Number of items put into the queue so far since creation of the queue
-		private AtomicInteger putCount = new AtomicInteger();
-		// Number of items taken from the queue so far since creation of the queue
-		private AtomicInteger takenCount = new AtomicInteger();
-		// Number of total items known to be put into the queue since creation of the queue.
-		// This includes both those items that have already been put into the queue and those
-		// that are yet to be put into the queue (i.e., future items).
-		private AtomicInteger totalExpectedCount = new AtomicInteger();
-		
-	    public BinderToIndexQueue(int capacity) {
-	    	super(capacity);
-	    }
-	    
-		@Override
-	    public void put(BinderToIndex binder) throws InterruptedException {
-	    	super.put(binder);
-	    	if(binder.binder != null)
-	    		putCount.incrementAndGet();
-	    }
-		
-		@Override
-		public BinderToIndex take() throws InterruptedException {
-			 BinderToIndex binder = super.take();
-			 if(binder.binder != null)
-				 takenCount.incrementAndGet();
-			 return binder;
-		}
-		
-		int getPutCount() {
-			return putCount.intValue();
-		}
-		
-		int getTakenCount() {
-			return takenCount.intValue();
-		}
-		
-		int getTotalExpectedCount() {
-			return totalExpectedCount.intValue();
-		}
-		
-		void incrementTotalExpectedCount(int delta) {
-			totalExpectedCount.addAndGet(delta);
 		}
 	}
 }

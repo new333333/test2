@@ -114,8 +114,7 @@ if (!window.ssSurvey) {
 		function ss_addQuestionHeader (questionContainer) {
 			var questionHeader = document.createElement('h4');
 			questionHeader.id = prefix + "questionHeader"+ss_questionsCounter;
-			if (1 == 1 || !usersHaveAlreadyVoted) {
-				//Show the links. But they will give an error message saying that you cannot move questions after anyone has voted
+			if (!usersHaveAlreadyVoted) {
 				var removerLink = document.createElement('a');
 				removerLink.href = "javascript: //;";
 				dojo.connect(removerLink, "onclick", ss_callRemoveQuestion(that, ss_questionsCounter));
@@ -353,9 +352,6 @@ if (!window.ssSurvey) {
 			}	
 			
 			var allowObj = dojo.byId(prefix + "_allowChange");		
-			var allowMultipleGuestVotesObj = dojo.byId(prefix + "_allowMultipleGuestVotes");		
-			//alert(allowMultipleGuestVotesObj)
-			//alert(allowMultipleGuestVotesObj.checked)
 			var inputObj = document.getElementById(inputId);
 			if (inputObj) {
 				inputObj.value = dojo.toJson(
@@ -364,8 +360,7 @@ if (!window.ssSurvey) {
 							'viewBeforeDueTime' : viewBeforeDueTime,
 							'viewAfterDueTime' : viewAfterDueTime,
 							'viewDetails' : viewDetails,
-							'allowChange' : allowObj && allowObj.checked,
-							'allowMultipleGuestVotes' : allowMultipleGuestVotesObj && allowMultipleGuestVotesObj.checked
+							'allowChange' : allowObj && allowObj.checked
 						}
 				);
 			}
@@ -403,11 +398,6 @@ if (!window.ssSurvey) {
 			rights = dojo.byId(prefix + "_allowChange");		
 			if (rights) {
 				rights.checked = currentSurvey.allowChange;
-			}
-			
-			rights = dojo.byId(prefix + "_allowMultipleGuestVotes");		
-			if (rights) {
-				rights.checked = currentSurvey.allowMultipleGuestVotes;
 			}
 		}		
 		

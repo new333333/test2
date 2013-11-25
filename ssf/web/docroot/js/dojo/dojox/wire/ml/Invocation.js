@@ -1,12 +1,19 @@
-//>>built
-define("dojox/wire/ml/Invocation",["dijit","dojo","dojox","dojo/require!dojox/wire/ml/Action"],function(_1,_2,_3){
-_2.provide("dojox.wire.ml.Invocation");
-_2.require("dojox.wire.ml.Action");
-_2.declare("dojox.wire.ml.Invocation",_3.wire.ml.Action,{object:"",method:"",topic:"",parameters:"",result:"",error:"",_run:function(){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.wire.ml.Invocation"]){
+dojo._hasResource["dojox.wire.ml.Invocation"]=true;
+dojo.provide("dojox.wire.ml.Invocation");
+dojo.require("dojox.wire.ml.Action");
+dojo.declare("dojox.wire.ml.Invocation",dojox.wire.ml.Action,{object:"",method:"",topic:"",parameters:"",result:"",error:"",_run:function(){
 if(this.topic){
-var _4=this._getParameters(arguments);
+var _1=this._getParameters(arguments);
 try{
-_2.publish(this.topic,_4);
+dojo.publish(this.topic,_1);
 this.onComplete();
 }
 catch(e){
@@ -14,46 +21,46 @@ this.onError(e);
 }
 }else{
 if(this.method){
-var _5=(this.object?_3.wire.ml._getValue(this.object):_2.global);
-if(!_5){
+var _2=(this.object?dojox.wire.ml._getValue(this.object):dojo.global);
+if(!_2){
 return;
 }
-var _4=this._getParameters(arguments);
-var _6=_5[this.method];
-if(!_6){
-_6=_5.callMethod;
-if(!_6){
+var _1=this._getParameters(arguments);
+var _3=_2[this.method];
+if(!_3){
+_3=_2.callMethod;
+if(!_3){
 return;
 }
-_4=[this.method,_4];
+_1=[this.method,_1];
 }
 try{
-var _7=false;
-if(_5.getFeatures){
-var _8=_5.getFeatures();
-if((this.method=="fetch"&&_8["dojo.data.api.Read"])||(this.method=="save"&&_8["dojo.data.api.Write"])){
-var _9=_4[0];
-if(!_9.onComplete){
-_9.onComplete=function(){
+var _4=false;
+if(_2.getFeatures){
+var _5=_2.getFeatures();
+if((this.method=="fetch"&&_5["dojo.data.api.Read"])||(this.method=="save"&&_5["dojo.data.api.Write"])){
+var _6=_1[0];
+if(!_6.onComplete){
+_6.onComplete=function(){
 };
 }
-this.connect(_9,"onComplete","onComplete");
-if(!_9.onError){
-_9.onError=function(){
+this.connect(_6,"onComplete","onComplete");
+if(!_6.onError){
+_6.onError=function(){
 };
 }
-this.connect(_9,"onError","onError");
-_7=true;
+this.connect(_6,"onError","onError");
+_4=true;
 }
 }
-var r=_6.apply(_5,_4);
-if(!_7){
-if(r&&(r instanceof _2.Deferred)){
-var _a=this;
-r.addCallbacks(function(_b){
-_a.onComplete(_b);
-},function(_c){
-_a.onError(_c);
+var r=_3.apply(_2,_1);
+if(!_4){
+if(r&&(r instanceof dojo.Deferred)){
+var _7=this;
+r.addCallbacks(function(_8){
+_7.onComplete(_8);
+},function(_9){
+_7.onError(_9);
 });
 }else{
 this.onComplete(r);
@@ -65,38 +72,38 @@ this.onError(e);
 }
 }
 }
-},onComplete:function(_d){
+},onComplete:function(_a){
 if(this.result){
-_3.wire.ml._setValue(this.result,_d);
+dojox.wire.ml._setValue(this.result,_a);
 }
 if(this.error){
-_3.wire.ml._setValue(this.error,"");
+dojox.wire.ml._setValue(this.error,"");
 }
-},onError:function(_e){
+},onError:function(_b){
 if(this.error){
-if(_e&&_e.message){
-_e=_e.message;
+if(_b&&_b.message){
+_b=_b.message;
 }
-_3.wire.ml._setValue(this.error,_e);
+dojox.wire.ml._setValue(this.error,_b);
 }
-},_getParameters:function(_f){
+},_getParameters:function(_c){
 if(!this.parameters){
-return _f;
+return _c;
 }
-var _10=[];
-var _11=this.parameters.split(",");
-if(_11.length==1){
-var _12=_3.wire.ml._getValue(_2.trim(_11[0]),_f);
-if(_2.isArray(_12)){
-_10=_12;
+var _d=[];
+var _e=this.parameters.split(",");
+if(_e.length==1){
+var _f=dojox.wire.ml._getValue(dojo.trim(_e[0]),_c);
+if(dojo.isArray(_f)){
+_d=_f;
 }else{
-_10.push(_12);
+_d.push(_f);
 }
 }else{
-for(var i in _11){
-_10.push(_3.wire.ml._getValue(_2.trim(_11[i]),_f));
+for(var i in _e){
+_d.push(dojox.wire.ml._getValue(dojo.trim(_e[i]),_c));
 }
 }
-return _10;
+return _d;
 }});
-});
+}

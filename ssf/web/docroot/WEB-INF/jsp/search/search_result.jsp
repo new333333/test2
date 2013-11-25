@@ -127,7 +127,6 @@ var ss_entryCount = 0;
 							
 									<!-- Search results navigation -->
 									<div class="ss_searchResult_header_top ssPageNavi">
-										<c:set var="ss_results_navigation_count" value="1"/>
 										<%@ include file="/WEB-INF/jsp/search/results_navigation.jsp" %>
 									</div>
 																
@@ -140,7 +139,6 @@ var ss_entryCount = 0;
 									<c:if test="${ss_pageNumber != 1 || ssPageEndIndex != ssTotalRecords}">
 										<!-- Search results navigation -->
 										<div class="ss_searchResult_header_bottom ssPageNavi">
-											<c:set var="ss_results_navigation_count" value="2"/>
 											<%@ include file="/WEB-INF/jsp/search/results_navigation.jsp" %>
 										</div>
 									</c:if>

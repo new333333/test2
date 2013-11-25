@@ -67,8 +67,6 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -120,6 +118,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	private Element rootConfigElement;
 	private String contextPath;
 	private String imagesPath;
+	private String brandingPrefix;
 	private DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
 	private Long binderId;
     private ProfileModule profileModule;
@@ -137,7 +136,11 @@ public class BuildDefinitionDivs extends TagSupport {
 			contextPath = MiscUtil.getFullStaticPath(req);
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 			
-			imagesPath = contextPath + "/images/";
+			String color_theme = user.getTheme();
+			if (color_theme == null || color_theme.equals("")) color_theme = "icib";
+			imagesPath = contextPath + "/i/" + color_theme;
+			brandingPrefix = SPropsUtil.getString("branding.prefix", "");
+			if (brandingPrefix.equals("")) brandingPrefix = "icecore"; //This default value should match ss_brand_prefix in brandedImagesPath.tag
 
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
@@ -553,7 +556,8 @@ public class BuildDefinitionDivs extends TagSupport {
 	}
 	//see if new item will meet uniqueness constaints
 	protected boolean testOption(Element item, Element sourceRoot, String name) {
-		if (!DefinitionHelper.checkIfMultipleAllowed(rootElement, configDocument.getRootElement())) return false;
+		if (item.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") && 
+				sourceRoot.selectSingleNode("//item[@name='"+name+"']") != null) return false;
 
 		if (rootElement == null) return true;
 
@@ -715,49 +719,17 @@ public class BuildDefinitionDivs extends TagSupport {
 								.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
 						sb.append("</div>");
 					
-					} else if (type.equals("selectbox") || type.startsWith("familySelectbox")|| 
-							type.equals("radio")) {
+					} else if (type.equals("selectbox") || type.equals("radio")) {
 						int optionCount = 0;
-						boolean selectedSeen = false;
-						if (type.equals("selectbox") || type.startsWith("familySelectbox")) {
+						if (type.equals("selectbox")) {
 							sb.append("<table>\n<tbody>\n<tr>\n<td>\n");
 							sb.append("<span class=\"ss_bold\">" + propertyConfigCaption + "</span>");
 							sb.append("\n</td>\n<td>\n");
 							//See if multiple selections are allowed
 							String multipleText = "";
 							String sizeText = "";
-							if (propertyConfig.selectNodes("option").size() > 1) {
-								int count = 0;
-								Iterator  itSelections = propertyConfig.elementIterator("option");
-								while (itSelections.hasNext()) {
-									Element selection = (Element) itSelections.next();
-									if (type.startsWith("familySelectbox") && 
-											Utils.checkIfFilr()) {
-										if (Utils.checkIfFilrFamily(type, selection.attributeValue("name", ""))) {
-											count++;
-											for (int i = 0; i < propertyValues.size(); i++) {
-												if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
-													//Remember that one of these properties is selected
-													selectedSeen = true;
-													break;
-												}
-											}
-										}
-									} else {
-										count++;
-										for (int i = 0; i < propertyValues.size(); i++) {
-											if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
-												//Remember that one of these properties is selected
-												selectedSeen = true;
-												break;
-											}
-										}
-									}
-								}
-								if (count > 0) {
-									sizeText = " size=\"" + String.valueOf(count) + "\"";
-								}
-							}
+							if (propertyConfig.selectNodes("option").size() > 1) 
+								sizeText = " size=\"" + String.valueOf(propertyConfig.selectNodes("option").size()) + "\"";
 							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
 							sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + sizeText + ">\n");
 						} else if (type.equals("radio")) {
@@ -780,24 +752,12 @@ public class BuildDefinitionDivs extends TagSupport {
 									propertyValueDefault.equals(selection.attributeValue("name", "")))) {
 								checked = " selected=\"selected\"";
 								if (type.equals("radio")) checked = " checked=\"checked\"";							}
-							if (type.equals("selectbox") || type.startsWith("familySelectbox")) {
-								boolean allowed = true;
-								if (type.startsWith("familySelectbox") && 
-										Utils.checkIfFilr()) {
-									allowed = Utils.checkIfFilrFamily(type, selection.attributeValue("name", ""));
-								}
-								if (allowed) {
-									if (!selectedSeen && checked.equals("")) {
-										//Nothing has been selected, so select the first one in the list
-										checked = " selected=\"selected\"";
-									}
-									selectedSeen = true;
-									sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
-									sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")))
-											.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
-									sb.append("</option>\n");
-									optionCount++;
-								}
+							if (type.equals("selectbox")) {
+								sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
+								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")))
+										.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+								sb.append("</option>\n");
+								optionCount++;
 							} else if (type.equals("radio")) {
 								sb.append("<tr><td valign='top'>\n");
 								sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
@@ -866,7 +826,7 @@ public class BuildDefinitionDivs extends TagSupport {
 											if (type.equals("radio")) checked = " checked=\"checked\"";
 										}
 
-										if (type.equals("selectbox") || type.startsWith("familySelectbox")) {
+										if (type.equals("selectbox")) {
 											sb.append("<option value=\"").append(entryFormItemNamePropertyName).append("\"").append(checked).append(">");
 											sb.append(NLT.getDef(entryFormItemCaptionPropertyValue));
 											sb.append("</option>\n");
@@ -885,7 +845,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							}
 						}
 						
-						if (type.equals("selectbox") || type.startsWith("familySelectbox")) {
+						if (type.equals("selectbox")) {
 							if (optionCount == 0) {
 								//No options were output, show something to avoid having an empty select box
 								sb.append("<option value=\"\">"+NLT.get("definition.noOptions")+"</option>\n");
@@ -939,7 +899,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("<label for=\"propertyId_" + 
 								propertyId + "\">" + propertyConfigCaption + "</label>");
 
-						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableReplyDefinitions(binderId);
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(binderId, Definition.FOLDER_ENTRY);
 						int size = defs.size();
 						if (size <= 0) size = 1;
 						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + 
@@ -983,7 +943,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 							sb.append(iconListValue);
 							sb.append("\"").append(checked).append("/>");
-							sb.append("<img alt=\"\" border=\"0\" src=\"").append(imagesPath).append(iconListValue).append("\"/>");
+							sb.append("<img alt=\"\" border=\"0\" src=\"").append(imagesPath + "/" + brandingPrefix).append(iconListValue).append("\"/>");
 							sb.append("<br/><br/>\n");
 						}
 					
@@ -1003,8 +963,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							map.put(user.getLocale().getDisplayName(user.getLocale()), user.getLocale());
 						}
 						Locale userLocale = null;
-			    		String language = LocaleUtils.getLocaleLanguage();
-			    		String country = LocaleUtils.getLocaleCountry();
+			    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+			    		String country = SPropsUtil.getString("i18n.default.locale.country", "");
 			    		if (!language.equals("")) {
 			    			if (!country.equals("")) userLocale = new Locale(language, country);
 			    			else userLocale = new Locale(language);

@@ -33,10 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.UrlWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 import com.google.gwt.http.client.URL;
 
 /**
@@ -97,23 +93,6 @@ public class LinkToUrlConfig extends ConfigItem
 	{
 		// Nothing to do.
 	}// end addChild()
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		return new UrlWidget( this, widgetStyles );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public LinkToUrlDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new LinkToUrlDropWidget( lpe, this );
-	}
 	
 	
 	/**

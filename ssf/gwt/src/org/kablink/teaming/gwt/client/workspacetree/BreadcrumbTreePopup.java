@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,35 +32,30 @@
  */
 package org.kablink.teaming.gwt.client.workspacetree;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
-import com.google.web.bindery.event.shared.HandlerRegistration;
+
 
 /**
  * Class used to drive the display of the WorkspaceTreeControl,
  * typically used for Teaming's bread crumbs.
  * 
  * @author drfoster@novell.com
+ *
  */
 public class BreadcrumbTreePopup extends TeamingPopupPanel
 	implements
 	// Event handlers implemented by this class.
 		BrowseHierarchyExitEvent.Handler
 {
-	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Miscellaneous events.
 		TeamingEvents.BROWSE_HIERARCHY_EXIT,
 	};
@@ -73,38 +68,17 @@ public class BreadcrumbTreePopup extends TeamingPopupPanel
 	 * @param modal
 	 */
 	public BreadcrumbTreePopup(boolean autoHide, boolean modal) {
-		// Initialize the super class.
 		super(autoHide, modal);
+		
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
 	}
 	
 	public BreadcrumbTreePopup(boolean autoHide) {
 		// Always use the initial form of the constructor.
 		this(autoHide, false);
-	}
-
-	/**
-	 * Called when the panel is attached.
-	 * 
-	 * Overrides the Widget.onAttach() method.
-	 */
-	@Override
-	public void onAttach() {
-		// Attach the widget and register the event handlers.
-		super.onAttach();
-		registerEvents();
-	}
-	
-	/**
-	 * Called when the panel is detached.
-	 * 
-	 * Overrides the Widget.onDetach() method.
-	 */
-	@Override
-	public void onDetach() {
-		// Let the widget detach and then unregister our event
-		// handlers.
-		super.onDetach();
-		unregisterEvents();
 	}
 
 	/**
@@ -117,39 +91,5 @@ public class BreadcrumbTreePopup extends TeamingPopupPanel
 	@Override
 	public void onBrowseHierarchyExit( final BrowseHierarchyExitEvent event ) {
 		hide();
-	}
-	
-	/*
-	 * Registers any global event handlers that need to be registered.
-	 */
-	private void registerEvents() {
-		// If we having allocated a list to track events we've
-		// registered yet...
-		if (null == m_registeredEventHandlers) {
-			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		}
-		
-		// If the list of registered events is empty...
-		if (m_registeredEventHandlers.isEmpty()) {
-			// ...register the events.
-			EventHelper.registerEventHandlers(
-				GwtTeaming.getEventBus(),
-				REGISTERED_EVENTS,
-				this,
-				m_registeredEventHandlers);
-		}
-	}
-	
-	/*
-	 * Unregisters any global event handlers that may be registered.
-	 */
-	private void unregisterEvents() {
-		// If we have a non-empty list of registered events...
-		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
-			// ...unregister them.  (Note that this will also empty the
-			// ...list.)
-			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-		}
-	}
+	}	
 }

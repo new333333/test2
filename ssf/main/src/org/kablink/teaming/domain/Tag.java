@@ -1,5 +1,5 @@
 /**
-\ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -94,7 +94,7 @@ public class Tag extends ZonedObject {
     public void setOwnerIdentifier(EntityIdentifier ownerId) {
     	this.ownerId = ownerId;
     }
-	public boolean isOwner(EntityIdentifiable entity) {
+	public boolean isOwner(DefinableEntity entity) {
  		if (entity == null) return false;
  		if (entity.getEntityIdentifier().equals(ownerId)) return true;
  		return false;

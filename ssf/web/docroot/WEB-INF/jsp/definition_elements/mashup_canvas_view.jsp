@@ -70,12 +70,12 @@
 </script>
 
 <div 
-<c:if test="${empty ss_mashupBGColor}">class="ss_mashup_canvas_view"</c:if>
+  <c:if test="${empty ss_mashupBGColor}">class="ss_mashup_canvas_view</c:if>
 >
   <c:if test="${ssConfigJspStyle != 'mobile'}">
-	<div id="ss_mashup_canvas_print" style="position: absolute; right: 7px; top: 7px;">
+	<div id="ss_mashup_canvas_print" style="position: relative;">
 		&nbsp;
-		<a style="background: transparent !important;" class="ss_actions_bar13_pane_none" href="javascript: window.print();">
+		<a style="position: absolute; right: 10px; top: 2px;" class="ss_actions_bar13_pane_none" href="javascript: window.print();">
 			<img border="0" 
 	      		 alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
 	      		 src="<html:rootPath/>images/pics/masthead/masthead_printer.png" border="0" align="absmiddle" />

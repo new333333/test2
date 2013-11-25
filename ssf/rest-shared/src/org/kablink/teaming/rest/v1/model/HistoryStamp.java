@@ -35,40 +35,38 @@ package org.kablink.teaming.rest.v1.model;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author jong
  *
  */
-@XmlRootElement (name="history_stamp")
+@XmlRootElement
 public class HistoryStamp {
 
-	private LongIdLinkPair principal;
+	private Long principalId;
 	private Calendar date;
 	
 	private HistoryStamp() {}
 	
-	public HistoryStamp(LongIdLinkPair principal, Calendar date) {
-		this.principal = principal;
+	public HistoryStamp(Long principalId, Calendar date) {
+		this.principalId = principalId;
 		this.date = date;
 	}
-
-	public HistoryStamp(LongIdLinkPair principal, Date date) {
-		this.principal = principal;
+	
+	public HistoryStamp(Long principalId, Date date) {
+		this.principalId = principalId;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		this.date = cal;
 	}
 
-    @XmlElement(name="principal")
-	public LongIdLinkPair getPrincipal() {
-		return principal;
+	public Long getPrincipalId() {
+		return principalId;
 	}
 
-	public void setPrincipal(LongIdLinkPair principal) {
-		this.principal = principal;
+	public void setPrincipalId(Long principalId) {
+		this.principalId = principalId;
 	}
 
 	public Calendar getDate() {

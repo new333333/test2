@@ -34,17 +34,17 @@ package org.kablink.teaming.spring.security.ldap;
 
 import org.kablink.util.StringUtil;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.security.ldap.authentication.AbstractLdapAuthenticator;
-import org.springframework.security.web .authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.Authentication;
+import org.springframework.security.BadCredentialsException;
+import org.springframework.security.ldap.SpringSecurityContextSource;
+import org.springframework.security.providers.ldap.authenticator.AbstractLdapAuthenticator;
+import org.springframework.security.providers.preauth.PreAuthenticatedAuthenticationToken;
 
 import org.springframework.util.Assert;
 
 public class PreAuthenticatedAuthenticator extends AbstractLdapAuthenticator {
 
-    public PreAuthenticatedAuthenticator(LdapContextSource contextSource) {
+    public PreAuthenticatedAuthenticator(SpringSecurityContextSource contextSource) {
         super(contextSource);
     }
 

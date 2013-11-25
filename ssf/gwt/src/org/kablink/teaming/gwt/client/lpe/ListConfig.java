@@ -35,10 +35,6 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.widgets.ListWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.http.client.URL;
 
@@ -56,14 +52,13 @@ public class ListConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public ListConfig( String configStr, String landingPageStyle )
+	public ListConfig( String configStr )
 	{
 		int i;
 		String[] propsStr;
 		
 		m_properties = new ListProperties();
 		m_configItems = new ArrayList<ConfigItem>();
-		setLandingPageStyle( landingPageStyle );
 
 		// Split the string "listStart,showBorder=1,title=xxx" into its parts.
 		propsStr = configStr.split( "[,;]" );
@@ -215,26 +210,6 @@ public class ListConfig extends ConfigItem
 	{
 		m_configItems.add( configItem );
 	}// end addChild()
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		ListWidget listWidget;
-		
-		listWidget = new ListWidget( this, widgetStyles );
-		return listWidget;
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public ListDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new ListDropWidget( lpe, this );
-	}
 	
 	
 	/**

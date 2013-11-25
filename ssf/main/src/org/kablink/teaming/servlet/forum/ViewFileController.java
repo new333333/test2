@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,18 +32,20 @@
  */
 package org.kablink.teaming.servlet.forum;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.activation.FileTypeMap;
+import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -51,17 +53,16 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
-import org.kablink.teaming.module.shared.FileUtils;
+import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.BrowserSniffer;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
@@ -69,12 +70,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 
-/**
- * ?
- * 
- * @author ?
- */
+import org.apache.commons.lang.StringUtils;
+
 public class ViewFileController extends SAbstractController {
+	
 	private FileTypeMap mimeTypes;
 
 	protected FileTypeMap getFileTypeMap() {
@@ -84,7 +83,6 @@ public class ViewFileController extends SAbstractController {
 		this.mimeTypes = mimeTypes;
 	}
 	
-	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
@@ -101,18 +99,7 @@ public class ViewFileController extends SAbstractController {
 		if (viewType.equals(WebKeys.FILE_VIEW_TYPE_UPLOAD_FILE)) {
 			//This is a request to view a recently uploaded file in the temp area
 			String shortFileName = WebHelper.getFileName(fileId);	
-			String contentType = getFileTypeMap().getContentType(shortFileName);
-			
-			//Protect against XSS attacks if this is an HTML file
-			contentType = FileUtils.validateDownloadContentType(contentType);
-
-			if (!(contentType.toLowerCase().contains("charset"))) {
-				String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
-				if (MiscUtil.hasString(encoding)) {
-					contentType += ("; charset=" + encoding);
-				}
-			}
-			response.setContentType(contentType);
+			response.setContentType(mimeTypes.getContentType(shortFileName));
 			response.setHeader("Cache-Control", "private");
 			String attachment = "attachment; ";
 			response.setHeader(
@@ -127,15 +114,7 @@ public class ViewFileController extends SAbstractController {
 			}
 			response.getOutputStream().flush();
 			
-		}
-		else if ( viewType.equalsIgnoreCase( "executeJspResults" ) )
-		{
-			String fullPath;
-			
-			fullPath = ServletRequestUtils.getStringParameter( request, "fullPath", ""); 
-			streamExecuteJspResults( request, response, fileId, fullPath );
-		}
-		else {
+		} else {
 			String strBinderId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 			String strEntryId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			Long entryId = null;
@@ -229,7 +208,7 @@ public class ViewFileController extends SAbstractController {
 					return null;
 				}
 				catch(Exception e) {
-					String url = WebUrlUtil.getServletRootURL(request);
+					String url = WebUrlUtil.getServletRootURL(request, false);
 					url += "errorHandler";
 					String eMsg = e.getLocalizedMessage();
 					if (eMsg == null) eMsg = e.toString();
@@ -276,18 +255,7 @@ public class ViewFileController extends SAbstractController {
 			else
 			if (fa != null) {
 				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-				String contentType = mimeTypes.getContentType(shortFileName);
-				//Protect against XSS attacks if this is an HTML file
-				contentType = FileUtils.validateDownloadContentType(contentType);
-
-				if (!(contentType.toLowerCase().contains("charset"))) {
-					String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
-					if (MiscUtil.hasString(encoding)) {
-						contentType += ("; charset=" + encoding);
-					}
-				}
-				
-				response.setContentType(contentType);
+				response.setContentType(mimeTypes.getContentType(shortFileName));
 				response.setHeader("Cache-Control", "private");
 				if (fileTime.equals("")) {
 					response.setHeader("Cache-Control", "private");
@@ -330,7 +298,7 @@ public class ViewFileController extends SAbstractController {
 						getReportModule().addFileInfo(AuditType.download, fa);
 					}
 					catch(Exception e) {
-						response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getLocalizedMessage());
+						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 					}
 				}
 
@@ -342,52 +310,6 @@ public class ViewFileController extends SAbstractController {
 		}
 		return null;
 	}
-
-	/**
-	 * 
-	 */
-	private void streamExecuteJspResults( HttpServletRequest request, HttpServletResponse response, String fileName, String fullPath )
-		throws Exception
-	{
-		int n;
-		byte[] buf = new byte[1024];
-		
-		java.io.InputStream in = null;
-		try {
-			OutputStream out;
-			File tmpFile;
-
-			tmpFile = new File( fullPath );
-			in = new FileInputStream( tmpFile );
-			// in = TempFileUtil.openTempFile( fileName );
-			
-			response.setHeader( "Cache-Control", "private" );
-			out = response.getOutputStream();
-			while( (n = in.read(buf, 0, buf.length)) > 0 )
-			{
-				out.write( buf, 0, n );
-			}
-			in.close();
-			in = null;
-			
-		} catch( Exception e ) {
-			response.getOutputStream().print( NLT.get( "file.error" ) + ": " + e.getLocalizedMessage() );
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch(Exception e) {}
-			}
-		}
-
-		try
-		{
-			response.getOutputStream().flush();
-		}
-		catch(Exception ignore)
-		{
-		}
-	}
 	
 	private void streamZipFile(HttpServletRequest request,
             				   HttpServletResponse response,
@@ -397,9 +319,8 @@ public class ViewFileController extends SAbstractController {
 		int n;
 		byte[] buf = new byte[1024];
 		
-		java.io.InputStream in = null;
 		try {
-			in = TempFileUtil.openTempFile(fileId);
+			java.io.InputStream in = TempFileUtil.openTempFile(fileId);
 
 			response.setContentType("application/zip");
 			response.setHeader("Cache-Control", "private");
@@ -414,16 +335,9 @@ public class ViewFileController extends SAbstractController {
 				out.write(buf, 0, n);
 			}
 			in.close();
-			in = null;
 			
 		} catch(Exception e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getLocalizedMessage());
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch(Exception e) {}
-			}
+			response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 		}
 
 		try {

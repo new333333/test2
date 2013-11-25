@@ -63,38 +63,29 @@
     <c:set var="mashupBinderId" value="${mashupBinder.id}"/>
   </c:if>
 </c:if>
-<style>
-.tasks {
-	background: #FFF;
-	border-collapse: collapse;
-	color: #000;
-	margin: 1em 0 1em;
-	table-layout: fixed;
-}
+<c:set var="mWidth" value="" />
+<c:set var="mHeight" value="" />
+<c:set var="mOverflow" value="" />
+<c:if test="${!empty mashup_attributes['width']}">
+  <c:set var="mWidth" >width: ${mashup_attributes['width']};</c:set>
+</c:if>
+<c:if test="${!empty mashup_attributes['height']}">
+  <c:set var="mHeight" >height: ${mashup_attributes['height']};</c:set>
+</c:if>
+<c:if test="${!empty mashup_attributes['overflow']}">
+  <c:set var="mOverflow" >overflow: ${mashup_attributes['overflow']};</c:set>
+</c:if>
 
-.tasks td {
-	padding: .3em .5em;
-	text-align: left;
-	vertical-align: top;
-	border: 1px solid #cecece;
-	color: #000;
-}
-
-.tasks th {
-	font-weight: normal;
-	padding: .3em .5em;
-	text-align: left;
-	vertical-align: top;
-	border: 1px solid #cecece;
-	color: #000;
-}
-</style>
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupBinder}">
 <li>
 </c:if>
 <% } %>
-<div class="ss_mashup_element">
+<div class="ss_mashup_element"
+  <c:if test="${ssConfigJspStyle != 'form'}">
+    style="${mWidth} overflow: hidden;"
+  </c:if>
+>
     <div class="ss_mashup_round_top"><div></div></div>
 	<div class="ss_mashup_folder_header_view">
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
@@ -112,75 +103,83 @@
 	
 	</div>
 
-	<div class="ss_mashup_folder_list_open">
+  <div class="ss_mashup_folder_list_open" style="${mHeight} ${mOverflow}">
 
 
   <div class="folders">
     
 	  <c:if test="${!empty ss_mashupBinderEntries[mashupBinderId]}">
-			  <div class="entry-content">
-			    <table class="tasks" cellspacing="2" cellpadding="5">
-				  <tr>
-					<th class="entry-caption" valign="top" nowrap>
+			  <div class="ss_task_list_container">
+			    <table class="ss_tasks_list" style="text-align: left;">
+				  <tr class="columnhead">
+					<td valign="top" nowrap>
 					  <ssf:nlt tag="general.title"/>
-					</th>
+					</td>
 
-					<th class="entry-caption" valign="top" nowrap>
-					  <ssf:nlt tag="task.dueDate"/>
-					</th>
-
-					<th class="entry-caption" valign="top" nowrap>
+					<td valign="top" nowrap>
 					  <ssf:nlt tag="task.priority"/>
-					</th>
+					</td>
 
-					<th class="entry-caption" valign="top" nowrap>
+					<td valign="top" nowrap>
+					  <ssf:nlt tag="task.dueDate"/>
+					</td>
+
+					<td valign="top" nowrap>
 					  <ssf:nlt tag="task.status"/>
-					</th>
+					</td>
 
-					<th class="entry-caption" valign="top" nowrap>
+					<td valign="top" nowrap>
 					  <ssf:nlt tag="task.done"/>
-					</th>
+					</td>
 
-					<th class="entry-caption" valign="top" nowrap>
+					<td valign="top" nowrap>
 					  <ssf:nlt tag="task.assigned"/>
-					</th>
+					</td>
+
+					<td valign="top" nowrap>
+					  <ssf:nlt tag="task.location"/>
+					</td>
 
 				  </tr>
 	    		<c:forEach var="entryFol2" items="${ss_mashupBinderEntries[mashupBinderId]}">
 	    			<jsp:useBean id="entryFol2" type="java.util.Map" />
 			  		  	  
 				  <tr>
-					<td class="entry-element" valign="top">
-					  <div class="entry">
-			  			<div class="entry-title">
+					<td class="ss_entryTitle">
+							
 						<ssf:titleLink 
-							action="view_folder_entry" 
 							entryId="${entryFol2._docId}" binderId="${entryFol2._binderId}" 
-							entityType="${entryFol2._entityType}"  
-							namespace="${renderResponse.namespace}" >		
+							entityType="${entryFol2._entityType}" >
+								<ssf:param name="url" useBody="true">
+									<ssf:url adapter="true" portletName="ss_forum" folderId="${entryFol2._binderId}" 
+									action="view_folder_entry" entryId="${entryFol2._docId}" actionUrl="true" />
+								</ssf:param>
 							
-							<ssf:param name="url" useBody="true">
-								<ssf:url crawlable="true" adapter="true" 
-								portletName="ss_forum" folderId="${entryFol2._binderId}" 
-								action="view_folder_entry" entryId="${entryFol2._docId}" actionUrl="true" />
-							</ssf:param>
-							
-							<c:out value="${entryFol2.title}" escapeXml="false"/>
+								<c:out value="${entryFol2.title}" escapeXml="false"/>
 						</ssf:titleLink>
-						<c:if test="${!empty entryFol2._totalReplyCount}">
-			    		          <span style="padding-left:6px;">(${entryFol2._totalReplyCount})</span>
-			  		        </c:if>
-			  		  </div>
-			  		  
-			  		  <c:if test="${!empty entryFol2._desc}">
-			    		    <div style="padding-left:10px;" class="ss_smallprint">
-			    		      <ssf:textFormat 
-			      	  		formatAction="limitedDescription" 
-			          		textMaxWords="10"><ssf:markup search="${entryFol2}" >${entryFol2._desc}</ssf:markup></ssf:textFormat>
-		  	    		      <div class="ss_clear"></div>
-		  	    		    </div>
-			  		  </c:if>
-                                        </td>
+					</td>
+
+					<td class="ss_iconsContainer"  style="text-align: center;" valign="top">
+					  <c:set var="priText" value=""/>
+					  <c:if test="${entryFol2.priority == 'p1'}">
+					    <c:set var="priText"><ssf:nlt tag="__task_priority_critical"/></c:set>
+					  </c:if>
+					  <c:if test="${entryFol2.priority == 'p2'}">
+					    <c:set var="priText"><ssf:nlt tag="__task_priority_high"/></c:set>
+					  </c:if>
+					  <c:if test="${entryFol2.priority == 'p3'}">
+					    <c:set var="priText"><ssf:nlt tag="__task_priority_medium"/></c:set>
+					  </c:if>
+					  <c:if test="${entryFol2.priority == 'p4'}">
+					    <c:set var="priText"><ssf:nlt tag="__task_priority_low"/></c:set>
+					  </c:if>
+					  <c:if test="${entryFol2.priority == 'p5'}">
+					    <c:set var="priText"><ssf:nlt tag="__task_priority_least"/></c:set>
+					  </c:if>
+					  <img src="<html:imagesPath/>icons/prio_${entryFol2.priority}.png"	
+					  alt="${priText}" title="${priText}"
+					  class="ss_taskPriority" />
+					</td>
 
 					<td class="entry-element" valign="top">
 						<c:if test="${!empty entryFol2['start_end#LogicalEndDate']}">
@@ -204,40 +203,26 @@
 						</c:if>
 					</td>
 
-					<td class="entry-element" valign="top">
-					  <c:if test="${entryFol2.priority == 'p1'}">
-					    <span><ssf:nlt tag="__task_priority_critical"/></span>
-					  </c:if>
-					  <c:if test="${entryFol2.priority == 'p2'}">
-					    <span><ssf:nlt tag="__task_priority_high"/></span>
-					  </c:if>
-					  <c:if test="${entryFol2.priority == 'p3'}">
-					    <span><ssf:nlt tag="__task_priority_medium"/></span>
-					  </c:if>
-					  <c:if test="${entryFol2.priority == 'p4'}">
-					    <span><ssf:nlt tag="__task_priority_low"/></span>
-					  </c:if>
-					  <c:if test="${entryFol2.priority == 'p5'}">
-					    <span><ssf:nlt tag="__task_priority_least"/></span>
-					  </c:if>
-					</td>
-
-					<td class="entry-element" valign="top">
+					<td class="ss_iconsContainer"  style="text-align: center;">
+					  <c:set var="statusText" value=""/>
 					  <c:if test="${entryFol2.status == 's1'}">
-					    <span><ssf:nlt tag="__task_status_needs_action"/></span>
+					    <c:set var="statusText"><ssf:nlt tag="__task_status_needs_action"/></c:set>
 					  </c:if>
 					  <c:if test="${entryFol2.status == 's2'}">
-					    <span><ssf:nlt tag="__task_status_in_process"/></span>
+					    <c:set var="statusText"><ssf:nlt tag="__task_status_in_process"/></c:set>
 					  </c:if>
 					  <c:if test="${entryFol2.status == 's3'}">
-					    <span><ssf:nlt tag="__task_status_completed"/></span>
+					    <c:set var="statusText"><ssf:nlt tag="__task_status_completed"/></c:set>
 					  </c:if>
 					  <c:if test="${entryFol2.status == 's4'}">
-					    <span><ssf:nlt tag="__task_status_cancelled"/></span>
+					    <c:set var="statusText"><ssf:nlt tag="__task_status_cancelled"/></c:set>
 					  </c:if>
+					  <img src="<html:imagesPath/>icons/status_${entryFol2.status}.png" 
+					    class="ss_taskStatus" alt="${statusText}" 
+					    title="${statusText}" />
 					</td>
 
-					<td class="entry-element" valign="top">
+					<td class="ss_iconsContainer"  style="text-align: center;" valign="top">
 					  <c:if test="${entryFol2.completed == 'c000'}">
 					    <span>0%</span>
 					  </c:if>
@@ -298,11 +283,22 @@
 						</c:if>									
 					</td>
 					
+					<td class="entry-element" valign="top">
+						<c:set var="path" value=""/>
+			
+						<c:if test="${!empty ss_mashupBinders[entryFol2._binderId]}">
+							<c:set var="path" value="${ss_mashupBinders[entryFol2._binderId]}"/>
+							<c:set var="title" value="${ss_mashupBinders[entryFol2._binderId].title} (${ss_mashupBinders[entryFol2._binderId].parentWorkArea.title})"/>
+				    		<a href="javascript: ;"
+								onclick="return ss_gotoPermalink('${entryFol2._binderId}', '${entryFol2._binderId}', 'folder', '', 'yes');"
+								title="${path}"
+								><span>${ss_mashupBinders[entryFol2._binderId].title}</span></a>
+							<span class="ss_smallprint"> (${ss_mashupBinders[entryFol2._binderId].parentWorkArea.title})</span>
+						</c:if>
+					</td>
+					
 				  </tr>
-		 
-		  	  		
-	    	</div>
-		</c:forEach>
+				</c:forEach>
 			    </table>
 			  </div>
 	  </c:if>
@@ -313,12 +309,8 @@
 	</div>
   </div>
 
-
-
-
-
-</div>
 <div class="ss_mashup_round_bottom"><div></div></div>
+</div>
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupBinder}">
 </li>

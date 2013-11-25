@@ -1,19 +1,29 @@
-//>>built
-define("dojox/layout/ScrollPane",["dojo/_base/kernel","dojo/_base/declare","dojo/_base/html","dojo/_base/fx","dijit/_Templated","dijit/layout/ContentPane","dojo/dom-class","dojo/text!./resources/ScrollPane.html"],function(_1,_2,_3,_4,_5,_6,_7,_8){
-_1.experimental("dojox.layout.ScrollPane");
-var _9=_2("dojox.layout.ScrollPane",[_6,_5],{_line:null,_lo:null,_offset:15,orientation:"vertical",autoHide:true,templateString:_8,resize:function(_a){
-if(_a){
-if(_a.h){
-_3.style(this.domNode,"height",_a.h+"px");
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.layout.ScrollPane"]){
+dojo._hasResource["dojox.layout.ScrollPane"]=true;
+dojo.provide("dojox.layout.ScrollPane");
+dojo.experimental("dojox.layout.ScrollPane");
+dojo.require("dijit.layout.ContentPane");
+dojo.require("dijit._Templated");
+dojo.declare("dojox.layout.ScrollPane",[dijit.layout.ContentPane,dijit._Templated],{_line:null,_lo:null,_offset:15,orientation:"vertical",autoHide:true,templateString:dojo.cache("dojox.layout","resources/ScrollPane.html","<div class=\"dojoxScrollWindow\" dojoAttachEvent=\"onmouseenter: _enter, onmouseleave: _leave\">\n    <div class=\"dojoxScrollWrapper\" style=\"${style}\" dojoAttachPoint=\"wrapper\" dojoAttachEvent=\"onmousemove: _calc\">\n\t<div class=\"dojoxScrollPane\" dojoAttachPoint=\"containerNode\"></div>\n    </div>\n    <div dojoAttachPoint=\"helper\" class=\"dojoxScrollHelper\"><span class=\"helperInner\">|</span></div>\n</div>\n"),resize:function(_1){
+if(_1){
+if(_1.h){
+dojo.style(this.domNode,"height",_1.h+"px");
 }
-if(_a.w){
-_3.style(this.domNode,"width",_a.w+"px");
+if(_1.w){
+dojo.style(this.domNode,"width",_1.w+"px");
 }
 }
-var _b=this._dir,_c=this._vertical,_d=this.containerNode[(_c?"scrollHeight":"scrollWidth")];
-_3.style(this.wrapper,this._dir,this.domNode.style[this._dir]);
-this._lo=_3.coords(this.wrapper,true);
-this._size=Math.max(0,_d-this._lo[(_c?"h":"w")]);
+var _2=this._dir,_3=this._vertical,_4=this.containerNode[(_3?"scrollHeight":"scrollWidth")];
+dojo.style(this.wrapper,this._dir,this.domNode.style[this._dir]);
+this._lo=dojo.coords(this.wrapper,true);
+this._size=Math.max(0,_4-this._lo[(_3?"h":"w")]);
 if(!this._size){
 this.helper.style.display="none";
 this.wrapper[this._scroll]=0;
@@ -21,19 +31,19 @@ return;
 }else{
 this.helper.style.display="";
 }
-this._line=new _4._Line(0-this._offset,this._size+(this._offset*2));
-var u=this._lo[(_c?"h":"w")],r=Math.min(1,u/_d),s=u*r,c=Math.floor(u-(u*r));
-this._helpLine=new _4._Line(0,c);
-_3.style(this.helper,_b,Math.floor(s)+"px");
+this._line=new dojo._Line(0-this._offset,this._size+(this._offset*2));
+var u=this._lo[(_3?"h":"w")],r=Math.min(1,u/_4),s=u*r,c=Math.floor(u-(u*r));
+this._helpLine=new dojo._Line(0,c);
+dojo.style(this.helper,_2,Math.floor(s)+"px");
 },postCreate:function(){
 this.inherited(arguments);
 if(this.autoHide){
-this._showAnim=_4._fade({node:this.helper,end:0.5,duration:350});
-this._hideAnim=_4.fadeOut({node:this.helper,duration:750});
+this._showAnim=dojo._fade({node:this.helper,end:0.5,duration:350});
+this._hideAnim=dojo.fadeOut({node:this.helper,duration:750});
 }
 this._vertical=(this.orientation=="vertical");
 if(!this._vertical){
-_7.add(this.containerNode,"dijitInline");
+dojo.addClass(this.containerNode,"dijitInline");
 this._dir="width";
 this._edge="left";
 this._scroll="scrollLeft";
@@ -45,13 +55,13 @@ this._scroll="scrollTop";
 if(this._hideAnim){
 this._hideAnim.play();
 }
-_3.style(this.wrapper,"overflow","hidden");
+dojo.style(this.wrapper,"overflow","hidden");
 },_set:function(n){
 if(!this._size){
 return;
 }
 this.wrapper[this._scroll]=Math.floor(this._line.getValue(n));
-_3.style(this.helper,this._edge,Math.floor(this._helpLine.getValue(n))+"px");
+dojo.style(this.helper,this._edge,Math.floor(this._helpLine.getValue(n))+"px");
 },_calc:function(e){
 if(!this._lo){
 this.resize();
@@ -69,6 +79,4 @@ if(this._hideAnim){
 this._hideAnim.play();
 }
 }});
-return _9;
-});
-require({cache:{"url:dojox/layout/resources/ScrollPane.html":"<div class=\"dojoxScrollWindow\" dojoAttachEvent=\"onmouseenter: _enter, onmouseleave: _leave\">\n    <div class=\"dojoxScrollWrapper\" style=\"${style}\" dojoAttachPoint=\"wrapper\" dojoAttachEvent=\"onmousemove: _calc\">\n\t<div class=\"dojoxScrollPane\" dojoAttachPoint=\"containerNode\"></div>\n    </div>\n    <div dojoAttachPoint=\"helper\" class=\"dojoxScrollHelper\"><span class=\"helperInner\">|</span></div>\n</div>"}});
+}

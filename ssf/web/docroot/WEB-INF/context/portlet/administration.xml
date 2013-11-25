@@ -21,8 +21,6 @@
 	<bean id="adminImportProfilesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ImportProfilesController" />
 	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
 	<bean id="adminManageQuotasController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageQuotasController" />
-	<bean id="adminManageFileUploadLimitsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageFileUploadLimitsController" />
-	<bean id="adminManageResourceDriverController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageResourceDriverController" />
 	<bean id="adminManageUserAccountsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageUserAccountsController" />
 	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationsController" />
 	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationGroupsController" />
@@ -65,8 +63,6 @@
 						<entry key="import_profiles"><ref bean="adminImportProfilesController"/></entry>
 						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
 						<entry key="manage_quotas"><ref bean="adminManageQuotasController"/></entry>
-						<entry key="manage_file_upload_limits"><ref bean="adminManageFileUploadLimitsController"/></entry>
-						<entry key="manage_resource_drivers"><ref bean="adminManageResourceDriverController"/></entry>
 						<entry key="manage_user_accounts"><ref bean="adminManageUserAccountsController"/></entry>
 						<entry key="manage_applications"><ref bean="adminManageApplicationsController"/></entry>
 						<entry key="manage_application_groups"><ref bean="adminManageApplicationGroupsController"/></entry>

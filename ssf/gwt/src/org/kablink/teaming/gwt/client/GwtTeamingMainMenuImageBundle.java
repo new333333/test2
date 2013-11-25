@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.resources.client.ClientBundle;
@@ -37,36 +38,13 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 
+
 /**
  * Images used by the GWT Teaming 'Main Menu' widget.
  * 
  * @author drfoster@novell.com
  */
 public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_down.png")
-	public ImageResource arrowDown();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_down_disabled.png")
-	public ImageResource arrowDownDisabled();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_down_over.png")
-	public ImageResource arrowDownMouseOver();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_up.png")
-	public ImageResource arrowUp();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_up_disabled.png")
-	public ImageResource arrowUpDisabled();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_up_over.png")
-	public ImageResource arrowUpMouseOver();
-
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/browse_hierarchy.png")
 	public ImageResource browseHierarchy();
@@ -80,20 +58,12 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource closeXMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/help3.gif")
-	public ImageResource help();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/home16.png")
 	public ImageResource home16();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/menu.png")
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/menu_arrow.png")
 	public ImageResource menuArrow();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/menu_gray.png")
-	public ImageResource menuArrowGray();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/newmenu.png")
@@ -112,7 +82,7 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource searchDelete();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_glass2.png")
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_glass.png")
 	public ImageResource searchGlass();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -136,14 +106,6 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource spacer1px();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/spinner16x16.gif")
-	public ImageResource spinner();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/delete_16.gif")
-	public ImageResource tagDelete();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/UserPhoto.png")
-	public ImageResource userPhoto();
+	public ImageResource tagDelete();	
 }

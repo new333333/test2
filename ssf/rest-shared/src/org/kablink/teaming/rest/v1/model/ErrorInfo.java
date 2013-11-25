@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author jong
  *
  */
-@XmlRootElement (name = "error_info")
+@XmlRootElement
 public class ErrorInfo {
 
 	public String code;

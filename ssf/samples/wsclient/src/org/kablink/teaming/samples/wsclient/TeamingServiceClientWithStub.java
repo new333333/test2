@@ -37,9 +37,7 @@ import static org.kablink.util.search.Restrictions.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.rpc.ServiceException;
@@ -171,17 +169,10 @@ public class TeamingServiceClientWithStub {
 		//getDeletedAndRestoredEntries();
 		
 		//addDicsussionEntryWithChineseInTitle();
-		
-		//downloadSameFileMultipleTimes();
-		
-		//addBlogEntryWithAttachment();
-		
-		//getTopWorkspaceIdRepeatedlyUsingMultipleThreads();
-
 	}
 	
 	public static void addMicroBlog() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		Long id = stub.folder_addMicroBlog(null, "More efficient blog!");
 				
@@ -192,7 +183,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void addMicroBlog_OldWay_ThisDoesNotWork() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		User admin = stub.profile_getUserByName(null, "admin", false);
 		DefinitionBrief db = stub.definition_getDefinitionByName(null, "_miniblog_entry");
@@ -244,7 +235,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void testApplicationScopedToken() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		// Non-existing application ID
 		callGetTeamsUsingToken(stub, 12345, 8, 0);
@@ -263,7 +254,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void fetchTaskEntriesModifiedBetweenTwoDates() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		// Create search criteria
 		Criteria crit = new Criteria()
@@ -295,7 +286,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void fetchCalendarEntriesModifiedBetweenTwoDates() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		// Create search criteria
 		Criteria crit = new Criteria()
@@ -328,7 +319,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void fetchCalendarEntriesCreatedOrModifiedOrEventDatedBetweenTwoDates() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		String beginDate = "20101101000000";
 		String endDate   = "20101201000000";
@@ -361,7 +352,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void calendarSync() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		User testUser = stub.profile_getUserByName(null, "kelly", false);
 		Long wsId = testUser.getWorkspaceId();
@@ -401,11 +392,11 @@ public class TeamingServiceClientWithStub {
     	}
 	}
 	public static void searchFolderEntriesAndNoReplies() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		// Search for all folder entries with the word "test" in entry title.
     	Criteria crit = new Criteria()
-			.add(like(Constants.TITLE_FIELD, "test"))
+			.add(eq(Constants.TITLE_FIELD, "test"))
 			.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY));
 	
 		FolderEntryCollection coll = stub.search_getFolderEntries(null, crit.toQuery().asXML(), 0, -1);
@@ -417,11 +408,11 @@ public class TeamingServiceClientWithStub {
     	}
 	}
 	public static void searchFolderEntriesAndReplies() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		// Search for all folder entries and replies with the word "test" in any text field.
     	Criteria crit = new Criteria()
-			.add(like(null, "test"));
+			.add(eq(Constants.ALL_TEXT_FIELD, "test"));
 	
 		FolderEntryCollection coll = stub.search_getFolderEntries(null, crit.toQuery().asXML(), 0, -1);
     	FolderEntryBrief[] entries = coll.getEntries();
@@ -432,7 +423,7 @@ public class TeamingServiceClientWithStub {
     	}
 	}
 	public static void getAllRepliesToSpecificEntry() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		// Fetch all replies to a specific entry.
     	Criteria crit = new Criteria()
@@ -448,7 +439,7 @@ public class TeamingServiceClientWithStub {
     	}
 	}
 	public static void checkTags(long binderId) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		Tag[] tags = setupTags(binderId);
 		for (int i=0; i<tags.length; ++i) {
@@ -463,7 +454,7 @@ public class TeamingServiceClientWithStub {
 		
 	}
 	public static void checkEntryTags(long entryId) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		Tag[] tags = setupTags(entryId);
 		for (int i=0; i<tags.length; ++i) {
@@ -495,7 +486,7 @@ public class TeamingServiceClientWithStub {
 		}		
 	}
 	public static void checkBinder() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		Binder testFolder1 = getTestFolder("MyTestingFolder");
 		Binder testFolder2 = new Binder();
@@ -521,7 +512,7 @@ public class TeamingServiceClientWithStub {
 		}
 	}
 	public static void checkEntrySubscriptions(long entryId) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		Subscription subscription = setupSubscription(entryId);
 		stub.folder_setSubscription(null, entryId, subscription);
@@ -529,7 +520,7 @@ public class TeamingServiceClientWithStub {
 		validateSubscription(subscription);
 	}
 	public static void checkBinderSubscriptions(long binderId) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		Subscription subscription = setupSubscription(binderId);
 		stub.binder_setSubscription(null, binderId, subscription);
@@ -569,7 +560,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void addFileEntry() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		FolderEntry testEntry = new FolderEntry();
 		// Do not add title!!!
 		testEntry.setDescription(new Description(1,"Creating a file entry through web services"));
@@ -582,25 +573,13 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void addDicsussionEntryWithChineseInTitle() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		FolderEntry testEntry = new FolderEntry();
-		// Option 1 - This is the original Chinese text. To embed this literal Chinese characters 
-		// in Java source code, the .java file must be saved in UTF-8 encoding. In such case, you
-		// must also specify UTF-8 as encoding when compiling the source file into class file.
-		// When using this option, the underlying web services framework (Axis 1.4) will correctly
-		// encode the input text using numeric character reference as specified by the standard.
 		//String text = "下記.txt";
-		// Option 2 - Assign Chinese string to a variable by using Unicode code value representation 
-		// instead of the above literal characters. This way, you can save this .java file in 
-		// more common ISO8859-1 encoding without losing the Chinese character values. 
-		// The underlying web services framework will correctly encode these Unicode characters 
-		// using numeric character reference representation before placing them into SOAP payload.
+		// Assign Chinese string to a variable by using Unicode code value representation 
+		// instead of the above literal characters. Alternatively you could use the literal
+		// value, save this Java file in UTF-8 and then compile it with UTF-8 as encoding.
 		String text = "\u4e0b\u8a18\u002e\u0074\u0078\u0074";
-		// Option 3 - The application (this code) encodes the text in numeric character reference 
-		// and passes the result to the underlying framework. This will work ONLY IF the underlying
-		// framework does NOT perform additional encoding on the provided input string. Otherwise,
-		// the original string can be double encoded resulting in unexpected behavior.
-		//String text = "&#x4E0B;&#x8A18;.txt";
 		byte[] ba = text.getBytes("UTF-8");
 		for(byte b:ba) {
 			int i = b & 0xFF;
@@ -614,19 +593,19 @@ public class TeamingServiceClientWithStub {
 		System.out.println();
 		testEntry.setTitle(text);
 		testEntry.setDescription(new Description(1,text));
-		testEntry.setParentBinderId(new Long(48));
+		testEntry.setParentBinderId(new Long(44));
 		long testEntryId = stub.folder_addEntry(null, testEntry, null);
 		System.out.println("Successfully created a discussion entry with ID = " + testEntryId);
 		
 		// Attach a file to the entry. This file contains Chinese in both filename and content.
 		// The following two statements are equivalent.
 		//stub.folder_uploadFileAsByteArray(null, testEntryId, null, "下記.txt", "下記".getBytes("UTF-8"));
-		stub.folder_uploadFileAsByteArray(null, testEntryId, null, text, "\u4e0b\u8a18".getBytes("UTF-8"));
+		stub.folder_uploadFileAsByteArray(null, testEntryId, null, "\u4e0b\u8a18\u002e\u0074\u0078\u0074", "\u4e0b\u8a18".getBytes("UTF-8"));
 		System.out.println("Successfully uploaded primary file with Chinese in both filename and content");
 	}
 	
 	public static void addDiscussionEntry() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		FolderEntry testEntry = new FolderEntry();
 		testEntry.setTitle("Created from web services");
 		testEntry.setDescription(new Description(1,"Setting creator and creation time programmtically"));
@@ -639,23 +618,8 @@ public class TeamingServiceClientWithStub {
 		System.out.println("Successfully created a discussion entry with ID = " + testEntryId);
 	}
 	
-	public static void addBlogEntryWithAttachment() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
-		FolderEntry blogEntry = new FolderEntry();
-		blogEntry.setTitle("Blog entry created through web services");
-		blogEntry.setDescription(new Description(1,"This blog entry has a file attachment"));
-		Long blogFolderId = 42L;
-		blogEntry.setParentBinderId(blogFolderId);
-		long blogEntryId = stub.folder_addEntry(null, blogEntry, null);
-		System.out.println("Successfully created a blog entry with ID = " + blogEntryId);
-		String fileName = "test-file.txt";
-		String fileContent = "Let's see if we can upload this file";
-		stub.folder_uploadFileAsByteArray(null, blogEntryId, null, fileName, fileContent.getBytes("UTF-8"));
-		System.out.println("Successfully attached a file to the entry");
-	}
-	
 	public static void checkEntry()  throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		Binder testFolder = getTestFolder("MyTestingFolder");
 		try {
@@ -693,7 +657,7 @@ public class TeamingServiceClientWithStub {
 		
 	}
 	public static void checkWorkflow(long entryId)  throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		FolderEntry	entry = stub.folder_getEntry(null, entryId, false, false);
 		DefinitionBrief def = stub.definition_getLocalDefinitionByName(null, entry.getParentBinderId(), "testworkflow", true);
@@ -747,7 +711,12 @@ public class TeamingServiceClientWithStub {
 	
 	public static FolderEntry getFolderEntryWSSecurity(long entryId, boolean includeAttachments) throws Exception {
 		// Use WS-Security
-		TeamingServiceSoapBindingStub stub = getStubWSS();
+		
+		EngineConfiguration config = WebServiceClientUtil.getMinimumEngineConfigurationWSSecurity();
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator(config);
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_WSS);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialWSSecurity(stub, USERNAME, PASSWORD, true);
 
 		FolderEntry entry = stub.folder_getEntry(null, entryId, includeAttachments, false);
 		
@@ -759,7 +728,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static FolderEntry getFolderEntry(long entryId, boolean includeAttachments) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		FolderEntry entry = stub.folder_getEntry(null, entryId, includeAttachments, false);
 		
@@ -772,7 +741,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void getFolderEntries(long binderId, int first, int max) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		FolderEntryCollection result = stub.folder_getEntries(null, binderId, first, max);
 		FolderEntryBrief[] entries = result.getEntries();
@@ -784,7 +753,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void addFolderEntryByCopying(FolderEntry entry) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		// We don't have to bother writing the code that copies the entry. 
 		// All we have to do is to nullify the id field of the persistent entry
@@ -803,7 +772,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void uploadFolderEntryFiles(long entryId) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		File file = new File("C:/junk/junk1/Water lilies.jpg");		
 		WebServiceClientUtil.attachFile(stub, file);
@@ -817,7 +786,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void modifyFolderEntry(FolderEntry entry) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		entry.setTitle(entry.getTitle() + " (Modified)");
 		entry.getDescription().setText(entry.getDescription().getText() + " (Modified)");
@@ -864,7 +833,7 @@ public class TeamingServiceClientWithStub {
 		System.out.println("Modification time: " + modificationTime.getTime().toString());
 	}
 	public static Binder modifyBinder(Binder binder) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		binder.setTitle(binder.getTitle() + " (Modified)");
 		binder.getDescription().setText(binder.getDescription().getText() + " (Modified)");
@@ -876,7 +845,7 @@ public class TeamingServiceClientWithStub {
 		return binder;
 	}
 	public static Binder uploadBinderFiles(Binder binder) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		File file = new File("C:/junk/junk1/Water lilies.jpg");		
 		WebServiceClientUtil.attachFile(stub, file);
@@ -892,7 +861,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void deleteFolderEntry(long entryId) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		stub.folder_deleteEntry(null, entryId);
 		
@@ -900,7 +869,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void getUser(long principalId) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		User user = stub.profile_getUser(null, principalId, false);
 		
@@ -908,7 +877,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void getGroup(long principalId) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		Group group = stub.profile_getGroup(null, principalId, false);
 		
@@ -916,7 +885,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void getPrincipals(int first, int max) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		PrincipalCollection result = stub.profile_getPrincipals(null, first, max);
 		PrincipalBrief[] entries = result.getEntries();
@@ -929,7 +898,7 @@ public class TeamingServiceClientWithStub {
 		}
 	}
 	public static void checkUsers() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		User testUser = new User();
 		testUser.setName("jodi");
@@ -958,7 +927,7 @@ public class TeamingServiceClientWithStub {
 		}
 	}
 	public static User uploadUserFile(User user) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		File file = new File("C:/junk/junk1/Water lilies.jpg");		
 		WebServiceClientUtil.attachFile(stub, file);
@@ -975,7 +944,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static FileVersions getEntryFileVersions(long entryId, String fileName) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		FileVersions fileVersions = stub.folder_getFileVersions(null, entryId, fileName);
 		
@@ -1014,7 +983,7 @@ public class TeamingServiceClientWithStub {
 		return null;
 	}
 	private static Binder getTestFolder(String title) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		long gblId = getGlobalWorkspace(stub);
 		try {
@@ -1026,7 +995,7 @@ public class TeamingServiceClientWithStub {
 		}
 	}
 	private static void checkGroups() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		Group group = new Group();
 		group.setName("testgroup");
@@ -1056,7 +1025,7 @@ public class TeamingServiceClientWithStub {
 		stub.profile_deletePrincipal(null, group.getId(), true);
 	}
 	public static User getTestUser() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		User testUser =null;
 		try {
@@ -1076,13 +1045,13 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void changeUserPassword(Long userId, String oldPassword, String newPassword) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		stub.profile_changePassword(null, userId, oldPassword, newPassword);
 	}
 	
 	public static void copyFolderEntry(long entryId, long destinationFolderId, boolean eventAsIcalString) throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		FolderEntry entry = stub.folder_getEntry(null, entryId, false, eventAsIcalString);
 		System.out.println("Successfully fetched the entry");
@@ -1095,7 +1064,7 @@ public class TeamingServiceClientWithStub {
 		System.out.println("ID of the newly added entry: " + newEntryId);
 	}
 
-	protected static TeamingServiceSoapBindingStub getStubBasic() throws ServiceException {
+	protected static TeamingServiceSoapBindingStub getStub() throws ServiceException {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
@@ -1104,18 +1073,8 @@ public class TeamingServiceClientWithStub {
 		return stub;
 	}
 	
-	protected static TeamingServiceSoapBindingStub getStubWSS() throws ServiceException {
-		EngineConfiguration config = WebServiceClientUtil.getMinimumEngineConfigurationWSSecurity();
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator(config);
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_WSS);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-		WebServiceClientUtil.setUserCredentialWSSecurity(stub, USERNAME, PASSWORD, true);
-		return stub;
-	}
-	
 	public static void copyFileFromUserToEntry() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		User admin = stub.profile_getUser(null, 1, false); 
 		
@@ -1145,7 +1104,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void addTaskEntry() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 	    FolderEntry fe = new FolderEntry();
 
@@ -1171,7 +1130,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void getFunctionMembership() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		long binderId = 251;
 		FunctionMembership[] fma = stub.binder_getFunctionMembership(null, binderId);
 		for(int i = 0; i < fma.length; i++) {
@@ -1185,7 +1144,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void setFunctionMembership() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		long binderId = 682;
 		FunctionMembership fm = new FunctionMembership();
 		fm.setFunctionName("__role.visitor");
@@ -1195,7 +1154,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void getMovedEntries() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		long[] entryIds = stub.folder_getMovedEntries(null, null, Calendar.getInstance());
 		System.out.println("Number of moved entries = " + entryIds.length);
 		for(int i = 0; i < entryIds.length; i++)
@@ -1203,7 +1162,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void getDeletedAndRestoredEntries() throws Exception {
-		TeamingServiceSoapBindingStub stub = getStubBasic();
+		TeamingServiceSoapBindingStub stub = getStub();
 		long[] folderIds = new long[] {51, 287};
 		String family = "discussion";
 		Calendar startTime = Calendar.getInstance();
@@ -1229,44 +1188,4 @@ public class TeamingServiceClientWithStub {
 		}
 		return sb.toString();
 	}
-	
-	public static void downloadSameFileMultipleTimes() throws Exception {
-		// To measure download time
-		TeamingServiceSoapBindingStub stub = getStubBasic();
-		Long entryId = 123L;
-		String attachmentId = "24e350ea3383b149013383dd2bf90025";
-		System.out.println("Start time: " + new Date());
-		for(int i = 0; i < 10; i++) {
-			byte[] content = stub.folder_getAttachmentAsByteArray(null, entryId, attachmentId);
-			System.out.println("(" + i + ") Downloaded file length: " + content.length);
-		}
-		System.out.println("End time: " + new Date());
-	}
-	
-	public static void getTopWorkspaceIdRepeatedlyUsingMultipleThreads() throws Exception {
-		int numThreads = 100;
-		final int numIterations = 20;
-		Thread[] threads = new Thread[numThreads];
-		for (int i = 0; i < numThreads; i++) {
-			final TeamingServiceSoapBindingStub stub = getStubWSS();
-			threads[i] = new Thread("Client " + i) {
-				public void run() {
-					for(int j = 0; j < numIterations; j++) {
-						try {
-							stub.binder_getTopWorkspaceId(null);
-						} catch (RemoteException e) {
-							System.out.println(e.toString());
-						}
-					}
-					System.out.println("Thread [" + Thread.currentThread().getName() + "] completing normally");
-				}
-			};
-		}
-		for(int i = 0; i < numThreads; i++)
-			threads[i].start();
-		for(int i = 0; i < numThreads; i++)
-			threads[i].join();
-		System.out.println("getTopWorkspaceIdRepeatedlyUsingMultipleThreads completed");
-	}
-	
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,22 +33,27 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FolderOptionsDlg.FolderOptionsDlgClient;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Command;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+
 
 /**
  * Class used for the Manage menu item popup.  
@@ -56,76 +61,42 @@ import com.google.gwt.user.client.Window;
  * @author drfoster@novell.com
  */
 public class ManageMenuPopup extends MenuBarPopupBase {
-	private BinderInfo			m_currentBinder;		// The currently selected binder.
-	private List<ToolbarItem>	m_actionsBucket;		// List of action         items for the context based menu.
-	private List<ToolbarItem>	m_configBucket;			// List of configuration  items for the context based menu.
-	private List<ToolbarItem>	m_ignoreBucket;			// List of ignored        items for the context based menu.
-	private List<ToolbarItem>	m_miscBucket;			// List of miscellaneous  items for the context based menu.
-	private List<ToolbarItem>	m_primaryBucket;		// List of primary        items for the context based menu.
-	private List<ToolbarItem>	m_teamAndEmailBucket;	// List of team and email items for the context based menu.
-	private List<ToolbarItem>	m_toolbarItemList;		// The context based toolbar requirements.
-	private List<ToolbarItem>	m_filrBucket;			// List of Filr specific  items for the context based menu.
-	private TagThisDlg			m_tagThisDlg;			//
-	private TeamManagementInfo	m_tmi;					// The team management information for which team management menu items should appear on the menu.
-	private ToolbarItem			m_brandingTBI;			// The branding                  toolbar item, if found.
-	private ToolbarItem			m_calendarImportTBI;	// The calendar import           toolbar item, if found.
-	private ToolbarItem			m_commonActionsTBI;		// The common actions            toolbar item, if found.
-	private ToolbarItem			m_emailContributorsTBI;	// The email contributors        toolbar item, if found.
-	private ToolbarItem			m_emailNotificationTBI;	// The email notification        toolbar item, if found.
-	private ToolbarItem			m_folderViewsTBI;		// The folder views              toolbar item, if found.
-	private ToolbarItem			m_shareThisTBI;			// The share this                toolbar item, if found.
-	private ToolbarItem			m_trackBinderTBI;		// The binder tracking           toolbar item, if found.
-	private ToolbarItem			m_trackPersonTBI;		// The person tracking           toolbar item, if found.
-	private ToolbarItem			m_trashTBI;				// The trash                     toolbar item, if found.
-	
 	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
+	
+	private BinderInfo m_currentBinder;				// The currently selected binder.
+	private int m_menuLeft;							// Left coordinate of where the menu is to be placed.
+	private int m_menuTop;							// Top  coordinate of where the menu is to be placed.
+	private List<ToolbarItem> m_actionsBucket;		// List of action         items for the context based menu.
+	private List<ToolbarItem> m_configBucket;		// List of configuration  items for the context based menu.
+	private List<ToolbarItem> m_ignoreBucket;		// List of ignored        items for the context based menu.
+	private List<ToolbarItem> m_miscBucket;			// List of miscellaneous  items for the context based menu.
+	private List<ToolbarItem> m_teamAndEmailBucket;	// List of team and email items for the context based menu.
+	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
+	private TeamManagementInfo m_tmi;				// The team management information for which team management menu items should appear on the menu.
+	private ToolbarItem m_brandingTBI;				// The branding                  toolbar item, if found.
+	private ToolbarItem m_calendarImportTBI;		// The calendar import           toolbar item, if found.
+	private ToolbarItem m_commonActionsTBI;			// The common actions            toolbar item, if found.
+	private ToolbarItem m_configureColumnsTBI;		// The configure columns         toolbar item, if found.
+	private ToolbarItem m_emailContributorsTBI;		// The email contributors        toolbar item, if found.
+	private ToolbarItem m_emailNotificationTBI;		// The email notification        toolbar item, if found.
+	private ToolbarItem m_folderViewsTBI;			// The folder views              toolbar item, if found.
+	private ToolbarItem m_shareThisTBI;				// The share this                toolbar item, if found.
+	private ToolbarItem m_trackBinderTBI;			// The binder tracking           toolbar item, if found.
+	private ToolbarItem m_trackPersonTBI;			// The person tracking           toolbar item, if found.
+	private TagThisDlg m_tagThisDlg = null;
 
 	/*
-	 * Constructor method.
+	 * Class constructor.
 	 * 
 	 * Note that the class constructor is private to facilitate code
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ManageMenuPopup(ContextBinderProvider binderProvider) {
+	private ManageMenuPopup(String manageName) {
 		// Simply initialize the super class.
-		super(binderProvider);
+		super(manageName);
 	}
 
-	/*
-	 * Scans the nested items of a toolbar looking for one whose URL
-	 * contains a specific event.  If it is found, it is added to
-	 * the bucket.
-	 * 
-	 * Returns true if the event was found and added to the bucket
-	 * and false otherwise.
-	 */
-	private boolean addNestedItemFromEvent(List<ToolbarItem> bucket, ToolbarItem tbi, TeamingEvents event) {
-		// If we don't have a toolbar to search or it has no nested
-		// items...
-		List<ToolbarItem> tbiList = ((null == tbi) ? null : tbi.getNestedItemsList());
-		if ((null == tbiList) || tbiList.isEmpty()) {
-			// ...bail.
-			return false;
-		}
-
-		// Scan the nested items.
-		for (ToolbarItem nestedTBI:  tbiList) {
-			// Does the nested item contain the event that we're
-			// looking for?
-			if (event.equals(nestedTBI.getTeamingEvent())) {
-				// Yes!  Add it to the bucket and return true.
-				tbiList.remove(nestedTBI);
-				bucket.add(nestedTBI);
-				return true;
-			}
-		}
-		
-		// If we get here, we didn't find the requested event.  Return
-		// false.
-		return false;
-	}
-	
 	/*
 	 * Scans the nested items of a toolbar looking for one whose URL
 	 * contains a specific action.  If it is found, it is added to
@@ -134,6 +105,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * Returns true if the action was found and added to the bucket
 	 * and false otherwise.
 	 */
+	private boolean addNestedItemFromUrl(List<ToolbarItem> bucket, ToolbarItem tbi, String action) {
+		return addNestedItemFromUrl(bucket, tbi, action, null);
+	}
 	private boolean addNestedItemFromUrl(List<ToolbarItem> bucket, ToolbarItem tbi, String action, String operation) {
 		// If we don't have a toolbar to search or it has no nested
 		// items...
@@ -148,8 +122,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		if (null != operation) {
 			operation = ("operation=" + operation.toLowerCase());
 		}
-		for (ToolbarItem nestedTBI:  tbiList) {
+		for (Iterator<ToolbarItem> tbiIT = tbiList.iterator(); tbiIT.hasNext(); ) {
 			// Does this nested item contain a URL?
+			ToolbarItem nestedTBI = tbiIT.next();
 			String url = nestedTBI.getUrl();
 			if (!(GwtClientHelper.hasString(url))) {
 				// No!  Skip it.
@@ -175,11 +150,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// false.
 		return false;
 	}
-	
-	private boolean addNestedItemFromUrl(List<ToolbarItem> bucket, ToolbarItem tbi, String action) {
-		// Always use the initial form of the method.
-		return addNestedItemFromUrl(bucket, tbi, action, null);
-	}
 
 	/*
 	 * Copies the nested ToolbarItem's from one ToolbarItem to another.
@@ -191,10 +161,10 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			List<ToolbarItem> nestedSrcTBIList = tbiSrc.getNestedItemsList();
 			if (null != nestedSrcTBIList) {
 				// ...scan them...
-				for (ToolbarItem tbiIT:  nestedSrcTBIList) {
+				for (Iterator<ToolbarItem> tbiIT = nestedSrcTBIList.iterator(); tbiIT.hasNext(); ) {
 					// ...and store them in the destination's nested
 					// ...List<ToolbarItem>.
-					tbiDest.addNestedItem(tbiIT);
+					tbiDest.addNestedItem(tbiIT.next());
 				}
 			}
 		}
@@ -205,38 +175,31 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * items that appear in the various sections of the menu.
 	 */
 	private void fillBuckets() {
+		ToolbarItem localTBI;
+
 		// Allocate the bucket lists.
 		m_actionsBucket      = new ArrayList<ToolbarItem>();
 		m_configBucket       = new ArrayList<ToolbarItem>();
-		m_filrBucket         = new ArrayList<ToolbarItem>();
 		m_ignoreBucket       = new ArrayList<ToolbarItem>();
 		m_miscBucket         = new ArrayList<ToolbarItem>();
-		m_primaryBucket      = new ArrayList<ToolbarItem>();
 		m_teamAndEmailBucket = new ArrayList<ToolbarItem>();
 
 		// File the buckets in the order things will appear in the
 		// menu.  Start with the actions section...
-		if (null != m_shareThisTBI) {
-			m_primaryBucket.add(m_shareThisTBI);
-		}
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder"         );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder"      );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace"      );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify"             );
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.INVOKE_RENAME_ENTITY    );
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.DELETE_SELECTED_ENTITIES);
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.COPY_SELECTED_ENTITIES  );
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.MOVE_SELECTED_ENTITIES  );
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "export_import"                       );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "manage_binder_quota"                 );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "manage_definitions"                  );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "configure_configuration"             );
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "delete");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "copy");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "move");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "export_import");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_binder_quota");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_definitions");
 		
 		// ...then the team section...
 		if ((null != m_tmi) && m_tmi.isTeamManagementEnabled()) {
 			// Add the team management items.
-			ToolbarItem localTBI;
 			if (m_tmi.isViewAllowed()) {
 				localTBI = new ToolbarItem();
 				localTBI.setName("viewTeam");
@@ -250,8 +213,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.setTitle(m_messages.mainMenuManageEditTeam());
 				localTBI.setUrl(m_tmi.getManageUrl());
 				localTBI.addQualifier("popup", "true");
-				localTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
-				localTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
+				localTBI.addQualifier("popupHeight", "500");
+				localTBI.addQualifier("popupWidth",  "600");
 				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isTeamMeetingAllowed()) {
@@ -260,8 +223,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.setTitle(m_messages.mainMenuManageStartTeamConference());
 				localTBI.setUrl(m_tmi.getTeamMeetingUrl());
 				localTBI.addQualifier("popup", "true");
-				localTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
-				localTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
+				localTBI.addQualifier("popupHeight", "500");
+				localTBI.addQualifier("popupWidth",  "600");
 				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isSendMailAllowed()) {
@@ -270,8 +233,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.setTitle(m_messages.mainMenuManageEmailTeam());
 				localTBI.setUrl(m_tmi.getSendMailUrl());
 				localTBI.addQualifier("popup", "true");
-				localTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
-				localTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
+				localTBI.addQualifier("popupHeight", "500");
+				localTBI.addQualifier("popupWidth",  "600");
 				m_teamAndEmailBucket.add(localTBI);
 			}
 		}
@@ -280,8 +243,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// ...then the miscellaneous section...
 		if (null != m_trackPersonTBI) m_miscBucket.add(m_trackPersonTBI);
 		if (null != m_trackBinderTBI) m_miscBucket.add(m_trackBinderTBI);
+		if (null != m_shareThisTBI)   m_miscBucket.add(m_shareThisTBI);
 		
-		// ...then the configuration section...
+		// ...and finally, the configuration section.
 		if (null != m_brandingTBI) {
 			m_configBucket.add(m_brandingTBI);
 		}
@@ -289,26 +253,14 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "config_email");
 		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "configure_access_control");
 		
-		// ...and finally, the Filr section.
-		if (null != m_trashTBI) {
-			m_filrBucket.add(m_trashTBI);
-		}
-		
-		// When all is said and done, we're going to render anything
+		// When all is said and done, where going to render anything
 		// that's left in the menus from the server at the bottom of
 		// the manage menu.  There are certain, known items that we
 		// don't want to render here.  The following will see to it
 		// that they're ignored by removing them from the appropriate
 		// lists.
-		
-		// Site administration is handled in the masthead.
-		addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "site_administration");
-		
-		// In Vibe mode...
-		if (!(GwtClientHelper.isLicenseFilr())) {
-			// ...this is in the views menu.
-			addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "binder_report");
-		}
+		addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "site_administration");	// This is handled in the masthead.
+		addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "binder_report");			// This is in the views menu.
 	}
 	
 	/*
@@ -320,7 +272,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	}
 	
 	private boolean hasNestedItems(ToolbarItem tbi) {
-		// Always use the initial form of the method.
 		return hasNestedItems(tbi, 1);
 	}
 	
@@ -334,6 +285,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 */
 	@Override
 	public void setCurrentBinder(BinderInfo binderInfo) {
+		// Simply store the parameter.
 		m_currentBinder = binderInfo;
 	}
 
@@ -375,9 +327,10 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	public boolean shouldShowMenu() {
 		// Scan the toolbar items...
 		ToolbarItem categoriesTBI;
-		for (ToolbarItem tbi:  m_toolbarItemList) {
+		for (Iterator<ToolbarItem> tbiIT = m_toolbarItemList.iterator(); tbiIT.hasNext(); ) {
 			// ...and keep track of the ones that appear on the manage
 			// ...menu.
+			ToolbarItem tbi = tbiIT.next();
 			String tbName = tbi.getName();
 			if (tbName.equalsIgnoreCase("ssFolderToolbar")) {
 				ToolbarItem adminTBI = tbi.getNestedToolbarItem("administration");
@@ -415,19 +368,20 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
-				m_brandingTBI          = tbi.getNestedToolbarItem("branding"   );
-				m_emailContributorsTBI = tbi.getNestedToolbarItem("sendEmail"  );
-				m_shareThisTBI         = tbi.getNestedToolbarItem("share"      );
-				m_trackBinderTBI       = tbi.getNestedToolbarItem("track"      );
+				m_brandingTBI          = tbi.getNestedToolbarItem("branding");
+				m_configureColumnsTBI  = tbi.getNestedToolbarItem("configureColumns");
+				m_emailContributorsTBI = tbi.getNestedToolbarItem("sendEmail");
+				m_shareThisTBI         = tbi.getNestedToolbarItem("share");
+				m_trackBinderTBI       = tbi.getNestedToolbarItem("track");
 				m_trackPersonTBI       = tbi.getNestedToolbarItem("trackPerson");
-				m_trashTBI             = tbi.getNestedToolbarItem("trash"      );
 			}
 		}
 		
 		// Return true if we found any of the manage menu items and
 		// false otherwise.
 		boolean reply =
-			((null != m_brandingTBI)                                                         ||
+			((null != m_configureColumnsTBI)                                                 ||
+			 (null != m_brandingTBI)                                                         ||
 			 (null != m_emailContributorsTBI)                                                ||
 			 (null != m_emailNotificationTBI)                                                ||
 			 (null != m_shareThisTBI)                                                        ||
@@ -435,7 +389,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			 (null != m_trackPersonTBI)                                                      ||
 			((null != m_calendarImportTBI)   && m_calendarImportTBI.hasNestedToolbarItems()) ||
 			((null != m_commonActionsTBI)    && m_commonActionsTBI.hasNestedToolbarItems())  ||
-			((null != m_trashTBI)            && GwtClientHelper.isLicenseFilr())             ||
 			((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems(2)));
 		if (reply) {
 			fillBuckets();
@@ -450,36 +403,43 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private void showFolderOptions(final ToolbarItem folderViewsTBI, final ToolbarItem calendarImportTBI) {
 		// If there aren't any folder options...
 		if ((!(hasNestedItems(folderViewsTBI, 2))) &&
-			(!(hasNestedItems(calendarImportTBI)))) {
+			(!(hasNestedItems(calendarImportTBI))) &&
+			(null == m_configureColumnsTBI)) {
 			// ...bail.
 			return;
 		}
 
 		// Add an anchor to run the folder options dialog.
 		final String foId = (IDBASE + "FolderOptions");
-		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageFolderOptions(), null, new Command() {
-			@Override
-			public void execute() {
-				GwtClientHelper.deferCommand(new ScheduledCommand() {
+		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageFolderOptions(), null, new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				ScheduledCommand showDlg = new ScheduledCommand() {
 					@Override
 					public void execute() {
 						showFolderOptionsAsync(foId, folderViewsTBI, calendarImportTBI);
 					}
-				});
+				};
+				Scheduler.get().scheduleDeferred(showDlg);
 			}
 		});
-		addContentMenuItem(mtA);
+		addContentWidget(mtA);
 	}
 	
 	private void showFolderOptionsAsync(String foId, ToolbarItem folderViewsTBI, ToolbarItem calendarImportTBI) {
-		// Run the folder options dialog.
-		final int x = getRelativeX();
-		final int y = getRelativeY();
+		// Remove the selection from the menu item...
+		Element menuItemElement = Document.get().getElementById(foId);
+		menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+		
+		// ...hide the menu...
+		hide();
+
 		FolderOptionsDlg.createAsync(
 				false,	// false -> Don't auto hide.
 				true,	// true  -> Modal.
-				x, y,
+				m_menuLeft,
+				m_menuTop,
 				m_currentBinder.getBinderId(),
+				m_configureColumnsTBI,
 				((null == calendarImportTBI) ? null : calendarImportTBI.getNestedItemsList()),
 				((null == folderViewsTBI)    ? null : folderViewsTBI.getNestedItemsList()),
 			new FolderOptionsDlgClient() {					
@@ -493,30 +453,30 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				public void onSuccess(FolderOptionsDlg dlg) {
 					// ...and run the folder options dialog.
 					dlg.addStyleName("folderOptionsDlg");
-					dlg.show((0 == x) && (0 == y));
+					dlg.show();
 				}
 			});
 	}
 	
 	/**
-	 * Completes construction of the menu.
+	 * Completes construction of the menu and shows it.
 	 * 
-	 * Implements the MenuBarPopupBase.populateMenu() abstract method.
+	 * Implements the MenuBarPopupBase.showPopup() abstract method.
+	 * 
+	 * @param left
+	 * @param top
 	 */
 	@Override
-	public void populateMenu() {
+	public void showPopup(int left, int top) {
+		// Position the menu...
+		m_menuLeft = left;
+		m_menuTop  = top;
+		setPopupPosition(m_menuLeft, m_menuTop);
+		
 		// Have we constructed the menu's contents yet?
 		if (!(hasContent())) {
-			// No!  We need to construct it now.  First the primary
+			// No!  We need to construct it now.  First the actions
 			// section.
-			addContextMenuItemsFromList(IDBASE, m_primaryBucket);
-			
-			// Then the actions section.
-			boolean hasPrimarySection = (!(m_primaryBucket.isEmpty()));
-			if (hasPrimarySection && isSpacerNeeded()) {
-				// ...and add a spacer when required.
-				addSpacerMenuItem();
-			}
 			addContextMenuItemsFromList(IDBASE, m_actionsBucket);
 			
 			// Then the team and email section...
@@ -536,10 +496,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				// ...and add a spacer when required.
 				addSpacerMenuItem();
 			}
-			boolean isFilr = GwtClientHelper.isLicenseFilr();
-			if (!(isFilr)) {
-				showTagThis();
-			}
+			showTagThis();
 			addContextMenuItemsFromList(IDBASE, m_miscBucket);
 			
 			// Then the config section...
@@ -552,16 +509,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			addContextMenuItem(IDBASE, m_emailNotificationTBI);
 			showFolderOptions(m_folderViewsTBI, m_calendarImportTBI);
 
-			// Then the Filr section...
-			boolean hasFilrSection = (isFilr && (!(m_filrBucket.isEmpty())));
-			if (hasFilrSection) {
-				if (isSpacerNeeded()) {
-					// ...and add a spacer when required.
-					addSpacerMenuItem();
-				}
-				addContextMenuItemsFromList(IDBASE, m_filrBucket);
-			}
-			
 			// Finally, a section containing anything that's left over.
 			boolean hasLeftOversSection = ((null != m_commonActionsTBI) && m_commonActionsTBI.hasNestedToolbarItems());
 			if (hasLeftOversSection && isSpacerNeeded()) {
@@ -570,6 +517,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			}
 			addNestedContextMenuItems(IDBASE, m_commonActionsTBI);
 		}
+					
+		// Finally, show the popup.
+		show();
 	}
 	
 	/*
@@ -592,7 +542,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			// tag this menu item.  Is this one of the ones we don't?
 			switch (m_currentBinder.getWorkspaceType()) {
 			case PROFILE_ROOT:
-			case PROFILE_ROOT_MANAGEMENT:
 			case NOT_A_WORKSPACE:
 				// Yes!  Bail.
 				return;
@@ -611,30 +560,35 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 
 		// Add an anchor to run the tag this dialog.
 		final String menuId = (IDBASE + "TagThis");
-		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new Command() {
-			@Override
-			public void execute() {
-				GwtClientHelper.deferCommand(new ScheduledCommand() {
+		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				ScheduledCommand showDlg = new ScheduledCommand() {
 					@Override
 					public void execute() {
 						showTagThisAsync(menuId, dlgCaption);
 					}
-				});
+				};
+				Scheduler.get().scheduleDeferred(showDlg);
 			}
 		});
-		addContentMenuItem(mtA);
+		addContentWidget(mtA);
 	}
 
 	private void showTagThisAsync(String menuId, String dlgCaption) {
-		// Show the tag this dialog.
-		final int x = getRelativeX();
-		final int y = getRelativeY();
+		// Remove the selection from the menu item...
+		Element menuItemElement = Document.get().getElementById(menuId);
+		menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+		
+		// ...hide the menu...
+		hide();
+		
 		if (null == m_tagThisDlg) {
 			TagThisDlg.createAsync(
 					false,	// false -> Don't auto hide.
 					true,	// true  -> Modal.
 					null,
-					x, y,
+					m_menuLeft,
+					m_menuTop,
 					dlgCaption,
 					new TagThisDlgClient() {						
 				@Override
@@ -677,14 +631,15 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * Loads the ManageMenuPopup split point and returns an
 	 * instance of it via the callback.
 	 *
-	 * @param binderProvider
+	 * @param name
 	 * @param mmpClient
 	 */
-	public static void createAsync(final ContextBinderProvider binderProvider, final ManageMenuPopupClient mmpClient) {
-		GWT.runAsync(ManageMenuPopup.class, new RunAsyncCallback() {			
+	public static void createAsync(final String name, final ManageMenuPopupClient mmpClient) {
+		GWT.runAsync(ManageMenuPopup.class, new RunAsyncCallback()
+		{			
 			@Override
 			public void onSuccess() {
-				ManageMenuPopup mmp = new ManageMenuPopup(binderProvider);
+				ManageMenuPopup mmp = new ManageMenuPopup(name);
 				mmpClient.onSuccess(mmp);
 			}
 			

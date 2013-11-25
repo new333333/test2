@@ -41,11 +41,12 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 
-import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
 
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
-import org.kablink.teaming.rest.v1.model.admin.*;
 
 /**
  * @author jong
@@ -58,79 +59,15 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     
     private final Set<Class> types;
     
-    public static final Class[] cTypes = {
-            Access.class,
-            ApplicationBrief.class,
-            ApplicationGroupBrief.class,
-            AverageRating.class,
-    		Binder.class,
-    		BinderBrief.class,
-    		BinderQuotasConfig.class,
-    		BinderTree.class,
-    		CustomField.class,
-    		DefinitionBrief.class,
-    		Description.class,
-            DesktopAppConfig.class,
-    		DiskQuotasConfig.class,
-    		EntityId.class,
-    		ErrorInfo.class,
+    private final Class[] cTypes = {
     		FileProperties.class,
     		FileVersionProperties.class,
-            Folder.class,
-            FolderEntry.class,
-            FolderEntryBrief.class,
-            Group.class,
-            GroupBrief.class,
-            GroupMember.class,
-    		HistoryStamp.class,
-    		LegacyFileProperties.class,
-    		LegacyHistoryStamp.class,
-    		LibraryInfo.class,
-    		Link.class,
-    		Locale.class,
-    		LongIdLinkPair.class,
-            MobileAppConfig.class,
-            NetFolderBrief.class,
-            NotifyWarning.class,
-    		Operation.class,
-    		ParentBinder.class,
-    		Permission.class,
-    		PrincipalBrief.class,
-            RecentActivityEntry.class,
-            ReleaseInfo.class,
-            Reply.class,
-            ReplyBrief.class,
-            RootRestObject.class,
-            SearchResultList.class,
-            SearchResultTree.class,
-            SearchResultTreeNode.class,
-            Share.class,
-            SharedBinderBrief.class,
-            SharedFileProperties.class,
-            SharedFolderEntryBrief.class,
-            ShareRecipient.class,
-            StringIdLinkPair.class,
-            Tag.class,
-            TeamBrief.class,
-            TeamMember.class,
-            TemplateBrief.class,
-            User.class,
-            UserBrief.class,
-            Workspace.class,
-            ZoneConfig.class,
-
-            // Admin model objects
-            KeyValuePair.class,
-            LdapHomeDirConfig.class,
-            LdapSearchInfo.class,
-            LdapUserSource.class,
-            NetFolder.class,
-            NetFolderServer.class,
+    		FileVersionPropertiesCollection.class
     		};
     
     public DefaultJAXBContextResolver() throws Exception {
         this.types = new HashSet(Arrays.asList(cTypes)); 
-        this.context = new JSONJAXBContext(JSONConfiguration.natural().usePrefixesAtNaturalAttributes().build(), cTypes);
+        this.context = new JSONJAXBContext(JSONConfiguration.natural().build(), cTypes);
     }
     
     public JAXBContext getContext(Class<?> objectType) {

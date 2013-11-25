@@ -91,7 +91,7 @@ public class MultipartResolverProgressListening extends
 					encoding);
 			return new DefaultMultipartHttpServletRequest(request,
 					parsingResult.getMultipartFiles(), parsingResult
-							.getMultipartParameters(), parsingResult.getMultipartParameterContentTypes());
+							.getMultipartParameters());
 		} catch (FileUploadBase.SizeLimitExceededException ex) {
 			throw new MaxUploadSizeExceededException(fileUpload.getSizeMax(),
 					ex);

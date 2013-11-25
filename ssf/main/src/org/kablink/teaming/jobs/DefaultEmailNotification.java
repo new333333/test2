@@ -62,12 +62,12 @@ public class DefaultEmailNotification extends SSCronTriggerJob implements EmailN
 			Date end = mail.sendNotifications(binderId, (Date)jobDataMap.get("lastNotification") );
 			//In v1 top level folders had their own schedules.  In v.1.X they don't
 			if (!zoneId.equals(binderId)) {
-				deleteJob(context);
+				removeJob(context);
 			} else {
 				jobDataMap.put("lastNotification", end);
 			}
 		} catch (NoBinderByTheIdException nf) {
-			deleteJobOnError(context,nf);
+			removeJobOnError(context,nf);
 		} 
     }
 

@@ -39,15 +39,13 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.fi.FIException;
-import org.kablink.teaming.fi.connection.ResourceDriverManager.FileOperation;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
 
+
 public class NullFIRepositorySessionFactoryAdapter extends AbstractFIRepositorySessionFactoryAdapter {
 
-	@Override
-	public RepositorySession openSession(String resourceDriverName, FileOperation fileOperation, DefinableEntity ... entitiesToCheckPermissionOn) 
-			throws FIException, UncheckedIOException {
+	public RepositorySession openSession(String resourceDriverName) throws FIException, UncheckedIOException {
 		return null;
 	}
 
@@ -78,12 +76,6 @@ public class NullFIRepositorySessionFactoryAdapter extends AbstractFIRepositoryS
 			String versionName, Boolean isEncrypted, byte[] encryptionKey, FileTypeMap fileTypeMap)
 			throws RepositoryServiceException, UncheckedIOException {
 		return null;
-	}
-
-	@Override
-	public boolean supportsExternalAcl(String resourceDriverName)
-			throws FIException, UncheckedIOException {
-		return false;
 	}
 
 }

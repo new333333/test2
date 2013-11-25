@@ -60,8 +60,9 @@
 <div id="ss_tab_content">
 		
 	<form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-	  id="<%= formName %>" onSubmit="return ssSurvey.prepareSubmit(this);">
+	  id="<%= formName %>" action="" onSubmit="return ssSurvey.prepareSubmit(this);">
   
+			<c:set var="onClickCancelRoutine" value="ss_cancelButtonCloseWindow();return false;" scope="request"/>
 		<div class="ss_surveyContainer">
 			<div id="ss_content">
 
@@ -71,8 +72,7 @@
 						<div id="ss_surveyForm_main">
 							<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 							  configElement="<%= item %>" 
-							  configJspStyle="${ssConfigJspStyle}" 
-							  entry="${ssDefinitionEntry}" />
+							  configJspStyle="${ssConfigJspStyle}" />
 							
 						</div>
 					</div>

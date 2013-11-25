@@ -39,12 +39,9 @@ import java.util.GregorianCalendar;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.license.LicenseManager;
 
-/**
- * ?
- * 
- * @author ?
- */
+
 public class LicenseChecker {
+
 	private static LicenseChecker instance = null;
 	public LicenseChecker() {
 		if(instance != null)
@@ -79,14 +76,6 @@ public class LicenseChecker {
 		return getInstance().getLicenseManager().isAuthorizedByLicense(featureName);
 	}
 	
-	public static boolean isAuthorizedByLicense(String featureName, boolean ignoreExpiration) {
-		return getInstance().getLicenseManager().isAuthorizedByLicense(featureName, ignoreExpiration);
-	}
-	
-	public static String getLicenseType() {
-		return getInstance().getLicenseManager().getLicenseType();
-	}
-	
 	public static boolean inCompliance()
 	{
 		return getInstance().getLicenseManager().inCompliance();
@@ -95,11 +84,6 @@ public class LicenseChecker {
 	public static boolean validLicense(Calendar when)
 	{
 		return getInstance().getLicenseManager().validLicense(when);
-	}
-	
-	public static boolean validLicenseExists()
-	{
-		return getInstance().getLicenseManager().validLicenseExists();
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.DateTools.Resolution;
@@ -64,16 +63,16 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.util.search.Constants;
 
-/**
+
+/*********************************************************************
  * Object to hold a named search filter
- *
  * @author Peter Hurley
+ *
  */
-@SuppressWarnings("unchecked")
 public class SearchFilterToSearchBooleanConverter {  
 	
 	//Routine to convert a search filter into the form that Lucene wants 
-	public static Document convertSearchFilterToSearchBoolean(Document searchFilter, String currentBinderId) {
+   	public static Document convertSearchFilterToSearchBoolean(Document searchFilter, String currentBinderId) {
 		//Build the search query
 		Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(Constants.QUERY_ELEMENT);
@@ -250,7 +249,7 @@ public class SearchFilterToSearchBooleanConverter {
 					}
 				}
 				if (userId != null) {
-					usersGroups.addAll(profileDao.getApplicationLevelGroupMembership(userId, zoneId));
+					usersGroups.addAll(profileDao.getAllGroupMembership(userId, zoneId));
 				
 					Iterator teamMembershipsIt = binderModule.getTeamMemberships(userId).iterator();
 					while (teamMembershipsIt.hasNext()) {
@@ -359,16 +358,7 @@ public class SearchFilterToSearchBooleanConverter {
 				d = date.toDate();
 				return DateTools.dateToString(d, DateTools.Resolution.SECOND);
 			} catch (Exception e1) {
-				try {
-					DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
-					DateTime date = fmt.parseDateTime(dateOrDateTimeAsString);
-					date = date.withMillisOfDay(0).withZone(DateTimeZone.UTC);
-					d = date.toDate();
-					return DateTools.dateToString(d, DateTools.Resolution.DAY) + "*";
-				} catch (Exception e2) {
-					//No correct value, ignore
-				}
-				
+				// no correct value ignore
 			}
 		}
 		
@@ -390,17 +380,10 @@ public class SearchFilterToSearchBooleanConverter {
 				date = date.withZone(DateTimeZone.UTC);
 				d = date.toDate();
 			} catch (Exception e1) {
-				try {
-					DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
-					DateTime date = fmt.parseDateTime(dateAsString);
-					date = date.withZone(DateTimeZone.UTC);
-					d = date.toDate();
-				} catch (Exception e2) {
-					// this is old date format, try it, maybe there are old saved searches
-					DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
-					DateTime date = fmt.parseDateTime(dateAsString);
-					d = date.toDate();
-				}
+				// this is old date format, try it, maybe there are old saved searches
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
+				DateTime date = fmt.parseDateTime(dateAsString);
+				d = date.toDate();
 			}
 		}
 		
@@ -418,22 +401,15 @@ public class SearchFilterToSearchBooleanConverter {
 			d = date.toDate();
 		} catch (Exception e) {
 			try {
-				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
 				DateTime date = fmt.parseDateTime(dateAsString);
-				date = date.withMillisOfDay(DateHelper.MILIS_IN_THE_DAY).withZone(DateTimeZone.UTC);
+				date = date.withZone(DateTimeZone.UTC);
 				d = date.toDate();
-			} catch (Exception e2) {
-				try {
-					DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
-					DateTime date = fmt.parseDateTime(dateAsString);
-					date = date.withZone(DateTimeZone.UTC);
-					d = date.toDate();
-				} catch (Exception e1) {
-					// this is old date format, try it, maybe there are old saved searches
-					DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
-					DateTime date = fmt.parseDateTime(dateAsString);
-					d = date.toDate();
-				}
+			} catch (Exception e1) {
+				// this is old date format, try it, maybe there are old saved searches
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
+				DateTime date = fmt.parseDateTime(dateAsString);
+				d = date.toDate();
 			}
 		}
 		
@@ -850,13 +826,12 @@ public class SearchFilterToSearchBooleanConverter {
     					if (value.trim().equals("")) value = "2*";
     				}
     				
-    				boolean exactPhrase = true;
+    				String exactPhrase = "true";
     				if((valueType == null || value.contains("*")) ||
     						"text".equals(valueType) ||
     						Constants.TITLE_FIELD.equals(elementName))
-    					exactPhrase = false;
-    				
-    				field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, (exactPhrase ? Constants.TRUE : Constants.FALSE));
+    					exactPhrase = "false";
+    				field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, exactPhrase);
     				
     				if(valueType != null)
     					field.addAttribute(Constants.VALUE_TYPE_ATTRIBUTE, valueType);
@@ -1048,5 +1023,6 @@ public class SearchFilterToSearchBooleanConverter {
 		
 		searchText = "(Teaming OR title:Novell NOT Status:bad) AND birthDate:[20090505* TO 20100830*]";
 		System.out.println(lowerCaseSearchText(searchText, Locale.ENGLISH));
-	}	
+	}
+	
 }

@@ -174,22 +174,6 @@ public class GwtBrandingData
 	
 	
 	/**
-	 * Return the name of the image to be used in the login dialog. 
-	 */
-	public String getLoginDlgImageName()
-	{
-		return m_brandingExt.getLoginDlgImgName();
-	}
-	
-	/**
-	 * Return the url for the image to be used in the login dialog. 
-	 */
-	public String getLoginDlgImageUrl()
-	{
-		return m_brandingExt.getLoginDlgImgUrl();
-	}
-	
-	/**
 	 * Return whether or not we have any branding data.
 	 */
 	public boolean haveBranding()
@@ -325,21 +309,4 @@ public class GwtBrandingData
 	{
 		m_isSiteBranding = isSiteBranding;
 	}// end setIsSiteBranding()
-
-	/**
-	 * Set the name of the image to be used in the login dialog. 
-	 */
-	public void setLoginDlgImageName( String imgName )
-	{
-		m_brandingExt.setLoginDlgImgName( imgName );
-	}
-	
-	/**
-	 * Set the url of the image to be used login dialog.
-	 */
-	public void setLoginDlgImageUrl( String loginDlgImgUrl )
-	{
-		m_brandingExt.setLoginDlgImgUrl( loginDlgImgUrl );
-	}
-	
 }// end GwtBrandingData

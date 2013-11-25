@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,9 +30,11 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.i18n.client.Messages;
+
 
 /**
  * This interface is used to retrieve strings from the file
@@ -42,20 +44,12 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface GwtTeamingMessages extends Messages
 {
-	// Base product names.  Non-translatable?
-	String companyNovell();
-	String productFilr();
-	String productVibe();
-	
 	// Strings used in the "find" name-completion control
 	String nOfn( int value1, int value2, int value3 );
 	String searching();
 	String searchEntireSiteLabel();
 	String searchCurrentFolderWorkspaceLabel();
 
-	// Strings used in the "Preview landing page" dialog.
-	String previewLandingPageDlgHeader();
-	
 	// Strings used with the Custom Jsp widget in the landing page editor.
 	String customJspAssocEntry();
 	String customJspAssocFolder();
@@ -101,10 +95,6 @@ public interface GwtTeamingMessages extends Messages
 	String enhancedViewDisplayEntryDesc();
 	String enhancedViewDisplayFullEntry();
 	String enhancedViewDisplayFullEntryDesc();
-	String enhancedViewDisplayMyCalendarEvents();
-	String enhancedViewDisplayMyCalendarEventsDesc();
-	String enhancedViewDisplayMyTasks();
-	String enhancedViewDisplayMyTasksDesc();
 	String enhancedViewDisplayRecentEntries();
 	String enhancedViewDisplayRecentEntriesDesc();
 	String enhancedViewDisplayRecentEntriesList();
@@ -119,6 +109,10 @@ public interface GwtTeamingMessages extends Messages
 	String enhancedViewDisplayTaskFolderDesc();
 	String enhancedViewDisplaySurvey();
 	String enhancedViewDisplaySurveyDesc();
+	String enhancedViewDisplayMyTasks();
+	String enhancedViewDisplayMyTasksDesc();
+	String enhancedViewDisplayMyCalendarEvents();
+	String enhancedViewDisplayMyCalendarEventsDesc();
 	
 	// lpe stands for Landing Page Editor
 	String lpeAltCustomJsp();
@@ -137,7 +131,6 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltLinkURL();
 	String lpeAltList();
 	String lpeAltMoveElement();
-	String lpeAltPreviewLandingPage();
 	String lpeAltEnhancedView();
 	String lpeAltTable();
 	String lpeAltUtilityElement();
@@ -222,7 +215,6 @@ public interface GwtTeamingMessages extends Messages
 	String _8();
 	String _9();
 	String _10();
-	String apply();
 	String betaWithProduct( String productName );
 	String cancel();
 	String cantAccessEntry();
@@ -230,27 +222,18 @@ public interface GwtTeamingMessages extends Messages
 	String change();
 	String edit();
 	String find();
-	String login();
 	String missingRequestInfo();
-	String none();
 	String ok();
 	String oneMomentPlease();
 	String overflowLabel();
 	String percent();
-	String publicName();
 	String send();
-	String shareExternal();
-	String shareInternal();
-	String sharePublic();
 	String showBorder();
 	String showTitle();
-	String signOut();
 	String title();
 	String unknownFileUploadError( String error);
 	String vibeInsideLandingPage();
 	String close();
-	String yes();
-	String no();
 	
 	// Strings used with the Utility Element widget in the landing page editor.
 	String utilityElementHint();
@@ -302,127 +285,29 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AddBinderTag();
 	String rpcFailure_AddFavorite();
 	String rpcFailure_AddFavoriteLimitExceeded();
-	String rpcFailure_AddNewFolder();
-	String rpcFailure_CanAddFolder();
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CanModifyBinder();
-	String rpcFailure_ChangeEntryTypes();
-	String rpcFailure_ChangeFavoriteState();
 	String rpcFailure_CheckForActivityStreamChanges();
-	String rpcFailure_CheckNetFoldersStatus();
-	String rpcFailure_CheckNetFolderRootsStatus();
-	String rpcFailure_ClearUsersAdHocFolders();
-	String rpcFailure_ClearUsersDownload();
-	String rpcFailure_ClearUsersPublicCollection();
-	String rpcFailure_ClearUsersWebAccess();
 	String rpcFailure_CollapseSubtasks();
-	String rpcFailure_CopyEntries();
-	String rpcFailure_CreateApplicationAlreadyExists();
-	String rpcFailure_CreateApplicationGroupAlreadyExists();
-	String rpcFailure_CreateBlogPage();
-	String rpcFailure_CreateDummyMobileDevices();
-	String rpcFailure_CreateEmailReport();
 	String rpcFailure_CreateGroup();
 	String rpcFailure_CreateGroupAlreadyExists();
-	String rpcFailure_CreateUserAlreadyExists();
-	String rpcFailure_CreateLicenseReport();
-	String rpcFailure_CreateLoginReport();
-	String rpcFailure_CreateUserAccessReport();
-	String rpcFailure_CreateUserActivityReport();
-	String rpcFailure_DeleteMobileDevices();
-	String rpcFailure_DeleteNetFolders();
-	String rpcFailure_DeleteNetFolderServers();
 	String rpcFailure_DeleteGroups();
-	String rpcFailure_DeleteSelectedUsers();
-	String rpcFailure_DeleteSelections();
-	String rpcFailure_DeleteShares();
 	String rpcFailure_DeleteTasks();
-	String rpcFailure_DisableUsers();
-	String rpcFailure_DisableUsersAdHocFolders();
-	String rpcFailure_DisableUsersDownload();
-	String rpcFailure_DisableUsersPublicCollection();
-	String rpcFailure_DisableUsersWebAccess();
-	String rpcFailure_EmailPublicLink();
-	String rpcFailure_EnableUsers();
-	String rpcFailure_EnableUsersAdHocFolders();
-	String rpcFailure_EnableUsersDownload();
-	String rpcFailure_EnableUsersPublicCollection();
-	String rpcFailure_EnableUsersWebAccess();
 	String rpcFailure_EntryDoesNotExist();
-	String rpcFailure_executeCustomJsp();
-	String rpcFailure_executeEnhancedViewJsp();
 	String rpcFailure_ExpandBucket();
 	String rpcFailure_ExpandSubtasks();
-	String rpcFailure_FindUserByEmailAddress();
 	String rpcFailure_FolderDoesNotExist();
-	String rpcFailure_GetAccessoryStatus();
 	String rpcFailure_GetActivityStreamParams();
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAddMeetingUrl();
-	String rpcFailure_GetAdhocFolderSetting();
 	String rpcFailure_GetAdminActions();
-	String rpcFailure_GetAllNetFolders();
-	String rpcFailure_GetAllNetFolderServers();
 	String rpcFailure_GetAllGroups();
-	String rpcFailure_GetBinderDescription();
-	String rpcFailure_GetBinderFilters();
-	String rpcFailure_GetBinderOwnerAvatarUrl();
-	String rpcFailure_GetBinderStats();
-	String rpcFailure_GetBlogArchiveInfo();
-	String rpcFailure_GetBlogPages();
-	String rpcFailure_GetCalendarAppointments();
-	String rpcFailure_GetCalendarDisplayData();
-	String rpcFailure_GetCalendarNextPreviousPeriod();
-	String rpcFailure_GetCanAddEntities();
-	String rpcFailure_GetCanAddEntitiesToBinders();
-	String rpcFailure_GetClipboardTeamUsers();
-	String rpcFailure_GetClipboardUsers();
-	String rpcFailure_GetClipboardUsersFromList();
-	String rpcFailure_GetCollectionPointUrl();
-	String rpcFailure_GetDateStr();
-	String rpcFailure_GetDesktopAppDownloadInfo();
-	String rpcFailure_GetDownloadFileUrl();
-	String rpcFailure_GetEmailNotificationInfo();
-	String rpcFailure_GetEntityActionToolbarItems();
-	String rpcFailure_GetEntityPermalink();
-	String rpcFailure_GetEntityRights();
-	String rpcFailure_GetEntryComments();
-	String rpcFailure_GetEntryTypes();
-	String rpcFailure_getExecuteJspUrl();
-	String rpcFailure_GetFileConflictsInfo();
-	String rpcFailure_GetFileFolderEntries();
-	String rpcFailure_GetFileUrl();
-	String rpcFailure_GetFolderColumns();
-	String rpcFailure_GetFolderDisplayData();
-	String rpcFailure_GetFolderEntries();
-	String rpcFailure_GetFolderEntryDetails();
-	String rpcFailure_GetFolderRows();
-	String rpcFailure_GetFolderSortSetting();
-	String rpcFailure_GetFolderToolbarItems();
-	String rpcFailure_GetFooterToolbarItems();
-	String rpcFailure_GetGroupActionToolbarItems();
-	String rpcFailure_GetHtml5Specs();
-	String rpcFailure_GetJitsZoneConfig();
 	String rpcFailure_GetLandingPageData();
-	String rpcFailure_GetLdapConfig();
-	String rpcFailure_GetLdapServerData();
 	String rpcFailure_GetListOfAttachments();
-	String rpcFailure_GetLocales();
-	String rpcFailure_GetBinderAccessories();
-	String rpcFailure_GetBinderAccessory();
 	String rpcFailure_GetBinderInfo();
 	String rpcFailure_GetBinderPermalink();
 	String rpcFailure_GetBranding();
-	String rpcFailure_GetChangeLogsHtml();
-	String rpcFailure_GetClickOnTitleAction();
-	String rpcFailure_GetCreditsHtml();
-	String rpcFailure_GetDatabasePruneDlgConfiguration();
-	String rpcFailure_GetDataQuotaExceededHtml();
-	String rpcFailure_GetDataQuotaHighwaterExceededHtml();
 	String rpcFailure_GetDefaultActivityStream();
-	String rpcFailure_GetDefaultStorageId();
-	String rpcFailure_GetDiskUsageHtml();
-	String rpcFailure_GetDiskUsageInfo();
 	String rpcFailure_GetFileSyncAppConfiguration();
 	String rpcFailure_GetEntryPermalink();
 	String rpcFailure_GetFavorites();
@@ -431,354 +316,130 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderEntry();
 	String rpcFailure_GetGeneric();
 	String rpcFailure_GetGroupLdapQuery();
-	String rpcFailure_GetGroupMembershipType();
 	String rpcFailure_GetGroupMembership();
+	String rpcFailure_GetGroupMembershipType();
 	String rpcFailure_GwtGroups();
 	String rpcFailure_GetGwtUIInfo();
-	String rpcFailure_GetHelpUrl();
 	String rpcFailure_GetImUrl();
-	String rpcFailure_GetInheritedLandingPageProperties();
 	String rpcFailure_GetIsDynamicGroupMembershipAllowed();
-	String rpcFailure_GetLdapSyncResults();
-	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
-	String rpcFailure_GetMainPageInfo();
-	String rpcFailure_GetManageMobileDevicesInfo();
-	String rpcFailure_GetManageUsersInfo();
-	String rpcFailure_GetManageUsersState();
-	String rpcFailure_GetMobileAppsConfiguration();
-	String rpcFailure_GetMyFilesContainerInfo();
 	String rpcFailure_GetMyTeams();
-	String rpcFailure_GetNameCompletionSettings();
 	String rpcFailure_NumberOfMembers();
-	String rpcFailure_GetNetFolder();
-	String rpcFailure_GetNetFolderSyncStatistics();
-	String rpcFailure_GetNextPreviousFolderEntryInfo();
-	String rpcFailure_GetParentBinderPermalink();
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetPresenceInfo();
 	String rpcFailure_GetProfileAvatars();
-	String rpcFailure_GetProfileEntryInfo();
 	String rpcFailure_GetProfileInfo();
 	String rpcFailure_GetProfileStats();
-	String rpcFailure_GetProjectInfo();
-	String rpcFailure_GetPublicLinks();
 	String rpcFailure_GetRecentPlaces();
-	String rpcFailure_GetReportsInfo();
 	String rpcFailure_GetRootWorkspaceId();
 	String rpcFailure_GetSavedSearches();
-	String rpcFailure_GetSelectedUsersDetails();
-	String rpcFailure_GetSelectionDetails();
 	String rpcFailure_GetSelfRegInfo();
-	String rpcFailure_GetSendToFriendUrl();
-	String rpcFailure_GetShareBinderPageUrl();
-	String rpcFailure_GetSharedViewState();
-	String rpcFailure_GetSharingInfo();
-	String rpcFailure_GetShareLists();
-	String rpcFailure_GetSignGuestbookUrl();
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
 	String rpcFailure_GetSubscriptionData();
-	String rpcFailure_GetSystemErrorLogUrl();
 	String rpcFailure_GetTags();
 	String rpcFailure_GetTagRights();
 	String rpcFailure_GetTagSortOrder();
-	String rpcFailure_GetTaskDisplayData();
 	String rpcFailure_GetTaskLinkage();
 	String rpcFailure_GetTaskList();
 	String rpcFailure_GetTeamManagement();
 	String rpcFailure_GetTeamMembership();
 	String rpcFailure_GetTeams();
-	String rpcFailure_GetTimeZones();
 	String rpcFailure_GetToolbarItems();
 	String rpcFailure_GetTopRanked();
 	String rpcFailure_GetTrackedPeople();
 	String rpcFailure_GetTrackedPlaces();
-	String rpcFailure_GetTrashUrl();
 	String rpcFailure_GetTree();
 	String rpcFailure_GetUpgradeInfo();
-	String rpcFailure_GetUserAccessInfo();
-	String rpcFailure_GetUserAvatar();
-	String rpcFailure_GetUserFileSyncAppConfig();
-	String rpcFailure_GetUserMobileAppsConfiguration();
 	String rpcFailure_GetUserPermalink();
-	String rpcFailure_GetUserProperties();
-	String rpcFailure_GetUserSharingRightsInfo();
-	String rpcFailure_GetUserWorkspaceInfo();
 	String rpcFailure_GetUserWorkspaceUrl();
-	String rpcFailure_GetViewFileUrl();
 	String rpcFailure_GetViewFolderEntryUrl();
-	String rpcFailure_GetViewInfo();
-	String rpcFailure_GetWhoHasAccess();
-	String rpcFailure_GetWorkspaceContributorIds();
-	String rpcFailure_GetXssHtml();
-	String rpcFailure_GetZipDownloadUrl();
-	String rpcFailure_GetZoneShareRights();
-	String rpcFailure_HideShares();
-	String rpcFailure_ImportIcalByUrl();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_LdapGuidNotConfigured();
-	String rpcFailure_LockEntries();
 	String rpcFailure_markupStringReplacement();
 	String rpcFailure_ModifyGroup();
-	String rpcFailure_MoveEntries();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
-	String rpcFailure_PinEntry();
 	String rpcFailure_PurgeTasks();
 	String rpcFailure_QViewMicroBlog();
 	String rpcFailure_RemoveBinderTag();
 	String rpcFailure_RemoveFavorite();
 	String rpcFailure_RemoveSavedSearch();
-	String rpcFailure_RenameEntity_File();
-	String rpcFailure_RenameEntity_Folder();
-	String rpcFailure_RenameEntity_Unknown();
-	String rpcFailure_RenameEntity_Workspace();
 	String rpcFailure_ReplyToEntry();
-	String rpcFailure_SaveAccessoryStatus();
-	String rpcFailure_SaveAdhocFolderSetting();
-	String rpcFailure_SaveBinderRegionState();
-	String rpcFailure_SaveCalendarDayView();
-	String rpcFailure_SaveCalendarHours();
-	String rpcFailure_SaveCalendarSettings();
-	String rpcFailure_SaveCalendarShow();
-	String rpcFailure_SaveClipboardUsers();
-	String rpcFailure_SaveColumnWidths();
-	String rpcFailure_SaveEmailNotificationInfo();
 	String rpcFailure_SaveFileSyncAppConfiguration();
-	String rpcFailure_SaveFolderColumns();
-	String rpcFailure_SaveFolderEntryDlgPosition();
-	String rpcFailure_SaveFolderPinningState();
-	String rpcFailure_SaveFolderSort();
-	String rpcFailure_SaveLdapConfig();
-	String rpcFailure_SaveManageUsersState();
-	String rpcFailure_SaveNameCompletionSettings();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
-	String rpcFailure_SaveSharedFilesState();
-	String rpcFailure_SaveShareLists();
-	String rpcFailure_SaveSharedViewState();
 	String rpcFailure_SaveSubscriptionData();
 	String rpcFailure_SaveTags();
 	String rpcFailure_SaveTagSortOrder();
 	String rpcFailure_SaveTaskCompleted();
 	String rpcFailure_SaveTaskDueDate();
-	String rpcFailure_SaveTaskGraphState();
 	String rpcFailure_SaveTaskLinkage();
 	String rpcFailure_SaveTaskPriority();
 	String rpcFailure_SaveTaskSort();
 	String rpcFailure_SaveTaskStatus();
-	String rpcFailure_SaveUserAccessConfig();
 	String rpcFailure_SaveWhatsNewShowSetting();
-	String rpcFailure_SaveZoneShareRights();
 	String rpcFailure_Search();
-	String rpcFailure_SendForgottenPwdEmail();
-	String rpcFailure_SendNotificationEmail();
-	String rpcFailure_SetDesktopAppDownloadVisibility();
-	String rpcFailure_SetEntriesPinState();
-	String rpcFailure_SetMobileDevicesWipeScheduledState();
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetUnseen();
 	String rpcFailure_ShareEntry();
-	String rpcFailure_ShowShares();
-	String rpcFailure_StartLdapSync();
-	String rpcFailure_StartLdapSyncPreview();
-	String rpcFailure_StopSyncNetFolders();
-	String rpcFailure_SyncNetFolders();
-	String rpcFailure_SyncNetFolderServer();
-	String rpcFailure_SyncNetFolderRoots();
 	String rpcFailure_TestGroupMembershipCriteria();
-	String rpcFailure_ErrorTestingNetFolderServerConnection();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
-	String rpcFailure_TrashPurgeAll();
-	String rpcFailure_TrashPurgeSelectedEntities();
-	String rpcFailure_TrashRestoreAll();
-	String rpcFailure_TrashRestoreSelectedEntities();
 	String rpcFailure_UnknownCause();
 	String rpcFailure_UnknownException();
-	String rpcFailure_UnlockEntries();
-	String rpcFailure_UnpinEntry();
 	String rpcFailure_UntrackingBinder();
 	String rpcFailure_UntrackingPerson();
 	String rpcFailure_UpdateCalculatedDatesBinder();
 	String rpcFailure_UpdateCalculatedDatesTask();
-	String rpcFailure_UpdateCalendarEvent();
-	String rpcFailure_UpdateCalendarEventAppointment();
-	String rpcFailure_UpdateCalendarEventTask();
 	String rpcFailure_UpdateFavorites();
-	String rpcFailure_UploadFileBlob();
-	String rpcFailure_SetUserSharingRightsInfo();
-	String rpcFailure_ValidateEmailAddress();
-	String rpcFailure_ValidateShareLists();
-	String rpcFailure_ValidateUploads();
 
 	// Strings used to describe various split point load failures.
-	String codeSplitFailure_AccessoriesPanel();
 	String codeSplitFailure_ActivityStreamCtrl();
-	String codeSplitFailure_AddFilesDlg();
-	String codeSplitFailure_AddFilesHtml5Popup();
-	String codeSplitFailure_AddNewFolderDlg();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
-	String codeSplitFailure_AlertDlg();
-	String codeSplitFailure_BinderOwnerAvatarPanel();
-	String codeSplitFailure_BlogArchiveCtrl();
-	String codeSplitFailure_BlogFolderView();
-	String codeSplitFailure_BlogGlobalTagsCtrl();
-	String codeSplitFailure_BlogPageCtrl();
-	String codeSplitFailure_BreadCrumbPanel();
-	String codeSplitFailure_CalendarFolderView();
-	String codeSplitFailure_CalendarNavigationPanel();
-	String codeSplitFailure_CalendarSettingsDlg();
-	String codeSplitFailure_ChangeEntryTypesDlg();
-	String codeSplitFailure_ChangePasswordDlg();
-	String codeSplitFailure_ChildBindersWidget();
-	String codeSplitFailure_ClipboardDlg();
-	String codeSplitFailure_CloudFolderAuthenticationDlg();
-	String codeSplitFailure_CollectionView();
-	String codeSplitFailure_ConfigureAdhocFoldersDlg();
-	String codeSplitFailure_ConfigureFileSyncAppDlg();
-	String codeSplitFailure_ConfigureMobileAppsDlg();
-	String codeSplitFailure_ConfigureUserAccessDlg();
-	String codeSplitFailure_ConfigureUserFileSyncAppDlg();
-	String codeSplitFailure_ConfigureUserMobileAppsDlg();
-	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
-	String codeSplitFailure_CreateBlogPageDlg();
-	String codeSplitFailure_CopyMoveEntriesDlg();
-	String codeSplitFailure_CopyPublicLinkDlg();
-	String codeSplitFailure_DeleteSelectedUsersDlg();
-	String codeSplitFailure_DeleteSelectionsDlg();
-	String codeSplitFailure_DescriptionPanel();
-	String codeSplitFailure_DesktopAppDownloadControl();
-	String codeSplitFailure_DesktopAppDownloadDlg();
-	String codeSplitFailure_DiscussionFolderView();
-	String codeSplitFailure_DiscussionWSView();
-	String codeSplitFailure_DownloadPanel();
 	String codeSplitFailure_EditBrandingDlg();
-	String codeSplitFailure_EditLdapConfigDlg();
-	String codeSplitFailure_EditLdapSearchDlg();
-	String codeSplitFailure_EditLdapServerConfigDlg();
-	String codeSplitFailure_EditNetFolderRightsDlg();
-	String codeSplitFailure_EditShareDlg();
-	String codeSplitFailure_EditShareNoteDlg();
-	String codeSplitFailure_EditShareRightsDlg();
-	String codeSplitFailure_EditUserZoneShareRightsDlg();
-	String codeSplitFailure_EditZoneShareSettingsDlg();
-	String codeSplitFailure_EmailNotificationDlg();
-	String codeSplitFailure_EmailPublicLinkDlg();
-	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
-	String codeSplitFailure_FilterPanel();
-	String codeSplitFailure_FileConflictsDlg();
-	String codeSplitFailure_FileFolderView();
 	String codeSplitFailure_FindCtrl();
-	String codeSplitFailure_FolderEntryComposite();
-	String codeSplitFailure_FolderEntryDlg();
-	String codeSplitFailure_FolderEntryView();
 	String codeSplitFailure_FolderOptionsDlg();
-	String codeSplitFailure_FolderColumnsDlg();
-	String codeSplitFailure_FooterPanel();
-	String codeSplitFailure_ForgottenPwdDlg();
-	String codeSplitFailure_GenericWSView();
-	String codeSplitFailure_GuestbookFolderView();
-	String codeSplitFailure_HomeWSView();
-	String codeSplitFailure_Html5UploadHelper();
-	String codeSplitFailure_ImportIcalByFileDlg();
-	String codeSplitFailure_ImportIcalByUrlDlg();
-	String codeSplitFailure_ImportProfilesDlg();
-	String codeSplitFailure_JitsZoneConfigDlg();
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
-	String codeSplitFailure_LandingPageWidget();
-	String codeSplitFailure_LdapBrowserDlg();
-	String codeSplitFailure_LdapSyncResultsDlg();
 	String codeSplitFailure_LoginDlg();
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();
-	String codeSplitFailure_ManageCommentsComposite();
-	String codeSplitFailure_ManageCommentsDlg();
-	String codeSplitFailure_ManageDatabasePruneDlg();
-	String codeSplitFailure_ManageGroupsDlg();
-	String codeSplitFailure_ManageMobileDevicesDlg();
-	String codeSplitFailure_ManageNetFoldersDlg();
-	String codeSplitFailure_ManageNetFolderServersDlg();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
-	String codeSplitFailure_ManageUsersDlg();
-	String codeSplitFailure_MicroBlogFolderView();
-	String codeSplitFailure_MilestoneFolderView();
-	String codeSplitFailure_MirroredFileFolderView();
-	String codeSplitFailure_MobileDevicesView();
-	String codeSplitFailure_ModifyGroupDlg();
-	String codeSplitFailure_ModifyNetFolderDlg();
-	String codeSplitFailure_ModifyNetFolderServerDlg();
-	String codeSplitFailure_MultiErrorAlertDlg();
-	String codeSplitFailure_NetFolderSelectPrincipalsWidget();
-	String codeSplitFailure_NetFoldersWSView();
-	String codeSplitFailure_NetFolderSyncStatisticsDlg();
-	String codeSplitFailure_PersonalWorkspacesView();
 	String codeSplitFailure_ProfileAttributeWidget();
-	String codeSplitFailure_ProfileEntryDlg();
 	String codeSplitFailure_ProfilePage();
-	String codeSplitFailure_ProgressDlg();
-	String codeSplitFailure_ProjectInfoWidget();
-	String codeSplitFailure_ProjectStatsWidget();
-	String codeSplitFailure_ProjectManagementWSView();
-	String codeSplitFailure_PromptDlg();
 	String codeSplitFailure_QuickViewDlg();
-	String codeSplitFailure_RenameEntityDlg();
-	String codeSplitFailure_RunAReportDlg();
 	String codeSplitFailure_SearchOptionsComposite();
-	String codeSplitFailure_SelectPrincipalsWidget();
-	String codeSplitFailure_SurveyFolderView();
-	String codeSplitFailure_ShareExpirationDlg();
-	String codeSplitFailure_ShareThisDlg();
-	String codeSplitFailure_ShareWithPublicInfoDlg();
-	String codeSplitFailure_ShareWithTeamsDlg();
-	String codeSplitFailure_SizeColumnsDlg();
 	String codeSplitFailure_TagThisDlg();
-	String codeSplitFailure_TaskFolderView();
-	String codeSplitFailure_TaskGraphsPanel();
 	String codeSplitFailure_TaskListing();
-	String codeSplitFailure_TeamWSView();
 	String codeSplitFailure_TinyMCEDlg();
-	String codeSplitFailure_TrashView();
-	String codeSplitFailure_UserPropertiesDlg();
-	String codeSplitFailure_UserShareRightsDlg();
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
-	String codeSplitFailure_WhoHasAccessDlg();
 	String codeSplitFailure_WorkspaceTreeControl();
-	String codeSplitFailure_ZoneShareRightsSelectPrincipalsWidget();
 	
 	// Strings used to describe various event handling errors.
-	String eventHandling_NoActionMenuHandler(         String eventName                  );
-	String eventHandling_NoContextMenuEventHandler(   String eventName                  );
-	String eventHandling_NoEntryMenuHandler(          String eventName                  );
-	String eventHandling_NoEventHandlerDefined(       String eventName, String className);
-	String eventHandling_NonSimpleEvent(              String eventName, String className);
-	String eventHandling_UnhandledEvent(              String eventName, String className);
-	String eventHandling_UnknownEditInPlaceEditorType(String editorType                 );
-	String eventHandling_Validation_NoHandler(        String eventName, String className);
-	String eventHandling_Validation_NotListed(        String eventName, String className);
-	String eventHandling_Validation_NoValidator(      String eventName                  );
+	String eventHandling_NoContextMenuEventHandler(String eventName                  );
+	String eventHandling_NoEventHandlerDefined(    String eventName, String className);
+	String eventHandling_NonSimpleEvent(           String eventName, String className);
+	String eventHandling_UnhandledEvent(           String eventName, String className);
+	String eventHandling_Validation_NoHandler(     String eventName, String className);
+	String eventHandling_Validation_NotListed(     String eventName, String className);
+	String eventHandling_Validation_NoValidator(   String eventName                  );
 	
 	// Strings used with the MastHead
 	String adminMenuItem();
 	String administrationHint();
-	String downloadFilrDesktopApp();
-	String downloadVibeDesktopApp();
 	String guest();
 	String helpMenuItem();
 	String helpHint();
-	String invokeUserListHint();
 	String loginHint();
 	String logoutHint();
-	String masthead_BrowseFilr();
 	String myWorkspaceHint();
 	String newsFeedMenuItem();
 	String personalPrefsMenuItem();
@@ -793,26 +454,18 @@ public interface GwtTeamingMessages extends Messages
 	String backgroundColorLabel();
 	String binderOverridesBrandingLabel();
 	String brandingDlgHeader();
-	String brandingDlgSiteBrandingHeader();
 	String brandingRulesLabel();
 	String backgroundImgLabel();
 	String cantEditBranding();
 	String clearBrandingLabel();
-	String colorDescription();
 	String colorHint();
 	String displayColorPicker();
 	String editAdvancedBranding();
-	String editBrandingDlg_CurrentImage();
-	String editBrandingDlg_CustomLoginDlgImg();
-	String editBrandingDlg_LoginDialogCaption();
-	String editBrandingDlg_LoginDialogImgHint();
-	String editBrandingDlg_UploadLabel();
 	String imgNone();
 	String invalidBackgroundColor( String color );
 	String invalidTextColor( String color );
 	String kablinkTeaming();
 	String noImagesAvailable();
-	String novellFilr();
 	String novellTeaming();
 	String sampleText();
 	String siteAndBinderBrandingLabel();
@@ -823,49 +476,14 @@ public interface GwtTeamingMessages extends Messages
 	String useAdvancedBrandingLabel();
 	
 	// Strings used in the login dialog.
-	String loginDlg_AuthProviderAol();
-	String loginDlg_AuthProviderGoogle();
-	String loginDlg_AuthProviderMyOpenId();
-	String loginDlg_AuthProviderVerisign();
-	String loginDlg_AuthProviderYahoo();
-	String loginDlg_AuthProviderUnknown();
-	String loginDlg_AuthenticateUsingOpenID( String providerName );
-	String loginDlg_ConfirmationText();
-	String loginDlg_EnterAsGuest();
-	String loginDlg_externalUserSelfRegFailed();
-	String loginDlg_ExtUserPwdResetHint();
-	String loginDlg_ExtUserRegistrationHint();
-	String loginDlg_FirstNameLabel();
-	String loginDlg_ForgottenPwd();
-	String loginDlg_firstNameRequired();
-	String loginDlg_LastNameLabel();
-	String loginDlg_lastNameRequired();
-	String loginDlg_OrLabel();
-	String loginDlg_PwdLabel();
-	String loginDlg_pwdRequired();
-	String loginDlg_PasswordResetComplete();
-	String loginDlg_PasswordResetRequested();
-	String loginDlg_PwdResetFailed();
-	String loginDlg_pwdDoNotMatch();
-	String loginDlg_ReenterPwdLabel();
-	String loginDlg_Register();
-	String loginDlg_RegisterUsingSelfReg();
-	String loginDlg_ResetPwd();
 	String loginDlgAuthenticating();
 	String loginDlgCreateNewAccount();
 	String loginDlgKablinkHeader();
 	String loginDlgLoginFailed();
-	String loginDlgLoginWebAccessRestricted();
-	String loginDlgNovellFilrHeader();
 	String loginDlgNovellHeader();
-	String loginDlgOpenIDIdentity();
 	String loginDlgPassword();
 	String loginDlgReset();
-	String loginDlgSelectAuthProviderLabel();
-	String loginDlgUseOpenId();
 	String loginDlgUserId();
-	String loginDlgDownloadingFile1();
-	String loginDlgDownloadingFile2();
 	
 	// Strings used in the personal preferences dialog.
 	String accessibleMode();
@@ -874,12 +492,6 @@ public interface GwtTeamingMessages extends Messages
 	String numEntriesPerPageCannotBeBlank();
 	String numEntriesPerPageInvalidNum();
 	String numEntriesPerPageLabel();
-	String fileLinkActionLabel();
-	String fileLinkActionOption_Download();
-	String fileLinkActionOption_ViewDetails();
-	String fileLinkActionOption_ViewHtmlElseDetails();
-	String fileLinkActionOption_ViewHtmlElseDownload();
-	String hidePublicCollectionLabel();
 	String personalPreferencesDlgHeader();
 	String showEntriesAsAnOverlay();
 	String showEntriesInNewPage();
@@ -904,33 +516,6 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuBarViews();
 	String mainMenuBarWhatsNew();
 	String mainMenuBarWorkspace();
-	String mainMenuClipboardDlgAddPeople();
-	String mainMenuClipboardDlgAddTeam();
-	String mainMenuClipboardDlgClearAll();
-	String mainMenuClipboardDlgDelete();
-	String mainMenuClipboardDlgEmpty();
-	String mainMenuClipboardDlgHeader();
-	String mainMenuClipboardDlgReading();
-	String mainMenuClipboardDlgSelectAll();
-	String mainMenuEmailNotificationDlgAltHelpAll();
-	String mainMenuEmailNotificationDlgAltHelpOverride();
-	String mainMenuEmailNotificationDlgAltListCollapse();
-	String mainMenuEmailNotificationDlgAltListExpand();
-	String mainMenuEmailNotificationDlgBannerFilr();
-	String mainMenuEmailNotificationDlgBannerVibe();
-	String mainMenuEmailNotificationDlgClearEntrySubscription();
-	String mainMenuEmailNotificationDlgDigest();
-	String mainMenuEmailNotificationDlgHeader();
-	String mainMenuEmailNotificationDlgIndividualMessages();
-	String mainMenuEmailNotificationDlgIndividualMessagesNoAttachments();
-	String mainMenuEmailNotificationDlgMessageType();
-	String mainMenuEmailNotificationDlgMultipleItems(int count);
-	String mainMenuEmailNotificationDlgNoChanges();
-	String mainMenuEmailNotificationDlgNoTitle();
-	String mainMenuEmailNotificationDlgOverride();
-	String mainMenuEmailNotificationDlgReading();
-	String mainMenuEmailNotificationDlgTextMessaging();
-	String mainMenuErrorNoContributorsToEmail();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();
 	String mainMenuFavoritesDlgMoveDown();
@@ -945,30 +530,9 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFolderOptionsDlgImportCalendar();
 	String mainMenuFolderOptionsDlgImportTask();
 	String mainMenuFolderOptionsNoOptions();
-	String mainMenuFolderOptionsUnexpectedEvent(String eventName);
-	String mainMenuImportIcalByFileDlgErrorBogusJSONData(String jsonData);
-	String mainMenuImportIcalByFileDlgErrorFailed(String detail);
-	String mainMenuImportIcalByFileDlgErrorNoFile();
-	String mainMenuImportIcalByFileDlgErrorParse(String detail);
-	String mainMenuImportIcalByFileDlgHeader(String importType);
-	String mainMenuImportIcalByFileDlgHint();
-	String mainMenuImportIcalByFileDlgSuccess(String added, String modified);
-	String mainMenuImportIcalByUrlDlgErrorFailed(String detail);
-	String mainMenuImportIcalByUrlDlgErrorNoUrl();
-	String mainMenuImportIcalByUrlDlgErrorParse(String detail);
-	String mainMenuImportIcalByUrlDlgErrorUnknown();
-	String mainMenuImportIcalByUrlDlgErrorUrl(String detail);
-	String mainMenuImportIcalByUrlDlgHeader(String importType);
-	String mainMenuImportIcalByUrlDlgHintCalendar();
-	String mainMenuImportIcalByUrlDlgHintTask();
-	String mainMenuImportIcalByUrlDlgSuccess(String added, String modified);
-	String mainMenuImportIcalTypeError();
-	String mainMenuImportIcalTypeCalendar();
-	String mainMenuImportIcalTypeTask();
 	String mainMenuManageEditTeam();
 	String mainMenuManageEmailTeam();
 	String mainMenuManageFolderOptions();
-	String mainMenuManageFolderColumns();
 	String mainMenuManageSavedSearchesDlgDeleteSearch();
 	String mainMenuManageSavedSearchesDlgErrorSearchDuplicate();
 	String mainMenuManageSavedSearchesDlgErrorSearchHasInvalidData();
@@ -986,9 +550,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuMyTeamsNoTeams();
 	String mainMenuMyGroupsNoGroups();
 	String mainMenuRecentPlacesNoPlaces();
-	String mainMenuRenameBinderDlgErrorBogusBinder(String binderType);
-	String mainMenuSearchEmpty();
-	String mainMenuSearchImageAlt();
+	String mainMenuSearchButtonAlt();
 	String mainMenuSearchOptionsAdvancedSearch();
 	String mainMenuSearchOptionsCloseAlt();
 	String mainMenuSearchOptionsHeader();
@@ -1025,56 +587,13 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuViewsWhatsNewInWorkspace();
 	String mainMenuViewsWhatsUnreadInFolder();
 	String mainMenuViewsWhatsUnreadInWorkspace();
-	String mainMenuWhoHasAccessDlgGroupsWithAccess();
-	String mainMenuWhoHasAccessDlgHeader();
-	String mainMenuWhoHasAccessDlgNone();
-	String mainMenuWhoHasAccessDlgReading();
-	String mainMenuWhoHasAccessDlgUsersWithAccess();
-	
-	// Strings used by the 'Add New Folder' dialog.
-	String addNewFolderDlgError_AddFailed();
-	String addNewFolderDlgError_NoName();
-	String addNewFolderDlgHeader();
-	String addNewFolderDlgName();
-	String addNewFolderDlgType();
-	String addNewFolderDlg_Type_BoxDotNet();
-	String addNewFolderDlg_Type_DropBox();
-	String addNewFolderDlg_Type_GoogleDrive();
-	String addNewFolderDlg_Type_PersonalStorage();
-	String addNewFolderDlg_Type_SkyDrive();
-
-	// Strings used by the 'Calendar Settings' dialog.
-	String calendarSettingsDlg_Day_Sunday();
-	String calendarSettingsDlg_Day_Monday();
-	String calendarSettingsDlg_Day_Tuesday();
-	String calendarSettingsDlg_Day_Wednesday();
-	String calendarSettingsDlg_Day_Thursday();
-	String calendarSettingsDlg_Day_Friday();
-	String calendarSettingsDlg_Day_Saturday();
-	String calendarSettingsDlg_Header();
-	String calendarSettingsDlg_Label_WeekStartsOn();
-	String calendarSettingsDlg_Label_WorkDayStartsAt();
 
 	// Strings used in the workspace tree control.
-	String treeAltConfigureFolder();
-	String treeAltConfigureWorkspace();
-	String treeAltEntry();
-	String treeAltFolder();
-	String treeAltWorkspace();
 	String treeBucketHover( String firstPart, String lastPart );
 	String treeCloseActivityStreams();
 	String treeCloseActivityStreamsHint();
 	String treeCloseBreadCrumbs();
-	String treeErrorNoManageMenu();
-	String treeIntentionallyLeftBlank();
-	String treeInternalErrorNoCollection();
-	String treeInternalErrorRefreshNotSidebar();
-	String treeInternalErrorRerootNotSidebar();
-	String treePreviousCollection();
-	String treePreviousFolder();
 	String treeSiteWide();
-	String treeTrash();
-	String treeWSAndFolders();
 	
 	// Strings used in the "Add File Attachment" dialog.
 	String addFileAttachmentDlgHeader();
@@ -1282,9 +801,6 @@ public interface GwtTeamingMessages extends Messages
 	String qViewErrorWorkspaceDoesNotExist();
 	String qViewErrorDeletedWorkspace();
 	String qViewErrorNoProfile();
-	String qViewErrorNoUserForQuickView();
-	String qViewErrorCantTrack();
-	String qViewErrorCantUntrack();
 
 	//Profile
 	String profileCallMe();
@@ -1296,11 +812,9 @@ public interface GwtTeamingMessages extends Messages
 	String profileSavedSearches();
 	String profileTeams();
 	String profileGroups();
-	String profileInsufficientViewProfileRights();
 	String profileFollowing();
 	String profileAboutMe();
 	String profileDataQuota();
-	String profileQuotaMegaBytes(String size);
 	String profileQuotaUsed();
 	String profileSetDefaultAvatar();
 	String profileRemoveAvatar();
@@ -1316,13 +830,9 @@ public interface GwtTeamingMessages extends Messages
 	String presenceUnknown();
 
 	// The following strings are used in the Administration Information dialog
-	String adminInfoDlgEnterProxyCredentials( String serverName );
-	String adminInfoDlgExpiredLicense( String productName );
-	String adminInfoDlgFilrTasksToBeCompleted();
 	String adminInfoDlgHeader();
 	String adminInfoDlgLoginAsAdmin();
 	String adminInfoDlgRelease();
-	String adminInfoDlgSelectNetFolderServerType( String serverName );
 	String adminInfoDlgUpgradeDefinitions();
 	String adminInfoDlgUpgradeSearchIndex();
 	String adminInfoDlgUpgradeTasksNotDone();
@@ -1331,11 +841,8 @@ public interface GwtTeamingMessages extends Messages
 	// The following strings are used in the activity stream control.
 	String actionsLabel();
 	String autoRefreshIsPaused();
-	String confirmDeleteEntry();
 	String followedPeople();
 	String followedPlaces();
-	String hideComments();
-	String hideDesc();
 	String markEntryAsReadHint();
 	String myFavorites();
 	String myTeams();
@@ -1355,125 +862,35 @@ public interface GwtTeamingMessages extends Messages
 	String siteWide();
 	String showAll();
 	String showAllEntries();
-	String showAllComments();
-	String showEntireDescHint();
-	String showPartialDescHint();
 	String showUnread();
 	String showUnreadEntries();
 	String whatsNew();
 	String whatsNewWithName( String name );
 	
 	// The following strings are used in the activity stream "reply to entry" ui
-	String addAComment();
 	String defaultReplyTitle( String title );
 	String noReplyText();
+	String replyToEntryLabel();
 	
 	// The following strings are used in the activity stream "share this entry" ui.
 	String addRecipient();
 	String commentsLabel();
-	String copyPublicLinkTheseItems( String product );
 	String defaultShareTitle( String title );
-	String emailPublicLinkTheseItems( String product );
-	String manageShares();
 	String noShareRecipients();
 	String noShareRecipientsOrTeams();
-	String removeShareHint();
-	String shareAccess();
+	String removeRecipientHint();
 	String shareCaption();
-	String shareDlg_accessLabel();
-	String shareDlg_addExternalUserTitle();
-	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
-	String shareDlg_cantShareWithAllExternalUsersGroup();
-	String shareDlg_cantShareWithAllInternalUsersGroup();
-	String shareDlg_cantShareWithExternalUser();
-	String shareDlg_cantShareWithPublic();
-	String shareDlg_cantShareWithYourself();
-	String shareDlg_clickToAddNote();
-	String shareDlg_contributor();
-	String shareDlg_deleteButton();
-	String shareDlg_editButton();
-	String shareDlg_editor();
-	String shareDlg_emailAddressInvalidPrompt();
-	String shareDlg_emailAddressInvalid_blDomain();
-	String shareDlg_emailAddressInvalid_blEMA();
-	String shareDlg_emailAddressInvalid_wl();
-	String shareDlg_expiresAfter( String after );
-	String shareDlg_expiresLabel();
-	String shareDlg_expiresNever();
-	String shareDlg_expiresOn( String on );
-	String shareDlg_fileLabel();
-	String shareDlg_findByFileLabel();
-	String shareDlg_findByFolderLabel();
-	String shareDlg_findByUserLabel();
-	String shareDlg_findAllShares();
-	String shareDlg_findShareItemsBy();
-	String shareDlg_findSharesByFile();
-	String shareDlg_findSharesByFolder();
-	String shareDlg_findSharesByHint();
-	String shareDlg_findSharesByUser();
-	String shareDlg_folderLabel();
-	String shareDlg_makePublic();
-	String shareDlg_manageShares();
-	String shareDlg_manageMultipleItems( int numItems );
-	String shareDlg_noNote();
-	String shareDlg_noTeamsToShareWith();
-	String shareDlg_noteLabel();
-	String shareDlg_notifyLabel();
-	String shareDlg_publicUrlLabel();
-	String shareDlg_readingShareInfo();
-	String shareDlg_reshareExternal();
-	String shareDlg_reshareInternal();
-	String shareDlg_reshareLabel();
-	String shareDlg_reshareNo();
-	String shareDlg_resharePublic();
-	String shareDlg_rightsLabel();
-	String shareDlg_savingShareInfo();
-	String shareDlg_selectMethodToFindShares();
-	String shareDlg_selectSharesToDelete();
-	String shareDlg_selectSharesToEdit();
-	String shareDlg_sendingNotificationEmail();
-	String shareDlg_sharedByLabel();
-	String shareDlg_sharedWithCol();
-	String shareDlg_shareLabel();
-	String shareDlg_sharingLabel();
-	String shareDlg_sharePublicTitle();
-	String shareDlg_viewer();
-	String shareEntityName();
 	String shareErrors();
-	String shareExpires();
 	String shareHint();
 	String shareName();
-	String shareNote();
-	String shareRecipientType();
-	String shareRecipientTypeExternalUser();
-	String shareRecipientTypeGroup();
-	String shareRecipientTypePublic();
-	String shareRecipientTypeTeam();
-	String shareRecipientTypeUser();
-	String shareSharedBy();
-	String shareSharedWith();
-	String shareTheseItems();
+	String shareType();
+	String shareTypeGroup();
+	String shareTypeUser();
 	String shareWithGroups();
 	String shareWithTeams();
 	String shareWithUsers();
-	String sharingMultipleItems( int numItems );
 	String unknownShareType();
 	String usersWithoutRights();
-	
-	// The following strings are using in the "share expiration" dialog
-	String shareExpirationDlg_cantEnterPriorDate();
-	String shareExpirationDlg_caption();
-	String shareExpirationDlg_days();
-	String shareExpirationDlg_expiresAfter();
-	String shareExpirationDlg_expiresLabel();
-	String shareExpirationDlg_expiresNever();
-	String shareExpirationDlg_expiresOn();
-	String shareExpirationDlg_noDateEntered();
-	String shareExpirationDlg_noDaysEntered();
-	
-	// The following strings are used in the "share with teams" dialog
-	String shareWithTeamsDlg_caption();
-	String shareWithTeamsDlg_Instructions();
 	
 	// The following strings are used in the Group Membership popup
 	String allUsersGroupDesc();
@@ -1510,15 +927,12 @@ public interface GwtTeamingMessages extends Messages
 	String hoverWorkspaceTrash();
 
 	// The following strings are used in the "Actions" popup menu.
-	String deleteEntry();
 	String markRead();
 	String markUnread();
 	String reply();
-	String sendToFriend();
 	String share();
 	String subscribe();
 	String tag();
-	String viewDetails();
 	
 	// The following strings are used in the "Subscribe to Entry" dialog.
 	String cantSubscribeNoEmailAddresses();
@@ -1572,16 +986,14 @@ public interface GwtTeamingMessages extends Messages
 	// The following are used for task folder listing.
 	String taskAltDateCalculated();
 	String taskAltDelete();
+	String taskAltFilterOff();
+	String taskAltFilterOn();
 	String taskAltHierarchyDisabled();
-	String taskAltLocationGotoThisFolder();
-	String taskAltLocationIsThisFolder();
 	String taskAltMoveDown();
 	String taskAltMoveLeft();
 	String taskAltMoveRight();
 	String taskAltMoveUp();
-	String taskAltParentWithDurationError();;
 	String taskAltPurge();
-	String taskAltTaskActions();
 	String taskAltTaskClosed();
 	String taskAltTaskUnread();
 	String taskCantMove_Filter();
@@ -1613,16 +1025,6 @@ public interface GwtTeamingMessages extends Messages
 	String taskConfirmPurge();
 	String taskDebug_times(String taskCount, String readTime, String showTime, String totalTime);
 	String taskFilter_empty();
-	String taskGraphsAltHide();
-	String taskGraphsAltShow();
-	String taskGraphs();
-	String taskGraphsPriority();
-	String taskGraphsRefresh();
-	String taskGraphsStatus();
-	String taskGraphsStatusCanceled(String percent, String count);
-	String taskGraphsStatusCompleted(String percent, String count);
-	String taskGraphsStatusInProcess(String percent, String count);
-	String taskGraphsStatusNeedsAction(String percent, String count);
 	String taskHierarchyDisabled();
 	String taskHierarchyDisabled_Filter();
 	String taskHierarchyDisabled_Rights();
@@ -1678,482 +1080,15 @@ public interface GwtTeamingMessages extends Messages
 	String backgroundRepeatX();
 	String backgroundRepeatY();
 	String backgroundNoRepeat();
-	String borderColorLabel();
-	String borderWidthLabel();
-	String contentTextColorLabel();
-	String headerBackgroundColorLabel();
-	String headerTextColorLabel();
-	String inheritPropertiesLabel();
-	String invalidBorderColor( String color );
-	String invalidContentTextColor( String color );
-	String invalidHeaderBgColor( String color );
-	String invalidHeaderTextColor( String color );
 
 	// Strings used in the Novell Desktop App dialog (File Sync)
-	String fileSyncAppAllowAccess( String productName );
-	String fileSyncAppAllowCachePwd();
 	String fileSyncAppAutoUpdateUrlLabel();
-	String fileSyncAppAutoUpdateUrlLabel_UseLocal();
-	String fileSyncAppAutoUpdateUrlLabel_UseRemote();
-	String fileSyncAppAutoUpdateUrlRequiredPrompt();
 	String fileSyncAppDlgHeader();
-	String fileSyncAppEnableDeployLabel();
-	String fileSyncAppHeader2();
-	String fileSyncAppHeader3();
 	String fileSyncAppIntervalLabel();
-	String fileSyncApp_InvalidAutoUpdateUrlText();
-	String fileSyncAppMaxFileSizeLabel();
-	String fileSyncAppMBLabel();
 	String fileSyncAppMinutesLabel();
-	String fileSyncApp_OnSaveUnknownException( String desc );
-	String fileSyncAppUseGlobalSettings();
-	String fileSyncAppUseUserSettings();
-	
-	// Strings used in the Manage Database Logs dialog
-	String databasePruneDlgHeader();
-	String databasePruneDlgHeader1();
-	String databasePruneDlgHeader2();
-	String databasePruneDlgHeader3();
-	String databasePruneDlgRemoveAuditTrailEntries();
-	String databasePruneDlgRemoveChangeLogEntries();
-	String databasePruneDlgAgeUnits();
-	String databasePruneDlgEnableAuditTrail();
-	String databasePruneDlgEnableChangeLog();
-	String databasePruneDlgEnableFileArchiving();
-	String databasePruneDlgCautionAuditTrail();
-	String databasePruneDlgCautionChangeLog();
-	String databasePruneDlgCautionIrrevocable();
-	String databasePruneDlg_OnSaveUnknownException( String desc );
-	String databasePruneDlgCautionFileArchiving();
-	
-	// Strings used in the Configure User File Sync App dialog
-	String configureUserFileSyncAppDlgErrorHeader();
-	String configureUserFileSyncAppDlgHeaderGroups( String numGroups );
-	String configureUserFileSyncAppDlgHeaderUsers( String numUsers );
-	String configureUserFileSyncAppDlgOnSaveUnknownException( String desc );
-	String configureUserFileSyncDlgSaving( String completed, String total );
-
-	// Strings used by the filter bar in the various binder views.
-	String vibeBinderFilter_Alt_Filters();
-	String vibeBinderFilter_Filter();
-	String vibeBinderFilter_Filters();
-	String vibeBinderFilter_None();
-	
-	// Strings used by the footer in the various binder views.
-	String vibeBinderFooter_Filr_AtomUrl();
-	String vibeBinderFooter_Filr_EmailAddresses();
-	String vibeBinderFooter_Filr_EmailAddressesHint();
-	String vibeBinderFooter_Filr_FileDownload();
-	String vibeBinderFooter_Filr_FileDownloadHint();
-	String vibeBinderFooter_Filr_iCalUrl();
-	String vibeBinderFooter_Filr_iCalUrlHint();
-	String vibeBinderFooter_Filr_KeyHeader();
-	String vibeBinderFooter_Filr_KeyFooter();
-	String vibeBinderFooter_Filr_Permalink();
-	String vibeBinderFooter_Filr_PermalinkHint();
-	String vibeBinderFooter_Filr_RSSUrl();
-	String vibeBinderFooter_Filr_RSSUrlHint();
-	String vibeBinderFooter_Filr_WebDAVUrl();
-	String vibeBinderFooter_Filr_WebDAVUrlHintEntry();
-	String vibeBinderFooter_Filr_WebDAVUrlHintFolder();
-	String vibeBinderFooter_Vibe_AtomUrl();
-	String vibeBinderFooter_Vibe_EmailAddresses();
-	String vibeBinderFooter_Vibe_EmailAddressesHint();
-	String vibeBinderFooter_Vibe_FileDownload();
-	String vibeBinderFooter_Vibe_FileDownloadHint();
-	String vibeBinderFooter_Vibe_iCalUrl();
-	String vibeBinderFooter_Vibe_iCalUrlHint();
-	String vibeBinderFooter_Vibe_KeyHeader();
-	String vibeBinderFooter_Vibe_KeyFooter();
-	String vibeBinderFooter_Vibe_Permalink();
-	String vibeBinderFooter_Vibe_PermalinkHint();
-	String vibeBinderFooter_Vibe_RSSUrl();
-	String vibeBinderFooter_Vibe_RSSUrlHint();
-	String vibeBinderFooter_Vibe_WebDAVUrl();
-	String vibeBinderFooter_Vibe_WebDAVUrlHintEntry();
-	String vibeBinderFooter_Vibe_WebDAVUrlHintFolder();
-	
-	// Strings used by the entry menu bar in the various binder views.
-	String vibeEntryMenu_Alt_ClearFilter();
-	String vibeEntryMenu_Alt_GlobalFilter();
-	String vibeEntryMenu_Alt_FilterOptions();
-	String vibeEntryMenu_Alt_ListOptions();
-	String vibeEntryMenu_Alt_PersonalFilter();
-	String vibeEntryMenu_Alt_Pin_ShowAll();
-	String vibeEntryMenu_Alt_Pin_ShowPinned();
-	String vibeEntryMenu_Alt_Shared_ShowAll();
-	String vibeEntryMenu_Alt_Shared_ShowFiles();
-	String vibeEntryMenu_ClearFilters();
-	String vibeEntryMenu_GlobalizeFilter(String filterName);
-	String vibeEntryMenu_ManageFilters();
-	String vibeEntryMenu_ManageUsers_EnabledFilter();
-	String vibeEntryMenu_ManageUsers_ExternalFilter();
-	String vibeEntryMenu_ManageUsers_DisabledFilter();
-	String vibeEntryMenu_ManageUsers_InternalFilter();
-	String vibeEntryMenu_ManageUsers_Warning_NoUsers1();
-	String vibeEntryMenu_ManageUsers_Warning_NoUsers2(); 
-	String vibeEntryMenu_PersonalizeFilter(String filterName);
-	String vibeEntryMenu_SharedView_HiddenFilter();
-	String vibeEntryMenu_SharedView_NonHiddenFilter();
-	String vibeEntryMenu_SharedView_Warning_NoShares();
-	String vibeEntryMenu_Warning_FoldersIgnored();
-	String vibeEntryMenu_Warning_OnlyFolders_Entries();
-	String vibeEntryMenu_Warning_OnlyFolders_Files();
-		
-	// Strings used in the Folder Columns dialog
-	String folderColumnsDlgColumn();
-	String folderColumnsDlgCustomLabel();
-	String folderColumnsDlgHeader();
-	String folderColumnsDlgMoveDown();
-	String folderColumnsDlgMoveUp();
-	String folderColumnsDlgNoOptions();
-	String folderColumnsDlgOrder();
-	String folderColumnsDlgRestoreDefaults();
-	String folderColumnsDlgSetAsDefault();
-	String folderColumnsDlgShow();
-	
-	// Strings used by various widgets of the Vibe Data table.
-	String vibeDataTable_Alt_CancelWipe();
-	String vibeDataTable_Alt_CollapseDescription();
-	String vibeDataTable_Alt_Comments();
-	String vibeDataTable_Alt_EntryActions();
-	String vibeDataTable_Alt_ExpandDescription();
-	String vibeDataTable_Alt_ExternalUser_Guest();
-	String vibeDataTable_Alt_ExternalUser_Others();
-	String vibeDataTable_Alt_InternalUser_LDAP();
-	String vibeDataTable_Alt_InternalUser_PersonAdmin();
-	String vibeDataTable_Alt_InternalUser_PersonOthers();
-	String vibeDataTable_Alt_InternalUser_System();
-	String vibeDataTable_Alt_Ldap_Group();
-	String vibeDataTable_Alt_Local_Group();
-	String vibeDataTable_Alt_MobileDevices();
-	String vibeDataTable_Alt_MobileDevices_None();
-	String vibeDataTable_Alt_UnknownGroupType();
-	String vibeDataTable_Alt_UnknownUser();
-	String vibeDataTable_Alt_Unread();
-	String vibeDataTable_Alt_PinEntry();
-	String vibeDataTable_Alt_PinHeader();
-	String vibeDataTable_Alt_PinHeader_PinAll();
-	String vibeDataTable_Alt_PinHeader_UnpinAll();
-	String vibeDataTable_Alt_ScheduleWipe();
-	String vibeDataTable_Alt_StarGold();
-	String vibeDataTable_Alt_StarGray();
-	String vibeDataTable_Alt_System_Group();
-	String vibeDataTable_Alt_UnpinEntry();
-	String vibeDataTable_Alt_View();
-	String vibeDataTable_ColumnResizer();
-	String vibeDataTable_Confirm_CantCopyPublicLink_1a();
-	String vibeDataTable_Confirm_CantCopyPublicLink_1b();
-	String vibeDataTable_Confirm_CantCopyPublicLink_1c();
-	String vibeDataTable_Confirm_CantCopyPublicLink_2a();
-	String vibeDataTable_Confirm_CantCopyPublicLink_2b();
-	String vibeDataTable_Confirm_CantCopyPublicLink_2c();
-	String vibeDataTable_Confirm_CantCopyPublicLink_3();
-	String vibeDataTable_Confirm_CantEmailPublicLink_1a();
-	String vibeDataTable_Confirm_CantEmailPublicLink_1b();
-	String vibeDataTable_Confirm_CantEmailPublicLink_1c();
-	String vibeDataTable_Confirm_CantEmailPublicLink_2a();
-	String vibeDataTable_Confirm_CantEmailPublicLink_2b();
-	String vibeDataTable_Confirm_CantEmailPublicLink_2c();
-	String vibeDataTable_Confirm_CantEmailPublicLink_3();
-	String vibeDataTable_Confirm_CantShareNetFolders();
-	String vibeDataTable_Confirm_CantShareNoRights();
-	String vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
-	String vibeDataTable_Download();
-	String vibeDataTable_Error_MirroredDriverNotConfigured();
-	String vibeDataTable_Empty();
-	String vibeDataTable_Empty_Pinning();
-	String vibeDataTable_Event_AllDay();
-	String vibeDataTable_Event_End();
-	String vibeDataTable_Event_Duration(String days);
-	String vibeDataTable_Event_Start();
-	String vibeDataTable_GuestbookInternalErrorOverrideMissing();
-	String vibeDataTable_InternalError_NestedCloudFolderAuthentication();
-	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
-	String vibeDataTable_InternalError_UnsupportedStructuredToolbar();
-	String vibeDataTable_MemberCount(String count);
-	String vibeDataTable_MobileDevices();
-	String vibeDataTable_People();
-	String vibeDataTable_Pin();
-	String vibeDataTable_Select();
-	String vibeDataTable_TrashConfirmPurge();
-	String vibeDataTable_TrashConfirmPurgeAll();
-	String vibeDataTable_TrashConfirmPurgeAllWithSelections();
-	String vibeDataTable_TrashConfirmRestoreAllWithSelections();
-	String vibeDataTable_TrashInternalErrorOverrideMissing(String methodName);
-	String vibeDataTable_View();
-	String vibeDataTable_ViewTrash();
-	String vibeDataTable_Warning_CantCopyPublicLink_1a();
-	String vibeDataTable_Warning_CantCopyPublicLink_1b();
-	String vibeDataTable_Warning_CantCopyPublicLink_1c();
-	String vibeDataTable_Warning_CantCopyPublicLink_2a();
-	String vibeDataTable_Warning_CantCopyPublicLink_2b();
-	String vibeDataTable_Warning_CantCopyPublicLink_2c();
-	String vibeDataTable_Warning_CantCopyPublicLink_3();
-	String vibeDataTable_Warning_CantEmailPublicLink_1a();
-	String vibeDataTable_Warning_CantEmailPublicLink_1b();
-	String vibeDataTable_Warning_CantEmailPublicLink_1c();
-	String vibeDataTable_Warning_CantEmailPublicLink_2a();
-	String vibeDataTable_Warning_CantEmailPublicLink_2b();
-	String vibeDataTable_Warning_CantEmailPublicLink_2c();
-	String vibeDataTable_Warning_CantEmailPublicLink_3();
-	String vibeDataTable_Warning_NoEntryActions();
-	String vibeDataTable_Warning_ShareNetFolders();
-	String vibeDataTable_Warning_ShareNoRights();
-	String vibeDataTable_Warning_ShareNoRightsAndNetFolders();
-	String vibeDataTable_WhatsNew();
-	
-	// Strings used by the Vibe simple pager widget.
-	String vibeSimplePager_Of(String start, String end, String size);
-	String vibeSimplePager_OfOver(String start, String end, String size);
-	
-	// String used in the Landing Page
-	String nowFollowingBinder();
-	String utilityElementAdminPage();
-	String utilityElementFollowWorkspace();
-	String utilityElementLogIn();
-	String utilityElementMyWorkspace();
-	String utilityElementShareWorkspace();
-
-	// Strings used in the TaskFolderWidget
-	String taskFolderWidget_assignedTo();
-	String taskFolderWidget_dueDate();
-	String taskFolderWidget_percentDone();
-	String taskFolderWidget_priority();
-	String taskFolderWidget_status();
-
-	// Strings used in the SizeColumnsDlg.
-	String sizeColumnsDlgColColumn();
-	String sizeColumnsDlgColDefault();
-	String sizeColumnsDlgColResize();
-	String sizeColumnsDlgColSize();
-	String sizeColumnsDlgColUnit();
-	String sizeColumnsDlgDefaultRB(String def);
-	String sizeColumnsDlgFixedRB();
-	String sizeColumnsDlgFlowRB();
-	String sizeColumnsDlgHeader();
-	String sizeColumnsDlgSliderHint();
-	String sizeColumnsDlgUnitPercentRB();
-	String sizeColumnsDlgUnitPixelRB();
-	String sizeColumnsDlgWarnPercents();
-	
-	// Strings used in the AddFilesDlg.
-	String addFilesDlgFrameTitle();
-	String addFilesDlgHavingTrouble();
-	String addFilesDlgHeader();
-	
-	// Strings used in the AddFilesHtml5Popup.
-	String addFilesHtml5PopupAbort();
-	String addFilesHtml5PopupAbortAlt();
-	String addFilesHtml5PopupBrowse();
-	String addFilesHtml5PopupBrowseAlt();
-	String addFilesHtml5PopupBusy(String fileName, int thisOne, int total);
-	String addFilesHtml5PopupClose();
-	String addFilesHtml5PopupCloseAlt();
-	String addFilesHtml5PopupDnDHint();
-	String addFilesHtml5PopupFoldersSkipped(String folderNames);
-	String addFilesHtml5PopupHint();
-	String addFilesHtml5PopupProgressItem();
-	String addFilesHtml5PopupProgressTotal();
-	String addFilesHtml5PopupReadError(String fileName, String errorDesc);
-	String addFilesHtml5PopupUploadValidationError();
-	String addFilesHtml5PopupValidating();
-
-	// Strings used by Html5FileUploadClientHelper.java.
-	String html5Uploader_InternalError_NoBrowserSupport();
-	String html5Uploader_InternalError_UploaderAlreadyActive();
-	String html5Uploader_Warning_NoFiles();
-	
-	// Strings used in the "Child binders widget"
-	String workspacesHeader();
-	String unreadEntries( Long numUnread );
-
-	// Strings used in the "Unread entries" dialog
-	String unreadEntriesDlgHeader();
-	
-	// Strings used in the CloudFolderAuthenticationDlg.
-	String cloudFolderAuthenticationDlgHeader();
-	String cloudFolderAuthenticationDlgMessageAboveLogo();
-	String cloudFolderAuthenticationDlgMessageBelowLogo();
-	
-	// Strings used in the CopyMoveEntriesDlg in copy mode.
-	String copyEntriesDlgCaption1_Entries();
-	String copyEntriesDlgCaption1_Entry();
-	String copyEntriesDlgCaption1_Folder();
-	String copyEntriesDlgCaption1_Workspace();
-	String copyEntriesDlgCaption2();
-	String copyEntriesDlgCurrentDestination();
-	String copyEntriesDlgCurrentDestinationNone();
-	String copyEntriesDlgErrorInvalidSearchResult();
-	String copyEntriesDlgErrorCopyFailures();
-	String copyEntriesDlgErrorTargetInSourceAll();
-	String copyEntriesDlgErrorTargetInSourceSome();
-	String copyEntriesDlgHeader();
-	String copyEntriesDlgProgress(int done, int total);
-	String copyEntriesDlgSelectDestination();
-	String copyEntriesDlgWarningNoSelection();
-
-	// Strings used in the CopyMoveEntriesDlg in move mode.
-	String moveEntriesDlgCaption1_Entries();
-	String moveEntriesDlgCaption1_Entry();
-	String moveEntriesDlgCaption1_Folder();
-	String moveEntriesDlgCaption1_Workspace();
-	String moveEntriesDlgCaption2();
-	String moveEntriesDlgCurrentDestination();
-	String moveEntriesDlgCurrentDestinationNone();
-	String moveEntriesDlgErrorInvalidSearchResult();
-	String moveEntriesDlgErrorMoveFailures();
-	String moveEntriesDlgErrorTargetInSourceAll();
-	String moveEntriesDlgErrorTargetInSourceSome();
-	String moveEntriesDlgHeader();
-	String moveEntriesDlgProgress(int done, int total);
-	String moveEntriesDlgSelectDestination();
-	String moveEntriesDlgWarningNoSelection();
-	
-	// Strings used in the CopyMoveEntriesDlg in all modes.
-	String cmeDlg_Alt_Browse();
-
-	// Strings used by the operations against selected entries.
-	String deleteFolderEntriesError();
-	String deleteTasksError();
-	String purgeTasksError();
-	
-	// Strings used by the operations against selected users.
-	String enableUsersError();
-	String deleteSelectedUsersError();
-	String disableUsersError();
-	
-	// Strings used by the lock selected entries facility.
-	String lockEntriesError();
-
-	// Strings used by the unlock selected entries facility.
-	String unlockEntriesError();
-
-	// Strings used by the zip and download selected files facility.
-	String zipDownloadUrlError();
-	
-	// String used within BinderViewsHelper.
-	String binderViewsHelper_failureSettingAdHocFolders();
-	String binderViewsHelper_failureSettingDownload();
-	String binderViewsHelper_failureSettingPublicCollection();
-	String binderViewsHelper_failureSettingWebAccess();
-	
-	// Strings used by ChangeEntryTypesDlg.
-	String changeEntryTypesDlgCurrent();
-	String changeEntryTypesDlgErrorChangeFailures();
-	String changeEntryTypesDlgErrorNoSelection();
-	String changeEntryTypesDlgHeader();
-	String changeEntryTypesDlgHeaderFor(String title);
-	String changeEntryTypesDlgLocal();
-	String changeEntryTypesDlgNew();
-	String changeEntryTypesDlgNote();
-	String changeEntryTypesDlgSelect();
-	
-	// Strings used by the ProfileEntryDlg.
-	String profileEntryDlgDelete();
-	String profileEntryDlgHeader();
-	String profileEntryDlgLabelize(String label);
-	String profileEntryDlgModify();
-	String profileEntryDlgNote();
-	
-	// Strings used by the ConfirmDlg.
-	String confirmDlgHeader();
-	
-	// Strings used by the MultiErrorAlertDlg.
-	String multiErrorAlertDlgHeaderConfirm();
-	String multiErrorAlertDlgHeaderError();
-	
-	// Strings used in the Project Information widget
-	String dueDateLabel();
-	String managerLabel();
-	String projectInformation();
-	String projectStatusCancelled();
-	String projectStatusClosed();
-	String projectStatusOpen();
-	String projectStatusUnknown();
-	String statusLabel();
-
-	// Strings used in the Project Statistics widget
-	String projectStatistics();
-	
-	// String used by the task graphs widgets.
-	String taskGraphs_PriorityCritical( String percent, String count);
-	String taskGraphs_PriorityHigh(     String percent, String count);
-	String taskGraphs_PriorityLeast(    String percent, String count);
-	String taskGraphs_PriorityLow(      String percent, String count);
-	String taskGraphs_PriorityMedium(   String percent, String count);
-	String taskGraphs_PriorityNone(     String percent, String count);
-	String taskGraphs_StatusCanceled(   String percent, String count);
-	String taskGraphs_StatusCompleted(  String percent, String count);
-	String taskGraphs_StatusInProcess(  String percent, String count);
-	String taskGraphs_StatusNeedsAction(String percent, String count);
-	
-	// Strings used by the milestone graphs widgets.
-	String milestoneGraphs_StatusCompleted( String percent, String count );
-	String milestoneGraphs_StatusOpen( String percent, String count );
-	String milestoneGraphs_StatusReopened( String percent, String count );
-	
-	// Strings used by the guest book folder.
-	String guestBook_Error_CouldNotGetSigningURL();
-	String guestBook_GotoProfile();
-	
-	// Strings used in the "My Tasks" widget
-	String myTasksHeader();	
-	
-	// Strings used in the 'Binder View Helper' APIs.
-	String binderViewsConfirmDeleteEntries();
-	String binderViewsConfirmDeleteEntry();
-	String binderViewsConfirmDeleteFolder();
-	String binderViewsConfirmDeleteWorkspace();
-	String binderViewsConfirmDeleteUserWS();
-	String binderViewsDeleteSelectedUsersCaption();
-	String binderViewsDeleteSelectedUsersProgress();
-	String binderViewsDeleteSelectionsCaption();
-	String binderViewsDeleteSelectionsProgress();
-	String binderViewsDeleteTasksCaption();
-	String binderViewsDeleteTasksProgress();
-	String binderViewsPurgeTasksCaption();
-	String binderViewsPurgeTasksProgress();
-	
-	// Strings used in the calendar view.
-	String calendarNav_Alt_GoTo();
-	String calendarNav_Alt_GoToToday();
-	String calendarNav_Alt_NextTimePeriod();
-	String calendarNav_Alt_PreviousTimePeriod();
-	String calendarNav_Alt_Settings();
-	String calendarNav_Alt_View1();
-	String calendarNav_Alt_View3();
-	String calendarNav_Alt_ViewMonth();
-	String calendarNav_Alt_ViewWeek();
-	String calendarNav_Alt_View2Weeks();
-	String calendarNav_Alt_ViewWorkWeek();
-	String calendarNav_Hours_FullDay();
-	String calendarNav_Hours_WorkDay();
-	String calendarView_Error_CantAdd();
-	String calendarView_Error_CantClickCreateWhenViewByDate();
-	String calendarView_Error_CantModify();
-	String calendarView_Error_CantTrash();
-	String calendarView_Error_CantUpdateRecurrence();
-	String calendarView_Error_CantUpdateWhenViewByDate();
-	String calendarView_Recurrence(int index, int total);
-
-	// Strings used by the 'Progress' dialog.
-	String progressDlgConfirmCancel();
-
-	// Strings used by the 'Quick Filter' composite.
-	String quickFilterAltOff();
-	String quickFilterAltOn();
-	String quickFilter_empty();
-
-	// Strings used in the "Edit graphic properties" dialog
-	String editGraphicPropertiesDlgSetImageSize();
-
-	// Strings used in the Manage Comments composite.
-	String manageCommentsCompositeSend();
-	String manageCommentsCompositeWhoHasAccess();
-	
-	// Strings used in the Manage Comments dialog.
-	String manageCommentsDlgComments(int cCount);
+	String fileSyncAppOff();
+	String fileSyncAppOn();
+	String fileSyncAppOnOffLabel();
 	
 	// Strings used in the Manage Groups dialog
 	String manageGroupsDlgAddGroupLabel();
@@ -2161,29 +1096,15 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgCreatingGroup();
 	String manageGroupsDlgDeleteGroupLabel();
 	String manageGroupsDlgDeletingGroup();
-	String manageGroupsDlgDesktopAppSettings();
-	String manageGroupsDlgDownload_Clear();
-	String manageGroupsDlgDownload_Disable();
-	String manageGroupsDlgDownload_Enable();
 	String manageGroupsDlgEditGroupLabel();
 	String manageGroupsDlgHeader();
-	String manageGroupsDlgMobileAppSettings();
 	String manageGroupsDlgModifyingGroup();
-	String manageGroupsDlgMoreLabel();
 	String manageGroupsDlgNameCol();
 	String manageGroupsDlgNoGroupsLabel();
-	String manageGroupsDlgPersonalStorage_Clear();
-	String manageGroupsDlgPersonalStorage_Disable();
-	String manageGroupsDlgPersonalStorage_Enable();
 	String manageGroupsDlgSelectGroupToDelete();
-	String manageGroupsDlgSelectGroupsToModify();
 	String manageGroupsDlgSelect1GroupToEdit();
 	String manageGroupsDlgTitleCol();
-	String manageGroupsDlgTypeCol();
 	String manageGroupsDlgUnknownStatus();
-	String manageGroupsDlgWebAccess_Clear();
-	String manageGroupsDlgWebAccess_Disable();
-	String manageGroupsDlgWebAccess_Enable();
 	
 	// Strings used in the Modify Group dialog
 	String addGroupDlgHeader();
@@ -2197,11 +1118,9 @@ public interface GwtTeamingMessages extends Messages
 	String modifyGroupDlgNameTooLong();
 	String modifyGroupDlgStaticLabel();
 	String modifyGroupDlgTitleLabel();
-	String modifyGroupDlgViewGroupMembershipLabel();
 
 	// Strings used in the Modify static membership dialog
 	String modifyStaticMembershipDlgDeleteLabel();
-	String modifyStaticMembershipDlgExternalAllowedLabel();
 	String modifyStaticMembershipDlgGroupLabel();
 	String modifyStaticMembershipDlgGroupTab();
 	String modifyStaticMembershipDlgHeader( String groupTitle );
@@ -2225,976 +1144,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyDynamicMembershipDlgTestQueryResults( int count );
 	String modifyDynamicMembershipDlgUpdateLabel();
 
-	// Strings used in the Show dynamic membership dialog
-	String showDynamicMembershipDlgGroupTab();
-	String showDynamicMembershipDlgHeader();
-	String showDynamicMembershipDlgUserTab();
-	
-	// String used in the blog archive control
-	String blogArchiveTitle();
-	
-	// Strings used in the blog global tags control.
-	String blogGlobalTagsTitle();
-	
-	// Strings used in the blog page control.
-	String blogPageCtrl_newPageLabel();
-	String blogPageCtrl_selectPageLabel();
-
-	// Strings used in the "Add blog page" dialog
-	String createBlogPageDlg_caption();
-	String createBlogPageDlg_createFailed();
-	String createBlogPageDlg_newPageNameLabel();
-	String createBlogPageDlg_noNameSpecified();
-
-	// Strings used with Filr
-	String folders();
-	String mobileDevicesList();
-	String myFiles();
-	String netFolders();
-	String peopleList();
-	String sharedByMe();
-	String sharedWithMe();
-	String sharedPublic();
-
-	// Strings used with the "Share send-to" widget
-	String shareSendToWidget_AllRecipients();
-	String shareSendToWidget_OnlyModifiedRecipients();
-	String shareSendToWidget_OnlyNewRecipients();
-	String shareSendToWidget_SelectedRecipients();
-	String shareSendToWidget_Unknown();
-	
-	// Strings used in the manage Net Folder Servers dialog
-	String manageNetFolderServersDlg_AddNetFolderServerLabel();
-	String manageNetFolderServersDlg_ConfirmDelete( String netFolderServerNames );
-	String manageNetFolderServersDlg_CouldNotDeletePrompt( String netFolderServerNames );
-	String manageNetFolderServersDlg_DeleteNetFolderServerLabel();
-	String manageNetFolderServersDlg_Header();
-	String manageNetFolderServersDlg_NameCol();
-	String manageNetFolderServersDlg_NoNetFolderServersLabel();
-	String manageNetFolderServersDlg_ServerPathCol();
-	String manageNetFolderServersDlg_SelectServersToDelete();
-	String manageNetFolderServersDlg_SelectServersToSync();
-	String manageNetFolderServersDlg_SyncLabel();
-	String manageNetFolderServersDlg_Syncing();
-	String manageNetFolderServersDlg_SyncFailure();
-	String manageNetFolderServersDlg_UnknownStatus();
-
-	// Strings used in the modify Net Folder Server dialog
-	String modifyNetFolderServerDlg_AddHeader();
-	String modifyNetFolderServerDlg_AllowSelfSignedCertsLabel();
-	String modifyNetFolderServerDlg_AuthenticationTab();
-	String modifyNetFolderServerDlg_AuthTypeLabel();
-	String modifyNetFolderServerDlg_AuthType_Kerberos();
-	String modifyNetFolderServerDlg_AuthType_KerberosThenNtlm();
-	String modifyNetFolderServerDlg_AuthType_NMAS();
-	String modifyNetFolderServerDlg_AuthType_Ntlm();
-	String modifyNetFolderServerDlg_ConfigTab();
-	String modifyNetFolderServerDlg_CreatingNetFolderServer();
-	String modifyNetFolderServerDlg_EditHeader( String name );
-	String modifyNetFolderServerDlg_EnableSyncScheduleLabel();
-	String modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( String err );
-	String modifyNetFolderServerDlg_ErrorModifyingNetFolderServer( String err );
-	String modifyNetFolderServerDlg_Group();
-	String modifyNetFolderServerDlg_HostUrlLabel();
-	String modifyNetFolderServerDlg_HostUrlRequired();
-	String modifyNetFolderServerDlg_InsufficientRights();
-	String modifyNetFolderServerDlg_IsSharePointServerLabel();
-	String modifyNetFolderServerDlg_Minutes();
-	String modifyNetFolderServerDlg_ModifyingNetFolderServer();
-	String modifyNetFolderServerDlg_NameLabel();
-	String modifyNetFolderServerDlg_NameRequired();
-	String modifyNetFolderServerDlg_NoLdapServers();
-	String modifyNetFolderServerDlg_NotFullyConfigured();
-	String modifyNetFolderServerDlg_PrivilegedPrincipalsHint();
-	String modifyNetFolderServerDlg_ProxyName_Alt();
-	String modifyNetFolderServerDlg_ProxyNameHint1();
-	String modifyNetFolderServerDlg_ProxyNameHint2();
-	String modifyNetFolderServerDlg_ProxyNameHint3();
-	String modifyNetFolderServerDlg_ProxyNameLabel();
-	String modifyNetFolderServerDlg_ProxyPwdLabel();
-	String modifyNetFolderServerDlg_RefreshRightsLabel();
-	String modifyNetFolderServerDlg_ScheduleTab();
-	String modifyNetFolderServerDlg_SelectServerTypePrompt();
-	String modifyNetFolderServerDlg_ServerAlreadyExists();
-	String modifyNetFolderServerDlg_ServerPathHint1();
-	String modifyNetFolderServerDlg_ServerPathOESHint();
-	String modifyNetFolderServerDlg_ServerPathWindowsHint();
-	String modifyNetFolderServerDlg_ServerPathLabel();
-	String modifyNetFolderServerDlg_SharePointPathHint();
-	String modifyNetFolderServerDlg_SyncAllNetFoldersPrompt();
-	String modifyNetFolderServerDlg_SyncOfNetFolderServerStarted();
-	String modifyNetFolderServerDlg_SyncOnlyDirStructureCB();
-	String modifyNetFolderServerDlg_SyncScheduleCaption();
-	String modifyNetFolderServerDlg_SyncTab();
-	String modifyNetFolderServerDlg_TestConnectionLabel();
-	String modifyNetFolderServerDlg_TypeLabel();
-	String modifyNetFolderServerDlg_Type_Famt();
-	String modifyNetFolderServerDlg_Type_FileSystem();
-	String modifyNetFolderServerDlg_Type_Netware();
-	String modifyNetFolderServerDlg_Type_OES();
-	String modifyNetFolderServerDlg_Type_SharePoint2010();
-	String modifyNetFolderServerDlg_Type_SharePoint2013();
-	String modifyNetFolderServerDlg_Type_Undefined();
-	String modifyNetFolderServerDlg_Type_WebDav();
-	String modifyNetFolderServerDlg_Type_Windows();
-	String modifyNetFolderServerDlg_UseDirectoryRightsCB();
-	String modifyNetFolderServerDlg_User();
-	
-	// Strings used in the Manage Net Folders dialog
-	String manageNetFoldersDlg_AddNetFolderLabel();
-	String manageNetFoldersDlg_CancelSyncRequested();
-	String manageNetFoldersDlg_ConfirmDelete( String netFolderName );
-	String manageNetFoldersDlg_DeleteFailed();
-	String manageNetFoldersDlg_DeleteInProgress();
-	String manageNetFoldersDlg_DeleteNetFolderErrorMsg( String netFolderName, String errorMsg );
-	String manageNetFoldersDlg_DeleteNetFolderLabel();
-	String manageNetFoldersDlg_FilterOptionsAlt();
-	String manageNetFoldersDlg_Header();
-	String manageNetFoldersDlg_nNetFoldersToDelete( int count );
-	String manageNetFoldersDlg_NameCol();
-	String manageNetFoldersDlg_NoNetFoldersLabel();
-	String manageNetFoldersDlg_PromptForSync();
-	String manageNetFoldersDlg_RelativePathCol();
-	String manageNetFoldersDlg_SearchingForNetFolders();
-	String manageNetFoldersDlg_ServerCol();
-	String manageNetFoldersDlg_SelectFoldersToDelete();
-	String manageNetFoldersDlg_SelectFoldersToStopSync();
-	String manageNetFoldersDlg_SelectFoldersToSync();
-	String manageNetFoldersDlg_ShowHomeDirsLabel();
-	String manageNetFoldersDlg_StopSyncLabel();
-	String manageNetFoldersDlg_SyncLabel();
-	String manageNetFoldersDlg_Syncing();
-	String manageNetFoldersDlg_SyncStatusCol();
-	String manageNetFoldersDlg_UnknownStatus();
-	
-	// Net Folder sync status
-	String netFolderSyncStatusCanceled();
-	String netFolderSyncStatusCompleted();
-	String netFolderSyncStatusInProgress();
-	String netFolderSyncStatusNeverRun();
-	String netFolderSyncStatusStopped();
-	String netFolderSyncStatusUnknown();
-	String netFolderSyncStatusWaitingToBeSyncd();
-
-	// Strings used in the Modify Net Folder dialog
-	String modifyNetFolderDlg_AddHeader();
-	String modifyNetFolderDlg_AllowDataSyncBy();
-	String modifyNetFolderDlg_AllowDesktopAppToSyncLabel();
-	String modifyNetFolderDlg_AllowMobileAppsToSyncLabel();
-	String modifyNetFolderDlg_ConfigTab();
-	String modifyNetFolderDlg_CreateNetFolderServerLabel();
-	String modifyNetFolderDlg_CreatingNetFolder();
-	String modifyNetFolderDlg_DataSyncTab();
-	String modifyNetFolderDlg_EditHeader( String name );
-	String modifyNetFolderDlg_EnableJitsLabel();
-	String modifyNetFolderDlg_EnableSyncScheduleLabel();
-	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );
-	String modifyNetFolderDlg_ErrorModifyingNetFolder( String err );
-	String modifyNetFolderDlg_FullSyncDirOnlyCB();
-	String modifyNetFolderDlg_IndexContentLabel();
-	String modifyNetFolderDlg_InsufficientRights();
-	String modifyNetFolderDlg_JitsAclMaxAgeLabel();
-	String modifyNetFolderDlg_JitsResultsMaxAgeLabel();
-	String modifyNetFolderDlg_ModifyingNetFolder();
-	String modifyNetFolderDlg_NameLabel();
-	String modifyNetFolderDlg_NameRequired();
-	String modifyNetFolderDlg_NetFolderAlreadyExists();
-	String modifyNetFolderDlg_NetFolderServerLabel();
-	String modifyNetFolderDlg_NoNetFolderServersLabel();
-	String modifyNetFolderDlg_NoNetFolderServersPrompt();
-	String modifyNetFolderDlg_ParentBinderRequired();
-	String modifyNetFolderDlg_ParentFolderLabel();
-	String modifyNetFolderDlg_RelativePathLabel();
-	String modifyNetFolderDlg_RightsTab();
-	String modifyNetFolderDlg_SelectPrincipalsHint();
-	String modifyNetFolderDlg_ScheduleTab();
-	String modifyNetFolderDlg_SyncScheduleCaption();
-	String modifyNetFolderDlg_UseNetFolderScheduleRbLabel();
-	String modifyNetFolderDlg_UseNetFolderSyncOptionRbLabel();
-	String modifyNetFolderDlg_UseNetFolderServerScheduleRbLabel();
-	String modifyNetFolderDlg_UseNetFolderServerSyncOptionRbLabel();
-	
-	// Strings used in the Schedule widget
-	String scheduleWidget_AtTimeLabel();
-	String scheduleWidget_EveryDayLabel();
-	String scheduleWidget_FridayLabel();
-	String scheduleWidget_HoursLabel();
-	String scheduleWidget_MondayLabel();
-	String scheduleWidget_OnSelectedDaysLabel();
-	String scheduleWidget_RepeatEveryLabel();
-	String scheduleWidget_SaturdayLabel();
-	String scheduleWidget_SundayLabel();
-	String scheduleWidget_ThursdayLabel();
-	String scheduleWidget_TuesdayLabel();
-	String scheduleWidget_WednesdayLabel();
-
-	// Strings used in the Edit Share Note dialog
-	String editShareNoteDlg_caption();
-	String editShareNoteDlg_noteLabel();
-
-	// Strings used in the Edit Share Rights dialog
-	String editShareRightsDlg_CanShareExternalLabel();
-	String editShareRightsDlg_CanShareInternalLabel();
-	String editShareRightsDlg_CanShareLabel();
-	String editShareRightsDlg_CanSharePublicLabel();
-	String editShareRightsDlg_caption();
-	String editShareRightsDlg_ContributorLabel();
-	String editShareRightsDlg_EditorLabel();
-	String editShareRightsDlg_GrantRightsLabel();
-	String editShareRightsDlg_ViewerLabel();
-
-	// Strings used in the Edit Share dialog
-	String editShareDlg_accessRightsLabel();
-	String editShareDlg_captionEdit1( String recipientName );
-	String editShareDlg_captionEditMultiple( int numShares );
-	String editShareDlg_canReshareExternalLabel();
-	String editShareDlg_canReshareInternalLabel();
-	String editShareDlg_canResharePublicLabel();
-	String editShareDlg_leaveUnchanged();
-	String editShareDlg_no();
-	String editShareDlg_undefinedNote();
-	String editShareDlg_yes();
-
-	// Strings used in the User Actions Popup
-	String userActionsPanel_PersonalPreferences();
-	String userActionsPanel_ViewProfile();
-	String userActionsPanel_ViewSharedByMe();
-
-	// Strings used when testing a net folder and net folder server connection
-	String testConnection_InProgressLabel();
-	String testConnection_NetworkError();
-	String testConnection_Normal();
-	String testConnection_ProxyCredentialsError();
-	String testConnection_UnknownStatus();
-
-	// Strings used in the Configure User Access dialog
-	String configureUserAccessDlg_Header();
-	String configureUserAccessDlg_AllowGuestAccessLabel();
-	String configureUserAccessDlg_AllowGuestReadOnlyLabel();
-	String configureUserAccessDlg_AllowSelfRegInternalUserAccountLabel();
-	String configureUserAccessDlg_AllowExternalUserAccessLabel();
-	String configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel();
-	String configureUserAccessDlg_DisableDownloadLabel();
-	String configureUserAccessDlg_DisableWebAccessLabel();
-	
-	// Strings used by the GWT based Folder Entry viewer.
-	String folderEntry_Alt_Close();
-	String folderEntry_Alt_Hide();
-	String folderEntry_Alt_LockedBy(String user);
-	String folderEntry_Alt_MarkRead();
-	String folderEntry_Alt_Next();
-	String folderEntry_Alt_Previous();
-	String folderEntry_Close();
-	String folderEntry_Comments(int count);
-	String folderEntry_Entry();
-	String folderEntry_Error_NoNext();
-	String folderEntry_Error_NoPrevious();
-	String folderEntry_File();
-	String folderEntry_FileSize(String size);
-	String folderEntry_Hide();
-	String folderEntry_Locked();
-	String folderEntry_Modified();
-	String folderEntry_NoShares(String what);
-	String folderEntry_SharedBy();
-	String folderEntry_SharedOn(String date);
-	String folderEntry_SharedWith();
-	String folderEntry_ShareExpires(String date);
-	String folderEntry_ShareInfo();
-	String folderEntry_ShareReshare_External();
-	String folderEntry_ShareReshare_Internal();
-	String folderEntry_ShareReshare_Public();
-	String folderEntry_ShareReshares(String reshare);
-	String folderEntry_ShareRight_Contributor();
-	String folderEntry_ShareRight_Editor();
-	String folderEntry_ShareRight_Viewer();
-	String folderEntry_ShareRights(String right);
-	String folderEntry_ShowDescription();
-	
-	// String used in the Configure Adhoc Folders dialog
-	String configureAdhocFoldersDlg_AllowAdhocFoldersLabel();
-	String configureAdhocFoldersDlg_Header();
-	
-	// String used in the desktop application download control.
-	String desktopAppCtrl_Alt_HideForSession();
-	String desktopAppCtrl_DontShowAgain();
-	String desktopAppCtrl_Hint_Filr();
-	String desktopAppCtrl_Hint_Vibe();
-	
-	// String used in the desktop application download dialog.
-	String downloadAppDlgAlt_AndroidDownloads();
-	String downloadAppDlgAlt_IOSDownloads();
-	String downloadAppDlgAlt_MacDownloads();
-	String downloadAppDlgAlt_WindowsDownloads();
-	String downloadAppDlgBody_Downloads();
-	String downloadAppDlgBody_Instructions();
-	String downloadAppDlgBody_Product();
-	String downloadAppDlgBody_Type();
-	String downloadAppDlgDownloadAndroid(String company, String product);
-	String downloadAppDlgDownloadFilenameUnknown();
-	String downloadAppDlgDownloadIOS(String company, String product);
-	String downloadAppDlgDownloadMac1(String product, String filename, String quickStart);
-	String downloadAppDlgDownloadMac2(String company, String product);
-	String downloadAppDlgDownloadMd5(String md5);
-	String downloadAppDlgDownloadWindows1(String product, String filename32, String filename64, String quickStart);
-	String downloadAppDlgDownloadWindows2(String company, String product);
-	String downloadAppDlgError_NoMacUrl();
-	String downloadAppDlgError_NoUrls();
-	String downloadAppDlgError_NoWin32Url();
-	String downloadAppDlgError_NoWin64Url();
-	String downloadAppDlgHeader(String product);
-	String downloadAppDlgInstructAndroid1(String type);
-	String downloadAppDlgInstructAndroid2();
-	String downloadAppDlgInstructAndroid3(String company, String product, String type);
-	String downloadAppDlgInstructAndroid4(String company, String product);
-	String downloadAppDlgInstructIOS1(String company, String product, String iPhone, String iPad, String type);
-	String downloadAppDlgInstructIOS2();
-	String downloadAppDlgInstructIOS3();
-	String downloadAppDlgInstructIOS4(String company, String product);
-	String downloadAppDlgProductAndroid(String product);
-	String downloadAppDlgProductIOS(String product);
-	String downloadAppDlgProductMac(String product);
-	String downloadAppDlgProductWindows(String product);
-	String downloadAppDlgSubhead(String product);
-	String downloadAppDlgUrlMac();
-	String downloadAppDlgUrlWin32();
-	String downloadAppDlgUrlWin64();
-
-	// Strings used in the "Select Principals" widget
-	String selectPrincipalsWidget_CantSelectExternalUserPrompt();
-	String selectPrincipalsWidget_NameCol();
-	String selectPrincipalsWidget_NoPrincipalsHint();
-	String selectPrincipalsWidget_PrincipalAlreadyInListPrompt( String name );
-	String selectPrincipalsWidget_RemovePrincipalHint();
-	String selectPrincipalsWidget_RightsCol();
-	String selectPrincipalsWidget_SelectPrincipalsLabel();
-	String selectPrincipalsWidget_TypeCol();
-
-	// Strings used by the 'Manage Users' dialog.
-	String manageUsersDlgCaption();
-	
-	// Strings used by the 'Import Profiles' dialog.
-	String importProfilesDlgErrorBogusJSONData( String msg );
-	String importProfilesDlgErrorFailed( String msg );
-	String importProfilesDlgErrorNoFile();
-	String importProfilesDlgErrorParse( String msg );
-	String importProfilesDlgHeader();
-	String importProfilesDlgSuccess();
-	String importProfilesDlgViewSample();
-	
-	// Strings used by the 'User Share Rights' dialog.
-	String userShareRightsDlgError_NoWorkspace();
-	String userShareRightsDlgError_SetFailures();
-	String userShareRightsDlgHeader( int count );
-	String userShareRightsDlgLabel_Allow();
-	String userShareRightsDlgLabel_AllowForwarding();
-	String userShareRightsDlgLabel_AllowSharingWith();
-	String userShareRightsDlgLabel_Clear();
-	String userShareRightsDlgLabel_ExternalUsers();
-	String userShareRightsDlgLabel_InternalUsers();
-	String userShareRightsDlgLabel_NoChange();
-	String userShareRightsDlgLabel_NoZoneSettings();
-	String userShareRightsDlgLabel_Public();
-	String userShareRightsDlgProgress( int done, int total );
-
-	// Strings used to represent the different rights
-	String allowAccess();
-	String externalRights();
-	String forwardingRights();
-	String internalRights();
-	String noRights();
-	String publicRights();
-	String shareWithAllExternalRights();
-	String shareWithAllInternalRights();
-
-	// Strings used in the Edit Net Folder Rights dialog
-	String editNetFolderRightsDlg_AllowAccessLabel();
-	String editNetFolderRightsDlg_CanShareLabel();
-	String editNetFolderRightsDlg_Caption();
-	String editNetFolderRightsDlg_Instructions();
-	String editNetFolderRightsDlg_ReShareLabel();
-	String editNetFolderRightsDlg_ShareInternalLabel();
-	String editNetFolderRightsDlg_ShareExternalLabel();
-	String editNetFolderRightsDlg_SharePublicLabel();
-
-	// Strings used for the empty collection view widget.
-	String emptyCollection_Info_MyFiles( String product );
-	String emptyCollection_Info_SharedByMe_1( String product );
-	String emptyCollection_Info_SharedByMe_2();
-	String emptyCollection_Info_SharedWithMe( String product );
-	String emptyCollection_Info_SharedPublic( String product );
-	String emptyCollection_Info_NetFolders_1( String product );
-	String emptyCollection_Info_NetFolders_2();
-	String emptyCollection_Info_NetFolders_3();
-	String emptyCollection_Info_NetFolders_4( String product );
-	String emptyCollection_SubHead_MyFiles();
-	String emptyCollection_SubHead_SharedByMe();
-	String emptyCollection_SubHead_SharedWithMe();
-	String emptyCollection_SubHead_SharedPublic();
-	String emptyCollection_SubHead_NetFolders();
-	
-	// Strings used for the empty file folder view widget.
-	String emptyFileFolder_Info_1();
-	String emptyFileFolder_Info_2( String company, String product );
-	String emptyFileFolder_Info_3( String product );
-	String emptyFileFolder_SubHead();
-	
-	// Strings used for the empty mobile devices view widget.
-	String emptyMobileDevices_Info_1_System( String company, String product );
-	String emptyMobileDevices_Info_1_User( String company, String product );
-	String emptyMobileDevices_Info_2( String company, String product );
-	String emptyMobileDevices_SubHead();
-	
-	// Strings used for the empty people view widget.
-	String emptyPeople_Info_1( String company, String product );
-	String emptyPeople_Info_2( String company, String product );
-	String emptyPeople_SubHead();
-	
-	// Strings used in the administration console home page
-	String adminConsoleInfoWidget_AdminGuideLabel();
-	String adminConsoleInfoWidget_BuildLabel();
-	String adminConsoleInfoWidget_FilrApplianceLabel();
-	String adminConsoleInfoWidget_FilrHeader();
-	String adminConsoleInfoWidget_GeneralInfoFilr();
-	String adminConsoleInfoWidget_GeneralInfoVibe();
-	String adminConsoleInfoWidget_KablinkHeader();
-	String adminConsoleInfoWidget_NovellHeader();
-	String adminConsoleInfoWidget_ReleaseLabel();
-	String adminConsoleInfoWidget_SeeAdminGuide();
-	
-	// Strings used by the 'Run a Report' dialog.
-	String runAReportDlgCaption();
-	String runAReportDlgChoose();
-	String runAReportDlgMaxSize();
-	String runAReportDlgInternalError_UnknownReport(String unknownReport);
-	String runAReportDlgSelect();
-
-	// String used by the 'Email Report' dialog.
-	String emailReportAndSeparator();
-	String emailReportCaption();
-	String emailReportReportColumn_AttachedFiles();
-	String emailReportReportColumn_Comment();
-	String emailReportReportColumn_From();
-	String emailReportReportColumn_LogStatus();
-	String emailReportReportColumn_LogType();
-	String emailReportReportColumn_SendDate();
-	String emailReportReportColumn_Subject();
-	String emailReportReportColumn_ToAddresses();
-	String emailReportRunReport();
-	String emailReportTypeErrors();
-	String emailReportTypeReceived();
-	String emailReportTypeSent();
-	String emailReportWarning_NoData();
-	
-	// String used by the 'License Report' dialog.
-	String licenseReportAndSeparator();
-	String licenseReportCaption();
-	String licenseReportReport_Activity();
-	String licenseReportReport_AllowedExt();
-	String licenseReportReport_AllowedExtNote();
-	String licenseReportReport_AllowedReg();
-	String licenseReportReport_AllowedRegNote();
-	String licenseReportReport_CurrentActive(long count);
-	String licenseReportReport_CurrentLicense();
-	String licenseReportReport_Effective();
-	String licenseReportReport_KeyIssued();
-	String licenseReportReport_KeyUID();
-	String licenseReportReport_License(String company, String product, String date);
-	String licenseReportReport_ProductTitle();
-	String licenseReportReport_StatsCol_Checksum();
-	String licenseReportReport_StatsCol_Date();
-	String licenseReportReport_StatsCol_Local();
-	String licenseReportReport_StatsCol_LDAP();
-	String licenseReportReport_StatsCol_OpenId();
-	String licenseReportReport_StatsCol_OtherExt();
-	String licenseReportReport_StatsCol_GuestAccessEnabled();
-	String licenseReportReport_StatsCol_365();
-	String licenseReportRunReport();
-	String licenseReportGuestAccessEnabledYes();
-	String licenseReportGuestAccessEnabledNo();
-
-	
-	// String used by the 'Login Report' dialog.
-	String loginReportAndSeparator();
-	String loginReportCaption1();
-	String loginReportCaption2();
-	String loginReportPeople();
-	String loginReportRemove();
-	String loginReportRunReport();
-	String loginReportSort();
-	String loginReportSortAll_Date();
-	String loginReportSortAll_User();
-	String loginReportSortSummaries_Last();
-	String loginReportSortSummaries_None();
-	String loginReportSortSummaries_Number();
-	String loginReportSortSummaries_User();
-	String loginReportType_All();
-	String loginReportType_Summaries();
-	String loginReportWarning_UserAlreadySelected(String name);
-	
-	// String used by the 'System Error Log Report' composite.
-	String systemErrorLogReportCaption();
-	String systemErrorLogReportRunReport();
-
-	// Strings used in the Configure Mobile Apps dialog
-	String configureMobileAppsDlgAddAndroid();
-	String configureMobileAppsDlgAddIos();
-	String configureMobileAppsDlgAllowAccess( String productName );
-	String configureMobileAppsDlgAllowCacheContent();
-	String configureMobileAppsDlgAllowCacheContentZone();
-	String configureMobileAppsDlgAllowCachePwd();
-	String configureMobileAppsDlgButton_Add();
-	String configureMobileAppsDlgButton_Delete();
-	String configureMobileAppsDlgDisableApplicationsOnRootedOrJailBrokenDevices();
-	String configureMobileAppsDlgHeader();
-	String configureMobileAppsDlgHeader2();
-	String configureMobileAppsDlgHeader3();
-	String configureMobileAppsDlgCutCopy();
-	String configureMobileAppsDlgOnSaveUnknownException( String err );
-	String configureMobileAppsDlgOpenIn();
-	String configureMobileAppsDlgOpenIn_AllApps();
-	String configureMobileAppsDlgOpenIn_Disabled();
-	String configureMobileAppsDlgOpenIn_WhiteList();
-	String configureMobileAppsDlgScreenCaptureAndroid();
-	String configureMobileAppsDlgUseGlobalSettings();
-	String configureMobileAppsDlgUseUserSettings();
-	String configureMobileAppsDlgWhiteListAndroid();
-	String configureMobileAppsDlgWhiteListIos();
-	String configureMobileAppsSyncIntervalLabel();
-	String configureMobileAppsSyncMinutesLabel();
-	
-	// Strings used in the Configure User Mobile Apps dialog
-	String configuerUserMobileAppsDlgErrorHeader();
-	String configureUserMobileAppsDlgHeaderGroups( String numGroup );
-	String configureUserMobileAppsDlgHeaderUsers( String numUsers );
-	String configureUserMobileAppsDlgOnSaveUnknownException( String err );
-	String configuerUserMobileAppsDlgSaving( String completed, String total );
-
-	// String used by the 'User Access Report' composite.
-	String userAccessReportCaption();
-	String userAccessReportObjectsColName();
-	String userAccessReportObjectsColType();
-	String userAccessReportObjectsHint();
-	String userAccessReportObjectType_Folder();
-	String userAccessReportObjectType_Profiles();
-	String userAccessReportObjectType_Unknown();
-	String userAccessReportObjectType_Workspace();
-	String userAccessReportUser();
-	String userAccessReportUserHint();
-	String userAccessReportWarning_NoData();
-	
-	// String used by the 'User Activity Report' composite.
-	String userActivityReportAndSeparator();
-	String userActivityReportCaption1();
-	String userActivityReportCaption2();
-	String userActivityReportPeople();
-	String userActivityReportRemove();
-	String userActivityReportRunReport();
-	String userActivityReportType_All();
-	String userActivityReportType_Summaries();
-	String userActivityReportWarning_UserAlreadySelected(String name);
-
-	// Strings used by the 'User Properties' dialog.
-	String userPropertiesDlgEdit_HomeFolder();
-	String userPropertiesDlgEdit_NetFolders();
-	String userPropertiesDlgEdit_PersonalStorage();
-	String userPropertiesDlgEdit_Profile();
-	String userPropertiesDlgEdit_Quotas();
-	String userPropertiesDlgEdit_Sharing();
-	String userPropertiesDlgHeader();
-	String userPropertiesDlgLabelize(String label);
-	String userPropertiesDlgLabel_Home();
-	String userPropertiesDlgLabel_HomePath();
-	String userPropertiesDlgLabel_LastLogin();
-	String userPropertiesDlgLabel_LdapContainer();
-	String userPropertiesDlgLabel_LdapDN();
-	String userPropertiesDlgLabel_NetFolders();
-	String userPropertiesDlgLabel_PersonalStorage();
-	String userPropertiesDlgLabel_Quota();
-	String userPropertiesDlgLabel_Sharing();
-	String userPropertiesDlgLabel_Source();
-	String userPropertiesDlgLabel_Type();
-	String userPropertiesDlgLabel_UserId();
-	String userPropertiesDlgNetFolders();
-	String userPropertiesDlgNo();
-	String userPropertiesDlgNoAboutMe();
-	String userPropertiesDlgNoHome();
-	String userPropertiesDlgNoNF();
-	String userPropertiesDlgNoQuota();
-	String userPropertiesDlgNoWS();
-	String userPropertiesDlgPersonalStorage();
-	String userPropertiesDlgPersonalStorage_Clear();
-	String userPropertiesDlgPersonalStorage_Disable();
-	String userPropertiesDlgPersonalStorage_Enable();
-	String userPropertiesDlgPersonalStorage_NoExternal();
-	String userPropertiesDlgPersonalStorage_NoGlobal();
-	String userPropertiesDlgPersonalStorage_NoGuest();
-	String userPropertiesDlgPersonalStorage_NoPerUser();
-	String userPropertiesDlgPersonalStorage_YesGlobal();
-	String userPropertiesDlgPersonalStorage_YesLocal();
-	String userPropertiesDlgPersonalStorage_YesPerUser();
-	String userPropertiesDlgProfile();
-	String userPropertiesDlgQuota();
-	String userPropertiesDlgQuota_Group(long quota);
-	String userPropertiesDlgQuota_User( long quota);
-	String userPropertiesDlgQuota_Zone( long quota);
-	String userPropertiesDlgQuotasDisabled();
-	String userPropertiesDlgSharing();
-	String userPropertiesDlgSharing_External();
-	String userPropertiesDlgSharing_Forwarding();
-	String userPropertiesDlgSharing_Internal();
-	String userPropertiesDlgSharing_NoRights();
-	String userPropertiesDlgSharing_Public();
-	String userPropertiesDlgSourceLDAP();
-	String userPropertiesDlgSourceLocal();
-	String userPropertiesDlgUnknown();
-	String userPropertiesDlgYes();
-
-	// Strings used in the "Edit Zone Share Settings" dialog.
-	String editZoneShareSettingsDlg_Header();
-	String editZoneShareSettingsDlg_Lists();
-	String editZoneShareSettingsDlg_Rights();
-	
-	// Strings used in the "Edit Zone Share Rights" tab.
-	String editZoneShareRightsTab_AllowShareWithLdapGroups();
-	String editZoneShareRightsTab_ReadingRights();
-	String editZoneShareRightsTab_SavingRights();
-	String editZoneShareRightsTab_SelectPrincipalsHint();
-	
-	// Strings used in the "Edit Zone Share Lists" tab.
-	String editZoneShareListsTab_Add();
-	String editZoneShareListsTab_Cleanup();
-	String editZoneShareListsTab_Confirm_DeleteShares();
-	String editZoneShareListsTab_Delete();
-	String editZoneShareListsTab_Domains();
-	String editZoneShareListsTab_Domains_AddPrompt();
-	String editZoneShareListsTab_EMAs();
-	String editZoneShareListsTab_EMA_AddPrompt();
-	String editZoneShareListsTab_Error_DeleteSharesFailed();
-	String editZoneShareListsTab_Error_InvalidDomain();
-	String editZoneShareListsTab_Error_InvalidEMA();
-	String editZoneShareListsTab_Header();
-	String editZoneShareListsTab_Mode();
-	String editZoneShareListsTab_ModeBlacklist();
-	String editZoneShareListsTab_ModeDisabled();
-	String editZoneShareListsTab_ModeWhitelist();
-
-	// Strings used in the "Edit Zone Share Rights" dialog
-	String editUserZoneShareRightsDlg_Caption();
-	String editUserZoneShareRightsDlg_Instructions();
-	String editUserZoneShareRightsDlg_ReShareLabel();
-	String editUserZoneShareRightsDlg_ShareExternalLabel();
-	String editUserZoneShareRightsDlg_ShareInternalLabel();
-	String editUserZoneShareRightsDlg_SharePublicLabel();
-	String editUserZoneShareRightsDlg_ShareWithAllExternalUsersLabel();
-	String editUserZoneShareRightsDlg_ShareWithAllInternalUsersLabel();
-	
-	// Strings used by the 'Rename an Entity' dialog.
-	String renameEntityDlgError_BogusEntity(String entityType);
-	String renameEntityDlgError_NoName_File();
-	String renameEntityDlgError_NoName_Folder();
-	String renameEntityDlgError_NoName_Unknown();
-	String renameEntityDlgError_NoName_Workspace();
-	String renameEntityDlgHeader_File();
-	String renameEntityDlgHeader_Folder();
-	String renameEntityDlgHeader_Unknown();
-	String renameEntityDlgHeader_Workspace();
-	String renameEntityDlgName();
-	
-	// Strings used by the 'File Conflicts' dialog.
-	String fileConflictsDlgBtnCancel();
-	String fileConflictsDlgBtnOverwrite();
-	String fileConflictsDlgBtnVersion();
-	String fileConflictsDlgConfirmOverwrite();
-	String fileConflictsDlgConfirmVersion();
-	String fileConflictsDlgConflictingFiles();
-	String fileConflictsDlgHeader();
-
-	// Strings used in the Share with public info dialog
-	String shareWithPublicInfoDlg_Header();
-	String shareWithPublicInfoDlg_InstructionsEntry( String itemName );
-	String shareWithPublicInfoDlg_InstructionsFolder( String itemName );
-	String shareWithPublicInfoDlg_Instructions2( String itemName );
-
-	// Strings used in the Change Password dialog
-	String changePasswordDlg_ChangeDefaultPasswordHint();
-	String changePasswordDlg_ChangingPassword();
-	String changePasswordDlg_ConfirmPasswordLabel();
-	String changePasswordDlg_CurrentPasswordLabel();
-	String changePasswordDlg_EnterCurrentPwd();
-	String changePasswordDlg_ErrorChangingPassword( String desc );
-	String changePasswordDlg_ChangeDefaultPasswordHeader();
-	String changePasswordDlg_NewPasswordLabel();
-	String changePasswordDlg_PasswordCannotBeEmpty();
-	String changePasswordDlg_PasswordsDoNotMatch();
-	
-	// Strings used by the find control browser.
-	String findControlBrowser_Error_NotSupporter(String searchType);
-
-	// String used in the Forgotten Password dialog
-	String forgottenPwdDlg_Caption();
-	String forgottenPwdDlg_EmailAddress();
-	String forgottenPwdDlg_EnterEmailAddress();
-	String forgottenPwdDlg_Hint();
-	String forgottenPwdDlg_HintNote();
-	String forgottenPwdDlg_Instructions();
-	String forgottenPwdDlg_InvalidEmailAddress();
-	String forgottenPwdDlg_ForgottenPwdEmailSent();
-	String forgottenPwdDlg_OnlyForExternalUsers();
-	String forgottenPwdDlg_sendingEmail();
-	
-	// String used in the main content control.
-	String contentControl_Warning_ShareNoRights();
-
-	// Strings used in the Jits zone config dialog
-	String jitsZoneConfigDlg_EnableJits();
-	String jitsZoneConfigDlg_Header();
-	String jitsZoneConfigDlg_MaxWaitLabel();
-	String jitsZoneConfigDlg_OnSaveUnknownException( String errMsg );
-	String jitsZoneConfigDlg_SavingConfig();
-	String jitsZoneConfigDlg_SecondsLabel();
-
-	// Strings used in the Net Folder Sync Statistics dialog
-	String netFolderSyncStatisticsDlg_CountFailure();
-	String netFolderSyncStatisticsDlg_DirEnum();
-	String netFolderSyncStatisticsDlg_DirOnly();
-	String netFolderSyncStatisticsDlg_EndDate();
-	String netFolderSyncStatisticsDlg_EntriesExpunged();
-	String netFolderSyncStatisticsDlg_FileCount();
-	String netFolderSyncStatisticsDlg_FilesAdded();
-	String netFolderSyncStatisticsDlg_FilesExpunged();
-	String netFolderSyncStatisticsDlg_FilesHeading();
-	String netFolderSyncStatisticsDlg_FilesModified();
-	String netFolderSyncStatisticsDlg_FilesSetAcl();
-	String netFolderSyncStatisticsDlg_FilesSetOwnership();
-	String netFolderSyncStatisticsDlg_FolderCount();
-	String netFolderSyncStatisticsDlg_FoldersAdded();
-	String netFolderSyncStatisticsDlg_FoldersExpunged();
-	String netFolderSyncStatisticsDlg_FoldersHeading();
-	String netFolderSyncStatisticsDlg_FoldersProcessed();
-	String netFolderSyncStatisticsDlg_FoldersSetAcl();
-	String netFolderSyncStatisticsDlg_FoldersSetOwnership();
-	String netFolderSyncStatisticsDlg_Header( String netFolderName );
-	String netFolderSyncStatisticsDlg_MiscHeading();
-	String netFolderSyncStatisticsDlg_NodeIpAddress();
-	String netFolderSyncStatisticsDlg_NoValue();
-	String netFolderSyncStatisticsDlg_StartDate();
-	
-	// Strings used in the Delete Selections dialog.
-	String deleteSelectionsDlgConfirm();
-	String deleteSelectionsDlgHeader();
-	String deleteSelectionsDlgLabel_Trash();
-	String deleteSelectionsDlgLabel_TrashAdHoc();
-	String deleteSelectionsDlgLabel_Purge();
-	String deleteSelectionsDlgLabel_PurgeAll();
-	String deleteSelectionsDlgLabel_PurgeOnly();
-	String deleteSelectionsDlgWarning_CantUndo();
-	
-	// Strings used in the Delete Selected Users dialog.
-	String deleteSelectedUsersDlgConfirmWS();
-	String deleteSelectedUsersDlgConfirmWSAndUsers();
-	String deleteSelectedUsersDlgHeader();
-	String deleteSelectedUsersDlgLabel_Trash();
-	String deleteSelectedUsersDlgLabel_TrashAdHoc();
-	String deleteSelectedUsersDlgLabel_TrashDisabled();
-	String deleteSelectedUsersDlgLabel_Purge();
-	String deleteSelectedUsersDlgLabel_PurgeAll();
-	String deleteSelectedUsersDlgLabel_PurgeOnly();
-	String deleteSelectedUsersDlgLabel_PurgeUsers1();
-	String deleteSelectedUsersDlgLabel_PurgeUsers2();
-	String deleteSelectedUsersDlgLabel_PurgeUsers3();
-	String deleteSelectedUsersDlgLabel_PurgeUsers4();
-	String deleteSelectedUsersDlgWarning_CantUndo();
-
-	// Strings used in the Edit Ldap Configuration dialog
-	String editLdapConfigDlg_AddLdapServerLabel();
-	String editLdapConfigDlg_AllowLocalLoginLabel();
-	String editLdapConfigDlg_ConfirmDelete( String msg );
-	String editLdapConfigDlg_CreatingUsersLabel();
-	String editLdapConfigDlg_DefaultLocaleLabel();
-	String editLdapConfigDlg_DefaultTimeZoneLabel();	
-	String editLdapConfigDlg_DeleteGroupsLabel();
-	String editLdapConfigDlg_DeleteLdapServerLabel();
-	String editLdapConfigDlg_DeleteUserLabel();
-	String editLdapConfigDlg_DeleteUsersWarning();
-	String editLdapConfigDlg_DeleteWorkspaceLabel();
-	String editLdapConfigDlg_DisableUserLabel();
-	String editLdapConfigDlg_DisableUserLabel2();
-	String editLdapConfigDlg_EnableSyncScheduleLabel();
-	String editLdapConfigDlg_GroupsTab();
-	String editLdapConfigDlg_Header();
-	String editLdapConfigDlg_LdapConfigMustBeSaved();
-	String editLdapConfigDlg_LdapConfigMustBeSavedBeforePreviewCanBeStarted();
-	String editLdapConfigDlg_LdapGuidAttribChanged();
-	String editLdapConfigDlg_LdapServersTab();
-	String editLdapConfigDlg_LdapSyncInProgressCantStartAnother();
-	String editLdapConfigDlg_LocalUserAccountsTab();
-	String editLdapConfigDlg_NoLdapServersLabel();
-	String editLdapConfigDlg_NoLdapServersToSync();
-	String editLdapConfigDlg_PreviewLdapSyncLabel();
-	String editLdapConfigDlg_ReadingLdapConfig();
-	String editLdapConfigDlg_RegisterGroupProfilesAutomatically();
-	String editLdapConfigDlg_RegisterUserProfilesAutomatically();
-	String editLdapConfigDlg_SavingLdapConfig();
-	String editLdapConfigDlg_ScheduleTab();
-	String editLdapConfigDlg_SelectLdapServersToDelete();
-	String editLdapConfigDlg_SelectLdapServersToSync();
-	String editLdapConfigDlg_ServerUrlCol();
-	String editLdapConfigDlg_ShowSyncResultsLabel();
-	String editLdapConfigDlg_SyncGroupMembership();
-	String editLdapConfigDlg_SyncGroupProfiles();
-	String editLdapConfigDlg_Syncing();
-	String editLdapConfigDlg_SyncLdapServerLabel();
-	String editLdapConfigDlg_SyncUserProfiles();
-	String editLdapConfigDlg_UserDNCol();
-	String editLdapConfigDlg_UsersTab();
-
-	// Strings used in the Edit ldap server configuration dialog
-	String editLdapServerConfigDlg_AddSearchLabel();
-	String editLdapServerConfigDlg_BaseDnCol();
-	String editLdapServerConfigDlg_DeleteSearchLabel();
-	String editLdapServerConfigDlg_DirTypeLabel();
-	String editLdapServerConfigDlg_ErrorNoBaseDn();
-	String editLdapServerConfigDlg_ErrorNoPwd();
-	String editLdapServerConfigDlg_ErrorNoProxyDn();
-	String editLdapServerConfigDlg_ErrorNoServerUrl();
-	String editLdapServerConfigDlg_ErrorNoUserAttribMappings();
-	String editLdapServerConfigDlg_ErrorNoUserIdAttrib( String productName );
-	String editLdapServerConfigDlg_FilterCol();
-	String editLdapServerConfigDlg_GroupsTab();
-	String editLdapServerConfigDlg_GuidAttributeHint1();
-	String editLdapServerConfigDlg_GuidAttributeLabel();
-	String editLdapServerConfigDlg_Header();
-	String editLdapServerConfigDlg_NameAttributeHint( String productName );
-	String editLdapServerConfigDlg_NameAttributeLabel( String productName );
-	String editLdapServerConfigDlg_NameAttributePrompt( String productName );
-	String editLdapServerConfigDlg_NoSearchesLabel();
-	String editLdapServerConfigDlg_NoServerURL();
-	String editLdapServerConfigDlg_Other();
-	String editLdapServerConfigDlg_ProxyDn_Alt();
-	String editLdapServerConfigDlg_ProxyDNLabel();
-	String editLdapServerConfigDlg_ProxyPasswordLabel();
-	String editLdapServerConfigDlg_SelectSearchesToDelete();
-	String editLdapServerConfigDlg_ServerTab();
-	String editLdapServerConfigDlg_ServerUrlHint();
-	String editLdapServerConfigDlg_ServerUrlLabel();
-	String editLdapServerConfigDlg_UserAttributeMappingHint();
-	String editLdapServerConfigDlg_UsersTab();
-
-	// Strings used in the Edit Ldap Search dialog
-	String editLdapSearchDlg_AttributeNameLabel();
-	String editLdapSearchDlg_BaseDn_Alt();
-	String editLdapSearchDlg_BaseDnLabel();
-	String editLdapSearchDlg_CustomCriteriaRB();
-	String editLdapSearchDlg_DontCreateNetFolderRB();
-	String editLdapSearchDlg_ErrorNoAttributeName();
-	String editLdapSearchDlg_ErrorNoBaseDn();
-	String editLdapSearchDlg_ErrorNoFilter();
-	String editLdapSearchDlg_ErrorNoNetFolderPath();
-	String editLdapSearchDlg_ErrorNoNetFolderServer();
-	String editLdapSearchDlg_FilterLabel();
-	String editLdapSearchDlg_Header();
-	String editLdapSearchDlg_HomeDirAttribRB();
-	String editLdapSearchDlg_HomeDirNetFolderHeader();
-	String editLdapSearchDlg_HomeDirNetFolderHint();
-	String editLdapSearchDlg_NetFolderPathLabel();
-	String editLdapSearchDlg_NetFolderServerLabel();
-	String editLdapSearchDlg_NoServerURL();
-	String editLdapSearchDlg_SearchSubtreeLabel();
-	String editLdapSearchDlg_SpecifiedAttribRB();
-
-	// Strings used in the Ldap Sync Results dialog
-	String ldapSyncResultsDlg_ActionCol();
-	String ldapSyncResultsDlg_AddedAction();
-	String ldapSyncResultsDlg_AddedGroupsLabel();
-	String ldapSyncResultsDlg_AddedUsersLabel();
-	String ldapSyncResultsDlg_DeletedAction();
-	String ldapSyncResultsDlg_DeletedGroupsLabel();
-	String ldapSyncResultsDlg_DeletedUsersLabel();
-	String ldapSyncResultsDlg_DisabledAction();
-	String ldapSyncResultsDlg_DisabledUsersLabel();
-	String ldapSyncResultsDlg_FilterOptionsAlt();
-	String ldapSyncResultsDlg_GroupType();
-	String ldapSyncResultsDlg_Header();
-	String ldapSyncResultsDlg_HeaderPreview();
-	String ldapSyncResultsDlg_ModifiedAction();
-	String ldapSyncResultsDlg_ModifiedGroupsLabel();
-	String ldapSyncResultsDlg_ModifiedUsersLabel();
-	String ldapSyncResultsDlg_NameCol();
-	String ldapSyncResultsDlg_NoLdapSyncResults();
-	String ldapSyncResultsDlg_PreviewHint();
-	String ldapSyncResultsDlg_RequestingLdapSyncResults();
-	String ldapSyncResultsDlg_ServerLabel();
-	String ldapSyncResultsDlg_ShowAddedGroupsCB();
-	String ldapSyncResultsDlg_ShowAddedUsersCB();
-	String ldapSyncResultsDlg_ShowDeletedGroupsCB();
-	String ldapSyncResultsDlg_ShowDeletedUsersCB();
-	String ldapSyncResultsDlg_ShowDisabledUsersCB();
-	String ldapSyncResultsDlg_ShowModifiedGroupsCB();
-	String ldapSyncResultsDlg_ShowModifiedUsersCB();
-	String ldapSyncResultsDlg_SyncStatusLabel();
-	String ldapSyncResultsDlg_SyncStatus_Completed();
-	String ldapSyncResultsDlg_SyncStatus_Error();
-	String ldapSyncResultsDlg_SyncStatus_InProgress();
-	String ldapSyncResultsDlg_SyncStatus_NotCollectingResults();
-	String ldapSyncResultsDlg_SyncStatus_SyncAlreadyInProgress();
-	String ldapSyncResultsDlg_TypeCol();
-	String ldapSyncResultsDlg_UserType();
-
-	// Strings used by AlertDlg.
-	String alertDlgHeader(String product);
-
-	// Strings used by PromptDlg.
-	String promptDlgHeader();
-
-	// Strings used in the Email Public Link dialog
-	String emailPublicLinkDlg_EmailHint();
-	String emailPublicLinkDlg_Hint1();
-	String emailPublicLinkDlg_Hint2();
-	String emailPublicLinkDlg_MessageHint();
-	String emailPublicLinkDlg_NoEmailAddresses();
-	String emailPublicLinkDlg_SendBtn();
-	String emailPublicLinkDlg_SendingEmails();
-
-	// Strings used in the Copy Public Link dialog.
-	String copyPublicLink(String product);
-	String copyPublicLink_DownloadFileLink();
-	String copyPublicLink_Button(String product);
-	String copyPublicLink_Error_ReadErrors();
-	String copyPublicLink_HintSingle(String product);
-	String copyPublicLink_HintMultiple(String product);
-	String copyPublicLink_InternalError_NoEntries();
-	String copyPublicLink_InternalError_NotAnEntry();
-	String copyPublicLink_MultipleItems(int numItems);
-	String copyPublicLink_Reading();
-	String copyPublicLink_ViewFileLink();
-
-	// LDAP browser dialog strings.
-	String ldapBrowser_Caption();
-	String ldapBrowser_InternalError_CantFindTree();
-	String ldapBrowser_InternalError_NoTrees();
-	String ldapBrowser_Label_Empty();
-	String ldapBrowser_Label_SelectOne();
-	String ldapBrowser_Label_SelectTree();
-	String ldapBrowser_Label_Tree();
-	String ldapBrowser_Warning_Partial();
-
-	// Strings used in the name completion settings dialog
-	String nameCompletionSettingsDlg_Desc();
-	String nameCompletionSettingsDlg_FQDN();
-	String nameCompletionSettingsDlg_Header();
-	String nameCompletionSettingsDlg_Hint();
-	String nameCompletionSettingsDlg_Name();
-	String nameCompletionSettingsDlg_PrimaryDisplayLabel();
-	String nameCompletionSettingsDlg_SavingSettings();
-	String nameCompletionSettingsDlg_SecondaryDisplayLabel();
-	String nameCompletionSettingsDlg_Title();
-	
-	// Strings used in the Manage Devices dialog.
-	String manageMobileDevicesDlgCaptionSystem();
-	String manageMobileDevicesDlgDevices(int dCount);
-	String manageMobileDevicesDlgSystem();
-	String manageMobileDevicesDlgUser(String title);
-	String manageMobileDevicesDlg_confirmDelete();
-	String manageMobileDevicesDlg_failureDeletingMobileDevices();
+	// Strings used in the "Edit graphic properties" dialog
+	String editGraphicPropertiesDlgSetImageSize();
 	
 }// end GwtTeamingMessages

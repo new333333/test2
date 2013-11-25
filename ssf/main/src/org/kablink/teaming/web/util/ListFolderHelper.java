@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,7 +37,6 @@ import static org.kablink.util.search.Restrictions.in;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,7 +62,6 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -123,8 +121,7 @@ import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 /**
- * ?
- *  
+ * 
  * @author ?
  */
 @SuppressWarnings({"unchecked", "unused"})
@@ -300,6 +297,12 @@ public class ListFolderHelper {
 			if (bs.getBinderModule().testAccess(binder, BinderOperation.deleteEntries)) {
 				accessControlBinderMap.put("deleteEntries", new Boolean(true));
 			}
+			if (bs.getBinderModule().testAccess(binder, BinderOperation.addEntry)) {
+				accessControlBinderMap.put("copyEntries", new Boolean(true));
+			}
+			if (bs.getBinderModule().testAccess(binder, BinderOperation.moveBinder)) {
+				accessControlBinderMap.put("moveEntries", new Boolean(true));
+			}
 	
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
@@ -413,7 +416,7 @@ public class ListFolderHelper {
 	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, Binder binder, UserProperties userFolderProperties, boolean searchTrash) {
 		Map result = new HashMap();
 		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
-		String searchTitle = ((null == request) ? "" : PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, ""));
+		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
 		if (!searchTitle.equals("")) {
 			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
 		}
@@ -553,21 +556,16 @@ public class ListFolderHelper {
 		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 	}
 
-	//Return the list of calendar events to show
-	//  Note: this routine is used by the Mobile devices to get the list of calendar events to show
-	public static List findCalendarEvents(AllModulesInjected bs, RenderRequest request, 
+	public static Map findCalendarEvents(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model) throws PortletRequestBindingException {
 		Map folderEntries = new HashMap();
 		Long binderId = binder.getId();
-		List binderIds = Arrays.asList(String.valueOf(binderId));
 		
 		int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
 		int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
 		int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
 		
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-		String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, null);
-		String calendarModeType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_MODE_TYPE, "");
 		
 		Date currentDate = EventsViewHelper.getCalendarCurrentDate(portletSession);
 		currentDate = EventsViewHelper.getDate(year, month, dayOfMonth, currentDate);
@@ -576,8 +574,6 @@ public class ListFolderHelper {
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
-		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
-		TimeZone timeZone = user.getTimeZone();
 		
 		Grid oldGrid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId.toString());
 		String gridType = "";
@@ -588,15 +584,16 @@ public class ListFolderHelper {
 		}
 		gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, gridType);
 		gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, gridSize);
+		Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, binderId.toString(), gridType, gridSize);
+		model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).type);
+		model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).size);
 		
-		Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, calendarStickyId, gridType, gridSize);
-
-		model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(calendarStickyId)).type);
-		model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(calendarStickyId)).size);
+		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
+		TimeZone timeZone = user.getTimeZone();
 		
 		Calendar calCurrentDate = new GregorianCalendar(timeZone);
 		calCurrentDate.setTime(currentDate);
-		
+
 		Calendar nextDate = new GregorianCalendar(timeZone);
 		nextDate.setTime(currentDate);
 
@@ -607,14 +604,9 @@ public class ListFolderHelper {
 		Calendar calEndDateRange = new GregorianCalendar(timeZone);
    		calStartDateRange.setTime(currentDate);
    		calEndDateRange.setTime(currentDate);
-
-       	model.put(WebKeys.CALENDAR_PREV_DATE, prevDate);
-       	model.put(WebKeys.CALENDAR_NEXT_DATE, nextDate);
-       	model.put(WebKeys.CALENDAR_CURR_DATE, calCurrentDate);
-       	model.put(WebKeys.CALENDAR_RANGE_END_DATE, calEndDateRange);
-
-   		String strSessGridType = gridType;
-   		Integer sessGridSize = gridSize;
+		
+   		String strSessGridType = null;
+   		Integer sessGridSize = null;
    		EventsViewHelper.Grid grid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId.toString());
    		if (grid != null) {
    			strSessGridType = grid.type;
@@ -623,11 +615,10 @@ public class ListFolderHelper {
        	String strSessGridSize = "";
        	if (sessGridSize != null) strSessGridSize = sessGridSize.toString(); 
       	
-		Integer weekFirstDay = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
-		weekFirstDay = weekFirstDay!=null?weekFirstDay:CalendarHelper.getFirstDayOfWeek();
-		
-       	AbstractIntervalView intervalView = new OneMonthView(currentDate, weekFirstDay);;
+       	AbstractIntervalView intervalView = null;
        	if (EventsViewHelper.GRID_MONTH.equals(strSessGridType)) {
+			Integer weekFirstDay = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
+			weekFirstDay = weekFirstDay!=null?weekFirstDay:CalendarHelper.getFirstDayOfWeek();
 			
        		intervalView = new OneMonthView(currentDate, weekFirstDay);
        		
@@ -652,156 +643,33 @@ public class ListFolderHelper {
        	
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 		Map options = getSearchFilter(bs, request, binder, userFolderProperties);
-		
 		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
-		options.put( ObjectKeys.SEARCH_SORT_DESCEND, new Boolean( false ) );
-		
+       	// options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
 		List intervals = new ArrayList(1);
 		intervals.add(intervalView.getVisibleIntervalRaw());
        	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervals);
        	
-		AbstractIntervalView calendarViewRangeDates = new OneMonthView(currentDate, weekFirstDay);
-       	String start = DateTools.dateToString(calendarViewRangeDates.getVisibleStart(), DateTools.Resolution.SECOND);
-       	String end =  DateTools.dateToString(calendarViewRangeDates.getVisibleEnd(), DateTools.Resolution.SECOND);
+       	if (1 == 0) {
+       		options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calStartDateRange.getTime()));
+	       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calEndDateRange.getTime()));
+	
+	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calStartDateRange.getTime()));
+	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calEndDateRange.getTime()));
+       	}
+
+  		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.EVENT_DATES_FIELD);
+  		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+
+       	model.put(WebKeys.CALENDAR_PREV_DATE, prevDate);
+       	model.put(WebKeys.CALENDAR_NEXT_DATE, nextDate);
+       	model.put(WebKeys.CALENDAR_CURR_DATE, calCurrentDate);
+       	model.put(WebKeys.CALENDAR_RANGE_END_DATE, calEndDateRange);
        	
-       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, start);
-       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, end);
-
-       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, start);
-       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, end);
-
-       	if (!calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
-			//See if there is a filter turned on for this folder. But don't do it for the MyEvents display
-			options.putAll(ListFolderHelper.getSearchFilter(bs, request, binder, userFolderProperties));
-		}
-		Document baseFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
-		boolean filtered = (null != baseFilter); 
-		if (filtered) {
-			Element preDeletedOnlyTerm = (Element)baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@preDeletedOnly='true']");
-			if (preDeletedOnlyTerm != null) {
-				options.put(ObjectKeys.SEARCH_PRE_DELETED, Boolean.TRUE);
-			}
-		}				
-		
-		// Are we searching for events in a folder or workspace?
-       	List entries = new ArrayList();;
-		if (binder instanceof Folder || binder instanceof Workspace) {
-			// Yes!  Are we searching for physical events using
-			// a filter?
-			boolean virtual;
-			String eventsType = EventsViewHelper.getCalendarDisplayEventType(bs, user.getId(), binderId);
-			virtual = ((null != eventsType) && "virtual".equals(eventsType));
-			if ((!virtual) && filtered) {
-				// Yes!  Simply perform the search using that
-				// filter.
-				folderEntries = bs.getBinderModule().executeSearchQuery(baseFilter, Constants.SEARCH_MODE_NORMAL, options);
-				entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-			
-			} else {
-				// No, the search is either for virtual event
-				// or not using a filter!  Is it a search for
-				// physical events?
-				if (!virtual) {
-					// Yes!  Is it really?  We'll consider it
-					// a search for virtual event if there
-					// aren't any binders to search through.
-					int binderCount = ((null == binderIds) ? 0 : binderIds.size());
-					switch (binderCount) {
-					case 0:
-						virtual = true;
-						break;
-						
-					case 1:
-						Object binderO = binderIds.get(0);
-						if ((null != binderO) && (binderO instanceof String)) {
-							virtual = ("none".equalsIgnoreCase((String)binderO));
-						}
-						break;
-					}
-				}
-
-				// Is it a search for virtual events using a
-				// defined filter?
-				if (virtual && filtered) {
-					// Yes!  Instead of searching the current
-					// binder, which the filter should have
-					// been setup for, we need to search the
-					// entire tree.  Adjust the filter
-					// accordingly.
-					Element foldersListFilterTerm = (Element)baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='foldersList']");
-					Element filterFolderId = (Element)baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='foldersList']/filterFolderId");
-					if ((null != foldersListFilterTerm) && (null != filterFolderId)) {
-						foldersListFilterTerm.addAttribute("filterType", "ancestriesList");
-						filterFolderId.setText(String.valueOf(bs.getWorkspaceModule().getTopWorkspace().getId()));
-					}
-				}
-
-				// Search for the events that are calendar
-				// entries.
-				ModeType modeType = (virtual ? ModeType.VIRTUAL : ModeType.PHYSICAL); 
-				if (calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
-					//This is a request for calendar events for the current user
-					modeType = ModeType.MY_EVENTS;
-				}
-				Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
-				folderEntries = bs.getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
-				entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-				
-				// Are we searching for virtual events?
-				if (virtual) {
-					// Yes!  Search for the events that are
-					// task entries...
-					List taskIntervals = new ArrayList(1);
-					taskIntervals.add(calendarViewRangeDates.getVisibleIntervalRaw());
-			       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, taskIntervals);
-			       	
-					searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
-					folderEntries = bs.getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
-					List taskEntries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-					int tasks = ((null == taskEntries) ? 0 : taskEntries.size());
-					if (0 < tasks) {
-						// ...and add them to the calendar sorted by end date
-						// ...events we found above.
-						Map<Integer, List> taskEntriesByDay = new HashMap<Integer, List>();
-						for (int i = 0; i < tasks; i += 1) {
-							Map taskEntry = (Map)taskEntries.get(i);
-							String event0 = (String)taskEntry.get("_event0");
-							if (event0 != null) {
-								Date startDate = (Date)taskEntry.get(event0+"#LogicalStartDate");
-								Date endDate = (Date)taskEntry.get(event0+"#LogicalEndDate");
-								if (endDate != null) {
-									startDate = endDate;
-								}
-								if (startDate != null) {
-									Calendar cal = new GregorianCalendar();
-									cal.setTime(startDate);
-									Integer monthDay = cal.get(Calendar.DAY_OF_MONTH);
-									if (!taskEntriesByDay.containsKey(monthDay)) {
-										taskEntriesByDay.put(monthDay, new ArrayList());
-									}
-									List dayEntries = taskEntriesByDay.get(monthDay);
-									dayEntries.add(taskEntry);
-								}
-							}
-						}
-						for (int i=1; i <= 31; i++) {
-							if (taskEntriesByDay.containsKey(Integer.valueOf(i))) {
-								List dayEntries = taskEntriesByDay.get(Integer.valueOf(i));
-								for (Object te : dayEntries) {
-									entries.add(te);
-								}
-							}
-						}
-					}
-				}
-			}
-			
-		} else {
-			// A template.
-			entries = new ArrayList();
+		if (binder instanceof Folder) {
+			folderEntries = bs.getFolderModule().getEntries(binderId, options);
 		}
 		
-		return entries;
+		return folderEntries;
 	}
 	
 	public static void setDatesForGridDayView(Calendar calStartDateRange, Calendar calEndDateRange, 
@@ -907,7 +775,7 @@ public class ListFolderHelper {
 		
 		if (showTrash) {
 			TrashHelper.buildTrashViewToolbar(model);
-			folderEntries = TrashHelper.getTrashEntities(bs, model, folder, options);
+			folderEntries = TrashHelper.getTrashEntries(bs, model, folder, options);
 		}
 		
 		else {
@@ -932,6 +800,9 @@ public class ListFolderHelper {
 					folderEntries = TaskHelper.findTaskEntries(bs, req, (Binder) folder, model, options);
 					model.put(WebKeys.TASK_CAN_MODIFY_LINKAGE, new Boolean(TaskHelper.canModifyTaskLinkage(req, bs, ((Binder) folder))));
 					GwtUIHelper.setCommonRequestInfoData(req, bs, model);
+				} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && accessible_simple_ui &&
+						ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
+					folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);
 				} else {
 					folderEntries = bs.getFolderModule().getEntries(folderId, options);
 				}
@@ -1197,7 +1068,7 @@ public class ListFolderHelper {
            	child.setText(Constants.ENTRY_TYPE_ENTRY);
         	options2.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
     	}
-		Map entriesMap = bs.getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options2);
+		Map entriesMap = bs.getBinderModule().executeSearchQuery(searchFilter, options2);
 		List entries = (List) entriesMap.get(ObjectKeys.SEARCH_ENTRIES);
 		LinkedHashMap monthHits = new LinkedHashMap();
 		Map folderHits = new HashMap();
@@ -1301,7 +1172,7 @@ public class ListFolderHelper {
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.SORT_TITLE_FIELD));
-		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
@@ -1310,8 +1181,7 @@ public class ListFolderHelper {
       		Map entryMap = (Map) iter.next();
       		binderIdList.add(new Long((String)entryMap.get("_docId")));
       	}
-      	//Get sub-binder list including intermediate binders that may be inaccessible
-      	SortedSet binderList = bs.getBinderModule().getBinders(binderIdList, Boolean.FALSE);
+      	SortedSet binderList = bs.getBinderModule().getBinders(binderIdList);
         for (Iterator iter=binderList.iterator(); iter.hasNext();) {
      		Binder b = (Binder)iter.next();
       		if (b.isDeleted()) continue;
@@ -1705,7 +1575,7 @@ public class ListFolderHelper {
 		}
 		if ((viewType.equals(Definition.VIEW_STYLE_DISCUSSION) || viewType.equals(Definition.VIEW_STYLE_TABLE) || 
 				viewType.equals(Definition.VIEW_STYLE_FILE)) && !folder.isMirrored()) {
-			//Add the Delete and Purge buttons
+			//Add the Delete and More buttons
 			if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteEntries)) {
 				Map qualifiers = new HashMap();
 				String onClickPhrase = "ss_deleteSelectedEntries('delete');return false;";
@@ -1715,14 +1585,43 @@ public class ListFolderHelper {
 				qualifiers.put("textId", "ss_toolbarDeleteBtn");
 				entryToolbar.addToolbarMenu("1_deleteSelected", NLT.get("toolbar.delete"), 
 						"#", qualifiers);
-				qualifiers = new HashMap();
-				onClickPhrase = "ss_deleteSelectedEntries('purge');return false;";
-				qualifiers.put("title", NLT.get("file.command.deleteEntriesPurge"));
-				qualifiers.put("onClick", onClickPhrase);
-				qualifiers.put("linkclass", "ss_toolbarDeleteBtnDisabled");
-				qualifiers.put("textId", "ss_toolbarPurgeBtn");
-				entryToolbar.addToolbarMenu("1_purgeSelected", NLT.get("toolbar.purge"), 
-						"#", qualifiers);
+			}
+
+			if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteEntries) ||
+					bs.getBinderModule().testAccess(folder, BinderOperation.addEntry) ||
+					bs.getBinderModule().testAccess(folder, BinderOperation.moveBinder)) {
+				Map dropdownQualifiers = new HashMap();
+				dropdownQualifiers.put("highlight", new Boolean(true));
+				dropdownQualifiers.put("linkclass", "ss_toolbarDeleteBtnDisabled");
+				dropdownQualifiers.put("textId", "ss_toolbarMoreBtn");
+				entryToolbar.addToolbarMenu("1_more", NLT.get("toolbar.more"), "", dropdownQualifiers);
+				
+				if (bs.getBinderModule().testAccess(folder, BinderOperation.addEntry)) {
+					Map qualifiers = new HashMap();
+					String onClickPhrase = "ss_copyMoveSelectedEntries('copy');return false;";
+					qualifiers.put("title", NLT.get("file.command.copyEntries"));
+					qualifiers.put("onClick", onClickPhrase);
+					qualifiers.put("textId", "ss_toolbarCopyBtn");
+					entryToolbar.addToolbarMenuItem("1_more", "more", NLT.get("toolbar.copy"), "#", qualifiers);
+				}
+				
+				if (bs.getBinderModule().testAccess(folder, BinderOperation.moveBinder)) {
+					Map qualifiers = new HashMap();
+					String onClickPhrase = "ss_copyMoveSelectedEntries('move');return false;";
+					qualifiers.put("title", NLT.get("file.command.moveEntries"));
+					qualifiers.put("onClick", onClickPhrase);
+					qualifiers.put("textId", "ss_toolbarMoveBtn");
+					entryToolbar.addToolbarMenuItem("1_more", "more", NLT.get("toolbar.move"), "#", qualifiers);
+				}
+				
+				if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteEntries)) {
+					Map qualifiers = new HashMap();
+					String onClickPhrase = "ss_deleteSelectedEntries('purge');return false;";
+					qualifiers.put("title", NLT.get("file.command.deleteEntriesPurge"));
+					qualifiers.put("onClick", onClickPhrase);
+					qualifiers.put("textId", "ss_toolbarPurgeBtn");
+					entryToolbar.addToolbarMenuItem("1_more", "more", NLT.get("toolbar.purge"), "#", qualifiers);
+				}
 			}
 		}
 	}
@@ -1801,7 +1700,7 @@ public class ListFolderHelper {
 		}
 
 		//Copy binder
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.copyBinder)) {
+		if (!folder.isMirrored() && bs.getBinderModule().testAccess(folder, BinderOperation.copyBinder)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
@@ -1859,16 +1758,6 @@ public class ListFolderHelper {
 			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("administration.definition_builder_designers"), url, qualifiers);
 		}
 		
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration)) {
-			adminMenuCreated=true;
-			qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_TEMPLATES);
-			url.setParameter(WebKeys.URL_BINDER_PARENT_ID, forumId);
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("administration.template_builder_local"), url, qualifiers);
-		}
-		
 		//Delete binder
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteBinder)) {
 			adminMenuCreated=true;
@@ -1901,7 +1790,7 @@ public class ListFolderHelper {
 			//Synchronize mirrored folder
 			if(folder.isMirrored() &&
 					folder.getResourceDriverName() != null &&
-					bs.getFolderModule().testAccess(folder, FolderOperation.fullSynchronize)) {
+					bs.getFolderModule().testAccess(folder, FolderOperation.synchronize)) {
 				adminMenuCreated=true;
 				qualifiers = new HashMap();
 				qualifiers.put("showSpinner", new Boolean(true));
@@ -2428,6 +2317,18 @@ public class ListFolderHelper {
 					adapterUrl.toString(), qualifiers);
         }
 
+		//Color themes (removed for now)
+		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
+					NLT.get("ui.availableThemeIds") + "', '" +
+					NLT.get("ui.availableThemeNames") + "', '" +
+					NLT.get("sidebar.themeChange") + "'); return false;");
+			//footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+			model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
+			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
+		}
+		
 		// GWT UI.  Note that these need to be last in the toolbar
 		// building sequence because they access things in the
 		// model to construct toolbars specific to the GWT UI.
@@ -2553,30 +2454,6 @@ public class ListFolderHelper {
 		UserProperties userProps = bs.getProfileModule().getUserProperties(userId, binderId);
 		return ((ModeType) userProps.getProperty(WebKeys.FOLDER_MODE_PREF));
 	}
-
-	/**
-	 * Returns true if a folder holds events that user is currently
-	 * viewing in 'Virtual' mode and false otherwise.
-	 * 
-	 * @param bs
-	 * @param user
-	 * @param viewType
-	 * @param folderId
-	 * 
-	 * @return
-	 */
-	public static boolean isVirtualEventFolder(AllModulesInjected bs, User user, String viewType, Long folderId) {
-		boolean reply;
-		if ((MiscUtil.hasString(viewType) &&
-				(viewType.equals(Definition.VIEW_STYLE_TASK) || viewType.equals(Definition.VIEW_STYLE_CALENDAR)))) {
-			ModeType mode = ListFolderHelper.getFolderModeType(bs, user.getId(), folderId);
-			reply = (ModeType.VIRTUAL == mode);
-		}
-		else {
-			reply = false;
-		}
-		return reply;
-	}
 	
 	/**
 	 * Saves given folder mode in session or default mode if given is
@@ -2598,33 +2475,5 @@ public class ListFolderHelper {
 		}
 		bs.getProfileModule().setUserProperty(userId, binderId, WebKeys.FOLDER_MODE_PREF, modeType);
 		return modeType;
-	}
-	
-	/**
-	 * Returns a String[] of the IDs of the contributors to an entry.
-	 * 
-	 * @param entry
-	 * 
-	 * @return
-	 */
-	public static String[] collectContributorIds(FolderEntry entry) {		
-		Set principals = new HashSet();
-		collectCreatorAndMoficationIdsRecursive(entry, principals);
-		String[] as = new String[principals.size()];
-		principals.toArray(as);
-		return as;
-	}
-
-	/*
-	 * Recursively collects the contributor Principals to an entry into
-	 * the given set.
-	 */
-	private static void collectCreatorAndMoficationIdsRecursive(FolderEntry entry, Set principals) {		
-		principals.add(entry.getCreation().getPrincipal().getId().toString());
-		principals.add(entry.getModification().getPrincipal().getId().toString());
-		Iterator repliesIt = entry.getReplies().iterator();
-		while (repliesIt.hasNext()) {
-			collectCreatorAndMoficationIdsRecursive((FolderEntry)repliesIt.next(), principals);
-		}
 	}
 }

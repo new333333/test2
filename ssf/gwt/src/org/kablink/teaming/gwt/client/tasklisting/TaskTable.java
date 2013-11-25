@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,22 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
-import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TaskDeleteEvent;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveDownEvent;
@@ -61,10 +46,8 @@ import org.kablink.teaming.gwt.client.event.TaskMoveLeftEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveRightEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveUpEvent;
 import org.kablink.teaming.gwt.client.event.TaskPurgeEvent;
+import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
-import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
@@ -72,12 +55,13 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.AssignmentInfoListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CollapseSubtasksCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandSubtasksCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskBundleCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTeamAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PurgeTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskCompletedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskDueDateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskLinkageCmd;
@@ -94,27 +78,19 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDueDateDlg;
-import org.kablink.teaming.gwt.client.util.AssignmentInfo;
-import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BinderType;
-import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
-import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
+import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItemHelper;
-import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
@@ -134,6 +110,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -150,7 +127,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Class that implements the Composite that contains the task folder
@@ -161,15 +137,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class TaskTable extends Composite
 	implements
 	// Event handlers implemented by this class.
-		ChangeEntryTypeSelectedEntitiesEvent.Handler,
-		CopySelectedEntitiesEvent.Handler,
-		DeleteSelectedEntitiesEvent.Handler,
-		LockSelectedEntitiesEvent.Handler,
-		MarkReadSelectedEntitiesEvent.Handler,
-		MoveSelectedEntitiesEvent.Handler,
-		QuickFilterEvent.Handler,
-		ShareSelectedEntitiesEvent.Handler,
-		SubscribeSelectedEntitiesEvent.Handler,
 		TaskDeleteEvent.Handler,
 		TaskHierarchyDisabledEvent.Handler,
 		TaskMoveDownEvent.Handler,
@@ -177,42 +144,38 @@ public class TaskTable extends Composite
 		TaskMoveRightEvent.Handler,
 		TaskMoveUpEvent.Handler,
 		TaskPurgeEvent.Handler,
-		UnlockSelectedEntitiesEvent.Handler,
-		ViewSelectedEntryEvent.Handler,
-		ViewWhoHasAccessEvent.Handler
+		TaskQuickFilterEvent.Handler
 {
-	private boolean						m_sortAscending;			//
-	private Column						m_sortColumn;				//
-	private EventHandler				m_assigneeMouseOutEvent;	//
-	private EventHandler				m_assigneeMouseOverEvent;	//
-	private EventHandler				m_cbClickHandler;			//
-	private EventHandler				m_columnClickHandler;		//
-	private EventHandler				m_dueDateClickHandler;		//
-	private EventHandler				m_expanderClickHandler;		//
-	private EventHandler				m_newTaskClickHandler;		//
-	private EventHandler				m_taskLocationClickHandler;	//
-	private EventHandler				m_taskOptionClickHandler;	//
-	private EventHandler				m_taskOrderBlurHandler;		//
-	private EventHandler				m_taskOrderClickHandler;	//
-	private EventHandler				m_taskOrderKeyPressHandler;	//
-	private EventHandler				m_taskSeenClickHandler;		//
-	private EventHandler				m_taskViewClickHandler;		//
-	private FlexCellFormatter			m_flexTableCF;				//
-	private FlexTable					m_flexTable;				//
-	private Image 						m_dueDateBusy;				//
-	private int							m_markerSize;				// Calculated size of a marker (e.g., unseen bubble, completed checkmark, ...)
-	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private long						m_renderTime;				//
-	private ProcessActiveWidgets		m_processActiveWidgets;		//
-	private RowFormatter				m_flexTableRF;				//
-	private String						m_quickFilter;				//
-	private TaskBundle					m_taskBundle;				//
-	private TaskDueDateDlg				m_dueDateDlg;				//
-	private TaskListing					m_taskListing;				//
-	private TaskPopupMenu				m_newTaskMenu;				//
-	private TaskPopupMenu				m_percentDoneMenu;			//
-	private TaskPopupMenu				m_priorityMenu;				//
-	private TaskPopupMenu				m_statusMenu;				//
+	private boolean					m_sortAscending;			//
+	private Column					m_sortColumn;				//
+	private EventHandler			m_assigneeMouseOutEvent;	//
+	private EventHandler			m_assigneeMouseOverEvent;	//
+	private EventHandler			m_cbClickHandler;			//
+	private EventHandler			m_columnClickHandler;		//
+	private EventHandler			m_dueDateClickHandler;		//
+	private EventHandler			m_expanderClickHandler;		//
+	private EventHandler			m_newTaskClickHandler;		//
+	private EventHandler			m_taskOptionClickHandler;	//
+	private EventHandler			m_taskOrderBlurHandler;		//
+	private EventHandler			m_taskOrderClickHandler;	//
+	private EventHandler			m_taskOrderKeyPressHandler;	//
+	private EventHandler			m_taskSeenClickHandler;		//
+	private EventHandler			m_taskViewClickHandler;		//
+	private FlexCellFormatter		m_flexTableCF;				//
+	private FlexTable				m_flexTable;				//
+	private Image 					m_dueDateBusy;				//
+	private int						m_markerSize;				// Calculated size of a marker (e.g., unseen bubble, completed checkmark, ...)
+	private long					m_renderTime;				//
+	private ProcessActiveWidgets	m_processActiveWidgets;		//
+	private RowFormatter			m_flexTableRF;				//
+	private String					m_quickFilter;				//
+	private TaskBundle				m_taskBundle;				//
+	private TaskDueDateDlg			m_dueDateDlg;				//
+	private TaskListing				m_taskListing;				//
+	private TaskPopupMenu			m_newTaskMenu;				//
+	private TaskPopupMenu			m_percentDoneMenu;			//
+	private TaskPopupMenu			m_priorityMenu;				//
+	private TaskPopupMenu			m_statusMenu;				//
 	
 	private       boolean							m_newTaskTable = true;										//
 	private final GwtRpcServiceAsync				m_rpcService   = GwtTeaming.getRpcService();				// 
@@ -246,15 +209,6 @@ public class TaskTable extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
-		TeamingEvents.COPY_SELECTED_ENTITIES,
-		TeamingEvents.DELETE_SELECTED_ENTITIES,
-		TeamingEvents.LOCK_SELECTED_ENTITIES,
-		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
-		TeamingEvents.MOVE_SELECTED_ENTITIES,
-		TeamingEvents.QUICK_FILTER,
-		TeamingEvents.SHARE_SELECTED_ENTITIES,
-		TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES,
 		TeamingEvents.TASK_DELETE,
 		TeamingEvents.TASK_HIERARCHY_DISABLED,
 		TeamingEvents.TASK_MOVE_DOWN,
@@ -262,10 +216,17 @@ public class TaskTable extends Composite
 		TeamingEvents.TASK_MOVE_RIGHT,
 		TeamingEvents.TASK_MOVE_UP,
 		TeamingEvents.TASK_PURGE,
-		TeamingEvents.UNLOCK_SELECTED_ENTITIES,
-		TeamingEvents.VIEW_SELECTED_ENTRY,
-		TeamingEvents.VIEW_WHO_HAS_ACCESS,
+		TeamingEvents.TASK_QUICK_FILTER,
 	};
+	
+	/*
+	 * Enumeration used to represent the type of an AssignmentInfo.
+	 */
+	private enum AssigneeType {
+		INDIVIDUAL,
+		GROUP,
+		TEAM,
+	}
 	
 	/*
 	 * Enumeration used to represent the order of the columns in the
@@ -489,7 +450,8 @@ public class TaskTable extends Composite
 			m_processActiveLabel = new InlineLabel();
 			m_processActiveDIV.add(m_processActiveLabel);
 			m_processActiveDIV.addStyleName("gwtTaskList_processActive");
-			Image busyImg = GwtClientHelper.buildImage(m_images.busyAnimation_small());
+			Image busyImg = new Image(m_images.busyAnimation());
+			busyImg.getElement().setAttribute("align", "absmiddle");
 			m_processActiveDIV.add(busyImg);
 			m_processActiveDIV.setVisible(false);
 		}
@@ -610,6 +572,13 @@ public class TaskTable extends Composite
 		// ...store the parameters...
 		m_taskListing = taskListing;
 		
+		// ..register the events to be handled by this class...
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
+		
+		
 		// ...initialize the JSNI mouse event handlers...
 		jsInitTaskMouseEventHandlers(this);
 		
@@ -695,9 +664,8 @@ public class TaskTable extends Composite
 	 * @param disposition
 	 * @param newTaskId
 	 * @param selectedTaskId
-	 * @param updateAllDates
 	 */
-	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId, boolean updateAllDates) {		
+	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId) {		
 		switch (disposition) {
 		default:
 		case APPEND:
@@ -727,21 +695,10 @@ public class TaskTable extends Composite
 			}
 			
 			// ...and refresh the list.
-			List<TaskListItem> newTaskList;
-			if (updateAllDates) {
-				newTaskList = null;
-			}
-			else {
-				newTaskList = new ArrayList<TaskListItem>();
-				newTaskList.add(newTask);
-			}
+			List<TaskListItem> newTaskList = new ArrayList<TaskListItem>();
+			newTaskList.add(newTask);
 			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), newTaskList);
 		}		
-	}
-	
-	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId) {
-		// Always use the initial form of the method.
-		applyTaskDisposition(disposition, newTaskId, selectedTaskId, false);	// false -> Don't update all dates, just specific ones.
 	}
 	
 	/**
@@ -753,7 +710,7 @@ public class TaskTable extends Composite
 	public void applyTaskDueDate(TaskEvent newDueDate, Long selectedTaskId) {
 		final TaskListItem selectedTask = TaskListItemHelper.findTask(m_taskBundle, selectedTaskId);
 		final TaskInfo ti = selectedTask.getTask();
-		final Long entryId = ti.getTaskId().getEntityId();
+		final Long entryId = ti.getTaskId().getEntryId();
 		SaveTaskDueDateCmd cmd = new SaveTaskDueDateCmd(ti.getTaskId(), newDueDate);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -780,8 +737,33 @@ public class TaskTable extends Composite
 				updateCalculatedDatesAsync(null, ti.getTaskId().getBinderId(), entryId);
 			}
 		});
+		
 	}
 	
+	/*
+	 * Returns a base Anchor widget.
+	 */
+	private Anchor buildAnchor(List<String> styles) {
+		Anchor reply = new Anchor();
+		for (String style:  styles) {
+			reply.addStyleName(style);
+		}
+		return reply;
+	}
+	
+	private Anchor buildAnchor(String style) {
+		List<String> styles = new ArrayList<String>();
+		styles.add(style);
+		if (!(style.equals("cursorPointer"))) {
+			styles.add("cursorPointer");
+		}
+		return buildAnchor(styles);
+	}
+	
+	private Anchor buildAnchor() {
+		return buildAnchor("cursorPointer");
+	}
+
 	/*
 	 * Returns a base Label that can be used as an anchor like widget.
 	 */
@@ -860,7 +842,9 @@ public class TaskTable extends Composite
 		case GROUP:
 		case TEAM:
 			// Group or team assignee!
-			Image assigneeImg = GwtClientHelper.buildImage(m_taskListing.getRequestInfo().getImagesPath() + ai.getPresenceDude());
+			Image assigneeImg = new Image();
+			assigneeImg.setUrl(m_taskListing.getRequestInfo().getImagesPath() + ai.getPresenceDude());
+			assigneeImg.getElement().setAttribute("align", "absmiddle");
 			fp.add(assigneeImg);
 
 			int    members       = ai.getMembers();
@@ -894,6 +878,22 @@ public class TaskTable extends Composite
 			
 			break;
 		}
+	}
+
+	/*
+	 * Returns a base Image widget.
+	 */
+	private Image buildImage(ImageResource res, String title) {
+		Image reply = new Image(res);
+		reply.getElement().setAttribute("align", "absmiddle");
+		if (GwtClientHelper.hasString(title)) {
+			reply.setTitle(title);
+		}
+		return reply;
+	}
+	
+	private Image buildImage(ImageResource res) {
+		return buildImage(res, null);
 	}
 
 	/*
@@ -1007,7 +1007,7 @@ public class TaskTable extends Composite
 		if (null == selectedOption) {
 			selectedOption = taskOptions.get(0);
 		}
-		Image img = GwtClientHelper.buildImage(selectedOption.getMenuImageRes(), selectedOption.getMenuAlt());
+		Image img = buildImage(selectedOption.getMenuImageRes(), selectedOption.getMenuAlt());
 		final Element imgElement = img.getElement();
 		if      (taskMenu == m_priorityMenu)    uid.setTaskPriorityImage(   img);
 		else if (taskMenu == m_statusMenu)      uid.setTaskStatusImage(     img);
@@ -1017,11 +1017,11 @@ public class TaskTable extends Composite
 		Widget reply;
 		if (task.getTask().getCanModify()) {	
 			// Yes!  Generate the Anchor for this option.
-			Anchor  a  = GwtClientHelper.buildAnchor(anchorStyle);
+			Anchor  a  = buildAnchor(anchorStyle);
 			Element aE = a.getElement();
 			aE.appendChild(imgElement);
-			aE.appendChild(GwtClientHelper.buildImage(m_images.menu()).getElement());
-			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(task.getTask().getTaskId().getEntityId()));
+			aE.appendChild(buildImage(m_images.menu()).getElement());
+			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(task.getTask().getTaskId().getEntryId()));
 			aE.setAttribute(ATTR_OPTION_MENU, taskMenu.getTaskEventEnum().toString());
 			EventWrapper.addHandler(a, m_taskOptionClickHandler);
 			reply = a;
@@ -1071,7 +1071,7 @@ public class TaskTable extends Composite
 	 * Returns a spacer Image.
 	 */
 	private Image buildSpacer(int height, int width) {
-		Image reply = GwtClientHelper.buildImage(m_images.spacer());
+		Image reply = new Image(m_images.spacer());
 		reply.setHeight(String.valueOf(height) + "px");
 		reply.setWidth( String.valueOf(width ) + "px");
 		return reply;
@@ -1183,16 +1183,6 @@ public class TaskTable extends Composite
 			}
 		};
 		
-		
-		// Event handler used when the user clicks on a task's location
-		// link to go to that folder.
-		m_taskLocationClickHandler = new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				handleTaskLocation(getTaskFromEventWidget((Widget) event.getSource()));
-			}
-		};
-		
 		// Event handler used when the user clicks on one of a task's
 		// option menus.
 		m_taskOptionClickHandler = new ClickHandler() {
@@ -1290,34 +1280,22 @@ public class TaskTable extends Composite
 	}
 	
 	/*
-	 * Returns a List<EntityId> of the IDs of the tasks in the TaskTable
+	 * Returns a List<Long> of the IDs of the tasks in the TaskTable
 	 * that are currently checked.
 	 */
-	private List<EntityId> getTaskIdsChecked() {
-		List<EntityId> reply = new ArrayList<EntityId>();;
+	private List<Long> getTaskIdsChecked() {
+		List<Long> reply = new ArrayList<Long>();;
 		getTaskIdsCheckedImpl(m_taskBundle.getTasks(), reply);
 		return reply;
 	}
 	
-	private void getTaskIdsCheckedImpl(List<TaskListItem> tasks, List<EntityId> checkedTaskIds) {
+	private void getTaskIdsCheckedImpl(List<TaskListItem> tasks, List<Long> checkedTaskIds) {
 		for (TaskListItem task:  tasks) {
 			if (getUIData(task).isTaskCBChecked()) {
-				checkedTaskIds.add(task.getTask().getTaskId());
+				checkedTaskIds.add(task.getTask().getTaskId().getEntryId());
 			}
 			getTaskIdsCheckedImpl(task.getSubtasks(), checkedTaskIds);
 		}
-	}
-
-	/*
-	 * Returns a List<Long> of just the entry IDs from a List<EntityId>.
-	 */
-	private List<Long> getTaskIdsCheckedAsListLong() {
-		List<EntityId> entryIds = getTaskIdsChecked();
-		List<Long> reply = new ArrayList<Long>();
-		for (EntityId entryId:  entryIds) {
-			reply.add(entryId.getEntityId());
-		}
-		return reply;
 	}
 	
 	/**
@@ -1456,38 +1434,41 @@ public class TaskTable extends Composite
 		}
 	}
 	
-	/**
-	 * Handles ContributorIdsRequestEvent's received by the task
-	 * listing.
-	 * 
-	 * @param event
+	/*
+	 * Called to create JavaScript methods that will be invoked from
+	 * the the task table to handle hover events over a task.
 	 */
-	public void handleContributorIdsRequest(ContributorIdsRequestEvent event) {
-		// If we're embedded in JSP...
-		if (m_taskListing.isEmbeddedInJSP()) {
-			// ...contributor IDs will have been handled by the
-			// ...controller.  Simply bail.
-			return;
+	private native void jsInitTaskMouseEventHandlers(TaskTable taskTable) /*-{
+		$wnd.ss_taskMouseOut = function(row) {
+			taskTable.@org.kablink.teaming.gwt.client.tasklisting.TaskTable::handleTaskMouseOut(Ljava/lang/String;)(row);
 		}
 		
-		// Is the event targeted to this folder?
-		final Long eventBinderId = event.getBinderId();
-		if (eventBinderId.equals(m_taskListing.getBinderId())) {
-			// Yes!  Asynchronously fire the corresponding reply event
-			// with the contributor IDs.
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					GwtTeaming.fireEvent(
-						new ContributorIdsReplyEvent(
-							eventBinderId,
-							TaskListItemHelper.findContributorIds(
-								m_taskBundle.getTasks())));
-				}
-			});
+		$wnd.ss_taskMouseOver = function(row) {
+			taskTable.@org.kablink.teaming.gwt.client.tasklisting.TaskTable::handleTaskMouseOver(Ljava/lang/String;)(row);
+		}
+	}-*/;
+
+	/**
+	 * Called by TaskPopupMenu when a selection has been made in one of
+	 * the task's option menus.
+	 * 
+	 * @param task
+	 * @param event
+	 * @param optionValue
+	 */
+	public void setTaskOption(TaskListItem task, TeamingEvents event, String optionValue) {
+		switch (event) {
+		case TASK_NEW_TASK:          handleTaskNewTask(       task, optionValue); break;
+		case TASK_SET_PERCENT_DONE:  handleTaskSetPercentDone(task, optionValue); break;
+		case TASK_SET_PRIORITY:      handleTaskSetPriority(   task, optionValue); break;
+		case TASK_SET_STATUS:        handleTaskSetStatus(     task, optionValue); break;
+			
+		default:
+			Window.alert(m_messages.taskInternalError_UnexpectedEvent(event.toString()));
+			break;
 		}
 	}
-	
+
 	/*
 	 * Called when the membership of a group or team has been
 	 * determined to display the members.
@@ -1668,12 +1649,13 @@ public class TaskTable extends Composite
 	 * asynchronously run the due date editor dialog.
 	 */
 	private void handleTaskChangeDueDateAsync(final Anchor dueDateAnchor, final TaskListItem task) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand dueDateEditor = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				handleTaskChangeDueDateNow(dueDateAnchor, task);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(dueDateEditor);
 	}
 	
 	/*
@@ -1699,7 +1681,7 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskDelete() {
 		// If nothing the user can delete is checked...
-		final List<TaskListItem> tasksChecked = getTasksChecked();
+		List<TaskListItem> tasksChecked = getTasksChecked();
 		int c = ((null == tasksChecked) ? 0 : tasksChecked.size());
 		for (int i = (c - 1); i >= 0; i -= 1) {
 			TaskListItem task = tasksChecked.get(i);
@@ -1707,60 +1689,31 @@ public class TaskTable extends Composite
 				tasksChecked.remove(i);
 			}
 		}
-		if (!(GwtClientHelper.hasItems(tasksChecked))) {
+		if ((null == tasksChecked) || tasksChecked.isEmpty()) {
 			// ...there's nothing to delete.
 			return;
 		}
-		
+
 		// Is the user sure they want to perform the delete?
-		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+		if (!(Window.confirm(m_messages.taskConfirmDelete()))) {
+			// No!  Bail.
+			return;
+		}
+
+		// Delete the selected tasks.
+		final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+		DeleteTasksCmd cmd = new DeleteTasksCmd(taskIds);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_DeleteTasks());
 			}
-			
+
 			@Override
-			public void onSuccess(ConfirmDlg cDlg) {
-				ConfirmDlg.initAndShow(
-					cDlg,
-					new ConfirmCallback() {
-						@Override
-						public void dialogReady() {
-							// Ignored.  We don't really care when the
-							// dialog is ready.
-						}
-
-						@Override
-						public void accepted() {
-							// Yes!  Delete the selected tasks.
-							final List<EntityId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-							DeleteEntitiesHelper.deleteSelectedTasksAsync(taskIds, new DeleteEntitiesCallback() {
-								@Override
-								public void operationCanceled() {
-									handleTaskPostRemoveAsync(taskIds);
-								}
-
-								@Override
-								public void operationComplete() {
-									handleTaskPostRemoveAsync(taskIds);
-								}
-								
-								@Override
-								public void operationFailed() {
-									// Nothing to do.  The delete call
-									// will have told the user about
-									// the failure.
-								}
-							});
-						}
-
-						@Override
-						public void rejected() {
-							// No, they're not sure!
-						}
-					},
-					m_messages.taskConfirmDelete());
+			public void onSuccess(VibeRpcResponse result) {
+				handleTaskPostRemoveAsync(taskIds);
 			}
 		});
 	}
@@ -1770,9 +1723,9 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskExpander(final TaskListItem task) {
 		// Extract the IDs we need to perform the expand/collapse.
-		EntityId taskId   = task.getTask().getTaskId();
-		Long    binderId = taskId.getBinderId();
-		Long    entryId  = taskId.getEntityId();
+		TaskId taskId   = task.getTask().getTaskId();
+		Long   binderId = taskId.getBinderId();
+		Long   entryId  = taskId.getEntryId();
 
 		// Are we collapsing the subtasks?
 		if (task.getExpandSubtasks()) {
@@ -1827,12 +1780,13 @@ public class TaskTable extends Composite
 	 * Shows the dialog asynchronously.
 	 */
 	private void handleTaskHierarchyDisabledAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand reasonShower = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				handleTaskHierarchyDisabledNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(reasonShower);
 	}
 	
 	/*
@@ -1847,30 +1801,6 @@ public class TaskTable extends Composite
 	}
 	
 	/*
-	 * Called to switch to the folder location of a task.
-	 */
-	private void handleTaskLocation(TaskListItem task) {
-		final String folderId = String.valueOf(task.getTask().getTaskId().getBinderId());
-		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(folderId);
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-					folderId);
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
-				String binderPermalink = responseData.getStringValue();
-				EventHelper.fireChangeContextEventAsync(folderId, binderPermalink, Instigator.GOTO_CONTENT_URL);
-			}
-		});
-	}
-
-	/*
 	 * Called from a JSNI method when the mouse leaves a task.
 	 */
 	private void handleTaskMouseOut(String taskRowS) {
@@ -1878,7 +1808,7 @@ public class TaskTable extends Composite
 		Element trElement = m_flexTableRF.getElement(taskRow);
 		TaskListItem task = getTaskFromEventElement(trElement);
 		Image img = getUIData(task).getTaskNewTaskMenuImage();
-		img.setUrl(m_images.newTaskButton1().getSafeUri().asString());
+		img.setResource(m_images.newTaskButton1());
 	}
 	
 	/*
@@ -1889,7 +1819,7 @@ public class TaskTable extends Composite
 		Element trElement = m_flexTableRF.getElement(taskRow);
 		TaskListItem task = getTaskFromEventElement(trElement);
 		Image img = getUIData(task).getTaskNewTaskMenuImage();
-		img.setUrl(m_images.newTaskButton2().getSafeUri().asString());
+		img.setResource(m_images.newTaskButton2());
 	}
 	
 	/*
@@ -1973,20 +1903,8 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskNewTask(TaskListItem task, String newTaskDisposition) {
 		jsSetNewTaskDisposition(newTaskDisposition);
-		jsSetSelectedTaskId(String.valueOf(task.getTask().getTaskId().getEntityId()));
-		String newTaskUrl = m_taskBundle.getNewTaskUrl();
-		if (m_taskListing.isEmbeddedInJSP()) {
-			GwtClientHelper.jsLaunchToolbarPopupUrl(newTaskUrl);
-		}
-		else {
-			OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-				newTaskUrl,
-				Instigator.GOTO_CONTENT_URL);
-			
-			if (GwtClientHelper.validateOSBI(osbInfo)) {
-				GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
-			}
-		}
+		jsSetSelectedTaskId(String.valueOf(task.getTask().getTaskId().getEntryId()));
+		GwtClientHelper.jsLaunchToolbarPopupUrl(m_taskBundle.getNewTaskUrl());
 	}
 	
 	/*
@@ -2162,9 +2080,9 @@ public class TaskTable extends Composite
 		final Long binderId;
 		final Long entryId;
 		if ((null != taskList) && (1 == taskList.size())) {
-			EntityId taskId = taskList.get(0).getTask().getTaskId();
-		    binderId       = taskId.getBinderId();
-		    entryId        = taskId.getEntityId();
+		    TaskId taskId = taskList.get(0).getTask().getTaskId();
+		    binderId      = taskId.getBinderId();
+		    entryId       = taskId.getEntryId();
 		}
 		else {
 			binderId = m_taskBundle.getBinderId();
@@ -2183,21 +2101,22 @@ public class TaskTable extends Composite
 	 * Does what's necessary after a task is deleted or purged to put
 	 * the change into affect.
 	 */
-	private void handleTaskPostRemoveAsync(final List<EntityId> taskIds) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+	private void handleTaskPostRemoveAsync(final List<TaskId> taskIds) {
+		ScheduledCommand postRemover = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				handleTaskPostRemoveNow(taskIds);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(postRemover);
 	}
 	
-	private void handleTaskPostRemoveNow(List<EntityId> taskIds) {
+	private void handleTaskPostRemoveNow(List<TaskId> taskIds) {
 		// Scan the tasks that were removed...
-		for (EntityId taskId:  taskIds) {
+		for (TaskId taskId:  taskIds) {
 			// ...scan the task's subtasks...
-			List<TaskListItem> taskList = TaskListItemHelper.findTaskList(m_taskBundle, taskId.getEntityId());
-			TaskListItem       task     = TaskListItemHelper.findTask(    taskList,     taskId.getEntityId());
+			List<TaskListItem> taskList = TaskListItemHelper.findTaskList(m_taskBundle, taskId.getEntryId());
+			TaskListItem       task     = TaskListItemHelper.findTask(    taskList,     taskId.getEntryId());
 			int taskIndex = taskList.indexOf(task);
 			List<TaskListItem> subtaskList = task.getSubtasks();
 			int tasks = subtaskList.size();
@@ -2232,7 +2151,7 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskPurge() {
 		// If nothing the user can purge is checked...
-		final List<TaskListItem> tasksChecked = getTasksChecked();
+		List<TaskListItem> tasksChecked = getTasksChecked();
 		int c = ((null == tasksChecked) ? 0 : tasksChecked.size());
 		for (int i = (c - 1); i >= 0; i -= 1) {
 			TaskListItem task = tasksChecked.get(i);
@@ -2240,60 +2159,31 @@ public class TaskTable extends Composite
 				tasksChecked.remove(i);
 			}
 		}
-		if (!(GwtClientHelper.hasItems(tasksChecked))) {
+		if ((null == tasksChecked) || tasksChecked.isEmpty()) {
 			// ...there's nothing to purge.
 			return;
 		}
 
 		// Is the user sure they want to perform the purge?
-		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+		if (!(Window.confirm(m_messages.taskConfirmPurge()))) {
+			// No!  Bail.
+			return;
+		}
+
+		// Purge the selected tasks.
+		final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+		PurgeTasksCmd cmd = new PurgeTasksCmd(taskIds);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_PurgeTasks());
 			}
-			
+
 			@Override
-			public void onSuccess(ConfirmDlg cDlg) {
-				ConfirmDlg.initAndShow(
-					cDlg,
-					new ConfirmCallback() {
-						@Override
-						public void dialogReady() {
-							// Ignored.  We don't really care when the
-							// dialog is ready.
-						}
-
-						@Override
-						public void accepted() {
-							// Yes!  Purge the selected tasks.
-							final List<EntityId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-							DeleteEntitiesHelper.purgeSelectedTasksAsync(taskIds, new DeleteEntitiesCallback() {
-								@Override
-								public void operationCanceled() {
-									handleTaskPostRemoveAsync(taskIds);
-								}
-
-								@Override
-								public void operationComplete() {
-									handleTaskPostRemoveAsync(taskIds);
-								}
-								
-								@Override
-								public void operationFailed() {
-									// Nothing to do.  The purge call
-									// will have told the user about
-									// the failure.
-								}
-							});
-						}
-
-						@Override
-						public void rejected() {
-							// No, they're not sure!
-						}
-					},
-					m_messages.taskConfirmPurge());
+			public void onSuccess(VibeRpcResponse result) {
+				handleTaskPostRemoveAsync(taskIds);
 			}
 		});
 	}
@@ -2344,7 +2234,7 @@ public class TaskTable extends Composite
 	 * Called when the user clicks the seen sun burst on a task.
 	 */
 	private void handleTaskSeen(final TaskListItem task) {
-		final Long entryId = task.getTask().getTaskId().getEntityId();
+		final Long entryId = task.getTask().getTaskId().getEntryId();
 		SetSeenCmd cmd = new SetSeenCmd(entryId);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -2410,7 +2300,7 @@ public class TaskTable extends Composite
 		}
 		
 		// Save the new task percent done value.
-		final Long entryId = task.getTask().getTaskId().getEntityId();
+		final Long entryId = task.getTask().getTaskId().getEntryId();
 		SaveTaskCompletedCmd cmd = new SaveTaskCompletedCmd(task.getTask().getTaskId().getBinderId(), entryId, percentDone);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -2474,12 +2364,13 @@ public class TaskTable extends Composite
 			if (null != newStatus) {
 				// Yes!  Apply it.
 				final String finalNewStatus = newStatus;
-				GwtClientHelper.deferCommand(new ScheduledCommand() {
+				ScheduledCommand statusUpdater = new ScheduledCommand() {
 					@Override
 					public void execute() {
 						handleTaskSetStatus(task, finalNewStatus);
 					}
-				});
+				};
+				Scheduler.get().scheduleDeferred(statusUpdater);
 			}
 		}
 	}
@@ -2495,7 +2386,7 @@ public class TaskTable extends Composite
 		}
 
 		// Save the new task priority.
-		final Long entryId = task.getTask().getTaskId().getEntityId();
+		final Long entryId = task.getTask().getTaskId().getEntryId();
 		SaveTaskPriorityCmd cmd = new SaveTaskPriorityCmd(task.getTask().getTaskId().getBinderId(), entryId, priority);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -2546,9 +2437,9 @@ public class TaskTable extends Composite
 		}
 
 		// Collect the TaskId's of the affected tasks.
-		TaskInfo            ti              = task.getTask();
-		final EntityId       taskId          = ti.getTaskId();
-		final List<EntityId> affectedTaskIds = new ArrayList<EntityId>();
+		TaskInfo           ti              = task.getTask();
+		final TaskId       taskId          = ti.getTaskId();
+		final List<TaskId> affectedTaskIds = new ArrayList<TaskId>();
 		for (TaskListItem affectedTask:  affectedTasks) {
 			affectedTaskIds.add(affectedTask.getTask().getTaskId());
 		}
@@ -2561,7 +2452,7 @@ public class TaskTable extends Composite
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					GwtTeaming.getMessages().rpcFailure_SaveTaskStatus(),
-					String.valueOf(taskId.getEntityId()));
+					String.valueOf(taskId.getEntryId()));
 			}
 
 			@Override
@@ -2655,14 +2546,14 @@ public class TaskTable extends Composite
 		final TaskInfo ti = task.getTask();
 		GetViewFolderEntryUrlCmd cmd;
 		
-		cmd = new GetViewFolderEntryUrlCmd( ti.getTaskId().getBinderId(), ti.getTaskId().getEntityId() );
+		cmd = new GetViewFolderEntryUrlCmd( ti.getTaskId().getBinderId(), ti.getTaskId().getEntryId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
-					String.valueOf(ti.getTaskId().getEntityId()));
+					String.valueOf(ti.getTaskId().getEntryId()));
 			}
 			
 			@Override
@@ -2712,20 +2603,6 @@ public class TaskTable extends Composite
 	}-*/;
 	
 	/*
-	 * Called to create JavaScript methods that will be invoked from
-	 * the the task table to handle hover events over a task.
-	 */
-	private native void jsInitTaskMouseEventHandlers(TaskTable taskTable) /*-{
-		$wnd.ss_taskMouseOut = function(row) {
-			taskTable.@org.kablink.teaming.gwt.client.tasklisting.TaskTable::handleTaskMouseOut(Ljava/lang/String;)(row);
-		}
-		
-		$wnd.ss_taskMouseOver = function(row) {
-			taskTable.@org.kablink.teaming.gwt.client.tasklisting.TaskTable::handleTaskMouseOver(Ljava/lang/String;)(row);
-		}
-	}-*/;
-
-	/*
 	 * Uses JSNI to store the ID of the most recently selected task.
 	 */
 	private native void jsSetNewTaskDisposition(String newTaskDisposition) /*-{
@@ -2748,256 +2625,15 @@ public class TaskTable extends Composite
 		if (m_sortColumn == col) {
 			// Yes!  Add the appropriate directional arrow
 			// (i.e., ^/v)...
-			ImageResource	ir = (m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
-			Image			i  = GwtClientHelper.buildImage(ir.getSafeUri());
+			Image i = buildImage(m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
 			i.addStyleName("gwtTaskList_sortImage");
-			a.getElement().insertFirst(i.getElement());
+			a.getElement().appendChild(i.getElement());
 			
 			// ...and style to the <TD>.
 			m_flexTableCF.addStyleName(0, getColumnIndex(col), "sortedcol");
 		}
 	}
 
-	/**
-	 * Called when the task table is attached.
-	 * 
-	 * Overrides the Widget.onAttach() method.
-	 */
-	@Override
-	public void onAttach() {
-		// Let the widget attach and then register our event handlers.
-		super.onAttach();
-		registerEvents();
-	}
-	
-	/**
-	 * Handles ChangeEntryTypeSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the ChangeEntryTypeSelectedEntitiesEvent.Handler.onChangeEntryTypeSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onChangeEntryTypeSelectedEntities(ChangeEntryTypeSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the change.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getTaskIdsChecked();
-			}
-			BinderViewsHelper.changeEntryTypes(selectedEntityIds);
-		}
-	}
-	
-	/**
-	 * Handles CopySelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the CopySelectedEntitiesEvent.Handler.onCopySelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onCopySelectedEntities(CopySelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Are there any entities in the event?
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				// No!  Invoke the copy on those selected in the view.
-				selectedEntityIds = getTaskIdsChecked();
-				BinderViewsHelper.copyEntries(selectedEntityIds);
-			}
-		}
-	}
-	
-	/**
-	 * Handles DeleteSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the DeleteSelectedEntitiesEvent.Handler.onDeleteSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDeleteSelectedEntities(DeleteSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Are there any entities in the event?
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				// No!  Delete the entities selected in the view.
-				List<TaskListItem> tasksChecked = getTasksChecked();
-				int c = ((null == tasksChecked) ? 0 : tasksChecked.size());
-				for (int i = (c - 1); i >= 0; i -= 1) {
-					TaskListItem task = tasksChecked.get(i);
-					if (!(task.getTask().getCanTrash())) {
-						tasksChecked.remove(i);
-					}
-				}
-				if (!(GwtClientHelper.hasItems(tasksChecked))) {
-					// ...there's nothing to delete.
-					return;
-				}
-				final List<EntityId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-				BinderViewsHelper.deleteSelections(taskIds, new DeleteEntitiesCallback() {
-					@Override
-					public void operationCanceled() {
-						handleTaskPostRemoveAsync(taskIds);
-					}
-
-					@Override
-					public void operationComplete() {
-						handleTaskPostRemoveAsync(taskIds);
-					}
-
-					@Override
-					public void operationFailed() {
-						// Nothing to do.  The delete call will have
-						// told the user about the failure.
-					}
-				});
-			}
-		}
-	}
-	
-	/**
-	 * Called when the task table is detached.
-	 * 
-	 * Overrides the Widget.onDetach() method.
-	 */
-	@Override
-	public void onDetach() {
-		// Let the widget detach and then unregister our event
-		// handlers.
-		super.onDetach();
-		unregisterEvents();
-	}
-	
-	/**
-	 * Handles LockSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the LockSelectedEntitiesEvent.Handler.onLockSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onLockSelectedEntities(LockSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the lock.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getTaskIdsChecked();
-			}
-			BinderViewsHelper.lockEntries(selectedEntityIds);
-		}
-	}
-	
-	/**
-	 * Handles MarkReadSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the MarkReadSelectedEntitiesEvent.Handler.onMarkReadSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMarkReadSelectedEntities(MarkReadSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the mark entries read.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getTaskIdsChecked();
-			}
-			BinderViewsHelper.markEntriesRead(selectedEntityIds);
-		}
-	}
-	
-	/**
-	 * Handles MoveSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the MoveSelectedEntitiesEvent.Handler.onMoveSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMoveSelectedEntities(MoveSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Are there any entities in the event?
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				// No!  Invoke the move on those selected in the view.
-				selectedEntityIds = getTaskIdsChecked();
-				BinderViewsHelper.moveEntries(selectedEntityIds);
-			}
-		}
-	}
-	
-	/**
-	 * Handles QuickFilterEvent's received by this class.
-	 * 
-	 * Implements the QuickFilterEvent.Handler.onQuickFilter() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onQuickFilter(QuickFilterEvent event) {
-		// If the event is targeted to the task folder we're viewing...
-		if (event.getFolderId().equals(m_taskBundle.getBinderId())) {
-			// ...handle it.
-			handleTaskQuickFilter(event.getQuickFilter());
-		}
-	}
-
-	/**
-	 * Handles ShareSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the ShareSelectedEntitiesEvent.Handler.onShareSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onShareSelectedEntities(ShareSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the share.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getTaskIdsChecked();
-			}
-			BinderViewsHelper.shareEntities(selectedEntityIds);
-		}
-	}
-	
-	/**
-	 * Handles SubscribeSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the SubscribeSelectedEntitiesEvent.Handler.onSubscribeSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSubscribeSelectedEntities(SubscribeSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the subscribe to.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getTaskIdsChecked();
-			}
-			BinderViewsHelper.subscribeToEntries(selectedEntityIds);
-		}
-	}
-	
 	/**
 	 * Handles TaskDeleteEvent's received by this class.
 	 * 
@@ -3083,90 +2719,28 @@ public class TaskTable extends Composite
 	}
 
 	/**
-	 * Handles UnlockSelectedEntitiesEvent's received by this class.
+	 * Handles TaskQuickFilterEvent's received by this class.
 	 * 
-	 * Implements the UnlockSelectedEntitiesEvent.Handler.onUnlockSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onUnlockSelectedEntities(UnlockSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the unlock.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getTaskIdsChecked();
-			}
-			BinderViewsHelper.unlockEntries(selectedEntityIds);
-		}
-	}
-	
-	/**
-	 * Handles ViewSelectedEntryEvent's received by this class.
-	 * 
-	 * Implements the ViewSelectedEntryEvent.Handler.onViewSelectedEntry() method.
+	 * Implements the TaskQuickFilterEvent.Handler.onTaskQuickFilter() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onViewSelectedEntry(ViewSelectedEntryEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the view.
-			List<EntityId> eids = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(eids))) {
-				eids = getTaskIdsChecked();
-			}
-			if (GwtClientHelper.hasItems(eids)) {
-				for (EntityId eid:  eids) {
-					if (eid.isEntry()) {
-						BinderViewsHelper.viewEntry(eid);
-						return;
-					}
-				}
-			}
-		}
+	public void onTaskQuickFilter(TaskQuickFilterEvent event) {
+		handleTaskQuickFilter(event.getQuickFilter());
 	}
-	
-	/**
-	 * Handles ViewWhoHasAccessEvent's received by this class.
-	 * 
-	 * Implements the ViewWhoHasAccessEvent.Handler.onViewWhoHasAccess() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onViewWhoHasAccess(ViewWhoHasAccessEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the view.
-			List<EntityId> eids = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(eids))) {
-				eids = getTaskIdsChecked();
-			}
-			if (GwtClientHelper.hasItems(eids)) {
-				for (EntityId eid:  eids) {
-					BinderViewsHelper.viewWhoHasAccess(eid);
-					return;
-				}
-			}
-		}
-	}
-	
+
 	/*
 	 * Called to write the change in linkage to the folder preferences.
 	 */
 	private void persistLinkageChangeAsync(final ScheduledCommand postChangeCommand) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand persistor = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				persistLinkageChangeNow(postChangeCommand);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(persistor);
 	}
 	
 	private void persistLinkageChangeNow(final ScheduledCommand postChangeCommand) {
@@ -3197,7 +2771,7 @@ public class TaskTable extends Composite
 				// If we have a post change command...
 				if (null != postChangeCommand) {
 					// ...schedule it.
-					GwtClientHelper.deferCommand(postChangeCommand);
+					Scheduler.get().scheduleDeferred(postChangeCommand);
 				}
 			}
 		});
@@ -3210,12 +2784,7 @@ public class TaskTable extends Composite
 	private void persistSortChange() {
 		// Simply tell the server to persist the new sort setting on
 		// the binder.
-		BinderInfo bi = new BinderInfo();
-		bi.setBinderType(BinderType.FOLDER         );
-		bi.setFolderType(FolderType.TASK           );
-		bi.setBinderId(  m_taskBundle.getBinderId());
-		bi.setEntityType("folder"                  );
-		SaveTaskSortCmd cmd = new SaveTaskSortCmd(bi, m_sortColumn.getSortKey(), m_sortAscending);
+		SaveTaskSortCmd cmd = new SaveTaskSortCmd(m_taskBundle.getBinderId(), m_sortColumn.getSortKey(), m_sortAscending);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -3236,12 +2805,13 @@ public class TaskTable extends Composite
 	 * new task.
 	 */
 	private void promptForDispositionAsync(final Long newTaskId, final Long selectedTaskId) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand promptor = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				promptForDispositionNow(newTaskId, selectedTaskId);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(promptor);
 	}
 	
 	/*
@@ -3266,16 +2836,17 @@ public class TaskTable extends Composite
 	 * Called to completely refresh the contents of the TaskTable.
 	 */
 	private void refreshTaskTableAsync(final ProcessActive pa, final boolean preserveChecks, final boolean persistLinkage) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand refresher = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				refreshTaskTableNow(pa, preserveChecks, persistLinkage);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(refresher);
 	}
 	
 	private void refreshTaskTableNow(final ProcessActive pa, final boolean preserveChecks, final boolean persistLinkage) {
-		GetTaskBundleCmd cmd = new GetTaskBundleCmd(m_taskListing.isEmbeddedInJSP(), m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode());
+		GetTaskBundleCmd cmd = new GetTaskBundleCmd(m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode());
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -3306,7 +2877,7 @@ public class TaskTable extends Composite
 				// ...preserve the tasks that are currently checked...
 				List<Long> checkedTaskIds;
 				if (preserveChecks)
-				     checkedTaskIds = getTaskIdsCheckedAsListLong();
+				     checkedTaskIds = getTaskIdsChecked();
 				else checkedTaskIds = null;
 				
 				// ...store the new TaskBundle in the TaskListing...
@@ -3326,28 +2897,6 @@ public class TaskTable extends Composite
 		});
 	}
 	
-	/*
-	 * Registers any global event handlers that need to be registered.
-	 */
-	private void registerEvents() {
-		// If we having allocated a list to track events we've
-		// registered yet...
-		if (null == m_registeredEventHandlers) {
-			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		}
-
-		// If the list of registered events is empty...
-		if (m_registeredEventHandlers.isEmpty()) {
-			// ...register the events.
-			EventHelper.registerEventHandlers(
-				GwtTeaming.getEventBus(),
-				m_registeredEvents,
-				this,
-				m_registeredEventHandlers);
-		}
-	}
-
 	/*
 	 * Renders a column of a row based on a task into the TaskTable.
 	 */
@@ -3465,42 +3014,24 @@ public class TaskTable extends Composite
 		if (ti.isTaskOverdue()) {
 			il.addStyleName("gwtTaskList_task-overdue-color");
 		}
-		
-		boolean parentWithDurationError = TaskListItemHelper.isParentWithDurationError(task);
 		if (tie.getEndIsCalculated() && hasDueDate) {
 			il.addStyleName("gwtTaskList_calculatedDate");
-			if (!parentWithDurationError) {
-				il.setTitle(m_messages.taskAltDateCalculated());
-			}
+			il.setTitle(m_messages.taskAltDateCalculated());
 		}
-		
 		Widget dueDateWidget;
 		if (ti.getCanModify() && ti.isTaskActive()) {
-			Anchor a = GwtClientHelper.buildAnchor();
+			Anchor a = buildAnchor();
 			Element aE = a.getElement();
 			aE.appendChild(il.getElement());
-			aE.appendChild(GwtClientHelper.buildImage(m_images.menu()).getElement());
-			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(ti.getTaskId().getEntityId()));
+			aE.appendChild(buildImage(m_images.menu()).getElement());
+			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(ti.getTaskId().getEntryId()));
 			EventWrapper.addHandler(a, m_dueDateClickHandler);
 			dueDateWidget = a;
 		}
 		else {
 			dueDateWidget = il;
 		}
-		dueDateWidget.addStyleName("marginleft5px");
-		int col = getColumnIndex(Column.DUE_DATE);
-		m_flexTable.setWidget(row, col, dueDateWidget);
-		
-		// Is this a parent task with a calculated due date?
-		if (parentWithDurationError) {
-			// Yes!  Style it accordingly.
-			m_flexTableCF.addStyleName(row, col, "gwtTaskList_parentDurationError");
-			m_flexTableCF.getElement(row, col).setTitle(m_messages.taskAltParentWithDurationError());
-		}
-		else {
-			m_flexTableCF.removeStyleName(row, col, "gwtTaskList_parentDurationError");
-			m_flexTableCF.getElement(row, col).setTitle("");
-		}
+		m_flexTable.setWidget(row, getColumnIndex(Column.DUE_DATE), dueDateWidget);
 	}
 	
 	/*
@@ -3509,37 +3040,12 @@ public class TaskTable extends Composite
 	private void renderColumnLocation(final TaskListItem task, int row) {
 		// Are we displaying tasks assigned to the current user?
 		if (!(m_taskBundle.getIsFromFolder())) {
-			// Yes!  Do we have a location string for this task?
-			TaskInfo ti = task.getTask();
-			String location = ti.getLocation();
-			if (!(GwtClientHelper.hasString(location))) {
-				// No!  Then we don't render anything.
+			// Yes!  Render the column.
+			String location = task.getTask().getLocation();
+			if (null == location) {
 				return;
 			}
-			
-			// Yes, we have a location string for this task!  If the
-			// task is from the folder that we're displaying...
-			EntityId tid = ti.getTaskId();
-			InlineLabel locationLabel = new InlineLabel(location);
-			Widget locationWidget;
-			if (tid.getBinderId().equals(m_taskBundle.getBinderId())) {
-				// ...simply render the location as text.
-				locationLabel.setTitle(m_messages.taskAltLocationIsThisFolder());
-				locationWidget = locationLabel;
-			}
-			
-			else {
-				// ...otherwise, render a link for it.
-				Anchor locationAnchor = GwtClientHelper.buildAnchor();
-				locationAnchor.addStyleName("gwtTaskList_task-locationAnchor");
-				locationAnchor.getElement().setAttribute(ATTR_ENTRY_ID, String.valueOf(tid.getEntityId()));
-				EventWrapper.addHandler(locationAnchor, m_taskLocationClickHandler);
-				locationLabel.setTitle(m_messages.taskAltLocationGotoThisFolder());
-				Element taElement = locationAnchor.getElement();
-				taElement.appendChild(locationLabel.getElement());
-				locationWidget = locationAnchor;
-			}
-			m_flexTable.setWidget(row, getColumnIndex(Column.LOCATION), locationWidget);
+			m_flexTable.setHTML(row, getColumnIndex(Column.LOCATION), location);
 		}
 	}
 
@@ -3558,23 +3064,29 @@ public class TaskTable extends Composite
 		int newTaskMenuIndex = getColumnIndex(Column.NEW_TASK_MENU);
 		if (includeNewTaskMenu) {
 			// Yes!  Add an Anchor for it...
-			Anchor menuAnchor = GwtClientHelper.buildAnchor("gwtTaskList_newTaskMenu_Link");
+			Anchor menuAnchor = buildAnchor("gwtTaskList_newTaskMenu_Link");
 			Element menuElement = menuAnchor.getElement();
-			String entryId = String.valueOf(task.getTask().getTaskId().getEntityId());
+			String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
 			menuElement.setAttribute(ATTR_ENTRY_ID, entryId);
 			EventWrapper.addHandler(menuAnchor, m_newTaskClickHandler);
-			Image newTaskMenuImg = GwtClientHelper.buildImage(m_images.newTaskButton1().getSafeUri().asString());
-			newTaskMenuImg.addStyleName("gwtTaskList_newTaskMenu_LinkImg");
-			newTaskMenuImg.setTitle(m_messages.taskAltTaskActions());
+			Image newTaskMenuImg = buildImage(m_images.newTaskButton1());
 			getUIData(task).setTaskNewTaskMenuImage(newTaskMenuImg);
 			menuElement.appendChild(newTaskMenuImg.getElement());
 			m_flexTable.setWidget(row, newTaskMenuIndex, menuAnchor);
 			
 			// ...and add hover event handlers to the task.
 			m_flexTableRF.getElement(row).setAttribute(ATTR_ENTRY_ID, entryId);
-			Element tdElement = m_flexTableCF.getElement(row, newTaskMenuIndex);
-			tdElement.setAttribute("onMouseOut",  "ss_taskMouseOut('"  + row + "');");
-			tdElement.setAttribute("onMouseOver", "ss_taskMouseOver('" + row + "');");
+			
+			String mouseOut  = "ss_taskMouseOut('"  + row + "');";
+			String mouseOver = "ss_taskMouseOver('" + row + "');";
+			
+			Element tdElement = m_flexTableCF.getElement(row, getColumnIndex(Column.TASK_NAME));
+			tdElement.setAttribute("onMouseOut",  mouseOut);
+			tdElement.setAttribute("onMouseOver", mouseOver);
+			
+			tdElement = m_flexTableCF.getElement(row, newTaskMenuIndex);
+			tdElement.setAttribute("onMouseOut",  mouseOut);
+			tdElement.setAttribute("onMouseOver", mouseOver);
 		}
 		
 		else {
@@ -3617,7 +3129,7 @@ public class TaskTable extends Composite
 				ta.setText(orderHTML);
 				ta.addStyleName("gwtTaskList_task-orderAnchor");
 				Element taE = ta.getElement();
-				String entryId = String.valueOf(task.getTask().getTaskId().getEntityId());
+				String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
 				taE.setAttribute(ATTR_ENTRY_ID, entryId);
 				EventWrapper.addHandler(ta, m_taskOrderClickHandler);
 				fp.add(ta);
@@ -3671,7 +3183,7 @@ public class TaskTable extends Composite
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 
-		String entryId = String.valueOf(task.getTask().getTaskId().getEntityId());
+		String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
 		CheckBox cb = new CheckBox();
 		uid.setTaskSelectorCB(cb);
 		cb.getElement().setId("gwtTaskList_taskSelect_" + entryId);
@@ -3686,8 +3198,8 @@ public class TaskTable extends Composite
 		FlowPanel fp = new FlowPanel();
 		fp.add(cb);
 		if (0 < task.getSubtasks().size()) {
-			Anchor a = GwtClientHelper.buildAnchor();
-			Image  i = GwtClientHelper.buildImage(task.getExpandSubtasks() ? m_images.task_closer() : m_images.task_opener());
+			Anchor a = buildAnchor();
+			Image  i = buildImage(task.getExpandSubtasks() ? m_images.task_closer() : m_images.task_opener());
 			Element aE = a.getElement();
 			aE.appendChild(i.getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, entryId);
@@ -3714,9 +3226,14 @@ public class TaskTable extends Composite
 		}
 		
 		// Add an Anchor for it to the TaskTable.
-		Widget statusWidget = buildOptionColumn(task, m_statusMenu, status, "status-icon");
-		statusWidget.addStyleName("marginleft5px");
-		m_flexTable.setWidget(row, getColumnIndex(Column.STATUS), statusWidget);
+		m_flexTable.setWidget(
+			row,
+			getColumnIndex(Column.STATUS),
+			buildOptionColumn(
+				task,
+				m_statusMenu,
+				status,
+				"status-icon"));
 	}
 	
 	/*
@@ -3749,17 +3266,17 @@ public class TaskTable extends Composite
 		markerPanel.addStyleName(nameMarkerStyles);
 		Widget marker;
 		TaskInfo ti = task.getTask();
-		String entryId = String.valueOf(ti.getTaskId().getEntityId());
+		String entryId = String.valueOf(ti.getTaskId().getEntryId());
 		if (ti.isTaskClosed()) {
 			taStyles        += " gwtTaskList_task-strike_Inner";
 			namePanelStyles += " gwtTaskList_task-strike_Outer";
-			Image i          = GwtClientHelper.buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
+			Image i          = buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
 			marker           = i;
 		}
 		else if (ti.isTaskUnseen()) {
-			Anchor a = GwtClientHelper.buildAnchor();
+			Anchor a = buildAnchor();
 			uid.setTaskUnseenAnchor(a);
-			Image i = GwtClientHelper.buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
+			Image i = buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
 			Element aE = a.getElement();
 			aE.appendChild(i.getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, entryId);
@@ -3781,7 +3298,7 @@ public class TaskTable extends Composite
 		taLeftOffset += m_markerSize;
 		
 		// Add the appropriately styled task name Anchor to the panel.
-		Anchor ta = GwtClientHelper.buildAnchor();
+		Anchor ta = buildAnchor();
 		ta.addStyleName(taStyles + " gwtTaskList_task-nameAnchor");
 		ta.getElement().setAttribute(ATTR_ENTRY_ID, entryId);
 		EventWrapper.addHandler(ta, m_taskViewClickHandler);
@@ -3823,7 +3340,7 @@ public class TaskTable extends Composite
 	 * Renders the 'Assigned To' column header.
 	 */
 	private void renderHeaderAssignedTo() {
-		Anchor a = GwtClientHelper.buildAnchor("sort-column");
+		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_assignedTo());
 		markAsSortKey(a, Column.ASSIGNED_TO);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.ASSIGNED_TO.m_sortKey);
@@ -3835,7 +3352,7 @@ public class TaskTable extends Composite
 	 * Renders the 'Closed - % Done' column header.
 	 */
 	private void renderHeaderClosedPercentDone() {
-		Anchor a = GwtClientHelper.buildAnchor("sort-column");
+		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_closedPercentDone());
 		markAsSortKey(a, Column.CLOSED_PERCENT_DONE);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.CLOSED_PERCENT_DONE.m_sortKey);
@@ -3852,7 +3369,7 @@ public class TaskTable extends Composite
 	 */
 	private void renderHeaderDueDate() {
 		FlowPanel fp = new FlowPanel();
-		Anchor a = GwtClientHelper.buildAnchor("sort-column");
+		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_dueDate());
 		markAsSortKey(a, Column.DUE_DATE);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.DUE_DATE.m_sortKey);
@@ -3877,7 +3394,7 @@ public class TaskTable extends Composite
 		// Are we displaying tasks assigned to the current user?
 		if (!(m_taskBundle.getIsFromFolder())) {
 			// Yes!  Render the column header.
-			Anchor a = GwtClientHelper.buildAnchor("sort-column");
+			Anchor a = buildAnchor("sort-column");
 			a.getElement().setInnerHTML(m_messages.taskColumn_location());
 			markAsSortKey(a, Column.LOCATION);
 			a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.LOCATION.m_sortKey);
@@ -3904,7 +3421,7 @@ public class TaskTable extends Composite
 		// Are we supposed to show the 'Order' column?
 		if (showOrderColumn()) {
 			// Yes!  Render the column header.
-			Anchor a = GwtClientHelper.buildAnchor("sort-column");
+			Anchor a = buildAnchor("sort-column");
 			a.getElement().setInnerHTML(m_messages.taskColumn_order());
 			markAsSortKey(a, Column.ORDER);
 			a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.ORDER.m_sortKey);
@@ -3919,7 +3436,7 @@ public class TaskTable extends Composite
 	 * Renders the 'Priority' column header.
 	 */
 	private void renderHeaderPriority() {
-		Anchor a = GwtClientHelper.buildAnchor("sort-column");
+		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_priority());
 		markAsSortKey(a, Column.PRIORITY);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.PRIORITY.m_sortKey);
@@ -3949,7 +3466,7 @@ public class TaskTable extends Composite
 	 * Renders the 'Status' column header.
 	 */
 	private void renderHeaderStatus() {
-		Anchor a = GwtClientHelper.buildAnchor("sort-column");
+		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_status());
 		markAsSortKey(a, Column.STATUS);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.STATUS.m_sortKey);
@@ -3961,7 +3478,7 @@ public class TaskTable extends Composite
 	 * Renders the 'Task Name' column header.
 	 */
 	private void renderHeaderTaskName() {
-		Anchor a = GwtClientHelper.buildAnchor("sort-column");
+		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_name());
 		markAsSortKey(a, Column.TASK_NAME);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.TASK_NAME.m_sortKey);
@@ -4089,27 +3606,6 @@ public class TaskTable extends Composite
 		renderTaskListImpl(tasks, true);
 	}
 
-	/**
-	 * Called by TaskPopupMenu when a selection has been made in one of
-	 * the task's option menus.
-	 * 
-	 * @param task
-	 * @param event
-	 * @param optionValue
-	 */
-	public void setTaskOption(TaskListItem task, TeamingEvents event, String optionValue) {
-		switch (event) {
-		case TASK_NEW_TASK:          handleTaskNewTask(       task, optionValue); break;
-		case TASK_SET_PERCENT_DONE:  handleTaskSetPercentDone(task, optionValue); break;
-		case TASK_SET_PRIORITY:      handleTaskSetPriority(   task, optionValue); break;
-		case TASK_SET_STATUS:        handleTaskSetStatus(     task, optionValue); break;
-			
-		default:
-			GwtClientHelper.deferredAlert(m_messages.taskInternalError_UnexpectedEvent(event.toString()));
-			break;
-		}
-	}
-
 	/*
 	 * Checks or removes the check from all the tasks in the TaskTable.
 	 */
@@ -4120,12 +3616,13 @@ public class TaskTable extends Composite
 				m_messages.taskProcess_unSelectAll()),
 			0);
 		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand selector = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				selectAllTasksNow(pa, select);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(selector);
 	}
 	
 	private void selectAllTasksNow(ProcessActive pa, boolean select) {
@@ -4179,7 +3676,7 @@ public class TaskTable extends Composite
 		boolean byRights  = (!(m_taskBundle.getCanModifyTaskLinkage()));
 		boolean bySort    = ((Column.ORDER != m_sortColumn) || (!m_sortAscending));
 		boolean byVirtual = (!(m_taskBundle.getIsFromFolder()));
-		// GwtClientHelper.deferredAlert("f:" + byFilter + ", r:" + byRights + ", s:" + bySort + ", v:" + byVirtual);
+		// Window.alert("f:" + byFilter + ", r:" + byRights + ", s:" + bySort + ", v:" + byVirtual);
 		return (bySort || byVirtual || byFilter || byRights);
 	}
 	
@@ -4256,8 +3753,7 @@ public class TaskTable extends Composite
 		jsSetSelectedTaskId(    "");
 		
 		// Render the tasks from the bundle.
-		boolean disposeWillUpdate = ((null != newTaskId) && (null != taskDisposition) && (!(TaskDisposition.APPEND.equals(taskDisposition))));
-		m_renderTime = renderTaskBundle(tb, ((!disposeWillUpdate) && m_taskListing.getUpdateCalculatedDates()));
+		m_renderTime = renderTaskBundle(tb, m_taskListing.getUpdateCalculatedDates());
 
 		// Did we just add a new task?
 		if (null != newTaskId) {
@@ -4267,8 +3763,7 @@ public class TaskTable extends Composite
 				applyTaskDisposition(
 					taskDisposition,
 					newTaskId,
-					selectedTaskId,
-					m_taskListing.getUpdateCalculatedDates());		
+					selectedTaskId);		
 			}
 
 			// No, we don't know where the new task should be placed!
@@ -4336,18 +3831,6 @@ public class TaskTable extends Composite
 	}
 
 	/*
-	 * Unregisters any global event handlers that may be registered.
-	 */
-	private void unregisterEvents() {
-		// If we have a non-empty list of registered events...
-		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
-			// ...unregister them.  (Note that this will also empty the
-			// ...list.)
-			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-		}
-	}
-	
-	/*
 	 * Makes a GWT RPC call to the server to update the calculated
 	 * dates for the binder and/or task, and any related subtasks.  If
 	 * the RPC call succeeds any modified end dates will be reflected
@@ -4358,7 +3841,7 @@ public class TaskTable extends Composite
 			pa.setMessage(m_messages.taskProcess_updatingDates());
 		}
 		
-		m_dueDateBusy.setResource(m_images.busyAnimation_small());
+		m_dueDateBusy.setResource(m_images.busyAnimation());
 		UpdateCalculatedDatesCmd cmd = new UpdateCalculatedDatesCmd(binderId, entryId);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -4382,7 +3865,7 @@ public class TaskTable extends Composite
 				
 				// Did any tasks have the logical end dates changed?
 				m_dueDateBusy.setResource(m_images.spacer());
-				if (GwtClientHelper.hasItems(updatedTaskInfo)) {
+				if ((null != updatedTaskInfo) && (!(updatedTaskInfo.isEmpty()))) {
 					// Yes!  Scan them...
 					Date now = new Date();
 					long nowMS = now.getTime();
@@ -4391,9 +3874,7 @@ public class TaskTable extends Composite
 						TaskDate     dueDate = updatedTaskInfo.get(entryId);
 						TaskListItem task = TaskListItemHelper.findTask(m_taskBundle, entryId);
 						TaskInfo     ti = task.getTask();
-						TaskEvent    tie  = ti.getEvent();
-						tie.setLogicalEnd(dueDate);
-						tie.setEndIsCalculated(true);
+						ti.getEvent().setLogicalEnd(dueDate);
 						
 						// ...if the task's overdue state changed... 
 						long dueMS = (((null == dueDate) || (!(GwtClientHelper.hasString(dueDate.getDateDisplay())))) ? Long.MAX_VALUE : dueDate.getDate().getTime()); 
@@ -4421,12 +3902,13 @@ public class TaskTable extends Composite
 	}
 	
 	private void updateCalculatedDatesAsync(final ProcessActive pa, final Long binderId, final Long entryId) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand updater = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				updateCalculatedDatesNow(pa, binderId, entryId);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(updater);
 	}
 	
 	/*
@@ -4434,12 +3916,13 @@ public class TaskTable extends Composite
 	 * in the TaskListing.
 	 */
 	private void validateTaskToolsAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand validator = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				validateTaskToolsNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(validator);
 	}
 	
 	private void validateTaskToolsNow() {
@@ -4450,7 +3933,7 @@ public class TaskTable extends Composite
 		int tasksCheckedCount = tasksChecked.size();
 		String selectedTaskId;
 		if (1 == tasksCheckedCount)
-		     selectedTaskId = String.valueOf(tasksChecked.get(0).getTask().getTaskId().getEntityId());
+		     selectedTaskId = String.valueOf(tasksChecked.get(0).getTask().getTaskId().getEntryId());
 		else selectedTaskId = "";
 		jsSetSelectedTaskId(selectedTaskId);
 		
@@ -4516,10 +3999,11 @@ public class TaskTable extends Composite
 		else m_taskListing.showTaskToolsLinkage();
 		
 		// Enabled/disable the buttons as calculated.
+		m_taskListing.getDeleteButton().setEnabled(   enableTrash                        );
 		m_taskListing.getMoveDownButton().setEnabled( moveStates.canMoveDown(),  arrowHint);
 		m_taskListing.getMoveLeftButton().setEnabled( moveStates.canMoveLeft(),  arrowHint);
 		m_taskListing.getMoveRightButton().setEnabled(moveStates.canMoveRight(), arrowHint);
 		m_taskListing.getMoveUpButton().setEnabled(   moveStates.canMoveUp(),    arrowHint);
-		m_taskListing.setEntriesSelected((enableTrash || enablePurge), (1 == tasksCheckedCount));
+		m_taskListing.getPurgeButton().setEnabled(    enablePurge                        );
 	}
 }

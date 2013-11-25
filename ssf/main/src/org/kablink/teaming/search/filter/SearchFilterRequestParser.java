@@ -44,12 +44,11 @@ import javax.portlet.PortletRequest;
 
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.SearchWildCardException;
 import org.kablink.teaming.module.definition.DefinitionModule;
-import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+
 
 public class SearchFilterRequestParser {
 	
@@ -67,7 +66,7 @@ public class SearchFilterRequestParser {
 		this.definitionModule = definitionModule;
 	}
 		
-	public Document getSearchQuery() throws Exception {
+	public Document getSearchQuery() {
 		Boolean joiner = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchJoiner, true);
 		
 		SearchFilter searchFilter = new SearchFilter(joiner);
@@ -212,10 +211,7 @@ public class SearchFilterRequestParser {
 			for (int i = 0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeEntry)) {
 					String entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]).concat("_selected"), "");
-					if (entryTypeId.equals("")) {
-						//See if there was an initial value
-						entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]).concat("_initialized"), "");
-					}
+					
 					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat(numbers[i].concat("_selected")), SearchFilter.AllEntries);
 					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("_selected"));
 					String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("_selected").concat("0"), null);
@@ -273,10 +269,6 @@ public class SearchFilterRequestParser {
 			for (int i = 0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeWorkflow)) {
 					String workflowId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]).concat("_selected"), "");
-					if (workflowId.equals("")) {
-						//See if there was an initial value
-						workflowId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]).concat("_initialized"), "");
-					}
 					String[] workflowSteps =  PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchWorkflowStep.concat(numbers[i]));
 					if (!workflowId.equals("")) {
 						if (workflowsMap.containsKey(workflowId)) {
@@ -385,16 +377,15 @@ public class SearchFilterRequestParser {
 		searchFilter.addTags(tagsList);
 	}
 
-	private void parseFreeText(PortletRequest request, SearchFilter searchFilter) throws SearchWildCardException {
+	private void parseFreeText(PortletRequest request, SearchFilter searchFilter) {
 		String searchText = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchText, "");
-		searchText = SearchUtils.validateSearchText(searchText);
 		Boolean searchCaseSensitive = false;
 		try {
 			searchCaseSensitive = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_CASE_SENSITIVE);
 		} catch(Exception e) {}
 		if (searchCaseSensitive == null) searchCaseSensitive = false;
 		
-		if (!searchText.trim().equals("")) {
+		if (!searchText.equals("")) {
 			searchFilter.addText(searchText, searchCaseSensitive);
 		}
 	}

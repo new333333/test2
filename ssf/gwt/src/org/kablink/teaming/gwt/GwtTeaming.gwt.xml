@@ -1,41 +1,19 @@
 <module rename-to="gwtteaming">
 	<!-- Inherit the core Web Toolkit stuff. -->
 	<inherits name='com.google.gwt.user.User' />
-	<inherits name='com.google.gwt.xml.XML'   />
+	<inherits name='com.google.gwt.xml.XML' />
 	<inherits name='com.google.gwt.i18n.I18N' />
-	<inherits name='com.google.gwt.json.JSON' />
 	
-	<!-- Inherit the default GWT theme style sheet. -->
+	<!-- Inherit the default GWT style sheet.  You can change       -->
+	<!-- the theme of your GWT application by uncommenting          -->
+	<!-- any one of the following lines.                            -->
 	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
-	
-	<!-- Other possible themes for GWT.  -->
-	<!--
-		<inherits name='com.google.gwt.user.theme.chrome.Chrome'/>
-		<inherits name='com.google.gwt.user.theme.dark.Dark'    />
-	-->
-	
-	<!-- Inherit the GWT Calendar support libraries. -->
-	<inherits name='com.bradrydzewski.gwt.calendar.Calendar'            />
-	<inherits name='com.bradrydzewski.gwt.calendar.theme.google.Google' />
+	<!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
-	<!-- Other possible themes for the GWT Calendar.  -->
-	<!--
-		<inherits name='com.bradrydzewski.gwt.calendar.theme.ical.iCal' />
-		<inherits name='com.bradrydzewski.gwt.calendar.theme.outlook.Outlook' /> 
-	-->
-	
-	<!-- Inherit the GWT drag-and-drop support libraries. -->
-	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd' />
-	
-	<!-- Inherit the GWT W3C file APIs support libraries. -->	
-	<inherits name="org.vectomatic.libgwtfile"/>
-	
-	<!-- Inherit the GWT 'Crypto' API support libraries. -->	
-	<inherits name="com.googlecode.gwt.crypto.Crypto"/>
-	
- 	<!-- Other 'generic' module inherits go here. -->
+ 	<!-- Other generic module inherits go here. -->
 
-	<!-- Specify the application entry point class. -->
+	<!-- Specify the app entry point class. -->
 	<entry-point class='org.kablink.teaming.gwt.client.GwtTeaming'/>
 
 	<!-- Specify the initial split point that needs to be loaded. -->
@@ -44,19 +22,17 @@
 			name="compiler.splitpoint.initial.sequence"
 			value="org.kablink.teaming.gwt.client.GwtMainPage"/>
 	-->
-	
-    <!-- Specify the application specific style sheets. -->
-	<stylesheet src='GwtTeaming.css'                />
-    <stylesheet src='GwtProfile.css'                />		
-    <stylesheet src='GwtLandingPage.css'            />		
-    <stylesheet src='GwtBinderViews.css'            />		
-    <stylesheet src='GwtMenus.css'                  />		
-    <stylesheet src='GwtFolderEntryView.css'        />		
-    <stylesheet src='GwtDesktopAppDownloadPage.css' />		
-    <stylesheet src='GwtReports.css'                />		
-    <stylesheet src='VibeCellTable.css'             />		
-    <stylesheet src='VibeDataGrid.css'              />
-    <stylesheet src='VibeWidgets.css'               />
+    
+    <!-- Specify the application specific style sheet.              -->
+    <!-- Note:  DRF - 20100913                                      -->
+    <!--    Our CSS style sheets are also brought in via link tags  -->
+    <!--    in initializeGWT.jsp.  This change was made so that     -->
+    <!--    their inclusion honors our 'must-revalidate' browser    -->
+    <!--    caching.  When they were included here alone, they only -->
+    <!--    got brought in by gwtteaming.nocache.js which bypassed  -->
+    <!--    the cache re-validation handling.                       -->
+	<stylesheet src='GwtTeaming.css?v3' />
+    <stylesheet src='GwtProfile.css?v3' />		
 	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
@@ -68,31 +44,4 @@
 	<!--    ie9:       IE9.                                         -->
 	<!--    opera:     Opera, all versions.                         -->
 	<!--    safari:    Safari and Chrome (webkit), all versions.    -->
-
-	<!-- Using deferred binding, when requested, load the -->
-	<!-- appropriate agent class.                         -->	
-	<replace-with class="org.kablink.teaming.gwt.client.util.AgentGecko18">
-		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
-		<when-property-is name="user.agent" value="gecko1_8" />
-	</replace-with>
-	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE6">
-		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
-		<when-property-is name="user.agent" value="ie6" />
-	</replace-with>
-	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE8">
-		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
-		<when-property-is name="user.agent" value="ie8" />
-	</replace-with>
-	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE9">
-		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
-		<when-property-is name="user.agent" value="ie9" />
-	</replace-with>
-	<replace-with class="org.kablink.teaming.gwt.client.util.AgentOpera">
-		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
-		<when-property-is name="user.agent" value="opera" />
-	</replace-with>
-	<replace-with class="org.kablink.teaming.gwt.client.util.AgentSafari">
-		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
-		<when-property-is name="user.agent" value="safari" />
-	</replace-with>
 </module>

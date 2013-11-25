@@ -90,8 +90,6 @@ public class QueryBuilder {
 	private static final String TEAM_PREFIX=Constants.TEAM_ACL_FIELD + ":";
 	private static final String FOLDER_PREFIX=Constants.FOLDER_ACL_FIELD + ":";
 	private static final String ENTRY_PREFIX=Constants.ENTRY_ACL_FIELD + ":";
-	private static final String ROOT_PREFIX=Constants.ROOT_FOLDER_ACL_FIELD + ":";
-	private static final String SHARED_PREFIX=Constants.SHARED_IDS + ":";
 	private static final String ENTRY_ALL=ENTRY_PREFIX+Constants.READ_ACL_ALL;
 	private static final String ENTRY_ALL_GLOBAL=ENTRY_PREFIX+Constants.READ_ACL_GLOBAL;
 	private static final String FOLDER_ALL_GLOBAL=FOLDER_PREFIX+Constants.READ_ACL_GLOBAL;
@@ -100,34 +98,20 @@ public class QueryBuilder {
 	private static final String BINDER_OWNER_PREFIX=Constants.BINDER_OWNER_ACL_FIELD + ":";
 	private static final String ENTRY_OWNER_PREFIX=Constants.ENTRY_OWNER_ACL_FIELD + ":";
 
-	private boolean useAcls;
-	private boolean preDeleted;
-	private User user;
-	private Application application;
 	private Set userPrincipals;
 	private Set applicationPrincipals;
 	
 	private static Log logger = LogFactory.getLog(QueryBuilder.class);
-	
-	public QueryBuilder(boolean useAcls, boolean preDeleted) {
-		this(useAcls, preDeleted, null);
+
+	private QueryBuilder() {
 	}
 
-	public QueryBuilder(boolean useAcls, boolean preDeleted, Long asUserId) {
-		this.useAcls = useAcls;
-		this.preDeleted = preDeleted;
-		if(asUserId != null) {
-			this.user = getProfileDao().loadUser(asUserId, RequestContextHolder.getRequestContext().getZoneId());
-			this.application = null;
-		}
-		else {
-			this.user = RequestContextHolder.getRequestContext().getUser();
-			this.application = RequestContextHolder.getRequestContext().getApplication();			
-		}
+	public QueryBuilder(boolean useAcls) {
 		if(useAcls) {
-			this.userPrincipals = getProfileDao().getAllPrincipalIds(user);
-			if(application != null && !application.isTrusted()) {
-				this.applicationPrincipals = getProfileDao().getAllPrincipalIds(application);
+			this.userPrincipals = getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser());
+			Application app = RequestContextHolder.getRequestContext().getApplication();
+			if(app != null && !app.isTrusted()) {
+				this.applicationPrincipals = getProfileDao().getPrincipalIds(app);
 			} else {
 				this.applicationPrincipals = null;
 			}
@@ -137,11 +121,17 @@ public class QueryBuilder {
 		}
 	}
 
+	public QueryBuilder(Long asUserId) {
+		User asUser = getProfileDao().loadUser(asUserId, RequestContextHolder.getRequestContext().getZoneId());
+		this.userPrincipals = (getProfileDao().getPrincipalIds(asUser));
+		this.applicationPrincipals = null;
+	}
+
 	protected WorkspaceModule getWorkspaceModule() {
 		return (WorkspaceModule)SpringContextUtil.getBean("workspaceModule");
 	}
 
-	protected static ProfileDao getProfileDao() {
+	protected ProfileDao getProfileDao() {
 		return (ProfileDao)SpringContextUtil.getBean("profileDao");
 	}
 
@@ -162,6 +152,38 @@ public class QueryBuilder {
 	}
 
 	public SearchObject buildQuery(Document domQuery) {
+		return buildQuery(domQuery, false);
+	}
+	
+	public SearchObject buildQueryPreDeleted(Document domQuery) {
+		return buildQuery(domQuery, false, null, true);
+	}
+
+	public SearchObject buildQueryPreDeleted(Document domQuery, boolean ignoreAcls) {
+		return buildQuery(domQuery, ignoreAcls, null, true);
+	}
+
+	public SearchObject buildQuery(Document domQuery, Long asUserId) {
+		return buildQuery(domQuery, false, asUserId, false);
+	}
+
+	public SearchObject buildQuery(Document domQuery, Long asUserId, boolean ignoreAcls) {
+		return buildQuery(domQuery, ignoreAcls, asUserId, false);
+	}
+
+	public SearchObject buildQueryPreDeleted(Document domQuery, Long asUserId) {
+		return buildQuery(domQuery, false, asUserId, true);
+	}
+
+	public SearchObject buildQueryPreDeleted(Document domQuery, Long asUserId, boolean ignoreAcls) {
+		return buildQuery(domQuery, ignoreAcls, asUserId, true);
+	}
+
+	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls) {
+		return buildQuery(domQuery, ignoreAcls, null, false);
+	}
+
+	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls, Long asUserId, boolean preDeleted) {
 		SearchObject so = new SearchObject();
 
 		Element root = domQuery.getRootElement();
@@ -176,10 +198,18 @@ public class QueryBuilder {
 		//Add on the ACL clauses that filter out anything the user is not allowed to see.
 		handleRootElement(root, so);
 		
-		if(useAcls) {
-			// add acl check to every query. 
-			String acls = getAclClause(so);
-			so.setAclQueryStr(acls);	
+		//If searching as a different user, add in the acl for that user
+		if (asUserId != null && !ignoreAcls) {
+			QueryBuilder aclQ = new QueryBuilder(asUserId);
+			String acls = getAclClauseForIds(aclQ.userPrincipals, asUserId);
+			addAclClauses(acls, so);
+		}
+		
+		// add acl check to every query. 
+		User user = RequestContextHolder.getRequestContext().getUser();
+		if (!ignoreAcls) { 
+			String acls = getAclClause();
+			addAclClauses(acls, so);
 		}
 		
 		// add preDeleted clause to every query.  Check to see if the preDeleted option was passed in
@@ -198,25 +228,30 @@ public class QueryBuilder {
 		
 		if(logger.isDebugEnabled())
 			logger.debug(org.kablink.teaming.util.Constants.NEWLINE + 
-					
 					"XML query =>" + 
 					org.kablink.teaming.util.Constants.NEWLINE + 
 					((SPropsUtil.getBoolean("querybuilder.debug.format.dom", false))? XmlUtil.asPrettyString(domQuery) : domQuery.asXML()) +
 					org.kablink.teaming.util.Constants.NEWLINE + 
-					
 					"Lucene query =>" +
 					org.kablink.teaming.util.Constants.NEWLINE + 
-					so.getLuceneQuery().toString() +
-					org.kablink.teaming.util.Constants.NEWLINE +
-					
-					"ACL query =>" +
-					org.kablink.teaming.util.Constants.NEWLINE + 
-					so.getAclQueryStr()
-					);
+					so.getLuceneQuery().toString());
 					
 		return so;
 	}
 
+	private void addAclClauses(String acls, SearchObject so) {
+		if (acls != null && acls.length() != 0) {
+			Query top = so.getLuceneQuery();
+			if(!(top instanceof BooleanQuery)) {
+				BooleanQuery bq = new BooleanQuery();
+				bq.add(top, BooleanClause.Occur.MUST);
+				top = bq;
+			}
+			((BooleanQuery) top).add(so.parseQueryStringWSA(acls), BooleanClause.Occur.MUST);
+			so.setLuceneQuery(top);
+		}
+	}
+	
 	private void parseRootElementDoNotUse(Element element, SearchObject so) {
 		String qString = "";
 
@@ -440,21 +475,8 @@ public class QueryBuilder {
 		Query query = null;
 
 		String fieldName = element.attributeValue(FIELD_NAME_ATTRIBUTE);
-		// Deal with deprecated _allText field
-		if("_allText".equals(fieldName)) 
-			fieldName = null;
-		
 		String exactPhrase = element.attributeValue(EXACT_PHRASE_ATTRIBUTE);
 
-		// Deal with exactphrase attribute. The name of the attribute is slightly mis-leading for
-		// historical reason, but regardless of that, here's the semantics as currently defined:
-		// If exactphrase=true, it means that the supplied term value is NOT parsed or analyzed,
-		// and instead treated as a single term irrespective of whether the value contains spaces or not.
-		// Furthermore, if exactphrase=false, then it's possible to use some additional advanced
-		// search techniques. For example, you can specify phrase term by enclosing term value with
-		// a pair of double quotes. Also, wildcard match is available by appending * or ? character
-		// to the term.
-		
 		// Make exactphrase=true as the default.
 		if ((exactPhrase != null)
 				&& (exactPhrase.equalsIgnoreCase(EXACT_PHRASE_FALSE)))
@@ -469,11 +491,8 @@ public class QueryBuilder {
 			return null;
 		if (child.getName().equalsIgnoreCase(FIELD_TERMS_ELEMENT)) {
 			if (exact) {
-				// For exact match, it makes no sense to provide a term without
-				// specifying a field name. But when it happens, I guess we want
-				// to default it to "some" field rather than throwing an error.
 				if(fieldName == null || fieldName.equals(""))
-					fieldName = Constants.GENERAL_TEXT_FIELD;
+					fieldName = Constants.ALL_TEXT_FIELD;
 				query = new TermQuery(new Term(fieldName, text));
 			} else {
 				String queryStr;
@@ -481,7 +500,6 @@ public class QueryBuilder {
 					queryStr = fieldName + ":(" + text + ")";
 				else
 					queryStr = text;
-				queryStr = queryStr.replaceAll("_allText:", "");
 				query = so.parseQueryString(queryStr);
 			}
 		}
@@ -515,6 +533,7 @@ public class QueryBuilder {
 					descending = false;
 				else
 					descending = true;
+				User user = RequestContextHolder.getRequestContext().getUser();
 		    	Locale locale = user.getLocale();
 		    	fields[i] = new SortField(child.getText(), locale, descending);
 				//fields[i] = new SortField(child.getText(), SortField.AUTO, descending);
@@ -551,6 +570,7 @@ public class QueryBuilder {
 				 * BasicIndexUtils.buildAclTag(tagName,
 				 * BasicIndexUtils.READ_ACL_ALL) + " ";
 				 */
+				User user = RequestContextHolder.getRequestContext().getUser();
 				ptagString += Constants.ACL_TAG_FIELD
 						+ ":"
 						+ BasicIndexUtils.buildAclTag(tagName, user.getId()
@@ -573,6 +593,7 @@ public class QueryBuilder {
 				if (tagName == null || tagName.equals(""))
 					continue;
 
+				User user = RequestContextHolder.getRequestContext().getUser();
 				TermQuery tQuery = new TermQuery(new Term(Constants.ACL_TAG_FIELD, BasicIndexUtils.buildAclTag(tagName, user.getId().toString())));
 				
 				if(query == null) { // This is first term query
@@ -683,45 +704,34 @@ public class QueryBuilder {
 		return new TermRangeQuery(fieldName, startText, finishText, inclusive, inclusive);
 	}
 
-	public String buildAclClause() {
-		return getAclClause(null);
-	}
-	
-	private String getAclClause(SearchObject so)
+	private String getAclClause()
 	{
 		//KEEP THIS AND getAclClauseForIds IN SYNC WITH ACCESSUTILS.CHECKACCESS 
 		
 		//if this is the super user or the synchronization agent, but not a remote application, then don't add any acl controls.
 		
+		User user = RequestContextHolder.getRequestContext().getUser();
 		if ((user.isSuper() || 
-				ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId()) ||
-				ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) && 
+				ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId())) && 
 				applicationPrincipals == null) {
-			return null;
+			return "";
 		}
 
-		StringBuilder sb = new StringBuilder();
-		
-		getAclClauseForIds(userPrincipals, user.getId(), sb, so);
+		String clause = getAclClauseForIds(userPrincipals, user.getId());
 		if(applicationPrincipals != null) {
-			sb.append(" AND ");
-			getAclClauseForIds(applicationPrincipals, null, sb, so);
+			String otherClause = getAclClauseForIds(applicationPrincipals, null);
+			clause = clause + " AND " + otherClause;
 		}
-		
-		return sb.toString();
+		return clause;
 	}
 	
-	private StringBuilder getAclClauseForIds(Set principalIds, Long userId, StringBuilder qString, SearchObject so)
+	private String getAclClauseForIds(Set principalIds, Long userId)
 	{
 		Long allUsersGroupId = Utils.getAllUsersGroupId();
-		Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();
       	Set principalIds2 = new HashSet(principalIds);
       	User user = null;
-      	if (userId != null) {
+      	if(userId != null)
       		user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
-      	} else {
-      		user = RequestContextHolder.getRequestContext().getUser();
-      	}
       	
       	//Get the conditions that the current user passes
 		List<Condition> conditions = getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
@@ -730,11 +740,12 @@ public class QueryBuilder {
 		//check user can see all users
       	boolean canOnlySeeCommonGroupMembers = Utils.canUserOnlySeeCommonGroupMembers(user);
 		if (canOnlySeeCommonGroupMembers) {
-			if (allUsersGroupId != null && principalIds2.contains(allUsersGroupId)) {
+			if (allUsersGroupId != null && principalIds2.contains(allUsersGroupId) ) {
 				//This user is not allowed to see all users, so remove the AllUsers group id
 				principalIds2.remove(allUsersGroupId);
 			}
 		}
+		StringBuffer qString = new StringBuffer();
 		
 		/*
 		 * if widen(the default), then acl query is:
@@ -765,28 +776,6 @@ public class QueryBuilder {
 			}
 		}
 		String entryAll = getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_ALL, conditionsMet);
-
-		//Add the shared entries outside of the root folder restrictions
-		String sharedPrincipals = idField(principalIds, SHARED_PREFIX, new ArrayList<Long>());
-		if (user.getIdentityInfo().isInternal() && !user.isShared()) {
-			sharedPrincipals += " OR " + SHARED_PREFIX + String.valueOf(allUsersGroupId);
-		} else if (!user.getIdentityInfo().isInternal() && !user.isShared()) {
-			sharedPrincipals += " OR " + SHARED_PREFIX + String.valueOf(allExtUsersGroupId);
-		}
-		qString.append("(" + sharedPrincipals + ") OR ");
-
-		//Start with the Net Folder Root acl
-		String rootPrincipals = idField(principalIds, ROOT_PREFIX, new ArrayList<Long>());
-		rootPrincipals += " OR " + ROOT_PREFIX + Constants.ROOT_FOLDER_ALL;
-		if (user.getIdentityInfo().isInternal() && !user.isShared()) {
-			rootPrincipals += " OR " + ROOT_PREFIX + String.valueOf(allUsersGroupId);
-		} else if (!user.getIdentityInfo().isInternal() && !user.isShared()) {
-			rootPrincipals += " OR " + ROOT_PREFIX + String.valueOf(allExtUsersGroupId);
-		}
-		qString.append("((" + rootPrincipals + ") AND ");
-		
-		if(so != null)
-			so.setNetFolderRootAclQueryStr(rootPrincipals);
 		
 		// folderAcl:1,2,3...
 		if (widen) {
@@ -835,8 +824,8 @@ public class QueryBuilder {
 					"(" + teamPrincipals + "))");
 			qString.append("))");
 		}
-		qString.append(")");
-		return qString;
+		String acls = qString.toString();
+		return acls;
 	}
 	
 	//Routine to get a list of conditions that the current user meets (if any)

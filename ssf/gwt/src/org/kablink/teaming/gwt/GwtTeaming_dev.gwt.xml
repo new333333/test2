@@ -1,22 +1,10 @@
 <module rename-to="gwtteaming">
-	<!-- Inherit the base GwtTeaing module. -->
+	<!-- Inherit the core GwtTeaing stuff. -->
 	<inherits name='org.kablink.teaming.gwt.GwtTeaming' />
-	
-	<!-- Add gwt-log support with a default level of `DEBUG` -->       
-	<inherits name='com.allen_sauer.gwt.log.gwt-log-DEBUG' />
 	
  	<!-- Other 'development only' module inherits go here. -->
  	
-	<!-- GWT Loggers Enabled by default -->  
-	<set-property name="log_ConsoleLogger" value="ENABLED"  />  
-	<set-property name="log_GWTLogger"     value="ENABLED"  /> 
-	<set-property name="log_SystemLogger"  value="ENABLED"  />   
-	<set-property name="log_DivLogger"     value="DISABLED" />  
-	<set-property name="log_FirebugLogger" value="DISABLED" />  
-	<set-property name="log_RemoteLogger"  value="ENABLED"  />  
-	<set-property name="log_WindowLogger"  value="DISABLED" />
-       
-	<!-- Development:  Support for English only. -->
+	<!-- Support for English only. -->
 	<extend-property       name="locale" values="en" />	<!-- English.            -->
 		
 	<set-property          name="locale" value="en"  />	<!-- English only.       -->

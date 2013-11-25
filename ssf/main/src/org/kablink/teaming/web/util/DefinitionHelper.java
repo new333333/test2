@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -52,7 +53,6 @@ import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,6 +67,10 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
+import org.kablink.teaming.calendar.AbstractIntervalView;
+import org.kablink.teaming.calendar.EventsViewHelper;
+import org.kablink.teaming.calendar.OneDayView;
+import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -100,6 +104,7 @@ import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -114,18 +119,12 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.springframework.core.io.ClassPathResource;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings({"unchecked", "unused"})
+
 public class DefinitionHelper {
 	protected static final Log logger = LogFactory.getLog(Definition.class);
 	
 	private static DefinitionHelper instance; // A singleton instance
 	private DefinitionModule definitionModule;
-	private BinderModule binderModule;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
 	public DefinitionHelper() {
 		if(instance != null)
@@ -142,12 +141,6 @@ public class DefinitionHelper {
     public DefinitionModule getDefinitionModule() {
     	return definitionModule;
     }
-    public void setBinderModule(BinderModule binderModule) {
-    	this.binderModule = binderModule;
-    }
-    public BinderModule getBinderModule() {
-    	return binderModule;
-    }
 	public static DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
         return getInstance().definitionBuilderConfig;
     }
@@ -163,16 +156,6 @@ public class DefinitionHelper {
 	public static SortedMap<String, Definition> getAvailableDefinitions(Long binderId, Integer defType) {
 		List<Definition> definitions = getInstance().getDefinitionModule().getDefinitions(binderId, Boolean.TRUE, defType);
 		return orderDefinitions(definitions, true);
-	}
-	public static SortedMap<String, Definition> getAvailableReplyDefinitions(Long binderId) {
-		List<Definition> defs = getInstance().getDefinitionModule().getDefinitions(binderId, Boolean.TRUE, Definition.FOLDER_ENTRY);
-		List<String> commentTypes = new ArrayList<String>();
-		commentTypes.add(Definition.FAMILY_COMMENT);
-		commentTypes.add(Definition.FAMILY_FILE_COMMENT);
-		Binder binder = null;
-		if (binderId != null) binder = getInstance().getBinderModule().getBinder(binderId);
-		defs = Utils.validateDefinitions(defs, binder, commentTypes);
-		return orderDefinitions(defs, true);
 	}
 	public static TreeMap orderDefinitions(Collection<Definition> defs, Boolean includeDefinitionName) {
 		TreeMap<String, Definition> orderedDefinitions = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
@@ -445,25 +428,7 @@ public class DefinitionHelper {
 		}
 		return false;
 	}
-	//Routine to see if an item is inside a "conditional" element
-	public static boolean checkIfMultipleAllowed(Element item, Element root) {
-		if ("false".equals(item.attributeValue("multipleAllowed"))) {
-			Element parentItem = item;
-			while (root != null && !parentItem.equals(root)) {
-				String name = parentItem.attributeValue("name", "");
-				if (name.equals("conditional") || 
-						name.equals("conditionalView") || 
-						name.equals("conditionalProfileFormItem") || 
-						name.equals("conditionalProfileViewItem")) return true;
-				parentItem = parentItem.getParent();
-				if (parentItem == null) break;
-			}
-			return false;
-		}
-		return true;
-	}
-
-    private static String getWebDAVURL(PortletRequest pReq, HttpServletRequest hReq, Folder folder, FolderEntry entry) {
+    public static String getWebDAVURL(PortletRequest req, Folder folder, FolderEntry entry) {
     	String strEntryURL = "";
 		if (entry.getEntryDefId() == null) {
 			getInstance().getDefinitionModule().setDefaultEntryDefinition(entry);
@@ -487,18 +452,9 @@ public class DefinitionHelper {
 				
 			}
 		}
-		if (null != pReq)
-		     strEntryURL = SsfsUtil.getEntryUrl(pReq, folder, entry, strRepositoryName);
-		else strEntryURL = SsfsUtil.getEntryUrl(hReq, folder, entry, strRepositoryName);
+		strEntryURL = SsfsUtil.getEntryUrl(req, folder, entry, strRepositoryName);
 		
 		return strEntryURL;
-    }
-    public static String getWebDAVURL(PortletRequest pReq, Folder folder, FolderEntry entry) {
-    	return getWebDAVURL(pReq, null, folder, entry);
-    }
-    
-    public static String getWebDAVURL(HttpServletRequest hReq, Folder folder, FolderEntry entry) {
-    	return getWebDAVURL(null, hReq, folder, entry);
     }
 	
     public static String findCaptionForValue(Document definitionConfig, Element configElement, String value)
@@ -1031,7 +987,7 @@ public class DefinitionHelper {
 	        				List teams = new ArrayList();
 	        				
 	        				ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-	        				groups.addAll(profileDao.getApplicationLevelGroupMembership(user.getId(), user.getZoneId()));
+	        				groups.addAll(profileDao.getAllGroupMembership(user.getId(), user.getZoneId()));
 	        				Iterator itG = groups.iterator();
 	        				while (itG.hasNext()) {
 	        					groupsS.add(itG.next().toString());
@@ -1045,8 +1001,7 @@ public class DefinitionHelper {
 	        				Criteria crit = SearchUtils.tasksForUser(user.getId(), 
 	        									(String[])groupsS.toArray(new String[groupsS.size()]), 
 	        									(String[])teams.toArray(new String[teams.size()]));
-	        				Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
-
+	        				Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
         					mashupMyTaskEntries.addAll((List)results.get(ObjectKeys.SEARCH_ENTRIES));
 
         					//Get the task binders so the title can be shown
@@ -1063,7 +1018,7 @@ public class DefinitionHelper {
     							}
     				    	}
 
-        					mashupViewType = ObjectKeys.MASHUP_VIEW_TYPE_MY_TASKS;
+        			    	mashupViewType = ObjectKeys.MASHUP_VIEW_TYPE_MY_TASKS;
 	        			}
 	        		} else if (ObjectKeys.MASHUP_TYPE_BINDER_URL.equals(type) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_BINDER_ID) && 
@@ -1205,9 +1160,6 @@ public class DefinitionHelper {
     				}
     			}
     		}
-    		
-    		// Add the language the tinyMCE editor should use.
-    		model.put( "tinyMCELang", GwtUIHelper.getTinyMCELanguage() );
 
         	attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_STYLE);
     		if (attr == null || attr.equals("")) {
@@ -1293,13 +1245,13 @@ public class DefinitionHelper {
     				if (f.isFile()) pathType = ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE_EXTENSION;
     			}
     			mashupValues[i] = mashupValues[i].replaceFirst(",", ",pathType="+pathType+",");
-
+    		
     		} else if (ObjectKeys.MASHUP_TYPE_IFRAME.equals(type) && 
     				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_URL)) {
     			//This is a url. It must be checked for xss
     			String url = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_URL);
     			StringCheckUtil.checkUrl(url);
-    		}
+   		}
     		
     		// Is this an html configuration?
     		if ( ObjectKeys.MASHUP_TYPE_HTML.equalsIgnoreCase( type ) )
@@ -1661,9 +1613,7 @@ public class DefinitionHelper {
 	}
 
 	public static Set<String> getTextualInputDataKeys(String definitionId, InputDataAccessor inputData) {
-		Definition definition = null;
-		if(definitionId != null)
-			definition = getDefinition(definitionId);
+    	Definition definition = getDefinition(definitionId);
     	Document definitionTree = null;
     	if(definition != null)
     		definitionTree = definition.getDefinition();

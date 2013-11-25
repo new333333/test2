@@ -127,7 +127,7 @@ public class UserSynchInterceptor extends AbstractInterceptor implements Initial
 				updates = filterUpdates(updates);
 				
 				if(!updates.isEmpty()) {
-					getProfileModule().modifyUserFromPortal(user.getId(), updates, null);				
+					getProfileModule().modifyUserFromPortal(user, updates, null);				
 				}
 				
 				ses.setAttribute(WebKeys.PORTLET_USER_SYNC, Boolean.TRUE, PortletSession.APPLICATION_SCOPE);

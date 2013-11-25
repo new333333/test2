@@ -36,19 +36,10 @@
 		name="binderId" value="${ssBinder.id}"/><ssf:param 
 		name="tabTitle" value=""/><ssf:param 
 		name="newTab" value="1"/></ssf:url>" method="post" id="advSearchForm">
-	<input type="hidden" name="context" value="${ss_searchContext}"/>
-	<input type="hidden" name="contextCollection" value="${ss_searchContextCollection}"/>
-	<input type="hidden" name="contextBinderId" value="${ss_searchContextBinderId}"/>
-	<input type="hidden" name="contextEntryId" value="${ss_searchContextEntryId}"/>
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
 				<div class="n-buttonright"><ssf:showHelp guideName="user" pageId="informed_search" sectionId="informed_search_basic" /></div>
-				  <c:if test="${!empty ss_searchError}">
-				    <div style="padding:20px;">
-				      <span class="ss_errorLabel ss_bold ss_largestprint">${ss_searchError}</span>
-				    </div>
-				  </c:if>
 								
 				<table>
 					<tr>
@@ -62,101 +53,6 @@
 							<input type="hidden" name="operation" value="ss_searchResults"/>
 						</td>
 					</tr>
-					
-					<tr>
-						<td></td>
-						<td colspan="2">
-						  <table cellspacing="0" cellpadding="0" style="padding-bottom:16px;" width="100%">
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="all"
-								<c:if test="${ss_searchScope == 'all'}"> checked="checked" </c:if>
-								style="width:20px;">
-							  </td>
-							  <td nowrap>
-								<ssf:nlt tag="search.scope.all"/>
-							  </td>
-							</tr>
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="myFiles"
-								  <c:if test="${ss_searchScope == 'myFiles'}"> checked="checked" </c:if>
-								  style="width:20px;">
-							  </td>
-							  <td nowrap>
-								<ssf:nlt tag="search.scope.myFiles"/>
-							  </td>
-							</tr>
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="netFolders" 
-								<c:if test="${ss_searchScope == 'netFolders'}"> checked="checked" </c:if>
-								style="width:20px;">
-							  </td>
-							  <td>
-								<ssf:nlt tag="search.scope.netFolders"/>
-							  </td>
-							</tr>
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="sharedWithMe" 
-								<c:if test="${ss_searchScope == 'sharedWithMe'}"> checked="checked" </c:if>
-								style="width:20px;">
-							  </td>
-							  <td>
-								<ssf:nlt tag="search.scope.sharedWithMe"/>
-							  </td>
-							</tr>
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="sharedByMe" 
-								<c:if test="${ss_searchScope == 'sharedByMe'}"> checked="checked" </c:if>
-								style="width:20px;">
-							  </td>
-							  <td>
-								<ssf:nlt tag="search.scope.sharedByMe"/>
-							  </td>
-							</tr>
-						    <c:if test="${ss_searchContext == 'binder' || scope == 'current'}">
-						     <tr>
-						      <td width="20" valign="top">
-								<input type="radio" name="scope" value="current" 
-								  <c:if test="${ss_searchScope == 'current'}"> checked="checked" </c:if>
-								  style="width:20px;"
-								>
-							  </td>
-							  <td>
-							    <c:if test="${!empty ss_searchContextBinder}">
-									<ssf:nlt tag="search.scope.current"/>&nbsp;
-									<a href="<ssf:url action="view_folder_listing" 
-										binderId="${ss_searchContextBinderId}" />"
-										title="${ss_searchContextBinder.pathName}"
-										onClick="ss_openUrlInWorkarea(this.href, '${ss_searchContextBinderId}', 'view_folder_listing');return false;"
-									>
-									  <span>${ss_searchContextBinder.title}</span>
-									</a>
-								</c:if>
-							  </td>
-							 </tr>
-							 <tr>
-						      <td width="20" valign="top">&nbsp;</td>
-							  <td align="left" nowrap>
-							    <c:if test="${ss_searchIncludeNestedBinders}">
-							      <input type="checkbox" 
-							        name="includeNestedBinders" 
-							        checked />
-							    </c:if>
-							    <c:if test="${!ss_searchIncludeNestedBinders}">
-							      <input type="checkbox" name="includeNestedBinders" /> 
-							    </c:if>
-							    <span>&nbsp;<ssf:nlt tag="search.scope.includeSubBinders"/></span>
-							  </td>
-							 </tr>
-							</c:if>
-						  </table>
-						</td>
-					</tr>
-					
 					<tr>
 						<td></td>
 						<td>
@@ -166,39 +62,24 @@
 									[<ssf:nlt tag="search.NoResults" />]
 								  </c:when>
 								  <c:otherwise>
-								    <c:if test="${searchCountTotalApproximate}">
-									  <ssf:nlt tag="search.resultsApproximate">
-									    <ssf:param name="value" value="${ssPageStartIndex}"/>
-									    <ssf:param name="value" value="${ssPageEndIndex}"/>
-									  </ssf:nlt>
-									</c:if>
-								    <c:if test="${!searchCountTotalApproximate}">
-									  <ssf:nlt tag="search.results">
-									    <ssf:param name="value" value="${ssPageStartIndex}"/>
-									    <ssf:param name="value" value="${ssPageEndIndex}"/>
-									    <ssf:param name="value" value="${ssTotalRecords}"/>
-									  </ssf:nlt>
-									</c:if>
+									<ssf:nlt tag="search.results">
+									<ssf:param name="value" value="${ssPageStartIndex}"/>
+									<ssf:param name="value" value="${ssPageEndIndex}"/>
+									<ssf:param name="value" value="${ssTotalRecords}"/>
+									</ssf:nlt>
 								  </c:otherwise>
 								</c:choose>
 							</div>
 						</td>
 						<td style="text-align: right;">
-						  <ssf:ifNotFilr>
 							<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 								name="tabTitle" value=""/><ssf:param 
 								name="newTab" value="1"/><ssf:param 
 								name="searchText" value="${ss_filterMap.searchText}"/><ssf:param 
 								name="operation" value="ss_searchResults"/><ssf:param 
-								name="showAdvancedSearchForm" value="true"/><ssf:param 
-								name="context" value="${ss_searchContext}"/><ssf:param 
-								name="contextCollection" value="${ss_searchContextCollection}"/><ssf:param 
-								name="contextBinderId" value="${ss_searchContextBinderId}"/><ssf:param 
-								name="contextEntryId" value="${ss_searchContextEntryId}"/><ssf:param 
-								name="includeNestedBinders" value="${ss_searchIncludeNestedBinders}"/></ssf:url>" >
+								name="showAdvancedSearchForm" value="true"/></ssf:url>" >
 								<ssf:nlt tag="searchForm.advanced.Title"/>
 							</a>
-						  </ssf:ifNotFilr>
 						</td>
 						<td></td>
 					</tr>	

@@ -40,14 +40,7 @@
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
 <%
-boolean isIECheck;
-//If IE 7 or better, then pretend not IE so it works like the other browsers (i.e., no applet for viewing)
-if (BrowserSniffer.is_ie_4(request) || BrowserSniffer.is_ie_5(request) || 
-		BrowserSniffer.is_ie_5_5(request) || BrowserSniffer.is_ie_6(request)) {
-	isIECheck = true;
-} else {
-	isIECheck = false;
-}
+boolean isIECheck = BrowserSniffer.is_ie(request);
 String strBrowserType = "nonie";
 if (isIECheck) strBrowserType = "ie";
 boolean isAppletSupportedCheck = SsfsUtil.supportApplets(request);

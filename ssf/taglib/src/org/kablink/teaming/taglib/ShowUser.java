@@ -50,7 +50,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
@@ -127,8 +126,8 @@ public class ShowUser extends BodyTagSupport {
 				else
 					httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, Boolean.FALSE);
 					
-				ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
 				if (user instanceof Group) {
+					ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
 					if (profileModule != null) {
 						Collection<Long> ids = new ArrayList<Long>();
 						ids.add(user.getId());
@@ -136,13 +135,6 @@ public class ShowUser extends BodyTagSupport {
 						httpReq.setAttribute(WebKeys.SHOW_USER_GROUP_MEMBERS, groupUsers);
 					}
 				}
-				//See if this user can reference the profiles binder
-				Boolean canReferenceProfilesBinder = false;
-				try {
-					Binder pb = profileModule.getProfileBinder();
-					canReferenceProfilesBinder = true;
-				} catch(Exception e) {}
-				httpReq.setAttribute(WebKeys.SHOW_USER_CAN_ACCESS_PROFILES_BINDER, canReferenceProfilesBinder);
 				
 				// Output the presence info
 				String jsp = "/WEB-INF/jsp/tag_jsps/show_user/show_user.jsp";

@@ -39,5 +39,5 @@ public interface BinderReindex {
 	public final static String BINDER_REINDEX_GROUP="binder-reindex";
 	public final static String BINDER_REINDEX_DESCRIPTION="re-index entries";
 	public final static String BINDER_REINDEX_JOB="binder.reindex.job";
-	public void scheduleNonBlocking(List<Long> binderIds, User user, boolean includeEntries);
+	public void schedule(List<Long> binderIds, User user);
 }

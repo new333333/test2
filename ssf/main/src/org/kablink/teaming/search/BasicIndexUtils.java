@@ -46,7 +46,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.util.search.FieldFactory;
 
 import static org.kablink.util.search.Constants.*;
 /**
@@ -81,16 +80,16 @@ public class BasicIndexUtils {
     }
     
     public static void addUid(Document doc, String uid, boolean fieldsOnly) {
-        doc.add(FieldFactory.createFieldStoredNotAnalyzed(UID_FIELD, uid));    
-        doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(THIS_CLASS_FIELD, getClassName(uid)));
+        doc.add(new Field(UID_FIELD, uid, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));    
+        doc.add(new Field(THIS_CLASS_FIELD, getClassName(uid), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
     
     public static void addDocType(Document doc, String docType, boolean fieldsOnly) {
-        doc.add(FieldFactory.createFieldStoredNotAnalyzed(DOC_TYPE_FIELD, docType));
+        doc.add(new Field(DOC_TYPE_FIELD, docType, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
     
     public static void addAttachmentType(Document doc, String attType, boolean fieldsOnly) {
-        doc.add(FieldFactory.createFieldStoredNotAnalyzed(ATTACHMENT_TYPE_FIELD, attType));
+        doc.add(new Field(ATTACHMENT_TYPE_FIELD, attType, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
     /*
     public static Document createDocument(String uid, String docType, String className) {
@@ -143,12 +142,12 @@ public class BasicIndexUtils {
     }
     
     public static  void addFileContents(Document doc, String text) {
-    	Field contents = FieldFactory.createFullTextFieldIndexed(TEMP_FILE_CONTENTS_FIELD, text, false);
+    	Field contents = new Field(TEMP_FILE_CONTENTS_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
         doc.add(contents);
     }
     
-    public static  Field generalTextField(String text) {
-        return FieldFactory.createFullTextFieldIndexed(GENERAL_TEXT_FIELD, text, false);
+    public static  Field allTextField(String text) {
+        return new Field(ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
     }   
    
     public static String buildAclTag(String tag, String aclId)

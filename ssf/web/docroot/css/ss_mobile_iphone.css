@@ -79,9 +79,8 @@ span.pad-left20 select {
 	background-repeat: repeat;
 	white-space:nowrap;
 	-moz-border-radius: 5px;
-	border-radius: 7px;
 	-webkit-border-radius: 7px;
-}
+	}
 
 .homelink { 
 	position: relative;
@@ -94,7 +93,6 @@ span.pad-left20 select {
 	background-repeat: repeat;
 	white-space:nowrap;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
 
@@ -437,11 +435,9 @@ span.pad-left20 select {
 /*  iPhone Specific CSS3 */
 
 .roundcorner {
-	border-radius: 10px;
 	-webkit-border-radius: 10px;
 	}
 .roundcornerLG {
-	border-radius: 40px;
 	-webkit-border-radius: 40px;
 	}
 	
@@ -658,14 +654,6 @@ div.ss_mobile_calendar_no_entries_header span {
 }
 td div.ss_mobile_calendar_entries_header span {
 	font-size: 1.02em;
-}
-div.ss_mobile_calendar_entries_family_header {
-	padding: 6px;
-	text-align: left;
-}
-div.ss_mobile_calendar_entries_family_header span {
-	font-size: 1.02em;
-	font-weight: bold;
 }
 div.ss_mobile_calendar_no_entries_content {
 	padding: 20px;

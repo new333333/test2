@@ -2,8 +2,8 @@
 .soria .dijitMenu,
 .soria .dijitMenuBar {
 	border: 1px solid #cbcbcb;
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 	background-color: #fff;
 }
 .soria .dijitBorderContainer .dijitMenuBar {
@@ -11,7 +11,7 @@
 }
 .soria .dijitMenuItem {
 	font-family: sans-serif;
-	margin: 0;
+	margin: 0px;
 	color: #243C5F;
 }
 .soria .dijitMenuBar .dijitMenuItem {
@@ -24,7 +24,6 @@
 	padding:1px;
 }
 .soria .dijitMenuPassive .dijitMenuItemHover,
-.soria .dijitComboBoxMenu .dijitMenuItemHover,
 .soria .dijitMenuItemSelected {
 	background-color: #d9e6f9; 
 	color: #243C5F;
@@ -51,17 +50,13 @@
 .soria .dijitMenuSeparatorBottom {
 	border-top: 1px solid #8ba0bd;
 }
-.soria .dijitCheckedMenuItem .dijitMenuItemIcon  {
+.soria .dijitCheckedMenuItemIconChar {
+	display: none;
+}
+.soria .dijitCheckedMenuItemIcon {
 	background-image: url('images/spriteCheckbox.gif');
 	background-position: -80px;
 }
-.soria .dijitCheckedMenuItemChecked .dijitMenuItemIcon {
-	background-position: -64px;
-}
-.soria .dijitRadioMenuItem .dijitMenuItemIcon {
-	background-image: url('images/spriteRadio.gif');
-	background-position: -80px;
-}
-.soria .dijitRadioMenuItemChecked .dijitMenuItemIcon {
+.soria .dijitCheckedMenuItemChecked .dijitCheckedMenuItemIcon {
 	background-position: -64px;
 }

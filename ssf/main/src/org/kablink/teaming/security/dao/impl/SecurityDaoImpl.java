@@ -77,8 +77,6 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     private static final String WORK_AREA_OPERATION_NAME = "operationName";
     private static final String PRINCIPAL_IDS = "principalIds";
     private static final String RESERVED_ID = "internalId";
-    private static final String FUNCTION_SCOPE = "scope";
-    
     public void save(Object obj) {
         getHibernateTemplate().save(obj);
     }
@@ -102,7 +100,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     	}	        
     }
 
-    public List<Function> findFunctions(final Long zoneId) {
+    public List findFunctions(final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	        return (List)getHibernateTemplate().execute(
@@ -245,7 +243,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     		end(begin, "findWorkAreaFunctionMemberships(Long,Long,String)");
     	}
 	 }
-		
+	
     public void deleteWorkAreaFunctionMemberships(final Long zoneId, final Long workAreaId, final String workAreaType) {
 		long begin = System.nanoTime();
 		try {

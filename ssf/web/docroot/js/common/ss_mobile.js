@@ -144,25 +144,6 @@ function ss_clearStatusMobile(textareaId) {
 	}
 }
 
-function ss_showDiv(divName) {
-	var divObj = document.getElementById(divName);
-	if (divObj == null) return;
-    if (typeof divObj.style.display == 'undefined' || divObj.style.display == '' || divObj.style.display != 'inline') {
-    	divObj.style.display = "block";
-    }
-    divObj.style.visibility = "visible";
-}
-
-function ss_hideDiv(divName) {
-	var divObj = document.getElementById(divName);
-	if (divObj != null) {
-		if (typeof divObj.style.display == "undefined" || divObj.style.display != "none") {
-			divObj.style.visibility = "hidden";
-			divObj.style.display = "none";
-		}
-    }
-}
-
 var ss_activeMenu = null;
 function ss_showMenu(divId) {
 	if (ss_activeMenu != null) {
@@ -242,35 +223,6 @@ function ss_setUGT(formName, elementName, type) {
 			ele.setAttribute("name", "entryUGT");
 			ele.setAttribute("value", type + "," + elementName);
 			formObj.appendChild(ele);
-		}
-	}
-}
-
-//checkboxes on designer forms need to be present even if they are unchecked.
-//Use hidden field.
-function ss_saveCheckBoxValue(box, hiddenFieldId) {
-	var hiddenField = document.getElementById(hiddenFieldId);
-	var cbChecked = box.checked;
-	if (cbChecked) hiddenField.value="true";
-	else hiddenField.value="false";
-
-	// Did the user just check the notify assignee/attendee checkbox on
-	// a task/calendar entry?
-	if (cbChecked &&
-			((hiddenFieldId == "hidden_attendee_notify") ||		// Calendar
-																// entry.
-			 (hiddenFieldId == "hidden_assignment_notify"))) {	// Task entry.
-		// Yes! Can we access the subject, its default and the title?
-		var eSubject        = document.getElementById("_sendMail_subject");
-		var eSubjectDefault = document.getElementById("_sendMail_subject_default");
-		var eTitle          = document.getElementById("title");
-		var sTitle          = ((null == eTitle) ? "" : eTitle.value);
-		if (eSubject && eSubjectDefault && eTitle && sTitle.length) {
-			// Yes! Does the subject still contain the default?
-			if (eSubject.value == eSubjectDefault.value) {
-				// Yes! Default the email subject to the title.
-				eSubject.value = sTitle;
-			}
 		}
 	}
 }

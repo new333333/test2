@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.util;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -54,6 +56,82 @@ public class TaskListItem implements IsSerializable {
 	// TaskListItem in the user interface.
 	private transient Object	m_uiData;
 
+	/**
+	 * Inner class used to model assignment information for a task.
+	 */
+	public static class AssignmentInfo implements IsSerializable {
+		private GwtPresenceInfo m_presence;			// Only used for individual assignees.
+		private int             m_members = (-1);	// Only used for group and team assignees.
+		private Long            m_id;				//
+		private Long			m_presenceUserWSId;	// Only used for individual assignees.
+		private String			m_presenceDude;		// Used for all assignees.
+		private String          m_title;			//
+
+		// The following are used for managing group and team assignees
+		// for this AssignmentInfo in the user interface.
+		private transient List<AssignmentInfo> m_membership;
+		private transient int                  m_membersShown;
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * No parameters as per GWT serialization requirements.
+		 */
+		public AssignmentInfo() {
+			// Nothing to do.
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public GwtPresenceInfo      getPresence()         {return m_presence;        }
+		public int                  getMembers()          {return m_members;         }
+		public Long                 getId()               {return m_id;              }
+		public Long                 getPresenceUserWSId() {return m_presenceUserWSId;}
+		public String               getPresenceDude()     {return m_presenceDude;    }
+		public String               getTitle()            {return m_title;           }
+		public List<AssignmentInfo> getMembership()       {return m_membership;      }
+		public int                  getMembersShown()     {return m_membersShown;    }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setPresence(        GwtPresenceInfo      presence)         {m_presence         = presence;        }
+		public void setMembers(         int                  members)          {m_members          = members;         }
+		public void setId(              Long                 id)               {m_id               = id;              }
+		public void setPresenceUserWSId(Long                 presenceUserWSId) {m_presenceUserWSId = presenceUserWSId;}
+		public void setPresenceDude(    String               presenceDude)     {m_presenceDude     = presenceDude;    }
+		public void setTitle(           String               title)            {m_title            = title;           }
+		public void setMembership(      List<AssignmentInfo> membership)       {m_membership       = membership;      }
+		public void setMembersShown(    int                  membersShown)     {m_membersShown     = membersShown;    }
+		
+		/**
+		 * Constructs an AssignmentInfo from the parameters.
+		 * 
+		 * @param id
+		 * @param title
+		 * 
+		 * @return
+		 */
+		public static AssignmentInfo construct(Long id, String title) {
+			AssignmentInfo reply = new AssignmentInfo();
+			
+			reply.setId(   id   );
+			reply.setTitle(title);
+			
+			return reply;
+		}
+		
+		public static AssignmentInfo construct(Long id) {
+			// Always use the initial form of the method.
+			return construct(id, "");
+		}		
+	}
+	
 	/**
 	 * Inner class used to model the Vibe Duration object in a way
 	 * that's compatible with GWT RPC calls 
@@ -298,31 +376,6 @@ public class TaskListItem implements IsSerializable {
 		}
 
 		/**
-		 * Returns true if the TaskEvent only as a duration in dates
-		 * (no actual start or end) and false otherwise.
-		 * 
-		 * @return
-		 */
-		public boolean hasDurationOnly() {
-			// Is the task an all day event?
-			boolean reply = (!(getAllDayEvent()));
-			if (reply) {
-				// No!  Is it's duration in days only?
-				TaskDuration tD = getDuration();
-				reply = tD.hasDaysOnly();
-				if (reply) {
-					// Yes!  If the task doesn't have an actual start
-					// and end date, it only has a duration in days.
-					reply = ((!(hasActualEnd())) && (!(hasActualStart())));				
-				}
-			}
-			
-			// If we get here, reply is true if the TaskEvent only has
-			// a duration in days.  Return it.
-			return reply;
-		}
-
-		/**
 		 * Returns true if the TaskEvent requires some type of task
 		 * date calculation and false otherwise.
 		 * 
@@ -367,18 +420,15 @@ public class TaskListItem implements IsSerializable {
 		private List<AssignmentInfo>	m_assignments      = new ArrayList<AssignmentInfo>();
 		private List<AssignmentInfo>	m_assignmentGroups = new ArrayList<AssignmentInfo>();
 		private List<AssignmentInfo>	m_assignmentTeams  = new ArrayList<AssignmentInfo>();
-		private Long					m_creatorId;
-		private Long					m_modifierId;
-		private String					m_completed     = "";	
-		private String					m_entityType    = "";
-		private String					m_location      = "";
-		private String					m_priority      = "";
-		private String					m_title         = "";
-		private String					m_status        = "";
-		private TaskDate				m_completedDate = new TaskDate();	
-		private TaskEvent				m_event         = new TaskEvent();
-		private EntityId				m_taskId        = new EntityId();
-		private String					m_desc			= "";
+		private String					m_completed        = "";	
+		private String					m_entityType       = "";
+		private String					m_location         = "";
+		private String					m_priority         = "";
+		private String					m_title            = "";
+		private String					m_status           = "";
+		private TaskDate				m_completedDate    = new TaskDate();	
+		private TaskEvent				m_event            = new TaskEvent();
+		private TaskId					m_taskId           = new TaskId();	
 
 		// The following are the values used for task completion
 		// percentages.
@@ -430,8 +480,6 @@ public class TaskListItem implements IsSerializable {
 		public List<AssignmentInfo> getAssignments()      {return m_assignments;     }
 		public List<AssignmentInfo> getAssignmentGroups() {return m_assignmentGroups;}
 		public List<AssignmentInfo> getAssignmentTeams()  {return m_assignmentTeams; }
-		public Long                 getCreatorId()        {return m_creatorId;       }
-		public Long                 getModifierId()       {return m_modifierId;      }
 		public String               getCompleted()        {return m_completed;       }
 		public String               getEntityType()       {return m_entityType;      }
 		public String               getLocation()         {return m_location;        }
@@ -440,8 +488,7 @@ public class TaskListItem implements IsSerializable {
 		public String               getStatus()           {return m_status;          }
 		public TaskDate             getCompletedDate()    {return m_completedDate;   }
 		public TaskEvent            getEvent()            {return m_event;           }
-		public EntityId             getTaskId()           {return m_taskId;          }
-		public String				getDesc()			  {return m_desc;			 }
+		public TaskId               getTaskId()           {return m_taskId;          }
 		
 		/**
 		 * Set'er methods.
@@ -456,8 +503,6 @@ public class TaskListItem implements IsSerializable {
 		public void setAssignments(     List<AssignmentInfo> assignments)      {m_assignments      = assignments;     }
 		public void setAssignmentGroups(List<AssignmentInfo> assignmentGroups) {m_assignmentGroups = assignmentGroups;}
 		public void setAssignmentTeams( List<AssignmentInfo> assignmentTeams)  {m_assignmentTeams  = assignmentTeams; }
-		public void setCreatorId(       Long                 creatorId)        {m_creatorId        = creatorId;       }
-		public void setModifierId(      Long                 modifierId)       {m_modifierId       = modifierId;      }
 		public void setCompleted(       String               completed)        {m_completed        = completed;       }
 		public void setEntityType(      String               entityType)       {m_entityType       = entityType;      }
 		public void setLocation(        String               location)         {m_location         = location;        }
@@ -466,8 +511,7 @@ public class TaskListItem implements IsSerializable {
 		public void setStatus(          String               status)           {m_status           = status;          }
 		public void setCompletedDate(   TaskDate             completedDate)    {m_completedDate    = completedDate;   }
 		public void setEvent(           TaskEvent            event)            {m_event            = event;           }
-		public void setTaskId(          EntityId             taskId)           {m_taskId           = taskId;          }
-		public void setDesc(			String				 desc )			   {m_desc			   = desc;			  }
+		public void setTaskId(          TaskId               taskId)           {m_taskId           = taskId;          }
 
 		/**
 		 * Various task state evaluators.
@@ -506,21 +550,7 @@ public class TaskListItem implements IsSerializable {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public TaskListItem() {
-		// Initialize the super class.
-		super();
-	}
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param task
-	 */
-	public TaskListItem(TaskInfo task) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the task.
-		setTask(task);
+		// Nothing to do.
 	}
 
 	/**

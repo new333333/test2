@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,65 +32,22 @@
  */
 package org.kablink.teaming.gwt.client;
 
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-import org.kablink.teaming.gwt.client.util.UserType;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+
 
 /**
  * Class used in GWT RPC calls to represent a User.
  * 
  * @author drfoster@novell.com
  */
-public class GwtUser extends GwtPrincipal
-	implements IsSerializable, VibeRpcResponseData
-{
+public class GwtUser extends GwtTeamingItem implements IsSerializable {
 	private String m_name;
 	private String m_title;
 	private String m_userId;
 	private String m_viewUrl;
 	private String m_wsId;
 	private String m_wsTitle;
-	private String m_email;
-	private String m_avatarUrl;
-	private ExtUserProvState m_extUserProvState;
-	private UserType m_userType = UserType.UNKNOWN;
-	
-	/**
-	 * This represents the provisioned state of an external user.
-	 * Keep this up-to-date with ExtProvState in User.java
-	 */
-	public enum ExtUserProvState implements IsSerializable
-	{
-		INITIAL,
-		
-		/**
-		 * The invited external user responded, and through self-provisioning interface
-		 * successfully supplied his credential to use with local Filr authentication
-		 * in the future. The account still needs to be confirmed/verified before
-		 * the user can actually log into Fir using the specified credential and
-		 * start accessing data. 
-		 */
-		CREDENTIALED,
-
-		/**
-		 * The user has been successfully verified and is ready to use the system.
-		 * Verification is needed/performed only once for each user account.
-		 */
-		VERIFIED,
-		
-		/**
-		 * The user has requested to reset their password
-		 */
-		PWD_RESET_REQUESTED,
-		
-		/**
-		 * The user has reset their password and has not responded to the verification email.
-		 */
-		PWD_RESET_WAITING_FOR_VERIFICATION,
-		
-		UNKNOWN,
-	}
 	
 	/**
 	 * Constructor method. 
@@ -98,68 +55,12 @@ public class GwtUser extends GwtPrincipal
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public GwtUser() {
-		super();
+		// Nothing to do.
 	}	
-		
-	/**
-	 * 
-	 */
-	public ExtUserProvState getExtUserProvState()
-	{
-		return m_extUserProvState;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getAvatarUrl()
-	{
-		return m_avatarUrl;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getEmail()
-	{
-		return m_email;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public Long getIdLong()
-	{
-		if ( m_userId != null )
-			return Long.valueOf( m_userId );
-		
-		return null;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public String getImageUrl()
-	{
-		String url;
-		
-		// Does the user have an avatar?
-		url = getAvatarUrl();
-		if ( url != null && url.length() > 0 )
-		{
-			// Yes
-			return url;
-		}
-		
-		return GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png";
-	}
 	
 	/**
 	 * Returns the user's name.
 	 */
-	@Override
 	public String getName() {
 		return m_name;
 	}
@@ -167,18 +68,8 @@ public class GwtUser extends GwtPrincipal
 	/**
 	 * Returns the user's title.
 	 */
-	@Override
 	public String getTitle() {
 		return m_title;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public PrincipalType getType()
-	{
-		return PrincipalType.USER;
 	}
 	
 	/**
@@ -203,12 +94,14 @@ public class GwtUser extends GwtPrincipal
 	}
 	
 	/**
+	 * Return the name of the parent binder.
+	 * 
 	 * Implements the GwtTeamingItem.getSecondaryDisplayText() abstract
 	 * method.
 	 */
 	@Override
 	public String getSecondaryDisplayText() {
-		return getEmail();
+		return "";
 	}
 		
 	/**
@@ -228,39 +121,6 @@ public class GwtUser extends GwtPrincipal
 	 */
 	public String getViewWorkspaceUrl() {
 		return m_viewUrl;
-	}
-	
-	/**
-	 * Returns the user type.
-	 * 
-	 * @return
-	 */
-	public UserType getUserType() {
-		return m_userType;
-	}
-
-	/**
-	 * 
-	 */
-	public void setAvatarUrl( String url )
-	{
-		m_avatarUrl = url;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setEmail( String email )
-	{
-		m_email = email;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setExtUserProvState( ExtUserProvState state )
-	{
-		m_extUserProvState = state;
 	}
 	
 	/**
@@ -287,10 +147,7 @@ public class GwtUser extends GwtPrincipal
 	 * @param userId
 	 */
 	public void setUserId(Long userId) {
-		if ( userId != null )
-			setUserId(String.valueOf(userId));
-		else
-			m_userId = null;
+		setUserId(String.valueOf(userId));
 	}
 	
 	/**
@@ -336,14 +193,5 @@ public class GwtUser extends GwtPrincipal
 	 */
 	public void setWorkspaceTitle(String wsTitle) {
 		m_wsTitle = wsTitle;
-	}
-
-	/**
-	 * Stores the user type.
-	 * 
-	 * @param userType
-	 */
-	public void setUserType(UserType userType) {
-		m_userType = userType;
 	}
 }

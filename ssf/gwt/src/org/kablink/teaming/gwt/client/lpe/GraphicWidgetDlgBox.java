@@ -92,7 +92,6 @@ public class GraphicWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
 		GraphicProperties properties;
@@ -231,7 +230,6 @@ public class GraphicWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
-	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		GraphicProperties	properties;
@@ -319,7 +317,6 @@ public class GraphicWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
-	@Override
 	public FocusWidget getFocusWidget()
 	{
 		if ( m_graphicListBox != null )
@@ -438,7 +435,6 @@ public class GraphicWidgetDlgBox extends DlgBox
 		return unit;
 	}
 	
-
 	/**
 	 * Initialize the controls on the page with the values from the properties.
 	 */
@@ -529,7 +525,6 @@ public class GraphicWidgetDlgBox extends DlgBox
 	 * This method gets called when the user types in the "width" or "height" text box.
 	 * We only allow the user to enter numbers.
 	 */
-	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;

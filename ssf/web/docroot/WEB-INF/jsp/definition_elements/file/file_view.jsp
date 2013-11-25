@@ -84,7 +84,7 @@
 <%
 	ss_entryAttributesSeen.put("title"+ssDefinitionEntry.getId().toString(), true);
 %>
-      <table cellspacing="0" cellpadding="0" style="margin-left: 5px; margin-top: 10px">
+      <table cellspacing="0" cellpadding="0" style="margin-left: 5px;">
       <tr>
         <td <c:if test="${!empty selection.fileItem.description.text}">rowspan="2" valign="top" </c:if> >
           <div class="ss_thumbnail_tiny ss_thumbnail_standalone">
@@ -207,25 +207,6 @@
 </div>
 </div>
 </div>
-
-<c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
-<c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
-<c:if test="${!ss_fileopenDivSeen}">
-  <div id="ss_div_fileopen${ss_attachments_namespace}" 
-    name="ss_div_fileopen${ss_attachments_namespace}" 
-    style="visibility:visible;display:block; width:1px; height:1px;">
-	<div align="right">
-		<iframe frameborder="0" 
-		  id="ss_iframe_fileopen${ss_attachments_namespace}" 
-		  name="ss_iframe_fileopen${ss_attachments_namespace}" 
-		  src="<html:rootPath/>js/forum/null.html" 
-		  height="1" width="1"
-		  title="<ssf:nlt tag="entry.AttachFilesByWebDav" />" >Novell Vibe</iframe>
-	</div>
-  </div>
-  <c:set var="ss_fileopenDivSeen" value="true" scope="request"/>
-</c:if>
-
 <script type="text/javascript">
 function ss_focusOnEntry() {
 	ss_setFocusToFirstA("ss_entryTop${ss_entryLinkCounter}");

@@ -48,13 +48,8 @@
 
 //Set up the user object
 if (org.kablink.teaming.context.request.RequestContextHolder.getRequestContext() != null) {
-	org.kablink.teaming.domain.User user = null;
-	try {
-		user = org.kablink.teaming.context.request.RequestContextHolder.getRequestContext().getUser();
-	}
-	catch(org.kablink.teaming.context.request.NoContextUserException doNotPropogate) {}
-	if(user != null)
-		request.setAttribute("ssUser", user);
+	org.kablink.teaming.domain.User user = org.kablink.teaming.context.request.RequestContextHolder.getRequestContext().getUser();
+	request.setAttribute("ssUser", user);
 }
 
 %><%--

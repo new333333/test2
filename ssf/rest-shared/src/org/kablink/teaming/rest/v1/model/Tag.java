@@ -32,43 +32,6 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+public class Tag {
 
-@XmlRootElement(name="tag")
-public class Tag extends BaseRestObject {
-	protected String id;
-	protected String name="";
-	protected Boolean isPublic=false;
-	private EntityId entity;
-	
-   public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-	
-	public EntityId getEntity() {
-		return entity;
-	}
-	public void setEntity(EntityId entity) {
-		this.entity = entity;
-	}
-
-	public String getName() {
-	    return name;
-	}
-	public void setName(String name) {
-	    this.name = name;
-	}	
-
-    @XmlElement(name="public")
-	public Boolean isPublic() {
-		return isPublic;
-	}
-	public void setPublic(Boolean isPublic) {
-		this.isPublic = isPublic;
-	}
 }

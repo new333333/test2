@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,39 +35,33 @@ package org.kablink.teaming.gwt.client.workspacetree;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
-import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
-import org.kablink.teaming.gwt.client.event.MenuLoadedEvent.MenuItem;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
-import org.kablink.teaming.gwt.client.util.BinderIconSize;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
-import org.kablink.teaming.gwt.client.util.TreeMode;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
+
 
 /**
  * Base class used to drive the display of the various instantiations
  * of a WorkspaceTreeControl,
  * 
  * @author drfoster@novell.com
+ *
  */
 public abstract class TreeDisplayBase {
 	private List<TreeInfo>			m_rootTIList;	// The root TreeInfo object being displayed.
@@ -99,7 +93,6 @@ public abstract class TreeDisplayBase {
 		 * 
 		 * @param event
 		 */
-		@Override
 		public void onClick(ClickEvent event) {
 			// Is the item is a bucket?
 			if (m_ti.isBucket()) {
@@ -142,10 +135,7 @@ public abstract class TreeDisplayBase {
 	 * @param rootTI
 	 */
 	public TreeDisplayBase(WorkspaceTreeControl wsTree, TreeInfo rootTI) {
-		// Initialize the super class...
-		super();
-		
-		// ...and store the parameters.
+		// Simply store the parameters.
 		m_wsTree = wsTree;
 		m_rootTI = rootTI;
 	}
@@ -153,16 +143,12 @@ public abstract class TreeDisplayBase {
 	/**
 	 * Constructor method.  (2 of 2)
 	 *
-	 * @param tm
 	 * @param wsTree
 	 * @param rootTIList
 	 */
 	public TreeDisplayBase(WorkspaceTreeControl wsTree, List<TreeInfo> rootTIList) {
-		// Initialize the super class...
-		super();
-		
-		// ...and store the parameters.
-		m_wsTree     = wsTree;
+		// Simply store the parameters.
+		m_wsTree = wsTree;
 		m_rootTIList = rootTIList;
 	}
 
@@ -172,12 +158,8 @@ public abstract class TreeDisplayBase {
 	abstract OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti);
 	abstract void selectBinder(TreeInfo ti);
 	public abstract boolean isInActivityStreamMode();
-	public abstract void    getSidebarCollection(CollectionCallback collectionCallback);
-	public abstract void    menuLoaded(MenuItem menuItem);
-	public abstract void    refreshSidebarTree();
-	public abstract void    rerootSidebarTree();
-	public abstract void    render(          BinderInfo selectedBinderInfo, FlowPanel targetPanel);
-	public abstract void    setRenderContext(BinderInfo selectedBinderInfo, FlowPanel targetPanel);
+	public abstract void    render(          String selectedBinderId, FlowPanel targetPanel);
+	public abstract void    setRenderContext(String selectedBinderId, FlowPanel targetPanel);
 	public abstract void    setSelectedBinder(OnSelectBinderInfo binderInfo);
 
 	/**
@@ -223,8 +205,10 @@ public abstract class TreeDisplayBase {
 	 * 
 	 * Subclasses of TreeDisplayBase base should override this if they
 	 * need to do any processing AFTER a new context has been loaded.
+	 * 
+	 * @param binderId
 	 */
-	public void clearBusySpinner() {
+	public void contextLoaded(String binderId) {
 		// By default, we do nothing special.
 	}
 	
@@ -273,15 +257,6 @@ public abstract class TreeDisplayBase {
 		else reply = ti.getBinderHover();
 		return reply;
 	}
-
-	/**
-	 * Returns access to the Filr image bundle.
-	 *  
-	 * @return
-	 */
-	GwtTeamingFilrImageBundle getFilrImages() {
-		return GwtTeaming.getFilrImageBundle();
-	}
 	
 	/**
 	 * Returns access to the workspace tree's image bundle.
@@ -290,15 +265,6 @@ public abstract class TreeDisplayBase {
 	 */
 	GwtTeamingWorkspaceTreeImageBundle getImages() {
 		return GwtTeaming.getWorkspaceTreeImageBundle();
-	}
-	
-	/**
-	 * Returns access to the Vibe base image bundle.
-	 *  
-	 * @return
-	 */
-	GwtTeamingImageBundle getBaseImages() {
-		return GwtTeaming.getImageBundle();
 	}
 	
 	/**
@@ -329,24 +295,6 @@ public abstract class TreeDisplayBase {
 	}
 
 	/**
-	 * Returns the binder this tree control was built from.
-	 * 
-	 * @return
-	 */
-	BinderInfo getSelectedBinderInfo() {
-		return m_wsTree.getSelectedBinderInfo();
-	}
-	
-	/**
-	 * Returns the TreeMode being displayed.
-	 * 
-	 * @return
-	 */
-	TreeMode getTreeMode() {
-		return m_wsTree.getTreeMode();
-	}
-
-	/**
 	 * Returns the root List<TreeInfo>, if that's what we're
 	 * displaying.
 	 *  
@@ -364,37 +312,7 @@ public abstract class TreeDisplayBase {
 	GwtRpcServiceAsync getRpcService() {
 		return GwtTeaming.getRpcService();
 	}
-
-	/**
-	 * Returns true if the workspace tree is currently hidden because
-	 * of an empty sidebar and false otherwise.
-	 * 
-	 * @return
-	 */
-	final public boolean isTreeHiddenByEmptySidebar() {
-		return m_wsTree.isTreeHiddenByEmptySidebar();
-	}
-	
-	/**
-	 * Returns true if the tree is displaying for a trash view and
-	 * false otherwise.
-	 * 
-	 * @return
-	 */
-	final public boolean isTrash() {
-		return m_wsTree.isTrash();
-	}
-
-	/**
-	 * Returns true if the workspace tree is visible and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	final public boolean isTreeVisible() {
-		return m_wsTree.isVisible();
-	}
-
+		
 	/**
 	 * Called to reset the main menu context to that previously loaded.
 	 */
@@ -414,50 +332,6 @@ public abstract class TreeDisplayBase {
 		// By default, we ignore this.
 	}
 	
-	/**
-	 * Sets the image resource on a binder image based on its TreeInfo.
-	 * 
-	 * @param ti
-	 * @param iconSize
-	 */
-	public void setBinderImageResource(TreeInfo ti, BinderIconSize iconSize, ImageResource defaultImg) {
-		// Do we have an Image widget to store the image resource in?
-		Image binderImg = ((Image) ti.getBinderUIImage());
-		if (null != binderImg) {
-			// Yes!  Does the TreeInfo have the name of an icon to use?
-			String binderIcon = ti.getBinderIcon(iconSize);
-			if ((!(ti.getBinderInfo().isFolderHome())) && GwtClientHelper.hasString(binderIcon)) {
-				// Yes!  Set its URL into the Image.
-				if (binderIcon.startsWith("/"))
-				     binderImg.setUrl(getImagesPath() + binderIcon.substring(1));
-				else binderImg.setUrl(getImagesPath() + binderIcon);
-			}
-			
-			else {
-				// No, the TreeInfo doesn't have the name of an icon to
-				// use!  Does it have an ImageResource to use?
-				ImageResource binderImgRes = ti.getBinderImage(iconSize);
-				if (null == binderImgRes) {
-					// No!  Use the default ImageResource.
-					binderImgRes = defaultImg;
-				}
-				
-				// We always display images via their URL so that they
-				// can be scaled when necessary. 
-				binderImg.setUrl(binderImgRes.getSafeUri());
-			}
-
-			// Apply any scaling specified to the image.
-			int width  = ti.getBinderIconWidth( iconSize); if ((-1) != width)  binderImg.setWidth( width  + "px");
-			int height = ti.getBinderIconHeight(iconSize); if ((-1) != height) binderImg.setHeight(height + "px");
-		}
-	}
-	
-	public void setBinderImageResource(TreeInfo ti, BinderIconSize iconSize) {
-		// Always use the initial form of the method.
-		setBinderImageResource(ti, iconSize, getImages().spacer_1px());
-	}
-		
 	/**
 	 * Stores a new root TreeInfo.
 	 *  

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,10 +36,10 @@ package org.kablink.teaming.gwt.client.whatsnew;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ViewAllEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewUnreadEntriesEvent;
-import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
-import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
+import org.kablink.teaming.gwt.client.util.ShowSetting;
 
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * This popup menu is used to display the "show all" and "show unread" actions.
@@ -48,15 +48,15 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
  */
 public class ShowSettingPopupMenu extends PopupMenu
 {
-	private VibeMenuItem m_showAllMenuItem;
-	private VibeMenuItem m_showUnreadMenuItem;
+	private PopupMenuItem m_showAllMenuItem;
+	private PopupMenuItem m_showUnreadMenuItem;
 	
 	/**
 	 * 
 	 */
 	public ShowSettingPopupMenu( boolean autoHide, boolean modal )
 	{
-		super( autoHide, modal, true );
+		super( autoHide, modal );
 
 		// Add the "show all" menu item.
 		m_showAllMenuItem = addMenuItem( new ViewAllEntriesEvent(), null, GwtTeaming.getMessages().showAll() );
@@ -69,17 +69,38 @@ public class ShowSettingPopupMenu extends PopupMenu
 	/**
 	 * Check the appropriate menu item based on the given show setting.
 	 */
-	public void updateMenu( ActivityStreamDataType showSetting )
+	public void updateMenu( ShowSetting showSetting )
 	{
-		if ( showSetting == ActivityStreamDataType.ALL )
+		if ( showSetting == ShowSetting.SHOW_ALL )
 		{
 			setMenuItemCheckedState( m_showAllMenuItem, true );
 			setMenuItemCheckedState( m_showUnreadMenuItem, false );
 		}
-		else if ( showSetting == ActivityStreamDataType.UNREAD )
+		else if ( showSetting == ShowSetting.SHOW_UNREAD )
 		{
 			setMenuItemCheckedState( m_showAllMenuItem, false );
 			setMenuItemCheckedState( m_showUnreadMenuItem, true );
 		}
+	}
+
+	
+	/**
+	 * Show this popup menu.
+	 */
+	public void showMenu( final int x, final int y )
+	{
+		PopupPanel.PositionCallback posCallback;
+
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				setPopupPosition( x-offsetWidth, y );
+			}
+		};
+		setPopupPositionAndShow( posCallback );
 	}
 }

@@ -44,10 +44,10 @@
 <ul style="margin-left:-15px;">
 <c:if test="${!empty ssBinderConfig.parentBinder}">
 <c:set var="parentBinder" value="${ssBinderConfig.parentBinder}"/>
-<jsp:useBean id="parentBinder" type="org.kablink.teaming.domain.Binder" />
+<jsp:useBean id="parentBinder" type="org.kablink.teaming.domain.TemplateBinder" />
 <%
 	Stack parentTree = new Stack();
-	while (parentBinder != null && parentBinder instanceof org.kablink.teaming.domain.TemplateBinder) {
+	while (parentBinder != null) {
 		parentTree.push(parentBinder);
 		parentBinder = (org.kablink.teaming.domain.TemplateBinder)parentBinder.getParentBinder();
 	}
@@ -69,8 +69,7 @@
 </c:if>
 <c:if test="${!empty ssNavigationLinkTree[nextConfig.id]}">
 <div style="display:inline">
-<ssf:tree treeName="${ss_breadcrumbsTreeName}${nextConfig.id}" 
-  treeDocument="${ssNavigationLinkTree[nextConfig.id]}" 
+<ssf:tree treeName="${ss_breadcrumbsTreeName}${nextConfig.id}" treeDocument="${ssNavigationLinkTree[nextConfig.id]}" 
   rootOpen="false" topId="${nextConfig.id}"
   showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" />
 </div>

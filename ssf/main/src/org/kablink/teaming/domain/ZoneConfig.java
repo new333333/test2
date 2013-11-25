@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,27 +31,15 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.domain;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
 import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.Utils;
 
-/**
- * ?
- * 
- * @author ?
- */
 @SuppressWarnings("unchecked")
 public class ZoneConfig extends ZonedObject implements WorkArea {
-	public static final String WORKAREA_TYPE = "zone";
-	
-	public static Integer ZONE_LATEST_VERSION=16;  //This is used to introduce changes and fix things up between releases.
+	public static Integer ZONE_LATEST_VERSION=8;  //This is used to introduce changes and fix things up between releases.
 	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
 	private AuthenticationConfig authenticationConfig;
 	private HomePageConfig homePageConfig;
@@ -67,32 +55,9 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Long fileVersionsMaxAge;
 	private MailConfig mailConfig;
 	private Boolean fsaEnabled;
-	private Boolean fsaDeployEnabled;
-	private Boolean fsaDeployLocalApps;
-	private Boolean fsaAllowCachePwd;
 	private Integer fsaSynchInterval;
 	private String fsaAutoUpdateUrl;
-	private Integer fsaMaxFileSize;
-	private OpenIDConfig openIDConfig;
-	private Boolean externalUserEnabled;
-	private String localeLanguage;
-	private String localeCountry;
-	private Boolean adHocFoldersEnabled;
-	private Boolean fileArchivingEnabled;
-	private Boolean downloadEnabled;
-	private Boolean webAccessEnabled;
-	private Integer auditTrailKeepDays;
-	private Integer changeLogsKeepDays;
-	private Boolean auditTrailEnabled;
-	private Boolean changeLogEnabled;
-	private MobileAppsConfig mobileAppsConfig;
-	// If this is false, JITS is turned off on all binders regardless of their individual settings.
-	private Boolean jitsEnabled = Boolean.TRUE;
-	// This setting exists only on zones, not on individual binders.
-    private Long jitsWaitTimeout; // in milliseconds
-    private String shareListsBlob;
-    private Boolean allowShareWithLdapGroups;
-    private NameCompletionSettings nameCompletionSettings;
+	private Long fsaMaxFileSize;
 
 	public ZoneConfig()
 	{
@@ -103,9 +68,6 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 		this.homePageConfig = new HomePageConfig();
 		this.weekendsAndHolidaysConfig = new WeekendsAndHolidaysConfig();
 		this.mailConfig = new MailConfig();
-		this.openIDConfig = new OpenIDConfig();
-		this.mobileAppsConfig = new MobileAppsConfig();
-		this.nameCompletionSettings = new NameCompletionSettings();
 	}
 	public void setZoneId(Long zoneId)
 	{
@@ -124,15 +86,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     public void setAuthenticationConfig(AuthenticationConfig authenticationConfig) {
     	this.authenticationConfig = authenticationConfig;
     }
-    public OpenIDConfig getOpenIDConfig() {
-    	if(openIDConfig == null)
-    		return new OpenIDConfig(); // actor for default settings
-		return openIDConfig;
-	}
-	public void setOpenIDConfig(OpenIDConfig openidConfig) {
-		this.openIDConfig = openidConfig;
-	}
-	public HomePageConfig getHomePageConfig() {
+    public HomePageConfig getHomePageConfig() {
     	return homePageConfig;
     }
     public void setHomePageConfig(HomePageConfig homePageConfig) {
@@ -144,23 +98,6 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     public void setWeekendsAndHolidaysConfig(WeekendsAndHolidaysConfig weekendsAndHolidaysConfig) {
     	this.weekendsAndHolidaysConfig = weekendsAndHolidaysConfig;
     }
-
-    /**
-     * 
-     */
-	public NameCompletionSettings getNameCompletionSettings()
-	{
-    	return nameCompletionSettings;
-    }
-	
-	/**
-	 * 
-	 */
-    public void setNameCompletionSettings( NameCompletionSettings settings )
-    {
-    	this.nameCompletionSettings = settings;
-    }
-
     public boolean isMobileAccessEnabled() {
 		if (mobileAccessEnabled != null)
 			return mobileAccessEnabled.booleanValue();
@@ -258,88 +195,50 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     	this.mailConfig = mailConfig;
     }
     //simulate a workarea to support the zone wide rights and provide a workarea for the security code
-    @Override
-	public Long getWorkAreaId() {
+    public Long getWorkAreaId() {
     	return getZoneId();
     }
-    @Override
-	public String getWorkAreaType() {
-    	return WORKAREA_TYPE;
+    public String getWorkAreaType() {
+    	return EntityIdentifier.EntityType.zone.name();
     }
-    @Override
-	public WorkArea getParentWorkArea() {
+    public WorkArea getParentWorkArea() {
     	return null;
     }
-    @Override
-	public boolean isFunctionMembershipInheritanceSupported() {
+    public boolean isFunctionMembershipInheritanceSupported() {
     	return false;
     }
-    @Override
-	public boolean isFunctionMembershipInherited() {
-   	return false;
-   }
-  
-   @Override
-public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
-   	
-   }
-   @Override
-public boolean isExtFunctionMembershipInherited() {
-  	return false;
-  }
- 
-  @Override
-public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
-  	
-  }
-    @Override
-	public Long getOwnerId() {
-    	return null;
+     public boolean isFunctionMembershipInherited() {
+    	return false;
     }
-    @Override
-	public Principal getOwner() {
-    	return null;
-    }
-    @Override
-	public void setOwner(Principal owner) {
+   
+    public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
     	
     }
-     @Override
-	public boolean isTeamMembershipInherited() {
+    public Long getOwnerId() {
+    	return null;
+    }
+    public Principal getOwner() {
+    	return null;
+    }
+    public void setOwner(Principal owner) {
+    	
+    }
+     public boolean isTeamMembershipInherited() {
     	return false;
     }
-	@Override
 	public Set<Long> getTeamMemberIds() {
     	return new HashSet();
     }
-    @Override
-	public void setTeamMemberIds(Set<Long> memberIds) {
+    public void setTeamMemberIds(Set<Long> memberIds) {
     	
     }
-    @Override
-	public Set<Long> getChildWorkAreas() {
+    public Set<Long> getChildWorkAreas() {
     	return new HashSet();
     }
-    @Override
-	public boolean isAclExternallyControlled() {
-    	return Boolean.FALSE;
-    }
-    @Override
-	public List<WorkAreaOperation> getExternallyControlledRights() {
-    	return new ArrayList<WorkAreaOperation>();
-    }
-    @Override
-	public String getRegisteredRoleType() {
-    	return "";
-    }
-    
-/**
- * The following methods deal with the settings used by the desktop application (file sync app)
- */
     
 	public boolean getFsaEnabled() {
 		if(fsaEnabled == null)
-			return SPropsUtil.getBoolean("fsa.enabled.default", true);
+			return SPropsUtil.getBoolean("fsa.enabled.default", false);
 		else
 			return fsaEnabled.booleanValue();
 	}
@@ -364,318 +263,14 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	public void setFsaAutoUpdateUrl(String fsaAutoUpdateUrl) {
 		this.fsaAutoUpdateUrl = fsaAutoUpdateUrl;
 	}
-	public int getFsaMaxFileSize() {
+	public long getFsaMaxFileSize() {
 		if(fsaMaxFileSize == null)
-			return SPropsUtil.getInt( "fsa.max.file.size", 50 );
+			return SPropsUtil.getLong("fsa.max.file.size", 1073741824L);
 		else
 			return fsaMaxFileSize;
 	}
-	public void setFsaMaxFileSize( int fsaMaxFileSize) {
+	public void setFsaMaxFileSize(long fsaMaxFileSize) {
 		// In this version of Vibe, this field is NOT persisted to database. So, this method shouldn't be used.
 		this.fsaMaxFileSize = fsaMaxFileSize;
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getFsaAllowCachePwd()
-	{
-		if ( fsaAllowCachePwd == null )
-			return SPropsUtil.getBoolean( "fsa.allow.cache.pwd.default", true );
-		else
-			return fsaAllowCachePwd.booleanValue();
-	}
-	
-	/**
-	 * 
-	 */
-	public void setFsaAllowCachePwd( boolean allow )
-	{
-		fsaAllowCachePwd = Boolean.valueOf( allow );
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getFsaDeployEnabled()
-	{
-		if ( fsaDeployEnabled == null )
-			return SPropsUtil.getBoolean( "fsa.deploy.enabled.default", false );
-		else
-			return fsaDeployEnabled.booleanValue();
-	}
-	
-	/**
-	 * 
-	 */
-	public void setFsaDeployEnabled( boolean enabled )
-	{
-		fsaDeployEnabled = Boolean.valueOf( enabled );
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getFsaDeployLocalApps()
-	{
-		if ( fsaDeployLocalApps == null )
-			return SPropsUtil.getBoolean( "fsa.deploy.local.apps.default", false );
-		else
-			return fsaDeployLocalApps.booleanValue();
-	}
-	
-	/**
-	 * 
-	 */
-	public void setFsaDeployLocalApps( boolean deployLocalApps )
-	{
-		fsaDeployLocalApps = Boolean.valueOf( deployLocalApps );
-	}
-
-/**
- * End of methods dealing with desktop application
- */
-
-	
-	public boolean isExternalUserEnabled() {
-		if(externalUserEnabled == null)
-			return SPropsUtil.getBoolean("external.user.enabled.default", false);
-		else
-			return externalUserEnabled.booleanValue();
-	}
-	public void setExternalUserEnabled(boolean externalUserEnabled) {
-		this.externalUserEnabled = externalUserEnabled;
-	}
-	
-	public String getLocaleLanguage() {
-		if(localeLanguage != null)
-			return localeLanguage;
-		else
-			return SPropsUtil.getString("i18n.default.locale.language", "");
-	}
-	public void setLocaleLanguage(String localeLanguage) {
-		this.localeLanguage = localeLanguage;
-	}
-	
-	public String getLocaleCountry() {
-		if(localeCountry != null)
-			return localeCountry;
-		else
-			return SPropsUtil.getString("i18n.default.locale.country", "");
-	}
-	public void setLocaleCountry(String localeCountry) {
-		this.localeCountry = localeCountry;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean isAdHocFoldersEnabled()
-	{
-		if ( adHocFoldersEnabled == null )
-			return SPropsUtil.getBoolean( "adHoc.folders.enabled.default", false );
-		
-		return adHocFoldersEnabled.booleanValue();
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAdHocFoldersEnabled( boolean enabled )
-	{
-		adHocFoldersEnabled = Boolean.valueOf( enabled );
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean isDownloadEnabled()
-	{
-		if ( downloadEnabled == null )
-			return true;
-		
-		return downloadEnabled.booleanValue();
-	}
-	
-	/**
-	 * 
-	 */
-	public void setDownloadEnabled( boolean enabled )
-	{
-		downloadEnabled = Boolean.valueOf( enabled );
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean isWebAccessEnabled()
-	{
-		if ( webAccessEnabled == null )
-			return true;
-		
-		return webAccessEnabled.booleanValue();
-	}
-	
-	/**
-	 * 
-	 */
-	public void setWebAccessEnabled( boolean enabled )
-	{
-		webAccessEnabled = Boolean.valueOf( enabled );
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean isSharingWithLdapGroupsEnabled()
-	{
-		if ( allowShareWithLdapGroups == null )
-			return true;
-		
-		return allowShareWithLdapGroups.booleanValue();
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAllowShareWithLdapGroups( boolean allow )
-	{
-		allowShareWithLdapGroups = Boolean.valueOf( allow );
-	}
-	
-
-	public int getAuditTrailKeepDays() {
-		if (auditTrailKeepDays == null) {
-			if (Utils.checkIfFilr() || Utils.checkIfIPrint()) {
-				return SPropsUtil.getInt("default.table.purge.keep.days.audittrail.filr", 183);
-			} else {
-				return SPropsUtil.getInt("default.table.purge.keep.days.audittrail", 0);
-			}
-		} else {
-			return auditTrailKeepDays;
-		}
-	}
-	public void setAuditTrailKeepDays(int auditTrailKeepDays) {
-		this.auditTrailKeepDays = auditTrailKeepDays;
-	}
-	
-	public boolean isFileArchivingEnabled() {
-		if(fileArchivingEnabled == null) {
-			if (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe()) {
-				return true;
-			} else {
-				//Filr and iPrint (and kablink) do not archive anything
-				return false;
-			}
-		}
-		return fileArchivingEnabled;
-	}
-	public void setFileArchivingEnabled(boolean fileArchivingEnabled) {
-		this.fileArchivingEnabled = fileArchivingEnabled;
-	}
-	
-	public boolean isAuditTrailEnabled() {
-		if(auditTrailEnabled == null) {
-			//This has never bee set by the admin. So the default is different depending on the product
-			if (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe()) {
-				//Vibe installations do audit trailing by default
-				return true;
-			} else {
-				//Filr and iPrint systems will do audit trails by default but they get pruned to 183 days.
-				return true;
-			}
-		}
-		//Once this value has been set by the administrator, use that value from then on
-		return auditTrailEnabled;
-	}
-	public void setAuditTrailEnabled(boolean auditTrailEnabled) {
-		this.auditTrailEnabled = auditTrailEnabled;
-	}
-	
-	public int getChangeLogsKeepDays() {
-		if (changeLogsKeepDays == null) {
-			if (Utils.checkIfFilr() || Utils.checkIfIPrint()) {
-				return SPropsUtil.getInt("default.table.purge.keep.days.changelogs.filr", 183);
-			} else {
-				return SPropsUtil.getInt("default.table.purge.keep.days.changelogs", 0);
-			}
-		} else {
-			return changeLogsKeepDays;
-		}
-	}
-	public void setChangeLogsKeepDays(int changeLogsKeepDays) {
-		this.changeLogsKeepDays = changeLogsKeepDays;
-	}
-
-	public boolean isChangeLogEnabled() {
-		if(changeLogEnabled == null)
-			if (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe()) {
-				//Vibe installations do Change Logging by default
-				return true;
-			} else {
-				//Filr and iPrint systems don't do Change Logging by default.
-				return false;
-			}
-		return changeLogEnabled;
-	}
-	public void setChangeLogEnabled(boolean changeLogEnabled) {
-		this.changeLogEnabled = changeLogEnabled;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public MobileAppsConfig getMobileAppsConfig()
-	{
-		if ( mobileAppsConfig == null )
-			return new MobileAppsConfig();
-		
-		return mobileAppsConfig;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMobileAppsConfig( MobileAppsConfig config )
-	{
-		mobileAppsConfig = config;
-	}
-	
-	public boolean getJitsEnabled() {
-    	if(jitsEnabled == null)
-    		return true;
-    	else
-    		return jitsEnabled.booleanValue();
-	}
-	public void setJitsEnabled(boolean jitsEnabled) {
-		this.jitsEnabled = Boolean.valueOf(jitsEnabled);
-	}
-	
-	public long getJitsWaitTimeout() {
-		if(jitsWaitTimeout == null)
-			return SPropsUtil.getLong("nf.jits.wait.timeout", 15000L);
-		return jitsWaitTimeout;
-	}
-	public void setJitsWaitTimeout(long jitsWaitTimeout) {
-		this.jitsWaitTimeout = Long.valueOf(jitsWaitTimeout);
-	}
-	
-	/**
-	 * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType"
-	 * @return
-	 */
-	public String getShareListsBlob() {
-		return shareListsBlob;
-	}
-	protected void setShareListsBlob(String shareListsBlob) {
-		this.shareListsBlob = shareListsBlob;
-	}
-	
-	public ShareLists getShareLists() {
-		return ShareLists.parseShareListsBlob(getShareListsBlob());
-	}
-	public void setShareLists(ShareLists shareLists) {
-		setShareListsBlob(shareLists.getShareListsBlob());
 	}
 }

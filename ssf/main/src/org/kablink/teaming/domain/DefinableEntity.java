@@ -48,8 +48,6 @@ import org.kablink.teaming.comparator.FileAttachmentComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.CollectionUtil;
-import org.kablink.teaming.util.IconSize;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.util.WebHelper;
 
@@ -58,7 +56,7 @@ import org.kablink.teaming.web.util.WebHelper;
  * this class.
  *
  */
-public abstract class DefinableEntity extends BaseEntity {
+public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected String title=""; //initialized by hibernate access=field
     protected String normalTitle=""; 
     protected Description description;
@@ -90,12 +88,12 @@ public abstract class DefinableEntity extends BaseEntity {
     	//cannot copy events,customattribute and attachments, since they need a ownerId
     	
     }
-    
-    @Override
 	public EntityIdentifier getEntityIdentifier() {
 		if (entityIdentifier == null) entityIdentifier = new EntityIdentifier(getId(), getEntityType());
 		return entityIdentifier;
 	}
+	public abstract EntityIdentifier.EntityType getEntityType();
+
    	
     /**
      * @hibernate.component prefix="description_"
@@ -219,10 +217,7 @@ public abstract class DefinableEntity extends BaseEntity {
      * @hibernate.property length="64"
      */
     public String getIconName() {
-    	return Utils.getIconNameTranslated(this.iconName);
-    }
-    public String getIconName(IconSize size) {
-    	return Utils.getIconNameTranslated(this.iconName, size);
+    	return iconName;
     }
     public void setIconName(String iconName) {
     	this.iconName = iconName;
@@ -384,24 +379,6 @@ public abstract class DefinableEntity extends BaseEntity {
     }
     
     /**
-     * Return the number of FileAttachments.
-     * @return
-     */
-    public int getFileAttachmentsCount() {
-    	Set atts = getAttachments();
-    	int count = 0;
-    	Attachment att;
-    	for (Iterator iter=atts.iterator(); iter.hasNext();) {
-    		att = (Attachment)iter.next();
-    		//return only file attachments.  Version not in attachment list
-    		if (att instanceof FileAttachment) {
-    			count++;
-    		}
-    	}
-    	return count;
-    }
-    
-    /**
      * Returns a list of <code>FileAttachment</code> whose repository name
      * matches the argument. 
      * 
@@ -521,7 +498,6 @@ public abstract class DefinableEntity extends BaseEntity {
      */
     public CustomAttribute getCustomAttribute(String name) {
     	return (CustomAttribute)getCustomAttributes().get(name);
-
    }
     /**
      * Retrieve <code>CustomAttibute</code> by its id.
@@ -593,7 +569,7 @@ public abstract class DefinableEntity extends BaseEntity {
     	this.iCustomAttributes = iCustomAttributes;
     }
     
-    public String getEntityTypedId() {
+    public String getTypedId() {
     	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
     }
     /**

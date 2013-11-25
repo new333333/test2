@@ -33,7 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<ssf:ifNotFilr>
+
 <c:if test="${!ss_pseudoEntity}">
 <c:set var="i_rating" value="0"/>
 <c:if test="${!empty ssDefinitionEntry.averageRating.average}">
@@ -93,4 +93,4 @@
 </tr></tbody></table>
 </div>
 </c:if>
-</ssf:ifNotFilr>
+

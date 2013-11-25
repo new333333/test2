@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,37 +30,30 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.widgets;
+
+
 
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
-import org.kablink.teaming.gwt.client.GwtGroup;
-import org.kablink.teaming.gwt.client.GwtNameCompletionSettings;
-import org.kablink.teaming.gwt.client.GwtNameCompletionSettings.GwtDisplayField;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
-import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetNameCompletionSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -76,22 +69,21 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+
 /**
  * This widget will allow the user to type into a text field and will use what is typed to search Teaming for
  * the requested object type, entry, folder, etc.
- * 
  * @author jwootton
+ *
  */
 public class FindCtrl extends Composite
-	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler, KeyDownHandler
+	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler
 {
 	/**
 	 * This widget is used to hold an item from a search result.
@@ -106,114 +98,40 @@ public class FindCtrl extends Composite
 		 */
 		public SearchResultItemWidget( GwtTeamingItem item )
 		{
-			FlowPanel topPanel;
-			FlowPanel infoPanel;
-			FlexTable table;
+			FlowPanel panel;
 			Anchor anchor;
-			String imgUrl;
+			InlineLabel secondaryText;
 			
 			m_item = item;
 			
-			topPanel = new FlowPanel();
-			topPanel.addStyleName( "findSearchResultItemWidget" );
-			
-			table = new FlexTable();
-			table.getCellFormatter().setVerticalAlignment( 0, 0, HasVerticalAlignment.ALIGN_TOP );
-			table.getCellFormatter().setVerticalAlignment( 0, 1, HasVerticalAlignment.ALIGN_TOP );
-			topPanel.add( table );
-			
-			// Is this a group?
-			if ( item instanceof GwtGroup )
-			{
-				// Yes
-				imgUrl = GwtTeaming.getFilrImageBundle().filrGroup48().getSafeUri().asString();
-			}
-			else
-			{
-				// Get the image associated with the item.
-				imgUrl = item.getImageUrl();
-			}
-			
-			// Does this item have an image associated with it?
-			if ( imgUrl != null && imgUrl.length() > 0 )
-			{
-				Image img;
-				
-				// Yes
-				img = new Image( imgUrl );
-				img.setHeight( "20px" );
-				img.setWidth( "20px" );
-				table.setWidget( 0, 0, img );
-			}
-
-			infoPanel = new FlowPanel();
-			infoPanel.getElement().getStyle().setMarginLeft( 4, Unit.PX );
-			table.setWidget( 0, 1, infoPanel );
+			panel = new FlowPanel();
+			panel.addStyleName( "findSearchResultItemWidget" );
 			
 			// Add the name of the item as an anchor.
-			{
-				String name;
-				
-				name = item.getShortDisplayName();
-				if ( item instanceof GwtGroup )
-				{
-					GwtDisplayField field;
-					
-					// What field are we supposed to use as the primary display?
-					field = m_nameCompletionSettings.getGroupPrimaryDisplayField();
-					if ( field == GwtDisplayField.NAME )
-						name = item.getShortDisplayName();
-					else if ( field == GwtDisplayField.TITLE )
-						name = item.getTitle();
-				}
-				
-				anchor = new Anchor( name );
-				anchor.setWordWrap( false );
-				anchor.addStyleName( "noTextDecoration" );
-				anchor.addStyleName( "bold" );
-				infoPanel.add( anchor );
-			}
+			anchor = new Anchor( item.getShortDisplayName() );
+			anchor.setWordWrap( false );
+			anchor.addStyleName( "noTextDecoration" );
+			anchor.addStyleName( "bold" );
+			panel.add( anchor );
 			
 			// Add any additional information about this item.
+			String secondaryDisplayText = item.getSecondaryDisplayText();
+			if (GwtClientHelper.hasString( secondaryDisplayText ))
 			{
-				String secondaryDisplayText;
-				
-				secondaryDisplayText = item.getSecondaryDisplayText();
-				if ( item instanceof GwtGroup )
-				{
-					GwtDisplayField field;
-					GwtGroup group;
-					
-					group = (GwtGroup) item;
-					
-					// What field are we supposed to use for the secondary info?
-					field = m_nameCompletionSettings.getGroupSecondaryDisplayField();
-					if ( field == GwtDisplayField.FQDN )
-						secondaryDisplayText = group.getDn();
-					else if ( field == GwtDisplayField.DESCRIPTION )
-						secondaryDisplayText = group.getDesc();
-				}
-				
-				if ( GwtClientHelper.hasString( secondaryDisplayText ) )
-				{
-					Label secondaryText;
-	
-					secondaryText = new Label( secondaryDisplayText );
-					secondaryText.addStyleName( "fontSize75em" );
-					secondaryText.setWordWrap( false );
-					infoPanel.add( secondaryText );
-				}
+				secondaryText = new InlineLabel( secondaryDisplayText );
+				secondaryText.addStyleName( "fontSize75em" );
+				secondaryText.setWordWrap( false );
+				panel.add( secondaryText );
 			}
-
+			
 			// All composites must call initWidget() in their constructors.
-			initWidget( topPanel );
+			initWidget( panel );
 		}// end SearchResultItemWidget()
 		
 		
 		/**
 		 * 
 		 */
-		@Override
 		public HandlerRegistration addClickHandler( ClickHandler handler )
 		{
 			return addDomHandler( handler, ClickEvent.getType() );
@@ -227,31 +145,6 @@ public class FindCtrl extends Composite
 		{
 			return m_item;
 		}// end getTeamingItem()
-		
-		/**
-		 * 
-		 */
-		public void turnHighlightOff()
-		{
-			Widget widget;
-			
-			widget = getWidget();
-			if ( widget != null )
-				widget.removeStyleName( "findSearchResultItemWidget_HighlightOn" );
-		}
-
-		/**
-		 * 
-		 */
-		public void turnHighlightOn()
-		{
-			Widget widget;
-			
-			widget = getWidget();
-			if ( widget != null )
-				widget.addStyleName( "findSearchResultItemWidget_HighlightOn" );
-		}
-		
 	}// end SearchResultItemWidget
 	
 	
@@ -271,7 +164,6 @@ public class FindCtrl extends Composite
 		private FlowPanel m_searchingPanel;
 		private int m_searchCountTotal = 0;	// Total number of items found by a search.
 		private int m_displayCount = 0;		// Total number of items currently being displayed from a search.
-		private int m_indexOfHighlightedItem = -1;
 		
 		
 		/**
@@ -303,8 +195,6 @@ public class FindCtrl extends Composite
 			// Create the footer
 			footer = createFooter();
 			m_mainPanel.add( footer );
-
-			m_nameCompletionSettings = new GwtNameCompletionSettings();
 
 			// All composites must call initWidget() in their constructors.
 			initWidget( m_mainPanel );
@@ -342,7 +232,6 @@ public class FindCtrl extends Composite
 			// Clear any results we may be currently displaying.
 			clearCurrentContent();
 			
-			m_indexOfHighlightedItem = -1;
 			m_displayCount = 0;
 			m_searchCountTotal = searchResults.getCountTotal();
 			results = searchResults.getResults();
@@ -487,60 +376,6 @@ public class FindCtrl extends Composite
 			return panel;
 		}// end createFooter()
 		
-		/**
-		 * 
-		 */
-		public SearchResultItemWidget getHightlightedItem()
-		{
-			Widget widget;
-			
-			if ( m_indexOfHighlightedItem == -1 )
-				return null;
-			
-			widget = m_contentPanel.getWidget( m_indexOfHighlightedItem );
-			if ( widget != null && widget instanceof SearchResultItemWidget )
-				return (SearchResultItemWidget) widget;
-			
-			return null;
-		}
-
-		/**
-		 * Issue an rpc request to get the name completion settings from the server.
-		 */
-		private void getNameCompletionSettingsFromServer()
-		{
-			GetNameCompletionSettingsCmd cmd;
-
-			// Execute a GWT RPC command asking the server for the name completion settings
-			cmd = new GetNameCompletionSettingsCmd();
-			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-			{
-				@Override
-				public void onFailure( Throwable t )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-												t,
-												GwtTeaming.getMessages().rpcFailure_GetNameCompletionSettings() );
-				}
-				
-				@Override
-				public void onSuccess( VibeRpcResponse response )
-				{
-					if ( response.getResponseData() != null && response.getResponseData() instanceof GwtNameCompletionSettings )
-					{
-						m_nameCompletionSettings = (GwtNameCompletionSettings) response.getResponseData();
-					}
-				}
-			});
-		}
-		
-		/**
-		 * 
-		 */
-		public int getNumResults()
-		{
-			return m_displayCount;
-		}
 		
 		/**
 		 * Hide the "Searching..." text.
@@ -552,138 +387,24 @@ public class FindCtrl extends Composite
 		
 		
 		/**
-		 * Highlight the next item in the list.
-		 */
-		public void highlightNextItem()
-		{
-			Widget widget;
-			
-			if ( m_displayCount == 0 )
-				return;
-
-			// Is there an item that is currently highlighted
-			if ( m_indexOfHighlightedItem != -1 )
-			{
-				// Yes
-				// Is there another item in the list?
-				if ( (m_indexOfHighlightedItem + 1) < m_displayCount )
-				{
-					// Yes
-					// unhighlight the currently highlighted item.
-					widget = m_contentPanel.getWidget( m_indexOfHighlightedItem );
-					
-					if ( widget != null && widget instanceof SearchResultItemWidget )
-					{
-						SearchResultItemWidget searchResultWidget;
-						
-						searchResultWidget = (SearchResultItemWidget) widget;
-						searchResultWidget.turnHighlightOff();
-					}
-					
-					++m_indexOfHighlightedItem;
-				}
-			}
-			else
-				m_indexOfHighlightedItem = 0;
-			
-			widget = m_contentPanel.getWidget( m_indexOfHighlightedItem );
-			if ( widget != null && widget instanceof SearchResultItemWidget )
-			{
-				SearchResultItemWidget searchResultWidget;
-				
-				searchResultWidget = (SearchResultItemWidget) widget;
-				searchResultWidget.turnHighlightOn();
-				
-				searchResultWidget.getElement().scrollIntoView();
-			}
-		}
-		
-		/**
-		 * Highlight the previous item in the list.
-		 */
-		public void highlightPreviousItem()
-		{
-			Widget widget;
-			
-			if ( m_displayCount == 0 )
-				return;
-
-			// Is there an item that is currently highlighted
-			if ( m_indexOfHighlightedItem != -1 )
-			{
-				// Yes
-				// Is there a previous item in the list?
-				if ( (m_indexOfHighlightedItem - 1) >= 0 )
-				{
-					// Yes
-					// unhighlight the currently highlighted item.
-					widget = m_contentPanel.getWidget( m_indexOfHighlightedItem );
-					
-					if ( widget != null && widget instanceof SearchResultItemWidget )
-					{
-						SearchResultItemWidget searchResultWidget;
-						
-						searchResultWidget = (SearchResultItemWidget) widget;
-						searchResultWidget.turnHighlightOff();
-					}
-					
-					--m_indexOfHighlightedItem;
-				}
-			}
-			else
-				m_indexOfHighlightedItem = 0;
-			
-			widget = m_contentPanel.getWidget( m_indexOfHighlightedItem );
-			if ( widget != null && widget instanceof SearchResultItemWidget )
-			{
-				SearchResultItemWidget searchResultWidget;
-				
-				searchResultWidget = (SearchResultItemWidget) widget;
-				searchResultWidget.turnHighlightOn();
-
-				searchResultWidget.getElement().scrollIntoView();
-			}
-		}
-		
-		/**
-		 * 
-		 */
-		@Override
-		public void onAttach()
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			super.onAttach();
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					// Issue an rpc request to get the name completion settings from the server
-					getNameCompletionSettingsFromServer();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-		
-		/**
 		 * This method gets called when the user clicks on an item from the list of search results.
 		 */
-		@Override
 		public void onClick( ClickEvent clickEvent )
 		{
+			GwtTeamingItem selectedItem;
+			
 			// Get the item selected by the user.
 			if ( clickEvent.getSource() instanceof SearchResultItemWidget )
 			{
 				SearchResultItemWidget tmp;
-				final GwtTeamingItem selectedItem;
 				
 				tmp = (SearchResultItemWidget) clickEvent.getSource();
 				selectedItem = tmp.getTeamingItem();
-
-				// Put the selected item into affect.
-				setSelectedItemAsync( selectedItem );
+				
+				// Update the text box with name of the selected item.
+				updateTextBoxWithSelectedItem( selectedItem );
+				
+				GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
 			}
 		}// end onClick()
 		
@@ -709,7 +430,7 @@ public class FindCtrl extends Composite
 			width = m_mainPanel.getOffsetWidth();
 			x = (width - m_searchingPanel.getOffsetWidth()) / 2;
 			x -= 40;
-			m_searchingPanel.getElement().getStyle().setLeft( x, Unit.PX );
+			DOM.setStyleAttribute( m_searchingPanel.getElement(), "left", Integer.toString( x ) + "px" );
 			
 			// Show the "searching..." text
 			m_searchingPanel.setVisible( true );
@@ -731,11 +452,8 @@ public class FindCtrl extends Composite
 	private FlowPanel m_scopePanel;
 	private RadioButton m_searchSiteRb;
 	private RadioButton m_searchBinderRb;
-	private Widget m_containerWidget;
-	private GwtNameCompletionSettings m_nameCompletionSettings;
-
 	private static int m_count = 0;
-
+	private Widget m_containerWidget;
 	
 	/*
 	 * Note that the class constructor is private to facilitate code
@@ -744,7 +462,7 @@ public class FindCtrl extends Composite
 	 */
 	private FindCtrl(
 		Widget containerWidget,
-		SearchType searchType,
+		GwtSearchCriteria.SearchType searchType,
 		int visibleLength )
 	{
 		m_containerWidget = containerWidget;
@@ -779,12 +497,12 @@ public class FindCtrl extends Composite
 			// Add a click handler for the "search entire site" rb
 			clickHandler = new ClickHandler()
 			{
-				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
-					GwtClientHelper.deferCommand( new ScheduledCommand()
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						@Override
 						public void execute()
 						{
 							// Set the search scope to "search entire site"
@@ -793,7 +511,8 @@ public class FindCtrl extends Composite
 							// Hide the search results.
 							hideSearchResults();
 						}
-					} );
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 			m_searchSiteRb.addClickHandler( clickHandler );
@@ -808,12 +527,12 @@ public class FindCtrl extends Composite
 			// Add a click handler for the "search current folder/workspace" rb
 			clickHandler = new ClickHandler()
 			{
-				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
-					GwtClientHelper.deferCommand( new ScheduledCommand()
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						@Override
 						public void execute()
 						{
 							// Set the search scope to "search local"
@@ -822,7 +541,8 @@ public class FindCtrl extends Composite
 							// Hide the search results.
 							hideSearchResults();
 						}
-					} );
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 			m_searchBinderRb.addClickHandler( clickHandler );
@@ -834,21 +554,12 @@ public class FindCtrl extends Composite
 		m_txtBox = new TextBox();
 		m_txtBox.setVisibleLength( visibleLength );
 		m_txtBox.addKeyUpHandler( this );
-		m_txtBox.addKeyDownHandler( this );
 		mainPanel.add( m_txtBox );
 		
 		// Create a widget where the search results will live.
-		{
-			FlowPanel searchResultsPanel;
-			
-			searchResultsPanel = new FlowPanel();
-			searchResultsPanel.addStyleName( "findSearchResultsPanel" );
-			mainPanel.add( searchResultsPanel );
-			
-			m_searchResultsWidget = new SearchResultsWidget();
-			searchResultsPanel.add( m_searchResultsWidget );
-			hideSearchResults();
-		}
+		m_searchResultsWidget = new SearchResultsWidget();
+		hideSearchResults();
+		mainPanel.add( m_searchResultsWidget );
 		
 		// Add handlers that will be called when the user clicks on the "previous" or "next" images.
 		m_searchResultsWidget.addClickHandlerOnPrevImg( this );
@@ -864,7 +575,6 @@ public class FindCtrl extends Composite
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure(Throwable t)
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -879,7 +589,6 @@ public class FindCtrl extends Composite
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtSearchResults gwtSearchResults;
@@ -1044,22 +753,18 @@ public class FindCtrl extends Composite
 		int height;
 		
 		// Get the position and dimensions of this control.
-		left = m_searchResultsWidget.getAbsoluteLeft();
-		top = m_searchResultsWidget.getAbsoluteTop();
-		height = m_searchResultsWidget.getOffsetHeight();
-		width = m_searchResultsWidget.getOffsetWidth();
+		left = getAbsoluteLeft();
+		top = getAbsoluteTop();
+		height = getOffsetHeight();
+		width = getOffsetWidth();
 		
 		// Factor scrolling into the mouse position.
 		mouseY += Window.getScrollTop();
 		mouseX += Window.getScrollLeft();
 		
-		//GWT.log( "left: " + left + " top: " + top + " height: " + height + " width: " + width + " mouseY: " + mouseY + " mouseX: " + mouseX, null );
-
 		// Is the mouse over this control?
 		if ( mouseY >= top && mouseY <= (top + height) && mouseX >= left && (mouseX <= left + width) )
 			return true;
-		
-		//GWT.log( "isMouseOver() about to return false", null );
 		
 		return false;
 	}// end isMouseOver()
@@ -1068,7 +773,6 @@ public class FindCtrl extends Composite
 	/**
 	 * This method gets called when the user clicks on the "previous" or "next" image in the search results window.
 	 */
-	@Override
 	public void onClick( ClickEvent clickEvent )
 	{
 		// If there is already a search in progress, ignore the click.
@@ -1107,89 +811,13 @@ public class FindCtrl extends Composite
 
 	
 	/**
-	 * Handles the KeyDownEvent
-	 */
-	@Override
-	public void onKeyDown( KeyDownEvent event )
-	{
-		// Does the search results widget have any results?
-		if ( m_searchResultsWidget.getNumResults() == 0 )
-		{
-			// No
-			return;
-		}
-		
-		if ( event.isDownArrow() )
-		{
-			// Yes
-			m_searchResultsWidget.highlightNextItem();
-		}
-		else if ( event.isUpArrow() )
-		{
-			m_searchResultsWidget.highlightPreviousItem();
-		}
-		else
-		{
-	        int keyCode;
-
-	        // Get the key the user pressed
-	        keyCode = event.getNativeEvent().getKeyCode();
-
-	        // Did the user press Enter?
-	        if ( keyCode == KeyCodes.KEY_ENTER )
-	        {
-	        	SearchResultItemWidget highlightedItem;
-	        	
-				// Yes
-	        	// Is there a search result item that is highlighted?
-	        	highlightedItem = m_searchResultsWidget.getHightlightedItem();
-	        	if ( highlightedItem != null )
-	        	{
-					// Yes
-					// Kill the keystroke.
-		        	event.stopPropagation();
-		        	event.preventDefault();
-		        	
-		        	// Close the search results panel
-		        	hideSearchResults();
-	        		
-	        		// Put the selected item into affect.
-					setSelectedItemAsync( highlightedItem.getTeamingItem() );
-	        	}
-	        }
-		}
-	}
-	
-	/**
 	 * Handles the KeyUpEvent
 	 */
-	@Override
 	public void onKeyUp( KeyUpEvent event )
 	{
 		String tmp;
-        int keyCode;
-
-        // Get the key the user pressed
-        keyCode = event.getNativeEvent().getKeyCode();
-
-        // Did the user press Enter?
-        if ( keyCode == KeyCodes.KEY_ENTER )
-        {
-        	SearchResultItemWidget highlightedItem;
-        	
-			// Yes
-        	// Is there a search result item that is highlighted?
-        	highlightedItem = m_searchResultsWidget.getHightlightedItem();
-        	if ( highlightedItem != null )
-        	{
-				// Yes
-	        	event.stopPropagation();
-	        	event.preventDefault();
-	        	return;
-        	}
-        }
-
-        // Get the search criteria the user entered.
+		
+		// Get the search criteria the user entered.
 		tmp = m_txtBox.getText();
 		
 		// Did the search string change?
@@ -1218,7 +846,6 @@ public class FindCtrl extends Composite
 	/**
 	 * 
 	 */
-	@Override
 	public void onPreviewNativeEvent( Event.NativePreviewEvent previewEvent )
 	{
 		int eventType;
@@ -1258,13 +885,6 @@ public class FindCtrl extends Composite
 		}
 	}// end onPreviewNativeEvent()
 	
-	/**
-	 * 
-	 */
-	public void setContainerWidget( Widget containerWidget )
-	{
-		m_containerWidget = containerWidget;
-	}
 	
 	/**
 	 * 
@@ -1295,75 +915,17 @@ public class FindCtrl extends Composite
 		m_searchCriteria.setFoldersOnly( value );
 	}// end setSearchForFoldersOnly()
 
-	/**
-	 * Set when searching for principals, should we search for external principals.
-	 */
-	public void setSearchForExternalPrincipals( boolean external )
-	{
-		m_searchCriteria.setSearchForExternalPrincipals( external );
-	}
-	
-	/**
-	 * Set when searching for principals, should we search for internal principals.
-	 */
-	public void setSearchForInternalPrincipals( boolean internal )
-	{
-		m_searchCriteria.setSearchForInternalPrincipals( internal );
-	}
-	
-	/**
-	 * Set when searching for principals, should we include ldap groups.
-	 */
-	public void setSearchForLdapGroups( boolean search )
-	{
-		m_searchCriteria.setSearchForLdapGroups( search );
-	}
 	
 	/**
 	 * Sets the search type of the search being done.
 	 * 
 	 * @param searchType
 	 */
-	public void setSearchType( SearchType searchType )
+	public void setSearchType( GwtSearchCriteria.SearchType searchType )
 	{
 		m_searchCriteria.setSearchType( searchType );
 	}// end setSearchType()
-
 	
-	/**
-	 * Returns the current search type.
-	 * 
-	 * @return
-	 */
-	public SearchType getSearchType()
-	{
-		return m_searchCriteria.getSearchType();
-	}// end getSearchType()
-
-	
-	/*
-	 * Sets the selected item in the FindCtrl.
-	 */
-	private void setSelectedItemAsync( final GwtTeamingItem selectedItem )
-	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
-			@Override
-			public void execute() 
-			{
-				setSelectedItemNow( selectedItem );
-			}
-		} );
-	}
-	
-	/*
-	 * Sets the selected item in the FindCtrl.
-	 */
-	private void setSelectedItemNow( GwtTeamingItem selectedItem )
-	{
-		updateTextBoxWithSelectedItem( selectedItem );
-		GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
-	}
 	
 	/**
 	 * Show the search results. 
@@ -1375,58 +937,28 @@ public class FindCtrl extends Composite
 		m_searchResultsWidget.setVisible( true );
 	}// end showSearchResults()
 	
-	
-	/*
-	 * Update the text box with the name of the selected item.
-	 */
-	private void updateTextBoxWithSelectedItem( GwtTeamingItem selectedItem )
-	{
-		String name;
-
-		// Get the name of the selected item.
-		name = selectedItem.getShortDisplayName();
-		
-		// Put the name of the selected item in the text box.
-		m_txtBox.setText( name );
-		
-		// Put the focus in the text box.
-		m_txtBox.setFocus( true );
-	}// end updateTextBoxWithSelectedItem()
-
-
-	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-	/* The following code is used to load the split point containing */
-	/* the FindCtrl and perform some operation on it.                */
-	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-	
 	/**
 	 * Callback interface to interact with the find control
 	 * asynchronously after it loads. 
 	 */
-	public interface FindCtrlClient
-	{
-		void onSuccess( FindCtrl findCtrl );
+	public interface FindCtrlClient {
+		void onSuccess(FindCtrl findCtrl);
 		void onUnavailable();
-	}// FindCtrlClient
-
+	}
 
 	/*
 	 * Asynchronously loads the TagThisDialog and performs some
 	 * operation against the code.
 	 */
 	private static void doAsyncOperation(
-		// Prefetch parameters.
-		final FindCtrlClient	findCtrlClient,
-		final boolean			prefetch,	// true -> Only a prefetch is performed. 
+		// Prefetch parameters.  If true, only a prefetch is performed.
+		final FindCtrlClient findCtrlClient,
+		final boolean prefetch,
 		
 		// Creation parameters.
-		final Widget		containerWidget,
-		final SearchType	searchType,
-		final int			visibleLength,
-		
-		// Set selected item parameters.
-		final FindCtrl			findCtrl,
-		final GwtTeamingItem	selectedItem)
+		final Widget containerWidget,
+		final GwtSearchCriteria.SearchType searchType,
+		final int visibleLength )
 	{
 		loadControl1(
 			// Prefetch parameters.
@@ -1436,14 +968,9 @@ public class FindCtrl extends Composite
 			// Creation parameters.
 			containerWidget,
 			searchType,
-			visibleLength,
-			
-			// Set selected item parameters.
-			findCtrl,
-			selectedItem );
+			visibleLength );				
 	}// end doAsyncOperation()
-
-
+	
 	/*
 	 * Various control loaders used to load the split points containing
 	 * the code for the controls in the find control.
@@ -1451,18 +978,14 @@ public class FindCtrl extends Composite
 	 * Load the split point for the FindCtrl.
 	 */
 	private static void loadControl1(
-		// Prefetch parameters.
-		final FindCtrlClient	findCtrlClient,
-		final boolean			prefetch,	// true -> Only a prefetch is performed.
+		// Prefetch parameters.  If true, only a prefetch is performed.
+		final FindCtrlClient findCtrlClient,
+		final boolean prefetch,
 		
 		// Creation parameters.
-		final Widget		containerWidget,
-		final SearchType	searchType,
-		final int			visibleLength,
-		
-		// Set selected item parameters.
-		final FindCtrl			findCtrl,
-		final GwtTeamingItem	selectedItem )
+		final Widget containerWidget,
+		final GwtSearchCriteria.SearchType searchType,
+		final int visibleLength )
 	{
 		GWT.runAsync( FindCtrl.class, new RunAsyncCallback()
 		{			
@@ -1477,11 +1000,7 @@ public class FindCtrl extends Composite
 					// Creation parameters.
 					containerWidget,
 					searchType,
-					visibleLength,
-					
-					// Set selected item parameters.
-					findCtrl,
-					selectedItem );
+					visibleLength );
 			}// end onSuccess()
 			
 			@Override
@@ -1492,51 +1011,26 @@ public class FindCtrl extends Composite
 			}// end onFailure()
 		} );
 	}// end doAsyncOperation()
-
-
+		
 	/*
 	 * Finishes the initialization of the FindCtrl object.
 	 */
 	private static void initFindCtrl_Finish(
-		// Prefetch parameters.
-		final FindCtrlClient	findCtrlClient,
-		final boolean			prefetch,	// true -> only a prefetch is performed.
+		// Prefetch parameters.  If true, only a prefetch is performed.
+		final FindCtrlClient findCtrlClient,
+		final boolean prefetch,
 		
 		// Creation parameters.
-		final Widget		containerWidget,
-		final SearchType	searchType,
-		final int			visibleLength,
-		
-		// Set selected item parameters.
-		final FindCtrl			findCtrl,
-		final GwtTeamingItem	selectedItem )
+		final Widget containerWidget,
+		final GwtSearchCriteria.SearchType searchType,
+		final int visibleLength )
 	{
-		FindCtrl reply;
-		if ( prefetch )
-		{
-			// Operation:  Prefetch.
-			reply = null;
-		}
-		else if ( null != findCtrl )
-		{
-			// Operation:  Set selected item.
-			reply = findCtrl;
-			findCtrl.setSelectedItemAsync( selectedItem );
-		}
-		else
-		{
-			// Operation:  Create.
-			reply = new FindCtrl( containerWidget, searchType, visibleLength );
-		}
-		
-		// If we have a FindCtrlClient...
-		if ( null != findCtrlClient )
-		{
-			// ...call its success handler.
-			findCtrlClient.onSuccess( reply );
-		}
+		FindCtrl findCtrl;
+		if (prefetch)
+		     findCtrl = null;
+		else findCtrl = new FindCtrl( containerWidget, searchType, visibleLength );
+		findCtrlClient.onSuccess( findCtrl );
 	}// end initFindCtrl_Finish()
-
 
 	/**
 	 * Loads the FindCtrl split point and returns an instance of it
@@ -1547,46 +1041,37 @@ public class FindCtrl extends Composite
 	 * @param findCtrlClient
 	 */
 	public static void createAsync(
-		final Widget			containerWidget,
-		final SearchType		searchType,
-		final int				visibleLength,
-		final FindCtrlClient	findCtrlClient )
+		final Widget containerWidget,
+		final GwtSearchCriteria.SearchType searchType,
+		final int visibleLength,
+		final FindCtrlClient findCtrlClient )
 	{
 		doAsyncOperation(
-			// Prefetch parameters.
+			// Prefetch parameters.  false -> Not a prefetch.
 			findCtrlClient,
-			false,	// false -> Not a prefetch.
+			false,
 			
 			// Required creation parameters.
 			containerWidget,
 			searchType,
-			visibleLength,
-			
-			// Set selected item parameters.
-			null,
-			null );
+			visibleLength );
 	}// end createAsync()
 	
 	public static void createAsync(
-		final Widget			containerWidget,
-		final SearchType		searchType,
-		final FindCtrlClient	findCtrlClient )
+		final Widget containerWidget,
+		final GwtSearchCriteria.SearchType searchType,
+		final FindCtrlClient findCtrlClient )
 	{
 		doAsyncOperation(
-			// Prefetch parameters.
+			// Prefetch parameters.  false -> Not a prefetch.
 			findCtrlClient,
-			false,	// false -> Not a prefetch.
+			false,
 			
-			// Creation parameters.
+			// Required creation parameters.
 			containerWidget,
 			searchType,
-			40,
-			
-			// Set selected item parameters.
-			null,
-			null );
+			40 );
 	}// end createAsync()
-
 
 	/**
 	 * Causes the split point for the FindCtrl to be fetched.
@@ -1614,47 +1099,32 @@ public class FindCtrl extends Composite
 		}
 		
 		doAsyncOperation(
-			// Prefetch parameters.
+			// Prefetch parameters.  true -> Prefetch only.
 			findCtrlClient,
-			true,	// true -> Only a prefetch is performed.
+			true,
 			
-			// Creation parameters.
+			// Creation parameters ignore.
 			null,
 			null,
-			-1,
-			
-			// Set selected item parameters.
-			null,
-			null );
+			-1 );
 	}// end prefetch()
 	
 	public static void prefetch()
 	{
-		// Always use the initial form of the method.
 		prefetch( null );
 	}// end prefetch()
-
 	
 	/**
-	 * Sets the selected item in the FindCtrl.
-	 * 
-	 * @param findCtrl
-	 * @param selectedItem
+	 * Update the text box with the name of the selected item.
 	 */
-	public static void setSelectedItem( FindCtrl findCtrl, GwtTeamingItem selectedItem )
+	private void updateTextBoxWithSelectedItem( GwtTeamingItem selectedItem )
 	{
-		doAsyncOperation(
-			// Prefetch parameters.
-			null,
-			false,	// false -> Not a prefetch.
-			
-			// Creation parameters.
-			null,
-			null,
-			-1,
-			
-			// Set selected item parameters.
-			findCtrl,
-			selectedItem );
-	}// end setSelectedItem()
+		String name;
+
+		// Get the name of the selected item.
+		name = selectedItem.getShortDisplayName();
+		
+		// Put the name of the selected item in the text box.
+		m_txtBox.setText( name );
+	}
 }// end FindCtrl

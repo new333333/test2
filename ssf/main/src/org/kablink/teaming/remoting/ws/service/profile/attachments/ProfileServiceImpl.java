@@ -39,7 +39,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.EmptyInputData;
-import org.kablink.teaming.remoting.ws.RemotingException;
+import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.attachments.AttachmentsHelper;
 import org.kablink.teaming.remoting.ws.util.attachments.CalendarHelper;
 import org.kablink.util.Validator;

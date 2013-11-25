@@ -58,22 +58,6 @@
 //If you need to change a translated string in the advanced theme langs, do it as follows
 function ss_addLanguageChanges() {
 	tinyMCE.addI18n('${ss_user_lang}.advanced',{
-		<c:if test="${ss_user_lang == 'zh'}">
-			hr_desc : "\u63D2\u5165\u6C34\u5E73\u7EBF",
-			link_desc : "\u63D2\u5165/\u7F16\u8F91\u8FDE\u7ED3",
-			unlink_desc : "\u53D6\u6D88\u8FDE\u7ED3",
-			backcolor_desc : "\u9009\u62E9\u80CC\u666F\u989C\u8272",
-			more_colors : "\u66F4\u591A\u989C\u8272",
-			undo_desc : "\u8FD8\u539F (Ctrl+Z)",
-			sub_desc : "\u4E0B\u6807",
-			sup_desc : "\u4E0A\u6807",
-			striketrough_desc : "\u5220\u9664\u7EBF",
-			charmap_desc : "\u63D2\u5165\u7279\u6B8A\u7B26\u53F7",
-			removeformat_desc : "\u6E05\u9664\u6837\u5F0F",
-			anchor_desc : "\u63D2\u5165/\u7F16\u8F91\u951A\u70B9",
-			cleanup_desc : "\u6E05\u9664\u591A\u4F59\u4EE3\u7801",
-			image_desc : "\u63D2\u5165/\u7F16\u8F91\u56FE\u7247",
-		</c:if>
 		font_size : "<ssf:nlt tag="tinyMce.font_size" text="Font size"/>",
 		fontdefault : "<ssf:nlt tag="tinyMce.font_family" text="Font family"/>",
 		paragraph : "<ssf:nlt tag="tinyMce.paragraph" text="paragraph"/>",
@@ -100,29 +84,5 @@ function ss_addLanguageChanges() {
 		justifyfull_desc : "<ssf:nlt tag="tinyMce.justifyfull_desc" text="Align full"/>",
 		code_desc : "<ssf:nlt tag="tinyMce.code_desc" text="Edit HTML Source"/>"
 		});
-	
-	<c:if test="${ss_user_lang == 'zh'}">
-	    tinyMCE.addI18n({zh:{
-			paste:{
-				paste_text_desc:"\u7EAF\u6587\u672C\u7C98\u8D34",
-				paste_word_desc:"\u4ECEWord\u7C98\u8D34"
-			},
-			ss_addimage:{
-				image_desc : "\u63D2\u5165/\u7F16\u8F91\u56FE\u7247"
-			},
-			advimage:{
-				image_desc : "\u63D2\u5165/\u7F16\u8F91\u56FE\u7247"
-			},
-			table:{
-				split_cells_desc:"\u5206\u5272\u5355\u5143\u683C",
-				merge_cells_desc:"\u5408\u5E76\u5355\u5143\u683C",
-				row_desc:"\u884C\u5C5E\u6027",
-				cell_desc:"\u5355\u5143\u683C\u5C5E\u6027"
-				}
-		  }});
-	    tinyMCE.addI18n('zh',{
-	    	more_colors : "\u66F4\u591A\u989C\u8272"
-	    	});
-	</c:if>
 }
 </script>

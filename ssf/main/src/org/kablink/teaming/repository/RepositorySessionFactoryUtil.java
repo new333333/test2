@@ -36,17 +36,12 @@ import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.fi.connection.ResourceDriverManager;
-import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.repository.archive.ArchiveStore;
 import org.kablink.teaming.repository.fi.FIRepositorySessionFactoryAdapter;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SpringContextUtil;
 
 
 public class RepositorySessionFactoryUtil {
-	private static AdminModule adminModule = (AdminModule) SpringContextUtil.getBean("adminModule");
 
 	public static RepositorySessionFactory getRepositorySessionFactory
 		(String repositoryName) throws RepositoryServiceException {
@@ -60,27 +55,23 @@ public class RepositorySessionFactoryUtil {
 		return factory;
 	}
 	
-	public static RepositorySession openSession(String repositoryName, String resourceDriverName, ResourceDriverManager.FileOperation fileOperation, DefinableEntity ... entitiesToCheckPermissionOn) 
+	public static RepositorySession openSession(Binder binder, String repositoryName) 
 	throws RepositoryServiceException, UncheckedIOException {
 		RepositorySessionFactory factory = getRepositorySessionFactory(repositoryName);
 		
-		if(factory instanceof FIRepositorySessionFactoryAdapter) {
-			if(resourceDriverName == null)
-				throw new IllegalArgumentException("Resource driver name must be specified when accessing mirrored folder");
-			return ((FIRepositorySessionFactoryAdapter) factory).openSession(resourceDriverName, fileOperation, entitiesToCheckPermissionOn);
-		}
-		else if(factory instanceof ExclusiveRepositorySessionFactory) {
+		if(factory instanceof FIRepositorySessionFactoryAdapter)
+			return ((FIRepositorySessionFactoryAdapter) factory).openSession(binder.getResourceDriverName());
+		else if(factory instanceof ExclusiveRepositorySessionFactory)
 			return ((ExclusiveRepositorySessionFactory) factory).openSession();
-		}
-		else {
+		else
 			throw new InternalException("This should not occur");
-		}
 	}
 	
 	public static ArchiveStore getArchiveStore(String repositoryName) {
-		if (ObjectKeys.FI_ADAPTER.equals(repositoryName) || !adminModule.isFileArchivingEnabled()) {
+		if(ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
 			return null;
-		} else {
+		}
+		else {
 			return getRepositorySessionFactory(repositoryName).getArchiveStore();
 		}
 	}

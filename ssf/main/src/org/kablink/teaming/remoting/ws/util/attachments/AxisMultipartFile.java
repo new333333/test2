@@ -39,7 +39,7 @@ import java.util.Date;
 import javax.activation.DataHandler;
 
 import org.kablink.teaming.util.FileHelper;
-import org.kablink.teaming.util.FileExtendedSupport;
+import org.kablink.teaming.util.FileModDateSupport;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,13 +58,14 @@ import org.springframework.web.multipart.MultipartFile;
  * @author jong
  *
  */
-public class AxisMultipartFile implements MultipartFile, FileExtendedSupport {
+public class AxisMultipartFile implements MultipartFile, FileModDateSupport {
 
 	private String fileName;
 	private DataHandler dataHandler;
 	private File file;
 	private long size;
 	private Date modDate;
+	private String modifier=null;
 
 	public AxisMultipartFile(String fileName, DataHandler dataHandler) {
 		this.fileName = fileName;
@@ -73,11 +74,12 @@ public class AxisMultipartFile implements MultipartFile, FileExtendedSupport {
 		this.size = file.length();
 	}
 	
-	public AxisMultipartFile(String fileName, DataHandler dataHandler, Date modDate) {
+	public AxisMultipartFile(String fileName, DataHandler dataHandler, String modifier, Date modDate) {
 		this.fileName = fileName;
 		this.dataHandler = dataHandler;
 		this.file = new File(dataHandler.getName());
 		this.size = file.length();
+		this.modifier = modifier;
 		this.modDate = modDate;
 	}
 
@@ -114,39 +116,16 @@ public class AxisMultipartFile implements MultipartFile, FileExtendedSupport {
 	public void transferTo(File dest) throws IOException, IllegalStateException {
 		FileHelper.move(this.file, dest);
 	}
-	
 	public Date getModDate() {
 		return modDate;
 	}
 	public void setModDate(Date modDate) {
 		this.modDate = modDate;
 	}
-	
-	@Override
-	public String getCreatorName() {
-		// Not supported
-		return null;
+	public String getModifier() {
+		return modifier;
 	}
-
-	@Override
-	public Long getCreatorId() {
-		// Not supported
-		return null;
-	}
-
-    public String getExpectedMd5() {
-        return null;
-    }
-
-    @Override
-	public String getModifierName() {
-		// Not supported
-		return null;
-	}
-
-	@Override
-	public Long getModifierId() {
-		// Not supported
-		return null;
+	public void setModifier(String modifier) {
+		this.modifier = modifier;
 	}
 }

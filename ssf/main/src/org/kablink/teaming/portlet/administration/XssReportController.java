@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.portlet.administration;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,19 +48,18 @@ import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.SearchTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.springframework.web.portlet.ModelAndView;
+
 
 /**
  * This class handles the XSS Report.
- * 
  * @author Peter Hurley
+ *
  */
-@SuppressWarnings({"unchecked", "unused"})
 public class XssReportController extends  AbstractReportController {
 	/**
+	 * 
 	 */
-	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		PortletURL	url;
@@ -73,12 +71,6 @@ public class XssReportController extends  AbstractReportController {
 		model = new HashMap();
 		populateModel( request, model );
 	
-		Boolean gwtReport= PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_GWT_REPORT);
-		if (null == gwtReport) {
-			gwtReport = Boolean.FALSE;
-		}
-		model.put(WebKeys.URL_GWT_REPORT, String.valueOf(gwtReport));
-		
 		Document pTree = DocumentHelper.createDocument();
     	Element rootElement = pTree.addElement(DomTreeBuilder.NODE_ROOT);
     	Document wsTree = getBinderModule().getDomBinderTree(RequestContextHolder.getRequestContext().getZoneId(), 
@@ -90,11 +82,12 @@ public class XssReportController extends  AbstractReportController {
 		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
 		
 		return new ModelAndView( chooseView( formData ), model );
-	}
+	}// end handleRenderRequestInternal()
+	
 	
 	/**
+	 * 
 	 */
-	@Override
 	protected void populateModel( RenderRequest request, Map model ) {
 		
 		super.populateModel(request, model);
@@ -102,12 +95,14 @@ public class XssReportController extends  AbstractReportController {
 		//Initialize the acl bean
 		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
 		accessControlMap.put("generateReport", getAdminModule().testAccess(AdminOperation.report));
-	}
 
+	}// end populateModel()
+
+	
 	/**
+	 * 
 	 */
-	@Override
 	protected String chooseView( Map formData ) {
 		return WebKeys.VIEW_XSS_REPORT;
 	}
-}
+}// end XssReportController

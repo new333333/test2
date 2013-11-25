@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.fi;
 
-import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.util.api.ApiErrorCode;
 
 public class ReadOnlyException extends FIException {
@@ -40,8 +39,8 @@ public class ReadOnlyException extends FIException {
 	private static final long serialVersionUID = 1L;
 	private static final String ERROR_CODE = "fi.error.read.only";
 
-	public ReadOnlyException(ResourceDriver driver, String operationName) {
-		super(ERROR_CODE, new Object[] {operationName, driver.getName()});
+	public ReadOnlyException(String driverTitle, String operationName) {
+		super(ERROR_CODE, operationName, driverTitle);
 	}
 	
     public int getHttpStatusCode() {

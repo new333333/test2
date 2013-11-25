@@ -33,10 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.GraphicWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.http.client.URL;
 
@@ -53,14 +49,11 @@ public class GraphicConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public GraphicConfig( String configStr, String style, String binderId )
+	public GraphicConfig( String configStr )
 	{
 		String[] results;
 		
 		m_properties = new GraphicProperties();
-		m_properties.setBinderId( binderId );
-		
-		setLandingPageStyle( style );
 		
 		// Split the configuration data into its parts.  ie showBorder=1 graphic=xxx title=yyy
 		results = configStr.split( "[,;]" );
@@ -216,23 +209,6 @@ public class GraphicConfig extends ConfigItem
 	{
 		// Nothing to do.
 	}// end addChild()
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		return new GraphicWidget( this, widgetStyles );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public GraphicDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new GraphicDropWidget( lpe, this );
-	}
 	
 	
 	/**

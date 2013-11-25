@@ -33,12 +33,9 @@
 package org.kablink.teaming.domain;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 
 /**
  * This class is used to marker a class that is not a <code>Binder</code>
@@ -46,9 +43,8 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 @SuppressWarnings("unchecked")
 public abstract class Entry extends DefinableEntity implements WorkArea {
  
-    protected Boolean hasEntryAcl = Boolean.FALSE; // Used for internally-controlled ACLs only
-    protected Boolean checkFolderAcl = Boolean.FALSE; // Used for internally-controlled ACLs only
-    protected Boolean hasEntryExternalAcl = Boolean.FALSE; // Used for externally-controlled ACLs only
+    protected Boolean hasEntryAcl = Boolean.FALSE;
+    protected Boolean checkFolderAcl = Boolean.FALSE;
     protected String entryDefId; //initialized by hiberate access=field
 
     public Entry() {
@@ -116,22 +112,7 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
 		this.checkFolderAcl = checkFolderAcl;
 	}
     
-	public boolean hasEntryExternalAcl() {
-		if (this instanceof FolderEntry && !((FolderEntry)this).isTop()) {
-			//This is a reply to a folder entry. Check the top entry instead
-			return ((FolderEntry)this).getTopEntry().hasEntryExternalAcl();
-		}
-		if (hasEntryExternalAcl == null) {
-			return false;
-		} else {
-			return hasEntryExternalAcl;
-		}
-	}
-	public void setHasEntryExternalAcl(boolean hasEntryExternalAcl) {
-		this.hasEntryExternalAcl = hasEntryExternalAcl;
-	}
-
-	//*****************WorkArea interface stuff***********/
+    //*****************WorkArea interface stuff***********/
     public Long getWorkAreaId() {
         return getId();
     }
@@ -145,20 +126,6 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
     public Set getChildWorkAreas() {
     	return new HashSet();
     }
-    
-    public boolean isAclExternallyControlled() {
-    	return this.getParentBinder().isAclExternallyControlled();
-    }
-    public List<WorkAreaOperation> getExternallyControlledRights() {
-    	return this.getParentBinder().getExternallyControlledRights();
-    }
-    public String getRegisteredRoleType() {
-    	if (this.getParentBinder().getResourceDriver() instanceof AclResourceDriver) {
-    		return ((AclResourceDriver)this.getParentBinder().getResourceDriver()).getRegisteredRoleTypeName();
-    	}
-    	return "";
-    }
-    
 	/**
 	 * @hibernate.property not-null="true"
 	 * @return
@@ -171,11 +138,6 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
      public boolean isFunctionMembershipInheritanceSupported() {
     	return false;
     }
-     public boolean isExtFunctionMembershipInherited() {
-     	return false;
-     }
-     public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
-     }
      public Long getOwnerId() {
     	Principal owner = getOwner();
     	if (owner == null)	return null;
@@ -213,4 +175,5 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
      public void setTeamMemberIds(Set<Long> memberIds) {
      }
      /*****************End WorkArea interface stuff***********/
+     
 }

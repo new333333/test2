@@ -1,95 +1,102 @@
-//>>built
-define("dojox/wire/_base",["dijit","dojo","dojox"],function(_1,_2,_3){
-_2.provide("dojox.wire._base");
-_3.wire._defaultWireClass="dojox.wire.Wire";
-_3.wire._wireClasses={"attribute":"dojox.wire.DataWire","path":"dojox.wire.XmlWire","children":"dojox.wire.CompositeWire","columns":"dojox.wire.TableAdapter","nodes":"dojox.wire.TreeAdapter","segments":"dojox.wire.TextAdapter"};
-_3.wire.register=function(_4,_5){
-if(!_4||!_5){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.wire._base"]){
+dojo._hasResource["dojox.wire._base"]=true;
+dojo.provide("dojox.wire._base");
+dojox.wire._defaultWireClass="dojox.wire.Wire";
+dojox.wire._wireClasses={"attribute":"dojox.wire.DataWire","path":"dojox.wire.XmlWire","children":"dojox.wire.CompositeWire","columns":"dojox.wire.TableAdapter","nodes":"dojox.wire.TreeAdapter","segments":"dojox.wire.TextAdapter"};
+dojox.wire.register=function(_1,_2){
+if(!_1||!_2){
 return;
 }
-if(_3.wire._wireClasses[_5]){
+if(dojox.wire._wireClasses[_2]){
 return;
 }
-_3.wire._wireClasses[_5]=_4;
+dojox.wire._wireClasses[_2]=_1;
 };
-_3.wire._getClass=function(_6){
-_2["require"](_6);
-return _2.getObject(_6);
+dojox.wire._getClass=function(_3){
+dojo["require"](_3);
+return dojo.getObject(_3);
 };
-_3.wire.create=function(_7){
-if(!_7){
-_7={};
+dojox.wire.create=function(_4){
+if(!_4){
+_4={};
 }
-var _8=_7.wireClass;
-if(_8){
-if(_2.isString(_8)){
-_8=_3.wire._getClass(_8);
+var _5=_4.wireClass;
+if(_5){
+if(dojo.isString(_5)){
+_5=dojox.wire._getClass(_5);
 }
 }else{
-for(var _9 in _7){
-if(!_7[_9]){
+for(var _6 in _4){
+if(!_4[_6]){
 continue;
 }
-_8=_3.wire._wireClasses[_9];
-if(_8){
-if(_2.isString(_8)){
-_8=_3.wire._getClass(_8);
-_3.wire._wireClasses[_9]=_8;
+_5=dojox.wire._wireClasses[_6];
+if(_5){
+if(dojo.isString(_5)){
+_5=dojox.wire._getClass(_5);
+dojox.wire._wireClasses[_6]=_5;
 }
 break;
 }
 }
 }
-if(!_8){
-if(_2.isString(_3.wire._defaultWireClass)){
-_3.wire._defaultWireClass=_3.wire._getClass(_3.wire._defaultWireClass);
+if(!_5){
+if(dojo.isString(dojox.wire._defaultWireClass)){
+dojox.wire._defaultWireClass=dojox.wire._getClass(dojox.wire._defaultWireClass);
 }
-_8=_3.wire._defaultWireClass;
+_5=dojox.wire._defaultWireClass;
 }
-return new _8(_7);
+return new _5(_4);
 };
-_3.wire.isWire=function(_a){
-return (_a&&_a._wireClass);
+dojox.wire.isWire=function(_7){
+return (_7&&_7._wireClass);
 };
-_3.wire.transfer=function(_b,_c,_d,_e){
-if(!_b||!_c){
+dojox.wire.transfer=function(_8,_9,_a,_b){
+if(!_8||!_9){
 return;
 }
-if(!_3.wire.isWire(_b)){
-_b=_3.wire.create(_b);
+if(!dojox.wire.isWire(_8)){
+_8=dojox.wire.create(_8);
 }
-if(!_3.wire.isWire(_c)){
-_c=_3.wire.create(_c);
+if(!dojox.wire.isWire(_9)){
+_9=dojox.wire.create(_9);
 }
-var _f=_b.getValue(_d);
-_c.setValue(_f,(_e||_d));
+var _c=_8.getValue(_a);
+_9.setValue(_c,(_b||_a));
 };
-_3.wire.connect=function(_10,_11,_12){
-if(!_10||!_11||!_12){
+dojox.wire.connect=function(_d,_e,_f){
+if(!_d||!_e||!_f){
 return;
 }
-var _13={topic:_10.topic};
-if(_10.topic){
-_13.handle=_2.subscribe(_10.topic,function(){
-_3.wire.transfer(_11,_12,arguments);
+var _10={topic:_d.topic};
+if(_d.topic){
+_10.handle=dojo.subscribe(_d.topic,function(){
+dojox.wire.transfer(_e,_f,arguments);
 });
 }else{
-if(_10.event){
-_13.handle=_2.connect(_10.scope,_10.event,function(){
-_3.wire.transfer(_11,_12,arguments);
+if(_d.event){
+_10.handle=dojo.connect(_d.scope,_d.event,function(){
+dojox.wire.transfer(_e,_f,arguments);
 });
 }
 }
-return _13;
+return _10;
 };
-_3.wire.disconnect=function(_14){
-if(!_14||!_14.handle){
+dojox.wire.disconnect=function(_11){
+if(!_11||!_11.handle){
 return;
 }
-if(_14.topic){
-_2.unsubscribe(_14.handle);
+if(_11.topic){
+dojo.unsubscribe(_11.handle);
 }else{
-_2.disconnect(_14.handle);
+dojo.disconnect(_11.handle);
 }
 };
-});
+}

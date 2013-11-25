@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,24 +30,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.profile.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
-/**
- * ?
- * 
- * @author nbjensen@novell.com
- */
 public class ProfileStatsPanel extends Composite {
+
+
 	private int row = 0;
 	private FlowPanel mainPanel;
 	private Grid grid;
@@ -83,10 +83,14 @@ public class ProfileStatsPanel extends Composite {
 		//if the quotas enable and is the owner or the admin then can see the quota
 		if(profileRequestInfo.isQuotasEnabled() && (profileRequestInfo.isOwner()) ) {
 
+			String end = " MB";
+			
 			String quotaTitle = GwtTeaming.getMessages().profileDataQuota();
 			Label quotaTitleLabel = new Label(quotaTitle);
-			InlineLabel quotaValueLabel = new InlineLabel(GwtTeaming.getMessages().profileQuotaMegaBytes(profileRequestInfo.getQuotasUserMaximum()));
+			InlineLabel quotaValueLabel = new InlineLabel(profileRequestInfo.getQuotasUserMaximum());
 			quotaValueLabel.addStyleName( "bold" );
+			InlineLabel endLabel = new InlineLabel(end);
+			quotaValueLabel.getElement().appendChild(endLabel.getElement());
 			
 			grid.insertRow(row);
 			grid.setWidget(row, 0, quotaTitleLabel);
@@ -95,8 +99,10 @@ public class ProfileStatsPanel extends Composite {
 
 			String usedTitle = GwtTeaming.getMessages().profileQuotaUsed();
 			Label quotaUsedLabel = new Label(usedTitle);
-			quotaUsedValueLabel = new InlineLabel(GwtTeaming.getMessages().profileQuotaMegaBytes(profileRequestInfo.getQuotasDiskSpacedUsed()));
+			quotaUsedValueLabel = new InlineLabel(profileRequestInfo.getQuotasDiskSpacedUsed());
 			quotaUsedValueLabel.addStyleName( "bold" );
+			InlineLabel endLabel2 = new InlineLabel(end);
+			quotaUsedValueLabel.getElement().appendChild(endLabel2.getElement());
 			
 			grid.insertRow(row);
 			grid.setWidget(row, 0, quotaUsedLabel);
@@ -106,6 +112,6 @@ public class ProfileStatsPanel extends Composite {
 	}
 
 	public void updateQuota(String usedQuota) {
-		quotaUsedValueLabel.setText(GwtTeaming.getMessages().profileQuotaMegaBytes(usedQuota));
+		quotaUsedValueLabel.setText(usedQuota + " MB");
 	}
 }

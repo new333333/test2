@@ -48,9 +48,6 @@
 <c:if test="${ss_type == 'miniblogs'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs_tab.jsp" />
 </c:if>
-<c:if test="${ss_type == 'filespaces'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/filespaces_tab.jsp" />
-</c:if>
 <c:if test="${ss_type == 'overview'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/overview.jsp" />
 </c:if>

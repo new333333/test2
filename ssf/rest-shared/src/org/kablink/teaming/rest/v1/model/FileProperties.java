@@ -32,63 +32,49 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 //This annotation is necessary not only for XML but also for JSON representation.
 @XmlRootElement(name="file")
-public class FileProperties extends BaseFileProperties {
-
-    private EntityId owningEntity;
-    private ParentBinder binder;
+public class FileProperties extends FileCommonProperties {
+	
 	private String name;
 	private Long lockedBy;
 	private Calendar lockExpiration;
-    private String permaLink;
-    @XmlElementWrapper(name="permalinks")
-    @XmlElement(name="permalink")
-    private List<Link> additionalPermaLinks;
-
-	public FileProperties() {
+	
+	// The following fields are processing instructions used for update only.
+	private Boolean incrementMajorVersion; // used for update only
+	
+	private FileProperties() {
 		super();
 	}
+	
+	public FileProperties(String id, String name, HistoryStamp creation, HistoryStamp modification, 
+			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
+			String note, Integer status, String webUrl, Long lockedBy, Calendar lockExpiration) {
+		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status, webUrl);
+		this.name = name;
+		this.lockedBy = lockedBy;
+		this.lockExpiration = lockExpiration;
+	}
 
-    protected FileProperties(FileProperties orig) {
-        super(orig);
-        this.owningEntity = orig.owningEntity;
-        this.binder = orig.binder;
-        this.name = orig.name;
-        this.lockedBy = orig.lockedBy;
-        this.lockExpiration = orig.lockExpiration;
-        this.permaLink = orig.permaLink;
-        this.additionalPermaLinks = orig.additionalPermaLinks;
-    }
+	public FileProperties(String id, String name, HistoryStamp creation, HistoryStamp modification, 
+			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
+			String note, Integer status, String webUrl, Long lockedBy, Date lockExpiration) {
+		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status, webUrl);
+		this.name = name;
+		this.lockedBy = lockedBy;
+		if(lockExpiration != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(lockExpiration);
+			this.lockExpiration = cal;
+		}
+	}
 
-    @XmlElement(name="owning_entity")
-    public EntityId getOwningEntity() {
-        return owningEntity;
-    }
-
-    public void setOwningEntity(EntityId owningEntity) {
-        this.owningEntity = owningEntity;
-    }
-
-    @XmlElement(name="parent_binder")
-    public ParentBinder getBinder() {
-        return binder;
-    }
-
-    public void setBinder(ParentBinder binder) {
-        this.binder = binder;
-    }
-
-    public String getName() {
+	public String getName() {
 		return name;
 	}
 
@@ -96,7 +82,6 @@ public class FileProperties extends BaseFileProperties {
 		this.name = name;
 	}
 
-    @XmlElement(name="locked_by")
 	public Long getLockedBy() {
 		return lockedBy;
 	}
@@ -105,7 +90,6 @@ public class FileProperties extends BaseFileProperties {
 		this.lockedBy = lockedBy;
 	}
 
-    @XmlElement(name="lock_expiration")
 	public Calendar getLockExpiration() {
 		return lockExpiration;
 	}
@@ -114,37 +98,12 @@ public class FileProperties extends BaseFileProperties {
 		this.lockExpiration = lockExpiration;
 	}
 
-    @XmlElement(name="permalink")
-    public String getPermaLink() {
-        return permaLink;
-    }
+	public Boolean getIncrementMajorVersion() {
+		return incrementMajorVersion;
+	}
 
-    public void setPermaLink(String permaLink) {
-        this.permaLink = permaLink;
-    }
-
-    public List<Link> getAdditionalPermaLinks() {
-        return additionalPermaLinks;
-    }
-
-    public void addAdditionalPermaLink(String relation, String uri) {
-        addAdditionalPermaLink(new Link(relation, uri));
-    }
-
-    public void addAdditionalPermaLink(String uri) {
-        addAdditionalPermaLink(new Link(null, uri));
-    }
-
-    public void addAdditionalPermaLink(Link link) {
-        if (additionalPermaLinks ==null) {
-            additionalPermaLinks = new ArrayList<Link>();
-        }
-        additionalPermaLinks.add(link);
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new FileProperties(this);
-    }
-
+	public void setIncrementMajorVersion(Boolean incrementMajorVersion) {
+		this.incrementMajorVersion = incrementMajorVersion;
+	}
+	
 }

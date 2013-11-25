@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.util;
 
-import java.io.InputStream;
 import java.util.Properties;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -45,20 +44,13 @@ public class PropertiesClassPathConfigFiles extends ClassPathConfigFiles
     public void afterPropertiesSet() throws Exception {
     	int size = size();
     	Properties tempProps = null;
-    	InputStream is;
         for(int i = 0; i < size; i++) {
         	tempProps = new Properties();
-        	is = getAsInputStream(i);
-        	try {
-	        	tempProps.load(is);
-	        	if(props == null)
-	        		props = tempProps;
-	        	else
-	        		props.putAll(tempProps);
-        	}
-        	finally {
-        		is.close();
-        	}
+        	tempProps.load(getAsInputStream(i));
+        	if(props == null)
+        		props = tempProps;
+        	else
+        		props.putAll(tempProps);
         }
     }
 

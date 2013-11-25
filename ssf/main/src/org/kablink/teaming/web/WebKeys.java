@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,11 +32,6 @@
  */
 package org.kablink.teaming.web;
 
-/**
- * ?
- * 
- * @author ?
- */
 public class WebKeys {
 	// Attribute names reserved by portlet specification
 	public static final String JAVAX_PORTLET_CONFIG = "javax.portlet.config";
@@ -62,7 +57,6 @@ public class WebKeys {
 	public static final String CALENDAR_GRID_TYPE = "ssGridType";
 	public static final String CALENDAR_GRID_SIZE = "ssGridSize";
 	public static final String CALENDAR_STICKY_ID = "calendarStickyId";
-	public static final String CALENDAR_EVENT_TYPE = "ss_calendarEventType";
 	public static final String CALENDAR_MODE_TYPE = "calendarModeType";
 	public static final String CALENDAR_FREE_BUSY_INFO = "ssCalendarFreeBusyInfo";
 	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";
@@ -100,14 +94,8 @@ public class WebKeys {
     public static final String SESSION_CAPTIVE = "sessionCaptive";
     public static final String SESSION_PRODUCT = "sessionProduct";
     public static final String VIBE_PRODUCT = "vibeProduct";
-    public static final String VIBE_LP_DEBUG = "vibeLPDebug";
     public static final String VIBE_UI_DEBUG = "vibeUIDebug";
     public static final String IS_FORM_LOGIN_ALLOWED = "isFormLoginAllowed";
-    public static final String JSP_NAME = "jspName";
-    public static final String CONFIG_STRING = "configStr";
-    public static final String CLOUD_FOLDERS_ENABLED = "cloudFoldersEnabled";
-    public static final String HAS_ROOT_DIR_ACCESS = "hasRootDirAccess";
-    public static final String DECIMAL_SEPARATOR = "decimalSeparator";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
@@ -127,17 +115,12 @@ public class WebKeys {
     public static final String URL_ADD_FOLDER = "ss_addFolderUrl";
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
-    public static final String URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE   = "showWhatsNew";
-    public static final String URL_ACTIVITY_STREAMS_SHOW_SPECIFIC    = "specificWhatsNew";
-    public static final String URL_ACTIVITY_STREAMS_SHOW_SPECIFIC_ID = "specificWhatsNewId";
+    public static final String URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE = "showWhatsNew";
     public static final String URL_BINDER_ID="binderId";
-    public static final String URL_GWT_REPORT="GwtReport";
-    public static final String URL_MULTIPLE_ENTITY_IDS="multipleEntityIds";
     public static final String URL_ZONE_UUID="zoneUUID";
     public static final String URL_BINDER_PARENT_ID="binderParentId";
     public static final String URL_BINDER_IDS="binderIds";
     public static final String URL_FOLDER_ID = "folderId";
-    public static final String URL_RECURSIVE = "recursive";
     public static final String URL_IS_LIBRARY_BINDER="isLibraryBinder";
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
     public static final String URL_BINDER_CONFIG_ID="binderConfigId";
@@ -155,18 +138,8 @@ public class WebKeys {
 	public static final String URL_PRODUCT_GW="gw";
 	public static final String URL_PRODUCT_KABLINK="kablink";
 	public static final String URL_PRODUCT_NOVELL="novell";
-	@Deprecated
-	public static final String URL_VIBEONPREM_ROOT_FLAG_DEPRECATED="vibeonprem_root";
-	@Deprecated
-	public static final String URL_VIBEONPREM_URL_FLAG_DEPRECATED="vibeonprem_url";	
-	@Deprecated
-	public static final String URL_VIBE_ROOT_FLAG_DEPRECATED="vibe_root";
-	@Deprecated
-	public static final String URL_VIBE_URL_FLAG_DEPRECATED="vibe_url";	
-	public static final String URL_NOVL_ROOT_FLAG="novl_root";
-	public static final String URL_NOVL_URL_FLAG="novl_url";	
-	public static final String URL_INVOKE_SHARE="invokeShare";	
-	public static final String URL_INVOKE_SUBSCRIBE="invokeSubscribe";	
+	public static final String URL_VIBEONPREM_ROOT_FLAG="vibeonprem_root";
+	public static final String URL_VIBEONPREM_URL_FLAG="vibeonprem_url";	
 	public static final String URL_CONTEXT="context";
 	public static final String URL_CSS_SHEET="sheet";
 	public static final String URL_CSS_THEME="theme";
@@ -191,10 +164,8 @@ public class WebKeys {
 	public static final String URL_ELEMENT_TO_EDIT = "_element";
 	public static final String URL_ELEMENT = "element";
 	public static final String URL_END_DATE = "ss_endDate";
-	public static final String URL_END_DATE_YYYYMMDD = "ss_endDateYYYYMMDD";
 	public static final String URL_ENTITY_ID = "entityId";
     public static final String URL_ENTITY_TYPE="entityType";
-    public static final String URL_ENTITY_TYPE_SHARE="share";
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
 	public static final String URL_ENTRY_ID = "entryId";
     public static final String URL_ENTRY_ID_PLACE_HOLDER="ss_entry_id_place_holder";
@@ -204,10 +175,6 @@ public class WebKeys {
     public static final String URL_ENTRY_TYPE="entryType";
     public static final String URL_ENTRY_UGT="entryUGT";
     public static final String URL_ENTRY_UPLOAD="upload";
-    public static final String URL_ENTRY_SOURCE_BINDER_ID="entrySourceBinderId";
-    public static final String URL_CLEAR_ENTRY_SOURCE_BINDER_ID="clearEntrySourceBinderId";
-    public static final String URL_ORIGINAL_ENTRY_SOURCE_BINDER_ID="originalEntrySourceBinderId";
-    public static final String URL_ENTRY_VIEW_IGNORE="ignoreEntryView";
     public static final String URL_ENTRY_VIEW_STYLE="entryViewStyle";
     public static final String URL_ENTRY_VIEW_STYLE2="entryViewStyle2";
     public static final String URL_ENTRY_VIEW_STYLE_FULL="full";
@@ -222,7 +189,6 @@ public class WebKeys {
 	public static final String URL_FILE_VERSION = "fileVersion";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_GROUP_ID="groupId";
-	public static final String URL_TEAM_ID="teamId";
 	public static final String URL_HOME_PAGE_ID="homePageId";
 	public static final String URL_GUEST_HOME_PAGE_ID="guestHomePageId";
 	public static final String URL_HOLIDAYS="holidays";
@@ -242,14 +208,9 @@ public class WebKeys {
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
     public static final String URL_OPERATION3="operation3";
-    public static final String URL_FOLDER_ENTRY="folderEntry";
-    public static final String URL_FOLDER_ENTRY_LIST="folderEntryList";
-    public static final String URL_FOLDER_LIST="folderList";
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
     public static final String URL_SEARCH_SCOPE="scope";
-    public static final String URL_CLEAR_FILTER="clear_filter";
-    public static final String URL_SELECT_FILTER="select_filter";
     public static final String URL_PAGE="page";
     public static final String URL_PAGE_SIZE="pageSize";
     public static final String URL_PORTAL_SIGNAL="portalSignalUrl";
@@ -272,12 +233,8 @@ public class WebKeys {
 	public static final String URL_SECTION_TO_EDIT = "_section";
 	public static final String URL_SEND_MAIL_LOCATION = "sendMailLocation";
 	public static final String URL_SEEN_BY_GWT = "seen_by_gwt";
-    public static final String URL_SHARE_PUBLIC_LINK="publicLink";
-    public static final String URL_SHARE_PUBLIC_LINK_HTML="publicLinkHtml";
     public static final String URL_SHOW_TRASH="showTrash";
-    public static final String URL_SHOW_COLLECTION="showCollection";
 	public static final String URL_START_DATE = "ss_startDate";
-	public static final String URL_START_DATE_YYYYMMDD = "ss_startDateYYYYMMDD";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
 	public static final String URL_STATUS_WINDOW = "statusWindow";
 	public static final String URL_SHOW_MENU = "showMenu";
@@ -320,7 +277,6 @@ public class WebKeys {
 	public static final String URL_ID_CHOICES_SEPARATOR = "_";
 	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
 	public static final String URL_URL = "spring-security-redirect";
-	public static final String URL_USER_GROUPS_LIST = "_user_groups_list";
 	public static final String URL_USER_ID = "userId";
     public static final String URL_USER_ID_PLACE_HOLDER="ss_user_id_place_holder";
 	public static final String URL_ICAL_URL = "iCalURL";
@@ -361,7 +317,6 @@ public class WebKeys {
     public static final String ACTION_ADD_TEAM_MEMBER = "add_team_member";
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
     public static final String ACTION_BINDER_REPORTS = "binder_reports";
-    public static final String ACTION_BUILD_FILTER = "build_filter";
     public static final String ACTION_USER_ACCESS_REPORT = "user_access_report";
     public static final String ACTION_XSS_REPORT = "xss_report";
     public static final String ACTION_IMPORT_FORUM_ENTRIES = "forum_import";
@@ -377,14 +332,12 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURE_DEFINITIONS = "configure_definitions";
 	public static final String ACTION_CONFIGURE_HOME_PAGE="configure_home_page";
 	public static final String ACTION_CONFIGURE_MOBILE_ACCESS="configure_mobile_access";
-	public static final String ACTION_CONFIGURE_SHARE_SETTINGS = "configure_share_settings";
 	public static final String ACTION_CONFIGURE_USER_ACCESS="configure_user_access";
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
 	public static final String ACTION_EDIT_ELEMENT = "edit_element";
 	public static final String ACTION_ENTRY_ACL_REPORT = "view_entry_acl_report";
 	public static final String ACTION_MANAGE_DEFINITIONS = "manage_definitions";
-	public static final String ACTION_MANAGE_TEMPLATES = "configure_configuration";
 	public static final String ACTION_MODIFY_DASHBOARD = "modify_dashboard";
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
 	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
@@ -427,12 +380,7 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURATION="configure_configuration";
 	public static final String ACTION_MANAGE_EXTENSIONS="manage_extensions";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
-	public static final String ACTION_MANAGE_MOBILE_DEVICES="manage_mobile_devices";
 	public static final String ACTION_MANAGE_QUOTAS="manage_quotas";
-	public static final String ACTION_MANAGE_FILE_UPLOAD_LIMITS="manage_file_upload_limits";
-	public static final String ACTION_MANAGE_NET_FOLDERS = "manage_net_folders";
-	public static final String ACTION_MANAGE_RESOURCE_DRIVERS="manage_resource_drivers";
-	public static final String ACTION_MANAGE_SHARE_ITEMS = "manage_share_items";
 	public static final String ACTION_MANAGE_USER_ACCOUNTS="manage_user_accounts";
 	public static final String ACTION_MANAGE_LICENSE="manage_license";
 	public static final String ACTION_MANAGE_ZONES="manage_zones";
@@ -453,7 +401,6 @@ public class WebKeys {
 	public static final String ACTION_STOP_WORKFLOW="stop_workflow";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
 	public static final String ACTION_ADD_MEETING="add_meeting";
-	public static final String ACTION_VIEW_ADMIN_CONSOLE_HOME_PAGE = "view_admin_console_home_page";
 	public static final String ACTION_VIEW_BINDER_ACCESS="view_binder_access";
 	public static final String ACTION_VIEW_BINDER_IN_PARENT="view_binder_in_parent";
 	public static final String ACTION_VIEW_CREDITS="view_credits";
@@ -461,7 +408,6 @@ public class WebKeys {
 	public static final String ACTION_VIEW_FILE="viewFile";
 	public static final String ACTION_VIEW_SUCCESS="view_success";
 	public static final String ACTION_VIEW_WORKFLOW_HISTORY="view_workflow_history";
-	public static final String ACTION_EXECUTE_JSP = "execute_jsp";
 	
 	
 	//operations
@@ -495,7 +441,6 @@ public class WebKeys {
     public static final String OPERATION_UNLOCK="unlock";
     public static final String OPERATION_MODIFY_TEMPLATE="modify_template";
     public static final String OPERATION_ADD_FILES_FROM_APPLET="add_files_from_applet";
-    public static final String OPERATION_CHECK_EXISTS_FILES_FROM_APPLET="check_exists_files_from_applet";
     public static final String OPERATION_ADD_FOLDER_FILES_FROM_APPLET="add_folder_files_from_applet";
     public static final String OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY="add_files_by_browse_for_entry";
     public static final String OPERATION_MODIFY_ALIAS="modify_alias";
@@ -621,7 +566,6 @@ public class WebKeys {
 	public static final String OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String OPERATION_UPLOAD_IMAGE_FILE = "upload_image_file";
 	public static final String OPERATION_UPLOAD_ICALENDAR_FILE = "uploadICalendarFile";
-	public static final String OPERATION_UPLOAD_ICALENDAR_FILE_GWT = "uploadICalendarFileGWT";
 	public static final String OPERATION_LOAD_ICALENDAR_BY_URL = "loadICalendarByURL";
 	public static final String OPERATION_SAVE_CALENDAR_CONFIGURATION = "saveCalendarConfiguration";
 	public static final String OPERATION_USER_LIST_SEARCH = "user_list_search";
@@ -665,7 +609,6 @@ public class WebKeys {
 	public static final String OPERATION_SET_UI_THEME = "set_ui_theme";
 	public static final String OPERATION_FIND_PLACE_FORM = "find_place_form";
     public static final String OPERATION_VIEW_ACCESS = "view_access";
-    public static final String OPERATION_MANAGE_ACCESS_SHARING = "manage_sharing";
     public static final String OPERATION_VIEW_ERROR_MESSAGE = "view_error_message";
     public static final String OPERATION_VIEW_EDIT_HISTORY = "view_edit_history";
 	public static final String OPERATION_WIKILINK_FORM = "wikilink_form";
@@ -678,8 +621,6 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_FILE = "view_file";
 	public static final String OPERATION_VIEW_UPLOAD_FILE = "view_upload_file";
 	public static final String OPERATION_LIST_SAVED_QUERIES="list_saved_queries";
-	public static final String OPERATION_READ_FILE_LIST="read_file_list";
-	public static final String OPERATION_READ_FOLDER="read_folder";
 	
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
 	public static final String OPERATION_REMOVE_SEARCH_QUERY = "remove_search_query";
@@ -715,13 +656,7 @@ public class WebKeys {
 	public static final String MRS_OPERATION_DUMP_TO_LOG = "dump_to_log";
 	public static final String MRS_OPERATION_ENABLE_SIMPLE_PROFILER = "enable_simple_profiler";
 	public static final String MRS_OPERATION_DISABLE_SIMPLE_PROFILER = "disable_simple_profiler";
-	public static final String MRS_OPERATION_DUMP_FILE_SYNC_STATS = "dump_file_sync_stats";
-	public static final String MRS_OPERATION_DUMP_FILE_SYNC_STATS_TO_LOG = "dump_file_sync_stats_to_log";
-	public static final String MRS_OPERATION_ENABLE_FILE_SYNC_STATS = "enable_file_sync_stats";
-	public static final String MRS_OPERATION_DISABLE_FILE_SYNC_STATS = "disable_file_sync_stats";
 	public static final String MRS_OPERATION_SEARCH = "search";
-	public static final String MRS_OPERATION_CLEAR = "clear";
-	public static final String MRS_OPERATION_STOP_FILE_SYNC = "stop_file_sync";
 
 	public static final String AUTO_NOTIFY_TAIL			= "_notify";
 	public static final String AUTO_NOTIFY_GROUPS_TAIL	= "_groups";
@@ -735,12 +670,8 @@ public class WebKeys {
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
 	public static final String ACCESS_CONTROL_CONFIGURE_ALLOWED = "ss_accessControlConfigureAllowed";
 	public static final String ACCESS_CONTROL_EXCEPTION = "ss_accessControlException";
-	public static final String ACCESS_CONTROL_SHARE_ITEMS = "ss_accessControlShareItems";
-	public static final String ACCESS_CONTROL_SHARE_ITEM_DELETE_RIGHTS = "ss_accessControlShareItemDeleteRights";
-	public static final String ACCESS_CONTROL_SHARE_ITEM_RECIPIENTS = "ss_accessControlShareItemRecipients";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
 	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
-	public static final String ACCESS_HONOR_INHERITANCE = "ss_accessHonorInheritance";
 	public static final String ACCESS_USERS_COUNT = "ss_accessUsersCount";
 	public static final String ACCESS_ALL_USERS_GROUP = "ss_accessAllUsersGroup";
 	public static final String ACCESS_APPLICATIONS_COUNT = "ss_accessApplicationsCount";
@@ -789,8 +720,6 @@ public class WebKeys {
 	public static final String BINDER_IS_LIBRARY="ssBinderIsLibrary";
     public static final String BINDER_ID_LIST = "ssBinderIdList";
 	public static final String BINDER_CONFIG="ssBinderConfig";
-	public static final String BINDER_CONFIG_ENTRY_SOURCE_BINDER_ID="ssBinderConfigEntrySourceBinderId";
-	public static final String BINDER_CONFIG_ENTRY_SOURCE_BINDER="ssBinderConfigEntrySourceBinder";
 	public static final String BINDER_CONFIG_TEAM="ssBinderConfigTeam";
 	public static final String BINDER_CONFIGS="ssBinderConfigs";
 	public static final String BINDER_DEFINITION_ID="ssBinderDefinitionId";
@@ -857,7 +786,6 @@ public class WebKeys {
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
     public static final String CONFIG_FALLBACK_JSP="ssConfigJsp";
-    public static final String CONFIGURE_CONFIGURATION_LOCAL="ssConfigureConfigurationLocal";
     public static final String CREATE_FILE_NAME_FORM_ELEMENT="createFileName_";
     public static final String CREATE_FILE_TYPE_FORM_ELEMENT="createFileType_";
     public static final String CSS_THEME="ssCssTheme";
@@ -925,11 +853,9 @@ public class WebKeys {
     public static final String DIV_ID="ss_divId";
     public static final String DOM_TREE="ssDomTree";
     public static final String DOWNLOAD_URL="ssDownloadURL";
-    public static final String EFFECTIVE_FILE_LINK_ACTION="ssEffectiveFileLinkAction";
     public static final String ERROR_INDEXING_COUNT="ssErrorIndexingCount";
     public static final String ERROR_INDEXING_BINDERS="ssErrorIndexingBinders";
     public static final String ERROR_INDEXING_ENTRIES="ssErrorIndexingEntries";
-    public static final String ERROR_INDEXING_STRINGS="ssErrorIndexingStrings";
     public static final String ERROR_LIST="ssErrorList";
     public static final String EXCEPTION="ssException";
     public static final String ELEMENT_NAME="ssElementName";
@@ -966,7 +892,6 @@ public class WebKeys {
     public static final String ENTRY_DUE_DATE="dueDate";
     public static final String MEETING_TOKEN="ssMeetingToken";
     public static final String MEETING_ERROR="ssMeetingError";
-	public static final String TEAM_BINDER="ssTeamBinder";
     public static final String TEAM_MEMBER_GROUPS="ssTeamMemberGroups";
     public static final String TEAM_MEMBERS="ssTeamMembers";
     public static final String TEAM_MEMBERS_COUNT="ssTeamMembersCount";
@@ -983,22 +908,18 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA_MAP="ssEntryDefinitionElementDataMap";
     public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
-    public static final String GROUP_ACTION_TOOLBAR="ssGroupActionToolbar";
-    public static final String ENTITY_ACTION_TOOLBAR="ssEntityActionToolbar";
     public static final String ENTRY_TOOLBAR="ssEntryToolbar";
     public static final String TRASH_VIEW_TOOLBAR="ssTrashViewToolbar";
     public static final String FOLDER_VIEWS_TOOLBAR="ssFolderViewsToolbar";
     public static final String FOLDER_ACTIONS_TOOLBAR="ssFolderActionsToolbar";
     public static final String EMAIL_SUBSCRIPTION_TOOLBAR = "ssEmailSubscriptionToolbar";
     public static final String ENTRY_ATTACHMENT_FILE_RECEIVER_URL = "ssAttachmentFileReceiverURL";
-    public static final String ENTRY_ATTACHMENT_FILE_CHECK_EXISTS_URL = "ssAttachmentFileCheckExistsURL";
     public static final String ERROR_COUNT = "ss_errorCount";
     public static final String ERROR_MESSAGE = "ss_errorMessage";
     public static final String ERROR_MESSAGE_FORMAT = "ss_errorMessageFormat";
     public static final String ERROR_MESSAGE_FORMAT_PRE = "pre";
     public static final String ERROR_MESSAGE_FORMAT_NORMAL = "normal";
     public static final String FOLDER_ATTACHMENT_FILE_RECEIVER_URL = "ssFolderAttachmentFileReceiverURL";
-    public static final String FOLDER_ATTACHMENT_FILE_CHECK_EXISTS_URL = "ssFolderAttachmentFileCheckExistsURL";
     public static final String FOLDER_ATTACHMENT_APPLET_REFRESH_URL = "ssFolderAttachmentAppletRefereshURL";
 	public static final String FOLDER_CONFIGS="ssFolderConfigs";
     public static final String ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION = "ssCloseDivFunctionName";
@@ -1012,7 +933,6 @@ public class WebKeys {
     public static final String FILE_VERSION_MAXIMUM_AGE = "ss_fileVersionMaximumAge";
     public static final String FILE_NAME = "ss_fileName";
     public static final String FILE_SIZE_LIMIT_USER_DEFAULT = "ss_fileSizeLimitUserDefault";
-    public static final String FILESPACE_ROOTS = "ss_filespaceRoots";
     public static final String FILE_VIEW_TYPE_ATTACHMENT_FILE = "ss_viewAttachmentFile";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
     public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";
@@ -1047,7 +967,6 @@ public class WebKeys {
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
     public static final String FOLDER_END_DATE="ssFolderEndDate";
     public static final String FOLDER_ENTRIES="ssFolderEntries";
-    public static final String FOLDER_ENTRIES_TOP_ENTRIES="ssFolderEntriesTopEntries";
     public static final String FOLDER_ENTRIES_WEBDAVURLS="ssFolderEntriesWebDAVURLs";
     public static final String FOLDER_ENTRYPEOPLE="ssFolderEntryPeople";
     public static final String FOLDER_ENTRYPLACES="ssFolderEntryPlaces";
@@ -1114,21 +1033,13 @@ public class WebKeys {
     public static final String LICENSE_OPTIONS_LIST="ssLicenseOptionsList";
     public static final String LICENSE_EXTERNAL_ACCESS_LIST="ssLicenseExternalAccessList";
     public static final String IS_LICENSE_REQUIRED_EDITION="ssIsLicenseRequiredEdition";
-    public static final String IS_OFFICE_ADD_IN_ALLOWED="ssIsOfficeAddInAllowed";
 
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String LIST_UNSEEN_COUNTS_BINDER_IDS="ss_unseenCountsBinderIds";
-    public static final String LOGIN_CAN_CANCEL = "login_can_cancel";
-    public static final String LOGIN_INVITATION_URL = "ss_login_invitation_url";
     public static final String LOGIN_ERROR="ss_loginError";
     public static final String LOGIN_ERROR_LOGIN_FAILED="loginFailed";
     public static final String LOGIN_ERROR_LOGINS_NOT_ALLOWED="loginsNotAllowed";
     public static final String LOGIN_ERROR_USER_ALREADY_LOGGED_IN="userAlreadyLoggedIn";
-    public static final String LOGIN_EXTERNAL_USER_ID = "ss_login_external_user_id";
-    public static final String LOGIN_EXTERNAL_USER_NAME = "ss_login_external_user_name";
-    public static final String LOGIN_OPEN_ID_PROVIDER_NAME = "ss_login_open_id_provider_name";
-    public static final String LOGIN_OPEN_ID_PROVIDER_URL = "ss_login_open_id_provider_url";
-    public static final String LOGIN_STATUS = "ss_loginStatus";
     public static final String LOGIN_URL="ss_loginUrl";
     public static final String LOGIN_POST_URL="ss_loginPostUrl";
     public static final String LOGOUT_URL="ss_logoutUrl";
@@ -1271,7 +1182,6 @@ public class WebKeys {
     public static final String FILE_SIZE_LIMITS_GROUPS="ss_fileSizeLimitsGroups";
     public static final String FILE_SIZE_LIMITS_USERS="ss_fileSizeLimitsUsers";
     public static final String QUOTAS_HIGH_WATER_MARK="ss_quotasHighWaterMark";
-    public static final String ALLOW_PERSONAL_STORAGE="ss_allowPersonalStorage";
     public static final String BINDER_QUOTA="ss_binderQuota";
     public static final String BINDER_QUOTAS_INITIALIZED="ss_binderQuotasInitialized";
     public static final String BINDER_QUOTAS_ENABLED="ss_binderQuotasEnabled";
@@ -1287,7 +1197,6 @@ public class WebKeys {
     public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";
     public static final String ALL_WORKFLOW_DEFINITIONS="ssAllWorkflowDefinitions";
     public static final String ALL_USERS_GROUP_ID="ssAllUsersGroupId";
-    public static final String ALL_EXTERNAL_USERS_GROUP_ID="ssAllExtUsersGroupId";
     public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String READ_ONLY="ssReadOnlyFields";
@@ -1341,7 +1250,6 @@ public class WebKeys {
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
     public static final String SEARCH_FILTER_MAP = "ss_filterMap";
     public static final String SEARCH_TOP_FOLDER_ID = "ss_searchTopFolderId";
-    public static final String SEARCH_ERROR="ss_searchError";
     public static final String SEARCH_RESULTS="ss_searchResults";
     public static final String SEARCH_RESULTS_COUNT="searchResultsCount";
     public static final String SEARCH_RESULTS_RATING="searchResultsRating";
@@ -1352,26 +1260,18 @@ public class WebKeys {
     public static final String SEARCH_SEARCH_SORT_BY="sortBy";
     public static final String SEARCH_SEARCH_SORT_BY_SECONDARY="sortBySecondary";
     public static final String SEARCH_TEXT="ss_searchText";
-    public static final String SEARCH_TEXT_FIELD="searchText";
     public static final String SEARCH_TOTAL_HITS="ss_searchTotalHits";
-    public static final String SEARCH_CONTEXT="ss_searchContext";
-    public static final String SEARCH_CONTEXT_BINDER="ss_searchContextBinder";
-    public static final String SEARCH_CONTEXT_BINDER_ID="ss_searchContextBinderId";
-    public static final String SEARCH_CONTEXT_ENTRY_ID="ss_searchContextEntryId";
-    public static final String SEARCH_CONTEXT_COLLECTION="ss_searchContextCollection";
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SEEN_ENTRIES="ssSeenEntries";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SENDING_EMAIL="sendingEmail";
-    public static final String SHARE_ITEM_ID="shareItemId";
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SIMPLE_URL_NAME_EXISTS_ERROR="ss_simpleUrlNameExistsError";
-    public static final String SIMPLE_URL_EMAIL_NAME_EXISTS_ERROR="ss_simpleUrlEmailNameExistsError";
     public static final String SIMPLE_URL_INVALID_CHARACTERS="ss_simpleUrlInvalidCharactersError";
     public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
     public static final String SMPT_ENABLED="ssSMTPEnabled";
-    public static final String SNIPPET="ssf_snippet";
+    public static final String SNIPPET="ss_snippet";
     public static final String TEAMING_LIVE_PREVIOUS_UPDATE_DATE = "ss_teaming_live_previous_update_date";
     public static final String TEAMING_LIVE_UPDATE_DATE = "ss_teaming_live_update_date";
     public static final String TEXT_VERIFICATION_RESPONSE = "kaptcha-response";
@@ -1453,7 +1353,6 @@ public class WebKeys {
     public static final String SHOW_GROUP_SHOW_PRESENCE="ss_showGroupShowPresence";
     public static final String SHOW_GROUP_GROUP_MEMBERS="ss_showGroupGroupMembers";
     public static final String SHOW_GROUP_INSTANCE_COUNT="ss_showGroupInstanceCount";
-    public static final String SHOW_USER_CAN_ACCESS_PROFILES_BINDER="ss_canAccessProfilesBinder";
     public static final String SHOW_USER_CLOSE="ss_showUserClose";
     public static final String SHOW_USER_SHOW_HINT="ss_showUserShowHint";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
@@ -1491,11 +1390,8 @@ public class WebKeys {
     public static final String TYPE="ss_type";
     public static final String TYPE2="ss_type2";
     public static final String TYPE3="ss_type3";
-    public static final String SEARCH_SAFE_TO_INDEX = "ssSearchSafeToIndex";
-    public static final String SEARCH_NODE="ssSearchNode";
     public static final String SEARCH_NODES="ssSearchNodes";
 	public static final Object SEARCH_SCOPE = "ss_searchScope";
-	public static final Object SEARCH_INCLUDE_NESTED_BINDERS = "ss_searchIncludeNestedBinders";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";
@@ -1505,10 +1401,8 @@ public class WebKeys {
     public static final String SIMPLE_URL_CHANGE_ACCESS="ssSimpleUrlChangeAccess";
     public static final String SIMPLE_URL_NAMES="ssSimpleUrlNames";
     public static final String SIMPLE_URL_PREFIX="ssSimpleUrlPrefix";
-    public static final String SIMPLE_WEBDAV_PREFIX="ssSimpleWebdavPrefix";
     public static final String STAND_ALONE="ssStandAlone";
     public static final String TOOLBAR="ss_toolbar";
-    public static final String TOOLBAR_MENU_CONTENTS_SELECTABLE="contentsSelectable"; 
     public static final String TOOLBAR_MENU_SELECTED="selected"; 
     public static final String TOOLBAR_FORMAT="ss_toolbar_format";
     public static final String TOOLBAR_STYLE="ss_toolbar_style";
@@ -1570,7 +1464,6 @@ public class WebKeys {
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WINDOW_HEIGHT="ss_windowHeight";
     public static final String WORKAREA="ssWorkArea";
-    public static final String WORKAREA_IS_EXTERNAL_ACLS="ssWorkAreaIsExternalAcls";
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
     public static final String WORKFLOW_THREAD_CAPTIONS="ssWorkflowThreadCaptions";
@@ -1620,7 +1513,6 @@ public class WebKeys {
     //View names
     public static final String VIEW_ACCESS_TO_BINDER = "binder/view_access";
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
-    public static final String VIEW_ACCESS_CONTROL_SHARING = "binder/view_access_control_sharing";
     public static final String VIEW_ACCESS_CONTROL_ENTRY = "binder/access_control_entry";
     public static final String VIEW_ACCESS_CONTROL_NO_MORE = "binder/access_control_no_more";
     public static final String VIEW_ACCESS_DENIED = "forum/access_not_allowed";
@@ -1630,7 +1522,6 @@ public class WebKeys {
     public static final String VIEW_ADD_BINDER_TYPE = "binder/add_binder_type";
     public static final String VIEW_ADD_TEAM_MEMBERS = "binder/add_team_members";
     public static final String VIEW_ADMIN_CHANGELOG="administration/changeLog";
-    public static final String VIEW_ADMIN_CREDITS="administration/credits";
     public static final String VIEW_ADMIN_UPDATE_CHANGELOG="administration/updateChangeLog";
     public static final String VIEW_ADMIN_CONFIGURE_HOME_PAGE="administration/configureHomePage";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
@@ -1649,15 +1540,12 @@ public class WebKeys {
     public static final String VIEW_ADMIN_EXPORT_IMPORT="administration/exportImport";
     public static final String VIEW_ADMIN_UPDATE_EXPORT_IMPORT="administration/updateExportImport";
     
-    public static final String VIEW_ADMIN_CONSOLE_HOME_PAGE = "administration/view_admin_console_home_page";
     public static final String VIEW_ADMIN_MOVE_DEFINITION="administration/moveDefinition";
     public static final String VIEW_ADMIN_MANAGE_APPLICATIONS="administration/manage_applications";
     public static final String VIEW_ADMIN_MANAGE_APPLICATION_GROUPS="administration/manage_application_groups";
     public static final String VIEW_ADMIN_MANAGE_EXTENSIONS="administration/manage_extensions";
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
     public static final String VIEW_ADMIN_MANAGE_QUOTAS="administration/manage_quotas";
-    public static final String VIEW_ADMIN_MANAGE_FILE_UPLOAD_LIMITS="administration/manage_file_upload_limits";
-    public static final String VIEW_ADMIN_MANAGE_RESOURCE_DRIVERS="administration/manage_resource_drivers";
     public static final String VIEW_ADMIN_MANAGE_USER_ACCOUNTS="administration/manage_user_accounts";
     public static final String VIEW_ADMIN_MANAGE_ZONES="administration/manage_zones";
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
@@ -1772,4 +1660,6 @@ public class WebKeys {
     public static final String SERVLET_DOWNLOAD_REPORT="reportDownload";
     public static final String SERVLET_PORTAL_LOGIN="portalLogin";
     public static final String SERVLET_PORTAL_LOGOUT="portalLogout";
+
+    
 }

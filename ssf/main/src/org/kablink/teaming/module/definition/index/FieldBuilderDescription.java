@@ -41,7 +41,6 @@ import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Html;
 import org.kablink.util.search.Constants;
-import org.kablink.util.search.FieldFactory;
 
 public class FieldBuilderDescription extends AbstractFieldBuilder {
     
@@ -84,24 +83,28 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         	// TODO We should really make the handling of this static description element identical to that of custom description element. 
         	// From indexing point of view, it is easy enough. But fixing application accordingly requires some work, so deferred to the
         	// later release.
-        	Field descField = FieldFactory.createField(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.NO); 
-        	Field descTextField = FieldFactory.createFullTextFieldIndexed(Constants.DESC_TEXT_FIELD, strippedText, false); 
-        	Field descFormatField = FieldFactory.createField(Constants.DESC_FORMAT_FIELD, String.valueOf(val.getFormat()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS); 
-        	// For the built-in description field, avoid indexing the same text twice. So don't add it in the catch-all field.
-     		return new Field[] {descField, descTextField, descFormatField};
+        	Field descField = new Field(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.NO); 
+        	Field descTextField = new Field(Constants.DESC_TEXT_FIELD, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
+        	Field descFormatField = new Field(Constants.DESC_FORMAT_FIELD, String.valueOf(val.getFormat()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS); 
+         	if (isFieldsOnly(args)) {
+         		return new Field[] {descField, descTextField, descFormatField};
+         	} else {
+        		Field allTextField = BasicIndexUtils.allTextField(strippedText);
+         		return new Field[] {allTextField, descField, descTextField, descFormatField};
+         	}
         }
         else {
         	// This is a custom description element.
         	// Use a single field to store the original text and also to index the stipped text.
         	// We will not bother with the format information for now.
         	// TODO We eventually want a single handling for both static and custom description element.
-        	Field descField = FieldFactory.createField(dataElemName, text, Field.Store.YES, Field.Index.NO); 
-        	Field descTextField = FieldFactory.createFullTextFieldIndexed(dataElemName, strippedText, false); 
+        	Field descField = new Field(dataElemName, text, Field.Store.YES, Field.Index.NO); 
+        	Field descTextField = new Field(dataElemName, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
          	if (isFieldsOnly(args)) {
          		return new Field[] {descField, descTextField};
          	} else {
-        		Field generalTextField = BasicIndexUtils.generalTextField(strippedText);
-         		return new Field[] {generalTextField, descField, descTextField};
+        		Field allTextField = BasicIndexUtils.allTextField(strippedText);
+         		return new Field[] {allTextField, descField, descTextField};
          	}
         }
     }

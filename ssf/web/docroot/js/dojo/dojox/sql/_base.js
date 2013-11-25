@@ -1,9 +1,16 @@
-//>>built
-define("dojox/sql/_base",["dijit","dojo","dojox","dojo/require!dojox/sql/_crypto"],function(_1,_2,_3){
-_2.provide("dojox.sql._base");
-_2.require("dojox.sql._crypto");
-_2.mixin(_3.sql,{dbName:null,debug:(_2.exists("dojox.sql.debug")?_3.sql.debug:false),open:function(_4){
-if(this._dbOpen&&(!_4||_4==this.dbName)){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.sql._base"]){
+dojo._hasResource["dojox.sql._base"]=true;
+dojo.provide("dojox.sql._base");
+dojo.require("dojox.sql._crypto");
+dojo.mixin(dojox.sql,{dbName:null,debug:(dojo.exists("dojox.sql.debug")?dojox.sql.debug:false),open:function(_1){
+if(this._dbOpen&&(!_1||_1==this.dbName)){
 return;
 }
 if(!this.dbName){
@@ -12,64 +19,64 @@ if(this.dbName.length>63){
 this.dbName=this.dbName.substring(0,63);
 }
 }
-if(!_4){
-_4=this.dbName;
+if(!_1){
+_1=this.dbName;
 }
 try{
 this._initDb();
-this.db.open(_4);
+this.db.open(_1);
 this._dbOpen=true;
 }
 catch(exp){
 throw exp.message||exp;
 }
-},close:function(_5){
-if(_2.isIE){
+},close:function(_2){
+if(dojo.isIE){
 return;
 }
-if(!this._dbOpen&&(!_5||_5==this.dbName)){
+if(!this._dbOpen&&(!_2||_2==this.dbName)){
 return;
 }
-if(!_5){
-_5=this.dbName;
+if(!_2){
+_2=this.dbName;
 }
 try{
-this.db.close(_5);
+this.db.close(_2);
 this._dbOpen=false;
 }
 catch(exp){
 throw exp.message||exp;
 }
-},_exec:function(_6){
+},_exec:function(_3){
 try{
 this._initDb();
 if(!this._dbOpen){
 this.open();
 this._autoClose=true;
 }
-var _7=null;
-var _8=null;
-var _9=null;
-var _a=_2._toArray(_6);
-_7=_a.splice(0,1)[0];
-if(this._needsEncrypt(_7)||this._needsDecrypt(_7)){
-_8=_a.splice(_a.length-1,1)[0];
-_9=_a.splice(_a.length-1,1)[0];
+var _4=null;
+var _5=null;
+var _6=null;
+var _7=dojo._toArray(_3);
+_4=_7.splice(0,1)[0];
+if(this._needsEncrypt(_4)||this._needsDecrypt(_4)){
+_5=_7.splice(_7.length-1,1)[0];
+_6=_7.splice(_7.length-1,1)[0];
 }
 if(this.debug){
-this._printDebugSQL(_7,_a);
+this._printDebugSQL(_4,_7);
 }
-var _b;
-if(this._needsEncrypt(_7)){
-_b=new _3.sql._SQLCrypto("encrypt",_7,_9,_a,_8);
+var _8;
+if(this._needsEncrypt(_4)){
+_8=new dojox.sql._SQLCrypto("encrypt",_4,_6,_7,_5);
 return null;
 }else{
-if(this._needsDecrypt(_7)){
-_b=new _3.sql._SQLCrypto("decrypt",_7,_9,_a,_8);
+if(this._needsDecrypt(_4)){
+_8=new dojox.sql._SQLCrypto("decrypt",_4,_6,_7,_5);
 return null;
 }
 }
-var rs=this.db.execute(_7,_a);
+var rs=this.db.execute(_4,_7);
 rs=this._normalizeResults(rs);
 if(this._autoClose){
 this.close();
@@ -94,154 +101,154 @@ try{
 this.db=google.gears.factory.create("beta.database","1.0");
 }
 catch(exp){
-_2.setObject("google.gears.denied",true);
-if(_3.off){
-_3.off.onFrameworkEvent("coreOperationFailed");
+dojo.setObject("google.gears.denied",true);
+if(dojox.off){
+dojox.off.onFrameworkEvent("coreOperationFailed");
 }
 throw "Google Gears must be allowed to run";
 }
 }
-},_printDebugSQL:function(_c,_d){
-var _e="dojox.sql(\""+_c+"\"";
-for(var i=0;i<_d.length;i++){
-if(typeof _d[i]=="string"){
-_e+=", \""+_d[i]+"\"";
+},_printDebugSQL:function(_9,_a){
+var _b="dojox.sql(\""+_9+"\"";
+for(var i=0;i<_a.length;i++){
+if(typeof _a[i]=="string"){
+_b+=", \""+_a[i]+"\"";
 }else{
-_e+=", "+_d[i];
+_b+=", "+_a[i];
 }
 }
-_e+=")";
+_b+=")";
 },_normalizeResults:function(rs){
-var _f=[];
+var _c=[];
 if(!rs){
 return [];
 }
 while(rs.isValidRow()){
-var row={};
+var _d={};
 for(var i=0;i<rs.fieldCount();i++){
-var _10=rs.fieldName(i);
-var _11=rs.field(i);
-row[_10]=_11;
+var _e=rs.fieldName(i);
+var _f=rs.field(i);
+_d[_e]=_f;
 }
-_f.push(row);
+_c.push(_d);
 rs.next();
 }
 rs.close();
-return _f;
+return _c;
 },_needsEncrypt:function(sql){
 return /encrypt\([^\)]*\)/i.test(sql);
 },_needsDecrypt:function(sql){
 return /decrypt\([^\)]*\)/i.test(sql);
 }});
-_2.declare("dojox.sql._SQLCrypto",null,{constructor:function(_12,sql,_13,_14,_15){
-if(_12=="encrypt"){
-this._execEncryptSQL(sql,_13,_14,_15);
+dojo.declare("dojox.sql._SQLCrypto",null,{constructor:function(_10,sql,_11,_12,_13){
+if(_10=="encrypt"){
+this._execEncryptSQL(sql,_11,_12,_13);
 }else{
-this._execDecryptSQL(sql,_13,_14,_15);
+this._execDecryptSQL(sql,_11,_12,_13);
 }
-},_execEncryptSQL:function(sql,_16,_17,_18){
-var _19=this._stripCryptoSQL(sql);
-var _1a=this._flagEncryptedArgs(sql,_17);
-var _1b=this;
-this._encrypt(_19,_16,_17,_1a,function(_1c){
-var _1d=false;
-var _1e=[];
+},_execEncryptSQL:function(sql,_14,_15,_16){
+var _17=this._stripCryptoSQL(sql);
+var _18=this._flagEncryptedArgs(sql,_15);
+var _19=this;
+this._encrypt(_17,_14,_15,_18,function(_1a){
+var _1b=false;
+var _1c=[];
 var exp=null;
 try{
-_1e=_3.sql.db.execute(_19,_1c);
+_1c=dojox.sql.db.execute(_17,_1a);
 }
 catch(execError){
-_1d=true;
+_1b=true;
 exp=execError.message||execError;
 }
 if(exp!=null){
-if(_3.sql._autoClose){
+if(dojox.sql._autoClose){
 try{
-_3.sql.close();
+dojox.sql.close();
 }
 catch(e){
 }
 }
-_18(null,true,exp.toString());
+_16(null,true,exp.toString());
 return;
 }
-_1e=_3.sql._normalizeResults(_1e);
-if(_3.sql._autoClose){
-_3.sql.close();
+_1c=dojox.sql._normalizeResults(_1c);
+if(dojox.sql._autoClose){
+dojox.sql.close();
 }
-if(_3.sql._needsDecrypt(sql)){
-var _1f=_1b._determineDecryptedColumns(sql);
-_1b._decrypt(_1e,_1f,_16,function(_20){
-_18(_20,false,null);
+if(dojox.sql._needsDecrypt(sql)){
+var _1d=_19._determineDecryptedColumns(sql);
+_19._decrypt(_1c,_1d,_14,function(_1e){
+_16(_1e,false,null);
 });
 }else{
-_18(_1e,false,null);
+_16(_1c,false,null);
 }
 });
-},_execDecryptSQL:function(sql,_21,_22,_23){
-var _24=this._stripCryptoSQL(sql);
-var _25=this._determineDecryptedColumns(sql);
-var _26=false;
-var _27=[];
+},_execDecryptSQL:function(sql,_1f,_20,_21){
+var _22=this._stripCryptoSQL(sql);
+var _23=this._determineDecryptedColumns(sql);
+var _24=false;
+var _25=[];
 var exp=null;
 try{
-_27=_3.sql.db.execute(_24,_22);
+_25=dojox.sql.db.execute(_22,_20);
 }
 catch(execError){
-_26=true;
+_24=true;
 exp=execError.message||execError;
 }
 if(exp!=null){
-if(_3.sql._autoClose){
+if(dojox.sql._autoClose){
 try{
-_3.sql.close();
+dojox.sql.close();
 }
 catch(e){
 }
 }
-_23(_27,true,exp.toString());
+_21(_25,true,exp.toString());
 return;
 }
-_27=_3.sql._normalizeResults(_27);
-if(_3.sql._autoClose){
-_3.sql.close();
+_25=dojox.sql._normalizeResults(_25);
+if(dojox.sql._autoClose){
+dojox.sql.close();
 }
-this._decrypt(_27,_25,_21,function(_28){
-_23(_28,false,null);
+this._decrypt(_25,_23,_1f,function(_26){
+_21(_26,false,null);
 });
-},_encrypt:function(sql,_29,_2a,_2b,_2c){
+},_encrypt:function(sql,_27,_28,_29,_2a){
 this._totalCrypto=0;
 this._finishedCrypto=0;
 this._finishedSpawningCrypto=false;
-this._finalArgs=_2a;
-for(var i=0;i<_2a.length;i++){
-if(_2b[i]){
-var _2d=_2a[i];
-var _2e=i;
+this._finalArgs=_28;
+for(var i=0;i<_28.length;i++){
+if(_29[i]){
+var _2b=_28[i];
+var _2c=i;
 this._totalCrypto++;
-_3.sql._crypto.encrypt(_2d,_29,_2.hitch(this,function(_2f){
-this._finalArgs[_2e]=_2f;
+dojox.sql._crypto.encrypt(_2b,_27,dojo.hitch(this,function(_2d){
+this._finalArgs[_2c]=_2d;
 this._finishedCrypto++;
 if(this._finishedCrypto>=this._totalCrypto&&this._finishedSpawningCrypto){
-_2c(this._finalArgs);
+_2a(this._finalArgs);
 }
 }));
 }
 }
 this._finishedSpawningCrypto=true;
-},_decrypt:function(_30,_31,_32,_33){
+},_decrypt:function(_2e,_2f,_30,_31){
 this._totalCrypto=0;
 this._finishedCrypto=0;
 this._finishedSpawningCrypto=false;
-this._finalResultSet=_30;
-for(var i=0;i<_30.length;i++){
-var row=_30[i];
-for(var _34 in row){
-if(_31=="*"||_31[_34]){
+this._finalResultSet=_2e;
+for(var i=0;i<_2e.length;i++){
+var row=_2e[i];
+for(var _32 in row){
+if(_2f=="*"||_2f[_32]){
 this._totalCrypto++;
-var _35=row[_34];
-this._decryptSingleColumn(_34,_35,_32,i,function(_36){
-_33(_36);
+var _33=row[_32];
+this._decryptSingleColumn(_32,_33,_30,i,function(_34){
+_31(_34);
 });
 }
 }
@@ -249,75 +256,75 @@ _33(_36);
 this._finishedSpawningCrypto=true;
 },_stripCryptoSQL:function(sql){
 sql=sql.replace(/DECRYPT\(\*\)/ig,"*");
-var _37=sql.match(/ENCRYPT\([^\)]*\)/ig);
-if(_37!=null){
-for(var i=0;i<_37.length;i++){
-var _38=_37[i];
-var _39=_38.match(/ENCRYPT\(([^\)]*)\)/i)[1];
+var _35=sql.match(/ENCRYPT\([^\)]*\)/ig);
+if(_35!=null){
+for(var i=0;i<_35.length;i++){
+var _36=_35[i];
+var _37=_36.match(/ENCRYPT\(([^\)]*)\)/i)[1];
+sql=sql.replace(_36,_37);
+}
+}
+_35=sql.match(/DECRYPT\([^\)]*\)/ig);
+if(_35!=null){
+for(i=0;i<_35.length;i++){
+var _38=_35[i];
+var _39=_38.match(/DECRYPT\(([^\)]*)\)/i)[1];
 sql=sql.replace(_38,_39);
 }
 }
-_37=sql.match(/DECRYPT\([^\)]*\)/ig);
-if(_37!=null){
-for(i=0;i<_37.length;i++){
-var _3a=_37[i];
-var _3b=_3a.match(/DECRYPT\(([^\)]*)\)/i)[1];
-sql=sql.replace(_3a,_3b);
-}
-}
 return sql;
-},_flagEncryptedArgs:function(sql,_3c){
-var _3d=new RegExp(/([\"][^\"]*\?[^\"]*[\"])|([\'][^\']*\?[^\']*[\'])|(\?)/ig);
-var _3e;
-var _3f=0;
-var _40=[];
-while((_3e=_3d.exec(sql))!=null){
-var _41=RegExp.lastMatch+"";
-if(/^[\"\']/.test(_41)){
+},_flagEncryptedArgs:function(sql,_3a){
+var _3b=new RegExp(/([\"][^\"]*\?[^\"]*[\"])|([\'][^\']*\?[^\']*[\'])|(\?)/ig);
+var _3c;
+var _3d=0;
+var _3e=[];
+while((_3c=_3b.exec(sql))!=null){
+var _3f=RegExp.lastMatch+"";
+if(/^[\"\']/.test(_3f)){
 continue;
 }
-var _42=false;
+var _40=false;
 if(/ENCRYPT\([^\)]*$/i.test(RegExp.leftContext)){
-_42=true;
+_40=true;
 }
-_40[_3f]=_42;
-_3f++;
+_3e[_3d]=_40;
+_3d++;
 }
-return _40;
+return _3e;
 },_determineDecryptedColumns:function(sql){
-var _43={};
+var _41={};
 if(/DECRYPT\(\*\)/i.test(sql)){
-_43="*";
+_41="*";
 }else{
-var _44=/DECRYPT\((?:\s*\w*\s*\,?)*\)/ig;
-var _45=_44.exec(sql);
-while(_45){
-var _46=new String(RegExp.lastMatch);
-var _47=_46.replace(/DECRYPT\(/i,"");
-_47=_47.replace(/\)/,"");
-_47=_47.split(/\s*,\s*/);
-_2.forEach(_47,function(_48){
-if(/\s*\w* AS (\w*)/i.test(_48)){
-_48=_48.match(/\s*\w* AS (\w*)/i)[1];
+var _42=/DECRYPT\((?:\s*\w*\s*\,?)*\)/ig;
+var _43=_42.exec(sql);
+while(_43){
+var _44=new String(RegExp.lastMatch);
+var _45=_44.replace(/DECRYPT\(/i,"");
+_45=_45.replace(/\)/,"");
+_45=_45.split(/\s*,\s*/);
+dojo.forEach(_45,function(_46){
+if(/\s*\w* AS (\w*)/i.test(_46)){
+_46=_46.match(/\s*\w* AS (\w*)/i)[1];
 }
-_43[_48]=true;
+_41[_46]=true;
 });
-_45=_44.exec(sql);
+_43=_42.exec(sql);
 }
 }
-return _43;
-},_decryptSingleColumn:function(_49,_4a,_4b,_4c,_4d){
-_3.sql._crypto.decrypt(_4a,_4b,_2.hitch(this,function(_4e){
-this._finalResultSet[_4c][_49]=_4e;
+return _41;
+},_decryptSingleColumn:function(_47,_48,_49,_4a,_4b){
+dojox.sql._crypto.decrypt(_48,_49,dojo.hitch(this,function(_4c){
+this._finalResultSet[_4a][_47]=_4c;
 this._finishedCrypto++;
 if(this._finishedCrypto>=this._totalCrypto&&this._finishedSpawningCrypto){
-_4d(this._finalResultSet);
+_4b(this._finalResultSet);
 }
 }));
 }});
 (function(){
-var _4f=_3.sql;
-_3.sql=new Function("return dojox.sql._exec(arguments);");
-_2.mixin(_3.sql,_4f);
+var _4d=dojox.sql;
+dojox.sql=new Function("return dojox.sql._exec(arguments);");
+dojo.mixin(dojox.sql,_4d);
 })();
-});
+}

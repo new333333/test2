@@ -1,2 +1,1 @@
-//>>built
-define("dijit/_editor/nls/ar/LinkDialog",({createLinkTitle:"خصائص الوصلة",insertImageTitle:"خصائص الصورة",url:"عنوان URL:",text:"الوصف:",target:"الهدف:",set:"تحديد",currentWindow:"النافذة الحالية",parentWindow:"النافذة الرئيسية",topWindow:"النافذة العلوية",newWindow:"نافذة جديدة"}));
+({"set":"تحديد","text":"الوصف:","insertImageTitle":"خصائص الصورة","url":"عنوان URL:","createLinkTitle":"خصائص الوصلة","newWindow":"New Window","topWindow":"Topmost Window","target":"Target:","parentWindow":"Parent Window","currentWindow":"Current Window"})

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,18 +30,16 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.module.admin;
 
+package org.kablink.teaming.module.admin;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
@@ -49,20 +47,12 @@ import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
-import org.kablink.teaming.domain.MobileAppsConfig;
-import org.kablink.teaming.domain.MobileOpenInWhiteLists;
-import org.kablink.teaming.domain.NameCompletionSettings;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
-import org.kablink.teaming.domain.OpenIDConfig;
-import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
-import org.kablink.teaming.domain.ShareItem;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
-import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.ConditionalClause;
@@ -71,21 +61,16 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.StatusTicket;
-import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 
 /**
- * ?
- * 
  * @author Janet McCann
+ *
  */
-@SuppressWarnings("unchecked")
 public interface AdminModule {
 	public enum AdminOperation {
 		manageFunction,
 		manageMail,
 		manageFileVersionAging,
-		manageLogTablePurge,
 		manageFileSizeLimit,
 		manageTemplate,
 		report,
@@ -95,20 +80,8 @@ public interface AdminModule {
 		manageIndex,
 		manageFunctionCondition,
 		manageRuntime,
-		manageResourceDrivers,
-		manageFileSynchApp,
-		manageOpenID,
-		manageExternalUser,
-		manageMobileApps
+		manageFileSynchApp
 	}
-	/**
-	 * The method name to be called is used as the operation.   This
-	 * allows the adminModule to check for multiple rights or change requirments in the future.
-	 * @param operation
-	 * @return
-	 */
-   	public boolean testUserAccess(User user, AdminOperation operation);
-   	public void checkUserAccess(User user, AdminOperation operation) throws AccessControlException;
 	/**
 	 * The method name to be called is used as the operation.   This
 	 * allows the adminModule to check for multiple rights or change requirments in the future.
@@ -195,34 +168,11 @@ public interface AdminModule {
     public MailConfig getMailConfig();
     public List<ChangeLog> getEntryHistoryChanges(EntityIdentifier entityIdentifier);
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
-    public boolean isAdHocFoldersEnabled();
-    public void setAdHocFoldersEnabled( boolean enabled );
-    public boolean isDownloadEnabled();
-    public void setDownloadEnabled( boolean enabled );
-    public boolean isWebAccessEnabled();
-    public void setWebAccessEnabled( boolean enabled );
-    public boolean isFileArchivingEnabled();
-    public void setFileArchivingEnabled(boolean fileArchivingEnabled);
-    public boolean isSharingWithLdapGroupsEnabled();
-    public void setAllowShareWithLdapGroups( boolean allow );
-    public int getAuditTrailKeepDays();
-    public int getChangeLogsKeepDays();
-    public boolean isAuditTrailEnabled();
-    public boolean isChangeLogEnabled();
-    public void setAuditTrailEnabled(boolean auditTrailEnabled);
-    public void setChangeLogEnabled(boolean changeLogEnabled);
-    public void setLogTableKeepDays(int auditTrailKeepDays, int changeLogsKeepDays);
-
-    public NameCompletionSettings getNameCompletionSettings();
-    public void setNameCompletionSettings( NameCompletionSettings settings );
-
-
     /**
      * Get system functions
      * @return
      */
     public Function getFunction(Long functionId);
-    public Function getFunctionByInternalId(String internalId);
     public List<Function> getFunctions();
     public List<Function> getFunctions(String scope);
     /**
@@ -253,143 +203,41 @@ public interface AdminModule {
     
     public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl, final Boolean checkFolderAcl);
     
-    public void setEntryHasExternalAcl(final WorkArea workArea, final Boolean hasExternalAcl);
-    public void setEntryHasExternalAcl(final WorkArea workArea, final Boolean hasExternalAcl, boolean skipFileContentIndexing);
-    
 	/**
-	 * Send a mail message to a collection of users and/or explicit email addresses.  Includes attachments from entries if specified.
-	 *   
+	 * Send a mail message to a collection of users and/or explicit email address.  Include attachments  from entries if specified  
 	 * @param entry - may be null
-	 * @param userIds - toList
-	 * @param teamIds
+	 * @param ids - toList
 	 * @param emailAddresses
 	 * @param ccIds - ccoList
 	 * @param bccIds - bccList
 	 * @param subject
 	 * @param body
 	 * @param sendAttachments
-	 * 
 	 * @return
-	 * 
 	 * @throws Exception
 	 */
     public Map<String, Object> sendMail(Entry entry, Collection<Long> userIds, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
     		Collection<Long> bccIds, String subject, Description body,  boolean sendAttachments) throws Exception;
-    
     /**
-     * Send a mail message to a collection of users and/or explicit email addresses.
-     *  
-     * @param ids - toList
-     * @param teamIds - toList
+     * Send a mail message to a collection of users and/or explicit email address. 
+     * @param ids
      * @param emailAddresses
  	 * @param ccIds - ccoList
 	 * @param bccIds - bccList
-     * @param subject
+    * @param subject
      * @param body
-     * 
      * @return
-     * 
      * @throws Exception
      */
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
     		Collection<Long> bccIds, String subject, Description body) throws Exception;
-
-    /**
-     * Send a share notification mail message to a collection of users
-     * and/or explicit email addresses.
-     * 
-     * @param share
-     * @param sharedEntity
-     * @param principalIds
-     * @param teamIds
-     * @param emailAddresses
-     * @param ccIds
-     * @param bccIds
-     * 
-     * @return
-     * 
-     * @throws Exception
-     */
-    public Map<String, Object> sendMail(ShareItem share, DefinableEntity sharedEntity, Collection<Long> principalIds, Collection<Long> teamIds,
-    		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception;
-    	 
-    /**
-	 * Send a public link notification mail message to a collection of
-	 * email addresses.
-	 * 
-	 * @param share				- Share item.
-	 * @param sharedEntity		- Entity (folder or folder entry) being shared.
-	 * @param emas				- toList,  stand alone email address.
-	 * @param bccEMAs			- bccList
-	 * @param viewUrl			- The public link view URL.
-	 * @param downloadUrl		- The public link download URL.
-	 * 
-	 * @return
-	 * 
-	 * @throws Exception
-     */
-    public Map<String, Object> sendPublicLinkMail(ShareItem share, DefinableEntity sharedEntity, Collection<String> ems,
-    		Collection<String> bccEMAs, String viewUrl, String downloadUrl) throws Exception;
-    	 
-    /**
-	 * Sends a URL notification mail message to a collection of users
-	 * and/or explicit email addresses.
-	 * 
-	 * @param url					- The URL embedded in the notification.
-	 * @param urlNotificationType	- Type of notification to send.
-	 * @param principalIds			- toList,  users and groups
-	 * @param teamIds				- toList,  teams.
-	 * @param emailAddresses		- toList,  stand alone email address.
-	 * @param ccIds					- ccList,  users and groups
-	 * @param bccIds				- bccList, users and groups
-     * 
-     * @return
-     * 
-     * @throws Exception
-     */
-    public Map<String, Object> sendUrlNotification(String url, UrlNotificationType urlNotificationType, Collection<Long> principalIds, Collection<Long> teamIds,
-    		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception;
-    	 
-    /**
-     * Sends a confirmation mail message to an external user.
-     * 
-     * @param externalUserId
-     * @param entityPermalinkUrl
-     * 
-     * @return
-     * 
-     * @throws Exception
-     */
-    public Map<String, Object> sendConfirmationMailToExternalUser(Long externalUserId, String entityPermalinkUrl) throws Exception;
-    	 
-    /**
-     * Sends a share invitation mail message to an external user.
-     * 
-     * @param share
-     * @param sharedEntity
-     * @param externalUserId
-     * 
-     * @return
-     * 
-     * @throws Exception
-     */
-    public Map<String, Object> sendShareInviteMailToExternalUser(ShareItem share, DefinableEntity sharedEntity, Long externalUserId) throws Exception;
     	 
     public void setMailConfigAndSchedules(MailConfig mailConfig, ScheduleInfo notifications, ScheduleInfo postings) throws AccessControlException;  
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess) throws AccessControlException;
- 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, boolean justThisScope, String scope) throws AccessControlException;
- 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, boolean justThisScope, String scope, boolean skipFileContentIndexing) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
-    public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit, boolean justThisScope, String scope) throws AccessControlException;
-    public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit, boolean justThisScope, String scope, boolean skipFileContentIndexing) throws AccessControlException;
-	public void updateWorkAreaFunctionMemberships(WorkArea wa, Long functionId, boolean add, Collection<Long> memberIds);
-	public void updateWorkAreaFunctionMembership( WorkArea wa, Long functionId, boolean add, Long             memberId );
-	public void resetWorkAreaFunctionMemberships( WorkArea wa, Long functionId,              Collection<Long> memberIds);
-	public void resetWorkAreaFunctionMemberships( WorkArea wa, Long functionId,              Collection<Long> memberIds, boolean skipFileContentIndexing);
-	public void resetWorkAreaFunctionMembership(  WorkArea wa, Long functionId,              Long             memberId );
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
-    public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly);
+	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly);
 	public void updateDefaultDefinitions(AllModulesInjected bs, Long topId, Boolean newDefinitionsOnly, Collection ids);
 	
 	/**
@@ -397,7 +245,7 @@ public interface AdminModule {
 	 * of the corresponding Lucene node in the context of current zone.
 	 * @return
 	 */
-	public List<IndexNode> retrieveIndexNodesHA();
+	public List<IndexNode> retrieveIndexNodes();
 	
 	/**
 	 * Update the index node with the state information.
@@ -406,21 +254,21 @@ public interface AdminModule {
 	 * @param accessMode
 	 * @param noDeferredUpdateLogRecords
 	 */
-	public void updateIndexNodeHA(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords);
+	public void updateIndexNode(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords);
 
 	/**
 	 * Apply the deferred update log records to the index node and remove them.
 	 * 
 	 * @param indexNode
 	 */
-	public void applyDeferredUpdateLogRecordsHA(IndexNode indexNode);
+	public void applyDeferredUpdateLogRecords(IndexNode indexNode);
 	
 	/**
 	 * Discard and remove the deferred update log records without applying them.
 	 *  
 	 * @param indexNode
 	 */
-	public void discardDeferredUpdateLogRecordsHA(IndexNode indexNode);
+	public void discardDeferredUpdateLogRecords(IndexNode indexNode);
 	
 	/**
 	 * Obtain an application-scoped token on behalf of the specified user.
@@ -470,85 +318,5 @@ public interface AdminModule {
 	
 	public void disableSimpleProfiler();
 	
-	public void clearSimpleProfiler();
-	
-	public String dumpFileSyncStatsAsString();
-	
-	public void dumpFileSyncStatsToLog();
-	
-	public void enableFileSyncStats();
-	
-	public void disableFileSyncStats();
-	
-	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean deployLocalApps, Boolean allowCachePwd, Integer maxFileSize );
-	
-	public void addOpenIDProvider(OpenIDProvider openIDProvider);
-	
-	public void modifyOpenIDProvider(OpenIDProvider openIDProvider);
-	
-	public void deleteOpenIDProvider(String openIDProviderId);
-	
-	public OpenIDProvider getOpenIDProvider(String openIDProviderId);
-	
-	public List<OpenIDProvider> getOpenIDProviders();
-	
-	public boolean isExternalUserEnabled();
-	
-	public void setExternalUserEnabled(boolean enabled);
-
-	public OpenIDConfig getOpenIDConfig();
-	
-	public void setOpenIDConfig(OpenIDConfig openIDConfig);
-	
-	public void purgeLogTablesImmediate();
-	
-	public boolean writeAuditTrailLogFile(List<AuditTrail> entriesToBeDeleted);
-	public boolean writeChangeLogLogFile(List<ChangeLog> entriesToBeDeleted);
-	
-    public ScheduleInfo getLogTablePurgeSchedule();
-    
-    public void setLogTablePurgeSchedule(ScheduleInfo info);
-    
-    public MobileAppsConfig getMobileAppsConfig();
-    public MobileOpenInWhiteLists getMobileOpenInWhiteLists();
-    
-    public void setMobileAppsConfig( MobileAppsConfig mobileAppsConfig );
-    
-    public void setJitsConfig( boolean enabled, long maxWait );
-    
-    /**
-     * Perform reindexing. This starts by first deleting from the search index the entire 
-     * documents corresponding to the binder and everything in it (as opposed to replacing
-     * one item at a time), hence destructive.
-     * 
-     * @param binderIds
-     * @param statusTicket
-     * @param nodeNames
-     * @param errors
-     * @param includeUsersAndGroups
-     * @throws AccessControlException
-     */
-    public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException;
-    
-    /**
-     * Clear/reset reindexing states associated with the nodes (H/A if specified, non-H/A if unspecified).
-     * 
-     * @param nodeNames
-     */
-    public void clearReindexState(String[] nodeNames);
-    
-    /**
-     * Return if "unsafe" reindexing is currently in progress. Used specifically by Desktop client.
-     * 
-     * @return
-     */
-    public boolean isUnsafeReindexingInProgress();
-    
-    /**
-     * Load the index node associated with the system configured with non-H/A Lucene service. 
-     * If the system is set up with H/A Lucene service, this method will return null.
-     * 
-     * @return
-     */
-    public IndexNode loadNonHAIndexNode();
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl);
  }

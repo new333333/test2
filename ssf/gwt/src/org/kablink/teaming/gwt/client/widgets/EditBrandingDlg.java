@@ -40,16 +40,11 @@ import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt.BrandingRule;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.util.runasync.EditBrandingDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg.TinyMCEDlgClient;
 
@@ -62,13 +57,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -97,7 +92,6 @@ public class EditBrandingDlg extends DlgBox
 	private RadioButton m_useAdvancedBrandingRb;
 	private ListBox m_brandingImgListbox;
 	private ListBox m_backgroundImgListbox;
-	private ListBox m_loginDlgImgListbox;
 	private CheckBox m_stretchBgImgCb;
 	private TextBox m_backgroundColorTextbox;
 	private TextBox m_textColorTextbox;
@@ -115,6 +109,7 @@ public class EditBrandingDlg extends DlgBox
 	private RadioButton m_ruleSiteBrandingOnlyRb = null;
 	private RadioButton m_ruleBothSiteAndBinderBrandingRb = null;
 	private RadioButton m_ruleBinderOverridesRb = null;
+	
 
 	/*
 	 * Note that the class constructor is private to facilitate code
@@ -127,11 +122,9 @@ public class EditBrandingDlg extends DlgBox
 		boolean autoHide,
 		boolean modal,
 		int xPos,
-		int yPos,
-		Integer width,
-		Integer height )
+		int yPos )
 	{
-		super( autoHide, modal, xPos, yPos, width, height, DlgButtonMode.OkCancel );
+		super( autoHide, modal, xPos, yPos );
 		
 		// Create the callback that will be used when we issue an ajax call to get
 		// the list of files attached to the given binder.
@@ -140,7 +133,6 @@ public class EditBrandingDlg extends DlgBox
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -156,7 +148,6 @@ public class EditBrandingDlg extends DlgBox
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				ArrayList<String> listOfFileAttachments;
@@ -183,7 +174,6 @@ public class EditBrandingDlg extends DlgBox
 		m_advancedBranding = null;
 		m_brandingImgListbox.setSelectedIndex( -1 );
 		m_backgroundImgListbox.setSelectedIndex( -1 );
-		m_loginDlgImgListbox.setSelectedIndex( -1 );
 		m_backgroundColorTextbox.setText( "" );
 		m_textColorTextbox.setText( "" );
 	}// end clearBranding()
@@ -192,16 +182,12 @@ public class EditBrandingDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
-		GwtTeamingMessages messages;
 		FlowPanel mainPanel = null;
 		Label spacer;
 		FlexTable table = null;
 		int nextRow;
-		
-		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
@@ -216,7 +202,7 @@ public class EditBrandingDlg extends DlgBox
 		{
 			HorizontalPanel hPanel;
 			
-			m_useBrandingImgRb = new RadioButton( "brandingType", messages.useBrandingImgLabel() );
+			m_useBrandingImgRb = new RadioButton( "brandingType", GwtTeaming.getMessages().useBrandingImgLabel() );
 			table.setWidget( nextRow, 0, m_useBrandingImgRb );
 
 			hPanel = new HorizontalPanel();
@@ -231,24 +217,29 @@ public class EditBrandingDlg extends DlgBox
 			{
 				Anchor addFileAnchor;
 				ClickHandler clickHandler;
+				MouseOverHandler mouseOverHandler;
+				MouseOutHandler mouseOutHandler;
 				FlowPanel flowPanel;
 				Element linkElement;
 				Element imgElement;
 				Image browseImg;
 				
 				flowPanel = new FlowPanel();
-//				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
+				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
 				flowPanel.addStyleName( "editBrandingBrowseLink" );
+				flowPanel.addStyleName( "editBrandingLink" );
+				flowPanel.addStyleName( "subhead-control-bg1" );
+				flowPanel.addStyleName( "roundcornerSM" );
 
 				addFileAnchor = new Anchor();
-				addFileAnchor.setTitle( messages.addImage() );
+				addFileAnchor.setTitle( GwtTeaming.getMessages().addImage() );
 				flowPanel.add( addFileAnchor );
 				
 				// Add a browse image to the link.
 				browseImg = new Image( GwtTeaming.getImageBundle().browseHierarchy() );
 				linkElement = addFileAnchor.getElement();
 				imgElement = browseImg.getElement();
-//				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
+				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
 				linkElement.appendChild( imgElement );
 
 				// Add a clickhandler to the "add file" link.  When the user clicks on the hint we
@@ -258,29 +249,53 @@ public class EditBrandingDlg extends DlgBox
 					/**
 					 * Invoke the "add file" dialog
 					 */
-					@Override
 					public void onClick( ClickEvent event )
 					{
-						Scheduler.ScheduledCommand cmd;
-						final Widget anchor;
+						Widget anchor;
 						
 						// Get the anchor the user clicked on.
 						anchor = (Widget) event.getSource();
 						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								// Invoke the "Add file attachment" dialog.
-								invokeAddFileAttachmentDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop() );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						removeMouseOverStyles( anchor.getParent() );
+						
+						// Invoke the "Add file attachment" dialog.
+						invokeAddFileAttachmentDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop() );
 					}//end onClick()
 				};
 				addFileAnchor.addClickHandler( clickHandler );
 				
+				// Add a mouse-over handler
+				mouseOverHandler = new MouseOverHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onMouseOver( MouseOverEvent event )
+					{
+						Widget widget;
+						
+						widget = (Widget)event.getSource();
+						widget.getParent().addStyleName( "subhead-control-bg2" );
+					}// end onMouseOver()
+				};
+				addFileAnchor.addMouseOverHandler( mouseOverHandler );
+
+				// Add a mouse-out handler
+				mouseOutHandler = new MouseOutHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onMouseOut( MouseOutEvent event )
+					{
+						Widget widget;
+						
+						widget = (Widget)event.getSource();
+						removeMouseOverStyles( widget.getParent() );
+					}// end onMouseOut()
+				};
+				addFileAnchor.addMouseOutHandler( mouseOutHandler );
+
 				hPanel.add( flowPanel );
 			}
 			
@@ -290,16 +305,21 @@ public class EditBrandingDlg extends DlgBox
 		
 		// Add the controls for "Use Advanced Branding"
 		{
-			m_useAdvancedBrandingRb = new RadioButton( "brandingType", messages.useAdvancedBrandingLabel() );
+			m_useAdvancedBrandingRb = new RadioButton( "brandingType", GwtTeaming.getMessages().useAdvancedBrandingLabel() );
 			
 			// Add a link the user can click on to edit the advanced branding.
 			{
 				Anchor advancedAnchor;
 				ClickHandler clickHandler;
+				MouseOverHandler mouseOverHandler;
+				MouseOutHandler mouseOutHandler;
 				
-				advancedAnchor = new Anchor( messages.advancedBtn() );
-				advancedAnchor.setTitle( messages.editAdvancedBranding() );
+				advancedAnchor = new Anchor( GwtTeaming.getMessages().advancedBtn() );
+				advancedAnchor.setTitle( GwtTeaming.getMessages().editAdvancedBranding() );
+				advancedAnchor.addStyleName( "editBrandingLink" );
 				advancedAnchor.addStyleName( "editBrandingAdvancedLink" );
+				advancedAnchor.addStyleName( "subhead-control-bg1" );
+				advancedAnchor.addStyleName( "roundcornerSM" );
 				
 				// Add a clickhandler to the "advanced" link.  When the user clicks on the link we
 				// will invoke the "edit advanced branding" dialog.
@@ -308,28 +328,51 @@ public class EditBrandingDlg extends DlgBox
 					/**
 					 * Invoke the "edit advanced branding" dialog
 					 */
-					@Override
 					public void onClick( ClickEvent event )
 					{
-						Scheduler.ScheduledCommand cmd;
-						final Anchor anchor;
+						Anchor anchor;
 						
 						anchor = (Anchor) event.getSource();
 						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute() 
-							{
-								
-								// Invoke the "Edit Advanced Branding" dialog.
-								invokeEditAdvancedBrandingDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop() );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						// Invoke the "Edit Advanced Branding" dialog.
+						invokeEditAdvancedBrandingDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop() );
 					}//end onClick()
 				};
 				advancedAnchor.addClickHandler( clickHandler );
+				
+				// Add a mouse-over handler
+				mouseOverHandler = new MouseOverHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onMouseOver( MouseOverEvent event )
+					{
+						Widget widget;
+						
+						widget = (Widget)event.getSource();
+						widget.removeStyleName( "subhead-control-bg1" );
+						widget.addStyleName( "subhead-control-bg2" );
+					}// end onMouseOver()
+				};
+				advancedAnchor.addMouseOverHandler( mouseOverHandler );
+
+				// Add a mouse-out handler
+				mouseOutHandler = new MouseOutHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onMouseOut( MouseOutEvent event )
+					{
+						Widget widget;
+						
+						// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
+						widget = (Widget)event.getSource();
+						removeMouseOverStyles( widget );
+					}// end onMouseOut()
+				};
+				advancedAnchor.addMouseOutHandler( mouseOutHandler );
 
 				table.setWidget( nextRow, 1,advancedAnchor );
 			}
@@ -348,7 +391,7 @@ public class EditBrandingDlg extends DlgBox
 		{
 			HorizontalPanel hPanel;
 			
-			table.setText( nextRow, 0, messages.backgroundImgLabel() );
+			table.setText( nextRow, 0, GwtTeaming.getMessages().backgroundImgLabel() );
 
 			// Create a list box to hold the list of attachments for the given binder.
 			// User can select one of these files to use as the background image.
@@ -362,24 +405,29 @@ public class EditBrandingDlg extends DlgBox
 			{
 				Anchor addFileAnchor;
 				ClickHandler clickHandler;
+				MouseOverHandler mouseOverHandler;
+				MouseOutHandler mouseOutHandler;
 				FlowPanel flowPanel;
 				Element linkElement;
 				Element imgElement;
 				Image browseImg;
 				
 				flowPanel = new FlowPanel();
-//				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
+				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
 				flowPanel.addStyleName( "editBrandingBrowseLink" );
+				flowPanel.addStyleName( "editBrandingLink" );
+				flowPanel.addStyleName( "subhead-control-bg1" );
+				flowPanel.addStyleName( "roundcornerSM" );
 
 				addFileAnchor = new Anchor();
-				addFileAnchor.setTitle( messages.addImage() );
+				addFileAnchor.setTitle( GwtTeaming.getMessages().addImage() );
 				flowPanel.add( addFileAnchor );
 				
 				// Add the browse image to the link.
 				browseImg = new Image( GwtTeaming.getImageBundle().browseHierarchy() );
 				linkElement = addFileAnchor.getElement();
 				imgElement = browseImg.getElement();
-//				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
+				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
 				linkElement.appendChild( imgElement );
 
 				// Add a clickhandler to the "add file" link.  When the user clicks on the hint we
@@ -389,28 +437,52 @@ public class EditBrandingDlg extends DlgBox
 					/**
 					 * Invoke the "add file" dialog
 					 */
-					@Override
 					public void onClick( ClickEvent event )
 					{
-						Scheduler.ScheduledCommand cmd;
-						final Widget anchor;
+						Widget anchor;
 						
 						// Get the anchor the user clicked on.
 						anchor = (Widget) event.getSource();
+						
+						removeMouseOverStyles( anchor.getParent() );
 
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								// Invoke the "Add file attachment" dialog.
-								invokeAddFileAttachmentDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop() );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						// Invoke the "Add file attachment" dialog.
+						invokeAddFileAttachmentDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop() );
 					}//end onClick()
 				};
 				addFileAnchor.addClickHandler( clickHandler );
+
+				// Add a mouse-over handler
+				mouseOverHandler = new MouseOverHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onMouseOver( MouseOverEvent event )
+					{
+						Widget widget;
+						
+						widget = (Widget)event.getSource();
+						widget.getParent().addStyleName( "subhead-control-bg2" );
+					}// end onMouseOver()
+				};
+				addFileAnchor.addMouseOverHandler( mouseOverHandler );
+
+				// Add a mouse-out handler
+				mouseOutHandler = new MouseOutHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onMouseOut( MouseOutEvent event )
+					{
+						Widget widget;
+						
+						widget = (Widget)event.getSource();
+						removeMouseOverStyles( widget.getParent() );
+					}// end onMouseOut()
+				};
+				addFileAnchor.addMouseOutHandler( mouseOutHandler );
 
 				hPanel.add( flowPanel );
 			}
@@ -419,30 +491,25 @@ public class EditBrandingDlg extends DlgBox
 			++nextRow;
 			
 			// Add a "stretch image" checkbox.
-			m_stretchBgImgCb = new CheckBox( messages.stretchImg() );
+			m_stretchBgImgCb = new CheckBox( GwtTeaming.getMessages().stretchImg() );
 			table.setWidget( nextRow, 1, m_stretchBgImgCb );
 			++nextRow;
 		}
 		
 		// Add an empty row to add some space between the "background image" listbox and the "background color" textbox.
-		spacer = new Label( messages.colorDescription() );
-		spacer.addStyleName( "margintop3" );
-		spacer.addStyleName( "gray3" );
-		table.setWidget( nextRow, 1, spacer );
+		spacer = new Label( " " );
+		spacer.addStyleName( "marginTop10px" );
+		table.setWidget( nextRow, 0, spacer );
 		++nextRow;
-
-
+		
 		// Add the controls for "Background color"
 		{
 			KeyUpHandler keyUpHandler;
 			ClickHandler clickHandler;
 			HorizontalPanel hPanel;
 			Anchor colorHint;
-			Element linkElement;
-			Element imgElement;
-			Image colorBrowseImg;
 			
-			table.setText( nextRow, 0, messages.backgroundColorLabel() );
+			table.setText( nextRow, 0, GwtTeaming.getMessages().backgroundColorLabel() );
 
 			// Create a panel where the background color control and hint will live.
 			hPanel = new HorizontalPanel();
@@ -452,28 +519,20 @@ public class EditBrandingDlg extends DlgBox
 			m_backgroundColorTextbox.setVisibleLength( 20 );
 			hPanel.add( m_backgroundColorTextbox );
 
-			// Add a button next to the background color textbox the user can click on to invoke a color picker.
-
-			colorHint = new Anchor();
-			colorHint.setTitle( messages.displayColorPicker() );
-			colorHint.addStyleName( "editBrandingBrowseLink" );
-			colorHint.addStyleName( "displayInlineBlock" );
-
-			// Add the browse image to the link.
-			colorBrowseImg = new Image( GwtTeaming.getImageBundle().colorPicker() );
-			linkElement = colorHint.getElement();
-			imgElement = colorBrowseImg.getElement();
-			linkElement.appendChild( imgElement );
+			// Add a hint next to the background color textbox the user can click on to invoke a color picker.
+			colorHint = new Anchor( GwtTeaming.getMessages().colorHint() );
+			colorHint.setTitle( GwtTeaming.getMessages().displayColorPicker() );
+			colorHint.addStyleName( "editBrandingLink" );
 			hPanel.add( colorHint );
-			table.setWidget( nextRow, 1, hPanel );
 
+			table.setWidget( nextRow, 1, hPanel );
+			
 			// Add a keyup handler so we can update the "sample text" background color.
 			keyUpHandler = new KeyUpHandler()
 			{
 				/**
 				 * Update the background color of the sample text.
 				 */
-				@Override
 				public void onKeyUp( KeyUpEvent event )
 				{
 					updateSampleTextBgColor();
@@ -488,7 +547,6 @@ public class EditBrandingDlg extends DlgBox
 				/**
 				 * Invoke the color picker.
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
 					Widget anchor;
@@ -511,13 +569,10 @@ public class EditBrandingDlg extends DlgBox
 			ClickHandler clickHandler;
 			Anchor textColorHint;
 			HorizontalPanel hPanel;
-			Element linkElement;
-			Element imgElement;
-			Image colorBrowseImg;
 			
-			table.setText( nextRow, 0, messages.textColorLabel() );
+			table.setText( nextRow, 0, GwtTeaming.getMessages().textColorLabel() );
 
-			// Create a panel where the text color control and button will live.
+			// Create a panel where the text color control and hint will live.
 			hPanel = new HorizontalPanel();
 			
 			// Add a text box where the user can enter the font color.
@@ -525,28 +580,20 @@ public class EditBrandingDlg extends DlgBox
 			m_textColorTextbox.setVisibleLength( 20 );
 			hPanel.add( m_textColorTextbox );
 			
-			// Add a button next to the text color textbox the user can click on to invoke a color picker.
-			textColorHint = new Anchor();
-			textColorHint.setTitle( messages.displayColorPicker() );
-			textColorHint.addStyleName( "editBrandingBrowseLink" );
-			textColorHint.addStyleName( "displayInlineBlock" );
-
-			// Add the browse image to the link.
-			colorBrowseImg = new Image( GwtTeaming.getImageBundle().colorPicker() );
-			linkElement = textColorHint.getElement();
-			imgElement = colorBrowseImg.getElement();
-			linkElement.appendChild( imgElement );
-
+			// Add a hint next to the text color textbox the user can click on to invoke a color picker.
+			textColorHint = new Anchor( GwtTeaming.getMessages().colorHint() );
+			textColorHint.setTitle( GwtTeaming.getMessages().displayColorPicker() );
+			textColorHint.addStyleName( "editBrandingLink" );
 			hPanel.add( textColorHint );
+			
 			table.setWidget( nextRow, 1, hPanel );
-
+			
 			// Add a keyup handler so we can update the "sample text" color
 			keyUpHandler = new KeyUpHandler()
 			{
 				/**
 				 * Update the text color of the sample text.
 				 */
-				@Override
 				public void onKeyUp( KeyUpEvent event )
 				{
 					updateSampleTextColor();
@@ -561,7 +608,6 @@ public class EditBrandingDlg extends DlgBox
 				/**
 				 * Invoke the color picker.
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
 					Widget anchor;
@@ -584,7 +630,7 @@ public class EditBrandingDlg extends DlgBox
 			cellFormatter = table.getCellFormatter();
 			cellFormatter.addStyleName( nextRow, 1, "paddingTop8px" );
 
-			m_sampleText = new InlineLabel( messages.sampleText() );
+			m_sampleText = new InlineLabel( GwtTeaming.getMessages().sampleText() );
 			m_sampleText.addStyleName( "editBrandingSampleText" );
 			table.setWidget( nextRow, 1, m_sampleText );
 			++nextRow;
@@ -598,20 +644,20 @@ public class EditBrandingDlg extends DlgBox
 			
 			m_rulesPanel = new FlowPanel();
 			
-			label = new Label( messages.brandingRulesLabel() );
+			label = new Label( GwtTeaming.getMessages().brandingRulesLabel() );
 			m_rulesPanel.add( label );
 
-			m_ruleSiteBrandingOnlyRb = new RadioButton( "brandingRule", messages.siteBrandingOnlyLabel() );
+			m_ruleSiteBrandingOnlyRb = new RadioButton( "brandingRule", GwtTeaming.getMessages().siteBrandingOnlyLabel() );
 			wrapperPanel = new FlowPanel();
 			wrapperPanel.add( m_ruleSiteBrandingOnlyRb );
 			m_rulesPanel.add( wrapperPanel );
 			
-			m_ruleBothSiteAndBinderBrandingRb = new RadioButton( "brandingRule", messages.siteAndBinderBrandingLabel() );
+			m_ruleBothSiteAndBinderBrandingRb = new RadioButton( "brandingRule", GwtTeaming.getMessages().siteAndBinderBrandingLabel() );
 			wrapperPanel = new FlowPanel();
 			wrapperPanel.add( m_ruleBothSiteAndBinderBrandingRb );
 			m_rulesPanel.add( wrapperPanel );
 			
-			m_ruleBinderOverridesRb = new RadioButton( "brandingRule", messages.binderOverridesBrandingLabel() );
+			m_ruleBinderOverridesRb = new RadioButton( "brandingRule", GwtTeaming.getMessages().binderOverridesBrandingLabel() );
 			wrapperPanel = new FlowPanel();
 			wrapperPanel.add( m_ruleBinderOverridesRb );
 			m_rulesPanel.add( wrapperPanel );
@@ -622,110 +668,19 @@ public class EditBrandingDlg extends DlgBox
 			++nextRow;
 		}
 		
-		mainPanel.add( table );
-		
-		// Add a GroupBox to hold the controls needed to select the image used in the login dialog.
-		{
-			FlowPanel captionPanelMainPanel;
-			CaptionPanel captionPanel;
-			FlexTable captionTable;
-			Label hint;
-			
-			captionPanel = new CaptionPanel( messages.editBrandingDlg_LoginDialogCaption() );
-			captionPanel.addStyleName( "editBrandingDlg_LoginDialogCaptionPanel" );
-			
-			captionPanelMainPanel = new FlowPanel();
-			captionPanel.add( captionPanelMainPanel );
-
-			hint = new Label( messages.editBrandingDlg_LoginDialogImgHint() );
-			hint.addStyleName( "editBrandingDlg_LoginDialogHint" );
-			captionPanelMainPanel.add( hint );
-			
-			captionTable = new FlexTable();
-			captionTable.setText( 0, 0, messages.editBrandingDlg_CurrentImage() );
-
-			// Add a listbox the user can use to select the default image or a custom image.
-			{
-				m_loginDlgImgListbox = new ListBox( false );
-				m_loginDlgImgListbox.setVisibleItemCount( 1 );
-			
-				captionTable.setWidget( 0, 1, m_loginDlgImgListbox );
-			}
-			
-			// Add a link the user can click on to add a file
-			{
-				Anchor addFileAnchor;
-				ClickHandler clickHandler;
-				FlowPanel flowPanel;
-				Element linkElement;
-				Element imgElement;
-				Image browseImg;
-				
-				flowPanel = new FlowPanel();
-//				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
-				flowPanel.addStyleName( "editBrandingBrowseLink" );
-
-				addFileAnchor = new Anchor();
-				addFileAnchor.setTitle( messages.addImage() );
-				flowPanel.add( addFileAnchor );
-				
-				// Add the browse image to the link.
-				browseImg = new Image( GwtTeaming.getImageBundle().browseHierarchy() );
-				linkElement = addFileAnchor.getElement();
-				imgElement = browseImg.getElement();
-//				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
-				linkElement.appendChild( imgElement );
-
-				// Add a clickhandler to the "add file" link.  When the user clicks on the hint we
-				// will invoke the "add file" dialog.
-				clickHandler = new ClickHandler()
-				{
-					/**
-					 * Invoke the "add file" dialog
-					 */
-					@Override
-					public void onClick( ClickEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						final Widget anchor;
-						
-						// Get the anchor the user clicked on.
-						anchor = (Widget) event.getSource();
-
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								// Invoke the "Add file attachment" dialog.
-								invokeAddFileAttachmentDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop() );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
-				addFileAnchor.addClickHandler( clickHandler );
-
-				captionTable.setWidget( 0, 2, flowPanel );
-			}
-
-			captionPanelMainPanel.add( captionTable );
-			
-			mainPanel.add( captionPanel );
-		}
-
 		// Add a link the user can click on to clear all branding information
 		{
-			FlowPanel panel;
-			Button clearBrandingBtn;
+			Anchor clearBrandingAnchor;
 			ClickHandler clickHandler;
+			MouseOverHandler mouseOverHandler;
+			MouseOutHandler mouseOutHandler;
 			
-			panel = new FlowPanel();
-			panel.addStyleName( "margintop3" );
-			
-			// Add "Clear branding" button
-			clearBrandingBtn = new Button( messages.clearBrandingLabel() );
-			panel.add( clearBrandingBtn );
+			clearBrandingAnchor = new Anchor( GwtTeaming.getMessages().clearBrandingLabel() );
+			clearBrandingAnchor.setTitle( GwtTeaming.getMessages().clearBrandingLabel() );
+			clearBrandingAnchor.addStyleName( "editBrandingLink" );
+			clearBrandingAnchor.addStyleName( "editBrandingAdvancedLink" );
+			clearBrandingAnchor.addStyleName( "subhead-control-bg1" );
+			clearBrandingAnchor.addStyleName( "roundcornerSM" );
 			
 			// Add a clickhandler to the "Clear branding" link.  When the user clicks on the link we
 			// will clear all branding information.
@@ -734,34 +689,61 @@ public class EditBrandingDlg extends DlgBox
 				/**
 				 * Clear all branding information.
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							clearBranding();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
+					clearBranding();
+				}//end onClick()
 			};
-			clearBrandingBtn.addClickHandler( clickHandler );
+			clearBrandingAnchor.addClickHandler( clickHandler );
 			
-			mainPanel.add( panel );
+			// Add a mouse-over handler
+			mouseOverHandler = new MouseOverHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOver( MouseOverEvent event )
+				{
+					Widget widget;
+					
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg1" );
+					widget.addStyleName( "subhead-control-bg2" );
+				}// end onMouseOver()
+			};
+			clearBrandingAnchor.addMouseOverHandler( mouseOverHandler );
+
+			// Add a mouse-out handler
+			mouseOutHandler = new MouseOutHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOut( MouseOutEvent event )
+				{
+					Widget widget;
+					
+					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg2" );
+					widget.addStyleName( "subhead-control-bg1" );
+				}// end onMouseOut()
+			};
+			clearBrandingAnchor.addMouseOutHandler( mouseOutHandler );
+
+			table.setWidget( nextRow, 0, clearBrandingAnchor );
+			++nextRow;
 		}
+
+		mainPanel.add( table );
 		
 		return mainPanel;
 	}// end createContent()
 	
+	
 	/**
 	 * Get the data from the controls in the dialog box and store the data in a GwtBrandingData obj.
 	 */
-	@Override
 	public Object getDataFromDlg()
 	{
 		GwtBrandingData brandingData;
@@ -859,9 +841,6 @@ public class EditBrandingDlg extends DlgBox
 			GwtBrandingDataExt.BrandingRule rule = GwtBrandingDataExt.BrandingRule.BRANDING_RULE_UNDEFINED;
 			
 			// Yes.  Get the branding rule.
-			if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
-				rule = GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY;
-			
 			if ( m_ruleBinderOverridesRb.getValue() == true )
 				rule = GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING;
 			else if ( m_ruleBothSiteAndBinderBrandingRb.getValue() == true )
@@ -872,20 +851,6 @@ public class EditBrandingDlg extends DlgBox
 			brandingData.setBrandingRule( rule );
 			
 			brandingData.setIsSiteBranding( true );
-		
-			// Save the login dialog image
-			{
-				// Is something selected in the "login dialog image" listbox?
-				imgName = "";
-				index = m_loginDlgImgListbox.getSelectedIndex();
-				if ( index != -1 )
-				{
-					// Yes
-					imgName = m_loginDlgImgListbox.getValue( index );
-				}
-				
-				brandingData.setLoginDlgImageName( imgName );
-			}
 		}
 		
 		return brandingData;
@@ -895,28 +860,12 @@ public class EditBrandingDlg extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
-	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return m_backgroundColorTextbox;
 	}// end getFocusWidget()
 	
 	
-	/**
-	 * 
-	 */
-	@Override
-	public HelpData getHelpData()
-	{
-		HelpData helpData;
-		
-		helpData = new HelpData();
-		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "brand" );
-		
-		return helpData;
-	}
-
 	/**
 	 * Issue an ajax request to get the list of file attachments for this binder.
 	 * When we get the response, updateListOfFileAttachments() will be called.
@@ -937,18 +886,6 @@ public class EditBrandingDlg extends DlgBox
 	public void init( GwtBrandingData brandingData )
 	{
 		String type;
-		
-		// Are we dealing with site branding?
-		if ( brandingData.isSiteBranding() )
-		{
-			// Yes
-			setCaption( GwtTeaming.getMessages().brandingDlgSiteBrandingHeader() );
-		}
-		else
-		{
-			// No
-			setCaption( GwtTeaming.getMessages().brandingDlgHeader() );
-		}
 		
 		// Remember the branding data we started with.
 		m_origBrandingData = brandingData;
@@ -983,7 +920,7 @@ public class EditBrandingDlg extends DlgBox
 		updateSampleTextColor();
 		
 		// Are we dealing with site branding?
-		if ( brandingData.isSiteBranding() && GwtTeaming.m_requestInfo.isLicenseFilr() == false )
+		if ( brandingData.isSiteBranding() )
 		{
 			BrandingRule brandingRule;
 
@@ -1044,7 +981,6 @@ public class EditBrandingDlg extends DlgBox
 				/**
 				 * This method gets called when user user presses ok in the "Add File Attachment" dialog.
 				 */
-				@Override
 				public boolean editSuccessful( Object obj )
 				{
 					m_addFileAttachmentDlg.hide();
@@ -1064,7 +1000,6 @@ public class EditBrandingDlg extends DlgBox
 				/**
 				 * This method gets called when the user presses cancel in the "Add file attachment" dialog.
 				 */
-				@Override
 				public boolean editCanceled()
 				{
 					m_addFileAttachmentDlg.hide();
@@ -1112,7 +1047,6 @@ public class EditBrandingDlg extends DlgBox
 				/**
 				 * This method gets called when user user presses ok in the "Color Picker" dialog.
 				 */
-				@Override
 				public boolean editSuccessful( Object obj )
 				{
 					m_colorPickerDlg.hide();
@@ -1140,7 +1074,6 @@ public class EditBrandingDlg extends DlgBox
 				/**
 				 * This method gets called when the user presses cancel in the "Color Picker" dialog.
 				 */
-				@Override
 				public boolean editCanceled()
 				{
 					m_colorPickerDlg.hide();
@@ -1174,7 +1107,6 @@ public class EditBrandingDlg extends DlgBox
 			/**
 			 * This method gets called when user user presses ok in the "Edit Advanced Branding" dialog.
 			 */
-			@Override
 			@SuppressWarnings("unused")
 			public boolean editSuccessful( Object obj )
 			{
@@ -1197,7 +1129,6 @@ public class EditBrandingDlg extends DlgBox
 			/**
 			 * This method gets called when the user presses cancel in the "Edit Advanced Branding" dialog.
 			 */
-			@Override
 			public boolean editCanceled()
 			{
 				m_editAdvancedBrandingDlg.hide();
@@ -1288,7 +1219,6 @@ public class EditBrandingDlg extends DlgBox
 					/**
 					 * 
 					 */
-					@Override
 					public void setPosition( int offsetWidth, int offsetHeight )
 					{
 						int xPos;
@@ -1353,11 +1283,11 @@ public class EditBrandingDlg extends DlgBox
 	/**
 	 * Remove the styles that were added to the given widget when the user moved the mouse over the widget.
 	 */
-//	private void removeMouseOverStyles( Widget widget )
-//	{
-//		widget.removeStyleName( "subhead-control-bg2" );
-//		widget.addStyleName( "subhead-control-bg1" );
-//	}// end removeMouseOverStyles()
+	private void removeMouseOverStyles( Widget widget )
+	{
+		widget.removeStyleName( "subhead-control-bg2" );
+		widget.addStyleName( "subhead-control-bg1" );
+	}// end removeMouseOverStyles()
 	
 	
 	/**
@@ -1427,34 +1357,18 @@ public class EditBrandingDlg extends DlgBox
 		// Empty the "branding image" and "background image" listboxes.
 		m_brandingImgListbox.clear();
 		m_backgroundImgListbox.clear();
-		m_loginDlgImgListbox.clear();
 		
 		// Add an entry called "None" to the branding listbox.  The user can select "None" if
 		// they don't want to use a branding image.
 		m_brandingImgListbox.addItem( GwtTeaming.getMessages().imgNone(), BrandingPanel.NO_IMAGE );
 		
-		// Add an entry called "None" to the login dialog image listbox.  The user can select "None" if
-		// they don't want to use an image in the login dialog.
-		m_loginDlgImgListbox.addItem( GwtTeaming.getMessages().imgNone(), BrandingPanel.NO_IMAGE );
-		
 		// Add a Novell Teaming or a Kablink Teaming entry to the branding listbox depending on
 		// whether we are running Novell or Kablink Teaming.  The user can select this entry if
 		// they want to use the Novell/Kablink Teaming branding image.
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
-		{
-			m_brandingImgListbox.addItem( GwtTeaming.getMessages().novellFilr(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-			m_loginDlgImgListbox.addItem( GwtTeaming.getMessages().novellFilr(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-		}
-		else if ( GwtMainPage.m_novellTeaming )
-		{
+		if ( GwtMainPage.m_novellTeaming )
 			m_brandingImgListbox.addItem( GwtTeaming.getMessages().novellTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-			m_loginDlgImgListbox.addItem( GwtTeaming.getMessages().novellTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-		}
 		else
-		{
 			m_brandingImgListbox.addItem( GwtTeaming.getMessages().kablinkTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-			m_loginDlgImgListbox.addItem( GwtTeaming.getMessages().kablinkTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-		}
 
 		// Do we have any file attachments?
 		if ( listOfFileAttachments.size() > 0 )
@@ -1472,7 +1386,6 @@ public class EditBrandingDlg extends DlgBox
 				fileName = listOfFileAttachments.get( i );
 				m_brandingImgListbox.addItem( fileName, fileName );
 				m_backgroundImgListbox.addItem( fileName, fileName );
-				m_loginDlgImgListbox.addItem( fileName, fileName );
 			}
 		}
 		else
@@ -1487,10 +1400,6 @@ public class EditBrandingDlg extends DlgBox
 		
 		// Select the background image file in the listbox that is defined in the original branding data. 
 		selectImageInListbox( m_backgroundImgListbox, m_origBrandingData.getBgImageName() );
-
-		// Select the login dialog image file in the listbox that is defined in the original branding data.
-		selectImageInListbox( m_loginDlgImgListbox, m_origBrandingData.getLoginDlgImageName() );
-		
 	}// end updateListOfFileAttachments()
 	
 	
@@ -1561,72 +1470,41 @@ public class EditBrandingDlg extends DlgBox
 	}
 
 	/**
-	 * Executes code through the GWT.runAsync() method to ensure that all of the
-	 * executing code is in this split point.
+	 * Loads the EditBrandingDlg split point and returns an instance of it
+	 * via the callback.
+	 *
+	 * @param editSuccessfulHandler
+	 * @param editCanceledHandler
+	 * @param autoHide
+	 * @param modal
+	 * @param xPos
+	 * @param yPos 
+	 * @param ebDlgClient
 	 */
-	public static void runAsyncCmd( final RunAsyncCmd cmd, final EditBrandingDlgClient ebDlgClient )
+	public static void createAsync(
+		final EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
+		final EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
+		final boolean autoHide,
+		final boolean modal,
+		final int xPos,
+		final int yPos,
+		final EditBrandingDlgClient ebDlgClient )
 	{
 		GWT.runAsync( EditBrandingDlg.class, new RunAsyncCallback()
-		{
+		{			
+			@Override
+			public void onSuccess()
+			{
+				EditBrandingDlg ebDlg = new EditBrandingDlg( editSuccessfulHandler, editCanceledHandler, autoHide, modal, xPos, yPos );
+				ebDlgClient.onSuccess( ebDlg );
+			}// end onSuccess()
+			
 			@Override
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EditBrandingDlg() );
 				ebDlgClient.onUnavailable();
-			}
-
-			@Override
-			public void onSuccess()
-			{
-				switch ( cmd.getCmdType() )
-				{
-				case CREATE:
-				{
-					EditBrandingDlg ebDlg;
-					RunAsyncCreateDlgParams params;
-					
-					params = (RunAsyncCreateDlgParams) cmd.getParams();
-					ebDlg = new EditBrandingDlg(
-												params.getEditSuccessfulHandler(),
-												params.getEditCanceledHandler(),
-												params.getAutoHide(),
-												params.getModal(),
-												params.getLeft(),
-												params.getTop(),
-												params.getWidth(),
-												params.getHeight() );
-					
-					if ( ebDlgClient != null )
-						ebDlgClient.onSuccess( ebDlg );
-					
-					break;
-				}
-					
-				case INIT_AND_SHOW:
-				{
-					EditBrandingDlgInitAndShowParams params;
-					EditBrandingDlg dlg;
-					
-					params = (EditBrandingDlgInitAndShowParams)cmd.getParams();
-					dlg = params.getUIObj();
-
-					if ( params.getWidth() != null && params.getHeight() != null )
-						dlg.setPixelSize( params.getWidth(), params.getHeight());
-					
-					dlg.init( params.getBrandingData() );
-					
-					if ( params.getLeft() != null && params.getTop() != null )
-						dlg.setPopupPosition( params.getLeft(), params.getTop() );
-					
-					dlg.show();
-					break;
-				}
-					
-				case UNKNOWN:
-				default:
-					break;
-				}
-			}
+			}// end onFailure()
 		} );
-	}
+	}// end createAsync()
 }// end EditBrandingDlg

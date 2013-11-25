@@ -63,7 +63,7 @@ public class DefaultLicenseMonitor extends SimpleTriggerJob implements
 	}
 
 	public void remove(Long zoneId) {
-		unscheduleJob(zoneId.toString(), LICENSE_MONITOR_GROUP);
+		removeJob(zoneId.toString(), LICENSE_MONITOR_GROUP);
 	}
 	public void schedule(Long zoneId, int hour)
 	{

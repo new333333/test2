@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.module.mail.impl;
 
 import java.io.StringWriter;
@@ -83,15 +84,14 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.smtp.SMTPManager;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 
 /**
- * ?
- *  
+ * 
  * @author Janet McCann
  */
 @SuppressWarnings("unchecked")
@@ -142,7 +142,6 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	 * Determine which users have access to the entry.
 	 * Return a map from locale to a collection of email Addresses
 	 */
-	@Override
 	public Map<Locale, Collection> buildDistributionList(Entry entry, Collection subscriptions, int style, boolean redacted) {
 		FolderEntry fEntry = (FolderEntry)entry;
 		List entries = new ArrayList();
@@ -238,7 +237,6 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	 * The list of entries will maintain the order used to do lookup.  This is important
 	 * when actually building the digest message	
 	 */
-	@Override
 	public List buildDistributionList(Binder binder, Collection entries, Collection subscriptions, int style, boolean redacted) {
 		Folder folder = (Folder)binder;
 		List result = new ArrayList();
@@ -247,13 +245,9 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			//check access to folder/entry and build lists of users to receive mail
 			List checkList = new ArrayList();
 			for (Map.Entry<User, String[]> me:userMap.entrySet()) {
-				User u = me.getKey();
-				boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers(u);
-				if ((redacted && limitedView) || (!redacted && !limitedView)) {
-					AclChecker check = new AclChecker(u, me.getValue());
-					check.checkEntries(entries);
-					checkList.add(check);
-				}
+				AclChecker check = new AclChecker(me.getKey(), me.getValue());
+				check.checkEntries(entries);
+				checkList.add(check);
 			}
 			//	get a map containing a list of users mapped to a list of entries
 			while (!checkList.isEmpty()) {
@@ -299,7 +293,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				
 			}
 			//expand groups so we can remove users
-			boolean sendingToAllUsersIsAllowed = EmailHelper.canSendToAllUsers();
+			boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
 			Set<Long> explodedGroups = getProfileDao().explodeGroups(groupIds, folder.getZoneId(), sendingToAllUsersIsAllowed);
 			List<Principal> principals = getProfileDao().loadPrincipals(explodedGroups, folder.getZoneId(), true);
 			for (Principal p : principals) {
@@ -466,7 +460,6 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		
 	}
 
-	@Override
 	public String getSubject(Binder binder, Entry entry, Notify notify) {
 		if (entry == null) {
 			StringBuffer buf = new StringBuffer();
@@ -507,7 +500,6 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		}
 	}
 	
-	@Override
 	public String getFrom(Binder binder, Notify notify) {
 		String from = binder.getNotificationDef().getFromAddress();
 		if (Validator.isNull(from))
@@ -614,7 +606,6 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		if (binder.getPosting() != null && binder.getPosting().isEnabled()) return binder.getPosting().getEmailAddress();
 		return null;
 	}
-	@Override
 	public Map buildMessage(Binder binder, Collection entries,  Notify notify) {
 	    Map result = new HashMap();
 	    if (notify.getStartDate() == null) return result;
@@ -716,7 +707,6 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		}
 
 	}
-	@Override
 	public Map buildMessage(Binder binder, Entry entry,  Notify notify) {
 		Map result = new HashMap();
 	    if (notify.getStartDate() == null) return result;

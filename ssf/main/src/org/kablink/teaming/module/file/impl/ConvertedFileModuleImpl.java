@@ -52,7 +52,6 @@ import org.kablink.teaming.docconverter.impl.TextOpenOfficeConverter;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.repository.RepositoryServiceException;
@@ -110,14 +109,6 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 		HtmlConverter converter = this.htmlConverterManager.getConverter();
 		converter.deleteConvertedFile(binder, entity, fa);
 	}
-	public void deleteCacheHtmlFile(
-			ShareItem shareItem, Binder binder, DefinableEntity entity, FileAttachment fa) 
-		throws UncheckedIOException, RepositoryServiceException {
-		
-		HtmlConverter converter = this.htmlConverterManager.getConverter();
-		converter.deleteConvertedFile(shareItem, binder, entity, fa);
-	}
-
 	public void deleteCacheTextFile(
 			Binder binder, DefinableEntity entity, FileAttachment fa) 
 		throws UncheckedIOException, RepositoryServiceException {
@@ -133,47 +124,18 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 		ImageConverter converter = this.imageConverterManager.getConverter();
 		converter.deleteConvertedFile(binder, entity, fa);
 	}
-
-    public InputStream getScaledInputStream(Binder binder, DefinableEntity entry,
-                                               FileAttachment fa) {
-        ImageConverter converter = null;
-
-        try
-        {
-            converter = this.imageConverterManager.getConverter();
-            return converter.convertToScaledImage(binder, entry, fa,
-                    new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, 0));
-        }
-        catch (IOException e)
-        {
-            throw new UncheckedIOException(e);
-        }
-
-    }
 	
-    public InputStream getThumbnailInputStream(Binder binder, DefinableEntity entry,
-                                               FileAttachment fa) {
-        ImageConverter converter = null;
-
-        try
-        {
-            converter = this.imageConverterManager.getConverter();
-            return converter.convertToThumbnail(binder, entry, fa,
-                    new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, 0));
-        }
-        catch (IOException e)
-        {
-            throw new UncheckedIOException(e);
-        }
-
-    }
-
-	public void readScaledFile(Binder binder, DefinableEntity entry,
+	public void readScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, OutputStream out)
 	{
+		ImageConverter converter = null;
+		
 		try
 		{
-			FileCopyUtils.copy(getScaledInputStream(binder, entry, fa), out);
+			converter = this.imageConverterManager.getConverter();
+			FileCopyUtils.copy(converter.convertToScaledImage(binder, entry, fa,
+									new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT)),
+							   out);
 		}
 		catch (IOException e)
 		{
@@ -191,9 +153,14 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out)
 	{
+		ImageConverter converter = null;
+		
 		try
 		{
-			FileCopyUtils.copy(getThumbnailInputStream(binder, entry, fa), out);
+			converter = this.imageConverterManager.getConverter();
+			FileCopyUtils.copy(converter.convertToThumbnail(binder, entry, fa,
+									new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, 0)),
+							   out);
 		}
 		catch (IOException e)
 		{
@@ -214,19 +181,11 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 	 */
 	public void readCacheHtmlFile(String url, Binder binder, DefinableEntity entry, FileAttachment fa, OutputStream out) 
 	{
-		readCacheHtmlFile(url, null, binder, entry, fa, out);
-	}
-	public void readCacheHtmlFile(String url, ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa, OutputStream out) 
-	{
 		InputStream is = null;
 
 		try
 		{
-			if (shareItem == null) {
-				is = htmlConverterManager.getConverter().convert(url, binder, entry, fa);
-			} else {
-				is = htmlConverterManager.getConverter().convert(url, shareItem, binder, entry, fa);
-			}
+			is = htmlConverterManager.getConverter().convert(url, binder, entry, fa);
 			if (fa.isEncrypted()) {
 				CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
 				out = cfe.getEncryptionOutputDecryptedStream(out);
@@ -282,23 +241,12 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out, String urlFileName)
 	{
-		readCacheUrlReferenceFile(null, binder, entry, fa, out, urlFileName);
-	}
-
-	public void readCacheUrlReferenceFile(
-			ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa, 
-			OutputStream out, String urlFileName)
-	{
 		InputStream is = null;
 		
 		try
 		{
 			urlFileName = (new File(urlFileName)).getName();  // Prevent ../ filename hacks
-			if (shareItem == null) {
-				is = htmlConverterManager.getConverter().getCachedFile(binder, entry, fa, urlFileName);
-			} else {
-				is = htmlConverterManager.getConverter().getCachedFile(shareItem, binder, entry, fa, urlFileName);
-			}
+			is = htmlConverterManager.getConverter().getCachedFile(binder, entry, fa, urlFileName);
 			FileCopyUtils.copy(is, out);
 		}
 		catch(IOException e) {
@@ -330,22 +278,11 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out, String imageFileName)
 	{
-		readCacheImageReferenceFile(null, binder, entry, fa, out, imageFileName);
-	}
-
-	public void readCacheImageReferenceFile(
-			ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa, 
-			OutputStream out, String imageFileName)
-	{
 		InputStream is = null;
 		
 		try
 		{
-			if (shareItem == null) {
-				is = htmlConverterManager.getConverter().getCachedFile(binder, entry, fa, imageFileName);
-			} else {
-				is = htmlConverterManager.getConverter().getCachedFile(shareItem, binder, entry, fa, imageFileName);
-			}
+			is = htmlConverterManager.getConverter().getCachedFile(binder, entry, fa, imageFileName);
 			FileCopyUtils.copy(is, out);
 		}
 		catch(IOException e) {

@@ -31,20 +31,6 @@
  
  <div style="#ss_eWrapper()">
   #parse("showAvatar.vm")
-
-    <div style="#ss_eFolderBreadcrumb()">
-      <span> ${ssVisitor.getNLT('notify.forum.label')} </span>
-      #if ($ssVisitor.Entity.ParentBinder.ParentBinder)
-	    <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.ParentBinder)"
-	      title="$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.PathName})"
-	    >$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.Title})</a>
-	    / 
-	  #end
-	  <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder)"
-	    title="$esc.html(${ssVisitor.Entity.ParentBinder.PathName})"
-	  >$esc.html(${ssVisitor.Entity.ParentBinder.Title})</a>
-    </div>
-    ${ssVisitor.NotifyDef.setVariable('folderPathShown', 'true')}
   
   ## Show the entry
   $ssVisitor.visit()
@@ -73,6 +59,20 @@
 	  $ssVisitor.setParam("org.kablink.teaming.notify.params.showAvatar", false)
 	  $ssVisitor.setParam("org.kablink.teaming.notify.params.showAvatarNew", false)
       #if (!$selection.ParentEntry)
+	    <div style="#ss_eLabel2()">
+	      $ssVisitor.getNLT("email.relatedFolder")
+	    </div>
+	    <div style="#ss_entryContent()">
+	      #if ($selection.ParentBinder.ParentBinder)
+		    <a href="$ssVisitor.getPermaLink($selection.ParentBinder.ParentBinder)"
+		      title="$esc.html(${selection.ParentBinder.ParentBinder.PathName})"
+		    >$esc.html(${selection.ParentBinder.ParentBinder.Title})</a>
+		    / 
+		  #end
+		  <a href="$ssVisitor.getPermaLink($selection.ParentBinder)"
+		    title="$esc.html(${selection.ParentBinder.PathName})"
+		  >$esc.html(${selection.ParentBinder.Title})</a>
+	    </div>
 	    <div style="#ss_eLabel2()">
 	      $ssVisitor.getNLT("email.relatedEntry")
 	    </div>

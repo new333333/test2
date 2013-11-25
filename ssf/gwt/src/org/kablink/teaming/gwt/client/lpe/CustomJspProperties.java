@@ -96,7 +96,7 @@ public class CustomJspProperties
 		m_zoneUUID = null;
 		m_rpcInProgress = false;
 
-		// Default the width and height to nothing
+		// Default the width and height to 100%
 		m_width = -1;
 		m_widthUnits = Style.Unit.PCT;
 		m_height = -1;

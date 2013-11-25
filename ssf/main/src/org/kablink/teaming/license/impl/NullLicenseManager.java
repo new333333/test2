@@ -40,7 +40,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.dom4j.Document;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.license.LicenseException;
 import org.kablink.teaming.license.LicenseManager;
@@ -79,16 +78,6 @@ public class NullLicenseManager implements LicenseManager {
 			return false;
 	}
 	
-	public boolean isAuthorizedByLicense(String featureName, boolean ignoreExpiration)
-	{
-			return false;
-	}
-	
-	public String getLicenseType() 
-	{
-		return ObjectKeys.LICENSE_TYPE_KABLINK;
-	}
-	
 	public Calendar getExpirationDate()
 	{
 		GregorianCalendar cal = new GregorianCalendar(TimeZoneHelper.getTimeZone("GMT"), Locale.US);
@@ -117,10 +106,5 @@ public class NullLicenseManager implements LicenseManager {
 	public long getExternalUsers()
 	{
 		return 0;
-	}
-	
-	public boolean validLicenseExists()
-	{
-		return false;
 	}
 }

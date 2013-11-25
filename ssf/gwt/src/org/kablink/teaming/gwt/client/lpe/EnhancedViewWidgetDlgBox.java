@@ -93,7 +93,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 {
 	private ListBox m_evListBox = null;
 	private Label m_descLabel;
-	private SizeCtrl m_sizeCtrl = null;
 	private ArrayList<EnhancedViewInfo> m_views;
 	private LandingPageEditor m_lpe;
 	
@@ -107,6 +106,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private TextBox m_numEntriesToShowTxtBox = null;
 	private InlineLabel m_currentFolderNameLabel = null;
 	private Button m_folderEditBtn;
+	private SizeCtrl m_sizeCtrl = null;
 	
 	// The following data members are used if an entry is associated with this view"
 	private String m_entryId = null;
@@ -180,7 +180,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
 		EnhancedViewProperties properties;
@@ -211,7 +210,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
-				@Override
 				public void onChange( ChangeEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -221,7 +219,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
-						@Override
 						public void execute()
 						{
 							handleViewSelected();
@@ -254,16 +251,16 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		m_selectFolderPanel.setVisible( false );
 		mainPanel.add( m_selectFolderPanel );
 		
-		// Create the controls that will be visibe if the user selects a view that requires
+		// Create the controls that will be visible if the user selects a view that requires
 		// an entry to be selected.
 		m_selectEntryPanel = createSelectEntryPanel();
 		m_selectEntryPanel.setVisible( false );
 		mainPanel.add( m_selectEntryPanel );
-		
-		// Add the size control
+
+		// Add controls for the width and height
 		m_sizeCtrl = new SizeCtrl();
 		mainPanel.add( m_sizeCtrl );
-
+		
 		init( properties );
 		
 		return mainPanel;
@@ -313,7 +310,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -323,7 +319,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
-						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -362,14 +357,12 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
-					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
-							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -467,7 +460,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -477,7 +469,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
-						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -517,14 +508,12 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
-					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
-							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -624,7 +613,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				
 				// Show/hide the "Show title" checkbox.
 				m_showFolderTitleCkBox.setVisible( evInfo.getTitleOptional() );
-				
+
 				// Is the selected view, "calendar"?
 				if ( evInfo.getViewType() == EnhancedViewType.DISPLAY_CALENDAR )
 				{
@@ -649,7 +638,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				// Show/hide the "Show title" checkbox.
 				m_showEntryTitleCkBox.setVisible( evInfo.getTitleOptional() );
 			}
-
+			
 			// Is the "Display calendar" or the "Display my calendar events" option selected?
 			viewType = evInfo.getViewType();
 			if ( viewType == EnhancedViewType.DISPLAY_CALENDAR || viewType == EnhancedViewType.DISPLAY_MY_CALENDAR_EVENTS )
@@ -699,7 +688,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
-	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		EnhancedViewProperties	properties;
@@ -797,7 +785,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -810,7 +797,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolderEntry gwtFolderEntry;
@@ -855,7 +841,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
-	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return m_evListBox;
@@ -876,7 +861,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -889,7 +873,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -926,7 +909,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		return m_sizeCtrl.getHeightUnits();
 	}
 	
-
 	/**
 	 * Return the jsp name of the selected view
 	 */
@@ -1031,7 +1013,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		return m_sizeCtrl.getWidthUnits();
 	}
 	
-
 	/**
 	 * This method gets called when the user selects a view in the listbox.
 	 */
@@ -1162,7 +1143,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	 * This method gets called when the user types in the "number of entries to show", "width" or "height" text box.
 	 * We only allow the user to enter numbers.
 	 */
-	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;

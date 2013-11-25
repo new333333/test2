@@ -423,9 +423,6 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
     }
 	public boolean isFunctionMembershipInheritanceSupported() {
-		return true;
-    }
-    public boolean isExtFunctionMembershipInherited() {
     	if (this.isTop()) {
     		//The top entry does not inherit
     		return false;
@@ -433,8 +430,6 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     		//Replies always inherit from the parent
     		return true;
     	}
-    }
-    public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
     }
     public Long getOwnerId() {
     	Principal owner = getOwner();
@@ -495,8 +490,4 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 		this.folderEntryStats = folderEntryStats;
 	}
     
-	public boolean noAclDredged() {
-		return (ResourceDriverConfig.DriverType.famt == getParentFolder().getResourceDriverType());
-	}
-
 }

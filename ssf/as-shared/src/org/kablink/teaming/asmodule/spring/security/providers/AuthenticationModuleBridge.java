@@ -33,9 +33,9 @@
 package org.kablink.teaming.asmodule.spring.security.providers;
 
 import org.kablink.teaming.asmodule.bridge.BridgeClient;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationServiceException;
+import org.springframework.security.providers.AuthenticationProvider;
 
 public class AuthenticationModuleBridge implements AuthenticationProvider {
 

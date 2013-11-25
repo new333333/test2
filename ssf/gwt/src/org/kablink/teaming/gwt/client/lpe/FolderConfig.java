@@ -33,10 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.FolderWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.http.client.URL;
 
@@ -53,12 +49,11 @@ public class FolderConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public FolderConfig( String configStr, String style )
+	public FolderConfig( String configStr )
 	{
 		String[] results;
 		
 		m_properties = new FolderProperties();
-		setLandingPageStyle( style );
 		
 		// Split the configuration data into its parts.  ie folderId=xxx showTitle=x showFolderDescription=1 showEntriesOpened=1 entriesToShow
 		results = configStr.split( "[,;]" );
@@ -224,23 +219,6 @@ public class FolderConfig extends ConfigItem
 	{
 		// Nothing to do.
 	}// end addChild()
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		return new FolderWidget( this, widgetStyles );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public FolderDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new FolderDropWidget( lpe, this );
-	}
 	
 	
 	/**

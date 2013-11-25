@@ -33,10 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.EntryWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 import com.google.gwt.dom.client.Style;
 
 
@@ -52,12 +48,11 @@ public class EntryConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public EntryConfig( String configStr, String style )
+	public EntryConfig( String configStr )
 	{
 		String[] results;
 		
 		m_properties = new EntryProperties();
-		setLandingPageStyle( style );
 		
 		// Split the configuration data into its parts.  ie entryId=xxx showTitle=x
 		results = configStr.split( "[,;]" );
@@ -203,23 +198,6 @@ public class EntryConfig extends ConfigItem
 	{
 		// Nothing to do.
 	}// end addChild()
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		return new EntryWidget( this, widgetStyles );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public EntryDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new EntryDropWidget( lpe, this );
-	}
 	
 	
 	/**

@@ -51,13 +51,7 @@ public class ProfileBinder extends Workspace {
     }
     public List getViewDefinitions() {
    		return getDefs(Definition.PROFILE_VIEW);
-    }
-
-    @Override
-    protected Binder newInstance() {
-        return new ProfileBinder();
-    }
-
+    }	
     /**
      * Always returns false.  Overloaded method
      */

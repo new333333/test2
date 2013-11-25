@@ -58,43 +58,19 @@ import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
  */
 public class ZoneContextValve extends ValveBase {
 
-	private String webappName;
-	private boolean useRuntimeContext = true;
-	
 	@Override
 	public void invoke(Request request, Response response) 
 	throws IOException, ServletException {
-		// Dynamic parts
 		ZoneContextHolder.setServerName(request.getServerName());
 		ZoneContextHolder.setServerPort(request.getServerPort());
 		ZoneContextHolder.setClientAddr(request.getRemoteAddr());
 		ZoneContextHolder.setSecure(request.isSecure());
-		
-		// Static parts
-		ZoneContextHolder.setWebappName(webappName);
-		ZoneContextHolder.setUseRuntimeContext(useRuntimeContext);
 		try {
 			getNext().invoke(request, response);
 		}
 		finally {
 			ZoneContextHolder.clear();
 		}
-	}
-
-	public String getWebappName() {
-		return webappName;
-	}
-
-	public void setWebappName(String webappName) {
-		this.webappName = webappName;
-	}
-
-	public boolean isUseRuntimeContext() {
-		return useRuntimeContext;
-	}
-
-	public void setUseRuntimeContext(boolean useRuntimeContext) {
-		this.useRuntimeContext = useRuntimeContext;
 	}
 
 }

@@ -47,7 +47,6 @@ public class GwtFolder extends GwtTeamingItem
 {
 	private String m_folderId;
 	private String m_folderName;
-	private String m_folderDesc;
 	private String m_parentBinderName;
 	private String m_viewUrl;
 	
@@ -58,28 +57,10 @@ public class GwtFolder extends GwtTeamingItem
 	{
 		m_folderId = null;
 		m_folderName = null;
-		m_folderDesc = null;
 		m_parentBinderName = null;
 		m_viewUrl = null;
 	}// end GwtFolder()
 	
-	
-	/**
-	 * 
-	 */
-	@Override
-	public String getImageUrl()
-	{
-		return "";
-	}
-	
-	/**
-	 * 
-	 */
-	public String getFolderDesc()
-	{
-		return m_folderDesc;
-	}
 	
 	/**
 	 * 
@@ -100,7 +81,6 @@ public class GwtFolder extends GwtTeamingItem
 	/**
 	 * 
 	 */
-	@Override
 	public String getName()
 	{
 		return getFolderName();
@@ -118,7 +98,6 @@ public class GwtFolder extends GwtTeamingItem
 	/**
 	 * Return the name of the parent binder.
 	 */
-	@Override
 	public String getSecondaryDisplayText()
 	{
 		String name;
@@ -135,7 +114,6 @@ public class GwtFolder extends GwtTeamingItem
 	/**
 	 * Return the short name that should be displayed when this folder is displayed.
 	 */
-	@Override
 	public String getShortDisplayName()
 	{
 		return m_folderName;
@@ -144,7 +122,6 @@ public class GwtFolder extends GwtTeamingItem
 	/**
 	 * 
 	 */
-	@Override
 	public String getTitle()
 	{
 		return "";
@@ -159,14 +136,6 @@ public class GwtFolder extends GwtTeamingItem
 		return m_viewUrl;
 	}// end getViewFolderUrl()
 	
-	
-	/**
-	 * 
-	 */
-	public void setFolderDesc( String folderDesc )
-	{
-		m_folderDesc = folderDesc;
-	}
 	
 	/**
 	 * 

@@ -34,9 +34,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 /**
  * 
  * @author jwootton
@@ -44,39 +41,8 @@ import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
  */
 public abstract class ConfigItem
 {
-	private String m_landingPageStyle = "";
-	
 	/**
 	 * 
 	 */
 	public abstract void addChild( ConfigItem childItem );
-	
-	/**
-	 * Create a widget that can be used on any page.  Currently, the returned widget
-	 * is only used in a landing page.
-	 */
-	public abstract VibeWidget createWidget( WidgetStyles widgetStyles );
-
-	/**
-	 * Create a DropWidget that is used in the landing page editor.
-	 */
-	public abstract DropWidget createDropWidget( LandingPageEditor lpe );
-	
-	/**
-	 * 
-	 */
-	public String getLandingPageStyle()
-	{
-		return m_landingPageStyle;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setLandingPageStyle( String style )
-	{
-		m_landingPageStyle = "";
-		if ( style != null && style.equalsIgnoreCase( "mashup_dark.css" ) )
-			m_landingPageStyle = "_dark";
-	}
 }// end ConfigItem

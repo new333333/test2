@@ -43,26 +43,6 @@ import org.apache.lucene.analysis.StopAnalyzer;
 
 public class VibeIndexAnalyzerTest extends TestCase {
 	
-	public void testDefaultBehavior1() throws Exception {
-		System.out.println();
-		Analyzer analyzer = new VibeIndexAnalyzer(StopAnalyzer.ENGLISH_STOP_WORDS_SET, "English", true, false, false);
-		String text = "Carlos";
-		AnalyzerUtils.displayTokens(analyzer, text);
-		System.out.println();
-		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"carlos","carlo"});
-	}
-	
-	public void testDefaultBehavior2() throws Exception {
-		System.out.println();
-		Analyzer analyzer = new VibeIndexAnalyzer(StopAnalyzer.ENGLISH_STOP_WORDS_SET, "English", true, false, false);
-		String text = "Jong-Hak Kim";
-		AnalyzerUtils.displayTokens(analyzer, text);
-		System.out.println();
-		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"jong","hak", "kim"});
-	}
-	
 	public void testPuntuationAndEmailAddress() throws Exception {
 		System.out.println(Charset.defaultCharset());
 		

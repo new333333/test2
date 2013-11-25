@@ -32,11 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
@@ -51,6 +51,7 @@ public class LinkToFolderDropWidget extends DropWidget
 	private LinkToFolderProperties	m_properties = null;
 	private InlineLabel		m_folderName = null;
 	private InlineLabel		m_title = null;
+	private Timer				m_timer = null;
 	
 	/**
 	 * 
@@ -203,16 +204,9 @@ public class LinkToFolderDropWidget extends DropWidget
 			m_properties.copy( (PropertiesObj) props );
 		
 		// Get the needed information from the server.
-		m_properties.getDataFromServer( new GetterCallback<Boolean>()
-		{
-			/**
-			 * 
-			 */
-			public void returnValue( Boolean value )
-			{
-				updateWidget();
-			}
-		} );
+		m_properties.getDataFromServer();
+		
+		updateWidget();
 	}// end updateWidget()
 	
 	
@@ -230,6 +224,31 @@ public class LinkToFolderDropWidget extends DropWidget
 			title = "";
 		m_title.setText( title );
 
+		// Are we waiting for the ajax call to get the folder name to finish?
+		if ( m_properties.isRpcInProgress() )
+		{
+			// Yes
+			// Have we already created a timer?
+			if ( m_timer == null )
+			{
+				// No, create one.
+				m_timer = new Timer()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void run()
+					{
+						updateWidget();
+					}// end run()
+				};
+			}
+			
+			m_timer.schedule( 250 );
+			return;
+		}
+
 		// Get the folder's name.
 		folderName = m_properties.getFolderName();
 			
@@ -242,5 +261,4 @@ public class LinkToFolderDropWidget extends DropWidget
 		// Notify the landing page editor that this widget has been updated.
 		m_lpe.notifyWidgetUpdated( this );
 	}// end updateWidget()
-
 }// end LinkToFolderDropWidget

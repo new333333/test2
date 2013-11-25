@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,7 +41,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.comparator.StringComparator;
-import org.kablink.teaming.context.request.NoContextUserException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
@@ -55,9 +54,8 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Validator;
 
 /**
- * ?
- * 
  * @author hurley
+ *
  */
 @SuppressWarnings("unchecked")
 public class NLT implements ApplicationContextAware {
@@ -77,7 +75,6 @@ public class NLT implements ApplicationContextAware {
 			throw new SingletonViolationException(NLT.class);
 	}
 	
-	@Override
 	public void setApplicationContext(ApplicationContext ac) throws BeansException {
 		this.ac = ac;
 	}
@@ -92,8 +89,8 @@ public class NLT implements ApplicationContextAware {
 	
 	public static Locale getTeamingLocale() {
 		if (null == teamingLocale) {
-			String language = LocaleUtils.getLocaleLanguage();
-			String country  = LocaleUtils.getLocaleCountry();
+			String language = SPropsUtil.getString("i18n.default.locale.language", "");
+			String country  = SPropsUtil.getString("i18n.default.locale.country",  "");
 			if ((null != language) && (0 < language.length())) {
 				if ((null != country) && (0 < country.length())) teamingLocale = new Locale(language, country);
 				else                                             teamingLocale = new Locale(language);
@@ -105,14 +102,10 @@ public class NLT implements ApplicationContextAware {
 		return teamingLocale;
 	}
 	
-	public static Locale getDefaultLocale() {
+	private Locale getLocale() {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		if(rc != null) {
-			User user = null;
-			try {
-				user = rc.getUser();
-			}
-			catch(NoContextUserException doNotPropogate) {}
+			User user = rc.getUser();
 			if(user != null)
 				return user.getLocale();
 			else
@@ -124,11 +117,11 @@ public class NLT implements ApplicationContextAware {
 	}
 	
 	private String getMessageWithTagAsDefault(String tag) {
-		return getMessageWithTagAsDefault(tag, null, getDefaultLocale());
+		return getMessageWithTagAsDefault(tag, null, getLocale());
 	}
 	
 	private String getMessageWithTagAsDefault(String tag, Object[] args) {
-		return getMessageWithTagAsDefault(tag, args, getDefaultLocale());		
+		return getMessageWithTagAsDefault(tag, args, getLocale());		
 	}
 	
 	private String getMessageWithTagAsDefault(String tag, Locale locale) {
@@ -140,15 +133,15 @@ public class NLT implements ApplicationContextAware {
 	}
 	
 	private String getMessageWithTextAsDefault(String tag, String text) {
-		return getMessageWithTextAsDefault(tag, null, text, getDefaultLocale());
+		return getMessageWithTextAsDefault(tag, null, text, getLocale());
 	}
 	
 	private String getMessageWithTextAsDefault(String tag, String text, Boolean silent) {
-		return getMessageWithTextAsDefault(tag, null, text, getDefaultLocale(), silent);
+		return getMessageWithTextAsDefault(tag, null, text, getLocale(), silent);
 	}
 	
 	private String getMessageWithTextAsDefault(String tag, Object[] args, String text) {
-		return getMessageWithTextAsDefault(tag, args, text, getDefaultLocale());
+		return getMessageWithTextAsDefault(tag, args, text, getLocale());
 	}
 	
 	private String getMessageWithTextAsDefault(String tag, String text, Locale locale) {

@@ -100,75 +100,6 @@ Date nextDate = calendarNextDate.getTime();
 %>
 
 <div class="folders">
-    <div class="folder-head" style="letter-spacing: 0; padding: 5px;">
-		<form id="calendarShowFilterForm" name="calendarShowFilterForm" 
-		  method="post" 
-		  action="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="__ajax_mobile" operation="mobile_show_folder" 
-		    actionUrl="true" 
-		    folderId="${ssBinder.id}" />"
-		>
-        <table cellspacing="0" cellpadding="0" width="100%">
-        <tr>
-          <td valign="top" width="40%" nowrap>
-          
-          <a href="javascript: ;" 
-      		  onClick="ss_toggleDivVisibility('calendar-show-filter-menu');return false;" style="color: #fff; font-size: 1.4em;">
-      	    <span><ssf:nlt tag="calendar.navi.chooseMode"/></span>&nbsp;
-      	    <span>
-              <c:if test="${ss_calendarEventType == 'event'}"><ssf:nlt tag="calendar.navi.mode.alt.physical"/></c:if>
-              <c:if test="${ss_calendarEventType == 'creation'}"><ssf:nlt tag="calendar.navi.mode.alt.physical.byCreation"/></c:if>
-              <c:if test="${ss_calendarEventType == 'activity'}"><ssf:nlt tag="calendar.navi.mode.alt.physical.byActivity"/></c:if>
-              <c:if test="${ss_calendarEventType == 'virtual'}"><ssf:nlt tag="calendar.navi.mode.alt.virtual"/></c:if>
-            </span>&nbsp;<img border="0" 
-      		  src="<html:rootPath/>images/pics/menudown.gif"/>
-      	  </a>
-          
-			<div id="calendar-show-filter-menu" class="action-dialog" 
-			  style="display:none; z-index:2; font-size: 1.2em;">
-			    <div class="dialog-content">
-		      		<div class="menu-item">
-				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				        action="__ajax_mobile" operation="mobile_show_folder" 
-				        folderId="${ssBinder.id}" 
-				        actionUrl="true" ><ssf:param name="eventType" value="event"/></ssf:url>"
-				      ><ssf:nlt tag="calendar.navi.mode.alt.physical"/></a>
-				    </div>
-				</div>
-			    <div class="dialog-content">
-		      		<div class="menu-item">
-				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				        action="__ajax_mobile" operation="mobile_show_folder" 
-				        folderId="${ssBinder.id}" 
-				        actionUrl="true" ><ssf:param name="eventType" value="creation"/></ssf:url>"
-				      ><ssf:nlt tag="calendar.navi.mode.alt.physical.byCreation"/></a>
-				    </div>
-				</div>
-			    <div class="dialog-content">
-		      		<div class="menu-item">
-				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				        action="__ajax_mobile" operation="mobile_show_folder" 
-				        folderId="${ssBinder.id}" 
-				        actionUrl="true" ><ssf:param name="eventType" value="activity"/></ssf:url>"
-				      ><ssf:nlt tag="calendar.navi.mode.alt.physical.byActivity"/></a>
-				    </div>
-				</div>
-			    <div class="dialog-content">
-		      		<div class="menu-item">
-				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				        action="__ajax_mobile" operation="mobile_show_folder" 
-				        folderId="${ssBinder.id}" 
-				        actionUrl="true" ><ssf:param name="eventType" value="virtual"/></ssf:url>"
-				      ><ssf:nlt tag="calendar.navi.mode.alt.virtual"/></a>
-				    </div>
-				</div>
-			</div>
-		  </td>
-		  
-		</tr>
-		</table>
-		</form>
-    </div>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr class="ss_mobile_calendar_monthyear">
@@ -323,122 +254,97 @@ Date nextDate = calendarNextDate.getTime();
      </table>
 
 	<c:set var="lastCalDayDate" value=""/>
-	<c:set var="lastFamilyType" value=""/>
 	<table class="ss_mobile_calendar" cellspacing="0" cellpadding="0">
 	<c:set var="entriesSeen" value="0"/>
-	<c:forEach var="familyType" items='<%= java.util.Arrays.asList(new String[]{"calendar", "task"}) %>' >
-	<jsp:useBean id="familyType" type="java.lang.String" />
 	<c:forEach var="entry2" items="${ssFolderEntries}" >
 	<jsp:useBean id="entry2" type="java.util.HashMap" />
 	<%
 		if (entry2.containsKey("_event0")) {
 			String eventName = (String)entry2.get("_event0");
-			String family = (String)entry2.get("_family");
-			if (familyType.equals(family)) {
-				boolean allDayEvent = false;
-				java.util.Date eventDate = null;
-				java.util.Date startDate = null;
-				if (entry2.containsKey(eventName + "#LogicalStartDate")) {
-					startDate = (java.util.Date)entry2.get(eventName + "#LogicalStartDate");
-					eventDate = startDate;
+			boolean allDayEvent = false;
+			java.util.Date startDate = null;
+			if (entry2.containsKey(eventName + "#LogicalStartDate")) 
+				startDate = (java.util.Date)entry2.get(eventName + "#LogicalStartDate");
+			java.util.Date endDate = null;
+			if (entry2.containsKey(eventName + "#LogicalEndDate")) 
+				endDate = (java.util.Date)entry2.get(eventName + "#LogicalEndDate");
+			if (startDate == null) startDate = endDate;
+			String eventTimeZoneId = null;
+			if (entry2.containsKey(eventName + "#TimeZoneID")) eventTimeZoneId = (String)entry2.get(eventName + "#TimeZoneID");
+			if (startDate != null && endDate != null) {
+				if (startDate.getHours() == 0 && startDate.getMinutes() == 0 && 
+						endDate.getHours() == 23 && endDate.getMinutes() == 59) {
+					allDayEvent = true;
 				}
-				java.util.Date endDate = null;
-				if (entry2.containsKey(eventName + "#LogicalEndDate")) {
-					endDate = (java.util.Date)entry2.get(eventName + "#LogicalEndDate");
-				}
-				if (eventDate == null || 
-						(endDate != null && "task".equals(family))) eventDate = endDate;
-				String eventTimeZoneId = null;
-				if (entry2.containsKey(eventName + "#TimeZoneID")) eventTimeZoneId = (String)entry2.get(eventName + "#TimeZoneID");
-				if (eventDate != null && endDate != null) {
-					if (eventDate.getHours() == 0 && eventDate.getMinutes() == 0 && 
-							endDate.getHours() == 23 && endDate.getMinutes() == 59) {
-						allDayEvent = true;
-					}
-				}
-				if (eventDate != null) {
-		%>
-	    <%  if (allDayEvent) {  %>
-			<c:set var="calMonthDate"><fmt:formatDate timeZone="GMT"
-	      		value="<%= eventDate %>" pattern="MMM" /></c:set>
-		<%  } else { %>
-			<c:set var="calMonthDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-	      		value="<%= eventDate %>" pattern="MMM" /></c:set>
-		<%  } %>
-	<c:set var="startDate" value="<%= startDate %>"/>
-	<c:set var="endDate" value="<%= endDate %>"/>
-	<c:set var="currDate" value="<%= currDate %>"/>
-	<c:if test="${currMonthDate == calMonthDate || (startDate != null && endDate != null && startDate.time <= currDate.time && endDate.time >= currDate.time)}">
-	    <c:set var="entriesSeen" value="${entriesSeen + 1}"/>
-	    <%  if (allDayEvent) {  %>
-		    <c:set var="calDayDate"><fmt:formatDate timeZone="GMT"
-	      		value="<%= eventDate %>" type="date" dateStyle="short" /></c:set>
-		<%  } else { %>
-		    <c:set var="calDayDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-	      		value="<%= eventDate %>" type="date" dateStyle="short" /></c:set>
-		<%  } %>
-	    <c:if test="${familyType != lastFamilyType}">
-	    <c:set var="lastFamilyType" value="${familyType }" />
-	    <tr>
-			<td colspan="2">
-			<div class="ss_mobile_calendar_entries_family_header">
-			  <span><ssf:nlt tag='<%= "family."+familyType %>'/></span>
-			</div>
-			</td>
-	    </tr>
-		</c:if>
-	    <c:if test="${calDayDate != lastCalDayDate}">
-	    <tr>
-			<td colspan="2">
-			<div class="ss_mobile_calendar_entries_header">
-			    <%  if (allDayEvent) {  %>
-					<span><fmt:formatDate value="<%= eventDate %>" pattern="EEE" timeZone="GMT" /></span>
-					<span><fmt:formatDate value="<%= eventDate %>" pattern="d MMM" timeZone="GMT" /></span>
-				<%  } else { %>
-					<span><fmt:formatDate value="<%= eventDate %>" pattern="EEE" timeZone="${ssUser.timeZone.ID}" /></span>
-					<span><fmt:formatDate value="<%= eventDate %>" pattern="d MMM" timeZone="${ssUser.timeZone.ID}" /></span>
-				<%  } %>
-			</div>
-			</td>
-	    </tr>
-		</c:if>
-		
-	    <c:set var="lastCalDayDate" value="${calDayDate}"/>
-		 <tr class="ss_mobile_calendar_entry_row">
-		   <td class="ss_mobile_calendar_time">
-			  <%
-			  	if (eventTimeZoneId != null) {
-			  %>
-			  <fmt:formatDate 
-			    timeZone="${ssUser.timeZone.ID}"
-	      		value="<%= eventDate %>" type="time" timeStyle="short" 
-	      	  />
-	      	  <%
-			  	} else {
-			  %>
-			  <span><ssf:nlt tag="event.allDay"/></span>
-			  <%
-			  	}
-			  %>
-		  	</td>
-		  	<td>
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				folderId="${entry2._binderId}"  entryId="${entry2._docId}"
-				action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
-		    	<c:if test="${empty entry2.title}">
-		    		(<ssf:nlt tag="entry.noTitle"/>)
-		    	</c:if>
-				<c:out value="${entry2.title}" escapeXml="true"/>
-			  </a>
-		   </td>
-		 </tr>
-	</c:if>
-		 <%
-		 		}
 			}
+			if (startDate != null) {
+	%>
+    <%  if (allDayEvent) {  %>
+		<c:set var="calMonthDate"><fmt:formatDate timeZone="GMT"
+      		value="<%= startDate %>" pattern="MMM" /></c:set>
+	<%  } else { %>
+		<c:set var="calMonthDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+      		value="<%= startDate %>" pattern="MMM" /></c:set>
+	<%  } %>
+<c:if test="${currMonthDate == calMonthDate}">
+    <c:set var="entriesSeen" value="${entriesSeen + 1}"/>
+    <%  if (allDayEvent) {  %>
+	    <c:set var="calDayDate"><fmt:formatDate timeZone="GMT"
+      		value="<%= startDate %>" type="date" dateStyle="short" /></c:set>
+	<%  } else { %>
+	    <c:set var="calDayDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+      		value="<%= startDate %>" type="date" dateStyle="short" /></c:set>
+	<%  } %>
+    <c:if test="${calDayDate != lastCalDayDate}">
+    <tr>
+		<td colspan="2">
+		<div class="ss_mobile_calendar_entries_header">
+		    <%  if (allDayEvent) {  %>
+				<span><fmt:formatDate value="<%= startDate %>" pattern="EEE" timeZone="GMT" /></span>
+				<span><fmt:formatDate value="<%= startDate %>" pattern="d MMM" timeZone="GMT" /></span>
+			<%  } else { %>
+				<span><fmt:formatDate value="<%= startDate %>" pattern="EEE" timeZone="${ssUser.timeZone.ID}" /></span>
+				<span><fmt:formatDate value="<%= startDate %>" pattern="d MMM" timeZone="${ssUser.timeZone.ID}" /></span>
+			<%  } %>
+		</div>
+		</td>
+    </tr>
+	</c:if>
+	
+    <c:set var="lastCalDayDate" value="${calDayDate}"/>
+	 <tr class="ss_mobile_calendar_entry_row">
+	   <td class="ss_mobile_calendar_time">
+		  <%
+		  	if (eventTimeZoneId != null) {
+		  %>
+		  <fmt:formatDate 
+		    timeZone="${ssUser.timeZone.ID}"
+      		value="<%= startDate %>" type="time" timeStyle="short" 
+      	  />
+      	  <%
+		  	} else {
+		  %>
+		  <span><ssf:nlt tag="event.allDay"/></span>
+		  <%
+		  	}
+		  %>
+	  	</td>
+	  	<td>
+		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			folderId="${ssBinder.id}"  entryId="${entry2._docId}"
+			action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
+	    	<c:if test="${empty entry2.title}">
+	    		(<ssf:nlt tag="entry.noTitle"/>)
+	    	</c:if>
+			<c:out value="${entry2.title}" escapeXml="true"/>
+		  </a>
+	   </td>
+	 </tr>
+</c:if>
+	 <%
+	 		}
 	 	}
 	 %>
-	</c:forEach>
 	</c:forEach>
 	</table>
 

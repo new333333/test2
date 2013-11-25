@@ -32,10 +32,6 @@
  */
 package org.kablink.teaming.gwt.client;
 
-import org.kablink.teaming.gwt.client.util.GroupType;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -44,14 +40,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author jwootton@novell.com
  */
-public class GwtGroup extends GwtPrincipal implements IsSerializable
+public class GwtGroup extends GwtTeamingItem implements IsSerializable
 {
 	private String m_name;
 	private String m_title;
 	private String m_id;
-	private String m_dn;
-	private String m_desc;
-	private GroupType m_groupType;
 	
 	/**
 	 * Constructor method. 
@@ -64,61 +57,8 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	}	
 	
 	/**
-	 * 
-	 */
-	public String getDesc()
-	{
-		return m_desc;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getDn()
-	{
-		return m_dn;
-	}
-	
-	/**
-	 * 
-	 */
-	public GroupType getGroupType()
-	{
-		return m_groupType;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public Long getIdLong()
-	{
-		if ( m_id != null )
-			return Long.valueOf( m_id );
-		
-		return null;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public String getImageUrl()
-	{
-		ImageResource imgResource;
-
-		if ( m_groupType != null )
-			imgResource = GwtClientHelper.getGroupTypeImage( m_groupType );
-		else
-			imgResource = GwtClientHelper.getGroupTypeImage( GroupType.UNKNOWN );
-		
-		return imgResource.getSafeUri().asString();
-	}
-	
-	/**
 	 * Returns the group's name.
 	 */
-	@Override
 	public String getName()
 	{
 		return m_name;
@@ -127,7 +67,6 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	/**
 	 * Returns the group's title.
 	 */
-	@Override
 	public String getTitle()
 	{
 		return m_title;
@@ -144,19 +83,9 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	/**
 	 * 
 	 */
-	@Override
 	public String getSecondaryDisplayText()
 	{
-		return getDn();
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public PrincipalType getType()
-	{
-		return PrincipalType.GROUP;
+		return null;
 	}
 
 	/**
@@ -169,33 +98,9 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	@Override
 	public String getShortDisplayName()
 	{
-		return getName();
+		return getTitle();
 	}
-	
-	/**
-	 * 
-	 */
-	public void setDesc( String desc )
-	{
-		m_desc = desc;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setDn( String dn )
-	{
-		m_dn = dn;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setGroupType( GroupType groupType )
-	{
-		m_groupType = groupType;
-	}
-	
+		
 	/**
 	 * Stores the group's name.
 	 * 

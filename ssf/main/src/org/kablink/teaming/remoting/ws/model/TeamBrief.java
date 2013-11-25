@@ -32,19 +32,11 @@
  */
 package org.kablink.teaming.remoting.ws.model;
 
-import org.kablink.teaming.domain.TeamInfo;
-
 import java.io.Serializable;
 
 public class TeamBrief extends BinderBrief implements Serializable {
 
 	public TeamBrief() {}
-
-    public TeamBrief(TeamInfo info) {
-        this(info.getId(), info.getTitle(), info.getEntityType(), info.getFamily(), info.getLibrary(), info.getDefinitionType(),
-                info.getPath(), new Timestamp(info.getCreation()), new Timestamp(info.getModification()), info.getPermaLink(),
-                info.getMirrored(), info.getParentBinderId());
-    }
 
 	public TeamBrief(Long id, String title, String entityType, String family, Boolean library, Integer definitionType, String path, Timestamp creation, Timestamp modification, String permalink, Boolean mirrored, Long parentBinderId) {
 		super(id, title, entityType, family, library, definitionType, path, creation, modification, permalink, mirrored, parentBinderId);

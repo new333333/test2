@@ -32,93 +32,57 @@
  */
 package org.kablink.teaming.fi.connection;
 
-import java.util.Date;
-import java.util.Map;
-
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.FIException;
 
 
-/**
- * Resource driver interface for mirrored folders.
- * 
- * @author jong
- *
- */
 public interface ResourceDriver {
-	
-	@Deprecated
-	public void initialize()  throws FIException, UncheckedIOException;
 
 	/**
 	 * Initialize the driver. 
-	 * <p>
-	 * The method must perform full initialization if the <code>properties</code> passed in
-	 * is not <code>null</code>. If it is <code>null</code>, then it must perform minimal
-	 * initialization just enough to support <code>testConnection</code> method on the driver.
 	 * 
-	 * @param properties A map of input properties or <code>null</code>
-	 * @return A map of output properties
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public Map<String,String> initialize(Map<String,String> properties) throws FIException, UncheckedIOException;
+	public void initialize() throws FIException, UncheckedIOException;
 	
 	/**
-	 * Shutdown the driver. 
-	 * 
-	 * All system resources and network connections must be closed and released.
+	 * Shutdown the driver.
 	 *
 	 */
 	public void shutdown();
 	
 	/**
-	 * Return the name of the driver instance. This name must be unique within a Vibe installation.
-	 * 
-	 * Note that Vibe resource driver manager uses this name not the name of the corresponding 
-	 * Spring bean when locating drivers in the system.
+	 * Return the name of the driver instance.
+	 * Note: Driver manager uses this name not the name of the corresponding
+	 * bean to locate drivers in the system. 
 	 * 
 	 * @return
 	 */
 	public String getName();
 	
 	/**
-	 * Return the display title of the driver instance.
-	 * 
+	 * Return the title of the driver instance. 
 	 * The title may or may not be localized depending on the driver implementation.
 	 * 
 	 * @return
 	 */
 	public String getTitle();
-
-	/**
-	 * Return title and mode as a single string.
-	 * 
-	 * @return
-	 */
+	
 	public String getTitleAndMode();
-
-	/**
-	 * Return the ID of the zone in which this driver belongs and is configured.
-	 * 
-	 * @return
-	 */
+	
 	public String getZoneId();
 	
 	/**
 	 * Return the type of the driver.
+	 * This is informational purpose only.
 	 *  
 	 * @return
 	 */
 	public String getType();
 	
 	/**
-	 * Return the resource root path configured for the driver.
-	 * 
-	 * The actual syntax of the root path will depend on the driver implementation.
-	 * Vibe resource driver manager does not interpret the path specification.
-	 * The value is meaningful only to the resource implementation.
+	 * Return the root path configured for the driver.
 	 * 
 	 * @return
 	 */
@@ -136,12 +100,12 @@ public interface ResourceDriver {
 	/**
 	 * Returns normalized resource path given its parent path and the resource name.
 	 * 
-	 * @param parentResourceNormalizedPath normalized parent path, must be non-null.
-	 * @param resourceName name of the resource
+	 * @param parentResourcePath normalized parent path, must be non-null.
+	 * @param resourceName
 	 * @return normalized path of the resource
 	 * @throws FIException
 	 */
-	public String normalizedResourcePath(String parentResourceNormalizedPath, String resourceName) throws FIException;
+	public String normalizedResourcePath(String parentResourcePath, String resourceName) throws FIException;
 	
 	/**
 	 * Returns normalized path of the specified resource.
@@ -153,54 +117,20 @@ public interface ResourceDriver {
 	public String normalizedResourcePath(String resourcePath) throws FIException;
 	
 	/**
-	 * Returns normalized path of the parent of the specified resource or <code>null</code>
-	 * if the resource doesn't have a parent.
-	 * 
-	 * @param normalizedResourcePath normalized resource path
-	 * @return
-	 * @throws FIException
-	 */
-	public String getParentResourcePath(String normalizedResourcePath) throws FIException;
-	
-	/**
-	 * Return the last element name of the resource identified by the path.
-	 * 
-	 * @param normalizedResourcePath 
+	 * Return the last element name of the path.
+	 * @param resourcePath 
 	 * @return
 	 */
-	public String getResourceName(String normalizedResourcePath) throws FIException;
+	public String getName(String resourcePath) throws FIException;
 	
 	/**
 	 * Returns whether the driver is read-only.
-	 * 
-	 * If the driver is read-only, Vibe can only read resources through the driver
-	 * but can not make any modifications.
-	 * 
 	 * @return
 	 */
 	public boolean isReadonly();
 	
 	/**
 	 * Returns whether the top-level deletion should be synchronized.
-	 * 
-	 * @return
 	 */
 	public boolean getSynchTopDelete();
-	
-	/**
-	 * Returns the date that the driver config was last set.
-	 * This is used to figure out if the driver needs to be re-initialized.
-	 * 
-	 * @return
-	 */
-	public Date getModifiedOn();
-
-	/**
-	 * Returns resource driver config object associated with this driver instance
-	 * or <code>null</code> if this driver instance was not created from a config object.
-	 * 
-	 * @return
-	 */
-	public ResourceDriverConfig getConfig();
-	
 }

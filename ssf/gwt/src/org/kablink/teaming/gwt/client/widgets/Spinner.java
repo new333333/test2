@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -122,7 +122,7 @@ public class Spinner {
 
 	private List<SpinnerListener> spinnerListeners = new ArrayList<SpinnerListener>();
 	private int step, minStep, maxStep, initialSpeed = 7;
-	private double value, min, max;
+	private long value, min, max;
 	private boolean increment;
 	private boolean constrained;
 	private boolean enabled = true;
@@ -157,7 +157,7 @@ public class Spinner {
 	};
 
 	private MouseDownHandler mouseDownHandler = new MouseDownHandler() {
-		@Override
+
 		public void onMouseDown(MouseDownEvent event) {
 			if (enabled) {
 				Image sender = (Image) event.getSource();
@@ -176,7 +176,6 @@ public class Spinner {
 	};
 
 	private MouseOverHandler mouseOverHandler = new MouseOverHandler() {
-		@Override
 		public void onMouseOver(MouseOverEvent event) {
 			if (enabled) {
 				Image sender = (Image) event.getSource();
@@ -190,7 +189,6 @@ public class Spinner {
 	};
 
 	private MouseOutHandler mouseOutHandler = new MouseOutHandler() {
-		@Override
 		public void onMouseOut(MouseOutEvent event) {
 			if (enabled) {
 				cancelTimer((Widget) event.getSource());
@@ -199,7 +197,6 @@ public class Spinner {
 	};
 
 	private MouseUpHandler mouseUpHandler = new MouseUpHandler() {
-		@Override
 		public void onMouseUp(MouseUpEvent event) {
 			if (enabled) {
 				cancelTimer((Widget) event.getSource());
@@ -213,7 +210,7 @@ public class Spinner {
 	 * @param value
 	 *            initial value
 	 */
-	public Spinner(SpinnerListener spinner, double value) {
+	public Spinner(SpinnerListener spinner, long value) {
 		this(spinner, value, 0, 0, 1, 99, false);
 	}
 
@@ -227,7 +224,7 @@ public class Spinner {
 	 * @param max
 	 *            max value
 	 */
-	public Spinner(SpinnerListener spinner, double value, double min, double max) {
+	public Spinner(SpinnerListener spinner, long value, long min, long max) {
 		this(spinner, value, min, max, 1, 99, true);
 	}
 
@@ -245,7 +242,7 @@ public class Spinner {
 	 * @param maxStep
 	 *            max value for stepping
 	 */
-	public Spinner(SpinnerListener spinner, double value, double min, double max,
+	public Spinner(SpinnerListener spinner, long value, long min, long max,
 			int minStep, int maxStep) {
 		this(spinner, value, min, max, minStep, maxStep, true);
 	}
@@ -266,7 +263,7 @@ public class Spinner {
 	 * @param constrained
 	 *            determines if min and max value will take effect
 	 */
-	public Spinner(SpinnerListener spinner, double value, double min, double max,
+	public Spinner(SpinnerListener spinner, long value, long min, long max,
 			int minStep, int maxStep, boolean constrained) {
 		this(spinner, value, min, max, minStep, maxStep, constrained,
 				(SpinnerResources) GWT.create(SpinnerResources.class));
@@ -290,7 +287,7 @@ public class Spinner {
 	 * @param images
 	 *            the arrows images
 	 */
-	public Spinner(SpinnerListener spinner, double value, double min, double max,
+	public Spinner(SpinnerListener spinner, long value, long min, long max,
 			int minStep, int maxStep, boolean constrained,
 			SpinnerResources images) {
 		super();
@@ -342,7 +339,7 @@ public class Spinner {
 	/**
 	 * @return the maximum value
 	 */
-	public double getMax() {
+	public long getMax() {
 		return max;
 	}
 
@@ -356,7 +353,7 @@ public class Spinner {
 	/**
 	 * @return the minimum value
 	 */
-	public double getMin() {
+	public long getMin() {
 		return min;
 	}
 
@@ -370,7 +367,7 @@ public class Spinner {
 	/**
 	 * @return the current value
 	 */
-	public double getValue() {
+	public long getValue() {
 		return value;
 	}
 
@@ -430,10 +427,10 @@ public class Spinner {
 	 *            the maximum value. Will not have any effect if constrained is
 	 *            set to false
 	 */
-	public void setMax(double max) {
+	public void setMax(long max) {
 		this.max = max;
 	}
-	
+
 	/**
 	 * @param maxStep
 	 *            the maximum step for this spinner
@@ -447,7 +444,7 @@ public class Spinner {
 	 *            the minimum value. Will not have any effect if constrained is
 	 *            set to false
 	 */
-	public void setMin(double min) {
+	public void setMin(long min) {
 		this.min = min;
 	}
 
@@ -465,13 +462,13 @@ public class Spinner {
 	 * @param fireEvent
 	 *            fires value changed event if set to true
 	 */
-	public void setValue(double value, boolean fireEvent) {
+	public void setValue(long value, boolean fireEvent) {
 		this.value = value;
 		if (fireEvent) {
 			fireOnValueChanged();
 		}
 	}
-	
+
 	/**
 	 * Decreases the current value of the spinner by subtracting current step
 	 */

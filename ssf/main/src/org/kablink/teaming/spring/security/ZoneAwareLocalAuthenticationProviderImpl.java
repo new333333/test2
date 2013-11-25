@@ -32,29 +32,20 @@
  */
 package org.kablink.teaming.spring.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.admin.AdminModule;
-import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
-import org.kablink.teaming.module.authentication.IdentityInfoObtainable;
-import org.kablink.teaming.module.authentication.LocalAuthentication;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
-import org.kablink.teaming.util.SpringContextUtil;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.BadCredentialsException;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.userdetails.UsernameNotFoundException;
 
 public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalAuthenticationProvider {
 	
@@ -76,16 +67,9 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 
 	protected Authentication doAuthenticate(Authentication authentication) throws AuthenticationException {
 		try {
-			User user = AuthenticationManagerUtil.authenticate(AuthenticationServiceProvider.LOCAL,
-					zoneName,
-					(String) authentication.getName(), 
-					(String) authentication.getCredentials(),
-					false, 
-					false,
-					false, 
-					false, 
-					new HashMap(), 
-					null);
+			User user = AuthenticationManagerUtil.authenticate(zoneName,
+					(String) authentication.getName(), (String) authentication.getCredentials(),
+					false, false, false, new HashMap(), null);
 
 			return outputAuthentication(authentication, user, null);
 		} catch(PasswordDoesNotMatchException e) {
@@ -99,35 +83,20 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 
 	protected Authentication outputAuthentication(Authentication authentication, User user, Object extraInfo) {
 		UserDetails details = new SsfContextMapper.SsfUserDetails(user.getName());
-        ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        if (getAdminModule().testUserAccess(user, AdminModule.AdminOperation.manageFunction)) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        }
-        UsernamePasswordAuthenticationToken result = newUsernamePasswordAuthenticationToken(user, extraInfo, details, authentication.getCredentials(), authorities);
+		UsernamePasswordAuthenticationToken result = newUsernamePasswordAuthenticationToken(user, extraInfo, details, authentication.getCredentials(), new GrantedAuthority[0]);
 		result.setDetails(details);
 		return result;	
 	}
 	
 	protected UsernamePasswordAuthenticationToken newUsernamePasswordAuthenticationToken
-	(User user, Object extraInfo, Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
-		return new SynchNotifiableAuthenticationImpl(principal, credentials, authorities, user);
+	(User user, Object extraInfo, Object principal, Object credentials, GrantedAuthority[] authorities) {
+		return new SynchNotifiableAuthenticationImpl(principal, credentials, authorities);
 	}
 	
-	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements LocalAuthentication, IdentityInfoObtainable, SynchNotifiableAuthentication {
-		User user;
-	    public SynchNotifiableAuthenticationImpl(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, User user) {
+	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements SynchNotifiableAuthentication {
+	    public SynchNotifiableAuthenticationImpl(Object principal, Object credentials, GrantedAuthority[] authorities) {
 	    	super(principal, credentials, authorities);
-	    	this.user = user;
 	    }
 		public void synchDone() {}
-		
-		@Override
-		public boolean isInternal() {
-			return user.getIdentityInfo().isInternal();
-		}
 	}
-
-    private AdminModule getAdminModule() {
-        return (AdminModule) SpringContextUtil.getBean("adminModule");
-    }
 }

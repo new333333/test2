@@ -50,7 +50,6 @@ import java.util.HashMap;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.util.CollectionUtil;
-import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 
 
@@ -73,9 +72,6 @@ public abstract class Principal extends Entry implements IPrincipal {
     protected String name;
     protected String foreignName="";
     protected String ldapGuid="";
-    protected String objectSid;
-    protected String samAccountName;
-    protected String domainName;
     protected List memberOf;//initialized by hiberate access=field
     protected Long workspaceId;
     protected List iMemberOf;
@@ -87,9 +83,8 @@ public abstract class Principal extends Entry implements IPrincipal {
     protected Map<String,EmailAddress> emailAddresses;//initialized by hibernate access=field
     // these collections are loaded for quicker indexing, hibernate will not persist them
     protected Map iEmailAddresses;
-	protected IdentityInfo identityInfo;
 
-    public EntityIdentifier.EntityType getEntityType() {
+     public EntityIdentifier.EntityType getEntityType() {
     	return EntityIdentifier.EntityType.valueOf(getType());
     }
     /**
@@ -169,8 +164,6 @@ public abstract class Principal extends Entry implements IPrincipal {
         return getEmailAddress(PRIMARY_EMAIL);
     }
     public void setEmailAddress(String address) {
-    	if(address != null)
-    		address = address.toLowerCase();
     	setEmailAddress(PRIMARY_EMAIL, address);
    }
     /**
@@ -188,8 +181,6 @@ public abstract class Principal extends Entry implements IPrincipal {
        	return (a==null ? "":a.getAddress());
     }
     public void setEmailAddress(String type, String address) {
-    	if(address != null)
-    		address = address.toLowerCase();
     	if (emailAddresses == null) emailAddresses = new HashMap();
     	if (Validator.isNull(address)) {
     		emailAddresses.remove(type);
@@ -206,8 +197,6 @@ public abstract class Principal extends Entry implements IPrincipal {
         return getEmailAddress(MOBILE_EMAIL);
     }
     public void setMobileEmailAddress(String address) {
-    	if(address != null)
-    		address = address.toLowerCase();
         setEmailAddress(MOBILE_EMAIL, address);
     }
    /**
@@ -217,8 +206,6 @@ public abstract class Principal extends Entry implements IPrincipal {
         return getEmailAddress(TEXT_EMAIL);
     }
     public void setTxtEmailAddress(String address) {
-    	if(address != null)
-    		address = address.toLowerCase();
         setEmailAddress(TEXT_EMAIL, address);
     }
     /**
@@ -228,8 +215,6 @@ public abstract class Principal extends Entry implements IPrincipal {
         return getEmailAddress(BCC_EMAIL);
     }
     public void setBccEmailAddress(String address) {
-    	if(address != null)
-    		address = address.toLowerCase();    	
         setEmailAddress(BCC_EMAIL, address);
     }
     /**
@@ -247,7 +232,6 @@ public abstract class Principal extends Entry implements IPrincipal {
      */
     public void setName(String name) {
     	if (Validator.isNull(name)) throw new IllegalArgumentException("null name");
-    	name = name.toLowerCase();
         this.name = name;
     }
  
@@ -264,11 +248,6 @@ public abstract class Principal extends Entry implements IPrincipal {
     	return foreignName;
     }
     public void setForeignName(String foreignName) {
-    	// We always store foreign name in lower case in the database so that we can match
-    	// on foreign names case insensitively using case-sensitive database lookup for
-    	// efficiency reason.
-    	if(foreignName != null)
-    		foreignName = foreignName.toLowerCase();
     	this.foreignName = foreignName;
     }
     
@@ -292,38 +271,11 @@ public abstract class Principal extends Entry implements IPrincipal {
     }// end setLdapGuid()
     
 
-    public String getObjectSid() {
-		return objectSid;
-	}
-	public void setObjectSid(String objectSid) {
-		this.objectSid = objectSid;
-	}
-	
-	public String getSamAccountName() {
-		return samAccountName;
-	}
-	public void setSamAccountName(String samAccountName) {
-		if(samAccountName != null)
-			samAccountName = samAccountName.toLowerCase();
-		this.samAccountName = samAccountName;
-	}
-	
-	public String getDomainName()
-	{
-		return domainName;
-	}
-	public void setDomainName( String domainName )
-	{
-		if(domainName != null)
-			domainName = domainName.toLowerCase();
-		this.domainName = domainName;
-	}
-	
-	/**
+    /**
      * This method will return true if this object is a "local" principal.  In other words, this
      * object was not sync'd from an ldap source.
      */
-    protected boolean isLocal()
+    public boolean isLocal()
     {
     	String		tmpName;
     	String		tmpForeignName;
@@ -448,46 +400,6 @@ public abstract class Principal extends Entry implements IPrincipal {
     public void setIndexEmailAddresses(Map iEmailAddresses) {
     	this.iEmailAddresses = iEmailAddresses;
     }
-
-    public String getAvatarAttachmentId() {
-        CustomAttribute attribute = getCustomAttribute("picture");
-        if (attribute!=null) {
-            Attachment attachment = (Attachment) attribute.getValueSet().iterator().next();
-            if (attachment!=null) {
-                return attachment.getId();
-            }
-        }
-        return null;
-    }
-
-	public IdentityInfo getIdentityInfo() {
-		return identityInfo;
-	}
-	
-	public void setIdentityInfo(IdentityInfo identityInfo) throws IllegalArgumentException {
-		identityInfo.validate();
-		this.identityInfo = identityInfo;
-	}
-	
-	public String[] getLdapContainerForeignNames() {
-		if(getIdentityInfo().isFromLdap()) {
-			String[] elements = StringUtil.split(this.getForeignName());
-			if(elements.length < 2)
-				return new String[0];
-			String[] foreignNames = new String[elements.length-1];
-			StringBuilder sb = new StringBuilder();
-			for(int i = 0; i < foreignNames.length; i++) {
-				if(i > 0)
-					sb.insert(0, ",");
-				sb.insert(0, elements[elements.length-1-i]);
-				foreignNames[i] = sb.toString();
-			}
-			return foreignNames;
-		}
-		else {
-			return new String[0];
-		}
-	}
 
  }
 

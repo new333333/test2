@@ -313,7 +313,7 @@ public class AddFileAttachmentDlg extends DlgBox
 							if ( m_editSuccessfulHandler != null )
 							{
 								// Yes, call it.
-								m_editSuccessfulHandler.editSuccessful( getDataFromDlg() );
+								m_editSuccessfulHandler.editSuccessful( null );
 							}
 						}
 					}

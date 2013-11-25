@@ -49,16 +49,10 @@ public class ContextLoaderListener extends org.springframework.web.context.Conte
 
 	private static volatile boolean initializationInProgress = false;
 	
-	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		initializationInProgress = true;
 		super.contextInitialized(event);
 		initializationInProgress = false;
-	}
-	
-	@Override
-	public void contextDestroyed(ServletContextEvent event) {
-		super.contextDestroyed(event);
 	}
 	
 	public static boolean isInitializationInProgress() {

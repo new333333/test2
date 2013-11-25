@@ -58,17 +58,6 @@ public class Group extends UserPrincipal implements GroupPrincipal {
     private Boolean dynamic = Boolean.FALSE; //initialized by hibernate access=field
     private String ldapQuery;
     
-    private Boolean ldapContainer; // false by default
-    
-    // For use by Hibernate only
-	protected Group() {
-    }
-	
-	// For use by application
-	public Group(IdentityInfo identityInfo) {
-		super(identityInfo);
-	}
-
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.group;
 	}
@@ -87,48 +76,33 @@ public class Group extends UserPrincipal implements GroupPrincipal {
      * @param members
      */
     public void setMembers(Collection newMembers) { 		
-    	if(isLdapContainer()) {
-    		throw new UnsupportedOperationException("setMembers() is not supported on the container group '" + getName() + "'");
-    	}
-    	else {
-	   		if (newMembers == null) newMembers = new ArrayList();
-			if (members == null) members = new ArrayList();
-			Set newM = CollectionUtil.differences(newMembers, members);
-			Set remM = CollectionUtil.differences(members, newMembers);
-			this.members.addAll(newM);
-			this.members.removeAll(remM);
-			for (Iterator iter=newM.iterator(); iter.hasNext();) {
-				UserPrincipal p = (UserPrincipal)iter.next();
-				p.getMemberOf().add(this);
-			}
-			for (Iterator iter=remM.iterator(); iter.hasNext();) {
-				UserPrincipal p = (UserPrincipal)iter.next();
-				p.getMemberOf().remove(this);
-			}
-    	}
+   		if (newMembers == null) newMembers = new ArrayList();
+		if (members == null) members = new ArrayList();
+		Set newM = CollectionUtil.differences(newMembers, members);
+		Set remM = CollectionUtil.differences(members, newMembers);
+		this.members.addAll(newM);
+		this.members.removeAll(remM);
+		for (Iterator iter=newM.iterator(); iter.hasNext();) {
+			UserPrincipal p = (UserPrincipal)iter.next();
+			p.getMemberOf().add(this);
+		}
+		for (Iterator iter=remM.iterator(); iter.hasNext();) {
+			UserPrincipal p = (UserPrincipal)iter.next();
+			p.getMemberOf().remove(this);
+		}
   	} 	
     
     public void addMember(IPrincipal member) {
-    	if(isLdapContainer()) {
-    		throw new UnsupportedOperationException("addMember() is not supported on the container group '" + getName() + "'");
-    	}
-    	else {
-	    	if (!(member instanceof UserPrincipal)) throw new NotSupportedException("Must be a User or Group");
-			if (members == null) members = new ArrayList();
-	    	if (members.contains(member)) return;
-	    	members.add(member);
-	    	member.getMemberOf().add(this);
-    	}
+    	if (!(member instanceof UserPrincipal)) throw new NotSupportedException("Must be a User or Group");
+		if (members == null) members = new ArrayList();
+    	if (members.contains(member)) return;
+    	members.add(member);
+    	member.getMemberOf().add(this);
     }
     public void removeMember(IPrincipal member) {
-    	if(isLdapContainer()) {
-    		throw new UnsupportedOperationException("removeMember() is not supported on the container group '" + getName() + "'");
-    	}
-    	else {
-			if (members == null) members = new ArrayList();
-	    	members.remove(member);
-	    	member.getMemberOf().remove(this);
-    	}
+		if (members == null) members = new ArrayList();
+    	members.remove(member);
+    	member.getMemberOf().remove(this);
     }
     
 	public boolean isDynamic() {
@@ -147,15 +121,5 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 	public void setLdapQuery(String ldapQuery) {
 		this.ldapQuery = ldapQuery;
 	}
-
-	public boolean isLdapContainer() {
-		if(ldapContainer == null)
-			return false;
-		return ldapContainer.booleanValue();
-	}
-
-	public void setLdapContainer(boolean ldapContainer) {
-		this.ldapContainer = ldapContainer;
-	}
-
+ 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.portlet.binder;
 
+import static org.kablink.util.search.Constants.COMMAND_DEFINITION_FIELD;
+
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +46,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
@@ -51,15 +54,19 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -67,7 +74,6 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
-import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
@@ -76,20 +82,17 @@ import org.springframework.web.portlet.ModelAndView;
 
 /**
  * Controller to handle type to find and lookup for search widgets
- * 
  * @author Janet
+ *
  */
-@SuppressWarnings("unchecked")
 public class TypeToFindAjaxController extends SAbstractController {
 	public static Pattern replacePtrn = Pattern.compile("([\\p{Punct}&&[^\\*]])");
 
 	//caller will retry on OptimisiticLockExceptions
-	@Override
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	
-	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -130,7 +133,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		String searchText = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TEXT_FIELD, "");
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		try {
 			searchText = URLDecoder.decode(searchText, "UTF-8");
 		} catch(Exception e) {}
@@ -229,17 +232,17 @@ public class TypeToFindAjaxController extends SAbstractController {
 			//Do a search to find the first few items that match the search text
 			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
 			if (findType.equals(WebKeys.FIND_TYPE_PLACES)) {
-				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, options);
+				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
 				List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 				model.put(WebKeys.ENTRIES, entries);
 				model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			} else if (findType.equals(WebKeys.FIND_TYPE_TEAMS)) {
-				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, options);
+				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
 				List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 				model.put(WebKeys.ENTRIES, entries);
 				model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			} else if (findType.equals(WebKeys.FIND_TYPE_ENTRIES)) {
-				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options);
+				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
 				List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 				List placesWithCounters = BinderHelper.sortPlacesInEntriesSearchResults(getBinderModule(), entries);
 				Map foldersMap = BinderHelper.prepareFolderList(placesWithCounters, false);
@@ -276,7 +279,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 					// to disallow sending email to the all users
 		    		// group?
 					boolean sendingEmail = PortletRequestUtils.getBooleanParameter(request, WebKeys.SENDING_EMAIL, false);
-					if (sendingEmail && (!(EmailHelper.canSendToAllUsers()))) {
+					if (sendingEmail && (!(SPropsUtil.getBoolean("mail.allowSendToAllUsers", false)))) {
 						// Yes!  We need to remove the all users group
 						// from the search results.  Scan them.
 						int size = searchEntries.size();
@@ -284,9 +287,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 				    		// Is this entry the all user's group?
 				    		Map entry = (Map)searchEntries.get(i);
 							String id = (String)entry.get(Constants.RESERVEDID_FIELD);
-							if ((null != id) && 
-									(id.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID) || 
-									 id.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID))) {
+							if ((null != id) && id.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID)) {
 								// Yes!  Remove it from the results.
 								searchEntries.remove(i);
 								searchHits -= 1;
@@ -298,9 +299,6 @@ public class TypeToFindAjaxController extends SAbstractController {
 				model.put(WebKeys.ENTRIES, searchEntries);
 				model.put(WebKeys.SEARCH_TOTAL_HITS, searchHits);
 			} else if (findType.equals(WebKeys.FIND_TYPE_USER)) {
-	    	    if (!user.isSuper()) {
-	     		   options.put(ObjectKeys.SEARCH_FILTER_AND, SearchUtils.buildExcludeFilter(org.kablink.util.search.Constants.HIDDEN_FROM_FIND_USER_FIELD, "true"));
-	     	    }
 				Map entries = getProfileModule().getUsers(options);
 				
 				int page = 0;
@@ -371,12 +369,6 @@ public class TypeToFindAjaxController extends SAbstractController {
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		int maxEntries = PortletRequestUtils.getIntParameter(request, "maxEntries", 10);
 		int pageNumber = PortletRequestUtils.getIntParameter(request, "pageNumber", 0);
-		String searchContextBinderId = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_BINDER_ID, "");
-		String searchScope = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_SCOPE, "");
-		Boolean showAllDefinitions = Boolean.TRUE;
-		if (searchScope.equals(ObjectKeys.SEARCH_SCOPE_CURRENT)) {
-			showAllDefinitions = Boolean.FALSE;
-		}
 		
 		while (searchText.endsWith("*")) {
 			searchText = searchText.substring(0, searchText.length() - 1); 
@@ -385,12 +377,9 @@ public class TypeToFindAjaxController extends SAbstractController {
 		Set<Definition> entries = new HashSet();
 		if (WebHelper.isUserLoggedIn(request)) {
 			Collection<Long> ids = TreeHelper.getSelectedIds(request.getParameterMap());
-			if (!searchContextBinderId.equals("")) {
-				ids.add(Long.valueOf(searchContextBinderId));
-			}
 			for (Long id:ids) {
 				try {
-					entries.addAll(getDefinitionModule().getDefinitions(id, showAllDefinitions, Definition.FOLDER_ENTRY));
+					entries.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.FOLDER_ENTRY));
 				} catch (Exception ex) {}
 			}
 			if (entries.isEmpty()) entries.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY));

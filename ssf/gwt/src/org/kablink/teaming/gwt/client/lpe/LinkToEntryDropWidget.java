@@ -32,11 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
@@ -51,6 +51,7 @@ public class LinkToEntryDropWidget extends DropWidget
 	private LinkToEntryProperties	m_properties = null;
 	private InlineLabel		m_entryName = null;
 	private InlineLabel		m_title = null;
+	private Timer				m_timer = null;
 	
 	/**
 	 * 
@@ -203,16 +204,9 @@ public class LinkToEntryDropWidget extends DropWidget
 			m_properties.copy( (PropertiesObj) props );
 		
 		// Get the needed information from the server.
-		m_properties.getDataFromServer( new GetterCallback<Boolean>()
-		{
-			/**
-			 * 
-			 */
-			public void returnValue( Boolean value )
-			{
-				updateWidget();
-			}
-		} );
+		m_properties.getDataFromServer();
+		
+		updateWidget();
 	}// end updateWidget()
 	
 	
@@ -229,6 +223,31 @@ public class LinkToEntryDropWidget extends DropWidget
 		if ( title == null || title.length() == 0 )
 			title = "";
 		m_title.setText( title );
+
+		// Are we waiting for the ajax call to get the entry name to finish?
+		if ( m_properties.isRpcInProgress() )
+		{
+			// Yes
+			// Have we already created a timer?
+			if ( m_timer == null )
+			{
+				// No, create one.
+				m_timer = new Timer()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void run()
+					{
+						updateWidget();
+					}// end run()
+				};
+			}
+			
+			m_timer.schedule( 250 );
+			return;
+		}
 
 		// Get the entry's name.
 		entryName = m_properties.getEntryName();

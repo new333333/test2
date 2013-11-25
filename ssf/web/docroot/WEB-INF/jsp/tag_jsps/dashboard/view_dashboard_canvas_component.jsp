@@ -71,7 +71,7 @@
 <c:if test="${empty ssBinder}">
     <form 
       method="post" 
-  	  action="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
+  	  action="<ssf:url action="modify_dashboard_portlet" actionUrl="true"><ssf:param 
   	  	name="dashboardId" value="${ssDashboardId}"/></ssf:url>">
      <c:set var="myId" value="dashboardId=${ssDashboardId}"/> 
 </c:if>

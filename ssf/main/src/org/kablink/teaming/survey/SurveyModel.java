@@ -64,8 +64,6 @@ public class SurveyModel {
 	
 	private Boolean allowedToChangeVote;
 	
-	private Boolean allowMultipleGuestVotes;
-	
 	private int maxLastIndex = 0;
 	
 	protected SurveyModel(JSONObject survey) {
@@ -89,9 +87,6 @@ public class SurveyModel {
 		} catch (JSONException e) {}
 		try {		
 			this.allowedToChangeVote = this.survey.getBoolean("allowChange");
-		} catch (JSONException e) {}
-		try {		
-			this.allowMultipleGuestVotes = this.survey.getBoolean("allowMultipleGuestVotes");
 		} catch (JSONException e) {}
 	}
 
@@ -139,7 +134,6 @@ public class SurveyModel {
 	public String toString() {
 		return new ToStringBuilder(this).append("questions", questions)
 			.append("allowedToChangeVote", this.allowedToChangeVote)
-			.append("allowMultipleGuestVotes", this.allowMultipleGuestVotes)
 			.append("allowedToViewAfterDueDate", this.allowedToViewAfterDueDate)
 			.append("allowedToViewBeforeDueDate", this.allowedToViewBeforeDueDate)
 			.append("allowedToViewDetails", this.allowedToViewDetails)
@@ -301,14 +295,6 @@ public class SurveyModel {
 			return true;
 		}	
 		return false;
-	}
-
-	public boolean isAllowMultipleGuestVotes() {
-		if (allowMultipleGuestVotes == null) {
-			return false;
-		}
-		
-		return allowMultipleGuestVotes;
 	}
 
 	public void removeVote() {

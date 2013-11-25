@@ -80,10 +80,10 @@ public class EmailAddress extends ZonedObject implements Serializable {
 	 * @return
 	 */
 	public String getAddress() {
-		return address;
+		return ((null != address) ? address.trim() : address);
 	}
 	public void setAddress(String address) {
-		this.address = ((null != address) ? address.trim().toLowerCase() : address);
+		this.address = ((null != address) ? address.trim() : address);
 	}
 	public boolean equals(Object obj) {
 		if (obj == null) return false;

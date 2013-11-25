@@ -126,7 +126,7 @@ tinyMCE.init({
   accessibility_focus: true,
   entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
   gecko_spellcheck : true,
-  plugins: "pdw,table,preelementfix,<%--
+  plugins: "compat2x,pdw,table,preelementfix,<%--
   --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">ss_addimage,</c:if><%--
   --%>preview,paste,ss_wikilink<c:if test="${isShowYouTube}">,ss_youtube</c:if>",
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
@@ -172,52 +172,6 @@ dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
 });
 
 tinyMCE.init({
-	  paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
-	  mode: "specific_textareas", editor_selector: "mceEditable_mirrored_file",
-	  theme : "advanced",
-	  onpageload : "ss_addLanguageChanges",
-	  language: "${ss_user_lang}",
-	  content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
-	  relative_urls: false, 
-	  remove_script_host : false,
-	  document_base_url : "<ssf:fileUrl entity="${ssDefinitionEntry}" baseUrl="true"/>",
-	  width: "100%",
-	  accessibility_warnings: true,
-	  accessibility_focus: true,
-	  entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
-	  gecko_spellcheck : true,
-	  plugins: "pdw,table,preelementfix,<%--
-	  --%>preview,paste,ss_wikilink<c:if test="${isShowYouTube}">,ss_youtube</c:if>",
-	  theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
-	  theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
-	  theme_advanced_resizing: true, 
-	  convert_fonts_to_spans: true,
-	  theme_advanced_styles: "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px;18px=ss_size_18px;20px=ss_size_20px;24px=ss_size_24px;28px=ss_size_28px;32px=ss_size_32px",
-	  theme_advanced_buttons1_add: "pdw_toggle",
-	  theme_advanced_buttons2_add: "|<%--
-	  --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">,ss_addimage</c:if><%--
-	  --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if><c:if test="${isShowYouTube}">,ss_youtube</c:if>",
-	  theme_advanced_path: false,
-	  pdw_toggle_on : 1,
-	  pdw_toggle_toolbars : "2",
-	  pdw_element_id : "ss_htmleditor_${element_name}",
-	  theme_advanced_resizing_min_width : 100,
-	  theme_advanced_resizing_min_height : 100,
-	  theme_advanced_resizing_use_cookie : true});
-
-	tinyMCE.addI18n('${ss_user_lang}.pdw',{
-		description : "<ssf:nlt tag="editor.pdw.desc"/>"
-		});
-	tinyMCE.addI18n('${ss_user_lang}.ss_wikilink',{
-	desc : "<ssf:nlt tag="editor.wikilink.title"/>"
-	});
-	tinyMCE.addI18n('${ss_user_lang}.ss_youtube',{
-	desc : "<ssf:nlt tag="editor.youtube.title"/>",
-	youTubeUrl : "<ssf:nlt tag="__youTubeUrl"/>",
-	dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
-	});
-
-tinyMCE.init({
 	paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
 	mode: "specific_textareas", editor_selector: "mceEditable_minimal",
 	theme : "simple",
@@ -232,7 +186,7 @@ tinyMCE.init({
 	  accessibility_focus: true,
 	  entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
 	  gecko_spellcheck : true,
-	  plugins: "table,preelementfix,<%--
+	  plugins: "compat2x,table,preelementfix,<%--
 	  --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">ss_addimage,</c:if><%--
 	  --%>preview,paste,ss_wikilink<c:if test="${isShowYouTube}">,ss_youtube</c:if>",
 	  theme_advanced_buttons3_add : "pastetext,pasteword,selectall",

@@ -72,7 +72,7 @@
 		<antcall target="compile" />
 		<antcall target="jar" />
 		<ant dir="standalone" target="build" inheritAll="false" />
-		<!--<ant dir="liferay-light" target="build" inheritAll="false" />-->
+		<ant dir="liferay-light" target="build" inheritAll="false" />
 		<!-- No longer supported portal types 
 		<ant dir="liferay" target="build" inheritAll="false" />
 		<ant dir="jbossportal" target="build" inheritAll="false" />
@@ -88,18 +88,12 @@
 	<target name="clean" depends="init">
 		<delete dir="${temp.dir}" />
 		<delete dir="${docs.api.dir}" />
-		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="gwt-unitCache" />
-		</delete>
-		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="lucene-contrib" />
-		</delete>
 		
 		<ant dir="util" target="clean" inheritAll="false"/>
 		<ant dir="util-search" target="clean" inheritAll="false"/>
 		<ant dir="rest-shared" target="clean" inheritAll="false"/>
-		<ant dir="rest-client" target="clean" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="clean" inheritAll="false"/>
+		<ant dir="lucene-contrib" target="clean" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="clean" inheritAll="false"/>
 		<ant dir="as-common" target="clean" inheritAll="false"/>
 		<ant dir="as-shared" target="clean" inheritAll="false"/>
@@ -116,9 +110,9 @@
 		<ant dir="main" target="clean" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="clean" inheritAll="false"/>
 		<ant dir="portal-module" target="clean" inheritAll="false"/>
-		<!--<ant dir="liferay" target="clean" inheritAll="false"/>
+		<ant dir="liferay" target="clean" inheritAll="false"/>
 		<ant dir="liferay-light" target="clean" inheritAll="false" />
-		<ant dir="jboss-portal" target="clean" inheritAll="false"/>-->
+		<ant dir="jboss-portal" target="clean" inheritAll="false"/>
 		<ant dir="taglib" target="clean" inheritAll="false"/>
 		<ant dir="gwt" target="clean" inheritAll="false"/>
 
@@ -130,21 +124,20 @@
 
 		<ant dir="war" target="clean" inheritAll="false"/>
 		
-		<!--<ant dir="ssfs" target="clean" inheritAll="false"/>-->
+		<ant dir="ssfs" target="clean" inheritAll="false"/>
 		
 		<ant dir="ssr" target="clean" inheritAll="false"/>
 		<ant dir="simple-url" target="clean" inheritAll="false"/>		
 		<ant dir="mobile" target="clean" inheritAll="false"/>		
 		<ant dir="rest" target="clean" inheritAll="false"/>		
-		<ant dir="webdav" target="clean" inheritAll="false"/>		
 	</target>
 
 	<target name="compile" depends="init">
 		<ant dir="util" target="compile" inheritall="false"/>
 		<ant dir="util-search" target="compile" inheritall="false"/>
 		<ant dir="rest-shared" target="compile" inheritall="false"/>
-		<ant dir="rest-client" target="compile" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="compile" inheritall="false"/>
+		<ant dir="lucene-contrib" target="compile" inheritall="false"/>
 		<ant dir="indexer-lucene" target="compile" inheritall="false"/>			
 		<ant dir="as-common" target="compile" inheritall="false"/>
 		<ant dir="as-shared" target="compile" inheritall="false"/>
@@ -164,9 +157,9 @@
 		<ant dir="slide-webdavclient" target="compile" inheritall="false"/>
 
 		<ant dir="portal-module" target="compile" inheritall="false"/>
-		<!--<ant dir="liferay" target="compile" inheritall="false"/>
+		<ant dir="liferay" target="compile" inheritall="false"/>
 		<ant dir="liferay-light" target="compile" inheritall="false"/>
-		<ant dir="jboss-portal" target="compile" inheritall="false"/>-->
+		<ant dir="jboss-portal" target="compile" inheritall="false"/>
 		<ant dir="taglib" target="compile" inheritall="false"/>
 		<ant dir="gwt" target="compile" inheritall="false"/>
 		
@@ -185,8 +178,8 @@
 		<ant dir="util" target="jar" inheritall="false"/>
 		<ant dir="util-search" target="jar" inheritall="false"/>
 		<ant dir="rest-shared" target="jar" inheritall="false"/>
-		<ant dir="rest-client" target="jar" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="jar" inheritall="false"/>
+		<ant dir="lucene-contrib" target="jar" inheritall="false"/>
 		<ant dir="indexer-lucene" target="jar" inheritall="false"/>
 		<ant dir="as-common" target="jar" inheritall="false"/>
 		<ant dir="as-shared" target="jar" inheritall="false"/>
@@ -204,9 +197,9 @@
 		<ant dir="main" target="jar" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="jar" inheritall="false"/>
 		<ant dir="portal-module" target="jar" inheritall="false"/>
-		<!--<ant dir="liferay" target="jar" inheritall="false"/>
+		<ant dir="liferay" target="jar" inheritall="false"/>
 		<ant dir="liferay-light" target="jar" inheritall="false"/>
-		<ant dir="jboss-portal" target="jar" inheritall="false"/>-->
+		<ant dir="jboss-portal" target="jar" inheritall="false"/>
 		<ant dir="taglib" target="jar" inheritall="false"/>
 		<ant dir="gwt" target="jar" inheritall="false"/>
 
@@ -216,7 +209,7 @@
 
 		<ant dir="war" target="war" inheritall="false"/>
 		
-		<!--<ant dir="ssfs" target="war" inheritall="false"/>-->
+		<ant dir="ssfs" target="war" inheritall="false"/>
 		
 		<ant dir="ssr" target="war" inheritall="false"/>
 		
@@ -225,16 +218,14 @@
 		<ant dir="mobile" target="war" inheritall="false"/>
 
 		<ant dir="rest" target="war" inheritall="false"/>
-
-		<ant dir="webdav" target="war" inheritall="false"/>
 	</target>
 
 	<target name="deploy" depends="init">
 		<ant dir="util" target="deploy" inheritall="false"/>
 		<ant dir="util-search" target="deploy" inheritall="false"/>
 		<ant dir="rest-shared" target="deploy" inheritall="false"/>
-		<ant dir="rest-client" target="deploy" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="deploy" inheritall="false"/>
+		<ant dir="lucene-contrib" target="deploy" inheritall="false"/>
 		<ant dir="indexer-lucene" target="deploy" inheritall="false"/>
 		<ant dir="as-common" target="deploy" inheritall="false"/>
 		<ant dir="as-shared" target="deploy" inheritall="false"/>
@@ -251,8 +242,8 @@
 		<ant dir="main" target="deploy" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="deploy" inheritall="false"/>
 		<ant dir="portal-module" target="deploy" inheritall="false"/>
-		<!--<ant dir="liferay" target="deploy" inheritall="false"/>
-		<ant dir="jboss-portal" target="deploy" inheritall="false"/>-->
+		<ant dir="liferay" target="deploy" inheritall="false"/>
+		<ant dir="jboss-portal" target="deploy" inheritall="false"/>
 		<ant dir="taglib" target="deploy" inheritall="false"/>
 		<ant dir="gwt" target="deploy" inheritall="false"/>
 
@@ -261,7 +252,7 @@
 		
 		<ant dir="web" target="deploy" inheritall="false"/>
 		
-		<!--<ant dir="ssfs" target="deploy" inheritall="false"/>-->
+		<ant dir="ssfs" target="deploy" inheritall="false"/>
 		
 		<ant dir="ssr" target="deploy" inheritall="false"/>
 		
@@ -270,8 +261,6 @@
 		<ant dir="mobile" target="deploy" inheritall="false"/>
 		
 		<ant dir="rest" target="deploy" inheritall="false"/>
-		
-		<ant dir="webdav" target="deploy" inheritall="false"/>
 	</target>
 
 	<target name="java2html" depends="init">
@@ -280,8 +269,8 @@
 		<ant dir="util" target="java2html" inheritAll="false"/>
 		<ant dir="util-search" target="java2html" inheritAll="false"/>
 		<ant dir="rest-shared" target="java2html" inheritAll="false"/>
-		<ant dir="rest-client" target="java2html" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="java2html" inheritAll="false"/>
+		<ant dir="lucene-contrib" target="java2html" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="java2html" inheritAll="false"/>
 		<ant dir="as-common" target="java2html" inheritAll="false"/>
 		<ant dir="as-shared" target="java2html" inheritAll="false"/>
@@ -298,9 +287,9 @@
 		<ant dir="main" target="java2html" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="java2html" inheritAll="false"/>
 		<ant dir="portal-module" target="java2html" inheritAll="false"/>
-		<!--<ant dir="liferay" target="java2html" inheritAll="false"/>
+		<ant dir="liferay" target="java2html" inheritAll="false"/>
 		<ant dir="liferay-light" target="java2html" inheritAll="false"/>
-		<ant dir="jboss-portal" target="java2html" inheritAll="false"/>-->
+		<ant dir="jboss-portal" target="java2html" inheritAll="false"/>
 		<ant dir="taglib" target="java2html" inheritAll="false"/>
 		<ant dir="gwt" target="java2html" inheritAll="false"/>
 		<ant dir="tools" target="java2html" inheritAll="false"/>
@@ -315,8 +304,8 @@
 		<ant dir="util" target="javadoc" inheritAll="false"/>
 		<ant dir="util-search" target="javadoc" inheritAll="false"/>
 		<ant dir="rest-shared" target="javadoc" inheritAll="false"/>
-		<ant dir="rest-client" target="javadoc" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="javadoc" inheritAll="false"/>
+		<ant dir="lucene-contrib" target="javadoc" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="javadoc" inheritAll="false"/>
 		<ant dir="as-common" target="javadoc" inheritAll="false"/>
 		<ant dir="as-shared" target="javadoc" inheritAll="false"/>
@@ -333,9 +322,9 @@
 		<ant dir="main" target="javadoc" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="javadoc" inheritAll="false"/>
 		<ant dir="portal-module" target="javadoc" inheritAll="false"/>
-		<!--<ant dir="liferay" target="javadoc" inheritAll="false"/>
+		<ant dir="liferay" target="javadoc" inheritAll="false"/>
 		<ant dir="liferay-light" target="javadoc" inheritAll="false"/>
-		<ant dir="jboss-portal" target="javadoc" inheritAll="false"/>-->
+		<ant dir="jboss-portal" target="javadoc" inheritAll="false"/>
 		<ant dir="taglib" target="javadoc" inheritAll="false"/>
 		<ant dir="gwt" target="javadoc" inheritAll="false"/>
 		<ant dir="tools" target="javadoc" inheritAll="false"/>

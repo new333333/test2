@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,6 +38,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 
+
 /**
  * Images used by the GWT Teaming 'Task Folder Listing' implementation.
  * 
@@ -45,68 +46,56 @@ import com.google.gwt.resources.client.ImageResource.RepeatStyle;
  */
 public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_down.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_down.png")
 	public ImageResource arrowDown();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_down_disabled.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_down_g.png")
 	public ImageResource arrowDownDisabled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_down_over.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_down_over.png")
 	public ImageResource arrowDownMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_left.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_left.png")
 	public ImageResource arrowLeft();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_left_disabled.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_left_g.png")
 	public ImageResource arrowLeftDisabled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_left_over.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_left_over.png")
 	public ImageResource arrowLeftMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_right.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_right.png")
 	public ImageResource arrowRight();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_right_disabled.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_right_g.png")
 	public ImageResource arrowRightDisabled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_right_over.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_right_over.png")
 	public ImageResource arrowRightMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_up.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_up.png")
 	public ImageResource arrowUp();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_up_disabled.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_up_g.png")
 	public ImageResource arrowUpDisabled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_up_over.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_up_over.png")
 	public ImageResource arrowUpMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/spinner16x16.gif")
-	public ImageResource busyAnimation_small();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/spinner25x25.gif")
+	@Source("org/kablink/teaming/gwt/public/images/busyanim16b.gif")
 	public ImageResource busyAnimation();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/spinner36x36.gif")
-	public ImageResource busyAnimation_medium();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/spinner48x48.gif")
-	public ImageResource busyAnimation_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/TaskListing/cal_menu.png")
@@ -173,11 +162,11 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource completed();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/filterOn.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/filterOn.png")
 	public ImageResource filterOn();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/filterOff.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/filterOff.png")
 	public ImageResource filterOff();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -229,11 +218,11 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource p5();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/sortAZ.gif")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/sortAZ.gif")
 	public ImageResource sortAZ();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/sortZA.gif")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/sortZA.gif")
 	public ImageResource sortZA();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)

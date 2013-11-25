@@ -38,8 +38,6 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.WSSecurityException;
@@ -54,9 +52,9 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.authentication.util.AuthenticationAdapter;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.encrypt.EncryptUtil;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.AuthenticationException;
 
 
 /**
@@ -70,8 +68,6 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class PWCallback implements CallbackHandler {
 
-	private static final Log logger = LogFactory.getLog(PWCallback.class);
-	
 	public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
         for (int i = 0; i < callbacks.length; i++) {
             if (callbacks[i] instanceof WSPasswordCallback) {
@@ -103,7 +99,6 @@ public class PWCallback implements CallbackHandler {
         				}
         				catch(AuthenticationException e) {
         					// Authentication failed.
-        					logger.warn(e.toString());
          					throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
         				}
             			

@@ -33,58 +33,31 @@
 
 package org.kablink.teaming.gwt.client.whatsnew;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.GwtMainPage;
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
-import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
-import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * 
  */
 public class ActivityStreamComment extends ActivityStreamUIEntry
-	implements ActivityStreamCommentsContainer
 {
-	private CommentAddedCallback m_commentAddedCallback;
-
-	private static final BigDecimal DELTA = BigDecimal.valueOf( 1, 1 );
-
-	/**
-	 * 
-	 */
-	public ActivityStreamComment(
-				ActivityStreamCtrl activityStreamCtrl,
-				CommentAddedCallback commentAddedCallback,
-				DescViewFormat descViewFormat,
-				boolean showTitle )
-	{
-		super( activityStreamCtrl, descViewFormat, showTitle );
-		
-		m_commentAddedCallback = commentAddedCallback;
-	}
+	private ActivityStreamTopEntry m_topEntry;	// The entry this comment belongs to.
 	
 	/**
 	 * 
 	 */
-	public ActivityStreamComment(
-			ActivityStreamCtrl activityStreamCtrl,
-			ActivityStreamTopEntry topEntry,
-			DescViewFormat descViewFormat )
+	public ActivityStreamComment( ActivityStreamCtrl activityStreamCtrl, ActivityStreamTopEntry topEntry )
 	{
-		this( activityStreamCtrl, null, descViewFormat, !GwtTeaming.m_requestInfo.isLicenseFilr() );
+		super( activityStreamCtrl );
+		
+		m_topEntry = topEntry;
 	}
+
 
 	/**
 	 * Nothing to do.
 	 */
-	@Override
 	public void addAdditionalHeaderUI( FlowPanel headerPanel )
 	{
 		// Nothing to do.
@@ -94,48 +67,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	private void addChildComment( ActivityStreamEntry activityStreamEntry, boolean scrollIntoView )
-	{
-		FlowPanel commentsPanel;
-		ActivityStreamComment commentUI;
-
-		// Get an ActivityStreamComment object.
-		commentUI = new ActivityStreamComment(
-											getActivityStreamCtrl(),
-											m_commentAddedCallback,
-											DescViewFormat.FULL,
-											getShowTitle() );
-		commentUI.setData( activityStreamEntry );
-		
-		// Add this ui widget to panel that holds all comments
-		commentsPanel = getCommentsPanel();
-		if ( commentsPanel != null )
-			commentsPanel.add( commentUI );
-		
-		if ( scrollIntoView )
-			showNewComment( commentUI );
-	}
-	
-	
-	/**
-	 * Create the panel that all comments will live in.
-	 */
-	@Override
-	public FlowPanel createCommentsPanel()
-	{
-		FlowPanel commentsPanel;
-		
-		commentsPanel = new FlowPanel();
-		commentsPanel.addStyleName( "activityStreamComment_CommentsPanel" );
-		
-		return commentsPanel;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public String getAvatarImageStyleName( ActivityStreamEntry asEntry )
+	public String getAvatarImageStyleName()
 	{
 		return "activityStreamCommentAvatarImg";
 	}
@@ -144,57 +76,34 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * Return the name of the style used with the content panel.
 	 */
-	@Override
 	public String getContentPanelStyleName()
 	{
 		return "activityStreamCommentContentPanel";
 	}
+
+	
+	/**
+	 * Return the name of the style used with a comment's description
+	 */
+	@Override
+	public String getDescStyleName()
+	{
+		return "activityStreamCommentDesc";
+	}
+
 	
 	/**
 	 * 
 	 */
-	@Override
 	public String getEntryHeaderStyleName()
 	{
 		return "activityStreamCommentHeader";
 	}
-	
-	/**
-	 * Return the url to the author's avatar image
-	 */
-	@Override
-	public String getEntryImgUrl( ActivityStreamEntry asEntry )
-	{
-		String url;
-		
-		// Get the url to the author's avatar
-		url = asEntry.getAuthorAvatarUrl();
-		
-		// Does the author have an avatar?
-		if ( url == null || url.length() == 0 )
-		{
-			// Default to the "no avatar" image.
-			url = GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png";
-		}
-		
-		return url;
-	}
 
 
-	/**
-	 * Return the name of the style used with a comment's full description
-	 */
-	@Override
-	public String getFullDescStyleName()
-	{
-		return "activityStreamCommentFullDesc";
-	}
-
-	
 	/**
 	 * Return the name of the style used with the div that holds the entry.
 	 */
-	@Override
 	public String getMainPanelStyleName()
 	{
 		return "activityStreamCommentMainPanel";
@@ -202,29 +111,8 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	
 	
 	/**
-	 * We don't display the number of comments so return null.
-	 */
-	@Override
-	public FlowPanel getNumCommentsPanel()
-	{
-		return null;
-	}
-	
-	
-	/**
-	 * Return the name of the style used with a comment's partial description
-	 */
-	@Override
-	public String getPartialDescStyleName()
-	{
-		return "activityStreamCommentPartialDesc";
-	}
-
-	
-	/**
 	 * 
 	 */
-	@Override
 	public String getTitlePanelStyleName()
 	{
 		return "activityStreamCommentTitlePanel";
@@ -234,107 +122,18 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	@Override
 	public String getTitleStyleName()
 	{
 		return "activityStreamCommentTitle";
 	}
-
-	/**
-	 * This method gets invoked when the user clicks on the avatar/file image.
-	 */
-	@Override
-	public void handleClickOnAvatar( Element element )
-	{
-		// For a comment we treat clicking on the avatar the same as clicking on the author's name.
-		handleClickOnAuthor( element );
-	}
 	
-
 	/**
 	 * Insert the given reply into the top entry's list of replies
 	 */
-	@Override
 	public void insertReply( ActivityStreamEntry reply )
 	{
-		// Add this reply to the container that holds the comments.
-		addChildComment( reply, true );
-		
-		if ( m_commentAddedCallback != null )
-			m_commentAddedCallback.commentAdded( reply );
-	}
-	
-	/**
-	 * Set the data this we should display from the given ActivityStreamEntry
-	 */
-	@Override
-	public void setData( ActivityStreamEntry entryItem )
-	{
-		List<ActivityStreamEntry> listOfChildComments;
-		
-		super.setData( entryItem );
-		
-		// Does this comment have any sub comments?
-		listOfChildComments = entryItem.getComments();
-		if ( listOfChildComments != null && listOfChildComments.size() > 0 )
-		{
-			// Yes
-			for ( ActivityStreamEntry nextComment: listOfChildComments )
-			{
-				// Add this comment to the panel that holds all comments.
-				addChildComment( nextComment, false );
-			}
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	private void showNewComment( ActivityStreamComment asComment )
-	{
-		Timer showTimer;
-		final Element element;
-		
-		element = asComment.getElement();
-		
-		element.scrollIntoView();
-		element.getStyle().setOpacity( 0 );
-
-		showTimer = new Timer()
-		{
-			@Override
-			public void run()
-			{
-				String opacityStr;
-				boolean increased = false;
-
-				opacityStr = element.getStyle().getOpacity();
-				if ( opacityStr != null && opacityStr.length() > 0 )
-				{
-					try
-					{
-						BigDecimal opacity;
-				
-						opacity = new BigDecimal( opacityStr );
-						if ( opacity.compareTo( new BigDecimal( 1 ) ) < 0 )
-						{
-							element.getStyle().setOpacity( opacity.add( DELTA ).doubleValue() );
-							increased = true;
-						}
-					}
-					catch ( NumberFormatException nfe )
-					{
-					}
-				}
-				
-				if ( increased == false )
-				{
-					element.getStyle().setOpacity( 1 );
-					cancel();
-				}
-			}
-		};
-         
-		showTimer.scheduleRepeating( 75 );
+		// Add this reply to the top entry.
+		if ( m_topEntry != null )
+			m_topEntry.insertReply( reply );
 	}
 }

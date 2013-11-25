@@ -79,58 +79,39 @@ public class FileCharsetDetectorUtil {
 	public static void convertEncoding(File infile, File outfile, String from,
 			String to) throws IOException, UnsupportedEncodingException {
 		// Set up byte streams.
-		InputStream in = null;
-		OutputStream out = null;
-		Reader r = null;
-		Writer w = null;
-		
-		try {
-			if (infile != null)
-				in = new FileInputStream(infile);
-			else
-				in = System.in;
-			outfile.createNewFile();		
-			if (outfile != null)
-				out = new FileOutputStream(outfile);
-			else
-				out = System.out;
-	
-			// Use default encoding if no encoding is specified.
-			if (from == null)
-				from = System.getProperty("file.encoding");
-			if (to == null)
-				to = "Unicode";
-	
-			// Set up character streams.
-			r = new BufferedReader(new InputStreamReader(in, from));
-			w = new BufferedWriter(new OutputStreamWriter(out, to));
-	
-			// Copy characters from input to output. The InputStreamReader
-			// converts from the input encoding to Unicode, and the
-			// OutputStreamWriter writes the file out in Unicode.
-			// Characters that cannot be represented in the output encoding are
-			// output as '?'
-			char[] buffer = new char[4096];
-			int len;
-			while ((len = r.read(buffer)) != -1)
-				// Read a block of input.
-				w.write(buffer, 0, len); // And write it out.
-		}
-		finally {
-			try {
-				if(r != null)
-					r.close(); // Close the input. This should close 'in' as well.
-				else if(in != null)
-					in.close();
-			}
-			catch(IOException e) {}
-			try {
-				if(w != null)
-					w.close(); // Flush and close output. This should close 'out' as well.
-				else if(out != null)
-					out.close();
-			}
-			catch(IOException e) {}
-		}
+		InputStream in;
+		if (infile != null)
+			in = new FileInputStream(infile);
+		else
+			in = System.in;
+		OutputStream out;
+		outfile.createNewFile();
+		if (outfile != null)
+			out = new FileOutputStream(outfile);
+		else
+			out = System.out;
+
+		// Use default encoding if no encoding is specified.
+		if (from == null)
+			from = System.getProperty("file.encoding");
+		if (to == null)
+			to = "Unicode";
+
+		// Set up character streams.
+		Reader r = new BufferedReader(new InputStreamReader(in, from));
+		Writer w = new BufferedWriter(new OutputStreamWriter(out, to));
+
+		// Copy characters from input to output. The InputStreamReader
+		// converts from the input encoding to Unicode, and the
+		// OutputStreamWriter writes the file out in Unicode.
+		// Characters that cannot be represented in the output encoding are
+		// output as '?'
+		char[] buffer = new char[4096];
+		int len;
+		while ((len = r.read(buffer)) != -1)
+			// Read a block of input.
+			w.write(buffer, 0, len); // And write it out.
+		r.close(); // Close the input.
+		w.close(); // Flush and close output.
 	}
 }

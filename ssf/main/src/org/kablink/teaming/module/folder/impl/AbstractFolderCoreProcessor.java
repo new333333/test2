@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,12 +38,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -73,6 +71,7 @@ import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.AbstractEntryProcessor;
 import org.kablink.teaming.module.file.FilesErrors;
@@ -90,7 +89,6 @@ import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
 import org.springframework.transaction.TransactionStatus;
@@ -99,8 +97,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import com.sitescape.team.domain.Statistics;
 
 /**
- * ?
- * 
+ *
  * @author Jong Kim
  */
 @SuppressWarnings("unchecked")
@@ -108,8 +105,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	implements FolderCoreProcessor {
   //***********************************************************************************************************	
     //inside write transaction
-    @Override
-	protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
+    protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	Folder folder = (Folder)binder;
     	FolderEntry fEntry = (FolderEntry)entry;
     	//lock the parent binder = to reduce optimistic lock exceptions
@@ -121,28 +117,25 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     	super.addEntry_fillIn(folder, entry, inputData, entryData, ctx);
     	fEntry.updateLastActivity(fEntry.getModification().getDate());
-    	if (!folder.isMirrored() && fEntry.isTop()) {
+    	if (fEntry.isTop()) {
     		Statistics statistics = getFolderStatistics(folder);
 	    	statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
 	    	setFolderStatistics(folder, statistics);
     	}
     }
     //inside write transaction
-    @Override
-	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
     }
     //no transaction
-    @Override
-	protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
+    protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
        	super.addEntry_done(binder, entry, inputData, ctx);
    		getRssModule().updateRssFeed(entry); 
      }
  
     //***********************************************************************************************************
     //no transaction    
-    @Override
-	public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems, Map options) 
+    public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems, Map options) 
    		throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
                
@@ -152,15 +145,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems, ctx);
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileData = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
-        List allUploadItems = new ArrayList(fileData);
 	FolderEntry newEntry = null;
         try {
          	final FolderEntry entry = addReply_create(def, ctx);
 		newEntry = entry;
         	// The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
-        	@Override
-			public Object doInTransaction(TransactionStatus status) {
+        	public Object doInTransaction(TransactionStatus status) {
         		addReply_fillIn(parent, entry, inputData, entryData, ctx);
         		addReply_preSave(parent, entry, inputData, entryData, ctx);
         		addReply_save(parent, entry, inputData, entryData, ctx);
@@ -191,7 +182,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         	}
         	throw ex;
     	} finally {
-        	cleanupFiles(allUploadItems);
+        	cleanupFiles(fileData);
     		
     	}
     }
@@ -277,32 +268,26 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
      //***********************************************************************************************************
     //inside write transaction
-    @Override
-	protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
+    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	Statistics statistics = getFolderStatistics((Folder)binder);
     	statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
     }
     //inside write transaction
-	@Override
 	protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
  			InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
  		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
     	FolderEntry fEntry = (FolderEntry)entry;
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
-		if(!binder.isMirrored()) {
-	    	Statistics statistics = getFolderStatistics((Folder)binder);
-		    statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-		    setFolderStatistics((Folder)binder, statistics);
-		}
+    	Statistics statistics = getFolderStatistics((Folder)binder);
+	    statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+	    setFolderStatistics((Folder)binder, statistics);
   }
     //no transaction
-	@Override
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
     	getRssModule().updateRssFeed(entry);
  	}
-    @Override
-	protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
+    protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, Map ctx) {
   	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
@@ -314,8 +299,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************
     //no write transaction    
-    @Override
-	protected void deleteEntry_setCtx(Entry entry, Map ctx) {
+    protected void deleteEntry_setCtx(Entry entry, Map ctx) {
     	//need context to pass replies
       	FolderEntry fEntry = (FolderEntry)entry;
       	//save top cause remove of reply sets it to null
@@ -327,8 +311,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         super.deleteEntry_setCtx(entry, ctx);
     }
     //no transaction
-   	@Override
-	protected void deleteEntry_processChangeLogs(Binder parentBinder, Entry entry, Map ctx, List changeLogs) {
+   	protected void deleteEntry_processChangeLogs(Binder parentBinder, Entry entry, Map ctx, List changeLogs) {
    		super.deleteEntry_processChangeLogs(parentBinder, entry, ctx, changeLogs);
    		//create history prior to delete.
      	List<FolderEntry> replies= (List)ctx.get("this.replies");
@@ -337,8 +320,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      	}
    	}
     //inside write transaction
-    @Override
-	protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
+    protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
         Statistics statistics = getFolderStatistics((Folder)parentBinder);        
         statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
     	super.deleteEntry_preDelete(parentBinder, entry, ctx);
@@ -356,13 +338,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
       	
     }
     //inside write transaction    
-    @Override
-	protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
+    protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
     	//folder Dao will handle
     }
     //no write transaction    
-    @Override
-	protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
+    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
     	List<FolderEntry> replies = (List)ctx.get("this.replies");
      	for (FolderEntry reply: replies) {
      		super.deleteEntry_processFiles(parentBinder, reply, deleteMirroredSource, null);
@@ -371,8 +351,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     
     //inside write transaction    
-    @Override
-	protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
+    protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted()) return;  //will handle in bulk way
         //use the optimized deleteEntry or hibernate deletes each collection entry one at a time
        	List entries = new ArrayList((List)ctx.get("this.replies"));
@@ -385,8 +364,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        	getFolderDao().deleteEntries((Folder)parentBinder, entries);   
     }
     //inside write transaction
-    @Override
-	protected void deleteEntry_postDelete(Binder parentBinder, Entry entry, Map ctx) {
+    protected void deleteEntry_postDelete(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted()) return;  //will handle in bulk way
        	List<FolderEntry> replies = (List)ctx.get("this.replies");
       	for (FolderEntry reply: replies) {
@@ -398,8 +376,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		super.deleteEntry_postDelete(parentBinder, entry, null);
   }
     //no transaction    
-    @Override
-	protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
+    protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted()) return;  //will handle in bulk way
         List<FolderEntry> replies = (List)ctx.get("this.replies");
       	for (FolderEntry reply: replies) {
@@ -412,8 +389,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
     //***********************************************************************************************************
     //inside write transaction
-    @Override
-	public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
+    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
     	super.addEntryWorkflow(binder, entry, definition, options);
  		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
      	
@@ -425,8 +401,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
     //inside write transaction
-    @Override
-	public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition) {
+    public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition) {
     	super.deleteEntryWorkflow(binder, entry, definition);
     	//reindex top whose lastActivity has changed
     	if (!entry.isTop()) {
@@ -436,8 +411,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
     //inside write transaction
-    @Override
-	public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
+    public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
     	super.modifyWorkflowState(binder, entry, tokenId, toState);
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
@@ -448,8 +422,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
     //inside write transaction
-   @Override
-public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData, Boolean canModifyEntry)  {
+   public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData, Boolean canModifyEntry)  {
 	   Long version = entry.getLogVersion();
 	   super.setWorkflowResponse(binder, entry, stateId, inputData, canModifyEntry);
 	   if (version != entry.getLogVersion()) {
@@ -462,8 +435,7 @@ public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputD
 	   }
    }
    //***********************************************************************************************************
-   @Override
-public Entry copyEntry(Binder binder, Entry source, Binder destination, String[] toFileNames, Map options) {
+   public Entry copyEntry(Binder binder, Entry source, Binder destination, Map options) {
    	 
 	   if (destination.isZone() || 
 			   ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()) ||
@@ -471,7 +443,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
      		throw new NotSupportedException("errorcode.notsupported.copyEntryDestination", new String[] {destination.getPathName()});
 	   if (!source.isTop()) throw new NotSupportedException("errorcode.notsupported.copyReply");
 	   
-	   BinderHelper.copyEntryCheckMirrored(binder, source, destination);
+   	   copyEntryCheckMirrored(binder, source, destination);
 
 	   List<FolderEntry>children = getFolderDao().loadEntryDescendants((FolderEntry)source);
 	   children.add(0, (FolderEntry)source);
@@ -483,16 +455,9 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 	   Map<EntityIdentifier, List<Tag>> tags = getCoreDao().loadAllTagsByEntity(ids);
 	   Map<FolderEntry, FolderEntry> sourceMap = new HashMap();
        getCoreDao().lock(destination);
-       String newTitle = (options==null)?null:(String) options.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE);
 	   //get ordered list of entries
 	   for (FolderEntry child:children) {
-		   FolderEntry entry = new FolderEntry(child);		
-		   if(child.equals(source) && Validator.isNotNull(newTitle)) { 
-			   // If the caller specified new title for the new entry, then we must set the title 
-			   // of the top-level entry in the copied hierarchy to this title. The titles of the 
-			   // children remain unchanged.
-			   entry.setTitle(newTitle);
-		   }
+		   FolderEntry entry = new FolderEntry(child);		   
 			if (child.isTop()) {
 				//docnumber will be different
 				((Folder)destination).addEntry(entry);
@@ -504,17 +469,13 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 			sourceMap.put(child, entry);
 		    List<Tag> entryTags = tags.get(child.getEntityIdentifier());
 			try{
-				// file name change is possible only for the top-level entry being copied.
-				doCopy(child, entry, entryTags, child.equals(source)?toFileNames:null, options);
+				doCopy(child, entry, entryTags, options);
 			} catch(Exception e) {
 				logger.error(e);
 				//The copy failed, so delete the attempted copy
 				sourceMap.remove(child);
 				FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
-				if (e instanceof TitleException) {
-					throw ((TitleException) e);
-				}
 				break;
 			}
 	   }
@@ -523,14 +484,14 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 	   //the top folder was already index but prior to adding its children, so by adding this index on the top folder entry
 	   //the additional information such as # of comments on a blog entry will show correctly
 	   if (top != null) {
-		   indexEntry(top.getParentBinder(), top, null, top.getFileAttachments(), true, tags.get(top.getEntityIdentifier()), false);
+		   indexEntry(top.getParentBinder(), top, null, top.getFileAttachments(), true, tags.get(top.getEntityIdentifier()));
 	   }
 	   return top; 
    }
  
-	protected void doCopy(FolderEntry source, FolderEntry entry, List<Tag> tags, String[] toFileNames, Map copyOptions) {
+	protected void doCopy(FolderEntry source, FolderEntry entry, List<Tag> tags, Map copyOptions) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry, toFileNames);
+		getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry);
 		EntryBuilder.copyAttributes(source, entry);
  		//copy tags
  		List myTags = new ArrayList();
@@ -544,25 +505,10 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
  			myTags.add(tCopy);
  		}
     	if (entry.isTop()) {
-    		if (entry.getParentFolder().isUniqueTitles()) 
-    			getCoreDao().updateTitle(entry.getParentBinder(), entry, null, entry.getNormalTitle());
-    		
-    		if(!entry.getParentFolder().isMirrored()) {
-	    		Statistics statistics = getFolderStatistics(entry.getParentFolder());
-	    		statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-	    		setFolderStatistics(entry.getParentFolder(), statistics);
-    		}
-    		
-    		//Check if this entry is being added to a Filr folder
-    		if (entry.getParentBinder().isMirrored() && entry.getParentBinder().isAclExternallyControlled()) {
-    			//In this case, we must change the entry definition type to be a Filr file
-    			Document defDoc = entry.getEntryDefDoc();
-    			String internalDefId = defDoc.getRootElement().attributeValue("internalId", "");
-    			if (!internalDefId.equals(ObjectKeys.DEFAULT_MIRRORED_FILR_FILE_ENTRY_DEF)) {
-    				//This is a bad definition type for a remote file. Change it
-    				entry.setEntryDefId(ObjectKeys.DEFAULT_MIRRORED_FILR_FILE_ENTRY_DEF);
-    			}
-    		}
+    		if (entry.getParentFolder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, null, entry.getNormalTitle());
+    		Statistics statistics = getFolderStatistics(entry.getParentFolder());
+    		statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+    		setFolderStatistics(entry.getParentFolder(), statistics);
     	}
     	processChangeLog(entry, ChangeLog.ADDENTRY);
 		getCoreDao().evict(tags);
@@ -606,34 +552,18 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 	    		//See if the entry definition type has an associated workflow
 	    		if (entry.getEntryDefId() != null) {
 	    			Definition wfDef = (Definition)workflowAssociations.get(entry.getEntryDefId());
-	    			if (wfDef != null) {
-	    				//Before starting this, make sure it isn't the same as one we aren't supposed to start
-	    				boolean found = false;
-	    				Set<WorkflowState> workflowStates = source.getWorkflowStates();
-	    				for (WorkflowState state : workflowStates) {
-	    					Definition def = state.getDefinition();
-	    					if (def.getId().equals(wfDef.getId())) {
-	    						found = true;
-	    						break;
-	    					}
-	    				}
-	    				if (!found) {
-	    					//It is OK to start this workflow
-	    					getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef, null);
-	    				}
-	    			}
+	    			if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef, null);
 	    		}
 	    	}
 		}
 
-		indexEntry(entry.getParentBinder(), entry, null, entry.getFileAttachments(), true, myTags, false);
+		indexEntry(entry.getParentBinder(), entry, null, entry.getFileAttachments(), true, myTags);
    	 
    }
  
    //***********************************************************************************************************
     //inside write transaction    
-    @Override
-	public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options) {
+    public void moveEntry(Binder binder, Entry entry, Binder destination, Map options) {
        	if (destination == null || binder.equals(destination)) return;
     	Folder from = (Folder)binder;
     	if (!(destination instanceof Folder))
@@ -642,7 +572,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     	FolderEntry fEntry = (FolderEntry)entry;
     	if (fEntry.getTopEntry() != null)
     		throw new NotSupportedException("errorcode.notsupported.moveReply");
-    	BinderHelper.moveEntryCheckMirrored(binder, entry, destination);
+    	moveEntryCheckMirrored(binder, entry, destination);
     	
     	//Remove this entry from the RSS index
     	Set<Entry> entriesToDelete = new HashSet<Entry>();
@@ -656,28 +586,22 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
    		if (from.isUniqueTitles()) getCoreDao().updateTitle(from, entry, entry.getNormalTitle(), null);		
    	    from.removeEntry(fEntry);
     	to.addEntry(fEntry);
-    	String newTitle = (options==null)?null:(String)options.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE);
-    	if(Validator.isNotNull(newTitle)) {
-		   // If the caller specified new title for the moved entry, then we need to change the title here.
-    		entry.setTitle(newTitle);
-    	}
    		if (to.isUniqueTitles()) getCoreDao().updateTitle(to, entry, null, entry.getNormalTitle());		
         Statistics statistics = getFolderStatistics(from);        
         statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
         setFolderStatistics(from, statistics);
-        if(!destination.isMirrored()) {
-	        statistics = getFolderStatistics((Folder)destination);
-	        statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-	        setFolderStatistics((Folder)destination, statistics);
-        }
+        statistics = getFolderStatistics((Folder)destination);
+        statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+        setFolderStatistics((Folder)destination, statistics);
 
     	User user = RequestContextHolder.getRequestContext().getUser();
 
         fEntry.setModification(new HistoryStamp(user));
         fEntry.incrLogVersion();
         //just log new location
-    	ChangeLog changes = ChangeLogUtils.create(fEntry, ChangeLog.MOVEENTRY);
-    	ChangeLogUtils.save(changes);
+    	ChangeLog changes = new ChangeLog(fEntry, ChangeLog.MOVEENTRY);
+    	changes.getEntityRoot();
+    	getCoreDao().save(changes);
 
     	List ids = new ArrayList();
     	for (int i=0; i<entries.size(); ++i) {
@@ -690,8 +614,9 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
             //just log new location
           	e.setModification(fEntry.getModification());
           	e.incrLogVersion();
-        	changes = ChangeLogUtils.create(e, ChangeLog.MOVEENTRY);
-        	ChangeLogUtils.save(changes);
+        	changes = new ChangeLog(e, ChangeLog.MOVEENTRY);
+        	changes.getEntityRoot();
+        	getCoreDao().save(changes);
          	ids.add(e.getId());
     	}
     	//add top entry to list of entries
@@ -701,11 +626,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     	getFolderDao().moveEntries(to,ids);
     	entries.add(fEntry);
     	// Move files in the entries
-   		for (Iterator iter=entries.iterator(); iter.hasNext();) {
-   			FolderEntry e = (FolderEntry)iter.next();
-   			// file name change is possible only for the top-level entry being moved
-   			getFileModule().moveFiles(binder, e, destination, e, e.equals(entry)?toFileNames:null);
-   		}
+    	moveFiles(binder, entries, destination);
     	//finally remove from index and reAdd.
     	indexEntries(entries);
    		getRssModule().updateRssFeed(fEntry); 
@@ -713,24 +634,20 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     
     //***********************************************************************************************************
        
-    @Override
-	protected SFQuery indexEntries_getQuery(Binder binder) {
+    protected SFQuery indexEntries_getQuery(Binder binder) {
         return getFolderDao().queryEntries((Folder)binder, null);
    	}
- 	@Override
-	protected void indexEntries_postIndex(Binder binder, Entry entry) {
+ 	protected void indexEntries_postIndex(Binder binder, Entry entry) {
  		super.indexEntries_postIndex(binder, entry);
 	}
  
     //***********************************************************************************************************
     //inside write transaction    
-   @Override
-public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, final boolean skipDbLog) {
+   public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
     	if(logger.isDebugEnabled())
     		logger.debug("Deleting binder [" + binder.getPathName() + "]");
     	//mark deleted first, saving real work for later
-    	if (!binder.isDeleted()) 
-    		super.deleteBinder(binder, deleteMirroredSource, options, skipDbLog);
+    	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource, options);
     	else {
     		//if binder is marked deleted, we are called from cleanup code without a transaction 
     		final Folder folder = (Folder)binder;
@@ -743,7 +660,6 @@ public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map option
 			Boolean done=Boolean.FALSE;
 			while (!done) {
 				done = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
-					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						SFQuery query = getFolderDao().queryEntries(folder, filter); 
 						try {
@@ -757,17 +673,15 @@ public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map option
 			 					if(logger.isDebugEnabled())
 			 						logger.debug("Deleting entry [" + entry.getTitle() + "], id=" + entry.getId());
 					    		//create history - using timestamp and version from folder delete
-								if(!skipDbLog) {
-									try {
-										entry.setModification(folder.getModification());
-										entry.incrLogVersion();
-										processChangeLog(entry, ChangeLog.DELETEENTRY);
-									} catch (Exception ex) {
-										logger.warn("Error logging entry " + entry.toString(), ex);
-									}
+								try {
+									entry.setModification(folder.getModification());
+									entry.incrLogVersion();
+									processChangeLog(entry, ChangeLog.DELETEENTRY);
+								} catch (Exception ex) {
+									logger.warn("Error logging entry " + entry.toString(), ex);
 								}
 								
-								getFileModule().deleteFiles(folder, entry, false, null, skipDbLog);
+								getFileModule().deleteFiles(folder, entry, false, null);
 
 								entries.add(entry);
 								++count;
@@ -782,7 +696,7 @@ public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map option
 							}
 							//	finally delete the binder and its associations
 							try {
-								getFileModule().deleteFiles(folder, folder, false, null, skipDbLog);
+								getFileModule().deleteFiles(folder, folder, false, null);
 							} catch (Exception ex) {
 								logger.warn("Error delete files: " + folder.getPathName(), ex);
 							}
@@ -807,14 +721,12 @@ public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map option
     }
     
    //inside write transaction    
-    @Override
-	protected void deleteBinder_processFiles(Binder binder, Map ctx) {
+    protected void deleteBinder_processFiles(Binder binder, Map ctx) {
     	//save for background
 
     }
     //inside write transaction    
-   @Override
-public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
+   public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
       	if (!binder.isRoot()) {
     		binder.getParentBinder().removeBinder(binder);
     	}
@@ -828,8 +740,7 @@ public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map
     }
 
    //inside write transaction    
-   @Override
-protected void deleteBinder_postDelete(Binder binder, Map ctx) {
+   protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 	   //remove notification status so mail isn't sent
 	   getCoreDao().executeUpdate("delete from org.kablink.teaming.domain.NotifyStatus where owningBinderId=" + binder.getId());
 	   getRssModule().deleteRssFeed(binder);
@@ -837,15 +748,13 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 
     //***********************************************************************************************************
    //inside write transaction    
-    @Override
-	public void moveBinder(Binder source, Binder destination, Map options) {
+    public void moveBinder(Binder source, Binder destination, Map options) {
     	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
     		super.moveBinder(source, destination, options);
     	else throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
    	 
     }
     //inside write transaction    
-	@Override
 	public void moveBinderFixup(Binder binder) {
 		//Some parentage has changed.
 		Folder folder = (Folder)binder;
@@ -858,23 +767,15 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 	}
     //***********************************************************************************************************
     //no transaction
-    @Override
-	public Binder copyBinder(Binder source, Binder destination, Map options) {
-    	if ((destination instanceof Folder) || (destination instanceof Workspace)) {
+    public Binder copyBinder(Binder source, Binder destination, Map options) {
+    	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
     		return super.copyBinder(source, destination, options);
-    	} else {
-    		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
-    	}
+    	else throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
    	 
     }
     //***********************************************************************************************************
    //no transaction
-    
-    //If the destination binder is a mirrored folder and the source binder is not a mirrored folder,
-    // then the callers to this routine should have validated that every entry is valid to copy.
-    //This routine will skip over any entry that is not valid, possibly making a partial copy
-    @Override
-	public void copyEntries(final Binder source, Binder binder, final Map options) { 
+    public void copyEntries(final Binder source, Binder binder, final Map options) { 
 		//now copy entries
 		final Folder folder = (Folder)binder;
 		Map serializationMap = ((Map) folder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
@@ -882,7 +783,6 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 		final List<Long>      sIds    = (hasTaskLinkage ? new ArrayList<Long>()     : null);
 		final Map<Long, Long> eIdsMap = (hasTaskLinkage ? new HashMap<Long, Long>() : null);
 		getTransactionTemplate().execute(new TransactionCallback() {
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 		    	Boolean preserverDocNum = null;
 		    	if (options != null) preserverDocNum = (Boolean)options.get(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER);
@@ -893,8 +793,7 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 				SFQuery query = getFolderDao().queryEntries((Folder)source, filter);
 		      	try {       
 		  			List<FolderEntry> batch = new ArrayList();
-		  			@SuppressWarnings("unused")
-					int total=0;
+		  			int total=0;
 		  			Map<FolderEntry, FolderEntry> sourceMap = new HashMap();
 		      		while (query.hasNext()) {
 		       			int count=0;
@@ -923,43 +822,31 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 		       					// ...skip it.
 		       					continue;
 		       				}
-		       				boolean okToCopy = false;
-		       				try {
-		       					//See if copying from this source binder to this destination folder is a legal operation to do
-		       					BinderHelper.copyEntryCheckMirrored(source, sEntry, folder);
-		       					okToCopy = true;
-		       				} catch(Exception e) {}
+		       				FolderEntry dEntry = new FolderEntry(sEntry);
 		       				
-		       				//Inside this routine, we will skip any invalid entries.
-		       				//Callers of this routine should validate the whole binder before calling this routine
-		       				//  if it is not desirable to have an incomplete copy.
-		       				if (okToCopy) {
-			       				FolderEntry dEntry = new FolderEntry(sEntry);
-			       				
-			       				if (sEntry.isTop()) {
-			       					sourceMap.clear();
-			       					if (preserverDocNum) folder.addEntry(dEntry, sEntry.getHKey().getLastNumber());
-			       					else folder.addEntry(dEntry);
-			          			} else {
-			          				FolderEntry dParent = sourceMap.get(sEntry.getParentEntry());
-			          				dParent.addReply(dEntry, sEntry.getHKey().getLastNumber());
-			          			}
-			       				getCoreDao().save(dEntry); //need to generate id; do after sortkey is set
-			       				sourceMap.put(sEntry, dEntry);
-			      		    	List<Tag> entryTags = tags.get(sEntry.getEntityIdentifier());
-			       				doCopy(sEntry, dEntry, entryTags, null, options);
-	
-			       				// Does the folder we're copy entries from
-			       				// contain task linkage information?
-			       				if (hasTaskLinkage) {
-			       					// Yes!  Then we need to track the IDs
-			       					// of the source entries and a mapping
-			       					// between the source and destination
-			       					// entries.
-				       				Long sId = sEntry.getId();
-				       				sIds.add(sId);
-				       				eIdsMap.put(sId, dEntry.getId());
-			       				}
+		       				if (sEntry.isTop()) {
+		       					sourceMap.clear();
+		       					if (preserverDocNum) folder.addEntry(dEntry, sEntry.getHKey().getLastNumber());
+		       					else folder.addEntry(dEntry);
+		          			} else {
+		          				FolderEntry dParent = sourceMap.get(sEntry.getParentEntry());
+		          				dParent.addReply(dEntry, sEntry.getHKey().getLastNumber());
+		          			}
+		       				getCoreDao().save(dEntry); //need to generate id; do after sortkey is set
+		       				sourceMap.put(sEntry, dEntry);
+		      		    	List<Tag> entryTags = tags.get(sEntry.getEntityIdentifier());
+		       				doCopy(sEntry, dEntry, entryTags, options);
+
+		       				// Does the folder we're copy entries from
+		       				// contain task linkage information?
+		       				if (hasTaskLinkage) {
+		       					// Yes!  Then we need to track the IDs
+		       					// of the source entries and a mapping
+		       					// between the source and destination
+		       					// entries.
+			       				Long sId = sEntry.getId();
+			       				sIds.add(sId);
+			       				eIdsMap.put(sId, dEntry.getId());
 		       				}
 		       			}
 		       			getCoreDao().flush();
@@ -1015,15 +902,13 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 
     //***********************************************************************************************************
     //no transaction
-	@Override
 	public void setFileAgingDates(final Binder binder) { 
 		if (binder instanceof Folder) {
 	 		//now update the entries in the binder
 	 		@SuppressWarnings("unused")
 			final Folder folder = (Folder)binder;
 	 		getTransactionTemplate().execute(new TransactionCallback() {
-	 			@Override
-				public Object doInTransaction(TransactionStatus status) {
+	 			public Object doInTransaction(TransactionStatus status) {
 	 				FilterControls filter = new FilterControls();
 	 				filter.setOrderBy(new OrderBy("HKey.sortKey"));
 	 				SFQuery query = getFolderDao().queryEntries((Folder)binder, filter);
@@ -1048,10 +933,9 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 	 		}});
 		}
 	}
-	
+
     //***********************************************************************************************************
     //no transaction
-	@Override
 	public boolean isFolderEmpty(final Binder binder) { 
 		Boolean result = true;
 		if (binder instanceof Folder) {
@@ -1059,8 +943,7 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 	 		@SuppressWarnings("unused")
 			final Folder folder = (Folder)binder;
 	 		result = (Boolean) getTransactionTemplate().execute(new TransactionCallback() {
-	 			@Override
-				public Object doInTransaction(TransactionStatus status) {
+	 			public Object doInTransaction(TransactionStatus status) {
 	 				FilterControls filter = new FilterControls();
 	 				filter.setOrderBy(new OrderBy("HKey.sortKey"));
 	 				SFQuery query = getFolderDao().queryEntries((Folder)binder, filter);
@@ -1075,8 +958,7 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 	}
 	
     //***********************************************************************************************************
-    @Override
-	public Set getPrincipalIds(DefinableEntity entity) {
+    public Set getPrincipalIds(DefinableEntity entity) {
     	Set ids = super.getPrincipalIds(entity);
     	if (entity instanceof FolderEntry) {
     		FolderEntry fEntry = (FolderEntry)entity;
@@ -1086,8 +968,7 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
     	return ids;
     } 
 
-    @Override
-	public Set getPrincipalIds(List<DefinableEntity> results) {
+    public Set getPrincipalIds(List<DefinableEntity> results) {
     	Set ids = super.getPrincipalIds(results);
     	for (DefinableEntity entity: results) {
         	if (entity instanceof FolderEntry) {
@@ -1099,8 +980,7 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
     	return ids;
      }     
 
-    @Override
-	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
+    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	FolderEntry fEntry = (FolderEntry)entry;        
         // Add Doc number
@@ -1126,12 +1006,10 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
     //***********************************************************************************************************
           
 
-    @Override
-	public Map getEntryTree(Folder parentFolder, FolderEntry entry) {
+    public Map getEntryTree(Folder parentFolder, FolderEntry entry) {
     	return getEntryTree(parentFolder, entry, false);
     }
-    @Override
-	public Map getEntryTree(Folder parentFolder, FolderEntry entry, boolean includePreDeleted) {
+    public Map getEntryTree(Folder parentFolder, FolderEntry entry, boolean includePreDeleted) {
     	int entryLevel;
     	List<FolderEntry> lineage;
     	Map model = new HashMap();   	
@@ -1173,53 +1051,24 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
          
     //***********************************************************************************************************   
 
-	@Override
+
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
-		return processChangeLog(entry, operation, false, false);
-	}
-
-	@Override
-	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean skipDbLog, boolean skipNotifyStatus) {
-		// Take care of ChangeLog
-		ChangeLog changes = null;
-		
-		if (entry instanceof Binder) {
-			changes = processChangeLog((Binder)entry, operation, skipDbLog);
-		}
-		else {
-			if(!skipDbLog) {
-				changes = ChangeLogUtils.createAndBuild(entry, operation);
-				Element element = changes.getEntityRoot();
-				//add folderEntry fields
-				if (entry instanceof FolderEntry) {
-					FolderEntry fEntry = (FolderEntry)entry;
-					XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
-					if (fEntry.getTopEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
-					if (fEntry.getParentEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
-					if (!Validator.isNull(fEntry.getPostedBy())) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
-				} else if (entry instanceof Binder) {
-					if (operation.equals(ChangeLog.DELETEBINDER) || operation.equals(ChangeLog.PREDELETEBINDER)) {
-						//Add the path so it can be shown in the activity reports
-						XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_PATH, ((Binder)entry).getPathName());
-					}
-				}
-				ChangeLogUtils.save(changes);
+		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
+		ChangeLog changes = new ChangeLog(entry, operation);
+		Element element = ChangeLogUtils.buildLog(changes, entry);
+		//add folderEntry fields
+		if (entry instanceof FolderEntry) {
+			FolderEntry fEntry = (FolderEntry)entry;
+			if (!ChangeLog.DELETEENTRY.equals(operation)) {
+				NotifyStatus status = getCoreDao().loadNotifyStatus(fEntry.getParentFolder(), fEntry);
+				status.setLastModified(fEntry.getModification().getDate());
 			}
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
+			if (fEntry.getTopEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
+			if (fEntry.getParentEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
+			if (!Validator.isNull(fEntry.getPostedBy())) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
 		}
-		
-		// Take care of NotifyStatus
-		if(!skipNotifyStatus) {
-			if (entry instanceof FolderEntry) {
-				FolderEntry fEntry = (FolderEntry)entry;
-				if (!ChangeLog.DELETEENTRY.equals(operation)) {
-					NotifyStatus status = getCoreDao().loadNotifyStatus(fEntry.getParentFolder(), fEntry);
-					status.setLastModified(fEntry.getModification().getDate());
-					logger.debug("AbstractFolderCoreProcessor.processChangeLog( Operation:  " + operation + " ): NotifyStatus modified: "+ ", Entity: " + fEntry.getId() + " (" + fEntry.getTitle() + ")");
-					status.traceStatus(logger);
-				}
-			}
-		}
-
+		getCoreDao().save(changes);
 		return changes;
 	}
 	//***********************************************************************************************************
@@ -1244,4 +1093,57 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
         }
 	}
     
+    protected void moveEntryCheckMirrored(Binder binder, Entry entry, Binder destination) 
+    throws NotSupportedException {
+ 	   if(binder.isMirrored()) {
+ 			ResourceDriver sourceDriver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
+ 			if(sourceDriver.isReadonly()) {
+ 				throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredSource.readonly",
+ 						new String[] {sourceDriver.getTitle(), binder.getPathName()});
+ 			}
+ 			else {
+ 				if(destination.isMirrored()) {
+ 					ResourceDriver destDriver = getResourceDriverManager().getDriver(destination.getResourceDriverName());
+ 					if(destDriver.isReadonly()) {
+ 						throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredDestination.readonly",
+ 								new String[] {destDriver.getTitle(), destination.getPathName()});
+ 					}
+ 				}
+ 				else {
+ 					throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredSource",
+ 							new String[] {binder.getPathName(), destination.getPathName()});
+ 				}
+ 			}
+ 	   }
+ 	   else {
+ 		   if(destination.isMirrored()) {
+ 				throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredDestination",
+ 						new String[] {binder.getPathName(), destination.getPathName()});			   
+ 		   }
+ 	   }
+    }
+    
+    protected void copyEntryCheckMirrored(Binder binder, Entry entry, Binder destination) 
+    throws NotSupportedException {
+ 	   if(binder.isMirrored()) {
+			if(destination.isMirrored()) {
+				ResourceDriver destDriver = getResourceDriverManager().getDriver(destination.getResourceDriverName());
+				if(destDriver.isReadonly()) {
+					throw new NotSupportedException("errorcode.notsupported.copyEntry.mirroredDestination.readonly",
+							new String[] {destDriver.getTitle(), destination.getPathName()});
+				}
+			}
+			else {
+				throw new NotSupportedException("errorcode.notsupported.copyEntry.mirroredSource",
+						new String[] {binder.getPathName(), destination.getPathName()});
+			}
+ 	   }
+ 	   else {
+ 		   if(destination.isMirrored()) {
+ 				throw new NotSupportedException("errorcode.notsupported.copyEntry.mirroredDestination",
+ 						new String[] {binder.getPathName(), destination.getPathName()});			   
+ 		   }
+ 	   }
+    }
+
 }

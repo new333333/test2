@@ -186,6 +186,7 @@ public class EnhancedViewInfo
 		return m_titleOptional;
 	}
 	
+	
 	/**
 	 * Return the type of view this is.
 	 */
@@ -193,7 +194,6 @@ public class EnhancedViewInfo
 	{
 		return m_viewType;
 	}
-	
 	
 	/**
 	 * Does this view require the user to select an entry?

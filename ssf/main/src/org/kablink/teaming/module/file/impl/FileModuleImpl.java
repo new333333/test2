@@ -49,7 +49,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,17 +69,14 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.UserQuotaException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.util.FilterControls;
-import org.kablink.teaming.dao.util.ObjectControls;
-import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
-import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
@@ -91,7 +87,6 @@ import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Reservable;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -100,18 +95,14 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
-import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
-import org.kablink.teaming.module.file.ChecksumMismatchException;
 import org.kablink.teaming.module.file.ContentFilter;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.DeleteVersionException;
-import org.kablink.teaming.module.file.FileIndexData;
-import org.kablink.teaming.module.file.FileList;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
@@ -125,7 +116,6 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
-import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
@@ -137,19 +127,20 @@ import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.ExtendedMultipartFile;
+import org.kablink.teaming.util.DatedMultipartFile;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.FileUploadItem;
-import org.kablink.teaming.util.GangliaMonitoring;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.util.SizeMd5Pair;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.KeyValuePair;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -159,6 +150,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.sun.corba.se.impl.orbutil.closure.Constant;
 
 
 /**
@@ -197,9 +191,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private String failedFilterFile;
 	private String failedFilterTransaction;
 	private int lockExpirationAllowance; // number of seconds
-	private FileStore cacheFileStoreText;
-	private FileStore cacheFileStoreImage;
-	private FileStore cacheFileStoreHtml;
+	private FileStore cacheFileStore;
 	private String[] ooNonzerolengthExts;
 		
 	protected TransactionTemplate getTransactionTemplate() {
@@ -240,11 +232,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	protected ProfileModule getProfileModule() {
 		// Can't use IoC due to circular dependency
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
-	}
-
-	protected SharingModule getSharingModule() {
-		// Can't use IoC due to circular dependency
-		return (SharingModule) SpringContextUtil.getBean("sharingModule");
 	}
 
 	protected ConvertedFileModule getConvertedFileModule() {
@@ -314,9 +301,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	public void afterPropertiesSet() throws Exception {
-		cacheFileStoreText = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_TEXT);
-		cacheFileStoreHtml = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_HTML);
-		cacheFileStoreImage = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_IMAGE);
+		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
 		
 		ooNonzerolengthExts = SPropsUtil.getStringArray("openoffice.nonzerolength.extensions", ",");
 		
@@ -329,13 +314,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return deleteFiles(binder, entry, deleteMirroredSource, errors, false);
 	}
 	
-	public FilesErrors deleteFiles(final Binder binder, 
+	private FilesErrors deleteFiles(final Binder binder, 
 			final DefinableEntity entry, boolean deleteMirroredSource, 
-			FilesErrors errors, boolean skipDbLog) {
+			FilesErrors errors, boolean deleteAttachment) {
 		if(errors == null)
 			errors = new FilesErrors();
 		
-		boolean updateMetadata = false;
+		boolean updateMetadata = deleteAttachment;
 		List<ChangeLog> changeLogs = new ArrayList<ChangeLog>();
 		Collection<FileAttachment> fAtts = entry.getFileAttachments();
 		if (!fAtts.isEmpty()) {
@@ -343,7 +328,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 				try {
 					ChangeLog changeLog = deleteFileInternal(binder, entry, fAtt, 
-							deleteMirroredSource, errors, updateMetadata, skipDbLog);
+							deleteMirroredSource, errors, updateMetadata);
 					if(changeLog != null)
 						changeLogs.add(changeLog);
 				}
@@ -360,25 +345,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		String entityPath = FilePathUtil.getEntityDirPath(binder, entry);
 		try {
-			cacheFileStoreText.deleteDirectory(entityPath);
+			cacheFileStore.deleteDirectory(entityPath);
 		}
 		catch(Exception e) {
 			logger.error("Error deleting the entry's cache directory [" +
-					cacheFileStoreText.getAbsolutePath(entityPath) + "]", e);
-		}
-		try {
-			cacheFileStoreHtml.deleteDirectory(entityPath);
-		}
-		catch(Exception e) {
-			logger.error("Error deleting the entry's cache directory [" +
-					cacheFileStoreHtml.getAbsolutePath(entityPath) + "]", e);
-		}
-		try {
-			cacheFileStoreImage.deleteDirectory(entityPath);
-		}
-		catch(Exception e) {
-			logger.error("Error deleting the entry's cache directory [" +
-					cacheFileStoreImage.getAbsolutePath(entityPath) + "]", e);
+					cacheFileStore.getAbsolutePath(entityPath) + "]", e);
 		}
 		
 		if(!updateMetadata) {
@@ -396,25 +367,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void deleteCachedFiles(Binder binder, DefinableEntity entry) {
 		String entityPath = FilePathUtil.getEntityDirPath(binder, entry);
 		try {
-			cacheFileStoreText.deleteDirectory(entityPath);
+			cacheFileStore.deleteDirectory(entityPath);
 		}
 		catch(Exception e) {
 			logger.error("Error deleting the entry's cache directory [" +
-					cacheFileStoreText.getAbsolutePath(entityPath) + "]", e);
-		}
-		try {
-			cacheFileStoreHtml.deleteDirectory(entityPath);
-		}
-		catch(Exception e) {
-			logger.error("Error deleting the entry's cache directory [" +
-					cacheFileStoreHtml.getAbsolutePath(entityPath) + "]", e);
-		}
-		try {
-			cacheFileStoreImage.deleteDirectory(entityPath);
-		}
-		catch(Exception e) {
-			logger.error("Error deleting the entry's cache directory [" +
-					cacheFileStoreImage.getAbsolutePath(entityPath) + "]", e);
+					cacheFileStore.getAbsolutePath(entityPath) + "]", e);
 		}
 	}
 	
@@ -424,7 +381,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			errors = new FilesErrors();
 		
 		try {
-			deleteFileInternal(binder, entry, fAtt, true, errors, true, false);
+			deleteFileInternal(binder, entry, fAtt, true, errors, true);
 		}
 		catch(Exception e) {
 			logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
@@ -437,32 +394,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				
 		String faPath = FilePathUtil.getFileAttachmentDirPath(binder, entry, fAtt);
 		try {
-			cacheFileStoreText.deleteDirectory(faPath);
+			cacheFileStore.deleteDirectory(faPath);
 		}
 		catch(Exception e) {
 			logger.error("Error deleting the file attachment's cache directory [" +
-					cacheFileStoreText.getAbsolutePath(faPath) + "]", e);
-		}
-		try {
-			cacheFileStoreHtml.deleteDirectory(faPath);
-		}
-		catch(Exception e) {
-			logger.error("Error deleting the file attachment's cache directory [" +
-					cacheFileStoreHtml.getAbsolutePath(faPath) + "]", e);
-		}
-		try {
-			cacheFileStoreImage.deleteDirectory(faPath);
-		}
-		catch(Exception e) {
-			logger.error("Error deleting the file attachment's cache directory [" +
-					cacheFileStoreImage.getAbsolutePath(faPath) + "]", e);
+					cacheFileStore.getAbsolutePath(faPath) + "]", e);
 		}
 		//Mark that this entity was modified
 		setEntityModification(entry);
 		
 		return errors;
 	}
-	
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 		String versionName = null;
@@ -484,12 +426,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 		}
 		
-		RepositoryUtil.readVersionedFile(fa, binder, entry, versionName, latestVersionName, out);	
-		
-		GangliaMonitoring.incrementFileReads();
+		RepositoryUtil.readVersioned(fa, binder, entry, versionName, latestVersionName, out);			
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
+		return readFile(binder, entry, fa, false);
+	}
+	protected InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa, boolean readRawFile) { 
 		String versionName = null;
 		String latestVersionName = null;
 		
@@ -509,27 +452,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 		}
 		
-		InputStream result = RepositoryUtil.readVersionedFile(fa, binder, entry, versionName, latestVersionName, false);
-		
-		GangliaMonitoring.incrementFileReads();
-		
-		return result;
+		return RepositoryUtil.readVersioned(fa, binder, entry, versionName, latestVersionName, readRawFile);
 	}
 	
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException {
-		return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE, false);
+    	return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE);
     }
-    
-    public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
-    		List fileUploadItems, FilesErrors errors, boolean skipDbLog) 
-    	throws ReservedByAnotherUserException {
-		return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE, skipDbLog);
-    }
-    
-	private FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
-    		List fileUploadItems, FilesErrors errors, Boolean prune, boolean skipDbLog) 
+	public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
+    		List fileUploadItems, FilesErrors errors, Boolean prune) 
     	throws ReservedByAnotherUserException {
 		if(errors == null)
     		errors = new FilesErrors();
@@ -541,18 +473,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	checkReservation(entry);
     	
-    	//Start by deleting any cached html files. Since the files are changing, these wouldn't be valid after the change.
-    	deleteCachedFiles(binder, entry);
-    	
     	for (int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
     			// Unlike deleteFileInternal, writeFileTransactional is transactional.
     			// See the comment in writeFileMetadataTransactional for reason. 
-    			if (this.writeFileTransactional(binder, entry, fui, errors, skipDbLog)) {
+    			if (this.writeFileTransactional(binder, entry, fui, errors)) {
     				//	only advance on success
     				++i;
-    				GangliaMonitoring.incrementFileWrites();
     			} else {//error handled
 	    			if (fui.isRegistered()) getCoreDao().unRegisterFileName(binder, fui.getOriginalFilename());
     				fileUploadItems.remove(i);
@@ -583,7 +511,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		return errors;
     }
-	    
+	
 	public FilesErrors writeFilesValidationOnly(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException {
@@ -643,28 +571,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	}
     	}
 	}
-
-    protected void executeContentFilters(Binder binder, DefinableEntity entity, FileAttachment fa)
-    		throws IOException, FilterException, UncheckedIOException {
-    	InputStream is;
-    	for(int i = 0; i < contentFilters.length; i++) {
-    		is = readFile(binder, entity, fa);
-    		long begin = System.nanoTime();
-    		try {
-    			contentFilters[i].filter(binder, entity, fa.getFileItem().getName(), is);
-    		}
-    		finally {
-    			endFiltering(begin, fa.getFileItem().getName(), contentFilters[i]);
-    			try {
-    				is.close();
-    			}
-    			catch(IOException ignore) {}
-    		}
-    	}
-    }
     
     protected void executeContentFilters(Binder binder, DefinableEntity entity, String fileName, FileUploadItem fui)
-    		throws IOException, FilterException, UncheckedIOException {
+    throws IOException, FilterException, UncheckedIOException {
     	InputStream is;
     	for(int i = 0; i < contentFilters.length; i++) {
     		is = fui.getInputStream();
@@ -689,91 +598,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}	
 	}
 
-    public FilesErrors verifyCheckSums(List fileUploadItems) {
-        FilesErrors errors = null;
-        // Note that we do not have to use String comparison in the expression
-        // below. Just reference comparison is enough.
-        if(getFailedFilterTransaction() == FAILED_FILTER_TRANSACTION_CONTINUE) {
-            errors = new FilesErrors();
-        }
-
-        for(int i = 0; i < fileUploadItems.size();) {
-            FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
-            if(fui.calledByFileSync()) {
-            	if(logger.isDebugEnabled())
-            		logger.debug("Skipping checksum verification on file " + fui.getOriginalFilename());
-            	i++;
-            	continue;
-            }
-            
-            try {
-                SimpleProfiler.start("verifyCheckSums_makeReentrant");
-                fui.makeReentrant();
-                SimpleProfiler.stop("verifyCheckSums_makeReentrant");
-
-                if (!fui.verifyCheckSum()) {
-                    // Remove the failed file from the list first.
-                    fileUploadItems.remove(i);
-                    try {
-                        fui.delete();
-                    } catch (IOException e1) {
-                        logger.error("Failed to delete bad file " + fui.getOriginalFilename(), e1);
-                    }
-                    if(errors != null) {
-                        // Since we are not throwing an exception immediately in
-                        // this case, log the error right here.
-                        logger.error("Error verifying the file " + fui.getOriginalFilename() + " check sum for user " +  RequestContextHolder.getRequestContext().toString());
-                        errors.addProblem(new FilesErrors.Problem
-                            (fui.getRepositoryName(),  fui.getOriginalFilename(),
-                                    FilesErrors.Problem.PROBLEM_CHECKSUM_MISMATCH));
-                    } else {
-                        throw new ChecksumMismatchException(fui.getName());
-                    }
-                } else {
-                    ++i;
-                }
-            }
-            catch(IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }
-
-        if(errors == null)
-            errors = new FilesErrors();
-
-        return errors;
-    }
-
-	public FilesErrors filterFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
-			throws FilterException {
-		if(contentFilters == null)
-			return new FilesErrors(); // Nothing to filter with. Return empty error.
-	
-		FilesErrors errors = new FilesErrors();
-		
-		try {
-			SimpleProfiler.start("filterFile_executeContentFilters");
-			executeContentFilters(binder, entity, fa);
-			SimpleProfiler.stop("filterFile_executeContentFilters");
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}
-		catch(FilterException e) {
-			errors.addProblem(new FilesErrors.Problem
-					(fa.getRepositoryName(),  fa.getFileItem().getName(),
-							FilesErrors.Problem.PROBLEM_FILTERING, e));
-		}
-	
-		return errors;
-	}
-
-
 	public FilesErrors filterFiles(Binder binder, DefinableEntity entity, List fileUploadItems) 
 		throws FilterException {
 		if(contentFilters == null)
 			return new FilesErrors(); // Nothing to filter with. Return empty error.
-
+		
 		FilesErrors errors = null;
 		// Note that we do not have to use String comparison in the expression
 		// below. Just reference comparison is enough. 
@@ -783,17 +612,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
     	for(int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
-            if(fui.calledByFileSync()) {
-            	if(logger.isDebugEnabled())
-            		logger.debug("Skipping filters on file " + fui.getOriginalFilename());
-            	i++;
-            	continue;
-            }
     		try {
     			SimpleProfiler.start("filterFiles_makeReentrant");
         		fui.makeReentrant();
     			SimpleProfiler.stop("filterFiles_makeReentrant");
-
+        		
     			SimpleProfiler.start("filterFiles_executeContentFilters");
         		executeContentFilters(binder, entity, fui.getOriginalFilename(), fui);
     			SimpleProfiler.stop("filterFiles_executeContentFilters");
@@ -829,7 +652,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			if(errors != null) {
         			if (fui.isRegistered()) getCoreDao().unRegisterFileName(binder, fui.getOriginalFilename());
     				errors.addProblem(new FilesErrors.Problem
-    					(fui.getRepositoryName(),  fui.getOriginalFilename(),
+    					(fui.getRepositoryName(),  fui.getOriginalFilename(), 
     							FilesErrors.Problem.PROBLEM_FILTERING, e));
     			}
     			else {
@@ -919,46 +742,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
     public void unlock(Binder binder, DefinableEntity entity, FileAttachment fa,
-    		String lockId) throws LockedByAnotherUserException, LockIdMismatchException,
-    		UncheckedIOException, RepositoryServiceException {
+    		String lockId) throws UncheckedIOException, RepositoryServiceException {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
     	//closeExpiredLocksTransactional(binder, entity, true);
     	
 		FileAttachment.FileLock lock = fa.getFileLock();
 
-		if(lock != null) {
-			if(lock.getOwner().equals(user)) {
-				// The file is locked by the calling user.
-				if(lock.getId().equals(lockId)) {
-					// The lock id matches.
-					List newObjs = new ArrayList();
-					
-					// Commit any pending changes associated with the lock. In this 
-					// case, we don't care if the lock is effective or expired.
-					commitPendingChanges(binder, entity, fa, lock, newObjs);
-					
-					fa.setFileLock(null); // Clear the lock
-					
-					triggerUpdateTransaction(newObjs);
-					
-		    		//Go prune the minor versions
-		    		pruneFileVersions(binder, entity);
-				}
-				else {
-					// The lock id doesn't match.
-					throw new LockIdMismatchException();
-				}
-			}
-			else {
-				// The lock is owned by someone else.
-				throw new LockedByAnotherUserException(entity, fa, lock.getOwner());
-			}
-		}
-		else {
-			// The file isn't locked by anyone. Noop.
-			logger.debug("not locked");
-			return;
+		if(lock != null && lock.getOwner().equals(user) && lock.getId().equals(lockId)) {
+			// The file is locked by the calling user and the lock id matches.
+			
+			List newObjs = new ArrayList();
+			
+			// Commit any pending changes associated with the lock. In this 
+			// case, we don't care if the lock is effective or expired.
+			commitPendingChanges(binder, entity, fa, lock, newObjs);
+			
+			fa.setFileLock(null); // Clear the lock
+			
+			triggerUpdateTransaction(newObjs);
 		}
     }
 
@@ -986,7 +788,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
 
 
-	public void bringLocksUptodate(Binder binder, DefinableEntity entity) 
+	public void RefreshLocks(Binder binder, DefinableEntity entity) 
 		throws RepositoryServiceException, UncheckedIOException {
 		closeExpiredLocksTransactional(binder, entity, true);
 	}
@@ -1024,7 +826,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	if (Validator.isNull(name)) type = FileUploadItem.TYPE_ATTACHMENT;
     			
 		// Preserve modification time of the source for the target
-		file = new ExtendedMultipartFile(va.getFileItem().getName(),
+		file = new DatedMultipartFile(va.getFileItem().getName(),
 			readFile(binder, entity, va), va.getModification().getDate());
 		fui = new FileUploadItem(type, name, file, va.getRepositoryName());
    		fuis.add(fui);
@@ -1039,14 +841,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	try {	
     		writeFiles(binder, entity, fuis, null, prune2);
     	}
-    	finally {
-	    	for(FileUploadItem f : fuis) {
-	    		try {
-	    			f.delete();
-	    		}
-	    		catch(IOException ignore) {}
-	    	}
-    	}
+    	finally {}
     	if (prune && maxVersionsToKeep != null && maxVersionsToKeep == 0) {
     		//This is a special case. Make sure to keep at least one version
     		pruneFileVersions(binder, entity, maxVersionsToKeep + 1);
@@ -1061,12 +856,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	newTopVa.getParentAttachment().setMinorVersion(newTopVa.getMinorVersion());
 
     	getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
-    	deleteHtmlCacheFilesForFile(fa);
     	getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
     	getConvertedFileModule().deleteCacheImageFile(binder, entity, fa);
     	setEntityModification(entity);
     	entity.incrLogVersion();
-    	ChangeLog changes = ChangeLogUtils.createAndBuild(entity, changeLogCause, newTopVa.getParentAttachment());
+    	ChangeLog changes = new ChangeLog(entity, changeLogCause);
+		ChangeLogUtils.buildLog(changes, newTopVa.getParentAttachment());
 		saveChangeLogTransactional(changes);
 	}
 
@@ -1080,7 +875,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		setEntityModification(entity);
 		entity.incrLogVersion();
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY_SET_COMMENT, fileAtt);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_SET_COMMENT);
+		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
 	
@@ -1094,7 +890,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		setEntityModification(entity);
 		entity.incrLogVersion();
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY_SET_STATUS, fileAtt);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_SET_STATUS);
+		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
 	
@@ -1121,14 +918,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		FileUtils.setFileVersionAging(entity);	//Set the agingEnabled flag appropriately for all file attachments
 		setEntityModification(entity);
 		entity.incrLogVersion();
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION, fileAtt);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION);
+		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
 	
 	private void saveChangeLogTransactional(final ChangeLog changeLog) {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {  
-        		ChangeLogUtils.save(changeLog);
+                getCoreDao().save(changeLog);
             	return null;
         	}
         });	
@@ -1139,7 +937,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			throws UncheckedIOException, RepositoryServiceException {
 		if(fileExistsInRepository(fa)) {
 			// Rename the file in the repository
-			RepositoryUtil.moveFile(fa.getRepositoryName(), binder, entity, 
+			RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
 					fa.getFileItem().getName(), binder, entity, newName);
 		}
 		else {
@@ -1174,82 +972,72 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			v.getFileItem().setName(newName);
 		}
 		entity.incrLogVersion();
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILERENAME, fa);
-		ChangeLogUtils.save(changes);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILERENAME);
+		ChangeLogUtils.buildLog(changes, fa);
+		getCoreDao().save(changes);
 	}
 	
 	public void moveFiles(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
+			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException {
     	Collection<FileAttachment> atts = entity.getFileAttachments();
-    	//Decrement and increment the various quota counts
-		Long totalFileSizes = 0L;
-    	for (FileAttachment att : atts) {
-    		Set<VersionAttachment> fileVersions = att.getFileVersions();
-    		for (VersionAttachment fv : fileVersions) {
-    			//Count the file sizes for all versions in the entry
-    			totalFileSizes += fv.getFileItem().getLength();
-    		}
-    	}
-    	if (!binder.isMirrored()) {
-    		getBinderModule().decrementDiskSpaceUsed(binder, totalFileSizes);
-    	}
-    	if (!destBinder.isMirrored()) {
-    		getBinderModule().incrementDiskSpaceUsed(destBinder, totalFileSizes);
-    	}
-
     	//first register file names, so if one fails, files are not copied
-    	int i = 0;
-    	String toFileName;
-    	for(FileAttachment fa :atts) {
-    		toFileName = (toFileNames != null)? toFileNames[i] : fa.getFileItem().getName();
+    	for(FileAttachment fa :atts) {    			
+        	//Decrement and increment the various quota counts
+    		Long totalFileSizes = 0L;
+        	for (FileAttachment att : atts) {
+        		Set<VersionAttachment> fileVersions = att.getFileVersions();
+        		for (VersionAttachment fv : fileVersions) {
+        			//Count the file sizes for all versions in the entry
+        			totalFileSizes += fv.getFileItem().getLength();
+        		}
+        	}
+        	if (!binder.isMirrored()) {
+        		getBinderModule().decrementDiskSpaceUsed(binder, totalFileSizes);
+        	}
+        	if (!destBinder.isMirrored()) {
+        		getBinderModule().incrementDiskSpaceUsed(destBinder, totalFileSizes);
+        	}
+
    			if (binder.isLibrary() && !binder.equals(entity))
    				getCoreDao().unRegisterFileName(binder, fa.getFileItem().getName());
     		if (destBinder.isLibrary() && !destBinder.equals(destEntity))
-    			getCoreDao().registerFileName(destBinder, destEntity, toFileName);
-    		i++;
-    	}
-    	
+    			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
+    		}
 		// Rename the file in the repository
-    	i = 0;
        	for(FileAttachment fa :atts) {   
-    		toFileName = (toFileNames != null)? toFileNames[i] : fa.getFileItem().getName();
        		if(!ObjectKeys.FI_ADAPTER.equals(fa.getRepositoryName())) { // regular repository
-       	 		RepositoryUtil.moveFile(fa.getRepositoryName(), binder, entity, 
+       	 		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
        					fa.getFileItem().getName(), destBinder, destEntity, 
-       					toFileName);       			
+       					fa.getFileItem().getName());       			
        		}
        		else { // mirrored repository
-       			moveMirroredFile(binder, entity, destBinder, destEntity, fa, toFileName);
+       			moveMirroredFile(binder, entity, destBinder, destEntity, fa);
        		}
-   			ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMOVE, fa);
-   			ChangeLogUtils.save(changes);
-			// Now that we're done with the existing fa object (hence we don't need access to
-			// the previous name), we can finally change its name to the new name if different.
-			fa.getFileItem().setName(toFileName);
-			i++;
-       	}	
+   			ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
+			ChangeLogUtils.buildLog(changes, fa);
+			getCoreDao().save(changes);
+       	}
 	}
 
 	protected void moveMirroredFile(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity, FileAttachment fa, String toFileName) {
+			Binder destBinder, DefinableEntity destEntity, FileAttachment fa) {
 		if(binder.getResourceDriverName().equals(destBinder.getResourceDriverName())) {
 			// Both source and destination binders use the same resource
 			// driver. Move is possible.
-   	 		RepositoryUtil.moveFile(fa.getRepositoryName(), binder, entity, 
+   	 		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
    					fa.getFileItem().getName(), destBinder, destEntity, 
-   					toFileName);       								
+   					fa.getFileItem().getName());       								
 		}
 		else {
 			// Source and destination binders do not share the same driver. 
 			// Move is not possible in this case. We have to mimic it by
 			// copy followed by delete. 
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName(), destBinder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, destBinder);
+			RepositorySession session = RepositorySessionFactoryUtil.openSession(destBinder, fa.getRepositoryName());
 			try {
 				InputStream is = readFile(binder, entity, fa);
-				long size = fa.getFileItem().getLength();
 				try {
-					createVersionedWithInputData(session, destBinder, destEntity, toFileName, true, is, size, fa.getModification().getDate().getTime());
+					createVersionedWithInputData(session, destBinder, destEntity, fa.getFileItem().getName(), true, is);
 				}
 				finally {
 					try {
@@ -1264,7 +1052,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				session.close();
 			}
 			
-			session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName(), binder.getResourceDriverName(), ResourceDriverManager.FileOperation.DELETE, binder);
+			session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
 			try {
 				session.delete(binder, entity, fa.getFileItem().getName());
 			}
@@ -1275,7 +1063,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
 	public void copyFiles(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
+			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException {
 		List<FileUploadItem> fuis = new ArrayList<FileUploadItem>();
     	Collection<FileAttachment> atts = entity.getFileAttachments();
@@ -1283,7 +1071,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
      	String targetName;
      	String targetRepositoryName;
     	SimpleMultipartFile file;
-    	int i=0;
     	for(FileAttachment fa :atts) {
     		targetName = fa.getName(); 
   			targetRepositoryName = fa.getRepositoryName();
@@ -1308,16 +1095,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
   						targetRepositoryName = RepositoryUtil.getDefaultRepositoryName();
   					}
   				}
-  			} else {
-  				//The source entity is not a mirrored file
-  				if (destBinder.isMirrored()) {
-  					//But the destination binder is mirrored. We have to get the right repository name
-  					targetRepositoryName = ObjectKeys.FI_ADAPTER;
-  				}
   			}
-  			String toFileName = (toFileNames != null)? toFileNames[i] : fa.getFileItem().getName();
 			// Preserve modification time of the source for the target
-  			file = new ExtendedMultipartFile(toFileName,
+  			file = new DatedMultipartFile(fa.getFileItem().getName(),
 				readFile(binder, entity, fa), fa.getModification().getDate());
     		int type = FileUploadItem.TYPE_FILE;
     		if(Validator.isNull(targetName))
@@ -1325,11 +1105,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			fui = new FileUploadItem(type, targetName, file, targetRepositoryName);
 			//register here so entire copy fails if any one file is an issue
 	   		if (destBinder.isLibrary() && !(destEntity instanceof Binder)) {
-	   			getCoreDao().registerFileName(destBinder, destEntity, toFileName);
+	   			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
 	   			fui.setRegistered(true);
 	   		}
 	   		fuis.add(fui);
-	   		i++;
     	}
     	try {	
     		writeFiles(destBinder, destEntity, fuis, null);
@@ -1339,9 +1118,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		try {
 	    			f.delete();
 	    		}
-	    		catch(IOException ignore) {
-	    			logger.debug(ignore.getMessage());
-	    		}
+	    		catch(IOException ignore) {}
 	    	}
     	}
 	}
@@ -1406,7 +1183,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
    		// Update the metadata
 		entity.incrLogVersion();
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEVERSIONDELETE, va);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEVERSIONDELETE);
+		ChangeLogUtils.buildLog(changes, va);
 
 		fa.removeFileVersion(va);
 		
@@ -1423,7 +1201,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fa.setAgingEnabled(highestVa.getAgingEnabled());
 		fa.setFileStatus(highestVa.getFileStatus());
 		getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
-		deleteHtmlCacheFilesForFile(fa);
 		getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
     	getConvertedFileModule().deleteCacheImageFile(binder, entity, fa);
 		
@@ -1438,84 +1215,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		FileUtils.setFileVersionAging(entity);
 	}
 
-	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Long binderId) {
-		// look for the specific binder id
-    	// look only for attachments
-    	Criteria crit = new Criteria()
-    	    .add(conjunction()	
-    			.add(eq(Constants.BINDER_ID_FIELD, binderId.toString()))
-   				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_ATTACHMENT))
-     		);
-		// We use search engine to get the list of file names in the specified folder.
-        List<FileIndexData> results = getFileDataFromIndex(crit);
-        Map<String, FileIndexData> resultMap = new HashMap<String, FileIndexData>();
-        for (FileIndexData data : results) {
-            resultMap.put(data.getName(), data);
-        }
-        return resultMap;
-	}
-
-    public List<FileIndexData> getFileDataFromIndex(Criteria crit) {
-        return getFileDataFromIndex(crit, 0, Integer.MAX_VALUE).getFiles();
-    }
-
-    public FileList getFileDataFromIndex(Criteria crit, int offset, int size) {
-        QueryBuilder qb = new QueryBuilder(true, false);
-        org.dom4j.Document qTree = crit.toQuery(); //save for debug
-        SearchObject so = qb.buildQuery(qTree);
-
-        // create Lucene query
-        Query soQuery = so.getLuceneQuery();
-
-        if(logger.isDebugEnabled()) {
-            logger.debug("Query is: " + qTree.asXML());
-            logger.debug("Query is: " + soQuery.toString());
-        }
-
-        LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
-
-        Hits hits = null;
-        try {
-	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, offset, size);
-        }
-        finally {
-            luceneSession.close();
-        }
-
-        List<FileIndexData> result = new ArrayList<FileIndexData>();
-        int count = hits.length();
-        org.apache.lucene.document.Document doc;
-        String fileName;
-        for(int i = 0; i < count; i++) {
-        	doc = hits.doc(i);
-        	fileName = doc.get(Constants.FILENAME_FIELD);
-        	if(fileName != null) {
-        		try {
-	        		result.add(new FileIndexData(doc));
-        		}
-        		catch(Exception ignore) {
-        			// skip to next doc
-        			logger.warn("Skipping file '" + fileName + "' due to error in index data: " + ignore.toString());
-        		}
-        	}
-        }
-
-        return new FileList(result, offset, hits.getTotalHits());
-    }
-
-	public Map<String,Long> getChildrenFileNamesUsingDatabaseWithoutAccessCheck(Long binderId) {
-		List<Object[]> objs = getCoreDao().loadObjects(
-				new ObjectControls(FileAttachment.class, new String[]{"fileItem.name", "owner.ownerId"}),
-				new FilterControls("owner.owningBinderId", binderId),
-				RequestContextHolder.getRequestContext().getZoneId());
-		Map<String,Long> result = new HashMap<String,Long>();
-		for(Object[] obj:objs)
-			result.put((String)obj[0], (Long)obj[1]);
-		return result;
-	}
-
-	public Map<String,Long> getChildrenFileNamesUsingSearchIndex(Binder binder) {
+	public Map<String,Long> getChildrenFileNames(Binder binder) {
 		// look for the specific binder id
     	// look only for attachments
     	Criteria crit = new Criteria()
@@ -1524,7 +1224,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_ATTACHMENT))
      		);
 		// We use search engine to get the list of file names in the specified folder.
-		QueryBuilder qb = new QueryBuilder(true,false);
+		QueryBuilder qb = new QueryBuilder(true);
     	org.dom4j.Document qTree = crit.toQuery(); //save for debug
 		SearchObject so = qb.buildQuery(qTree);   	
    	
@@ -1540,8 +1240,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         
     	Hits hits = null;
         try {
-	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, 0, Integer.MAX_VALUE);
+	        hits = luceneSession.search(soQuery, null, 0, Integer.MAX_VALUE);
         }
         finally {
             luceneSession.close();
@@ -1567,7 +1266,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return result;
 	}
 
-    public Long deleteAgedFileVersions(DefinableEntity entity, Date agingDate) {
+	public Long deleteAgedFileVersions(DefinableEntity entity, Date agingDate) {
 		Binder binder = entity.getParentBinder();
 		Date now = new Date();
 		if (entity.getEntityType().equals(EntityType.folder) || entity.getEntityType().equals(EntityType.workspace)) {
@@ -1603,10 +1302,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         	public Object doInTransaction(TransactionStatus status) {
         		if(newObjs != null) {
         			for(Object newObj:newObjs)
-        				if(newObj instanceof ChangeLog)
-        					ChangeLogUtils.save((ChangeLog)newObj);
-        				else
-        					getCoreDao().save(newObj);
+        				getCoreDao().save(newObj);
         		}
                 return null;
         	}
@@ -1615,7 +1311,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void deletePrimaryFile(Binder binder, DefinableEntity entry,
 			String relativeFilePath, String repositoryName, FilesErrors errors) {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.DELETE, binder);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 		
 		try {
 			try {
@@ -1634,13 +1330,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private ChangeLog deleteFileInternal(Binder binder, DefinableEntity entry,
 			FileAttachment fAtt, boolean deleteMirroredSource, 
-			FilesErrors errors, boolean updateMetadata, boolean skipDbLog) {
-		return deleteFileInternal2(binder, entry, fAtt, deleteMirroredSource, errors, updateMetadata, skipDbLog);
-	}
-	
-	private ChangeLog deleteFileInternal2(Binder binder, DefinableEntity entry,
-			FileAttachment fAtt, boolean deleteMirroredSource, 
-			FilesErrors errors, boolean updateMetadata, boolean skipDbLog) {
+			FilesErrors errors, boolean updateMetadata) {
 		String relativeFilePath = fAtt.getFileItem().getName();
 		String repositoryName = fAtt.getRepositoryName();
 		
@@ -1741,20 +1431,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// No primary file to delete.
 		}
 				
-   		ChangeLog changeLog = null;
-   		if(!skipDbLog) {
-	   		changeLog = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEDELETE, fAtt);
-	   		Element parent = changeLog.getEntityRoot();
-	   		if(archiveURIs.size() > 0) {
-	   			Element fileElem = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FILEARCHIVE);
-	   			if(archiveStoreName != null)
-	   				fileElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_STORE_NAME, archiveStoreName);
-	   			for(KeyValuePair pair : archiveURIs) {
-	   				Element verElem = fileElem.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_VERSIONARCHIVE);
-	   				verElem.addAttribute(ObjectKeys.XTAG_FILE_VERSION_NUMBER, pair.getKey()); 
-	   				verElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_URI, pair.getValue());
-	   			}
-	   		}
+   		ChangeLog changeLog = new ChangeLog(entry, ChangeLog.FILEDELETE);
+   		Element parent = ChangeLogUtils.buildLog(changeLog, fAtt);
+   		if(archiveURIs.size() > 0) {
+   			Element fileElem = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FILEARCHIVE);
+   			if(archiveStoreName != null)
+   				fileElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_STORE_NAME, archiveStoreName);
+   			for(KeyValuePair pair : archiveURIs) {
+   				Element verElem = fileElem.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_VERSIONARCHIVE);
+   				verElem.addAttribute(ObjectKeys.XTAG_FILE_VERSION_NUMBER, pair.getKey()); 
+   				verElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_URI, pair.getValue());
+   			}
    		}
    		
    		// If this attachment has a relevance UUID...
@@ -1814,8 +1501,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		// Remove metadata and log change
 	       getTransactionTemplate().execute(new TransactionCallback() {
 	       	public Object doInTransaction(TransactionStatus status) {  
-	       		if(changeLog != null)
-	       			ChangeLogUtils.save(changeLog);
+	       		getCoreDao().save(changeLog);
             	
 				entry.removeAttachment(fAtt);
 				//file names on binders are not registered
@@ -1848,7 +1534,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {  
                 for(ChangeLog changeLog : changeLogs) {
-                	ChangeLogUtils.save(changeLog);
+                	getCoreDao().save(changeLog);
                 }
             	return null;
         	}
@@ -1900,94 +1586,90 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void writeFileMetadataTransactional(final Binder binder, final DefinableEntity entry, 
-    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated, final boolean skipDbLog) {	
+    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated) {	
 		getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		writeFileMetadataNonTransactional(binder, entry, fui, fAtt, isNew, versionCreated, skipDbLog);
-                return null;
-       	}
-       });
-	}
-	
-	private void writeFileMetadataNonTransactional(final Binder binder, final DefinableEntity entry, 
-    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated, boolean skipDbLog) {	
-		//Copy the "description" into the file attachment
-		fAtt.getFileItem().setDescription(fui.getDescription());
-		if(isNew) {
-    		// Important: Since file attachment is stored into custom 
-			// attribute using its id value rather than association, 
-			// this new object must be persisted here just in case it 
-			// is to be put into custom attribute down below. This 
-			// piece of code makes it impossible for the caller to 
-			// utilize the usual tactic of delaying update db 
-			// transaction to the very end of the operation.  
-    		getCoreDao().save(fAtt);    		
-		}
-    	if (fui.getType() == FileUploadItem.TYPE_FILE) {
-    		setCustomAttribute(entry, fui, fAtt, true);
-		} else if (fui.getType() == FileUploadItem.TYPE_ATTACHMENT) {
-			// Add the file attachment to the entry only if new file. 
-    		setCustomAttribute(entry, fui, fAtt, false);
-			if(isNew) {
-				entry.addAttachment(fAtt);
-			}
-			
-			String contentId = fui.getContentId();
-			if (contentId != null && !"".equals(contentId)) {
-    			String description = entry.getDescription().getText();
-    			if (description != null && description.indexOf(contentId) > -1) {
-    				description = description.replaceAll("\"cid:[\\s]*" + Pattern.quote(contentId) + "\"", "\"{{attachmentUrl: " + fAtt.getFileItem().getName() + "}}\"");
-    				entry.getDescription().setText(description);
-    			}
-			}
-			
-		}  else if (fui.getType() == FileUploadItem.TYPE_TITLE) {
-			String title = fui.getOriginalFilename();
-			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
-			if (ca != null) {
-				//exists - only allow 1 file, move to attachments
-				Set fAtts = (Set) ca.getValueSet();
-				for (Iterator iter=fAtts.iterator(); iter.hasNext(); ) {
-					FileAttachment fa = (FileAttachment)iter.next();
-					//if not the same - move it
-					if (!fAtt.equals(fa)) {
-						fa.setName(null);
-						for (Iterator iter2=fa.getFileVersions().iterator(); iter2.hasNext();) {
-							FileAttachment a = (FileAttachment)iter2.next();
-							a.setName(null);
-						}
-					}
-				}
-   				fAtts = new HashSet();
-				fAtts.add(fAtt); 
-		    	ca.setValue(fAtts);
-			} else {
-				Set fAtts = new HashSet();
-				fAtts.add(fAtt);
-				entry.addCustomAttribute(fui.getName(), fAtts);
-			}
-        	//if tracking unique titles, remove old title and add new
-         	String oldTitle = entry.getNormalTitle();
-   			entry.setTitle(title);
-   		   	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, oldTitle, entry.getNormalTitle());
-		} 
-   		//add file name so not null
-    	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
-    	
-    	if(versionCreated) {
-    		// The content was committed creating a new version. Increment disk usage for the user.
-    		incrementDiskSpaceUsed(fAtt);
-    	}
-    	
-		ChangeLog changes = null;
-		if(!skipDbLog) {
-	    	if (isNew)
-	    		changes = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEADD, fAtt);
-	    	else if(versionCreated)
-	    		changes = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEMODIFY, fAtt);
-		}
-    	if(changes != null)
-        	ChangeLogUtils.save(changes);
+        		//Copy the "description" into the file attachment
+        		fAtt.getFileItem().setDescription(fui.getDescription());
+        		if(isNew) {
+            		// Important: Since file attachment is stored into custom 
+        			// attribute using its id value rather than association, 
+        			// this new object must be persisted here just in case it 
+        			// is to be put into custom attribute down below. This 
+        			// piece of code makes it impossible for the caller to 
+        			// utilize the usual tactic of delaying update db 
+        			// transaction to the very end of the operation.  
+            		getCoreDao().save(fAtt);    		
+        		}
+            	if (fui.getType() == FileUploadItem.TYPE_FILE) {
+            		setCustomAttribute(entry, fui, fAtt);
+        		} else if (fui.getType() == FileUploadItem.TYPE_ATTACHMENT) {
+        			// Add the file attachment to the entry only if new file. 
+            		setCustomAttribute(entry, fui, fAtt);
+        			if(isNew) {
+        				entry.addAttachment(fAtt);
+        			}
+        			
+        			String contentId = fui.getContentId();
+        			if (contentId != null && !"".equals(contentId)) {
+	        			String description = entry.getDescription().getText();
+	        			if (description != null && description.indexOf(contentId) > -1) {
+	        				description = description.replaceAll("\"cid:[\\s]*" + Pattern.quote(contentId) + "\"", "\"{{attachmentUrl: " + fAtt.getFileItem().getName() + "}}\"");
+	        				entry.getDescription().setText(description);
+	        			}
+        			}
+        			
+        		}  else if (fui.getType() == FileUploadItem.TYPE_TITLE) {
+        			String title = fui.getOriginalFilename();
+        			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
+        			if (ca != null) {
+        				//exists - only allow 1 file, move to attachments
+        				Set fAtts = (Set) ca.getValueSet();
+        				for (Iterator iter=fAtts.iterator(); iter.hasNext(); ) {
+        					FileAttachment fa = (FileAttachment)iter.next();
+        					//if not the same - move it
+        					if (!fAtt.equals(fa)) {
+        						fa.setName(null);
+        						for (Iterator iter2=fa.getFileVersions().iterator(); iter2.hasNext();) {
+        							FileAttachment a = (FileAttachment)iter2.next();
+        							a.setName(null);
+        						}
+        					}
+        				}
+           				fAtts = new HashSet();
+        				fAtts.add(fAtt); 
+    			    	ca.setValue(fAtts);
+        			} else {
+        				Set fAtts = new HashSet();
+        				fAtts.add(fAtt);
+        				entry.addCustomAttribute(fui.getName(), fAtts);
+        			}
+                	//if tracking unique titles, remove old title and add new
+                 	String oldTitle = entry.getNormalTitle();
+           			entry.setTitle(title);
+           		   	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, oldTitle, entry.getNormalTitle());
+        		} 
+           		//add file name so not null
+            	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
+        		ChangeLog changes = null;
+            	if (isNew)
+            		changes = new ChangeLog(entry, ChangeLog.FILEADD);
+            	else if(versionCreated)
+            		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
+            	
+            	if(versionCreated) {
+            		// The content was committed creating a new version. Increment disk usage for the user.
+            		incrementDiskSpaceUsed(fAtt);
+            	}
+            	
+            	if(changes != null) {
+	            	ChangeLogUtils.buildLog(changes, fAtt);
+	        		getCoreDao().save(changes);
+            	}
+        		
+                 return null;
+        	}
+        });
     }
 
 	/*
@@ -2073,11 +1755,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 * return false or throw exception if either primary not written or metadata update failed.
 	 */
     private boolean writeFileTransactional(Binder binder, DefinableEntity entry, 
-    		FileUploadItem fui, FilesErrors errors, boolean skipDbLog) {
-		String relativeFilePath = fui.getOriginalFilename();
-		String repositoryName = fui.getRepositoryName();
-		FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
-
+    		FileUploadItem fui, FilesErrors errors) {
+    	
     	/// Work Flow:
     	/// step1: write primary file
     	/// step2: update metadata in database
@@ -2107,28 +1786,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
     	}
 
+		String relativeFilePath = fui.getOriginalFilename();
+		String repositoryName = fui.getRepositoryName();
+		FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
+
     	if(!writeFilePreCheck(binder, entry, fui, errors))
     		return false;
     	
     	boolean isNew = false;
     	
-		RepositorySession session = null;
-		
-		if(fAtt == null) { // New file
-			// If we're dealing with a mirrored folder (net folder), and we're creating a new mirrored
-			// file entry in the database as part of file sync process, and the caller (i.e. file sync
-			// process) specified the content legnth of the file, then we have all the metadata 
-			// information necessary to create the file attachment object in the database WITHOUT
-			// ever having to further interact with the back-end file system. Therefore, we do NOT
-			// need to incur the overhead of opening a session for that file.
-			if(!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName()) || 
-					fui.isSynchToRepository() ||
-					fui.getCallerSpecifiedContentLength() == null)
-				session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, binder);
-		}
-		else { // Existing file
-			session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.UPDATE, entry);
-		}
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
     	try {
     		boolean versionCreated = false;
@@ -2181,7 +1848,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	// using JTA. But that's not always available, and this version of
 	    	// the system does not try to address that. 
     		SimpleProfiler.start("writeFile_MetadataTransactional");
-	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew, versionCreated, skipDbLog);
+	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew, versionCreated);
     		SimpleProfiler.stop("writeFile_MetadataTransactional");
 	    	
         	//SimpleProfiler.done(logger);
@@ -2189,8 +1856,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	return true;
     	}
     	finally {
-    		if(session != null)
-    			session.close();
+    		session.close();
     	}
     }
     
@@ -2283,13 +1949,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// This is the special scenario captured in Bug #632279. 
 			// This part adds special logic to work around the issue.
     		versionName = createVersionedFile(session, binder, entry, fui);
-    		long fsize;
-    		if(fui.getCallerSpecifiedContentLength() != null)
-    			fsize = fui.getCallerSpecifiedContentLength().longValue();
-    		else
-    			fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
+    		long fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
 			fAtt.getFileItem().setLength(fsize);
-            fAtt.getFileItem().setMd5(fui.getMd5());
 			fAtt.setEncrypted(fui.getIsEncrypted());
 			fAtt.setEncryptionKey(fui.getEncryptionKey());
 			createVersionAttachment(fAtt, versionName);	    		
@@ -2324,12 +1985,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				// this kind of situation appears to be the one that is more
 				// forgiving or self-curing. This part of code implements that.
 	    		versionName = createVersionedFile(session, binder, entry, fui);
-	    		long fsize;
-	    		if(fui.getCallerSpecifiedContentLength() != null)
-	    			fsize = fui.getCallerSpecifiedContentLength().longValue();
-	    		else
-	    			fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
-	    		fileSize = Long.valueOf(fsize);
+	    		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
     			fAtt.setEncrypted(fui.getIsEncrypted());
     			fAtt.setEncryptionKey(fui.getEncryptionKey());
 	    	}
@@ -2348,7 +2004,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			//if we are adding a new version of an existing attachment to 
 			//a uniqueName item, set flag - (will already be set if originally added
 			//through a unique element.  In other works, once unique always unique
-			updateFileAttachment(fAtt, user, versionName, fileSize, fui.getMd5(), fui.getModDate(), fui.getModifierName(),
+			updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName(),
 					fui.getDescription());
 		}
 		
@@ -2356,7 +2012,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
 
     private void updateFileAttachment(FileAttachment fAtt, 
-			UserPrincipal user, String versionName, Long contentLength, String md5,
+			UserPrincipal user, String versionName, Long contentLength,
 			Date modDate, String modName, Description description) {
     	HistoryStamp now = new HistoryStamp(user);
     	HistoryStamp mod;
@@ -2375,8 +2031,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(contentLength != null)
 			fItem.setLength(contentLength);
 		
-        fItem.setMd5(md5);
-
 		if(description != null)
 			fItem.setDescription(description);
 		
@@ -2409,7 +2063,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private class UpdateInfo {
     	private String versionName = null;
     	private Long fileLength = null;
-        private String fileMd5 = null;
     }
     
     private UpdateInfo updateVersionedFile(RepositorySession session, Binder binder, 
@@ -2423,10 +2076,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		session.checkout(binder, entity, relativeFilePath);
     		// Update the file content
     		InputStream in = fui.getInputStream();
-    		SizeMd5Pair sizeMd5Pair = null;
     		try {
-    			sizeMd5Pair = fui.makeReentrant();
-    			updateWithInputData(session, binder, entity, relativeFilePath, in, sizeMd5Pair.getSize(), sizeMd5Pair.getMd5(), fui.getModTime());
+    			updateWithInputData(session, binder, entity, relativeFilePath, in);
     		}
     		finally {
     			try {
@@ -2440,33 +2091,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			// checkout with, we must checkin the file here. 
     			// sort of like auto-commit = true
     			updateInfo.versionName = session.checkin(binder, entity, relativeFilePath);
-    			long fsize;
-    			if(fui.getCallerSpecifiedContentLength() != null)
-    				fsize = fui.getCallerSpecifiedContentLength().longValue();
-    			else
-    				fsize = session.getContentLengthVersioned(binder, entity, relativeFilePath, updateInfo.versionName);
-    			updateInfo.fileLength = Long.valueOf(fsize);
-                updateInfo.fileMd5 = sizeMd5Pair.getMd5();
+    			updateInfo.fileLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, relativeFilePath, updateInfo.versionName));
     		}
     		else {
     			// auto-commit = false
-    			if(sizeMd5Pair != null) {
-	    			updateInfo.fileLength = sizeMd5Pair.getSize();
-	                updateInfo.fileMd5 = sizeMd5Pair.getMd5();
-    			}
+    			updateInfo.fileLength = Long.valueOf(fui.makeReentrant());
     		}
 		}
 		else { // This condition can occur only for mirrored folder when synching inbound from the source 
 			updateInfo.versionName = RepositoryUtil.generateRandomVersionName();
-			if(fui.calledByFileSync()) {
-				updateInfo.fileLength = fui.getCallerSpecifiedContentLength();
-				updateInfo.fileMd5 = fui.getMd5();
-			}
-			else {
-	            SizeMd5Pair sizeMd5Pair = fui.makeReentrant();
-				updateInfo.fileLength = sizeMd5Pair.getSize();
-	            updateInfo.fileMd5 = sizeMd5Pair.getMd5();
-			}
+			updateInfo.fileLength = Long.valueOf(fui.makeReentrant());
 		}
 
 		return updateInfo;
@@ -2478,11 +2112,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	String versionName = null;
     	
 		if(fui.isSynchToRepository()) {
-			long size = fui.makeReentrant().getSize();
 			InputStream in = fui.getInputStream();
 			try {
 				versionName = createVersionedWithInputData(session, binder, entity,
-						fui.getOriginalFilename(), fui.isSynchToRepository(), in, size, fui.getModTime());
+						fui.getOriginalFilename(), fui.isSynchToRepository(), in);
 			}
 			finally {
 				// Make sure to close the stream even when the above call fails. 
@@ -2518,7 +2151,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		FileAttachment fAtt = createFileAttachment(entry, fui);
 			
 		if(ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName()) // Bug #688072  
-				|| fui.makeReentrant().getSize() > 0) {
+				|| fui.makeReentrant() > 0) {
 			// For mirrored file entry, allow creation of empty file (to deal with bug #688072).
 			// For regular file entry, creation of an empty file version is not allowed (for
 			// bug #632279 explained below). This compromise is reasonable because mirrored
@@ -2526,15 +2159,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// caused by extraneous versions created from empty contents.
 			String versionName = createVersionedFile(session, binder, entry, fui);
 							
-			long fileSize;
-			
-			if(fui.getCallerSpecifiedContentLength() != null)
-				fileSize = fui.getCallerSpecifiedContentLength().longValue();
-			else
-				fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
+			long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
 					
 			fAtt.getFileItem().setLength(fileSize);
-            fAtt.getFileItem().setMd5(fui.getMd5());
 	
 			createVersionAttachment(fAtt, versionName);	
 		}
@@ -2554,7 +2181,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void checkDataQuota(Binder binder, FileUploadItem fui) throws IOException {
 		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) { 
-			Long fileSize = fui.makeReentrant().getSize();
+			Long fileSize = fui.makeReentrant();
 			
 			//Check that the user is not over the user quota
 			checkQuota(RequestContextHolder.getRequestContext().getUser(),
@@ -2661,7 +2288,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private String createVersionedWithInputData(RepositorySession session,
 			Binder binder, DefinableEntity entry, String relativeFilePath, 
-			boolean synchToRepository, Object inputData, long size, Long lastModTime)
+			boolean synchToRepository, Object inputData)
 		throws RepositoryServiceException {
 		String versionName = null;
 		/*if(inputData instanceof MultipartFile) {
@@ -2670,11 +2297,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		else*/ if(inputData instanceof byte[]) {
 			versionName = session.createVersioned(binder, entry, relativeFilePath,
-					new ByteArrayInputStream((byte[]) inputData), ((byte[]) inputData).length, lastModTime);
+					new ByteArrayInputStream((byte[]) inputData));
 		}
 		else if(inputData instanceof InputStream) {
 			versionName = session.createVersioned(binder, entry, relativeFilePath, 
-					(InputStream) inputData, size, lastModTime);
+					(InputStream) inputData);
 		}
 		else {
 			throw new InternalException("Illegal input type [" + inputData.getClass().getName() + "]");
@@ -2684,7 +2311,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void updateWithInputData(RepositorySession session,
-			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData, long size, String md5, Long lastModTime)
+			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData)
 		throws RepositoryServiceException {
 		/*if(inputData instanceof MultipartFile) {
 			service.update(session, binder, entry, 
@@ -2692,11 +2319,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		else*/ if(inputData instanceof byte[]) {
 			session.update(binder, entry, relativeFilePath,
-					new ByteArrayInputStream((byte[]) inputData), ((byte[]) inputData).length, lastModTime);
+					new ByteArrayInputStream((byte[]) inputData));
 		}
 		else if(inputData instanceof InputStream) {
 			session.update(binder, entry, relativeFilePath, 
-					(InputStream) inputData, size, lastModTime);
+					(InputStream) inputData);
 		}
 		else {
 			throw new InternalException("Illegal input type [" + inputData.getClass().getName() + "]");
@@ -2706,59 +2333,23 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private FileAttachment createFileAttachment(DefinableEntity entry, FileUploadItem fui) {
     	// TODO Take care of file path info?
     	
-		Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
-		
+        User user = RequestContextHolder.getRequestContext().getUser();
+
         String relativeFilePath = fui.getOriginalFilename();
 	
 		FileAttachment fAtt = new FileAttachment();
 		fAtt.setOwner(entry);
-		
-		User creator = RequestContextHolder.getRequestContext().getUser();
-		if(fui.getCreatorId() != null) {
-			try {
-				creator = getProfileDao().loadUser(fui.getCreatorId(), zoneId);
+		fAtt.setCreation(new HistoryStamp(user));
+		HistoryStamp mod;
+		if(fui.getModDate() != null) { // mod date specified
+			String name = fui.getModifierName();
+			if (Validator.isNotNull(name)) {
+				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneName());
 			}
-			catch(Exception e) {
-				logger.warn("Error loading user by ID '" + fui.getCreatorId() + "'", e);
-			}
-		}
-		else if(fui.getCreatorName() != null) {
-			try {
-				creator = getProfileDao().findUserByName(fui.getCreatorName(), zoneId);
-			}
-			catch(Exception e) {
-				logger.warn("Error loading user by name '" + fui.getCreatorName() + "'", e);
-			}
-		}
-		HistoryStamp creation = new HistoryStamp(creator);
-		fAtt.setCreation(creation);
-		
-		Date modDate;
-		if(fui.getModDate() != null)
-			modDate = fui.getModDate();
-		else 
-			modDate = creation.getDate();
-		
-		User modifier = (User) creation.getPrincipal();
-		if(fui.getModifierId() != null) {
-			try {
-				modifier = getProfileDao().loadUser(fui.getModifierId(), zoneId);
-			}
-			catch(Exception e) {
-				logger.warn("Error loading user by ID '" + fui.getModifierId() + "'", e);
-			}
-		}
-		else if(fui.getModifierName() != null) {
-			try {
-				modifier = getProfileDao().findUserByName(fui.getModifierName(), zoneId);
-			}
-			catch(Exception e) {
-				logger.warn("Error loading user by name '" + fui.getModifierName() + "'", e);
-			}
-		}
-		HistoryStamp mod = new HistoryStamp(modifier, modDate);
+			mod = new HistoryStamp(user, fui.getModDate());
+		} else // set mod date equal to creation date
+			mod = fAtt.getCreation();
 		fAtt.setModification(mod);
-		
 		fAtt.setLastVersion(1);
 		fAtt.setMajorVersion(1);
 		fAtt.setMinorVersion(0);
@@ -2872,7 +2463,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean closeExpiredLock(Binder binder, DefinableEntity entity, 
     		FileAttachment fa, boolean commit, List newObjs) throws RepositoryServiceException,
     		UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName(), binder.getResourceDriverName(), ResourceDriverManager.FileOperation.UPDATE, entity);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
 
 		try {
 			return closeExpiredLock(session, binder, entity, fa, commit, newObjs);
@@ -2910,7 +2501,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean commitPendingChanges(Binder binder, DefinableEntity entity,
     		FileAttachment fa, FileAttachment.FileLock lock, List newObjs)
     	throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName(), binder.getResourceDriverName(), ResourceDriverManager.FileOperation.UPDATE, entity);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
 
 		try {
 			return commitPendingChanges(session, binder, entity, fa,
@@ -3008,7 +2599,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 							fa.setModification(vAtt.getModification());
 							fa.setFileStatus(vAtt.getFileStatus());
 							fa.getFileItem().setLength(vAtt.getFileItem().getLength());
-							fa.getFileItem().setMd5(vAtt.getFileItem().getMd5());
 							fa.getFileItem().setDescription(vAtt.getFileItem().getDescription());
 							metadataDirty = true;
 						}
@@ -3016,11 +2606,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					else {
 						Long contentLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, 
 								relativeFilePath, versionName));
-						updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, fa.getFileItem().getMd5(), null, null, null);
+						updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null, null, null);
 						metadataDirty = true;
 		            	// add the size of the file to the users disk usage
-		            	incrementDiskSpaceUsed(fa);
-		            	ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY, fa);
+		            	incrementDiskSpaceUsed(fa);		
+		            	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		            	ChangeLogUtils.buildLog(changes, fa);
 		            	newObjs.add(changes);
 					}
 				}  
@@ -3106,7 +2697,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
     
     @SuppressWarnings("unchecked")
-	private void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt, boolean addToFront) {
+	private void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt) {
     	// Is the FileUploadItem named?
 		Set fAtts = null;
 		String fuiName = fui.getName();
@@ -3129,31 +2720,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		// Find custom attribute by the attribute name. 
 		CustomAttribute ca = entry.getCustomAttribute(fuiName);
-		if (ca != null) {
-			fAtts = ((Set) ca.getValueSet());
-		} else {
-			fAtts = new LinkedHashSet();
-		}
+		if(ca != null) fAtts = ((Set) ca.getValueSet());
+		else           fAtts = new HashSet();
 
 		// Simply because the file already exists for the entry does
 		// not mean that it is known through this particular data
 		// element (i.e., custom attribute). So we need to make
 		// sure that it is made visible through this element.
-		if (!addToFront || fAtts.isEmpty() || !(fAtts instanceof LinkedHashSet)) {
-			//Just add this item. It will be put at the back of the set
-			fAtts.add(fAtt); // If it is already in the set, this will have no effect.
-		} else {
-			//We want to add this attachment to the front of the set
-			LinkedHashSet fAttsOrdered = new LinkedHashSet();
-			fAttsOrdered.add(fAtt);      //Put the new item at the front
-			fAttsOrdered.addAll(fAtts);  //Add the rest of the items in the order they were in
-			fAtts = fAttsOrdered;
-		}
-		if (ca != null) {
-			ca.setValue(fAtts);
-		} else {
-			entry.addCustomAttribute(fuiName, fAtts);
-		}
+		fAtts.add(fAtt); // If it is already in the set, this will have no effect.
+		if(ca != null) ca.setValue(fAtts);
+		else           entry.addCustomAttribute(fuiName, fAtts);
    }
     
     private void incrementDiskSpaceUsed(FileAttachment fAtt) {
@@ -3225,48 +2801,5 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			return 3; // file size limit
 		}
 		return 0;
-	}
-	
-	@Override
-	public void correctLastModTime(FileAttachment fa, Date correctLastModTime) {
-		// Corret the data
-		if(fa.getModification() != null)
-			fa.getModification().setDate(correctLastModTime);
-		VersionAttachment hv = fa.getHighestVersion();
-		if(hv != null) {
-			if(hv.getModification() != null)
-				hv.getModification().setDate(correctLastModTime);
-		}
-		// Trigger db transaction
-		getTransactionTemplate().execute(new TransactionCallback<Object>() {
-        	public Object doInTransaction(TransactionStatus status) {
-        		return null;
-        	}
-        });	
-	}
-	
-	public void deleteHtmlCacheFilesForFile(FileAttachment fa) {
-		DefinableEntity entity = fa.getOwner().getEntity();
-		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
-		EntityIdentifier ei = entity.getEntityIdentifier();
-		spec.setSharedEntityIdentifier(ei);
-		List<ShareItem> shareItems = getProfileDao().findShareItems(spec);
-		if (shareItems != null) {
-			for (ShareItem shareItem : shareItems) {
-				//See if there are any cached HTML files to be deleted
-				if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
-					DefinableEntity e = getSharingModule().getSharedEntity(shareItem);
-					Binder binder = e.getParentBinder();
-					if (e instanceof Binder) binder = (Binder) e;
-					Set<FileAttachment> atts = e.getFileAttachments();
-					for (FileAttachment tfa : atts) {
-						if (tfa.equals(fa)) {
-							getConvertedFileModule().deleteCacheHtmlFile(shareItem, binder, entity, fa);
-							break;
-						}
-					}
-				}
-			}
-		}
 	}
 }

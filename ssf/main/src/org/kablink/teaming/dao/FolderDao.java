@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,9 +37,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
-import org.kablink.teaming.dao.util.HomeFolderSelectSpec;
-import org.kablink.teaming.dao.util.MyFilesStorageSelectSpec;
-import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Binder;
@@ -51,12 +48,11 @@ import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Tag;
 import org.springframework.dao.DataAccessException;
 
+
 /**
- * ?
- * 
  * @author Jong Kim
+ *
  */
-@SuppressWarnings("unchecked")
 public interface FolderDao {
 	/**
 	 * Load folder entry
@@ -143,48 +139,4 @@ public interface FolderDao {
      * @return List of folder entry ids
      */
 	public Set<Long> findFolderUnEncryptedEntries(final List<Long> binderIds);
-	
-	/**
-	 * Used to find all the Home folders that meet the specifications.
-	 * 
-	 * @param selectSpec
-	 * @param zoneId
-	 * 
-	 * @return
-	 */
-	public List<Folder> findHomeFolders(final HomeFolderSelectSpec selectSpec, final long zoneId);
-	
-	/**
-	 * Used to find all the My Files Storage folders that meet the
-	 * specifications.
-	 * 
-	 * @param selectSpec
-	 * @param zoneId
-	 * 
-	 * @return
-	 */
-	public List<Folder> findMyFilesStorageFolders(final MyFilesStorageSelectSpec selectSpec, final long zoneId);
-	
-	/**
-	 * Used to find all net folders that meet the specifications
-	 * 
-	 * @param selectSpec
-	 * @param zoneId
-	 * 
-	 * @return
-	 */
-	public List<Folder> findNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId );
-
-	/**
-	 * Used to return the number of net folders that meet the specifications
-	 * 
-	 * @param selectSpec
-	 * @param zoneId
-	 * 
-	 * @return
-	 */
-	public int getNumberOfNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId );
-	
-	public Folder loadFolderByResourcePath(String ancestorSortKey, final String resourcePath, final Long zoneId);
-
 }

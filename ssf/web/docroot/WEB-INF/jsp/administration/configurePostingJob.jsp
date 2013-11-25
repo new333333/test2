@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,8 +33,6 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
-<%@ page import="org.kablink.teaming.util.Utils" %>
-
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_mail") %>' scope="request"/>
@@ -86,22 +84,6 @@ function ${renderResponse.namespace}_modifyAlias() {
 	var param = document.getElementById('aliasSpan' + ${renderResponse.namespace}_savedIndex);
 	param.innerHTML = self.document.${renderResponse.namespace}_modifyAliasFm.alias.value;
 }
-
-function ss_checkIfNumberValid(s) {
-	if (ss_trim(s) == '') return true;   //Blank is ok
-	
-	var pattern1 = new RegExp("^[0-9]+$");
-	if (pattern1.test(ss_trim(s))) {
-		if (ss_trim(s).length > 8) {
-			alert("<ssf:escapeJavaScript><ssf:nlt tag="error.numberTooBig"/></ssf:escapeJavaScript>");
-			return false;
-		}
-		return true;
-	}
-	alert("<ssf:escapeJavaScript><ssf:nlt tag="error.mustBeAPositiveNumber"/></ssf:escapeJavaScript>");
-	return false;
-}
-
 </script>
 
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" id="${renderResponse.namespace}fm" method="post" 
@@ -125,43 +107,10 @@ function ss_checkIfNumberValid(s) {
 <jsp:include page="/WEB-INF/jsp/administration/schedule.jsp" />
 </td></tr></table>
 </fieldset>
-
-<fieldset class="ss_fieldset">
-	<legend class="ss_legend"><ssf:nlt tag="administration.configure.schedule.legend.outgoingAttachmentQuotas" /></legend>
-	<label for="outgoingAttachmentSumLimit">
-	  <span class="ss_labelAbove ss_normal"><ssf:nlt tag="administration.configure.schedule.quotaSum"/></span>
-	</label>
-	<input size="8" maxlength="8" type="textbox" style="text-align:right;"
-	  id="outgoingAttachmentSumLimit" 
-	  name="outgoingAttachmentSumLimit" 
-	  value="${ssMailConfig.outgoingAttachmentSumLimitKb}" 
-	  onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}' />
-	<span><ssf:nlt tag="file.sizeKB"/></span>
-	<br/>
-	<br/>
-	<label for="outgoingAttachmentSizeLimit">
-	  <span class="ss_labelAbove ss_normal"><ssf:nlt tag="administration.configure.schedule.quotaFile"/></span>
-	</label>
-	<input size="8" maxlength="8" type="textbox" style="text-align:right;"
-	  id= "outgoingAttachmentSizeLimit" 
-	  name="outgoingAttachmentSizeLimit" 
-	  value="${ssMailConfig.outgoingAttachmentSizeLimitKb}" 
-	  onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}' />
-	<span><ssf:nlt tag="file.sizeKB"/></span>
-</fieldset>
-
 <c:if test="${ssSMTPEnabled}">
-<% if (Utils.checkIfFilr()) { %>
-	<div style="display: none;">
-		<input type="checkbox" class="ss_style" id="simplepostenabled" name="simplepostenabled" <c:if test="${ssMailConfig.simpleUrlPostingEnabled}">checked</c:if>/>
-	</div>
-<% } else { %>
-	<br/>
-	<br/>
-	<input type="checkbox" class="ss_style" id="simplepostenabled" name="simplepostenabled" <c:if test="${ssMailConfig.simpleUrlPostingEnabled}">checked</c:if>/>
-	<span class="ss_labelRight"><ssf:nlt tag="incoming.enable.simple"/></span>
-	<br/>
-<% } %>
+<input type="checkbox" class="ss_style" id="simplepostenabled" name="simplepostenabled" <c:if test="${ssMailConfig.simpleUrlPostingEnabled}">checked</c:if>/>
+<span class="ss_labelRight"><ssf:nlt tag="incoming.enable.simple"/></span>
+<br/>
 </c:if>
 <c:if test="${!empty ssScheduleInfopost}">
 <br/>

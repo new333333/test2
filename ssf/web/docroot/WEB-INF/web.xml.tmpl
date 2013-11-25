@@ -14,12 +14,12 @@
 
 	<context-param>
 		<param-name>log4jConfigLocation</param-name>
-		<param-value>/../../conf/log4j.properties</param-value>
+		<param-value>/WEB-INF/log4j.properties</param-value>
 	</context-param>
 	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/context/applicationContext.xml /WEB-INF/context/additionalContext.xml /WEB-INF/context/security-auth.xml optional:/WEB-INF/context/security-ext.xml optional:/WEB-INF/context/applicationContext-ext.xml</param-value>
+		<param-value>/WEB-INF/context/applicationContext.xml /WEB-INF/context/additionalContext.xml /WEB-INF/context/security.xml /WEB-INF/context/security-auth.xml optional:/WEB-INF/context/security-ext.xml optional:/WEB-INF/context/applicationContext-ext.xml optional:/WEB-INF/context/portalContext.xml</param-value>
 	</context-param>
 
 	<context-param>
@@ -65,7 +65,7 @@
   		</init-param>
   		<init-param>
   			<param-name>X-UA-Compatible</param-name>
-  			<param-value>IE=Edge</param-value>
+  			<param-value>IE=EmulateIE7</param-value>
   		</init-param>
 	</filter>
 
@@ -78,7 +78,7 @@
   		</init-param>
   		<init-param>
   			<param-name>X-UA-Compatible</param-name>
-  			<param-value>IE=Edge</param-value>
+  			<param-value>IE=EmulateIE7</param-value>
   		</init-param>
 	</filter>
 
@@ -95,7 +95,7 @@
   		</init-param>
   		<init-param>
   			<param-name>X-UA-Compatible</param-name>
-  			<param-value>IE=Edge</param-value>
+  			<param-value>IE=EmulateIE7</param-value>
   		</init-param>
 	</filter>
 
@@ -112,7 +112,7 @@
   		</init-param>
   		<init-param>
   			<param-name>X-UA-Compatible</param-name>
-  			<param-value>IE=Edge</param-value>
+  			<param-value>IE=EmulateIE7</param-value>
   		</init-param>
 	</filter>
 
@@ -128,7 +128,12 @@
 
 	<filter-mapping>
 		<filter-name>defaultCharacterEncodingFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<servlet-name>dispatcher</servlet-name>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>defaultCharacterEncodingFilter</filter-name>
+		<servlet-name>portletAdapter</servlet-name>
 	</filter-mapping>
 
 @@LOGIN_FILTER@@
@@ -437,11 +442,7 @@
 			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
 			<param-value>org.kablink.teaming.remoting.rest.jersey.filter.ContainerFilter</param-value>
 		</init-param>
-        <init-param>
-            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-            <param-value>true</param-value>
-        </init-param>
-     	<load-on-startup>12</load-on-startup>
+     	<load-on-startup>12</load-on-startup>		
 	</servlet>
 
 	<servlet-mapping>

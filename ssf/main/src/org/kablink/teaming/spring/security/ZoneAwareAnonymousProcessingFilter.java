@@ -39,13 +39,14 @@ import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.util.SZoneConfig;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.Authentication;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
+import org.springframework.security.providers.anonymous.AnonymousProcessingFilter;
 
 
-public class ZoneAwareAnonymousProcessingFilter extends AnonymousAuthenticationFilter {
+public class ZoneAwareAnonymousProcessingFilter extends
+		AnonymousProcessingFilter {
 
 	private ZoneModule zoneModule;
 	public ZoneModule getZoneModule() { return zoneModule; }

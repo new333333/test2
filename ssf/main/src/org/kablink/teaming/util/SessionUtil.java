@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.util;
 
-import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -54,7 +53,7 @@ public class SessionUtil {
 		if (sessionFactory == null) sessionFactory = (SessionFactory)SpringContextUtil.getBean("sessionFactory");
 		return sessionFactory;
 	}
-	private static Session getSession() {
+	public static Session getSession() {
 		return SessionFactoryUtils.getSession(getSessionFactory(), false);
 	}
 	public static void sessionStartup() {
@@ -62,18 +61,6 @@ public class SessionUtil {
 		Session session = SessionFactoryUtils.getSession(getSessionFactory(), true);
 		session.setFlushMode(FlushMode.NEVER);
 		TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));		
-	}
-	public static CacheMode getCacheMode() {
-		Session session = getSession();
-		if(session != null)
-			return session.getCacheMode();
-		else
-			return null;
-	}
-	public static void setCacheMode(CacheMode cacheMode) {
-		Session session = getSession();
-		if(session != null)
-			session.setCacheMode(cacheMode);
 	}
 	public static void sessionStartup(Interceptor interceptor) {
 		//open shared session

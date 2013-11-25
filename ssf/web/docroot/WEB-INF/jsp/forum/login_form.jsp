@@ -46,11 +46,11 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%  
-String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
-String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
-Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
-boolean isMobile = (org.kablink.util.BrowserSniffer.is_mobile(request, userAgents) && 
-	!org.kablink.util.BrowserSniffer.is_tablet(request, tabletUserAgents, testForAndroid));  
+	String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+	String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+	Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
+	boolean isMobile = (org.kablink.util.BrowserSniffer.is_mobile(request, userAgents) && 
+		!org.kablink.util.BrowserSniffer.is_tablet(request, tabletUserAgents, testForAndroid));  
 %>
 <c:if test="${!empty ssAddUserAllowed}">
 	<script type="text/javascript">

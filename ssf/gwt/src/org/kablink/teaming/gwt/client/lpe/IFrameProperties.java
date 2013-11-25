@@ -53,7 +53,6 @@ public class IFrameProperties
 	
 	private String m_url;
 	private String m_name;
-	private String m_title;
 	private int m_height;
 	private int m_width;
 	private boolean m_showBorder;
@@ -66,7 +65,6 @@ public class IFrameProperties
 	{
 		m_url = null;
 		m_name = "";
-		m_title = null;
 		m_height = 200;
 		m_width = 400;
 		m_showBorder = false;
@@ -77,7 +75,6 @@ public class IFrameProperties
 	/**
 	 * 
 	 */
-	@Override
 	public void copy( PropertiesObj props )
 	{
 		if ( props instanceof IFrameProperties )
@@ -91,7 +88,6 @@ public class IFrameProperties
 			setWidth( iframeProps.getWidth() );
 			setShowBorder( iframeProps.getShowBorder() );
 			setScrollbarValue( iframeProps.getScrollbarValue() );
-			setTitle( iframeProps.getTitle() );
 		}
 	}
 	
@@ -99,7 +95,6 @@ public class IFrameProperties
 	/**
 	 * Return the properties as a string that can be stored in the db.
 	 */
-	@Override
 	public String createConfigString()
 	{
 		String str;
@@ -114,11 +109,6 @@ public class IFrameProperties
 		
 		str += ",height=" + String.valueOf( m_height );
 		str += ",width=" + String.valueOf( m_width );
-		
-		if ( m_title != null && m_title.length() > 0 )
-		{
-			str += ",title=" + ConfigData.encodeConfigData( m_title );
-		}
 		
 		str += ",frameBorder=";
 		if ( m_showBorder )
@@ -190,14 +180,6 @@ public class IFrameProperties
 	public boolean getShowBorder()
 	{
 		return m_showBorder;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getTitle()
-	{
-		return m_title;
 	}
 	
 	/**
@@ -305,14 +287,6 @@ public class IFrameProperties
 			setShowBorder( true );
 		else
 			setShowBorder( false );
-	}
-	
-	/**
-	 * 
-	 */
-	public void setTitle( String title )
-	{
-		m_title = title;
 	}
 	
 	/**

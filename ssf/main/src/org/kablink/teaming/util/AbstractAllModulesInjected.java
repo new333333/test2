@@ -48,16 +48,14 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
-import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.rss.RssModule;
-import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 
 
-public abstract class AbstractAllModulesInjected implements AllModulesInjected {
+public class AbstractAllModulesInjected implements AllModulesInjected {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
@@ -72,7 +70,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	private BinderModule binderModule;
 	private LdapModule ldapModule;
 	private ReportModule reportModule;
-	private ResourceDriverModule resourceDriverModule;
 	private FileModule fileModule;
 	private ConvertedFileModule convertedFileModule;
 	private DashboardModule dashboardModule;
@@ -81,15 +78,12 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	private RssModule rssModule;
 	private LicenseModule licenseModule;
 	private ZoneModule zoneModule;
-	private SharingModule sharingModule;
 
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}
 	
 	public BinderModule getBinderModule() {
-		if(binderModule == null)
-			binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
 		return binderModule;
 	}
 
@@ -98,8 +92,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public WorkspaceModule getWorkspaceModule() {
-		if(workspaceModule == null)
-			workspaceModule = (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
 		return workspaceModule;
 	}
 
@@ -108,8 +100,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public FolderModule getFolderModule() {
-		if(folderModule == null)
-			folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
 		return folderModule;
 	}
 	
@@ -118,8 +108,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public TemplateModule getTemplateModule() {
-		if(templateModule == null)
-			templateModule = (TemplateModule) SpringContextUtil.getBean("templateModule");
 		return templateModule;
 	}
 
@@ -128,8 +116,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public AdminModule getAdminModule() {
-		if(adminModule == null)
-			adminModule = (AdminModule) SpringContextUtil.getBean("adminModule");
 		return adminModule;
 	}
 
@@ -138,8 +124,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public AuthenticationModule getAuthenticationModule() {
-		if(authenticationModule == null)
-			authenticationModule = (AuthenticationModule) SpringContextUtil.getBean("authenticationModule");
 		return authenticationModule;
 	}
 
@@ -148,8 +132,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public ProfileModule getProfileModule() {
-		if(profileModule == null)
-			profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
 		return profileModule;
 	}
 	
@@ -158,14 +140,10 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public DefinitionModule getDefinitionModule() {
-		if(definitionModule == null)
-			definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
 		return definitionModule;
 	}
 
 	public WorkflowModule getWorkflowModule() {
-		if(workflowModule == null)
-			workflowModule = (WorkflowModule) SpringContextUtil.getBean("workflowModule");
 		return workflowModule;
 	}
 
@@ -178,8 +156,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public LdapModule getLdapModule() {
-		if(ldapModule == null)
-			ldapModule = (LdapModule) SpringContextUtil.getBean("ldapModule");
 		return ldapModule;
 	}
 	
@@ -188,14 +164,10 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public FileModule getFileModule() {
-		if(fileModule == null)
-			fileModule = (FileModule) SpringContextUtil.getBean("fileModule");
 		return fileModule;
 	}
 	
 	public ConvertedFileModule getConvertedFileModule() {
-		if(convertedFileModule == null)
-			convertedFileModule = (ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule");
 		return convertedFileModule;
 	}
 
@@ -208,8 +180,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public DashboardModule getDashboardModule() {
-		if(dashboardModule == null)
-			dashboardModule = (DashboardModule) SpringContextUtil.getBean("dashboardModule");
 		return dashboardModule;
 	}
 
@@ -218,24 +188,10 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public ReportModule getReportModule() {
-		if(reportModule == null)
-			reportModule = (ReportModule) SpringContextUtil.getBean("reportModule");
 		return reportModule;
 	}
 	
-	public void setResourceDriverModule(ResourceDriverModule resourceDriverModule) {
-		this.resourceDriverModule = resourceDriverModule;
-	}
-	
-	public ResourceDriverModule getResourceDriverModule() {
-		if(resourceDriverModule == null)
-			resourceDriverModule = (ResourceDriverModule) SpringContextUtil.getBean("resourceDriverModule");
-		return resourceDriverModule;
-	}
-	
 	public ConferencingModule getConferencingModule() {
-		if(conferencingModule == null)
-			conferencingModule = (ConferencingModule) SpringContextUtil.getBean("conferencingModule");
 		return conferencingModule;
 	}
 
@@ -244,8 +200,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public IcalModule getIcalModule() {
-		if(icalModule == null)
-			icalModule = (IcalModule) SpringContextUtil.getBean("icalModule");
 		return icalModule;
 	}
 	public void setIcalModule(IcalModule icalModule) {
@@ -253,8 +207,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}	
 	
 	public RssModule getRssModule() {
-		if(rssModule == null)
-			rssModule = (RssModule) SpringContextUtil.getBean("rssModule");
 		return rssModule;
 	}
 	public void setRssModule(RssModule rssModule) {
@@ -262,8 +214,6 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public LicenseModule getLicenseModule() {
-		if(licenseModule == null)
-			licenseModule = (LicenseModule) SpringContextUtil.getBean("licenseModule");
 		return licenseModule;
 	}
 	public void setLicenseModule(LicenseModule licenseModule) {
@@ -271,21 +221,10 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	
 	public ZoneModule getZoneModule() {
-		if(zoneModule == null)
-			zoneModule = (ZoneModule) SpringContextUtil.getBean("zoneModule");
 		return zoneModule;
 	}
 	public void setZoneModule(ZoneModule zoneModule) {
 		this.zoneModule = zoneModule;
-	}
-	
-	public SharingModule getSharingModule() {
-		if(sharingModule == null)
-			sharingModule = (SharingModule) SpringContextUtil.getBean("sharingModule");
-		return sharingModule;
-	}
-	public void setSharingModule(SharingModule sharingModule) {
-		this.sharingModule = sharingModule;
 	}
 
 }

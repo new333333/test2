@@ -48,7 +48,6 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.TrashHelper;
@@ -158,7 +157,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			element.addAttribute("id", binderId + "." + page);
 			element.addAttribute("hasChildren", "true");
 			element.addAttribute("type", DomTreeBuilder.NODE_TYPE_RANGE);
-			element.addAttribute("image", Utils.getIconNameTranslated(icon));
+			element.addAttribute("image", icon);
 			element.addAttribute("imageClass", imageClass);
 			element.addAttribute("page", page);
 			element.addAttribute("pageTuple", pageTuple);
@@ -207,13 +206,14 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				Binder ws = (Binder)source;
 				String icon = ws.getIconName();
 				String imageClass = "ss_twIcon";
+				String imageBrand = SPropsUtil.getString("branding.prefix");
 				if (icon == null || icon.equals("")) {
 					icon = "/icons/workspace.gif";
 					imageClass = "ss_twImg";
 				}
 				if (!icon.startsWith("/")) icon = "/" + icon;
 				element.addAttribute("type", DomTreeBuilder.NODE_TYPE_WORKSPACE);
-				element.addAttribute("image", Utils.getIconNameTranslated(icon));
+				element.addAttribute("image", "/" + imageBrand + icon);
 				element.addAttribute("imageClass", imageClass);
 				element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_WORKSPACE, source));
 				element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_WORKSPACE, source));
@@ -222,10 +222,11 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			} else if ((type == DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
 				String icon = f.getIconName();
+				String imageBrand = SPropsUtil.getString("branding.prefix");
 				if (icon == null || icon.equals("")) icon = "/icons/folder.png";
 				if (!icon.startsWith("/")) icon = "/" + icon;
 				element.addAttribute("type", DomTreeBuilder.NODE_TYPE_FOLDER);
-				element.addAttribute("image", Utils.getIconNameTranslated(icon));
+				element.addAttribute("image", "/" + imageBrand + icon);
 				element.addAttribute("imageClass", "ss_twIcon");
 				element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_FOLDER, source));
 				element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_FOLDER, source));

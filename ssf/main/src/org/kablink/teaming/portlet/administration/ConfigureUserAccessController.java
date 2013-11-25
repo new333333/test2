@@ -77,7 +77,6 @@ public class ConfigureUserAccessController extends  SAbstractController {
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			AuthenticationConfig authConfig = getAuthenticationModule().getAuthenticationConfig();
 			authConfig.setAllowAnonymousAccess(PortletRequestUtils.getBooleanParameter(request, "allowAnonymous", false));
-			authConfig.setAnonymousReadOnly(PortletRequestUtils.getBooleanParameter(request, "anonymousReadOnly", false));
 			authConfig.setAllowSelfRegistration(PortletRequestUtils.getBooleanParameter(request, "allowSelfRegistration", false));
 			getAuthenticationModule().setAuthenticationConfig(authConfig);
 		} else

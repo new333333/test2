@@ -42,21 +42,19 @@ public interface ResourceSession {
 
 	/**
 	 * Return path string, or <code>null</code> if path is not set.
-	 * 
 	 * @return
 	 */
 	public String getPath();
 	
 	/**
-	 * Return the last element name of the path, or <code>null</code> if path is not set.
-	 * 
+	 * Return the last element name of the path, or <code>null</code> 
+	 * if path is not set.
 	 * @return
 	 */
 	public String getName();
 	
 	/**
 	 * Set the path.
-	 * 
 	 * @param resourcePath
 	 * @return
 	 * @throws IOException 
@@ -65,12 +63,11 @@ public interface ResourceSession {
 	
 	/**
 	 * Set the path.
-	 * 
 	 * @param parentResourcePath
-	 * @param childResourceName
+	 * @param childName
 	 * @return
 	 */
-	public ResourceSession setPath(String parentResourcePath, String childResourceName) throws UncheckedIOException;
+	public ResourceSession setPath(String parentResourcePath, String childName) throws UncheckedIOException;
 	
 	/**
 	 * Close the session.
@@ -78,8 +75,7 @@ public interface ResourceSession {
 	public void close();
 	
 	/**
-	 * Return last modified time associated with the resource.
-	 * 
+	 * Return last modified time.
 	 * @return
 	 * @throws FIException
 	 * @throws UncheckedIOException
@@ -87,90 +83,40 @@ public interface ResourceSession {
 	 */
 	public long lastModified() throws FIException, UncheckedIOException, IllegalStateException;
 
-	/**
-	 * Return whether the resource exists or not. 
-	 */
 	public boolean exists() throws FIException, UncheckedIOException, IllegalStateException;
 
-	/**
-	 * Return whether the resource is a directory or a file.
-	 * 
-	 * @return
-	 * @throws FIException
-	 * @throws UncheckedIOException
-	 * @throws IllegalStateException
-	 */
 	public boolean isDirectory() throws FIException, UncheckedIOException, IllegalStateException;
 	
-	/**
-	 * Return <code>InputStream</code> on the content of the file resource.
-	 * 
-	 * @return
-	 * @throws FIException
-	 * @throws UncheckedIOException
-	 * @throws IllegalStateException
-	 */
 	public InputStream readFile() throws FIException, UncheckedIOException, IllegalStateException;
 	
-	/**
-	 * Write new content of the file resource. 
-	 * Create the resource if it doesn't already exist. 
-	 * 
-	 * @param in input stream
-	 * @param size content size in byte
-	 * @param lastModTime last modification time or <code>null</code>
-	 * @throws FIException
-	 * @throws UncheckedIOException
-	 * @throws IllegalStateException
-	 */
-	public void writeFile(InputStream in, long size, Long lastModTime) throws FIException, UncheckedIOException, IllegalStateException;
+	public void writeFile(InputStream in) throws FIException, UncheckedIOException, IllegalStateException;
 	
-	/**
-	 * Create a directory. 
-	 * 
-	 * @throws FIException
-	 * @throws UncheckedIOException
-	 * @throws IllegalStateException
-	 */
 	public void createDirectory() throws FIException, UncheckedIOException, IllegalStateException;
 	
 	public void delete() throws FIException, UncheckedIOException, IllegalStateException;
 	
 	/**
-	 * Return the names of the resources (directories and files) in the 
-	 * current directory. Each string represents only the name part rather than
-	 * a complete path for the resource. The array will be empty if the directory 
-	 * is empty. 
-	 * Returns null if the path does not denote a directory, or an I/O error occurs. 
-	 * 
-	 * @return
-	 * @throws FIException
-	 * @throws IllegalStateException If the path is not set, etc.
-	 */
-	public String[] listNames() throws FIException, IllegalStateException;
-
-	/**
-	 * Return the resource driver that allocated this session. 
-	 * Convenience method.
-	 * 
-	 * @return
-	 */
-	public ResourceDriver getResourceDriver();
-	
-	/**
-	 * Return the length (in byte) of the content of the file resource.
+	 * Returns an array of strings naming the files and directories in the 
+	 * current directory. Each string is a file name rather than a complete 
+	 * path. The array will be empty if the directory is empty. Returns null 
+	 * if this does not denote a directory, or an I/O error occurs. 
 	 * 
 	 * @return
 	 * @throws FIException
 	 * @throws IllegalStateException
 	 */
+	public String[] listNames() throws FIException, IllegalStateException;
+	
+	//public String[] listPaths() throws FIException, IllegalStateException;
+	
+	public ResourceDriver getDriver();
+	
 	public long getContentLength() throws FIException, IllegalStateException;
 	
 	/**
 	 * Move current resource (which may be either directory or file) into the
-	 * specified <code>targetDirectoryResourcePath</code> target directory. 
-	 * The <code>targetName</code> defines new name of the resource being moved.
-	 * 
+	 * specified target directory. The <code>targetName</code> defines new
+	 * name of the resource being moved.
 	 * @param targetDirectoryResourcePath
 	 * @param targetName
 	 * @param targetName

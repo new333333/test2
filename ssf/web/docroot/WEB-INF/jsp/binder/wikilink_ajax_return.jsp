@@ -65,7 +65,7 @@ var ss_wikiLinkUrl = "<ssf:url
     </ssf:url>";
 </script>
 <form method="post" name="ss_findLinkForm"
->
+	action="">
 <ssf:showHelp guideName="user" pageId="entry_linking" sectionId="entry_linking_otherfolder" /> 
 <ssf:nlt tag="wiki.link.tofolder"/> <b><span id="linkToFolderName">(${ssBinder.title})</span></b>
 <input type="hidden" name="binderId" id="binderId" value="${ssBinder.id}"/>

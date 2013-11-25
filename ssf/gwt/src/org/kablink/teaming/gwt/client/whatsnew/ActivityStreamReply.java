@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,6 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
+
 package org.kablink.teaming.gwt.client.whatsnew;
 
 import java.util.HashMap;
@@ -41,8 +43,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -53,15 +53,14 @@ import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * This widget is used to let the user enter a reply to an entry
- * 
  * @author jwootton
+ *
  */
 public class ActivityStreamReply extends Composite
 {
-	private TextBox m_titleTextBox = null;
+	private TextBox m_titleTextBox;
 	private TextArea m_descTextArea;
 	private EditSuccessfulHandler m_onSuccessHandler;
-	private FlowPanel m_addACommentPanel;
 	
 	/**
 	 * 
@@ -80,49 +79,17 @@ public class ActivityStreamReply extends Composite
 		mainPanel.addStyleName( "roundcornerSM" );
 		
 		// Add a textbox for the title
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
-		{
-			inputPanel = new FlowPanel();
-			inputPanel.addStyleName( "activityStreamReplyTitlePanel" );
-			m_titleTextBox = new TextBox();
-			m_titleTextBox.addStyleName( "activityStreamReplyTitleTextBox" );
-			inputPanel.add( m_titleTextBox );
-			mainPanel.add( inputPanel );
-		}
-		
 		inputPanel = new FlowPanel();
-		inputPanel.addStyleName( "activityStreamReply_RelativePos" );
-
-		// Add a panel that will hold "Add a comment" hint
-		{
-			m_addACommentPanel = new FlowPanel();
-			m_addACommentPanel.addStyleName( "activityStreamReplyAddACommentPanel" );
-			m_addACommentPanel.getElement().setInnerText( GwtTeaming.getMessages().addAComment() );
-			inputPanel.add( m_addACommentPanel );
-		}
+		inputPanel.addStyleName( "activityStreamReplyTitlePanel" );
+		m_titleTextBox = new TextBox();
+		m_titleTextBox.addStyleName( "activityStreamReplyTitleTextBox" );
+		inputPanel.add( m_titleTextBox );
+		mainPanel.add( inputPanel );
 		
 		// Create a textbox
+		inputPanel = new FlowPanel();
 		m_descTextArea = new TextArea();
 		m_descTextArea.addStyleName( "activityStreamReplyTextArea" );
-		m_descTextArea.addKeyPressHandler( new KeyPressHandler()
-		{
-			@Override
-			public void onKeyPress( KeyPressEvent event )
-			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute() 
-					{
-						// Hide the "Add a comment" message
-						m_addACommentPanel.setVisible( false );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		} );
 		inputPanel.add( m_descTextArea );
 		mainPanel.add( inputPanel );
 		
@@ -163,7 +130,6 @@ public class ActivityStreamReply extends Composite
 		// Add a click handler for the send button.
 		clickHandler = new ClickHandler()
 		{
-			@Override
 			public void onClick( ClickEvent event )
 			{
 				handleClickOnSendBtn();
@@ -179,7 +145,6 @@ public class ActivityStreamReply extends Composite
 		// Add a click handler for the cancel button.
 		clickHandler = new ClickHandler()
 		{
-			@Override
 			public void onClick( ClickEvent event )
 			{
 				close();
@@ -228,9 +193,7 @@ public class ActivityStreamReply extends Composite
 				replyText = builder.toSafeHtml().asString();
 			}
 
-			title = null;
-			if ( m_titleTextBox != null )
-				title = m_titleTextBox.getText();
+			title = m_titleTextBox.getText();
 			
 			results = new HashMap<String, String>();
 			results.put( "title", title );
@@ -246,9 +209,7 @@ public class ActivityStreamReply extends Composite
 	 */
 	private void init( String title )
 	{
-		if ( m_titleTextBox != null )
-			m_titleTextBox.setText( title );
-		
+		m_titleTextBox.setText( title );
 		m_descTextArea.setText( "" );
 	}
 
@@ -262,7 +223,6 @@ public class ActivityStreamReply extends Composite
 		// Issue a deferred command to give the focus to the textarea control.
 		cmd = new Scheduler.ScheduledCommand()
 		{
-			@Override
 			public void execute()
 			{
 				m_descTextArea.setFocus( true );

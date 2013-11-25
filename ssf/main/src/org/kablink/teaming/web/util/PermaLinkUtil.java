@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.web.util;
 
-import java.util.Date;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
@@ -40,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
@@ -54,42 +52,12 @@ import org.kablink.util.Http;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
-/**
- * ?
- * 
- * @author ?
- */
-public class PermaLinkUtil {
-	public static final int COLLECTION_USER_DEFAULT = (-1);
-    public static final int COLLECTION_MY_FILES = 0;
-    public static final int COLLECTION_NET_FOLDERS = 1;
-    public static final int COLLECTION_SHARED_BY_ME = 2;
-    public static final int COLLECTION_SHARED_WITH_ME = 3;
-    public static final int COLLECTION_SHARED_PUBLIC = 4;
 
+public class PermaLinkUtil {
 	private static final Log m_logger = LogFactory.getLog(PermaLinkUtil.class);
 
-	public static String getUserPermalink(HttpServletRequest request, String userId, Integer collection) {
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
-        adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, collection.toString());
-		return adapterUrl.toString();
-	}
-
-	public static String getUserWhatsNewPermalink(HttpServletRequest request, String userId) {
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
-        adapterUrl.setParameter(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "1");
-        adapterUrl.setParameter(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC, "10");
-		return adapterUrl.toString();
-	}
-
 	//userId may be placeholder
-	public static String getUserPermalink(HttpServletRequest request, String userId, boolean startWithActivityStreams, boolean startWithDefaultCollection) {
+	public static String getUserPermalink(HttpServletRequest request, String userId, boolean startWithActivityStreams) {
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
@@ -97,14 +65,11 @@ public class PermaLinkUtil {
 		if (startWithActivityStreams) {
 			adapterUrl.setParameter(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "1");
 		}
-		else if (startWithDefaultCollection) {
-			adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, String.valueOf(COLLECTION_USER_DEFAULT));
-		}
 		return adapterUrl.toString();
 	}
-
+	
 	public static String getUserPermalink(HttpServletRequest request, String userId) {
-		return getUserPermalink(request, userId, false, false);
+		return getUserPermalink(request, userId, false);
 	}
 	
 	public static String getPermalink(HttpServletRequest request, DefinableEntity entity) {
@@ -112,37 +77,24 @@ public class PermaLinkUtil {
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
 		return url.toString();
 	}
-	
 	public static String getPermalink(PortletRequest request, DefinableEntity entity) {
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
 		return url.toString();
 	}
-	
-	public static String getPermalinkForEmail(DefinableEntity entity, boolean crawler) {
-		// For the permalink to be built using the static information
-		// from the properties files.
-		Boolean oldUseRTContext = ZoneContextHolder.getUseRuntimeContext();
-		ZoneContextHolder.setUseRuntimeContext(Boolean.FALSE);
-		String reply = getPermalink(entity, crawler);
-		ZoneContextHolder.setUseRuntimeContext(oldUseRTContext);
-		
+	public static String getPermalinkForEmail(DefinableEntity entity) {
+		String reply = getPermalink(entity);
 		if (forceSecureLinksInEmail()) {
 			reply = forceHTTPSInUrl(reply);
 		}
 		return reply;
 	}
-	
-	public static String getPermalinkForEmail(DefinableEntity entity) {
-		return getPermalinkForEmail(entity, false);
-	}
-	
 	public static String getPermalink(DefinableEntity entity) {
 		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
 		return url.toString();
 	}
-
+	
 	public static String getPermalink(DefinableEntity entity, boolean crawler) {
 		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		url.setCrawler(crawler);
@@ -178,32 +130,6 @@ public class PermaLinkUtil {
 			adapterUrl.setParameter(WebKeys.URL_CAPTIVE, captive.toString());
 		return adapterUrl.toString();
 	}
-	public static String getSubscribePermalink(Long entityId, EntityIdentifier.EntityType entityType, Boolean captive) {
-		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
-		getPermalinkURL(adapterUrl, entityId, entityType);
-        adapterUrl.setParameter(WebKeys.URL_INVOKE_SUBSCRIBE, "1");
-		if(captive != null)
-			adapterUrl.setParameter(WebKeys.URL_CAPTIVE, captive.toString());
-		return adapterUrl.toString();
-	}
-
-	public static String getSharePermalink(Long entityId, EntityIdentifier.EntityType entityType, Boolean captive) {
-		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
-		getPermalinkURL(adapterUrl, entityId, entityType);
-        adapterUrl.setParameter(WebKeys.URL_INVOKE_SHARE, "1");
-		if(captive != null)
-			adapterUrl.setParameter(WebKeys.URL_CAPTIVE, captive.toString());
-		return adapterUrl.toString();
-	}
-
-    public static String getSharedPublicFileDownloadPermalink(Long shareItemId, String passKey, String fileName) {
-        return WebUrlUtil.getSharedPublicFileUrl((HttpServletRequest)null, shareItemId, passKey, WebKeys.URL_SHARE_PUBLIC_LINK, fileName);
-    }
-
-    public static String getSharedPublicFileViewPermalink(Long shareItemId, String passKey, String fileName) {
-        return WebUrlUtil.getSharedPublicFileUrl((HttpServletRequest)null, shareItemId, passKey, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fileName);
-    }
-
 	protected static void getPermalinkURL(AdaptedPortletURL adapterUrl, Long entityId, EntityIdentifier.EntityType entityType) {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entityType.name());
@@ -270,13 +196,6 @@ public class PermaLinkUtil {
 		adapterUrl.setParameter(WebKeys.URL_FILE_NAME, WebUrlUtil.urlEncodeFilename(fileName));
 		return adapterUrl.toString();
 	}
-
-    public static String getFileDownloadPermalink(String fileId, String fileName, Date modDate, Long owningEntityId, EntityIdentifier.EntityType owningEntityType) {
-        return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL((HttpServletRequest)null, null), WebKeys.ACTION_READ_FILE, owningEntityId.toString(), owningEntityType.name(),
-                fileId, String.valueOf(modDate.getTime()), null,
-                fileName, true);
-    }
-
 	public static String getTitlePermalink(Long binderId, String normalizedTitle) {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,7 +46,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class ViewForumEntryEvent extends VibeEventBase<ViewForumEntryEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private String	m_viewForumEntryUrl;	//
+	private String m_viewForumEntryUrl;
 
 	/**
 	 * Handler interface for this event.
@@ -61,36 +61,19 @@ public class ViewForumEntryEvent extends VibeEventBase<ViewForumEntryEvent.Handl
 	 * @param viewForumEntryUrl
 	 */
 	public ViewForumEntryEvent(String viewForumEntryUrl) {
-		// Initialize the super class...
 		super();
-		
-		// ...and store the parameters.
-		setViewForumEntryUrl(viewForumEntryUrl);
+		m_viewForumEntryUrl = viewForumEntryUrl;
 	}
 	
 	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public String  getViewForumEntryUrl() {return m_viewForumEntryUrl;}
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setViewForumEntryUrl(String viewForumEntryUrl) {m_viewForumEntryUrl = viewForumEntryUrl;}
-
-	/**
 	 * Dispatches this event when one is triggered.
 	 * 
-	 * Implements the VibeEventBase.doDispatch() method.
+	 * Implements GwtEvent.dispatch()
 	 * 
 	 * @param handler
 	 */
 	@Override
-	protected void doDispatch(Handler handler) {
+	protected void dispatch(Handler handler) {
 		handler.onViewForumEntry(this);
 	}
 	
@@ -119,6 +102,16 @@ public class ViewForumEntryEvent extends VibeEventBase<ViewForumEntryEvent.Handl
 		return TeamingEvents.VIEW_FORUM_ENTRY;
 	}
 		
+	/**
+	 * Returns the URL to view the forum entry associated with this
+	 * event.
+	 * 
+	 * @return
+	 */
+	public String getViewForumEntryUrl() {
+		return m_viewForumEntryUrl;
+	}
+
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

@@ -55,7 +55,7 @@
 				</ssHelpSpot>
 			</span>
 
-			<label for="ss_calendarEventsTypeSelect${prefix}"><ssf:nlt tag="calendar.navi.chooseMode"/></label>
+			<label for="ss_calendarEventsTypeSelect${prefix}"><ssf:nlt tag="calendar.navi.chooseMode"/>:</label>
 			<select id="ss_calendarEventsTypeSelect${prefix}" onchange="setModeCheck(this); ss_calendar_${prefix}.changeEventType();">
 				<c:if test="${ !empty ssShowFolderModeSelect && ssShowFolderModeSelect }">
 					<option value="virtual"><ssf:nlt tag="calendar.navi.mode.alt.virtual"/></option>

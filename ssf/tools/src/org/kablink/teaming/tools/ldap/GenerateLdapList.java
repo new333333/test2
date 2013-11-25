@@ -118,19 +118,14 @@ public class GenerateLdapList {
     		xOut = new XMLWriter(fOut, fmt);
            	Element cfgRoot = document.getRootElement();
             LdapContext ctx = getContext(cfgRoot);
-            try {
-	           	Document profileDoc = DocumentHelper.createDocument();
-	        	Element profileRoot = profileDoc.addElement("profiles");
-	            doUsers(ctx, cfgRoot, profileRoot);
-	            if (doGroups) {
-	            	doGroups(ctx, cfgRoot, profileRoot);
-	            }
-	            xOut.write(profileDoc);
-	    		xOut.flush();
+           	Document profileDoc = DocumentHelper.createDocument();
+        	Element profileRoot = profileDoc.addElement("profiles");
+            doUsers(ctx, cfgRoot, profileRoot);
+            if (doGroups) {
+            	doGroups(ctx, cfgRoot, profileRoot);
             }
-            finally {
-            	ctx.close();
-            }
+            xOut.write(profileDoc);
+    		xOut.flush();
 	    } catch (Exception ex) {
 	    	System.out.println("Can't write XML file " + outFile + ":error is: " + ex.getLocalizedMessage());
 	    	throw(ex);

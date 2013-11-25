@@ -58,7 +58,7 @@
   <ssf:form title="${ssBinder.title}">
 	<form class="ss_form" method="<%= methodName %>" 
   			enctype="<%= enctype %>" name="<%= formName %>" 
-  			id="<%= formName %>" onSubmit="return ss_onSubmit(this, true);">
+  			id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this, true);">
 
 		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   			configElement="<%= item %>" 
@@ -73,7 +73,7 @@
 
 		<div style="display:block">
 			<input type="checkbox" name="ss_library"
-				<c:if test="${ssDefinitionEntry.mirrored || ssDefinitionEntry.library}"> disabled </c:if>
+				<c:if test="${ssDefinitionEntry.mirrored}"> disabled </c:if>
 				<c:out value="${cb_checked}"/>
 				onClick="if (document.${formName}.ss_library.checked) document.${formName}.library.value='true'; else document.${formName}.library.value='false';">
 			&nbsp;
@@ -88,10 +88,7 @@
 			<c:set var="cb_checked" value=" checked "/>
 		</c:if>
 		<div style="display:block">
-			<input type="checkbox" name="ss_unique" 
-			<c:if test="${ssDefinitionEntry.mirrored || 
-			  (!ssBinderIsEmpty && ssDefinitionEntry.library && ssDefinitionEntry.uniqueTitles)}"> disabled </c:if>
-			<c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_unique.checked) document.${formName}.uniqueTitles.value='true'; else document.${formName}.uniqueTitles.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isUniqueTitles"/></span></input>
+			<input type="checkbox" name="ss_unique" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_unique.checked) document.${formName}.uniqueTitles.value='true'; else document.${formName}.uniqueTitles.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isUniqueTitles"/></span></input>
 		</div>
 		<input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
 		<br/>
@@ -115,7 +112,6 @@
 					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
 					<c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
 					<select name="resourceDriverName" onchange="updateResourceRootPath();">
-					    <option value="">---</option>option
 						<c:forEach var="driver" items="${resourceDrivers}">
 							<option value="${driver.name}" id="${driver.rootPath}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
 							<c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>

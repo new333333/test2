@@ -33,7 +33,6 @@
 package org.kablink.teaming.module.binder.processor;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.domain.Binder;
@@ -42,8 +41,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -65,7 +63,7 @@ public interface EntryProcessor extends BinderProcessor {
     public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options)
     	throws WriteFilesException, WriteEntryDataException;
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options);  
-    public Entry copyEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
+    public Entry copyEntry(Binder binder, Entry entry, Binder destination, Map options);
     public void copyEntries(Binder source, Binder binder, Map options);
     public void disableEntry(Principal entry, boolean disable);
     public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource, Map options);
@@ -76,14 +74,8 @@ public interface EntryProcessor extends BinderProcessor {
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
     public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData, Boolean canModifyEntry);
   	public IndexErrors indexEntries(Collection entries);
-  	public IndexErrors indexEntries(Collection entries, boolean skipFileContentIndexing);
   	public IndexErrors indexEntry(Entry entry);
-	public IndexErrors indexEntry(Entry entry, boolean skipFileContentIndexing);
   	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
-    public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
+    public void moveEntry(Binder binder, Entry entry, Binder destination, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
-	public ChangeLog processChangeLog(DefinableEntity entity, String operation, boolean skipDbLog, boolean skipNotifyStatus);
-	
-    public org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
-	(Binder binder, Entry entry, FileAttachment fa, Collection tags, boolean skipFileContentIndexing);
  }

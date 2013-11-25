@@ -32,9 +32,6 @@
  */
 package org.kablink.teaming.ssfs;
 
-import org.kablink.util.VibeRuntimeException;
-import org.kablink.util.api.ApiErrorCode;
-
 /**
  * Thrown to indicate that the actual type of the object 
  * (either folder or file) does not match the expectation. 
@@ -42,28 +39,12 @@ import org.kablink.util.api.ApiErrorCode;
  * @author jong
  *
  */
-public class TypeMismatchException extends VibeRuntimeException {
+public class TypeMismatchException extends RuntimeException {
 
 	public TypeMismatchException() {
 	}
 	
 	public TypeMismatchException(String msg) {
 		super(msg);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 400; // Bad request
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
-	 */
-	@Override
-	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.NOT_SUPPORTED;
 	}
 }

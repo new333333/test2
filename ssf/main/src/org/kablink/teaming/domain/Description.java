@@ -37,8 +37,6 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.kablink.teaming.domain;
-import org.kablink.util.Html;
-import org.kablink.util.HtmlToTextParser;
 import org.kablink.util.Validator;
 /**
  * @author janet
@@ -128,26 +126,12 @@ public class Description {
        	int hash = getFormat();
     	hash = 31*hash + getText().hashCode();
     	return hash;
-    }
-
+    }    
     public String getStrippedText() {
-        return getStrippedText(false);
-    }
-
-    public String getStrippedText(boolean withNewLines) {
     	if (getFormat() != FORMAT_HTML) return getText();
-        if (withNewLines) {
-    	    return HtmlToTextParser.htmlToText(getText());
-        } else {
-            return Html.stripHtml(getText());
-        }
-    }
+    	return getText().replaceAll("\\<.*?\\>","");
 
-    public String getHtmlText() {
-        if (getFormat() != FORMAT_NONE) return getText();
-        return Html.plainTextToHTML2(getText());
     }
-
     public String toString() {
     	return getText();
     }

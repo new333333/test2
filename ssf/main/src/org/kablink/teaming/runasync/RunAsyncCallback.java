@@ -32,6 +32,6 @@
  */
 package org.kablink.teaming.runasync;
 
-public interface RunAsyncCallback<V> {
-	V doAsynchronously() throws Exception;
+public interface RunAsyncCallback {
+	Object doAsynchronously() throws Exception;
 }

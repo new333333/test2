@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="org.kablink.teaming.util.Utils" %>
-
 <div style="padding:10px;">
 <table cellspacing="2" cellpadding="6" border="1" style="width:100%; background:#cecece;">
   <tr>
@@ -60,7 +58,7 @@
   </tr>
 
   <c:if test="${!empty ssBinder && ssBinder.entityType == 'folder'}">
-   <c:if test="${!empty ssSimpleUrlNames && ssBinder.postingEnabled}">
+   <c:if test="${!empty ssSimpleUrlNames}">
     <tr>
     <td valign="top" nowrap>
         <span><ssf:nlt tag="permalink.emailAddresses"/></span>
@@ -74,31 +72,29 @@
    </c:if>
   </c:if>
 
-  <% if (!(Utils.checkIfFilr())) { %>
-	  <c:if test="${!empty ss_toolbar_url_subscribe_rss}">
-	    <tr>
-	      <td valign="top" nowrap>
-	       <span><ssf:nlt tag="permalink.rssUrl"/></span>
-	      </td>
-	      <td valign="top" nowrap>
-	        <a href="${ss_toolbar_url_subscribe_rss}" 
-				onclick="ss_openUrlInWindow(this, 'teamingSubscribe', null, null);return false;"><span>${ss_toolbar_url_subscribe_rss}</span></a>
-	      </td>
-	    </tr>
-	  </c:if>
-	
-	  <c:if test="${!empty ss_toolbar_url_subscribe_atom}">
-	    <tr>
-	      <td valign="top" nowrap>
-	       <span><ssf:nlt tag="permalink.atomUrl"/></span>
-	      </td>
-	      <td valign="top" nowrap>
-	        <a href="${ss_toolbar_url_subscribe_atom}" 
-				onclick="ss_openUrlInWindow(this, 'teamingSubscribe', null, null);return false;"><span>${ss_toolbar_url_subscribe_atom}</span></a>
-	      </td>
-	    </tr>
-	  </c:if>
-  <% } %>
+  <c:if test="${!empty ss_toolbar_url_subscribe_rss}">
+    <tr>
+      <td valign="top" nowrap>
+       <span><ssf:nlt tag="permalink.rssUrl"/></span>
+      </td>
+      <td valign="top" nowrap>
+        <a href="${ss_toolbar_url_subscribe_rss}" 
+			onclick="ss_openUrlInWindow(this, 'teamingSubscribe', null, null);return false;"><span>${ss_toolbar_url_subscribe_rss}</span></a>
+      </td>
+    </tr>
+  </c:if>
+
+  <c:if test="${!empty ss_toolbar_url_subscribe_atom}">
+    <tr>
+      <td valign="top" nowrap>
+       <span><ssf:nlt tag="permalink.atomUrl"/></span>
+      </td>
+      <td valign="top" nowrap>
+        <a href="${ss_toolbar_url_subscribe_atom}" 
+			onclick="ss_openUrlInWindow(this, 'teamingSubscribe', null, null);return false;"><span>${ss_toolbar_url_subscribe_atom}</span></a>
+      </td>
+    </tr>
+  </c:if>
 
   <c:if test="${!empty ss_toolbar_url_webdav}">
     <tr>
@@ -163,34 +159,30 @@
   </td>
 </tr>
 
-<% if (!(Utils.checkIfFilr())) { %>
-	<tr>
-	  <td valign="top">
-	    <span><ssf:nlt tag="permalink.icalUrl"/></span>
-	  </td>
-	  <td valign="top">
-	    <span><ssf:nlt tag="permalink.hint.ical"/></span>
-	  </td>
-	</tr>
-	
-	<tr>
-	  <td valign="top">
-	    <span><ssf:nlt tag="permalink.rssUrl"/></span>
-	  </td>
-	  <td valign="top">
-	    <span><ssf:nlt tag="permalink.hint.rss"/></span>
-	  </td>
-	</tr>
-<% } %>
+<tr>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.icalUrl"/></span>
+  </td>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.hint.ical"/></span>
+  </td>
+</tr>
+
+<tr>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.rssUrl"/></span>
+  </td>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.hint.rss"/></span>
+  </td>
+</tr>
 
 </table>
 
-<% if (!(Utils.checkIfFilr())) { %>
-	<c:if test="${ssBinder.entityType == 'folder'}">
-	  <div style="padding:10px 10px 0px 6px;">
-	    <span><ssf:nlt tag="permalink.caution.rss"/></span>
-	  </div>
-	</c:if>
-<% } %>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <div style="padding:10px 10px 0px 6px;">
+    <span><ssf:nlt tag="permalink.caution.rss"/></span>
+  </div>
+</c:if>
 
 </div>

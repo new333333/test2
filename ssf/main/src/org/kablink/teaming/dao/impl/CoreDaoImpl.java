@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,7 +44,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
@@ -63,7 +62,7 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
-import org.hibernate.exception.ConstraintViolationException;
+import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -75,11 +74,8 @@ import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.Attachment;
-import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
-import org.kablink.teaming.domain.BinderState;
-import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.CustomAttributeListElement;
 import org.kablink.teaming.domain.Dashboard;
@@ -101,17 +97,13 @@ import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoBinderQuotaByTheIdException;
 import org.kablink.teaming.domain.NoDashboardByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
-import org.kablink.teaming.domain.NoLdapConnectionConfigByTheIdException;
 import org.kablink.teaming.domain.NoLibraryEntryByTheIdException;
-import org.kablink.teaming.domain.NoOpenIDProviderByTheIdException;
 import org.kablink.teaming.domain.NoPostingByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.domain.NoZoneByTheIdException;
 import org.kablink.teaming.domain.NotifyStatus;
-import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
@@ -124,10 +116,10 @@ import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.domain.BinderState.FullSyncStatus;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
 import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Validator;
@@ -136,11 +128,9 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
- * ?
- * 
  * @author Jong Kim
+ *
  */
-@SuppressWarnings({"deprecation", "unchecked", "unused"})
 public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	protected int inClauseLimit=1000;
 	protected Log logger = LogFactory.getLog(getClass());
@@ -148,13 +138,11 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     /**
      * Called after bean is initialized.  
      */
-	@Override
 	protected void initDao() throws Exception {
 		//some database limit the number of terms 
 		inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
 	}
 
-	@Override
 	public boolean isDirty() {
 		long begin = System.nanoTime();
 		try {
@@ -164,7 +152,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "isDirty()");
     	}	        
 	}
-	@Override
 	public void flush() {
 		long begin = System.nanoTime();
 		try {
@@ -174,7 +161,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "flush()");
     	}	        
 	}
-	@Override
 	public void clear() {
 		long begin = System.nanoTime();
 		try {
@@ -184,17 +170,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "clear()");
     	}	        
 	}
-	@Override
-	public boolean contains(Object obj) {
-		long begin = System.nanoTime();
-		try {
-			return getSession().contains(obj);
-    	}
-    	finally {
-    		end(begin, "contains(Object)");
-    	}	        
-	}
-	@Override
 	public void evict(Object obj) {
 		long begin = System.nanoTime();
 		try {
@@ -202,7 +177,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 				final Collection objs = (Collection)obj;
 				getHibernateTemplate().execute(
 						new HibernateCallback() {
-							@Override
 							public Object doInHibernate(Session session) throws HibernateException {
 								Iterator iter = objs.iterator();
 								while (iter.hasNext()) {
@@ -219,7 +193,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "evict(Object)");
     	}	        
 	}
-	@Override
 	public void refresh(Object obj) {
 		long begin = System.nanoTime();
 		try {
@@ -229,7 +202,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "refresh(Object)");
     	}	        
 	}
-	@Override
 	public void lock(Object obj) {
 		long begin = System.nanoTime();
 		try {
@@ -240,7 +212,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "lock(Object)");
     	}	        
 	}
-	@Override
 	public void save(Object obj) {
 		long begin = System.nanoTime();
 		try {
@@ -248,8 +219,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 				final Collection objs = (Collection)obj;
 			       getHibernateTemplate().execute(
 			                new HibernateCallback() {
-			                    @Override
-								public Object doInHibernate(Session session) throws HibernateException {
+			                    public Object doInHibernate(Session session) throws HibernateException {
 			                    	 Iterator iter = objs.iterator();
 			                     	 while (iter.hasNext()) {
 			                     	 	session.save(iter.next());                     	 	
@@ -266,7 +236,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
 
 	//re-attach object, this does not force a sql update
-	@Override
 	public void update(Object obj) {
 		long begin = System.nanoTime();
 		try {
@@ -276,26 +245,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "update(Object)");
     	}	        
 	}
-	
-	/*
-	 * This method differs from update(Object) in that this does not go through the
-	 * Spring's HibernateTemplate class which performs additional checking on the flush
-	 * mode. This allows us to work around the issue with OpenSessionInViewFilter where 
-	 * its flush mode is set to NEVER/MANUAL when not in a transaction which prevents
-	 * us from re-attaching an object to the session when not in an update transaction. 
-	 */
-	@Override
-	public void updateWithoutUsingHibernateTemplate(Object obj) {
-		long begin = System.nanoTime();
-		try {
-			getSession().update(obj);
-    	}
-    	finally {
-    		end(begin, "update(Object)");
-    	}	        
-	}
-	
-	@Override
 	public Object merge(Object obj) {
 		long begin = System.nanoTime();
 		try {
@@ -305,14 +254,12 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "merge(Object)");
     	}	        
 	}
-	@Override
 	public void replicate(final Object obj) {
 		long begin = System.nanoTime();
 		try {
 	      getHibernateTemplate().execute(
                 new HibernateCallback() {
-                    @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+                    public Object doInHibernate(Session session) throws HibernateException {
                     	 session.replicate(obj, ReplicationMode.EXCEPTION);
                     	 return null;
                     }
@@ -323,7 +270,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "replicate(Object)");
     	}	        
 	}
-	@Override
 	public SFQuery queryObjects(final ObjectControls objs, FilterControls filter, final Long zoneId) { 
 		long begin = System.nanoTime();
 		try {
@@ -331,8 +277,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 	       Query query = (Query)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	    	            	StringBuffer query = objs.getSelectAndFrom("x");
 	    	            	myFilter.appendFilter("x", query);
 	                      	Query q = session.createQuery(query.toString());
@@ -355,14 +300,12 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * not all databases handle on-delete correctly.  
 	 * We are forced to do it ourselves
 	 */
- 	@Override
-	public void deleteEntityAssociations(final String whereClause) {
+ 	public void deleteEntityAssociations(final String whereClause) {
 		long begin = System.nanoTime();
 		try {
 		   	getHibernateTemplate().execute(
 		    	   	new HibernateCallback() {
-		    	   		@Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		    	   		public Object doInHibernate(Session session) throws HibernateException {
 		    	   			//mysql won't delete these in 1 statement cause of foreign key constraints
 		    	   		session.createQuery("DELETE org.kablink.teaming.domain.VersionAttachment where " + whereClause)
 		    	   			.executeUpdate();
@@ -394,7 +337,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        	    	
 		
 	}	
-	@Override
 	public void delete(Object obj) {
 		long begin = System.nanoTime();
 		try {
@@ -410,7 +352,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * This is an optimized delete.  Deletes associations directly without waiting for hibernate
 	 * to query.  Also deleted entries associated by parentBinderId
 	 */	
-	@Override
 	public void delete(final Binder binder) {
 		long begin = System.nanoTime();
 		try {
@@ -420,14 +361,12 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "delete(Binder)");
     	}	        
 	}
-	@Override
 	public void delete(final Binder binder, final Class entryClass) {
 		long begin = System.nanoTime();
 		try {
 		   	getHibernateTemplate().execute(
 		    	new HibernateCallback() {
-		    		@Override
-					public Object doInHibernate(Session session) throws HibernateException {
+		    		public Object doInHibernate(Session session) throws HibernateException {
 	
 			   			//delete alias
 		    			//scheduled items should delete themselves as they come due
@@ -495,16 +434,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		   				.setLong("accessId", binder.getId())
 		   				.setParameter("accessType", SharedEntity.ACCESS_TYPE_TEAM)
 		   				.executeUpdate();
-			   			//delete share items where shared entity is this binder
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
-                    	.setInteger("sharedEntityType", binder.getEntityType().getValue())
-                    	.setLong("sharedEntityId", binder.getId())
-		   				.executeUpdate();
-			   			//delete share items where recipient is this team
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where recipient_type=:recipientType AND recipient_id=:recipientId")
-                    	.setShort("recipientType", ShareItem.RecipientType.team.getValue())
-                    	.setLong("recipientId", binder.getId())
-		   				.executeUpdate();
 			   			//delete tags on this binder
 			   			session.createQuery("Delete org.kablink.teaming.domain.Tag where entity_id=:entityId and entity_type=:entityType")
 			   				.setLong("entityId", binder.getId())
@@ -514,10 +443,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			   			session.createQuery("DELETE org.kablink.teaming.domain.SimpleName where binderId=:binderId")
 			   				.setLong("binderId", binder.getId())
 			   				.executeUpdate();
-			   			//delete associated binder state
-			   			session.createQuery("DELETE org.kablink.teaming.domain.BinderState where binderId=:binderId")
-		   				.setLong("binderId", binder.getId())
-		   				.executeUpdate();
 	
 			   			if (entryClass != null) {
 			   				
@@ -539,53 +464,9 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		    	   			session.createSQLQuery(sql).setParameter("binderId", binder.getId()).executeUpdate();
 		    	   			
 			   				//finally delete the entries
-		    	   			try {		    	   				
-				   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
-				       	   				.setEntity("parent", binder)
-				       	   				.executeUpdate();	
-		    	   			}
-		    	   			catch(ConstraintViolationException e) {
-		    	   				if(entryClass.equals(FolderEntry.class)) {
-			    	   				// This means that there are one or more records in the database that still point to
-			    	   				// one or more folder entries whose parents is the binder being deleted. We will need
-			    	   				// to perform some additional fix-up in order to be able to proceed from this state.
-			    	   				if(logger.isDebugEnabled())
-			    	   					logger.debug("Error deleting folder entries in binder " + binder.getId(), e);
-			    	   				logger.warn("Encountered constraint violation while deleting folder entries in binder " + binder.getId() +
-			    	   						": Will clear references to those entries and give it another try");
-			    	   				List<Long> folderEntryIds = getFolderEntryIds(binder);
-			    	   				StringBuilder inList = new StringBuilder();
-			    	   				int count = 0;
-			    	   				for(Long folderEntryId:folderEntryIds) {
-			    	   					if(inList.length() > 0)
-			    	   						inList.append(",");
-			    	   					inList.append(folderEntryId);
-			    	   					count++;
-			    	   					if(count >= 500) { 
-			    	   						// Clear associations in batch every 500 entries
-			    	             			String entityString = "ownerId in (" + inList.toString() + ") and ownerType='" + EntityType.folderEntry.name() + "'";
-			    		    		   		deleteEntityAssociations(entityString);
-			    		    		   		// Reset variables
-			    		    		   		count = 0;
-			    		    		   		inList = new StringBuilder();
-			    	   					}
-			    	   				}
-			    	   				if(inList.length() > 0) {
-			    	   					// Process the remainder
-		    	             			String entityString = "ownerId in (" + inList.toString() + ") and ownerType='" + EntityType.folderEntry.name() + "'";
-		    		    		   		deleteEntityAssociations(entityString);
-			    	   				}
-			    	   				// Now that we cleared the association, let's try it again.
-					   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
+			   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
 			       	   				.setEntity("parent", binder)
-			       	   				.executeUpdate();	
-					   				logger.info("Successfully re-executed the statement after clearing associations for up to " + folderEntryIds.size() + " child entries");
-		    	   				}
-		    	   				else {
-		    	   					// Don't know how to fix this up. Rethrow.
-		    	   					throw e;
-		    	   				}
-		    	   			}	 		   				
+			       	   				.executeUpdate();		 		   				
 			   			}
 
 			   			//delete customAttributeListElement definitions on this binder
@@ -610,31 +491,10 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		   				.setLong("binder", binder.getId())
 		   				.executeUpdate();
 	    	   			
-	    	   			try {
-				   			//do ourselves or hibernate will flsuh
-				   			session.createQuery("Delete org.kablink.teaming.domain.Binder where id=:id")
-				   		    	.setLong("id", binder.getId().longValue())
-				   		    	.executeUpdate();
-	    	   			}
-	    	   			catch(ConstraintViolationException e) {
-	    	   				// This almost surely means that the table still contains one or more child rows that still point to the binder as parent.
-	    	   				// We need to clear the association in order to be able to delete the binder. Also, it doesn't make any sense to
-	    	   				// delete the parent alone while leaving the child as orphan in a tree hierarchy. So we mark the child appropriately
-	    	   				// so that they can also be garbage collected by the system in subsequent cycles.
-	    	   				if(logger.isDebugEnabled())
-	    	   					logger.debug("Error deleting binder " + binder.getId(), e);
-	    	   				logger.warn("Encountered constraint violation while deleting binder " + binder.getId() + ": Will clear references from children and give it another try");
-	    	   				session.createQuery("update org.kablink.teaming.domain.Binder set parentBinder=null, topFolder=null, deleted=:delete where parentBinder=:binder1 or topFolder=:binder2")
-	    	   			    .setBoolean("delete", Boolean.TRUE)
-			   				.setLong("binder1", binder.getId())	   				
-			   				.setLong("binder2", binder.getId())	   				
-	    	   				.executeUpdate();
-	    	   				// Now that we cleared the association, let's try it again.
-				   			session.createQuery("Delete org.kablink.teaming.domain.Binder where id=:id")
+			   			//do ourselves or hibernate will flsuh
+			   			session.createQuery("Delete  org.kablink.teaming.domain.Binder where id=:id")
 			   		    	.setLong("id", binder.getId().longValue())
 			   		    	.executeUpdate();
-				   			logger.info("Successfully re-executed the statement after clearing associations from child binders");
-	    	   			}
 			   			
 			   			if (!binder.isRoot()) {
 			   				session.getSessionFactory().evictCollection("org.kablink.teaming.domain.Binder.binders", binder.getParentBinder().getId());
@@ -667,15 +527,13 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	    			
 	}
 	
-	@Override
 	public void move(final Binder binder) {
 		long begin = System.nanoTime();
 		try {
 			//this should handle entries also
 			getHibernateTemplate().execute(
 		    	new HibernateCallback() {
-		    		@Override
-					public Object doInHibernate(Session session) throws HibernateException {
+		    		public Object doInHibernate(Session session) throws HibernateException {
 	    	   			session.createQuery("update org.kablink.teaming.domain.NotifyStatus set owningBinderKey=:sortKey where owningBinderId=:id")
 	    	   				.setString("sortKey", binder.getBinderKey().getSortKey())
 	    	   				.setLong("id", binder.getId().longValue())
@@ -726,8 +584,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 
 
-    @Override
-	public Object load(Class clazz, String id) {
+    public Object load(Class clazz, String id) {
 		long begin = System.nanoTime();
 		try {
 			return getHibernateTemplate().get(clazz, id);
@@ -736,8 +593,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "load(Class,String)");
     	}	        
     }
-    @Override
-	public Object load(Class clazz, Long id) {
+    public Object load(Class clazz, Long id) {
 		long begin = System.nanoTime();
 		try {
 			return getHibernateTemplate().get(clazz, id);         
@@ -746,32 +602,10 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "load(Class,Long)");
     	}	        
     }
-    
-    @Override
-	public Object loadLocked(Class clazz, String id) {
-		long begin = System.nanoTime();
-		try {
-			return getHibernateTemplate().get(clazz, id, LockMode.PESSIMISTIC_WRITE);
-    	}
-    	finally {
-    		end(begin, "loadLocked(Class,String)");
-    	}	        
-    }
-    @Override
-	public Object loadLocked(Class clazz, Long id) {
-		long begin = System.nanoTime();
-		try {
-			return getHibernateTemplate().get(clazz, id, LockMode.PESSIMISTIC_WRITE);         
-    	}
-    	finally {
-    		end(begin, "loadLocked(Class,Long)");
-    	}	        
-    }
 	/**
 	 * Return a list containing an object array, where each object in a row representing the value of the requested attribute
 	 * This is used to return a subset of object attributes
 	 */
-	@Override
 	public List loadObjects(ObjectControls objs, FilterControls filter, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -781,7 +615,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "loadObjects(ObjectControls,FilterControls,Long)");
     	}	        
 	}
-	@Override
 	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -800,7 +633,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * @param ids
 	 * @return
 	 */
-	@Override
 	public List loadObjects(final String query, final Map values) {
 		long begin = System.nanoTime();
 		try {
@@ -811,14 +643,12 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	
-	@Override
 	public List loadObjects(final String query, final Map values, final Integer maxResults) {
 		long begin = System.nanoTime();
 		try {
 			return (List)getHibernateTemplate().execute(
 			        new HibernateCallback() {
-			            @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+			            public Object doInHibernate(Session session) throws HibernateException {
 		                  	Query q = session.createQuery(query);
 		                  	if(maxResults != null)
 		                  		q.setMaxResults(maxResults.intValue());
@@ -851,7 +681,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	/**
 	 * Return a list ob objects
 	 */
-	@Override
 	public List loadObjects(Class className, FilterControls filter, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -861,7 +690,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "loadObjecs(Class,FilterControls,Long)");
     	}	        
 	}
-	@Override
 	public List loadObjectsCacheable(Class className, FilterControls filter, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -877,15 +705,13 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * @param className
 	 * @return
 	 */
-   @Override
-public List loadObjects(final Collection ids, final Class className, final Long zoneId) {
+   public List loadObjects(final Collection ids, final Class className, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	        if ((ids == null) || ids.isEmpty()) return new ArrayList();
 	        List result = (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	if (ids.size() <= inClauseLimit) {
 	                            Criteria crit = session.createCriteria(className)
 	                            	.add(Expression.in(Constants.ID, ids));
@@ -919,15 +745,13 @@ public List loadObjects(final Collection ids, final Class className, final Long 
     	}	        
         
     }	
-   @Override
-public List loadObjects(final Collection ids, final Class className, final Long zoneId, final List collections) {
+   public List loadObjects(final Collection ids, final Class className, final Long zoneId, final List collections) {
 		long begin = System.nanoTime();
 		try {
 	       if ((ids == null) || ids.isEmpty()) return new ArrayList();
 	       List result = (List)getHibernateTemplate().execute(
 	           new HibernateCallback() {
-	                   @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+	                   public Object doInHibernate(Session session) throws HibernateException {
 	                   	//break list into chunks
 	                   	List idList = new ArrayList(ids); // need list for sublist method
 	                   	Set results = new HashSet(); //fetch returns duplicates, so weed them out using a set
@@ -958,16 +782,14 @@ public List loadObjects(final Collection ids, final Class className, final Long 
     	}	        
        
    }	
-   @Override
-public long countObjects(final Class clazz, FilterControls filter, Long zoneId) {
+   public long countObjects(final Class clazz, FilterControls filter, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			final FilterControls myFilter = filter==null?new FilterControls():filter;
 			if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 			Long result = (Long)getHibernateTemplate().execute(
 			    new HibernateCallback() {
-			        @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+			        public Object doInHibernate(Session session) throws HibernateException {
 			        	StringBuffer query = new StringBuffer();
 	                  	query.append(" select count(*) from x in class " + clazz.getName());
 	                  	myFilter.appendFilter("x", query);
@@ -990,21 +812,18 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId) 
     	}	        
 	}
    
-   @Override
-public long countObjects(final Class clazz, FilterControls filter, Long zoneId, final StringBuffer sbuf) {
+   public long countObjects(final Class clazz, FilterControls filter, Long zoneId, final StringBuffer sbuf) {
 		long begin = System.nanoTime();
 		try {
 			final FilterControls myFilter = filter==null?new FilterControls():filter;
 			if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 			Long result = (Long)getHibernateTemplate().execute(
 			    new HibernateCallback() {
-			        @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+			        public Object doInHibernate(Session session) throws HibernateException {
 			        	StringBuffer query = new StringBuffer();
 	                  	query.append(" select count(*) from x in class " + clazz.getName());
 	                  	myFilter.appendFilter("x", query);
-	                  	if(sbuf != null)
-	                  		query.append(sbuf.toString());
+	                  	query.append(sbuf.toString());
 	                  	Query q = session.createQuery(query.toString());
 	            		List filterValues = myFilter.getFilterValues();
 	            		for (int i=0; i<filterValues.size(); ++i) {
@@ -1024,7 +843,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
    	}	        
 	}
 	
-	@Override
 	public double averageColumn(final Class clazz, final String column, FilterControls filter, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -1032,8 +850,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	    	if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 			Double result = (Double)getHibernateTemplate().execute(
 			    new HibernateCallback() {
-			        @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+			        public Object doInHibernate(Session session) throws HibernateException {
 			        	StringBuffer query = new StringBuffer();
 	                  	query.append(" select avg(x." + column + ") from x in class " + clazz.getName());
 	                  	myFilter.appendFilter("x", query);
@@ -1061,7 +878,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "averageColumn(Class,String,FilterControls,Long)");
     	}	        
 	}
-	@Override
 	public long sumColumn(final Class clazz, final String column, FilterControls filter, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -1069,8 +885,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	    	if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 	    	Long result = (Long)getHibernateTemplate().execute(
 			    new HibernateCallback() {
-			        @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+			        public Object doInHibernate(Session session) throws HibernateException {
 			        	StringBuffer query = new StringBuffer();
 	                  	query.append(" select sum(x." + column + ") from x in class " + clazz.getName());
 	                  	myFilter.appendFilter("x", query);
@@ -1108,8 +923,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	// Create our own session cause failures clear the existing session and don't want to 
 	// necessarily cancel the running transaction.
 	// It assumes the combination of binderId and entityId is enough to identify an entry
-    @Override
-	public void registerFileName(Binder binder, DefinableEntity entity, String name) throws TitleException {
+    public void registerFileName(Binder binder, DefinableEntity entity, String name) throws TitleException {
 		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
@@ -1128,8 +942,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	// Create our own session cause failures clear the existing session and don't want to 
 	// necessarily cancel the running transaction.
 	// It assumes the combination of binderId and entityId is enough to identify an entry
-    @Override
-	public void registerTitle(Binder binder, DefinableEntity entity) throws TitleException {
+    public void registerTitle(Binder binder, DefinableEntity entity) throws TitleException {
 		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
@@ -1156,8 +969,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	
     }
     //attachments or foldernames
-    @Override
-	public void unRegisterFileName(Binder binder, String name) {
+    public void unRegisterFileName(Binder binder, String name) {
 		long begin = System.nanoTime();
     	try {
     		unRegisterLibraryEntry(new LibraryEntry(binder.getId(), LibraryEntry.FILE, name));
@@ -1169,8 +981,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}	        
     }
     //normalized titles in parentbinder
-    @Override
-	public void unRegisterTitle(Binder binder, String name) {
+    public void unRegisterTitle(Binder binder, String name) {
 		long begin = System.nanoTime();
     	try {
     		unRegisterLibraryEntry(new LibraryEntry(binder.getId(), LibraryEntry.TITLE, name));
@@ -1195,8 +1006,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
      	
     }
     //done in the current transaction on a binder title rename or remove attachment
-    @Override
-	public void updateFileName(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
+    public void updateFileName(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
 		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
@@ -1218,8 +1028,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
      }
     //done in the current transaction on a binder title rename or remove attachment
-    @Override
-	public void updateTitle(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
+    public void updateTitle(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
 		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
@@ -1244,8 +1053,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "updateTitle(Binder,DefinableEntity,String,String)");
     	}	        
     }
-    @Override
-	public Long getEntityIdForMatchingTitle(Long binderId, String title) {
+    public Long getEntityIdForMatchingTitle(Long binderId, String title) {
 		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.TITLE, title);
@@ -1259,8 +1067,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "getEntityIdForMatchingTitle(Long,String)");
     	}	        
     }
-    @Override
-	public LibraryEntry getRegisteredTitle(Long binderId, String title) {
+    public LibraryEntry getRegisteredTitle(Long binderId, String title) {
 		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.TITLE, title);
@@ -1271,8 +1078,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "getRegisteredTitle(Long,String)");
     	}	        
     }
-    @Override
-	public LibraryEntry getRegisteredFileName(Long binderId, String fileName) {
+    public LibraryEntry getRegisteredFileName(Long binderId, String fileName) {
 		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.FILE, fileName);
@@ -1283,8 +1089,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "getRegisteredFileName(Long,String)");
     	}	        
     }
-    @Override
-	public boolean isTitleRegistered(Long binderId, String title) {
+    public boolean isTitleRegistered(Long binderId, String title) {
 		long begin = System.nanoTime();
 		try {
 			return(null != getRegisteredTitle(binderId, title));
@@ -1293,8 +1098,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "isTitleRegistered(Long,String)");
     	}	        
     }
-    @Override
-	public boolean isFileNameRegistered(Long binderId, String fileName) {
+    public boolean isFileNameRegistered(Long binderId, String fileName) {
 		long begin = System.nanoTime();
 		try {
 			return(null != getRegisteredFileName(binderId, fileName));
@@ -1337,8 +1141,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}  	
     	
     }
-    @Override
-	public void addExistingName(LibraryEntry le, DefinableEntity entity) {
+    public void addExistingName(LibraryEntry le, DefinableEntity entity) {
 		long begin = System.nanoTime();
 		try {
 			LibraryEntry exist = loadLibraryEntry(le);
@@ -1352,8 +1155,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "addExistingName(LibraryEntry,DefinableEntity)");
     	}	        
     }
-    @Override
-	public  Long findFileNameEntryId(Binder binder, String name) {
+    public  Long findFileNameEntryId(Binder binder, String name) {
 		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binder.getId(),LibraryEntry.FILE, name));
@@ -1366,8 +1168,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
     }
 	//Clears only folderentries. sub-folder remain since they must always be unique for webdav to traverse the tree
-    @Override
-	public void clearFileNames(Binder binder) {
+    public void clearFileNames(Binder binder) {
 		long begin = System.nanoTime();
 		try {
 	    	executeUpdate("delete from org.kablink.teaming.domain.LibraryEntry where binderId=" +
@@ -1379,8 +1180,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	
     }
     //Clear all titles, don't need if uniqueTitles not enabled.
-    @Override
-	public void clearTitles(Binder binder) {
+    public void clearTitles(Binder binder) {
 		long begin = System.nanoTime();
 		try {
 	    	executeUpdate("delete from org.kablink.teaming.domain.LibraryEntry where binderId=" +
@@ -1391,14 +1191,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
     	
     }
-    @Override
-	public List<Workspace> findCompanies() {
+    public List<Workspace> findCompanies() {
 		long begin = System.nanoTime();
 		try {
 			return (List)getHibernateTemplate().execute(
 			    new HibernateCallback() {
-			        @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+			        public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Workspace.class)
 	             				.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_INTERNALID))
 	             				.setCacheable(isBinderQueryCacheable())
@@ -1411,14 +1209,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "findCompanies()");
     	}	        
 	}
-	@Override
 	public Workspace findTopWorkspace(final String zoneName) {
 		long begin = System.nanoTime();
 		try {
 	        return (Workspace)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        List results = session.createCriteria(Workspace.class)
 	                             		.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_INTERNALID))
 	                             		.add(Expression.eq("name", zoneName))
@@ -1444,8 +1240,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	 * @param zoneId
 	 * @return
 	 */
-    @Override
-	public Binder loadBinder(Long binderId, Long zoneId) {  
+    public Binder loadBinder(Long binderId, Long zoneId) {  
 		long begin = System.nanoTime();
 		try {
 			Binder binder = (Binder)load(Binder.class, binderId);
@@ -1462,14 +1257,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
     }
 
-    @Override
-	public Binder loadReservedBinder(final String reservedId, final Long zoneId) {
+    public Binder loadReservedBinder(final String reservedId, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	        return (Binder)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        List results = session.createCriteria(Binder.class)
 	                             		.add(Expression.eq("internalId", reservedId))
 	                             		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
@@ -1488,14 +1281,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
     }
  
-    @Override
-	public Definition loadReservedDefinition(final String reservedId, final Long zoneId) {
+    public Definition loadReservedDefinition(final String reservedId, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	        return (Definition)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        List results = session.createCriteria(Definition.class)
 	                             		.add(Expression.eq("internalId", reservedId))
 	                             		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
@@ -1515,7 +1306,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
    	
     }
-	@Override
 	public Definition loadDefinition(String defId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -1530,14 +1320,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 	}
 
-	@Override
 	public Definition loadDefinitionByName(final Binder binder, final String name, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			return (Definition)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		                public Object doInHibernate(Session session) throws HibernateException {
 		                 	Criteria crit =session.createCriteria(Definition.class)
 	                 		.add(Expression.eq("zoneId", zoneId))
 	                 		.add(Expression.eq("name", name));
@@ -1556,7 +1344,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "loadDefinitionByName(Binder,String,Long)");
     	}	        
  	}
-	@Override
 	public List loadDefinitions(FilterControls filter, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -1568,7 +1355,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "loadDefinitions(FilterControls, Long)");
     	}	        
 	}
-	@Override
 	public List loadDefinitions(Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -1599,17 +1385,14 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	}
 	
 	// return top level configurations
-	@Override
 	public List loadTemplates(final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			return (List)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		                public Object doInHibernate(Session session) throws HibernateException {
 		                 	Criteria criteria = session.createCriteria(TemplateBinder.class)
 	                 		.add(Expression.isNull("parentBinder"))
-	                 		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID))
 	                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
 	                 		.addOrder(Order.asc("definitionType"))
 	                 		.addOrder(Order.asc("templateTitle"));
@@ -1624,108 +1407,14 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "loadTemplates(Long)");
     	}	        
 	}
-	// return binder level templates
-	@Override
-	public List loadTemplates(final Binder binder, final Long zoneId, boolean includeAncestors) {
-		if (includeAncestors) {
-			//This request is for a list of templates from this binder and all of its ancestor binders
-			Map<String,Binder> templates = new TreeMap<String,Binder>();
-			Binder parentBinder = binder;
-			while (parentBinder != null) {
-				final Binder tb = parentBinder;
-				List<TemplateBinder> templateBinders = loadTemplates(tb, zoneId, false);
-				for (Binder b : templateBinders) {
-					templates.put(b.getTitle().toLowerCase(), b);					
-				}
-				parentBinder = parentBinder.getParentBinder();
-			}
-			List results = new ArrayList();
-			for (String title : (Set<String>)templates.keySet()) {
-				results.add(templates.get(title));
-			}
-			return results;
-		} else {
-			//Just return a list of the local templates owned by this binder
-			long begin = System.nanoTime();
-			try {
-				return (List)getHibernateTemplate().execute(
-		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-		                 	Criteria criteria = session.createCriteria(TemplateBinder.class)
-	                 		.add(Expression.eq(ObjectKeys.FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID, binder.getId()))
-	                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
-	                 		.addOrder(Order.asc("definitionType"))
-	                 		.addOrder(Order.asc("templateTitle"));
-		                 	criteria = filterCriteriaForTemplates(criteria);
-		                 	criteria.setCacheable(isBinderQueryCacheable());
-		                 	return criteria.list();
-		                }
-		            }
-		        );
-	    	}
-	    	finally {
-	    		end(begin, "loadTemplates(Long)");
-	    	}	  
-		}
-	}
-
-	@Override
-	public List<TemplateBinder> loadTemplates(final Binder binder, final Long zoneId, final int type, boolean includeAncestors) {
-		if (includeAncestors) {
-			//This request is for a list of templates from this binder and all of its ancestor binders
-			Map<String,Binder> templates = new TreeMap<String,Binder>();
-			Binder parentBinder = binder;
-			while (parentBinder != null) {
-				final Binder tb = parentBinder;
-				List<TemplateBinder> templateBinders = loadTemplates(tb, zoneId, type, false);
-				for (Binder b : templateBinders) {
-					templates.put(b.getTitle().toLowerCase(), b);					
-				}
-				parentBinder = parentBinder.getParentBinder();
-			}
-			List results = new ArrayList();
-			for (String title : (Set<String>)templates.keySet()) {
-				results.add(templates.get(title));
-			}
-			return results;
-		} else {
-			long begin = System.nanoTime();
-			try {
-				return (List)getHibernateTemplate().execute(
-			            new HibernateCallback() {
-			                @Override
-							public Object doInHibernate(Session session) throws HibernateException {
-			                	Criteria criteria = session.createCriteria(TemplateBinder.class)
-		                 		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_PARENTBINDER))
-		                 		.add(Expression.eq(ObjectKeys.FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID, binder.getId()))
-		                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
-		                 		.add(Expression.eq("definitionType", type))
-		                 		.addOrder(Order.asc(ObjectKeys.FIELD_TEMPLATE_TITLE));
-			                 	criteria = filterCriteriaForTemplates(criteria);
-			                 	criteria.setCacheable(isBinderQueryCacheable());
-			                 	return criteria.list();
-			                }
-			            }
-			        );
-	    	}
-	    	finally {
-	    		end(begin, "loadTemplates(Long,int)");
-	    	}	
-		}
-	}
-	
-	@Override
 	public List loadTemplates(final Long zoneId, final int type) {
 		long begin = System.nanoTime();
 		try {
 			return (List)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		                public Object doInHibernate(Session session) throws HibernateException {
 		                	Criteria criteria = session.createCriteria(TemplateBinder.class)
 	                 		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_PARENTBINDER))
-	                 		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID))
 	                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
 	                 		.add(Expression.eq("definitionType", type))
 	                 		.addOrder(Order.asc(ObjectKeys.FIELD_TEMPLATE_TITLE));
@@ -1748,7 +1437,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		return criteria;
 	}
 	
-	@Override
 	public TemplateBinder loadTemplate(Long templateId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -1763,14 +1451,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 	}
 
-	@Override
 	public TemplateBinder loadTemplateByName(final String name, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			return (TemplateBinder)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		                public Object doInHibernate(Session session) throws HibernateException {
 		                	TemplateBinder template = (TemplateBinder)session.createCriteria(TemplateBinder.class)
 	                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
 	                  		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_PARENTBINDER))
@@ -1789,14 +1475,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
  	}
 	//associations not maintained from definition to binders, only from
 	//binders to definitions
-	@Override
 	public void delete(final Definition def) {
 		long begin = System.nanoTime();
 		try {
 			getHibernateTemplate().execute(
 		        new HibernateCallback() {
-		            @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+		            public Object doInHibernate(Session session) throws HibernateException {
 		            	//see if in use
 		            	List results;
 		               	if (def.getType() != Definition.WORKFLOW) {
@@ -1853,14 +1537,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 	}
 	
-	@Override
 	public boolean checkInUse(final Definition def){
 		long begin = System.nanoTime();
 		try {
 			Boolean inUse = (Boolean) getHibernateTemplate().execute(
 			        new HibernateCallback() {
-			            @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+			            public Object doInHibernate(Session session) throws HibernateException {
 			            	//see if in use
 			               	if (def.getType() != Definition.WORKFLOW) {
 			               		long count = countObjects(org.kablink.teaming.domain.FolderEntry.class, new FilterControls("entryDefId", def.getId()), def.getZoneId());
@@ -1888,7 +1570,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	 * Perform a write of a new object now using a new Session so we can commit it fast
 	 * @param obj
 	 */
-	@Override
 	public Object saveNewSession(Object obj) {
 		long begin = System.nanoTime();
 		try {
@@ -1906,8 +1587,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 		
 	}
-    @Override
-	public Object saveNewSessionWithoutUpdate(Object obj) {
+    public Object saveNewSessionWithoutUpdate(Object obj) {
 		long begin = System.nanoTime();
 		try {
 	      	SessionFactory sf = getSessionFactory();
@@ -1925,8 +1605,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
     }
 
-    @Override
-	public Object updateNewSessionWithoutUpdate(Object obj) {
+    public Object updateNewSessionWithoutUpdate(Object obj) {
 		long begin = System.nanoTime();
 		try {
 	      	SessionFactory sf = getSessionFactory();
@@ -1944,7 +1623,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
     }
 
-	@Override
 	public List loadPostings(Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -1954,7 +1632,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "loadPostings(Long)");
     	}	        
 	}
-	@Override
 	public PostingDef loadPosting(String postingId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -1968,14 +1645,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "loadPosting(String,Long)");
     	}	        		
 	}
-	@Override
 	public PostingDef findPosting(final String emailAddress, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			return (PostingDef)getHibernateTemplate().execute(
 			        new HibernateCallback() {
-			            @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+			            public Object doInHibernate(Session session) throws HibernateException {
 		               		return session.createCriteria(PostingDef.class)
 		               						.add(Expression.eq("emailAddress", emailAddress))
 		               						.setCacheable(true)
@@ -1992,7 +1667,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	//build collections manually as an optimization for indexing
 	//evict from session cache, so no longer available to everyone else
 	//The entries must be of the same type
-	@Override
 	public void bulkLoadCollections(Collection entries) {
 		long begin = System.nanoTime();
 		try {
@@ -2002,8 +1676,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	       	sorted.addAll(entries);
 			getHibernateTemplate().execute(
 	            new HibernateCallback() {
-	                @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+	                public Object doInHibernate(Session session) throws HibernateException {
 	                	List readObjs = new ArrayList();
 	                	DefinableEntity entry=(DefinableEntity)sorted.iterator().next();
 	          	   		EntityIdentifier id = entry.getEntityIdentifier();
@@ -2113,7 +1786,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 	}
 	
-	@Override
 	public List<Long> findZoneEntityIds(Long entityId, String zoneUUID, String entityType) {
 		long begin = System.nanoTime();
 		try {
@@ -2130,8 +1802,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	       	final String thisZoneId = String.valueOf(RequestContextHolder.getRequestContext().getZoneId());
 	       	return (List<Long>)getHibernateTemplate().execute(
 	            new HibernateCallback() {
-	                @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+	                public Object doInHibernate(Session session) throws HibernateException {
 	                	List<Long> result = new ArrayList<Long>();
 	                	List readObjs = new ArrayList();
 	                	List objs = null;
@@ -2160,7 +1831,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 	}	
 	
-	@Override
 	public Tag loadTag(final String tagId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -2175,7 +1845,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	//The entries must be of the same type
 	//Used by indexing bulk load
 
-	@Override
 	public Map<EntityIdentifier, List<Tag>> loadAllTagsByEntity(final Collection<EntityIdentifier> entityIds) {
 		
 		
@@ -2185,8 +1854,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 			if (entityIds.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
 			List<Tag> tags = (List)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		                public Object doInHibernate(Session session) throws HibernateException {
 		                	List<Long> ids = new ArrayList();
 		                	EntityIdentifier savedId=null;
 		                	for (EntityIdentifier id:entityIds) {
@@ -2226,14 +1894,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		
 	}
 	//Used by indexing
-	@Override
 	public List<Tag> loadAllTagsByEntity(final EntityIdentifier entityId) {
 		long begin = System.nanoTime();
 		try {
 			return (List<Tag>)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		                public Object doInHibernate(Session session) throws HibernateException {
 		                 	return session.createCriteria(Tag.class)
 	                 		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
 	       					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
@@ -2249,14 +1915,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		
 	}
 
-	@Override
 	public List<Tag> loadCommunityTagsByEntity(final EntityIdentifier entityId) {
 		long begin = System.nanoTime();
 		try {
 			return (List<Tag>)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		                public Object doInHibernate(Session session) throws HibernateException {
 		                 	return session.createCriteria(Tag.class)
 	                 		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
 	       					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
@@ -2272,14 +1936,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 		
 	}
-	@Override
 	public List<Tag> loadPersonalTagsByEntity(final EntityIdentifier entityId, final EntityIdentifier ownerId) {
 		long begin = System.nanoTime();
 		try {
 			return (List<Tag>)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		                public Object doInHibernate(Session session) throws HibernateException {
 		                 	return session.createCriteria(Tag.class)
 	                 		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
 	       					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
@@ -2297,14 +1959,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 		
 	}
-	@Override
 	public List<Tag> loadPersonalTagsByOwner(final EntityIdentifier ownerId) {
 		long begin = System.nanoTime();
 		try {
 			return (List<Tag>)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		                public Object doInHibernate(Session session) throws HibernateException {
 		                 	return session.createCriteria(Tag.class)
 	                 		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
 	       					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
@@ -2321,14 +1981,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		
 	}	
     //load public and personal private tags for an entity.
-    @Override
-	public List<Tag> loadEntityTags(final EntityIdentifier entityIdentifier, final EntityIdentifier ownerIdentifier) {
+    public List<Tag> loadEntityTags(final EntityIdentifier entityIdentifier, final EntityIdentifier ownerIdentifier) {
 		long begin = System.nanoTime();
 		try {
 		   	return (List<Tag>)getHibernateTemplate().execute(
 			     	new HibernateCallback() {
-			       		@Override
-						public Object doInHibernate(Session session) throws HibernateException {
+			       		public Object doInHibernate(Session session) throws HibernateException {
 		                 	return session.createCriteria(Tag.class)
 	       					.add(Expression.eq("entityIdentifier.type", entityIdentifier.getEntityType().getValue()))
 	                 		.add(Expression.eq("entityIdentifier.entityId", entityIdentifier.getEntityId()))
@@ -2351,14 +2009,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
    	
     }
 	
-	@Override
 	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId) {
 		long begin = System.nanoTime();
 		try {
 			return (List<Subscription>)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		                public Object doInHibernate(Session session) throws HibernateException {
 		                 	return session.createCriteria(Subscription.class)
 	                 		.add(Expression.eq("id.entityId", entityId.getEntityId()))
 	       					.add(Expression.eq("id.entityType", entityId.getEntityType().getValue()))
@@ -2373,39 +2029,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 		
 	}
-	
-	@Override
-	public boolean subscriptionExistsOnEntity(final EntityIdentifier entityId) {
-		long begin = System.nanoTime();
-		try {
-			Subscription subscription = (Subscription)getHibernateTemplate().execute(
-		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-		                 	return session.createCriteria(Subscription.class)
-	                 		.add(Expression.eq("id.entityId", entityId.getEntityId()))
-	       					.add(Expression.eq("id.entityType", entityId.getEntityType().getValue()))
-	       					.setMaxResults(1)
-	       					.setCacheable(true)
-		                 	.uniqueResult();
-		                }
-		            }
-		        );
-			return subscription != null;
-    	}
-    	finally {
-    		end(begin, "subscriptionExistsOnEntity(EntityIdentifier)");
-    	}	        
-		
-	}
-	
 	private List loadObjects(final ObjectControls objs, FilterControls filter, Long zoneId, final boolean cacheable) {
 	   	final FilterControls myFilter = filter==null?new FilterControls():filter;
 		if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 		return (List)getHibernateTemplate().execute(
 	        new HibernateCallback() {
-	            @Override
-				public Object doInHibernate(Session session) throws HibernateException {
+	            public Object doInHibernate(Session session) throws HibernateException {
 	            	StringBuffer query = objs.getSelectAndFrom("x");
 	            	myFilter.appendFilter("x", query);
                   	Query q = session.createQuery(query.toString());
@@ -2419,14 +2048,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	        }
 	     );
 	}
-	@Override
 	public UserDashboard loadUserDashboard(final EntityIdentifier ownerId, final Long binderId) {		
 		long begin = System.nanoTime();
 		try {
 			return (UserDashboard)getHibernateTemplate().execute(
 				new HibernateCallback() {
-		            @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+		            public Object doInHibernate(Session session) throws HibernateException {
 	        			Criteria crit = session.createCriteria(UserDashboard.class)
 	        				.add(Expression.eq("binderId", binderId))
 	        				.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
@@ -2456,13 +2083,11 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "loadUserDashboard(EntityIdentifier,Long)");
     	}	        
 	}
-	@Override
 	public EntityDashboard loadEntityDashboard(final EntityIdentifier ownerId) {
 		long begin = System.nanoTime();
 		try {
 			return (EntityDashboard)getHibernateTemplate().execute(
 					new HibernateCallback() {
-						@Override
 						public Object doInHibernate(Session session) throws HibernateException {
 							Criteria crit = session.createCriteria(EntityDashboard.class)
 								.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
@@ -2495,7 +2120,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 	}
 
-	@Override
 	public Dashboard loadDashboard(String id, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -2542,7 +2166,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 	//Don't use , only for special cases
-	@Override
 	public void executeUpdate(final String queryStr) {
 		long begin = System.nanoTime();
 		try {
@@ -2552,14 +2175,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "executeUpdate(String)");
     	}	        
 	}
-	@Override
 	public void executeUpdate(final String queryStr, final Map values) {
 		long begin = System.nanoTime();
 		try {
 	    	getHibernateTemplate().execute(
 	        	   	new HibernateCallback() {
-	        	   		@Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	        	   		public Object doInHibernate(Session session) throws HibernateException {
 	    		   			Query query = session.createQuery(queryStr);
 		                  	if (values != null) {
 		                  		for (Iterator iter=values.entrySet().iterator(); iter.hasNext();) {
@@ -2591,7 +2212,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 	}
 	
-	@Override
 	public int daysSinceInstallation()
 	{
 		long begin = System.nanoTime();
@@ -2599,30 +2219,22 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 			final long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
 			List dates = (List) getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-		                 	return session.createCriteria(Binder.class)
-		                 		.add(Restrictions.isNull("resourceDriverName"))
-	                 			.setProjection(Projections.projectionList()
-								.add(Projections.min("creation.date"))
-								.add(Projections.max("creation.date")))
+		                public Object doInHibernate(Session session) throws HibernateException {
+		                 	return session.createCriteria(FolderEntry.class)
+	                 		.setProjection(Projections.projectionList()
+									.add(Projections.min("creation.date"))
+									.add(Projections.max("lastActivity")))
 	 	                 	.list();
 		                }
 		            }
 		        );
-			if (!dates.isEmpty()) {
-				Object[] row = (Object[]) dates.get(0);
-				Date earliest = (Date) row[0];
-				Date latest = (Date) row[1];
-				Date now = new Date();
-				if (latest == null || latest.before(now)) {
-					//If the max creation date is in the future, then use it; otherwise use today's date
-					latest = now;
-				}
-				if(earliest != null && latest != null) {
-					long millis = latest.getTime() - earliest.getTime();
-					return (int) ((millis + MILLIS_PER_DAY + 1)/MILLIS_PER_DAY);
-				}
+			
+			Object[] row = (Object[]) dates.get(0);
+			Date earliest = (Date) row[0];
+			Date latest = (Date) row[1];
+			if(earliest != null && latest != null) {
+				long millis = latest.getTime() - earliest.getTime();
+				return (int) ((millis + MILLIS_PER_DAY + 1)/MILLIS_PER_DAY);
 			}
 			
 			return 0;
@@ -2631,7 +2243,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "daysSinceInstallation()");
     	}	        
 	}
-	@Override
 	public NotifyStatus loadNotifyStatus(Binder binder, DefinableEntity entity) {
 		long begin = System.nanoTime();
 		try {
@@ -2641,8 +2252,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	        //create one and return
 	        status = new NotifyStatus(binder, entity);
 	        save(status);
-	        logger.debug("CoreDaoImpl.loadNotifyStatus( New NotifyStatus ): Binder: " + binder.getId() + ", Entity: " + entity.getId() + " (" + entity.getTitle() + ")");
-	        status.traceStatus(logger);
 	        return status;       
     	}
     	finally {
@@ -2654,14 +2263,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
      * The begin date is really a performance optimization, cause it limits the number of records that are even checked since the key is hopefully ordered by modifyDate.
      * End date is needed to exclude for updates that happen inbetween calls or get looping
      */
-    @Override
-	public List<NotifyStatus> loadNotifyStatus(final String sinceField, final Date begin, final Date end, final int maxResults, final Long zoneId) {
+    public List<NotifyStatus> loadNotifyStatus(final String sinceField, final Date begin, final Date end, final int maxResults, final Long zoneId) {
 		long beginMS = System.nanoTime();
 		try {
 	       	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	Criteria crit = session.createCriteria(NotifyStatus.class)
 	                    	.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
 	                    	.add(Expression.ge("lastModified", begin))
@@ -2688,14 +2295,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
      * The begin date is really a performance optimization, cause it limits the number of records that are even checked since the key is hopefully ordered by modifyDate.
      * End date is needed to exclude for updates that happen inbetween calls or get looping
     */
-    @Override
-	public List<NotifyStatus> loadNotifyStatus(final Binder binder, final String sinceField, final Date begin, final Date end, final int maxResults, final Long zoneId) {
+    public List<NotifyStatus> loadNotifyStatus(final Binder binder, final String sinceField, final Date begin, final Date end, final int maxResults, final Long zoneId) {
 		long beginMS = System.nanoTime();
 		try {
 	       	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	Criteria crit = session.createCriteria(NotifyStatus.class)
 	                    	.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
 	                    	.add(Expression.ge("lastModified", begin))
@@ -2719,7 +2324,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
     }
 
-	@Override
 	public SimpleName loadSimpleName(String name, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -2730,14 +2334,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 	}
 
-	@Override
 	public SimpleName loadSimpleNameByEmailAddress(final String emailAddress, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	        return (SimpleName)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        return session.createCriteria(SimpleName.class)
 	                        	.add(Expression.eq("id.zoneId", zoneId))
 	                        	.add(Expression.eq("emailAddress", emailAddress))
@@ -2753,14 +2355,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 	
-	@Override
 	public List<SimpleName> loadSimpleNames(final Long binderId, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	        return (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        List<SimpleName> results = session.createCriteria(SimpleName.class)
 	                        	.add(Expression.eq("id.zoneId", zoneId))
 	                        	.add(Expression.eq("binderId", binderId))
@@ -2778,14 +2378,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 
-	@Override
 	public IndexNode findIndexNode(final String nodeName, final String indexName) {
 		long begin = System.nanoTime();
 		try {
 			return (IndexNode)getHibernateTemplate().execute(
 			        new HibernateCallback() {
-			            @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+			            public Object doInHibernate(Session session) throws HibernateException {
 		               		return session.createCriteria(IndexNode.class)
 		               						// Use of the component wrapper causes IllegalArgumentException within
 		               						// Hibernate cache. So, use individual fields instead.
@@ -2803,15 +2401,13 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "findIndexNode(String,String)");
     	}	        
 	}
-		
-	@Override
+	
 	public void purgeIndexNodeByIndexName(final String indexName) {
 		long begin = System.nanoTime();
 		try {
 		   	getHibernateTemplate().execute(
 		    	   	new HibernateCallback() {
-		    	   		@Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		    	   		public Object doInHibernate(Session session) throws HibernateException {
 			     	   		session.createQuery("Delete org.kablink.teaming.domain.IndexNode where indexName=:indexName")
 			   				.setString("indexName", indexName)
 		     	   			.executeUpdate();
@@ -2824,14 +2420,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "purgeIndexNodeByIndexName(String)");
     	}	        
 	}
-	@Override
 	public List<LdapConnectionConfig> loadLdapConnectionConfigs(final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 		   return (List<LdapConnectionConfig>)getHibernateTemplate().execute(
 		    	   	new HibernateCallback() {
-		    	   		@Override
-						public Object doInHibernate(Session session) throws HibernateException {
+		    	   		public Object doInHibernate(Session session) throws HibernateException {
 		                       return session.createCriteria(LdapConnectionConfig.class)
 		                       .add(Expression.eq("zoneId", zoneId))
 		                       .setCacheable(true)
@@ -2845,43 +2439,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "loadLdapConnectionConfigs(Long)");
     	}	        
 	}
-	@Override
-	public LdapConnectionConfig loadLdapConnectionConfig(final String configId, final Long zoneId) {
-		long begin = System.nanoTime();
-		try {
-            LdapConnectionConfig o =(LdapConnectionConfig)getHibernateTemplate().get(LdapConnectionConfig.class, configId);
-            if (o != null && o.getZoneId().equals(zoneId)) return o;
-            throw new NoLdapConnectionConfigByTheIdException(configId);
-    	}
-    	finally {
-    		end(begin, "loadLdapConnectionConfig(String,Long)");
-    	}
-	}
-    @Override
-    public int getMaxLdapConnectionConfigPosition(final Long zoneId) {
-        long begin = System.nanoTime();
-        try {
-            Integer position = (Integer) getHibernateTemplate().execute(
-                    new HibernateCallback() {
-                        @Override
-                        public Object doInHibernate(Session session) throws HibernateException {
-                            session.createQuery("select max(position) from org.kablink.teaming.domain.LdapConnectionConfig where zoneId=:zoneId")
-                                    .setLong("zoneId", zoneId)
-                                    .uniqueResult();
-                            return null;
-                        }
-                    }
-            );
-            if (position==null) {
-                position = 0;
-            }
-            return position;
-        }
-        finally {
-            end(begin, "purgeIndexNodeByIndexName(String)");
-        }
-    }
-	@Override
 	public ZoneConfig loadZoneConfig(Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -2894,11 +2451,9 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 	}
 	
-	@Override
 	public int getLoginCount(final Date startDate) {
 		List result = new ArrayList();
 		result = (List) getHibernateTemplate().execute(new HibernateCallback() {
-			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 	
 				List auditTrail = session.createCriteria(LoginInfo.class)
@@ -2914,13 +2469,11 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		return result.size();
 	}
 	
-	@Override
 	public List<String> getLoginInfoIds(final Long zoneId, final Long userId, final String authenticatorName, final Date startDate, final Integer maxResult) {
 		long begin = System.nanoTime();
 		try {
 			List result = new ArrayList();
 			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
-				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
 					Criteria crit = session.createCriteria(LoginInfo.class)
 						.setProjection(Projections.property("id"))
@@ -2941,13 +2494,11 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	}
 	
 	
-	@Override
 	public List getOldFileVersions(final Long zoneId, final Date ageDate) {
 		long begin = System.nanoTime();
 		try {
 			List result = new ArrayList();
 			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
-				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
 					ProjectionList proj = Projections.projectionList()
 						.add(Projections.groupProperty("id"))
@@ -2969,13 +2520,11 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}
 	}
 	
-	@Override
 	public List getOldBinderFileVersions(final Long zoneId, final Date now) {
 		long begin = System.nanoTime();
 		try {
 			List result = new ArrayList();
 			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
-				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
 					ProjectionList proj = Projections.projectionList()
 						.add(Projections.groupProperty("id"))
@@ -2997,12 +2546,10 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}
 	}
 	
-	@Override
 	public Long computeDiskSpaceUsed(final Long zoneId, final Long binderId) {
 		long begin = System.nanoTime();
 		try {
 			List<Long> result = (List) getHibernateTemplate().execute(new HibernateCallback() {
-				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
 					Criteria crit = session.createCriteria(VersionAttachment.class)
 					.setProjection(Projections.projectionList().add(Projections.sum("fileItem.length")))
@@ -3021,7 +2568,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}
 	}
 	
-	@Override
 	public BinderQuota loadBinderQuota(Long zoneId, Long binderId) {
 		long begin = System.nanoTime();
 		try {
@@ -3038,21 +2584,19 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        		
 	}
 
-	@Override
 	public List<Binder> loadBindersByPathName(final String pathName, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			return (List)getHibernateTemplate().execute(
 				    new HibernateCallback() {
-				        @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+				        public Object doInHibernate(Session session) throws HibernateException {
 				        	if(lookupByRange()) {
 								Criteria crit = session.createCriteria(Binder.class)
 								.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
 								.add(Restrictions.ge("pathName", pathName.toLowerCase()))
 								.add(Restrictions.le("pathName", pathName.toUpperCase()))
 								.setCacheable(isBinderQueryCacheable());
-								return crit.list();
+								return crit.list();				        		
 				        	}
 				        	else {
 				        		Query q = session.createQuery("from org.kablink.teaming.domain.Binder x where lower(x.pathName)=:pathName and x.zoneId=:zoneId");
@@ -3063,34 +2607,11 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 				        	}
 		               }
 		            }
-				);
+				);				
     	}
     	finally {
     		end(begin, "loadBindersByPathName()");
-    	}
-	}
-
-	@Override
-	public Binder loadBinderByParentAndName(final Long parentBinderId, final String title, final Long zoneId) {
-		long begin = System.nanoTime();
-		try {
-			return (Binder)getHibernateTemplate().execute(
-				    new HibernateCallback() {
-				        @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-                            Query q = session.createQuery("from org.kablink.teaming.domain.Binder x where x.parentBinder.id=:parentId and lower(x.title)=:title and x.zoneId=:zoneId");
-                            q.setParameter("parentId", parentBinderId)
-                            .setParameter("title", title.toLowerCase())
-                            .setParameter("zoneId", zoneId)
-                            .setCacheable(isBinderQueryCacheable());
-                            return q.uniqueResult();
-		               }
-		            }
-				);
-    	}
-    	finally {
-    		end(begin, "loadBindersByPathName()");
-    	}
+    	}	        
 	}
 
 	private LibraryEntry loadLibraryEntry(LibraryEntry le) {
@@ -3101,222 +2622,5 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		// the input instance (eg. Bug #760515)
 		LibraryEntry primaryKeyValue = new LibraryEntry(le.getBinderId(), le.getType(), le.getName());
 		return (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, primaryKeyValue);
-	}
-	
-	@Override
-	public OpenIDProvider loadOpenIDProvider(Long zoneId, String openIDProviderId) {
-		long begin = System.nanoTime();
-		try {
-			OpenIDProvider o =(OpenIDProvider)getHibernateTemplate().get(OpenIDProvider.class, openIDProviderId);
-	        if (o != null && o.getZoneId().equals(zoneId)) return o;
-	        throw new NoOpenIDProviderByTheIdException(openIDProviderId);
-    	}
-    	finally {
-    		end(begin, "loadOpenIDProvider(String,Long)");
-    	}	        
-	}
-
-	@Override
-	public List<OpenIDProvider> findOpenIDProviders(final Long zoneId) {
-		long begin = System.nanoTime();
-		try {
-	        return (List)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-	                        return session.createCriteria(OpenIDProvider.class)
-	                        	.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
-	                        	.setCacheable(true)
-	                        	.setCacheRegion("query.ReferenceQueryCache")
-	                        	.addOrder(Order.asc("title"))
-	                        	.list();
-	                    }
-	                }
-	            );
-    	}
-    	finally {
-    		end(begin, "findOpenIDProviders(Long)");
-    	}	
-
-	}
-	
-	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate) {
-		long begin = System.nanoTime();
-		try {
-			List results = (List) getHibernateTemplate().execute(
-		    	new HibernateCallback() {
-		    		public Object doInHibernate(Session session) throws HibernateException {
-                        return session.createCriteria(AuditTrail.class)
-							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.isNotNull("startDate"))
-							.add(Restrictions.lt("startDate", purgeBeforeDate))
-							.setCacheable(false)
-	                    	.addOrder(Order.asc("startDate"))
-	                    	.list();
-		    		}
-		    	}
-		   	);
-			return results;
-		}
-		finally {
-    		end(begin, "getAuditTrailEntries()");
-		}
-	}
-
-	@Override
-	public int purgeAuditTrail(final Long zoneId, final Date purgeBeforeDate) {
-		long begin = System.nanoTime();
-		try {
-			Integer c = (Integer) getHibernateTemplate().execute(
-		    	new HibernateCallback() {
-		    		@Override
-					public Object doInHibernate(Session session) throws HibernateException {
-		     	   		int count = session.createQuery("Delete org.kablink.teaming.domain.AuditTrail where zoneId=:zoneId and startDate<:purgeBeforeDate")
-			   				.setLong("zoneId", zoneId)
-			   				.setDate("purgeBeforeDate", purgeBeforeDate)
-		     	   			.executeUpdate();
-		     	   		return Integer.valueOf(count);
-		    		}
-		    	}
-		   	);
-			return c.intValue();
-		}
-		finally {
-    		end(begin, "purgeAuditTrail()");
-		}
-	}
-	
-	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate) {
-		long begin = System.nanoTime();
-		try {
-			List results = (List) getHibernateTemplate().execute(
-		    	new HibernateCallback() {
-		    		public Object doInHibernate(Session session) throws HibernateException {
-                        return session.createCriteria(ChangeLog.class)
-							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.isNotNull("operationDate"))
-							.add(Restrictions.lt("operationDate", purgeBeforeDate))
-							.setCacheable(false)
-	                    	.addOrder(Order.asc("operationDate"))
-	                    	.list();
-		    		}
-		    	}
-		   	);
-			return results;
-		}
-		finally {
-    		end(begin, "getChangeLogEntries()");
-		}
-	}
-	
-	@Override
-	public int purgeChangeLogs(final Long zoneId, final Date purgeBeforeDate) {
-		long begin = System.nanoTime();
-		try {
-		   	Integer c = (Integer) getHibernateTemplate().execute(
-		    	new HibernateCallback() {
-		    		@Override
-					public Object doInHibernate(Session session) throws HibernateException {
-		     	   		int count = session.createQuery("Delete org.kablink.teaming.domain.ChangeLog where zoneId=:zoneId and operationDate<:purgeBeforeDate")
-			   				.setLong("zoneId", zoneId)
-			   				.setDate("purgeBeforeDate", purgeBeforeDate)
-		     	   			.executeUpdate();
-		     	   		return Integer.valueOf(count);
-		    		}
-		    	}
-		   	);
-		   	return c.intValue();
-		}
-		finally {
-    		end(begin, "purgeChangeLogs()");
-		}
-	}
-
-	@Override
-	public void purgeShares(final Binder binder, final boolean includeEntryShares) {
-		long begin = System.nanoTime();
-		try {
-		   	getHibernateTemplate().execute(
-		    	new HibernateCallback() {
-		    		@Override
-					public Object doInHibernate(Session session) throws HibernateException {
-			   			//delete share items where shared entity is this binder
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
-                    	.setInteger("sharedEntityType", binder.getEntityType().getValue())
-                    	.setLong("sharedEntityId", binder.getId())
-		   				.executeUpdate();
-			   			
-			   			//delete share items where recipient is this team
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where recipient_type=:recipientType AND recipient_id=:recipientId")
-                    	.setShort("recipientType", ShareItem.RecipientType.team.getValue())
-                    	.setLong("recipientId", binder.getId())
-		   				.executeUpdate();
-			   					
-			   			if(includeEntryShares && EntityIdentifier.EntityType.folder == binder.getEntityType()) {
-		 		   			//delete share items whose shared entities are entries in the specified binder
-		 		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in " + 
-		 			   				"(select p.id from org.kablink.teaming.domain.FolderEntry p where " +
-				   			  			" p.parentBinder=:folder) and sharedEntity_type=:sharedEntityType")
-				   			  	.setEntity("folder", binder)
-				   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
-				   				.executeUpdate(); 	
-			   			}
-
-			   			return null;
-	    	   		}
-	    	   	}
-	    	 );    	
-    	}
-    	finally {
-    		end(begin, "purgeShares");
-    	}	         
-
-	}
-
-	@Override
-	public Long peekFullSyncTask() {
-		long begin = System.nanoTime();
-		try {
-			return getHibernateTemplate().execute(
-		            new HibernateCallback<Long>() {
-		                @Override
-						public Long doInHibernate(Session session) throws HibernateException {
-		                	return (Long) session.createCriteria(BinderState.class)
-		                			.setProjection(Projections.property("binderId"))
-		                			.add(Restrictions.eq("fullSyncStats.statusStr", FullSyncStatus.ready.name()))
-		                			.addOrder(Order.asc("fullSyncStats.statusDate"))
-		                			.setMaxResults(1)
-                					.setCacheable(false)
-                					.uniqueResult();
-		                }
-		            }
-		        );
-    	}
-    	finally {
-    		end(begin, "peekFullSyncTask()");
-    	}	        
-	}
-
-	private List<Long> getFolderEntryIds(final Binder binder) {
-		// Return a list of IDs of folder entries whose parents are the specified folder
-		long begin = System.nanoTime();
-		try {
-	    	List<Long> result = (List<Long>)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-	                    	Criteria crit = session.createCriteria(FolderEntry.class)
-	                    			.setProjection(Projections.property("id"))
-	                    			.add(Restrictions.eq("parentBinder", binder))
-	                    			.setCacheable(false);
-	                    	return crit.list();
-	                    }
-	                }
-	            );  
-	    	return result;
-    	}
-    	finally {
-    		end(begin, "getFolderEntryIds(binder)");
-    	}	        
 	}
  }

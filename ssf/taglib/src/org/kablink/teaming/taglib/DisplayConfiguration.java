@@ -57,7 +57,6 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionUtils;
-import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.NLT;
@@ -122,6 +121,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 						jspBase = DEFAULT_EXT_BASE + Utils.getZoneKey() +
 							File.separator + extensionName + File.separator + "jsp" + File.separator;
 					for (Element nextItem:itemList) {
+						
 						//Find the jsp to run. Look in the definition configuration for this.
 						//Get the item type of the current item being processed 
 						String itemType = nextItem.attributeValue("name", "");
@@ -146,37 +146,6 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 						//get Item from main config document
 						Element itemDefinition = configBuilder.getItem(configDefinition, itemType);
 						if (itemDefinition != null) {
-							//See if this item is allowed by license
-							String license = itemDefinition.attributeValue("license", "");
-							String notLicense = itemDefinition.attributeValue("notLicense", "");
-							//Check if there is a license restriction. If so make sure the right license is in use
-							boolean allowed = true;
-							boolean notAllowed = false;
-							if (!license.equals("")) {
-								allowed = false;
-								String[] licenses = license.split(" ");
-								for (int i = 0; i < licenses.length; i++) {
-									if (LicenseChecker.isAuthorizedByLicense(licenses[i])) {
-										//Running the right license, allow it
-										allowed = true;
-										break;
-									}
-								}
-							}
-							if (!notLicense.equals("")) {
-								String[] notLicenses = license.split(" ");
-								for (int i = 0; i < notLicenses.length; i++) {
-									if (LicenseChecker.isAuthorizedByLicense(notLicenses[i])) {
-										//Running a disallowed license, skip it
-										notAllowed = true;
-										break;
-									}
-								}
-							}
-							if (!allowed || notAllowed) {
-								//This item is not allowed with this license, so skip it
-								continue;
-							}
 							String jspName;
 							String defaultJsp=configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
 							if (itemType.equals("customJsp")) {
@@ -446,13 +415,6 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 									pageContext.getOut().print(", propertyValue=" + propertyValue);
 									pageContext.getOut().print(", error=" + e.toString() + " -->\n");
 									pageContext.getOut().print("<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->\n");
-								}
-								
-								//Clear the values set
-								itPropertyValuesMap = propertyValuesMap.entrySet().iterator();
-								while (itPropertyValuesMap.hasNext()) {
-									Map.Entry entry = (Map.Entry)itPropertyValuesMap.next();
-									req.setAttribute((String)entry.getKey(), null);
 								}
 
 								//Restore the saved properties

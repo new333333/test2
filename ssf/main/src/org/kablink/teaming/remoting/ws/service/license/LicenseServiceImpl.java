@@ -33,8 +33,8 @@
 package org.kablink.teaming.remoting.ws.service.license;
 
 import org.kablink.teaming.license.LicenseException;
+import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.BaseService;
-import org.kablink.teaming.remoting.ws.RemotingException;
 
 
 public class LicenseServiceImpl extends BaseService implements LicenseService {

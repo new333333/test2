@@ -94,7 +94,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 
 <c:set var="ss_profile_entry_form" value="true" scope="request" />
 <form style="background: transparent;" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-  id="<%= formName %>" onSubmit="return ss_onSubmit(this);">
+  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
 
 
 <%-- Show the ok and cancel buttons at top right --%>

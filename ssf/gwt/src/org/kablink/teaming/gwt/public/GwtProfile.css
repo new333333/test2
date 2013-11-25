@@ -7,29 +7,22 @@ top:25px;
 
 .profileSection  {
 -moz-border-radius:5px 5px 5px 5px;
-border-radius:5px 5px 5px 5px;
 background:none repeat scroll 0 0 #FFFFFF;
 padding-bottom:1em;
 position:relative;
 }
 
 .column-head  {
-	position: relative;
-	color: #FFFFFF;
-	font-weight: bold;
-	letter-spacing: 0.02em;
-	margin-bottom: 0.5em;
-	padding: 8px;
-	cursor: pointer;
-	border-radius: 5px 5px 0px 0px;
-	-moz-border-radius: 5px 5px 0px 0px;
-	-webkit-border-radius: 5px 5px 0px 0px;
-	background-color: #81b2bd;
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
+background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
+color:#FFFFFF;
+font-weight:bold;
+letter-spacing:0.02em;
+margin-bottom:0.5em;
+padding:5px;
+cursor: pointer;
+-moz-border-radius: 5px 5px 0px 0px;
+-webkit-border-radius: 5px 5px 0px 0px;
+position:relative;
 }
 
 .profileTable  {
@@ -57,11 +50,11 @@ padding:0 10px 10px;
 }
 
 .column-r  {
-	background: none repeat scroll 0 0 #ededed;
-	padding: 0 0 10px 0;
-	width: 350px;
-	text-align:left;
-	position: relative;
+background:none repeat scroll 0 0 #E6E6E4;
+padding:0 0 10px 0;
+width:220px;
+text-align:left;
+position: relative;
 }
 .column-r .content {
 clear:both;
@@ -77,9 +70,9 @@ margin-top:0.5em;
 
 
 .profile-title  {
-color: #505354;
-font-size: 2em;
-letter-spacing: 0.02em;
+font-size:1.4em;
+font-weight:bold;
+letter-spacing:0.03em;
 }
 
 .profile.a  {
@@ -91,10 +84,7 @@ text-decoration:none;
 color:#5A9A98!important;
 font-size:1.1em;
 line-height:1.1em;
-padding:5px 0 5px 0;
-margin-top: 15px;
-margin-right: 20%;
-border-top: 1px solid #E0E0E0;
+padding:10px 0px 5px;
 }
 
 .sectionTable {
@@ -114,6 +104,8 @@ border-top: 1px solid #E0E0E0;
 
 .sectionTable td, .sectionTable th {
 	background-color:transparent !important;
+	border-bottom:1px solid #D2D5D1;
+	padding:3px;
 }
 .sectionHeadingRBB {
 	border-bottom:none !important;
@@ -190,9 +182,9 @@ clear:both;
 padding-bottom: 20px;
 }
 .user_stats {
-	float: left;
-	font-size: 1.3em;
-	height: 105px;
+float: left;
+font-size: 1.1em;
+height: 105px;
 }
 .stats_error_msg {
 color: RED;
@@ -203,7 +195,8 @@ margin-bottom: 10px;
 border-bottom:0 solid transparent;
 border-left:0 solid transparent;
 border-right:0 solid transparent;
-margin:0.5em;
+margin-top:0.5em;
+padding-bottom:0.5em;
 }
 .statsTable td {
 background-color:transparent;
@@ -216,7 +209,6 @@ padding:3px;
 }
 .profilePhotoMain {
 float: left;
-padding-left:5px;
 padding-top:10px;
 padding-bottom: 10px;
 }
@@ -224,25 +216,12 @@ padding-bottom: 10px;
 	width: 75px;
 }
 .attrLabel {
-	font-size: 12px;
+	font-size:0.8em;
 	white-space:nowrap;
 	color: #949494;
-	margin-top: 8px;
-	padding-right: 6px;
-	padding-left: 10px;
 	}
-.profile-value {
-	color: #505354;
-	font-size: 15px;
-	margin-top: 7px;
-	}	
-.profile-anchor {
-color:#1C5894 !important;
-display: inline-block;
-}
-	
 .marginleft1  {
-	margin-left:1em;
+margin-left:1em;
 }
 
 .clearStatus {
@@ -252,7 +231,6 @@ display: inline-block;
 	background: #949494;
 	padding: 2px 6px;
 	-moz-border-radius: 15px;
-	border-radius: 15px;
 	-webkit-border-radius: 15px;
 	}
 
@@ -262,7 +240,6 @@ display: inline-block;
 	background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
 	padding: 2px 6px;
 	-moz-border-radius: 15px;
-	border-radius: 15px;
 	-webkit-border-radius: 15px;
 	}
 
@@ -306,7 +283,6 @@ width: 520px;
 	width: 500px;
 	margin-top: 4px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .user_status_textAmount {
@@ -331,7 +307,7 @@ font-weight: bold;
 }
 .profileSideBar_Item { 
 	line-height: 13px;
-	font-size: 12px; 
+	font-size: 11px; 
 	margin-top: 1px;
 	text-transform:none;
 }
@@ -355,35 +331,26 @@ font-weight: bold;
 }
 .profile-actions{
 position:absolute;
-right: 5px;
+right: 4px;
 top: 0px;
 }
 .profile-action {
-	margin-bottom: 5px;
+	font-size: 11px;
+	padding-bottom: 4px;
 }
-.profile-action a, .profileUploadButton {
+.profile-action a {
 	color: #353838 !important;
-	display: inline-block;
+	background:url("images/putty_blend2.png") repeat-x scroll center bottom #FFFFFF;
+	border: 1px solid #c4c4c4;
+	padding: 2px 10px;
+	display:block;
 	text-align: center;
-	border: 1px solid #B8B8B8;
-	font-weight: normal !important;
-	font-size: 12px;
-	padding: 2px 10px  !important;
-	text-decoration:none;	
-	cursor: pointer !important;
-	white-space: nowrap;
-	border-radius: 15px;
 	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: #fff;	
+	-webkit-border-radius: 15px;	
 }
 .profile-action a:hover {
 	color: #135c8f;
-	border: 1px solid #81b2bd;
-	border-radius: 15px;
+	border: 1px solid #91daf2;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;	
 }
@@ -402,10 +369,13 @@ letter-spacing: 0.1em !important;
 color: #5691a6;
 background: #cce9ee;
 -moz-border-radius: 3px;
-border-radius: 3px;
 -webkit-border-radius: 3px;
 padding: 3px;
 }
+.profile-anchor {
+color:#1C5894 !important;
+}
+.profile-value {}
 .profile-value p{
 margin: 0;
 }
@@ -413,7 +383,6 @@ margin: 0;
 color: #5691a6;
 background: #cce9ee;
 -moz-border-radius: 3px;
-border-radius: 3px;
 -webkit-border-radius: 3px;
 }
 .profile-edit-button:hover, .profile-save-button:hover, .profile-cancel-button:hover {
@@ -428,7 +397,6 @@ font-weight:bold;
 margin:0.3em 0;
 padding:0.12em 0.8em;
 -moz-border-radius: 3px;
-border-radius: 3px;
 -webkit-border-radius: 3px;
 }
 .profile-save-button, .profile-edit-button, .profile-cancel-button {
@@ -442,15 +410,14 @@ color: #666666;
 font-size: 0.9em;
 text-transform: uppercase;
 float: left;
-clear: both;
 }
 .aboutLabel {
 padding-right: 10px;
 }
 .aboutDesc {
 color: #353838;
-font-size: 13px;
-line-height: 17px;
+font-size: 11px;
+line-height: 14px;
 text-transform: none;
 }
 .profile-selected-bg {
@@ -490,7 +457,7 @@ div.profile_gallery a:hover {
 	margin-top:2px;
 }
 .profileUploadButton {
-	margin-left: 10px;
+	margin-left: 5px;
 }
 .profileUploadPanel {
 }
@@ -500,8 +467,6 @@ div.profile_gallery a:hover {
 .modifyAvatarDlg {
 position: relative;
 background:none repeat scroll 0 0 #FFFFFF;
-border-top-left-radius:5px;
-border-top-right-radius:5px;
 -moz-border-radius-topleft:5px;
 -moz-border-radius-topright:5px;
 -webkit-border-top-left-radius: 5px;

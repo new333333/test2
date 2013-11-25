@@ -51,7 +51,7 @@ import org.kablink.teaming.security.accesstoken.InvalidAccessTokenException;
 import org.kablink.teaming.security.accesstoken.AccessToken.BinderAccessConstraints;
 import org.kablink.teaming.security.accesstoken.AccessToken.TokenScope;
 import org.kablink.teaming.security.dao.SecurityDao;
-import org.kablink.teaming.util.encrypt.EncryptUtil;
+import org.kablink.teaming.util.EncryptUtil;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;

@@ -32,14 +32,11 @@
  */
 package org.kablink.teaming.lucene;
 
-import org.kablink.util.VibeRuntimeException;
-import org.kablink.util.api.ApiErrorCode;
-
 /**
  * @author Jong Kim
  *
  */
-public class LuceneException extends VibeRuntimeException {
+public class LuceneException extends RuntimeException {
     public LuceneException() {
         super();
     }
@@ -60,18 +57,4 @@ public class LuceneException extends VibeRuntimeException {
     		return super.toString();
     	}
     }
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 500; // Internal Server Error
-	}
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
-	 */
-	@Override
-	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.LUCENE_ERROR;
-	}
 }

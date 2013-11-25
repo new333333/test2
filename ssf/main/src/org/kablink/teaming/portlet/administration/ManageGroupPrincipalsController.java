@@ -194,24 +194,13 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 		//get them all
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
-		//Exclude allUsers and allExtUsers from the search 
+		//Exclude allUsers from the search 
 		Document searchFilter = DocumentHelper.createDocument();
-		
 		Element rootElement = searchFilter.addElement(Constants.NOT_ELEMENT);
-		Element orElement = rootElement.addElement(Constants.OR_ELEMENT);
-		
-		Element field = orElement.addElement(Constants.FIELD_ELEMENT);
+		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
     	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.GROUPNAME_FIELD);
     	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(allIndividualsGroupName());
-    	
-    	if(allExtIndividualsGroupName() != null) {
-			field = orElement.addElement(Constants.FIELD_ELEMENT);
-	    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.GROUPNAME_FIELD);
-	    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-	    	child.setText(allExtIndividualsGroupName());
-    	}
-    	
     	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
 
 		Map searchResults = getGroupPrincipals(binder.getId(), options);
@@ -248,8 +237,6 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 	throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	
 	abstract protected String allIndividualsGroupName();
-
-	abstract protected String allExtIndividualsGroupName();
 
 	abstract protected Map getGroupPrincipals(Long binderId, Map options);
 

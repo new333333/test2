@@ -424,13 +424,7 @@ public class Tabs {
 	
 	private static void saveUserTabsImpl(PortletSession ps, HttpSession hs, Long userId) {
 		ProfileModule pm = ((ProfileModule) SpringContextUtil.getBean("profileModule"));
-		try {
-			User user = RequestContextHolder.getRequestContext().getUser();
-			if (!user.isShared()) {
-				//Only save the tabs to the disk if not the guest account
-				pm.setUserProperty(userId, ObjectKeys.USER_PROPERTY_TABS, getTabsImpl(ps, hs).getSerializationMap());
-			}
-		} catch(Exception e) {}
+		pm.setUserProperty(userId, ObjectKeys.USER_PROPERTY_TABS, getTabsImpl(ps, hs).getSerializationMap());
 	}
 	
 	/**

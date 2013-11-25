@@ -52,7 +52,6 @@ public class CreateGroupCmd extends VibeRpcCmd
 	private String m_title;
 	private String m_desc;
 	private boolean m_isMembershipDynamic;
-	private boolean m_externalMembersAllowed;
 	private List<GwtTeamingItem> m_membership;
 	private GwtDynamicGroupMembershipCriteria m_membershipCriteria;
 	
@@ -67,20 +66,12 @@ public class CreateGroupCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public CreateGroupCmd(
-		String name,
-		String title,
-		String desc,
-		boolean isMembershipDynamic,
-		boolean externalMembersAllowed,
-		List<GwtTeamingItem> membership,
-		GwtDynamicGroupMembershipCriteria membershipCriteria )
+	public CreateGroupCmd( String name, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership, GwtDynamicGroupMembershipCriteria membershipCriteria )
 	{
 		m_name = name;
 		m_title = title;
 		m_desc = desc;
 		m_isMembershipDynamic = isMembershipDynamic;
-		m_externalMembersAllowed = externalMembersAllowed;
 		m_membership = membership;
 		m_membershipCriteria = membershipCriteria;
 	}
@@ -106,14 +97,6 @@ public class CreateGroupCmd extends VibeRpcCmd
 		return m_desc;
 	}
 
-	/**
-	 * 
-	 */
-	public boolean getExternalMembersAllowed()
-	{
-		return m_externalMembersAllowed;
-	}
-	
 	/**
 	 * 
 	 */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -54,19 +54,14 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
-import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
-/**
- * ?
- * 
- * @author ?
- */
+
 @SuppressWarnings({"unchecked","unused"})
 public class ManageQuotasController extends SAbstractController {
-	@Override
+
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
@@ -74,11 +69,6 @@ public class ManageQuotasController extends SAbstractController {
 		getAdminModule().checkAccess(AdminOperation.manageFunction);
 		if ((formData.containsKey("okBtn") || formData.containsKey("deleteBtn")) && WebHelper.isMethodPost(request)) {
 			if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
-				if (Utils.checkIfFilr() && formData.containsKey("okBtn")) {
-					boolean allowPersonalStorage = formData.containsKey("allowPersonalStorage");
-					getAdminModule().setAdHocFoldersEnabled(allowPersonalStorage);
-				}
-				
 				boolean okBtnDelete = false;
 				if (formData.containsKey("deleteBtn")) okBtnDelete = true;
 				if (formData.containsKey("enableQuotas")) {
@@ -129,11 +119,6 @@ public class ManageQuotasController extends SAbstractController {
 				if (allUsersGroupId != null && groupIds.contains(allUsersGroupId)) {
 					//Trying to set a quota for all users by using the All Users group is prohibited
 					groupIds.remove(allUsersGroupId);
-				}
-				Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();
-				if (allExtUsersGroupId != null && groupIds.contains(allExtUsersGroupId)) {
-					//Trying to set a quota for all external users by using the All External Users group is prohibited
-					groupIds.remove(allExtUsersGroupId);
 				}
 				Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
 				String s_userQuota = PortletRequestUtils.getStringParameter(request, "addUserQuota", "");
@@ -202,6 +187,109 @@ public class ManageQuotasController extends SAbstractController {
 						getProfileModule().setUserDiskQuotas(ids, quotaValues.get(id.toString()));
 				}
 				
+				//Now check file size limits
+				String s_defaultFileSizeLimit;
+				Long defaultFileSizeLimit = null;
+				
+				// Get the default file size limit entered by the user.
+				s_defaultFileSizeLimit = PortletRequestUtils.getStringParameter(request, "defaultFileSizeLimit", "");
+				if (!s_defaultFileSizeLimit.equals("")) {
+					try {
+						defaultFileSizeLimit = Long.valueOf(s_defaultFileSizeLimit);
+					} catch(Exception e) {}
+				}
+				
+				if (defaultFileSizeLimit != null && defaultFileSizeLimit < 0) {
+					defaultFileSizeLimit = 0L;
+				}
+				
+				getAdminModule().setFileSizeLimitUserDefault(defaultFileSizeLimit);
+				
+				Set<Long> groupFSLIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addFSLGroups"));
+				if (allUsersGroupId != null && groupFSLIds.contains(allUsersGroupId)) {
+					//Trying to set a limit for all users by using the All Users group is prohibited
+					groupFSLIds.remove(allUsersGroupId);
+				}
+				Set<Long> userFSLIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addFSLUsers"));
+				String s_userFSLLimit = PortletRequestUtils.getStringParameter(request, "addFSLUserLimit", "");
+				Long userFileSizeLimit = null;
+				try {
+					if (!s_userFSLLimit.equals("")) {
+						userFileSizeLimit = Long.valueOf(s_userFSLLimit);
+					}
+					if (!userFSLIds.isEmpty()) {
+						getProfileModule().setUserFileSizeLimits(userFSLIds, userFileSizeLimit);
+					}
+				} catch(Exception e) {}
+				
+				Long groupFileSizeLimit = null;
+				String s_groupFileSizeLimit = PortletRequestUtils.getStringParameter(request, "addFSLGroupLimit", "");
+				try {
+					if (!s_groupFileSizeLimit.equals("")) {
+						groupFileSizeLimit = Long.valueOf(s_groupFileSizeLimit);
+					}
+					if (!groupFSLIds.isEmpty()) {
+						getProfileModule().setGroupFileSizeLimits(groupFSLIds, groupFileSizeLimit);
+					}
+				} catch(Exception e) {}
+				
+				//Check for individual group and user changes
+				userFSLIds = new HashSet<Long>();
+				groupFSLIds = new HashSet<Long>();
+				Map<String, Long> fileSizeLimitValues = new HashMap<String, Long>();
+				itFormData = formData.keySet().iterator();
+				while (itFormData.hasNext()) {
+					String key = (String)itFormData.next();
+					if (okBtnDelete && (key.indexOf("deleteFSLUser_") == 0)) {
+						String s_userId = key.substring(14, key.length());
+						userFSLIds.add(Long.valueOf(s_userId));
+						fileSizeLimitValues.put(s_userId, null);
+					}
+					if (okBtnDelete && (key.indexOf("deleteFSLGroup_") == 0)) {
+						String groupId = key.substring(15, key.length());
+						groupFSLIds.add(Long.valueOf(groupId));
+						fileSizeLimitValues.put(groupId, null);
+					}
+					if (key.indexOf("modifyFSLId") == 0) {
+						String s_id = PortletRequestUtils.getStringParameter(request, "modifyFSLId", "");
+						String s_newGroupFileSizeLimit = PortletRequestUtils.getStringParameter(request, "newFSLGroupLimit_"+s_id, "");
+						Long newGroupFileSizeLimit = null;
+						if (formData.containsKey("newFSLGroupLimit_"+s_id)) {
+							try {
+								if (!s_newGroupFileSizeLimit.equals("")) {
+									newGroupFileSizeLimit = Long.valueOf(s_newGroupFileSizeLimit);
+								}
+								groupFSLIds.add(Long.valueOf(s_id));
+								fileSizeLimitValues.put(s_id, newGroupFileSizeLimit);
+							} catch(Exception e) {}
+						}
+						
+						String s_newUserFileSizeLimit = PortletRequestUtils.getStringParameter(request, "newFSLUserLimit_"+s_id, "");
+						Long newUserFileSizeLimit = null;
+						if (formData.containsKey("newFSLUserLimit_"+s_id)) {
+							try {
+								if (!s_newUserFileSizeLimit.equals("")) {
+									newUserFileSizeLimit = Long.valueOf(s_newUserFileSizeLimit);
+								}
+								userFSLIds.add(Long.valueOf(s_id));
+								fileSizeLimitValues.put(s_id, newUserFileSizeLimit);
+							} catch(Exception e) {}
+						}
+					}
+				}
+				for (Long id : groupFSLIds) {
+					List ids = new ArrayList();
+					ids.add(id);
+					if (id != null && fileSizeLimitValues.containsKey(id.toString())) 
+						getProfileModule().setGroupFileSizeLimits(ids, fileSizeLimitValues.get(id.toString()));
+				}
+				for (Long id : userFSLIds) {
+					List ids = new ArrayList();
+					ids.add(id);
+					if (id != null && fileSizeLimitValues.containsKey(id.toString())) 
+						getProfileModule().setUserFileSizeLimits(ids, fileSizeLimitValues.get(id.toString()));
+				}
+
 			}
 
 		} else {
@@ -209,7 +297,6 @@ public class ManageQuotasController extends SAbstractController {
 		}
 	}
 
-	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -228,7 +315,6 @@ public class ManageQuotasController extends SAbstractController {
 		SortedSet<Principal> group_principals = getProfileModule().getPrincipals(groups);
 		model.put(WebKeys.QUOTAS_GROUPS, group_principals);
 		model.put(WebKeys.ALL_USERS_GROUP_ID, String.valueOf(Utils.getAllUsersGroupId()));
-		model.put(WebKeys.ALL_EXTERNAL_USERS_GROUP_ID, String.valueOf(Utils.getAllExtUsersGroupId()));
 
 		model.put(WebKeys.QUOTAS_DEFAULT, getAdminModule().getQuotaDefault());
 		model.put(WebKeys.QUOTAS_ENABLED, getAdminModule().isQuotaEnabled());
@@ -237,12 +323,17 @@ public class ManageQuotasController extends SAbstractController {
 		model.put(WebKeys.BINDER_QUOTAS_ENABLED, getAdminModule().isBinderQuotaEnabled());
 		model.put(WebKeys.BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED, getAdminModule().isBinderQuotaAllowBinderOwnerEnabled());
 		
-		if (Utils.checkIfFilr()) {
-			model.put(WebKeys.ALLOW_PERSONAL_STORAGE, GwtUIHelper.getAdhocFolderSettingFromZone(this));
-		}
+		model.put(WebKeys.FILE_SIZE_LIMIT_USER_DEFAULT, getAdminModule().getFileSizeLimitUserDefault());
+		users = getProfileModule().getNonDefaultFileSizeLimits(ObjectKeys.PRINCIPAL_TYPE_USER);
+		groups = getProfileModule().getNonDefaultFileSizeLimits(ObjectKeys.PRINCIPAL_TYPE_GROUP);
 		
-		model.put( "isFilr", Utils.checkIfFilr() );
+		principals = getProfileModule().getPrincipals(users);
+		model.put(WebKeys.FILE_SIZE_LIMITS_USERS, principals);
+		group_principals = getProfileModule().getPrincipals(groups);
+		model.put(WebKeys.FILE_SIZE_LIMITS_GROUPS, group_principals);
 		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_QUOTAS, model);
+
 	}
+
 }

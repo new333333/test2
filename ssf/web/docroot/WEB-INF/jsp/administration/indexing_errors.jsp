@@ -45,15 +45,6 @@
 	<div class="popupContent" style="padding: 20px;">
 		<span class="ss_bold"><ssf:nlt tag="index.finished"/></span>
 		<div class="margintop1"><ssf:nlt tag="index.errorsFound"><ssf:param name="value" value="${ssErrorIndexingCount}"/></ssf:nlt></div>
-		<c:if test="${!empty ssErrorIndexingStrings}">
-			<div class="margintop1" style="padding-left:12px;">
-			    <span class="ss_bold"><ssf:nlt tag="index.generalErrors"/></span>
-			    <br/>
-			    <c:forEach var="errorString" items="${ssErrorIndexingStrings}">
-			    	<div class="ss_normal" style="padding:4px 0px 0px 6px;">${errorString}</div>
-			    </c:forEach>
-			</div>
-		</c:if>
 		<div class="margintop3" style="text-align: center;"><input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" /></div>
 	</div>
 </div>

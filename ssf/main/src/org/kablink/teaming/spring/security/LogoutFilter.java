@@ -36,16 +36,13 @@ import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.util.SPropsUtil;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.ui.logout.LogoutHandler;
 
-public class LogoutFilter extends org.springframework.security.web.authentication.logout.LogoutFilter {
+public class LogoutFilter extends org.springframework.security.ui.logout.LogoutFilter {
 
 	private boolean allowLogoutViaGet;
 	
@@ -54,22 +51,14 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
 		allowLogoutViaGet = SPropsUtil.getBoolean("allow.logout.via.get", false);
 	}
 
-    public LogoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler... handlers) {
-    	super(logoutSuccessHandler, handlers);
-		allowLogoutViaGet = SPropsUtil.getBoolean("allow.logout.via.get", false);
-    }
-    
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
+    public void doFilterHttp(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
     ServletException {
-    	HttpServletRequest request = (HttpServletRequest) req;
-    	HttpServletResponse response = (HttpServletResponse) res;
-    	
         if (requiresLogout(request, response)) {
         	// We've got logout request.
         	if("GET".equalsIgnoreCase(request.getMethod())) { // GET method
         		if(allowLogoutViaGet) {
         			// Allow logout via GET.
-        			super.doFilter(request, response, chain);
+        			super.doFilterHttp(request, response, chain);
         		}
         		else {
         			// Don't allow logout via GET. Simply return without rendering anything new.
@@ -77,7 +66,7 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
         		}
         	}
         	else { // non-GET, probably POST
-        		super.doFilter(request, response, chain);
+        		super.doFilterHttp(request, response, chain);
         	}
         }
         else { // It's not logout request.

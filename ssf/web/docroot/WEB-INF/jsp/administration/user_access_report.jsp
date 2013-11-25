@@ -165,69 +165,69 @@ function getAccessReport( userId )
 /**
  * This function gets called when we get a response to an ajax request to get an access report.
  */
- function handleResponseToGetAccessReport( responseData )
- {
- 	// Hide the wait indicator.
- 	hideWaitIndicator();
- 	
- 	// Remove any previous access data from the page.
- 	removeAccessReportDataFromPage();
- 	if ( responseData.status == 1 )
- 	{
- 		// If we get here then things worked.
- 		// Do we have any data?
- 		if ( responseData.reportData != null && responseData.reportData.length > 0 )
- 		{
- 			var i;
- 			var div;
+function handleResponseToGetAccessReport( responseData )
+{
+	// Hide the wait indicator.
+	hideWaitIndicator();
+	
+	// Remove any previous access data from the page.
+	removeAccessReportDataFromPage();
+	if ( responseData.status == 1 )
+	{
+		// If we get here then things worked.
+		// Do we have any data?
+		if ( responseData.reportData != null && responseData.reportData.length > 0 )
+		{
+			var i;
+			var div;
 
- 			// Yes
- 			// Show the table that holds the list of objects the user has access to.
- 			div = document.getElementById( 'accessReportDiv1' );
- 			div.style.display = 'block';
- 			div = document.getElementById( 'accessReportDiv2' );
- 			div.style.display = 'block';
- 			// responseData.reportData is an array of objects.  Each object holds information about
- 			// the object the user has access to.
- 			for (i = 0; i < responseData.reportData.length; ++i)
- 			{
- 				var nextEntry;
+			// Yes
+			// Show the table that holds the list of objects the user has access to.
+			div = document.getElementById( 'accessReportDiv1' );
+			div.style.display = 'block';
+			div = document.getElementById( 'accessReportDiv2' );
+			div.style.display = 'block';
+			// responseData.reportData is an array of objects.  Each object holds information about
+			// the object the user has access to.
+			for (i = 0; i < responseData.reportData.length; ++i)
+			{
+				var nextEntry;
 
- 				// Get the next entry in the report.
- 				nextEntry = responseData.reportData[i];
+				// Get the next entry in the report.
+				nextEntry = responseData.reportData[i];
 
- 				// Add this entry to the table.
- 				addAccessReportDataToPage( nextEntry );
- 			}// end for() 
- 		}
- 		else
- 		{
- 			// Tell the administrator that the selected user doesn't have access to anything.
- 			alert( m_noAccess );
- 		}
- 	}
- 	else if ( responseData.status == -1 )
- 	{
- 		// If we get here an error happened retrieving the access report.
- 		// Display the error.
- 		if ( responseData.errDesc != null )
- 		{
- 			var msg;
+				// Add this entry to the table.
+				addAccessReportDataToPage( nextEntry );
+			}// end for() 
+		}
+		else
+		{
+			// Tell the administrator that the selected user doesn't have access to anything.
+			alert( m_noAccess );
+		}
+	}
+	else if ( responseData.status == -1 )
+	{
+		// If we get here an error happened retrieving the access report.
+		// Display the error.
+		if ( responseData.errDesc != null )
+		{
+			var msg;
 
- 			alert( responseData.errDesc );
- 		}
- 		else
- 		{
- 			// We should never get here.
- 			alert( 'Unknown access report status: ' + responseData.status );
- 		}
- 	}
- 	else
- 	{
- 		// We should never get here.
- 		alert( 'Unknown access report status: ' + responseData.status );
- 	}
- }// end handleResponseToGetAccessReport()
+			alert( responseData.errDesc );
+		}
+		else
+		{
+			// We should never get here.
+			alert( 'Unknown access report status: ' + responseData.status );
+		}
+	}
+	else
+	{
+		// We should never get here.
+		alert( 'Unknown access report status: ' + responseData.status );
+	}
+}// end handleResponseToGetAccessReport()
 
 
 /**

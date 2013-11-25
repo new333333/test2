@@ -1,19 +1,28 @@
-//>>built
-define("dojox/drawing/plugins/tools/Iconize",["dojo","../../util/oo","../_Plugin","../../manager/_registry"],function(_1,oo,_2,_3){
-var _4=oo.declare(_2,function(_5){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.drawing.plugins.tools.Iconize"]){
+dojo._hasResource["dojox.drawing.plugins.tools.Iconize"]=true;
+dojo.provide("dojox.drawing.plugins.tools.Iconize");
+dojo.require("dojox.drawing.plugins._Plugin");
+dojox.drawing.plugins.tools.Iconize=dojox.drawing.util.oo.declare(dojox.drawing.plugins._Plugin,function(_1){
 },{onClick:function(){
-var _6;
+var _2;
 for(var nm in this.stencils.stencils){
 if(this.stencils.stencils[nm].shortType=="path"){
-_6=this.stencils.stencils[nm];
+_2=this.stencils.stencils[nm];
 break;
 }
 }
-if(_6){
-this.makeIcon(_6.points);
+if(_2){
+this.makeIcon(_2.points);
 }
 },makeIcon:function(p){
-var _7=function(n){
+var _3=function(n){
 return Number(n.toFixed(1));
 };
 var x=10000;
@@ -24,48 +33,46 @@ x=Math.min(x,pt.x);
 y=Math.min(y,pt.y);
 }
 });
-var _8=0;
-var _9=0;
+var _4=0;
+var _5=0;
 p.forEach(function(pt){
 if(pt.x!==undefined&&!isNaN(pt.x)){
-pt.x=_7(pt.x-x);
-pt.y=_7(pt.y-y);
-_8=Math.max(_8,pt.x);
-_9=Math.max(_9,pt.y);
+pt.x=_3(pt.x-x);
+pt.y=_3(pt.y-y);
+_4=Math.max(_4,pt.x);
+_5=Math.max(_5,pt.y);
 }
 });
 var s=60;
 var m=20;
 p.forEach(function(pt){
-pt.x=_7(pt.x/_8)*s+m;
-pt.y=_7(pt.y/_9)*s+m;
+pt.x=_3(pt.x/_4)*s+m;
+pt.y=_3(pt.y/_5)*s+m;
 });
-var _a="[\n";
-_1.forEach(p,function(pt,i){
-_a+="{\t";
+var _6="[\n";
+dojo.forEach(p,function(pt,i){
+_6+="{\t";
 if(pt.t){
-_a+="t:'"+pt.t+"'";
+_6+="t:'"+pt.t+"'";
 }
 if(pt.x!==undefined&&!isNaN(pt.x)){
 if(pt.t){
-_a+=", ";
+_6+=", ";
 }
-_a+="x:"+pt.x+",\t\ty:"+pt.y;
+_6+="x:"+pt.x+",\t\ty:"+pt.y;
 }
-_a+="\t}";
+_6+="\t}";
 if(i!=p.length-1){
-_a+=",";
+_6+=",";
 }
-_a+="\n";
+_6+="\n";
 });
-_a+="]";
-var n=_1.byId("data");
+_6+="]";
+var n=dojo.byId("data");
 if(n){
-n.value=_a;
+n.value=_6;
 }
 }});
-_4.setup={name:"dojox.drawing.plugins.tools.Iconize",tooltip:"Iconize Tool",iconClass:"iconPan"};
-_1.setObject("dojox.drawing.plugins.tools.Iconize",_4);
-_3.register(_4.setup,"plugin");
-return _4;
-});
+dojox.drawing.plugins.tools.Iconize.setup={name:"dojox.drawing.plugins.tools.Iconize",tooltip:"Iconize Tool",iconClass:"iconPan"};
+dojox.drawing.register(dojox.drawing.plugins.tools.Iconize.setup,"plugin");
+}

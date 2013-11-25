@@ -48,12 +48,9 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.DefinitionInvalidException;
 import org.kablink.teaming.domain.DefinitionInvalidOperation;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
-import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionModule;
-import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -258,12 +255,6 @@ public class ViewController extends SAbstractController {
 		model.put(WebKeys.CONFIG_DEFINITION, definitionConfig);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 		model.put(WebKeys.DEFINITION, def);
-		try {
-			ProfileBinder binder = getProfileModule().getProfileBinder();
-			if (getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
-				model.put(WebKeys.IS_BINDER_ADMIN, true);
-			}
-		} catch(AccessControlException ex) {}
 		String option = PortletRequestUtils.getStringParameter(request, "option", "");		
 		Map data = new HashMap();
 		model.put("data", data);

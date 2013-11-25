@@ -54,10 +54,6 @@ public class ManageApplicationGroupsController extends ManageGroupPrincipalsCont
 		return "allApplications";
 	}
 	
-	protected String allExtIndividualsGroupName() {
-		return null;
-	}
-	
 	protected Map getGroupPrincipals(Long binderId, Map options) {
 		return getProfileModule().getApplicationGroups(options);
 	}

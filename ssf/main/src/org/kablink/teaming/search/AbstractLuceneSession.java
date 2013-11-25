@@ -34,110 +34,31 @@ package org.kablink.teaming.search;
 
 import org.apache.commons.logging.Log;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
 import org.kablink.teaming.util.SPropsUtil;
 
-public abstract class AbstractLuceneSession implements LuceneSession {
-	
-	protected Log logger;
+public class AbstractLuceneSession {
 	
 	private boolean inited = false;
 	private long readFloor = 0; // in milliseconds
 	private long writeFloor = 0; // in milliseconds
 	
-	protected AbstractLuceneSession(Log logger) {
-		this.logger = logger;
-	}
-	
 	// Used for read
-	protected void endRead(long begin, String methodName, Long contextUserId, String aclQueryStr, 
-			int mode, Query query, Sort sort, int offset, int size, int resultLength,
-			int filterSuccessCount, int filterFailureCount, int serviceCallCount) {
+	protected void endRead(Log logger, long begin, String methodName, Query query, int length) {
 		init();
 		if(logger.isTraceEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
 			if(diff >= (double) readFloor)
-				logger.trace(diff + " ms, " + methodName + ", result=" + resultLength + 
-						", contextUserId=" + contextUserId + 
-						", aclQueryStr=[" + aclQueryStr + 
-						"], mode=" + mode + 
-						", query=[" + ((query==null)? "" : query.toString()) + 
-						"], sort=[" + ((sort==null)? "" : sort.toString()) + 
-						"], offset=" + offset +
-						", size=" + size +
-						", filterSuccessCount=" + filterSuccessCount +
-						", filterFailureCount=" + filterFailureCount + 
-						", serviceCallCount=" + serviceCallCount);
+				logger.trace(diff + " ms, " + methodName + ", result=" + length + ", query=[" + query.toString() + "]");			
 		}
 		else if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
 			if(diff >= (double) readFloor)
-				logger.debug(diff + " ms, " + methodName + ", result=" + resultLength + 					
-						", offset=" + offset +
-						", size=" + size +
-						", filterSuccessCount=" + filterSuccessCount +
-						", filterFailureCount=" + filterFailureCount + 
-						", serviceCallCount=" + serviceCallCount);
-		}
-	}
-
-	// Used for read
-	protected void endRead(long begin, String methodName, Query query, String result) {
-		init();
-		if(logger.isTraceEnabled()) {
-			double diff = (System.nanoTime() - begin)/1000000.0;
-			if(diff >= (double) readFloor)
-				logger.trace(diff + " ms, " + methodName + ", result=" + result + ", query=[" + query.toString() + "]");			
-		}
-		else if(logger.isDebugEnabled()) {
-			double diff = (System.nanoTime() - begin)/1000000.0;
-			if(diff >= (double) readFloor)
-				logger.debug(diff + " ms, " + methodName + ", result=" + result);
-		}
-	}
-
-	// Used for read
-	protected void endRead(long begin, String methodName, Query query, int length) {
-		endRead(begin, methodName, query, String.valueOf(length));
-	}
-
-	// Used for read
-	protected void endRead(long begin, String methodName, String aclQueryStr, String result) {
-		init();
-		if(logger.isTraceEnabled()) {
-			double diff = (System.nanoTime() - begin)/1000000.0;
-			if(diff >= (double) readFloor)
-				logger.trace(diff + " ms, " + methodName + ", result=" + result + ", aclQuery=[" + aclQueryStr + "]");			
-		}
-		else if(logger.isDebugEnabled()) {
-			double diff = (System.nanoTime() - begin)/1000000.0;
-			if(diff >= (double) readFloor)
-				logger.debug(diff + " ms, " + methodName + ", result=" + result);
-		}
-	}
-
-	// Used for read
-	protected void endRead(long begin, String methodName, String aclQueryStr, int length) {
-		endRead(begin, methodName, aclQueryStr, String.valueOf(length));
-	}
-
-	// Used for read
-	protected void endRead(long begin, String methodName, String aclQueryStr, String binderPath, boolean result) {
-		init();
-		if(logger.isTraceEnabled()) {
-			double diff = (System.nanoTime() - begin)/1000000.0;
-			if(diff >= (double) readFloor)
-				logger.trace(diff + " ms, " + methodName + ", result=" + result + ", binderPath=[" + binderPath + "], aclQuery=[" + aclQueryStr + "]");			
-		}
-		else if(logger.isDebugEnabled()) {
-			double diff = (System.nanoTime() - begin)/1000000.0;
-			if(diff >= (double) readFloor)
-				logger.debug(diff + " ms, " + methodName + ", result=" + result);
+				logger.debug(diff + " ms, " + methodName + ", result=" + length);
 		}
 	}
 
 	// Used for write
-	protected void endWrite(long begin, String methodName) {
+	protected void endWrite(Log logger, long begin, String methodName) {
 		init();
 		if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;

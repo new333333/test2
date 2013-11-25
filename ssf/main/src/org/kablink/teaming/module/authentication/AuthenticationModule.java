@@ -59,7 +59,5 @@ public interface AuthenticationModule {
 	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId);
 	public List<LdapConnectionConfig> getLdapConnectionConfigs();
 	public void setLdapConnectionConfigs(List<LdapConnectionConfig> configs);
-    public LdapConnectionConfig getLdapConnectionConfig(String id);
-    public void saveLdapConnectionConfig(LdapConnectionConfig config);
 	public Set<String>getMappedAttributes(Principal principal);
 }

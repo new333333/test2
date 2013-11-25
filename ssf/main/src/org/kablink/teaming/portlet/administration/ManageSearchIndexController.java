@@ -59,7 +59,6 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.StatusTicket;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -106,20 +105,19 @@ public class ManageSearchIndexController extends  SAbstractController {
 				// Create a new status ticket
 				StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
 				IndexErrors errors = new IndexErrors();
+				Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeNames, errors);
+				//if people selected and not yet index; index content only, not the whole ws tree
 				String idChoices = TreeHelper.getSelectedIdsAsString(formData);
-				boolean includeUsersAndGroups = false;
-				if (idChoices.contains(usersAndGroups))
-					includeUsersAndGroups = true;
-				try {
-					getAdminModule().reindexDestructive(ids, statusTicket, nodeNames, errors, includeUsersAndGroups);
-				} catch(Exception e) {
-					errors.addError(NLT.get("error.indexing.string", new String[] {e.getMessage()}));
+				if (idChoices.contains(usersAndGroups)) {
+					ProfileBinder pf = getProfileModule().getProfileBinder();
+					if (!idsIndexed.contains(pf.getId())) {
+						errors.add(getBinderModule().indexBinder(pf.getId(), true)); 
+					}
 				}
-				
 	    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
 				//SimpleProfiler.done(logger);
 				response.setRenderParameters(formData);
-				response.setRenderParameter(WebKeys.ERROR_INDEXING_COUNT, String.valueOf(errors.getErrorCount()));
+				response.setRenderParameter(WebKeys.ERROR_INDEXING_COUNT, errors.getErrorCount().toString());
 				if (errors.getErrorCount() > 0) {
 					List binderIds = new ArrayList();
 					for (Binder b : errors.getBinders()) {
@@ -131,16 +129,10 @@ public class ManageSearchIndexController extends  SAbstractController {
 						entryIds.add(e.getId().toString());
 						logger.error(NLT.get("error.indexing.entries", new String[] {e.getId().toString(), e.getTitle()}));
 					}
-					List errorStrings = new ArrayList();
-					for (String s : errors.getGeneralErrors()) {
-						errorStrings.add(s);
-					}
 					if (binderIds.size() > 0)
 						response.setRenderParameter(WebKeys.ERROR_INDEXING_BINDERS, (String[])binderIds.toArray(new String[binderIds.size()]));
 					if (entryIds.size() > 0)
 						response.setRenderParameter(WebKeys.ERROR_INDEXING_ENTRIES, (String[])entryIds.toArray(new String[entryIds.size()]));
-					if (errorStrings.size() > 0)
-						response.setRenderParameter(WebKeys.ERROR_INDEXING_STRINGS, (String[])errorStrings.toArray(new String[errorStrings.size()]));
 				}
 			
 			} else if (operation.equals("optimize")) {
@@ -190,9 +182,8 @@ public class ManageSearchIndexController extends  SAbstractController {
 		if (formData.containsKey("okBtn") || btnClicked.equals("okBtn")) {
 			response.setContentType("text/xml");
 			model.put(WebKeys.ERROR_INDEXING_COUNT, request.getParameter(WebKeys.ERROR_INDEXING_COUNT));
-			model.put(WebKeys.ERROR_INDEXING_BINDERS, formData.get(WebKeys.ERROR_INDEXING_BINDERS));
-			model.put(WebKeys.ERROR_INDEXING_ENTRIES, formData.get(WebKeys.ERROR_INDEXING_ENTRIES));
-			model.put(WebKeys.ERROR_INDEXING_STRINGS, formData.get(WebKeys.ERROR_INDEXING_STRINGS));
+			model.put(WebKeys.ERROR_INDEXING_BINDERS, request.getParameter(WebKeys.ERROR_INDEXING_BINDERS));
+			model.put(WebKeys.ERROR_INDEXING_ENTRIES, request.getParameter(WebKeys.ERROR_INDEXING_ENTRIES));
 			return new ModelAndView("administration/indexing_errors", model);
 		}
 
@@ -204,11 +195,12 @@ public class ManageSearchIndexController extends  SAbstractController {
        	users.addAttribute("title", NLT.get("administration.profile.content"));
     	users.addAttribute("id", usersAndGroups);
 		String icon = p.getIconName();
+		String imageBrand = SPropsUtil.getString("branding.prefix");
 		if (Validator.isNull(icon)) {
-	    	users.addAttribute("image", Utils.getIconNameTranslated("/icons/profiles.gif"));
+	    	users.addAttribute("image", "/" + imageBrand + "/icons/profiles.gif");
 			users.addAttribute("imageClass", "ss_twImg");
 		} else {
-			users.addAttribute("image", Utils.getIconNameTranslated(icon));
+			users.addAttribute("image", "/" + imageBrand + icon);
 			users.addAttribute("imageClass", "ss_twIcon");
 		}
 		users.addAttribute("url", "");
@@ -220,14 +212,11 @@ public class ManageSearchIndexController extends  SAbstractController {
  		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
 		
-		List<IndexNode> nodes = getAdminModule().retrieveIndexNodesHA();
+		List<IndexNode> nodes = getAdminModule().retrieveIndexNodes();
 		
-		if (nodes != null) {
+		if(nodes != null) {
 			model.put(WebKeys.SEARCH_NODES, nodes);
-		} else {
-			model.put(WebKeys.SEARCH_NODE, getAdminModule().loadNonHAIndexNode());
 		}
-		model.put(WebKeys.SEARCH_SAFE_TO_INDEX, !(getAdminModule().isUnsafeReindexingInProgress()));
 			
 		IndexOptimizationSchedule schedule = getAdminModule().getIndexOptimizationSchedule();
 		model.put(WebKeys.SCHEDULE_INFO, schedule);

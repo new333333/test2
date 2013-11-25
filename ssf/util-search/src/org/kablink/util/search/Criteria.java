@@ -75,17 +75,4 @@ public class Criteria
 		}
 		return doc;
 	}
-
-    public Junction asJunction() {
-        return root;
-    }
-
-    public void merge(Criteria other) {
-        if (!root.getClass().equals(other.root.getClass())) {
-            throw new UnsupportedOperationException("Can't merge criteria with different root junction types");
-        }
-        for (Criterion crit : other.root.criteria) {
-            root.add(crit);
-        }
-    }
 }

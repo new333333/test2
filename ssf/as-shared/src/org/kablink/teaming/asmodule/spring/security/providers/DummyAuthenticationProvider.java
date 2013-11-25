@@ -32,86 +32,19 @@
  */
 package org.kablink.teaming.asmodule.spring.security.providers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.providers.AuthenticationProvider;
 
 public class DummyAuthenticationProvider implements AuthenticationProvider {
 
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
-		return new DummyAuthentication(authentication);
+		return authentication;
 	}
 
 	public boolean supports(Class authentication) {
 		return true;
 	}
 
-	/*
-	 * This class delegates all calls to the original authentication, except that
-	 * <code>getAuthorities</code> method returns an empty array instead of null
-	 * when the original value is null. This is to avoid NPE in RoleVoter class.
-	 */
-	public static class DummyAuthentication implements Authentication {
-
-		private static final long serialVersionUID = 1L;
-		
-		private Authentication authentication; // original input
-		
-		private Collection<? extends GrantedAuthority> grantedAuthorities;
-		
-		public DummyAuthentication(Authentication authentication) {
-			this.authentication = authentication;
-
-			grantedAuthorities = authentication.getAuthorities();
-			if(grantedAuthorities == null)
-				grantedAuthorities = new ArrayList<GrantedAuthority>();
-		}
-
-		public boolean equals(Object another) {
-			return authentication.equals(another);
-		}
-
-		public String toString() {
-			return authentication.toString();
-		}
-
-		public int hashCode() {
-			return authentication.hashCode();
-		}
-
-		public Collection<? extends GrantedAuthority> getAuthorities() {
-			return grantedAuthorities;
-		}
-
-		public String getName() {
-			return authentication.getName();
-		}
-
-		public Object getCredentials() {
-			return authentication.getCredentials();
-		}
-
-		public Object getDetails() {
-			return authentication.getDetails();
-		}
-
-		public Object getPrincipal() {
-			return authentication.getPrincipal();
-		}
-
-		public boolean isAuthenticated() {
-			return authentication.isAuthenticated();
-		}
-
-		public void setAuthenticated(boolean isAuthenticated)
-				throws IllegalArgumentException {
-			authentication.setAuthenticated(isAuthenticated);
-		}
-
-	}
 }

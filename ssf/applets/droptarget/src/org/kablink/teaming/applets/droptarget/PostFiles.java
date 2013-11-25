@@ -48,11 +48,8 @@ package org.kablink.teaming.applets.droptarget;
 
 import java.net.*;
 import java.io.*;
-import java.util.List;
 import java.util.ArrayList;
 import java.applet.AppletContext;
-
-import javax.swing.*;
 
 import netscape.javascript.JSObject;
 
@@ -62,7 +59,6 @@ public class PostFiles extends Thread {
   OutputStream outputStream;
   TopFrame topFrame;
   String toAddr;
-  String checkExistsAddr;
   ArrayList fileList;
   String topDir;
   String spv = "savePreviousVersions";
@@ -133,7 +129,6 @@ public class PostFiles extends Thread {
     private  void writeFile(String localFileName, OutputStream out, String boundary, TopFrame topFrame, String topDir, String strFormFieldName) throws Exception {
         String localfn;
         String localRelFileName;
-        FileInputStream fis = null;
         try {
           System.gc();
           File localFile = new File(localFileName);
@@ -169,7 +164,7 @@ public class PostFiles extends Thread {
           //out.write(new String("content-disposition: attachment; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
           out.write(new String("content-disposition: form-data; name=\""+strFormFieldName+"\"; filename=\"" + strUTF8EncodedFileName + "\"\r\n\r\n").getBytes());
 
-          fis = new FileInputStream(localFileName);
+          FileInputStream fis = new FileInputStream(localFileName);
           if (localFile.length() != 0) {
             int amountRead=0;
             while (true) {
@@ -183,23 +178,15 @@ public class PostFiles extends Thread {
             }
           }
           fis.close();
-          fis = null;
           out.write(new String("\r\n" + "--" + boundary + "\r\n").getBytes());
         } catch (java.io.FileNotFoundException fnfe) {
         } catch (java.io.IOException ioe) {
-        } finally {
-        	if (fis != null) {
-        		try {
-        			fis.close();
-        		} catch(Exception e) {}
-        	}
         }
       }
     
     private  void writeFile(String localFileName, OutputStream out, String boundary, TopFrame topFrame, String topDir) {
       String localfn;
       String localRelFileName;
-      FileInputStream fis = null;
       try {
         System.gc();
         File localFile = new File(localFileName);
@@ -233,7 +220,7 @@ public class PostFiles extends Thread {
         //out.write(new String("content-disposition: attachment; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
         out.write(new String("content-disposition: form-data; name=\""+ topFrame.getParameter("appletFileName") +"\"; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
 
-        fis = new FileInputStream(localFileName);
+        FileInputStream fis = new FileInputStream(localFileName);
         if (localFile.length() != 0) {
           int amountRead=0;
           while (true) {
@@ -247,16 +234,9 @@ public class PostFiles extends Thread {
           }
         }
         fis.close();
-        fis = null;
         out.write(new String("\r\n" + "--" + boundary + "\r\n").getBytes());
       } catch (java.io.FileNotFoundException fnfe) {
       } catch (java.io.IOException ioe) {
-      } finally {
-    	  if (fis != null) {
-    		  try {
-    			  fis.close();
-    		  } catch(Exception e) {}
-    	  }
       }
     }
 
@@ -274,10 +254,9 @@ public class PostFiles extends Thread {
     * in a timely manner. (When this wasn't a separate thread, the droptarget
     * couldn't change the icon till the event handler finished.)
     */
-    public PostFiles(TopFrame tf, String ta, String ca, ArrayList fl, String td) {
+    public PostFiles(TopFrame tf,String ta, ArrayList fl, String td) {
       topFrame = tf;
       toAddr = ta;
-      checkExistsAddr = ca;
       fileList = fl;
       topDir = td;
     }
@@ -289,18 +268,6 @@ public class PostFiles extends Thread {
       String filename = "";
       HttpURLConnection conn=null;
       int totalBytes = 0;
-      boolean sendFiles = false;
-      try {
-    	  sendFiles = checkForExistingFiles(topFrame, checkExistsAddr, fileList);
-      } catch(Exception e) {
-      	Debug.writeLog("Error Checking File List: "+e);
-    	reportErrorMessage(topFrame, conn, e.toString());
-      }
-      if (!sendFiles) {
-    	  //We are not going to send any files to the server
-    	  fileList.clear();
-      }
-      
       // Figure out the total number of bytes to send to the server
       totalBytes = countem(fileList);
         try {
@@ -387,89 +354,6 @@ public class PostFiles extends Thread {
         	Debug.writeLog("Error Uploading File: Exception: "+e);
         	reportErrorMessage(topFrame, conn, e.toString());
         }
-    }
-    
-    //Routine to check that there are files being overwritten
-    public boolean checkForExistingFiles(TopFrame tf, String fileCheckUrl, List fileList) {
-    	boolean result = true;
-    	HttpURLConnection connection = null;
-    	OutputStreamWriter wr = null;
-    	BufferedReader rd  = null;
-    	StringBuilder sb = null;
-    	String line = null;
-    	List existingFiles = new ArrayList();
-	
-    	URL serverAddress = null;
-	
-    	try {
-    		serverAddress = new URL(fileCheckUrl);
-    		//set up out communications stuff
-    		connection = null;
-	
-    		//Set up the initial connection
-    		connection = (HttpURLConnection)serverAddress.openConnection();
-    		connection.setRequestMethod("GET");
-    		connection.setDoOutput(true);
-    		connection.setReadTimeout(10000);
-	            
-    		connection.connect();
-	
-    		//get the output stream writer and write the output to the server
-    		wr = new OutputStreamWriter(connection.getOutputStream());
-    		StringBuffer sbuf = new StringBuffer();
-    		sbuf.append("fileNames=");
-    		for (int i = 0; i < fileList.size(); i++) {
-    			File file = (File)(fileList.get(i));
-    			if (i > 0) sbuf.append(",");
-    			sbuf.append(file.getName());
-    		}
-    		wr.write(sbuf.toString());
-    		wr.flush();
-	
-    		//read the result from the server
-    		//The server will return a list of files that already exist
-    		//If nothing is returned, then there were no files that already existed
-    		rd  = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-    		sbuf = new StringBuffer();
-    		String str;
-    		while ((str = rd.readLine()) != null) {
-    			if (!str.trim().equals("")) {
-    				sbuf.append(str.trim() + "\n");
-    			}
-    		}
-    		if (sbuf.length() > 0) {
-	    		//Custom button text
-	    		Object[] options = {tf.getParameter("strYes"),
-	    				tf.getParameter("strNo")};
-	    		int n = JOptionPane.showConfirmDialog(
-	    				tf,
-	    				tf.getParameter("strFilesExistConfirm") + "\n" + sbuf.toString(),
-	    				tf.getParameter("strFilesExist"),
-	    			    JOptionPane.YES_NO_OPTION);
-	    		if (n == 0) {
-	    			result = true;
-	    		} else {
-	    			result = false;
-	    		}
-    		}
-    		
-    	} catch (MalformedURLException e) {
-    		e.printStackTrace();
-    	} catch (ProtocolException e) {
-    		e.printStackTrace();
-    	} catch (IOException e) {
-    		e.printStackTrace();
-    	}
-    	finally
-    	{
-    		//close the connection, set all objects to null
-    		connection.disconnect();
-    		rd = null;
-    		sb = null;
-    		wr = null;
-    		connection = null;
-    	}
-    	return result;
     }
     
     public void reportErrorMessage(TopFrame topFrame, HttpURLConnection conn, String strError) {

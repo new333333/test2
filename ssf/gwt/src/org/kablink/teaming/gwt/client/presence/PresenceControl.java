@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,10 +35,11 @@ package org.kablink.teaming.gwt.client.presence;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPresenceInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
@@ -46,11 +47,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-/**
- * ?
- * 
- * @author ?
- */
 public class PresenceControl extends Composite {
 	private String m_binderId;
 	private boolean m_bShowStatusText;
@@ -103,7 +99,6 @@ public class PresenceControl extends Composite {
 			GetPresenceInfoCmd cmd;
 			
 			AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
-				@Override
 				public void onFailure(Throwable t) {
 					// Just ignore any errors.  All we need to do is hide the presence control
 					// See bug 648358.
@@ -115,7 +110,6 @@ public class PresenceControl extends Composite {
 					panel.setVisible(false);
 				}
 	
-				@Override
 				public void onSuccess( VibeRpcResponse response ) {
 					GwtPresenceInfo piFromRPC = null;
 					
@@ -138,38 +132,38 @@ public class PresenceControl extends Composite {
 		String statusText = pi.getStatusText();
 		switch (pi.getStatus()) {
 			case GwtPresenceInfo.STATUS_AVAILABLE:
-				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAvailable16().getSafeUri());
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAvailable16());
 				if (statusText == null) {
 					statusText = GwtTeaming.getMessages().presenceAvailable();
 				}
 				break;
 			case GwtPresenceInfo.STATUS_IDLE:
-				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16().getSafeUri());
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16());
 				if (statusText == null) {
 					statusText = GwtTeaming.getMessages().presenceIdle();
 				}
 				break;
 			case GwtPresenceInfo.STATUS_AWAY:
-				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16().getSafeUri());
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16());
 				if (statusText == null) {
 					statusText = GwtTeaming.getMessages().presenceAway();
 				}
 				break;
 			case GwtPresenceInfo.STATUS_BUSY:
-				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceBusy16().getSafeUri());
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceBusy16());
 				if (statusText == null) {
 					statusText = GwtTeaming.getMessages().presenceBusy();
 				}
 				break;
 			case GwtPresenceInfo.STATUS_OFFLINE:
-				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceOffline16().getSafeUri());
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceOffline16());
 				if (statusText == null) {
 					statusText = GwtTeaming.getMessages().presenceOffline();
 				}
 				break;
 			default:
 				statusText = "";
-				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceUnknown16().getSafeUri());
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceUnknown16());
 		}
 		if (pi.getStatus() != GwtPresenceInfo.STATUS_UNKNOWN || !m_bHideIfUnknown) {
 			if ( m_presenceAStyleName != null )
@@ -214,39 +208,12 @@ public class PresenceControl extends Composite {
 		}
 	}
 	
+	
 	/**
 	 * Set the alignment of the presence image.
 	 */
 	public void setImageAlignment( String alignment )
 	{
 		m_presenceImgAlignment = alignment;
-	}
-	
-	/**
-	 * Overrides the default image displayed by the presence control.
-	 * 
-	 * @param imageUrl
-	 */
-	public void setImageOverride(String imageUrl) {
-		if (GwtClientHelper.hasString(imageUrl)) {
-			m_presenceImage.setUrl(imageUrl);
-		}
-	}
-	
-	public void setImageOverride(ImageResource imageRes) {
-		if (null != imageRes) {
-			m_presenceImage.setUrl(imageRes.getSafeUri());
-		}
-	}
-	
-	/**
-	 * Adds a style name to the presence image.
-	 * 
-	 * @param style
-	 */
-	public void addImageStyleName(String style) {
-		if (GwtClientHelper.hasString(style)) {
-			m_presenceImage.addStyleName(style);
-		}
 	}
 }

@@ -227,22 +227,14 @@ public class TimeZoneHelper {
 		String offset = "";
 		TreeMap<String, String> results = new TreeMap<String, String>(); //sorted list
 		for (int i=0; i<ids.length; ++i) {
-			int rawOffset;
-			Integer offsetMinutes;
-			Integer offsetHours;
 			String id = fixTimeZoneId(ids[i]);
 			if (id == null) continue;
 			if (id.startsWith("Etc/") || id.startsWith("SystemV")) continue;
 			if (id.length() == 3 && !id.equals("GMT")) continue; //UTC is only one left
 			String tzString = TimeZone.getTimeZone(id).getDisplayName(false, TimeZone.LONG, user.getLocale());
-			rawOffset = TimeZone.getTimeZone( id ).getRawOffset();
-			offsetHours = rawOffset / (1000*60*60);
-			if (offsetHours > 12 || 0 < -11) continue;  //Skip any timezones that are outside of our expected range or -11 to +12
-			offsetMinutes = Math.abs( (rawOffset - (offsetHours*1000*60*60)) / (1000*60) );
-			offset = "(" + NLT.get("GMT") + " " + offsetHours.toString() + ":";
-			if ( offsetMinutes < 10 )
-				offset += "0";
-			offset += offsetMinutes.toString() + ") ";
+			Integer o = TimeZone.getTimeZone(id).getRawOffset() / (1000*60*60);
+			if (o > 12 || 0 < -11) continue;  //Skip any timezones that are outside of our expected range or -11 to +12
+			offset = "(" + NLT.get("GMT") + " " + o.toString() + ":00) ";
 			String city = id;
 			if (id.indexOf("/") >= 0) city = id.substring(id.indexOf("/")+1);
 			if (!tzString.contains("(")) tzString += " (" + city + ")";

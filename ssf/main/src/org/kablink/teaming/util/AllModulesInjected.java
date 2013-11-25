@@ -46,9 +46,7 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
-import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.rss.RssModule;
-import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -117,9 +115,6 @@ public interface AllModulesInjected {
 
 	ReportModule getReportModule();
 
-	void setResourceDriverModule(ResourceDriverModule resourceDriverModule);
-	ResourceDriverModule getResourceDriverModule();
-
 	void setDashboardModule(DashboardModule dashboardModule);
 
 	DashboardModule getDashboardModule();
@@ -139,7 +134,4 @@ public interface AllModulesInjected {
 	
 	void setZoneModule(ZoneModule zoneModule);
 	ZoneModule getZoneModule();
-	
-	void setSharingModule(SharingModule sharingModule);
-	SharingModule getSharingModule();
 }

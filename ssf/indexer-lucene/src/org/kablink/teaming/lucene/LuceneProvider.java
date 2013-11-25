@@ -32,22 +32,16 @@
  */
 package org.kablink.teaming.lucene;
 
-import gnu.trove.set.hash.TLongHashSet;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.analysis.WhitespaceAnalyzer;
-import org.apache.lucene.analysis.cn.ChineseAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
@@ -56,31 +50,15 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.ChainedFilter;
-import org.apache.lucene.search.Collector;
-import org.apache.lucene.search.FieldCache;
-import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.HitCollector;
+import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.NumericRangeFilter;
-import org.apache.lucene.search.NumericRangeQuery;
-import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.store.MMapDirectory;
-import org.apache.lucene.store.NIOFSDirectory;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.store.SimpleFSDirectory;
+import org.kablink.teaming.lucene.ChineseAnalyzer;
 import org.kablink.teaming.lucene.analyzer.VibeIndexAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.lucene.util.TagObject;
@@ -88,7 +66,6 @@ import org.kablink.util.EventsStatistics;
 import org.kablink.util.PropsUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-import org.kablink.util.search.QueryParserFactory;
 
 public class LuceneProvider extends IndexSupport implements LuceneProviderMBean {
 	
@@ -98,8 +75,6 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	private static final String FIND_TYPE_COMMUNITY_TAGS = "communityTags";
 	
 	private static Analyzer defaultAnalyzer;
-	
-	private static ThreadLocal<QueryParser> queryParserWithWSA = new ThreadLocal<QueryParser>();
 	
 	private LuceneProviderManager luceneProviderManager;
 	
@@ -127,15 +102,6 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		logDebug("Lucene provider instantiated");
 	}
 	
-	private QueryParser getQueryParserWithWSA() {
-		QueryParser qp = queryParserWithWSA.get();
-		if(qp == null) {
-			qp =  QueryParserFactory.createQueryParser(new WhitespaceAnalyzer());
-			queryParserWithWSA.set(qp);
-		}
-		return qp;
-	}
-	
 	public void initialize() {
 		// Make sure that the index directory exists
 		File indexDir = new File(indexDirPath);
@@ -159,23 +125,10 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		
 		// Create index if necessary
 		try {
-			String dirImplType = PropsUtil.getString("lucene.directory.implementation", null);
-			if(dirImplType == null)		
-				directory = FSDirectory.open(new File(indexDirPath));
-			else if(dirImplType.equalsIgnoreCase("simple"))
-				directory = new SimpleFSDirectory(new File(indexDirPath));
-			else if(dirImplType.equalsIgnoreCase("nio"))
-				directory = new NIOFSDirectory(new File(indexDirPath));
-			else if(dirImplType.equalsIgnoreCase("mmap"))
-				directory = new MMapDirectory(new File(indexDirPath));
-			else if(dirImplType.equalsIgnoreCase("ram"))
-				directory = new RAMDirectory();
-			else
-				throw newLuceneException("Invalid directory implementation type '" + dirImplType + "'");
-				
-			logInfo("Created Directory instance of class '" + directory.getClass().getName() + ((dirImplType == null)? "'" : "' given directory implementation type of '" + dirImplType + "'"));
+			directory = FSDirectory.open(new File(indexDirPath));
+			logInfo("Created FSDirectory instance of type " + directory.getClass().getName());
 		} catch (IOException e) {
-			throw newLuceneException("Could not create Directory instance", e);
+			throw newLuceneException("Could not create FSDirectory instance", e);
 		}
 		
 		try {
@@ -233,7 +186,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			IndexWriter.unlock(dir);
 		}
 		
-		int maxFields = PropsUtil.getInt("lucene.max.fieldlength", 100000);
+		int maxFields = PropsUtil.getInt("lucene.max.fieldlength", 10000);
 		int maxMerge = PropsUtil.getInt("lucene.max.merge.docs", UNSPECIFIED_INT);
 		int mergeFactor = PropsUtil.getInt("lucene.merge.factor", 10);
 		int ramBufferSizeMb = PropsUtil.getInt("lucene.ram.buffer.size.mb", 256);
@@ -257,45 +210,16 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return writer;
 	}
 	
-	private void purgeOldDocument(Fieldable uidField, Document doc) throws IOException {
-		// Enforce purge only for binders. If we do that for entries, it will have very bad side effect
-		// because, unfortunately, replies and attachments all share the same uid as their parent entry.
-		String uidValue = uidField.stringValue();
-		if(uidValue != null && uidValue.startsWith("org.kablink.teaming.domain.Folder_")) {
-			Fieldable docTypeField = doc.getFieldable(Constants.DOC_TYPE_FIELD);
-			if(docTypeField != null && Constants.DOC_TYPE_BINDER.equals(docTypeField.stringValue())) { // This is a binder
-				// First, purge duplicate based on the UID (i.e., enforce unique constraint on the internal id)
-				Term purgeTerm = new Term(Constants.UID_FIELD, uidValue);
-				getIndexingResource().getIndexWriter().deleteDocuments(purgeTerm);
-				if(logger.isTraceEnabled())
-					logTrace("Called purgeOldDocument on writer with uid term [" + purgeTerm.toString() + "]");
-				// Next, purge duplicate based on the path (i.e., enforce unique constraint on the path) 
-				Fieldable pathField = doc.getFieldable(Constants.SORT_ENTITY_PATH);
-				if(pathField != null) {
-					String path = pathField.stringValue();
-					if(Validator.isNotNull(path)) { 
-						Term purgeTerm2 = new Term(Constants.SORT_ENTITY_PATH, path);
-						getIndexingResource().getIndexWriter().deleteDocuments(purgeTerm2);
-						if(logger.isTraceEnabled())
-							logTrace("Called purgeOldDocument on writer with path term [" + purgeTerm2.toString() + "]");
-					}
-				}
-			}
-		}
-	}
-	
 	public void addDocuments(ArrayList docs) throws LuceneException {
 		long startTime = System.nanoTime();
 
 		try {
 			for (Iterator iter = docs.iterator(); iter.hasNext();) {
 				Document doc = (Document) iter.next();
-				Fieldable uidField = doc.getFieldable(Constants.UID_FIELD);
-				if (uidField == null)
+				if (doc.getFieldable(Constants.UID_FIELD) == null)
 					throw new IllegalArgumentException(
 							"Document must contain a UID with field name "
 									+ Constants.UID_FIELD);
-				purgeOldDocument(uidField, doc);
 				String tastingText = getTastingText(doc);
 				getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
 				if(logger.isTraceEnabled())
@@ -342,14 +266,12 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		for(Object obj : docsToAddOrDelete) {
 			if(obj instanceof Document) {
 				Document doc = (Document) obj;
-				Fieldable uidField = doc.getFieldable(Constants.UID_FIELD);
-				if (uidField == null)
+				if (doc.getFieldable(Constants.UID_FIELD) == null)
 					throw new IllegalArgumentException(
 							"Document must contain a UID with field name "
 									+ Constants.UID_FIELD);
+				String tastingText = getTastingText(doc);
 				try {
-					purgeOldDocument(uidField, doc);
-					String tastingText = getTastingText(doc);
 					getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
 				} catch (IOException e) {
 					throw newLuceneException("Could not add document to the index", e);					
@@ -454,40 +376,26 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	}
 	
 	private String getTastingText(Document doc) {
-		StringBuilder sb = new StringBuilder();
-		
-		Fieldable title = doc.getFieldable(Constants.TITLE_FIELD);
-		if (title != null) 
-			sb.append(title.stringValue());
-		
-		Fieldable desc = doc.getFieldable(Constants.DESC_TEXT_FIELD);
-		if(desc != null)
-			sb.append(desc.stringValue());
-		
-		if(sb.length() == 0) {
-			sb.append(getTastingTextFromGeneralTextField(doc));			
+		String text = getTastingTextFromAllTextField(doc);
+		if (text == null || text.length() == 0) {
+			Fieldable title = doc.getFieldable(Constants.TITLE_FIELD);
+			if (title != null) 
+				text = title.stringValue();
 		}
-		else if(sb.length() < 1024) {
-			Fieldable docTypeField = doc.getFieldable(Constants.DOC_TYPE_FIELD);
-			if(docTypeField != null && Constants.DOC_TYPE_ATTACHMENT.equals(docTypeField.stringValue())) {
-				sb.append(" ").append(getTastingTextFromGeneralTextField(doc));
-			}
-		}
-		
-		String text = sb.toString();
-		
-		if (text.length() > 1024) 
-			text = text.substring(0,1024);
-		
-		return text;
+		if(text == null)
+			text = "";
+		if (text.length()> 1024) 
+			return text.substring(0,1024);
+		else 
+			return text;
 	}
 	
-	private String getTastingTextFromGeneralTextField(Document doc) {
+	private String getTastingTextFromAllTextField(Document doc) {
 		StringBuilder sb = new StringBuilder();
-		Fieldable[] generalTextFields = doc.getFieldables(Constants.GENERAL_TEXT_FIELD);
+		Fieldable[] allTextFields = doc.getFieldables(Constants.ALL_TEXT_FIELD);
 		String piece;
-		for(Fieldable generalTextField:generalTextFields) {
-			piece = generalTextField.stringValue();
+		for(Fieldable allTextField:allTextFields) {
+			piece = allTextField.stringValue();
 			if(piece != null && piece.length()>0) {
 				if(sb.length() > 0)
 					sb.append(" ");
@@ -505,7 +413,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			return getDefaultAnalyzer();
 		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
 			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(VibeIndexAnalyzer.getInstance());
-			retAnalyzer.addAnalyzer(Constants.GENERAL_TEXT_FIELD, new ChineseAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
 			retAnalyzer.addAnalyzer(Constants.DESC_TEXT_FIELD, new ChineseAnalyzer());
 			retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
 			return retAnalyzer;
@@ -540,6 +448,10 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 	
+	public org.kablink.teaming.lucene.Hits search(Query query) throws LuceneException {
+		return this.search(query, 0, -1);
+	}
+
 	private IndexSearcherHandle getIndexSearcherHandle() throws LuceneException {
 		SearcherManager manager = getIndexingResource().getSearcherManager();
 		try {
@@ -562,147 +474,22 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}	
 	}
 	
-	public boolean testInferredAccessToNonNetFolder(Long contextUserId,  String aclQueryStr, String binderPath) throws LuceneException {
+	public org.kablink.teaming.lucene.Hits search(Query query, int offset,
+			int size) throws LuceneException {
 		long startTime = System.nanoTime();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
 		try {
-			if(aclQueryStr != null && aclQueryStr.length() > 0) {
-				BooleanQuery enhancedAclQuery = new BooleanQuery();
-				enhancedAclQuery.add(parseAclQueryStr(aclQueryStr), BooleanClause.Occur.MUST);
-				enhancedAclQuery.add(new PrefixQuery(new Term(Constants.SORT_ENTITY_PATH, binderPath.toLowerCase()+"/")), BooleanClause.Occur.MUST);
-				
-				TopDocs topDocs = indexSearcherHandle.getIndexSearcher().search(enhancedAclQuery, 1);
-				
-				boolean result = (topDocs.totalHits > 0);
-
-				end(startTime, "testInferredAccessToNonNetFolder", contextUserId, result, aclQueryStr, binderPath);
-				
-				return result;
-			}
-			else {
-				// The user has access to everything.
-				return true;
-			}
-		} catch (IOException e) {
-			throw newLuceneException("Error searching index", e);
-		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
-			throw e;
-		} catch (ParseException e) {
-			throw newLuceneException("Error parsing query", e);
-		} finally {
-			releaseIndexSearcherHandle(indexSearcherHandle);
-		}
-		
-	}
-	
-	/*
-	 * This method executes search query that limits its search space only to the 
-	 * immediate children of the specified binder.
-	 * The search result is restricted by the ACL filter if specified.
-	 * This method fully computes inferred access (visibility) based on the ACLs
-	 * stored in the index.
-	 */
-	public org.kablink.teaming.lucene.Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
-			Long parentBinderId, String parentBinderPath) throws LuceneException {
-		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
-
-		Filter implicitlyAccessibleSubFoldersFilter = null;
-		
-		try {
-			if(aclQueryStr != null && aclQueryStr.length() > 0) {
-				// This search is bound by ACL. We need to tweak the search in order to handle the anomaly associated with Net Folders (i.e., "implicit" permissions).
-				BooleanQuery implicitlyAccessibleSubFoldersQuery = new BooleanQuery();
-				implicitlyAccessibleSubFoldersQuery.add(new TermQuery(new Term(Constants.ENTRY_ANCESTRY, parentBinderId.toString())), BooleanClause.Occur.MUST);
-				//implicitlyAccessibleSubFoldersQuery.add(new TermQuery(new Term(Constants.IS_MIRRORED_FIELD, Constants.TRUE)), BooleanClause.Occur.MUST);
-				implicitlyAccessibleSubFoldersQuery.add(parseAclQueryStr(aclQueryStr), BooleanClause.Occur.MUST);
-
-				Set<String> subFolderPaths = obtainImplicitlyAccessibleSubFolderPaths(indexSearcherHandle.getIndexSearcher(), contextUserId, parentBinderPath, implicitlyAccessibleSubFoldersQuery); 
-				
-				if(subFolderPaths.size() > 0) {
-					BooleanQuery bq = new BooleanQuery();
-					for(String subFolderPath:subFolderPaths)
-						bq.add(new TermQuery(new Term(Constants.SORT_ENTITY_PATH, subFolderPath)), BooleanClause.Occur.SHOULD);
-					implicitlyAccessibleSubFoldersFilter = new QueryWrapperFilter(bq);
-				}
-			}
-			else {
-				// The user has access to everything any way, so no need to worry about visibility and no need to augment the original acl clauses.
-			}
-		} catch (IOException e) {
-			throw newLuceneException("Error searching index", e);
-		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
-			throw e;
-		} catch (ParseException e) {
-			throw newLuceneException("Error parsing query", e);
-		} finally {
-			releaseIndexSearcherHandle(indexSearcherHandle);
-		}
-		
-		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, implicitlyAccessibleSubFoldersFilter, false);
-	}
-
-	/*
-	 * This method executes search query that limits its search space only to the 
-	 * immediate children of the specified binder.
-	 * The search result only contains items that pass at least one of the filters
-	 * specified.
-	 * This method doesn't make any attempt to compute inferred access.
-	 */
-	public org.kablink.teaming.lucene.Hits searchNetFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException {
-		if(size == 0)
-			throw new IllegalArgumentException("Size must be specified");
-
-		long startTime = System.nanoTime();
-
-		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
-
-		TopDocs topDocs = null;
-		
-		Filter aclFilter = null;
-
-		try {
-			if(aclQueryStr != null && aclQueryStr.length() > 0) {
-				Query aclQuery = parseAclQueryStr(aclQueryStr);
-				aclFilter = new QueryWrapperFilter(aclQuery);
-			}
-			if(titles != null && titles.size() > 0) {
-				BooleanQuery titleQuery = new BooleanQuery();
-				for(String title:titles) {
-					titleQuery.add(new TermQuery(new Term(Constants.TITLE_FIELD, title.toLowerCase())), BooleanClause.Occur.SHOULD);
-				}
-				QueryWrapperFilter titleFilter = new QueryWrapperFilter(titleQuery);
-				if(aclFilter == null) {
-					aclFilter = titleFilter;
-				}
-				else {
-					aclFilter = new ChainedFilter(new Filter[] {aclFilter, titleFilter}, ChainedFilter.OR);
-				}
-			}
-			
+			org.apache.lucene.search.Hits hits = indexSearcherHandle.getIndexSearcher()
+					.search(query);
 			if (size < 0)
-				size = Integer.MAX_VALUE;
-
-			int searchMaxSize = getSearchMaxSize(offset, size);
-
-			if (sort == null) {
-				topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);
-			}
-			else {
-				try {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize, sort);
-				} catch (Exception ex) {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);
-				}
-			}
-		   
+				size = hits.length();
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, null, false);
+					.transfer(hits, offset, size);
+			tempHits.setTotalHits(hits.length());
 
-			end(startTime, "searchFolderOneLevel", contextUserId, aclQueryStr, titles, query, sort, offset, size, tempHits.length());
+			end(startTime, "search(Query,int,int)", query, tempHits.length());
 			
 			return tempHits;
 		} catch (IOException e) {
@@ -710,147 +497,39 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} catch (OutOfMemoryError e) {
 			getIndexingResource().closeOOM(e);
 			throw e;
-		} catch (ParseException e) {
-			throw newLuceneException("Error parsing query", e);
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
 	}
-	
-	private int getSearchMaxSize(int offset, int requestedMaxSize) {
-		if(requestedMaxSize == Integer.MAX_VALUE)
-			return Integer.MAX_VALUE;
-		else
-			return offset + requestedMaxSize;
+
+	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort) throws LuceneException {
+		return this.search(query, sort, 0, -1);
 	}
-	
-	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
+
+	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort,
 			int offset, int size) throws LuceneException {
-		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, null, true);
-	}
-
-	private org.kablink.teaming.lucene.Hits searchInternal(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
-			int offset, int size, Filter alternateAclFilter, boolean totalHitsApproximate) throws LuceneException {
-		ThreadLocalAclQueryFilter.clear();
-		try {
-			return doSearchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, alternateAclFilter, totalHitsApproximate);
-		}
-		finally {
-			ThreadLocalAclQueryFilter.clear();			
-		}
-	}
-	
-	private org.kablink.teaming.lucene.Hits doSearchInternal(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
-			int offset, int size, Filter alternateAclFilter, boolean totalHitsApproximate) throws LuceneException {
-		if(size == 0)
-			throw new IllegalArgumentException("Size must be specified");
-		
 		long startTime = System.nanoTime();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
-		TopDocs topDocs = null;
-		
-		Filter aclFilter = null;
-		
+		Hits hits = null;
+
 		try {
-			if(aclQueryStr != null && aclQueryStr.length() > 0) {
-				// The query result must be filtered by ACL restriction.
-				if(mode == Constants.SEARCH_MODE_NORMAL) {
-					Query aclQuery = parseAclQueryStr(aclQueryStr);
-					
-					Query aclQueryCopy = (Query) aclQuery.clone();
-					
-					QueryWrapperFilter aclQueryFilter = new QueryWrapperFilter(aclQuery);
-					
-					ThreadLocalAclQueryFilter threadLocalAclQueryFilter = new ThreadLocalAclQueryFilter(aclQueryFilter);
-					
-					Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(aclQueryCopy);
-					
-					TLongHashSet accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), contextUserId, accessibleFoldersAclQuery);
-					
-					Filter aclInheritingEntriesFilter = makeAclInheritingEntriesFilter();
-					
-					AclInheritingAccessibleEntriesFilter aclInheritingAccessibleEntriesFilter = new AclInheritingAccessibleEntriesFilter(aclInheritingEntriesFilter, accessibleFolderIds);
-					
-					if(alternateAclFilter != null)
-						aclFilter = new ChainedFilter(new Filter[] {threadLocalAclQueryFilter, aclInheritingAccessibleEntriesFilter, alternateAclFilter}, ChainedFilter.OR);		
-					else
-						aclFilter = new ChainedFilter(new Filter[] {threadLocalAclQueryFilter, aclInheritingAccessibleEntriesFilter}, ChainedFilter.OR);		
-				}
-				else if(mode == Constants.SEARCH_MODE_SELF_CONTAINED_ONLY) {
-					if(alternateAclFilter != null)
-						aclFilter = new ChainedFilter(new Filter[] {new QueryWrapperFilter(parseAclQueryStr(aclQueryStr)), alternateAclFilter}, ChainedFilter.OR);
-					else
-						aclFilter = new QueryWrapperFilter(parseAclQueryStr(aclQueryStr));
-				}
-				else if(mode == Constants.SEARCH_MODE_PREAPPROVED_PARENTS) {
-					Query aclInheritingEntriesPermissibleAclQuery = makeAclInheritingEntriesPermissibleAclQuery(parseAclQueryStr(aclQueryStr));
-					
-					QueryWrapperFilter aclInheritingEntriesPermissibleAclFilter = new QueryWrapperFilter(aclInheritingEntriesPermissibleAclQuery);
-
-					if(alternateAclFilter != null)
-						aclFilter = new ChainedFilter(new Filter[] {aclInheritingEntriesPermissibleAclFilter, alternateAclFilter}, ChainedFilter.OR);
-					else
-						aclFilter = aclInheritingEntriesPermissibleAclFilter;
-				}
-				else {
-					throw newLuceneException("Invalid search mode: " + mode);
-				}				
-			}
-			
-			if (size < 0)
-				size = Integer.MAX_VALUE;
-			
-			int searchMaxSize = getSearchMaxSize(offset, size);
-			
-			if (sort == null) {
-				topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);
-			}
-			else {
+			if (sort == null)
+				hits = indexSearcherHandle.getIndexSearcher().search(query);
+			else
 				try {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize, sort);
+					hits = indexSearcherHandle.getIndexSearcher().search(query, sort);
 				} catch (Exception ex) {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);
+					hits = indexSearcherHandle.getIndexSearcher().search(query);
 				}
-			}
-			
-			/// BEGIN: Debug
-			int hitsThreshold = PropsUtil.getInt("lucene.hits.threshold", 100000);
-	    	int length = topDocs.totalHits;
-	        length = Math.min(length - offset, size);
-	        Long hitsTransferBegin = null;
-	        if(length > hitsThreshold) {
-	        	hitsTransferBegin = System.nanoTime();
-	        	String log = "TOO LARGE HITS: transferred hits=" + length +
-	        			", hits threshold=" + hitsThreshold +
-	        			", total hits=" + topDocs.totalHits +
-	        			", contextUserId=" + contextUserId + 
-						", aclQueryStr=[" + ((aclQueryStr==null)? "" : aclQueryStr) + 
-						"], mode=" + mode + 
-						", query=[" + ((query==null)? "" : query.toString()) + 
-						"], sort=[" + ((sort==null)? "" : sort.toString()) + 
-						"], offset=" + offset +
-						", size=" + size +
-						", alternateAclFilter=[" + ((alternateAclFilter==null)? "" : alternateAclFilter.toString()) +
-						"]";
-	        	logger.warn(log);
-	        	if(PropsUtil.getBoolean("lucene.hits.threshold.exceeded.is.error", false)) {
-	        		throw new LuceneException(log);
-	        	}
-	        }
-	        /// END: Debug			
-			
+			if (size < 0)
+				size = hits.length();
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, ThreadLocalAclQueryFilter.getNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds(), totalHitsApproximate);
-			
-			/// BEGIN: Debug
-			if(hitsTransferBegin != null) {
-				logger.warn("TOO LARGE HITS: took " + (elapsedTimeInMs(hitsTransferBegin) / 1000.0) + " seconds");
-			}
-			/// END: Debug
+					.transfer(hits, offset, size);
+			tempHits.setTotalHits(hits.length());
 
-			end(startTime, "searchInternal", contextUserId, aclQueryStr, mode, query, sort, offset, size, tempHits.length());
+			end(startTime, "search(Query,Sort,int,int)", query, tempHits.length());
 			
 			return tempHits;
 		} catch (IOException e) {
@@ -858,25 +537,23 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} catch (OutOfMemoryError e) {
 			getIndexingResource().closeOOM(e);
 			throw e;
-		} catch (ParseException e) {
-			throw newLuceneException("Error parsing query", e);
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
 	}
 
-	public ArrayList getTags(String aclQueryStr, String tag, String type, String userId, boolean isSuper)
+	public ArrayList getTags(Query query, String tag, String type, String userId, boolean isSuper)
 	throws LuceneException {
 		long startTime = System.nanoTime();
 		
 		ArrayList<String> resultTags = new ArrayList<String>();
-		ArrayList tagObjects = getTagsWithFrequency(aclQueryStr, tag, type, userId, isSuper);
+		ArrayList tagObjects = getTagsWithFrequency(query, tag, type, userId, isSuper);
 		Iterator iter = tagObjects.iterator();
 		while (iter.hasNext()) {
 			resultTags.add(((TagObject)iter.next()).getTagName());
 		}
 		
-		end(startTime, "getTags(String,String,String,String,boolean)", aclQueryStr, resultTags.size());
+		end(startTime, "getTags(Query,String,String,String,boolean)", query, resultTags.size());
 		
 		return resultTags;
 	}	
@@ -892,7 +569,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	 * @return
 	 * getTags(Query query, Long id, String tag, String type, boolean isSuper)
 	 */
-	public ArrayList getTagsWithFrequency(String aclQueryStr, String tag, String type, String userId, boolean isSuper)
+	public ArrayList getTagsWithFrequency(Query query, String tag, String type, String userId, boolean isSuper)
 			throws LuceneException {
 		long startTime = System.nanoTime();
 		String tagOrig = tag;
@@ -907,7 +584,11 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		try {
 			final BitSet userDocIds = new BitSet(indexSearcherHandle.getIndexSearcher().getIndexReader().maxDoc());
 			if (!isSuper) {
-				markAccessibleDocs(indexSearcherHandle, aclQueryStr, userDocIds);
+				indexSearcherHandle.getIndexSearcher().search(query, new HitCollector() {
+					public void collect(int doc, float score) {
+						userDocIds.set(doc);
+					}
+				});
 			} else {
 				userDocIds.set(0, userDocIds.size());
 			}
@@ -983,7 +664,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 
 		resultTags.addAll(results);
 
-		end(startTime, "getTagsWithFrequency(String,String,String,String,boolean)", aclQueryStr, tagOrig, tag, resultTags.size());
+		end(startTime, "getTagsWithFrequency(Query,String,String,String,boolean)", query, tagOrig, tag, resultTags.size());
 
 		return resultTags;
 	}
@@ -1017,24 +698,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		try {
 			final BitSet userDocIds = new BitSet(indexSearcherHandle.getIndexSearcher().getIndexReader().maxDoc());
 			
-			indexSearcherHandle.getIndexSearcher().search(query, new Collector() {
-				@Override
-				public void collect(int doc) {
+			indexSearcherHandle.getIndexSearcher().search(query, new HitCollector() {
+				public void collect(int doc, float score) {
 					userDocIds.set(doc);
-				}
-
-				@Override
-				public boolean acceptsDocsOutOfOrder() {
-					return true;
-				}
-
-				@Override
-				public void setNextReader(IndexReader arg0, int arg1)
-						throws IOException {
-				}
-
-				@Override
-				public void setScorer(Scorer arg0) throws IOException {
 				}
 			});
 			if(sortTitleFieldName == null)
@@ -1180,40 +846,6 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 	
-	private void end(long begin, String methodName, Long contextUserId, int length) {
-		endStat(begin, methodName);
-		if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length +
-					", contextUserId=" + contextUserId);
-		}
-	}
-	
-	private void end(long begin, String methodName, Long contextUserId, boolean result, String aclQueryStr, String binderPath) {
-		endStat(begin, methodName);
-		if(logger.isTraceEnabled()) {
-			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + String.valueOf(result) +
-					", contextUserId=" + contextUserId +
-					", binderPath=[" + binderPath +
-					"], aclQuery=[" + ((aclQueryStr==null)? "" : aclQueryStr) + "]");			
-		}
-		else if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + String.valueOf(result));
-		}
-	}
-	
-	private void end(long begin, String methodName, Long contextUserId, int length, String parentBinderPath, Query implicitlyAccessibleSubFoldersQuery) {
-		endStat(begin, methodName);
-		if(logger.isTraceEnabled()) {
-			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length +
-					", contextUserId=" + contextUserId +
-					", parentBinderPath=[" + parentBinderPath +
-					"], implicitlyAccessibleSubFoldersQuery=[" + ((implicitlyAccessibleSubFoldersQuery==null)? null : implicitlyAccessibleSubFoldersQuery.toString()) + "]");
-		}
-		else if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
-		}
-	}
-	
 	private void end(long begin, String methodName, Query query, int length) {
 		endStat(begin, methodName);
 		if(logger.isTraceEnabled()) {
@@ -1224,74 +856,12 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
 		}
 	}
-
-	private void end(long begin, String methodName, String aclQueryStr, int length) {
-		endStat(begin, methodName);
-		if(logger.isTraceEnabled()) {
-			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length + 
-					", aclQuery=[" + ((aclQueryStr==null)? "" : aclQueryStr) + "]");			
-		}
-		else if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
-		}
-	}
-
-	private void end(long begin, String methodName, Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, int resultLength) {
-		endStat(begin, methodName);
-		if(logger.isTraceEnabled()) {
-			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 
-					", contextUserId=" + contextUserId + 
-					", aclQueryStr=[" + aclQueryStr + 
-					"], mode=" + mode + 
-					", query=[" + ((query==null)? "" : query.toString()) + 
-					"], sort=[" + ((sort==null)? "" : sort.toString()) + 
-					"], offset=" + offset +
-					", size=" + size);
-		}
-		else if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 					
-					", offset=" + offset +
-					", size=" + size);
-		}
-	}
-	
-	private void end(long begin, String methodName, Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size, int resultLength) {
-		endStat(begin, methodName);
-		if(logger.isTraceEnabled()) {
-			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 
-					", contextUserId=" + contextUserId + 
-					", aclQueryStr=[" + aclQueryStr + 
-					"], titles=" + titles +
-					", query=[" + ((query==null)? "" : query.toString()) + 
-					"], sort=[" + ((sort==null)? "" : sort.toString()) + 
-					"], offset=" + offset +
-					", size=" + size);
-		}
-		else if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 					
-					", offset=" + offset +
-					", size=" + size);
-		}
-	}
 	
 	private void end(long begin, String methodName, Query query, String tagBefore, String tagAfter, int length) {
 		endStat(begin, methodName);
 		if(logger.isTraceEnabled()) {
 			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length + 
 					", query=[" + ((query==null)? "" : query.toString()) + 
-					"], tag-before=[" + ((tagBefore==null)? "" : tagBefore) + 
-					"], tag-after=[" + ((tagAfter==null)? "" : tagAfter) + "]");
-		}
-		else if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
-		}
-	}
-	
-	private void end(long begin, String methodName, String aclQueryStr, String tagBefore, String tagAfter, int length) {
-		endStat(begin, methodName);
-		if(logger.isTraceEnabled()) {
-			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length + 
-					", aclQuery=[" + ((aclQueryStr==null)? "" : aclQueryStr) + 
 					"], tag-before=[" + ((tagBefore==null)? "" : tagBefore) + 
 					"], tag-after=[" + ((tagAfter==null)? "" : tagAfter) + "]");
 		}
@@ -1582,153 +1152,4 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return "Indexing and Search Statistics (" + indexName +"), " + statistics.asString();
 	}
 
-	private Query parseAclQueryStr(String aclQueryStr) throws ParseException {
-		return getQueryParserWithWSA().parse(aclQueryStr);
-	}
-	
-	private Set<String> obtainImplicitlyAccessibleSubFolderPaths(IndexSearcher searcher, Long contextUserId, String parentBinderPath, Query implicitlyAccessibleSubFoldersQuery) throws IOException {
-		long startTime = System.nanoTime();
-		
-		ImplicitlyAccessibleSubFoldersCollector collector = new ImplicitlyAccessibleSubFoldersCollector(parentBinderPath);
-		
-		searcher.search(implicitlyAccessibleSubFoldersQuery, collector);
-		
-		Set<String> result = collector.getImplicitlyAccessibleSubFolderPaths();
-		
-		end(startTime, "obtainImplicitlyAccessibleSubFolderPaths", contextUserId, result.size(), parentBinderPath, implicitlyAccessibleSubFoldersQuery);
-		
-		return result;
-	}
-	
-	private TLongHashSet obtainAccessibleFolderIds(IndexSearcher searcher, Long contextUserId, Query accessibleFoldersAclQuery) throws IOException {
-		long startTime = System.nanoTime();
-		
-		AccessibleFoldersCollector collector = new AccessibleFoldersCollector();
-		
-		searcher.search(accessibleFoldersAclQuery, collector);
-		
-		TLongHashSet result = collector.getAccessibleFolderIds();
-		
-		end(startTime, "obtainAccessibleFolderIds", contextUserId, result.size());
-		
-		return result;
-	}
-	
-	private Query makeAclInheritingEntriesPermissibleAclQuery(Query aclQuery) {
-		Query aclInheritingEntriesClause = makeAclInheritingEntriesQuery();
-		
-		BooleanQuery result = new BooleanQuery();
-		result.add(aclQuery, BooleanClause.Occur.SHOULD);
-		result.add(aclInheritingEntriesClause, BooleanClause.Occur.SHOULD);
-		
-		return result;
-	}
-	
-	private Query makeAclInheritingEntriesQuery() {
-		return NumericRangeQuery.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, Long.MIN_VALUE, Long.MAX_VALUE, true, true);		
-	}
-	
-	private Query makeAclInheritingEntriesStrictQuery() {
-		return NumericRangeQuery.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, 1L, Long.MAX_VALUE, true, true);		
-	}
-	
-	private Filter makeAclInheritingEntriesFilter() {
-		return NumericRangeFilter.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, Long.MIN_VALUE, Long.MAX_VALUE, true, true);				
-	}
-	
-	private Query makeAccessibleFoldersAclQuery(Query aclQuery) {
-		TermQuery tq = new TermQuery(new Term(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
-		
-		BooleanQuery bq = new BooleanQuery();
-		bq.add(tq, BooleanClause.Occur.MUST);
-		bq.add(aclQuery, BooleanClause.Occur.MUST);
-		
-		return bq;
-	}
-	
-	private void markAccessibleDocs(IndexSearcherHandle indexSearcherHandle , String aclQueryStr, final BitSet userDocIds) throws IOException {
-		try {
-			Query aclQuery = parseAclQueryStr(aclQueryStr);
-			
-			Query aclQueryCopy = (Query) aclQuery.clone();
-
-			Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(aclQueryCopy);
-
-			final TLongHashSet accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), null, accessibleFoldersAclQuery);
-
-			Query aclInheritingEntriesQuery = makeAclInheritingEntriesStrictQuery();
-
-			// Pass I
-			indexSearcherHandle.getIndexSearcher().search(aclQuery, new Collector() {
-				private int docBase;
-				
-				@Override
-				public void collect(int doc) {
-					userDocIds.set(doc+docBase);
-				}
-
-				@Override
-				public boolean acceptsDocsOutOfOrder() {
-					return true;
-				}
-
-				@Override
-				public void setNextReader(IndexReader reader, int docBase)
-						throws IOException {
-					this.docBase = docBase;
-				}
-
-				@Override
-				public void setScorer(Scorer scorer) throws IOException {
-				}
-			});
-			
-			// Pass II
-			indexSearcherHandle.getIndexSearcher().search(aclInheritingEntriesQuery, new Collector() {
-				private int docBase;
-				private long[] entryAclParentIds;
-				
-				@Override
-				public void collect(int doc) {
-					long entryAclParentId = entryAclParentIds[doc];
-					boolean hasAccess;
-					if(entryAclParentId > 0) {
-						// This doc represents an entry (or an attachment within that entry) that inherits ACL
-						// from its parent folder. We need to check if the user has access to the parent folder.
-						if(accessibleFolderIds.contains(entryAclParentId))
-							hasAccess = true; // The user has access to parent folder. Grant access to this entry.
-						else
-							hasAccess = false; // The user has no access to parent folder. Deny access to this entry.
-					}
-					else {
-						// In the current usage, this can not occur, because the query (aclInheritingEntriesQuery)
-						// will have already excluded this possibility.
-						hasAccess = false;
-					}
-					if(hasAccess)
-						userDocIds.set(doc+docBase);
-				}
-
-				@Override
-				public boolean acceptsDocsOutOfOrder() {
-					return true;
-				}
-
-				@Override
-				public void setNextReader(IndexReader reader, int docBase)
-						throws IOException {
-					this.docBase = docBase;
-					this.entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
-				}
-
-				@Override
-				public void setScorer(Scorer scorer) throws IOException {
-				}
-			});
-		} catch (ParseException e) {
-			throw newLuceneException("Error parsing query", e);
-		}
-		
-
-	}
 }

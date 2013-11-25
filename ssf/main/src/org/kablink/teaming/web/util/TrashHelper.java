@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,8 +59,6 @@ import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.LibraryEntry;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -72,12 +70,10 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.util.TrashTraverser;
 import org.kablink.teaming.web.util.TrashTraverser.TraverseCallback;
 import org.kablink.teaming.web.util.TrashTraverser.TraversalMode;
@@ -97,7 +93,7 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
  */
 public class TrashHelper {
 	// Class data members.
-	public static final String[] trashColumns = new String[] {"title", "date", "author", "location"};
+	public static final String[] trashColumns= new String[] {"title", "date", "author", "location"};
 	protected static Log logger = LogFactory.getLog(TrashHelper.class);
 	private final static int DEFAULT_RENAME_LIST_SIZE = 5;
 
@@ -110,27 +106,17 @@ public class TrashHelper {
 		private BinderOperation	m_binderOp;
 		private FolderOperation	m_entryOp;
 		
-		/**
+		/*
 		 * Class construction.
-		 * 
-		 * @param binderOp
-		 * @param entryOp
 		 */
 		public TrashCheckACLs(BinderOperation binderOp, FolderOperation entryOp) {
 			m_binderOp = binderOp;
-			m_entryOp  = entryOp;
+			m_entryOp = entryOp;
 		}
 		
-		/**
+		/*
 		 * Called to handle Binder's during the traversal.
-		 * 
-		 * @param bs
-		 * @param binderId
-		 * @param cbDataObject
-		 * 
-		 * @return
 		 */
-		@Override
 		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
 			boolean reply = true;
 			try {
@@ -155,17 +141,9 @@ public class TrashHelper {
 			return reply;
 		}
 		
-		/**
+		/*
 		 * Called to handle Entry's during the traversal.
-		 * 
-		 * @param bs
-		 * @param folderId
-		 * @param entryId
-		 * @param cbDataObject
-		 * 
-		 * @return
 		 */
-		@Override
 		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
 			boolean reply = true;
 			try {
@@ -191,24 +169,20 @@ public class TrashHelper {
 		}
 	}
 	
-	/**
-	 * Inner class used to manipulate entities in the trash.
+	/*
+	 * Inner class used to manipulate entries in the trash.
 	 */
-	public static class TrashEntity {
+	public static class TrashEntry {
 		// Class data members.
 		public Long		m_docId;
 		public Long		m_locationBinderId;
 		public String	m_docType;
 		
-		/**
-		 * Constructor method.
-		 * 
-		 * Constructs a TrashEntity based on the packed string
+		/*
+		 * Constructs a TrashEntry based on the packed string
 		 * representation of one.
-		 * 
-		 * @param paramS
 		 */
-		public TrashEntity(String paramS) {
+		public TrashEntry(String paramS) {
 			String[] params = paramS.split(StringPool.COLON);
 			
 			m_docId				= Long.valueOf(params[0]);
@@ -216,15 +190,11 @@ public class TrashHelper {
 			m_docType			=              params[2];
 		}
 		
-		/**
-		 * Constructor method.
-		 * 
-		 * Constructs a TrashEntity based on an results of a search.
-		 * 
-		 * @param searchResultsMap
+		/*
+		 * Constructs a TrashEntry based on an results of a search.
 		 */
 		@SuppressWarnings("unchecked")
-		public TrashEntity(Map searchResultsMap) {
+		public TrashEntry(Map searchResultsMap) {
 			m_docId     = Long.valueOf((String) searchResultsMap.get(Constants.DOCID_FIELD   ));
 			m_docType   =             ((String) searchResultsMap.get(Constants.DOC_TYPE_FIELD));
 			
@@ -236,13 +206,9 @@ public class TrashHelper {
 			else                  m_locationBinderId = null;
 		}
 
-		/**
-		 * Returns true if the FolderEntry for this TrashEntity can
+		/*
+		 * Returns true if the FolderEntry for this TrashEntry can
 		 * still be accessed and false otherwise.
-		 * 
-		 * @param bs
-		 * 
-		 * @return
 		 */
 		public boolean exists(AllModulesInjected bs) {
 			FolderEntry fe;
@@ -254,31 +220,22 @@ public class TrashHelper {
 			}
 			return (null != fe);
 		}
-		
-		/**
-		 * Returns true if this TrashEntity is a binder.
-		 * 
-		 * @return
+		/*
+		 * Returns true if this TrashEntry is a binder.
 		 */
 		public boolean isBinder() {
 			return "binder".equalsIgnoreCase(m_docType);
 		}
 		
-		/**
-		 * Returns true if this TrashEntity is an entry.
-		 * 
-		 * @return
+		/*
+		 * Returns true if this TrashEntry is an entry.
 		 */
 		public boolean isEntry() {
 			return "entry".equalsIgnoreCase(m_docType);
 		}
 		
-		/**
-		 * Returns true if this TrashEntity is a Folder.
-		 * 
-		 * @param bs
-		 * 
-		 * @return
+		/*
+		 * Returns true if this TrashEntry is a Folder.
 		 */
 		public boolean isFolder(AllModulesInjected bs) {
 			if (isBinder()) {
@@ -288,13 +245,9 @@ public class TrashHelper {
 			return false;
 		}
 		
-		/**
-		 * Returns true if the TrashEntity is valid and in a predeleted
+		/*
+		 * Returns true if the TrashEntry is valid and in a predeleted
 		 * state and false otherwise.
-		 * 
-		 * @param bs
-		 * 
-		 * @return
 		 */
 		public boolean isPreDeleted(AllModulesInjected bs) {
 			boolean reply = false;
@@ -322,12 +275,8 @@ public class TrashHelper {
 			return reply;
 		}
 		
-		/**
-		 * Returns true if this TrashEntity is a Workspace.
-		 * 
-		 * @param bs
-		 * 
-		 * @return
+		/*
+		 * Returns true if this TrashEntry is a Workspace.
 		 */
 		public boolean isWorkspace(AllModulesInjected bs) {
 			if (isBinder()) {
@@ -342,16 +291,9 @@ public class TrashHelper {
 	 * Inner classes used to traverse trash items to predelete them.
 	 */
 	private static class TrashPreDelete implements TraverseCallback {
-		/**
+		/*
 		 * Called to handle Binder's during the traversal.
-		 * 
-		 * @param bs
-		 * @param binderId
-		 * @param cbDataObject
-		 * 
-		 * @return
 		 */
-		@Override
 		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
 			boolean reply;
 			try {
@@ -370,16 +312,9 @@ public class TrashHelper {
 			return reply;
 		}
 		
-		/**
+		/*
 		 * Called to handle Entry's during the traversal.
-		 * 
-		 * @param bs
-		 * @param folderId
-		 * @param cbDataObject
-		 * 
-		 * @return
 		 */
-		@Override
 		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
 			boolean reply;
 			try {
@@ -411,8 +346,8 @@ public class TrashHelper {
 		// as well as how it grows when as the need arises.
 		private final static int CHUNK_SIZE = 100;
 
-		/**
-		 * Constructor method.
+		/*
+		 * Class constructor.
 		 */
 		public TrashPurgedBinderTracker() {
 			// Simply allocate the initial array from tracking purged
@@ -420,14 +355,14 @@ public class TrashHelper {
 			m_purgedBinderIds = new long[CHUNK_SIZE];
 		}
 		
-		/**
+		/*
 		 * Returns true if the binderId is already being tracked and
 		 * false otherwise.
-		 * 
-		 * @param binderId
-		 * 
-		 * @return
 		 */
+		public boolean isBinderPurged(Long binderId) {
+			// Always use the other form of the method.
+			return isBinderPurged(binderId.longValue());
+		}
 		public boolean isBinderPurged(long binderId) {
 			// Scan the binderId's that we're already tracking.
 			for (int i = 0; i < nextSlot; i += 1) {
@@ -442,17 +377,14 @@ public class TrashHelper {
 			// question.
 			return false;
 		}
-		
-		public boolean isBinderPurged(Long binderId) {
-			// Always use the initial form of the method.
-			return isBinderPurged(binderId.longValue());
-		}
 
-		/**
+		/*
 		 * Tracks binderId, if it's not already being tracked.
-		 * 
-		 * @param binderId
 		 */
+		public void track(Long binderId) {
+			// Always use the other form of the method.
+			track(binderId.longValue());
+		}
 		public void track(long binderId) {
 			// If we're not already tracking this binderId...
 			if (!(isBinderPurged(binderId))) {
@@ -460,11 +392,6 @@ public class TrashHelper {
 				validateSpace();
 				m_purgedBinderIds[nextSlot++] = binderId;
 			}
-		}
-		
-		public void track(Long binderId) {
-			// Always use the initial form of the method.
-			track(binderId.longValue());
 		}
 		
 		/*
@@ -483,7 +410,7 @@ public class TrashHelper {
 		}
 	}
 	
-	/**
+	/*
 	 * Inner class used to assist/manage in the renaming of binders,
 	 * entries and files that have naming conflicts during a restore. 
 	 */
@@ -498,28 +425,22 @@ public class TrashHelper {
 			File,
 		}
 
-		/**
-		 * Constructor method.
-		 * 
-		 * @param bs
+		/*
+		 * Class constructor.
 		 */
 		public TrashRenameData(AllModulesInjected bs) {
 			m_bs        = bs;
 			m_renameMap = new HashMap<String, String>();
 		}
 
-		/**
+		/*
 		 * Adds a rename item to the rename map.
-		 * 
-		 * @param rt
-		 * @param from
-		 * @param to
 		 */
 		public void addRename(RenameType rt, String from, String to) {
 			m_renameMap.put(getKey(rt, from), to);
 		}
 
-		/**
+		/*
 		 * Removes any items from the rename map.
 		 */
 		public void clearRenames() {
@@ -527,7 +448,7 @@ public class TrashHelper {
 		}
 		
 		/*
-		 * Generates a key for rename entities in the rename map.
+		 * Generates a key for rename entries in the rename map.
 		 */
 		private String getKey(RenameType rt, String baseKey) {
 			String key;
@@ -538,21 +459,19 @@ public class TrashHelper {
 			return (key + baseKey);
 		}
 		
-		/**
-		 * Returns true if there are items in the rename map.
-		 * 
-		 * @return
+		/*
+		 * Returns true if there are items in the rename map. 
 		 */
 		public boolean hasRenames() {
 			return (!(m_renameMap.isEmpty()));
 		}
 	}
 	
-	/**
+	/*
 	 * Inner class used to communicate information while traversing
 	 * binders and entries to predelete or restore them. 
 	 */
-	public static class TrashResponse {
+	private static class TrashResponse {
 		// Class data members.
 		public Exception		m_exception;
 		public Long				m_binderId;
@@ -567,23 +486,17 @@ public class TrashHelper {
 			ACLViolation,
 		}
 
-		/**
-		 * Constructor method.
-		 * 
-		 * @param bs
+		/*
+		 * Class constructor.
 		 */
 		public TrashResponse(AllModulesInjected bs) {
 			m_rd = new TrashRenameData(bs);
 			reset();
 		}
 
-		/**
+		/*
 		 * Returns the display name for the binderId in the
-		 * TrashResponse.
-		 * 
-		 * @param bs
-		 *  
-		 * @return
+		 * TrashResponse. 
 		 */
 		public String getBinderDisplayName(AllModulesInjected bs) {
 			String reply = String.valueOf(m_binderId);
@@ -600,12 +513,8 @@ public class TrashHelper {
 			return reply;
 		}
 		
-		/**
-		 * Returns the display name for the entryId in the TrashResponse.
-		 * 
-		 * @param bs
-		 * 
-		 * @return
+		/*
+		 * Returns the display name for the entryId in the TrashResponse. 
 		 */
 		public String getEntryDisplayName(AllModulesInjected bs) {
 			String reply = String.valueOf(m_entryId);
@@ -622,13 +531,9 @@ public class TrashHelper {
 			return reply;
 		}
 		
-		/**
+		/*
 		 * Generates a message string based on the content of this
-		 * TrashResponse.
-		 * 
-		 * @param bs
-		 * 
-		 * @return
+		 * TrashResponse. 
 		 */
 		public String getTrashMessage(AllModulesInjected bs) {
 			boolean needArgs = false;
@@ -720,12 +625,12 @@ public class TrashHelper {
 			}
 
 			// If we get here, reply refers to a String containing an
-			// appropriate message to display for this TrashEntity.
+			// appropriate message to display for this TrashEntry.
 			// Return it.
 			return reply;
 		}
 		
-		/**
+		/*
 		 * Resets the object's data members to their initial state.
 		 */
 		public void reset() {
@@ -739,23 +644,22 @@ public class TrashHelper {
 			m_rd.clearRenames();
 		}
 
-		/**
+		/*
 		 * Returns true if the object represents an error and false
 		 * otherwise.
-		 * 
-		 * @return
 		 */
 		public boolean isError() {
 			return (Status.NoError != m_status);
 		}
 
-		/**
+		/*
 		 * Sets the object to contain information about an ACL
 		 * violation.
-		 * 
-		 * @param binderId
-		 * @param entryId
 		 */
+		public void setACLViolation(Long binderId) {
+			// Always use the final form of the method.
+			setACLViolation(binderId, null);
+		}
 		public void setACLViolation(Long binderId, Long entryId) {
 			if (null == entryId) logger.debug("TrashResponse.setACLViolation(" + binderId +                  ")");
 			else                 logger.debug("TrashResponse.setACLViolation(" + binderId + ", " + entryId + ")");
@@ -766,20 +670,15 @@ public class TrashHelper {
 			m_binderId  = binderId;
 			m_entryId   = entryId;
 		}
-		
-		public void setACLViolation(Long binderId) {
-			// Always use the initial form of the method.
-			setACLViolation(binderId, null);
-		}
 
-		/**
+		/*
 		 * Set the object to contain information about a generic
 		 * exception.
-		 * 
-		 * @param ex
-		 * @param binderId
-		 * @param entryId
 		 */
+		public void setException(Exception ex, Long binderId) {
+			// Always use the final form of the method.
+			setException(ex, binderId, null);
+		}
 		public void setException(Exception ex, Long binderId, Long entryId) {
 			if (null == entryId) logger.debug("TrashResponse.setException(" + binderId +                  "):  ", ex);
 			else                 logger.debug("TrashResponse.setException(" + binderId + ", " + entryId + "):  ", ex);
@@ -790,27 +689,15 @@ public class TrashHelper {
 			m_binderId  = binderId;
 			m_entryId   = entryId;
 		}
-		
-		public void setException(Exception ex, Long binderId) {
-			// Always use the initial form of the method.
-			setException(ex, binderId, null);
-		}
 	}
 	
 	/*
 	 * Inner classes used to traverse trash items to restore them.
 	 */
 	private static class TrashRestore implements TraverseCallback {
-		/**
+		/*
 		 * Called to handle Binder's during the traversal.
-		 * 
-		 * @param bs
-		 * @param binderId
-		 * @param cbDataObject
-		 * 
-		 * @return
 		 */
-		@Override
 		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
 			TrashResponse tr = ((TrashResponse) cbDataObject);
 			boolean reply;
@@ -830,17 +717,9 @@ public class TrashHelper {
 			return reply;
 		}
 		
-		/**
+		/*
 		 * Called to handle Entry's during the traversal.
-		 * 
-		 * @param bs
-		 * @param folderId
-		 * @param entryId
-		 * @param cbDataObject
-		 * 
-		 * @return
 		 */
-		@Override
 		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
 			TrashResponse tr = ((TrashResponse) cbDataObject);
 			boolean reply;
@@ -868,8 +747,6 @@ public class TrashHelper {
 	 * @param op
 	 * @param request
 	 * @param response
-	 * 
-	 * @return
 	 */
 	public static ModelAndView ajaxTrashRequest(String op, AllModulesInjected bs, RenderRequest request, RenderResponse response) {
 		ModelAndView mv;
@@ -877,12 +754,12 @@ public class TrashHelper {
 			String	paramS = PortletRequestUtils.getStringParameter(request, "params", "");
 			String[]	params = StringUtil.unpack(paramS);
 			int count = ((null == params) ? 0 : params.length);
-			TrashEntity[] trashEntities = new TrashEntity[count];
+			TrashEntry[] trashEntries = new TrashEntry[count];
 			for (int i = 0; i < count; i += 1) {
-				trashEntities[i] = new TrashEntity(params[i]);
+				trashEntries[i] = new TrashEntry(params[i]);
 			}
-			if (op.equals(WebKeys.OPERATION_TRASH_PURGE)) mv = purgeEntities(  bs, trashEntities, request, response);
-			else                                          mv = restoreEntities(bs, trashEntities, request, response);
+			if (op.equals(WebKeys.OPERATION_TRASH_PURGE)) mv = purgeEntries(  bs, trashEntries, request, response);
+			else                                          mv = restoreEntries(bs, trashEntries, request, response);
 		}
 		else if (op.equals(WebKeys.OPERATION_TRASH_PURGE_ALL))   mv = purgeAll(  bs, request, response);
 		else if (op.equals(WebKeys.OPERATION_TRASH_RESTORE_ALL)) mv = restoreAll(bs, request, response);
@@ -937,7 +814,6 @@ public class TrashHelper {
 	 * otherwise.
 	 * 
 	 * @param user
-	 * 
 	 * @return
 	 */
 	public static boolean allowUserTrashAccess(User user) {
@@ -990,9 +866,6 @@ public class TrashHelper {
 	 * @param binderId
 	 * @param zoneUUID
 	 * @param model
-	 * 
-	 * @return
-	 * 
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -1023,12 +896,13 @@ public class TrashHelper {
 	 * @param request
 	 * @param binder
 	 * @param model
-	 * @param create
-	 * 
 	 * @return
-	 * 
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
+	public static Tabs.TabEntry buildTrashTabs(RenderRequest request, Binder binder, Map model) throws Exception {
+		return buildTrashTabs(request, binder, model, false);
+	}
 	@SuppressWarnings("unchecked")
 	public static Tabs.TabEntry buildTrashTabs(RenderRequest request, Binder binder, Map model, boolean create) throws Exception {
 		Tabs.TabEntry tab;
@@ -1048,40 +922,7 @@ public class TrashHelper {
 		
 		return tab;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public static Tabs.TabEntry buildTrashTabs(RenderRequest request, Binder binder, Map model) throws Exception {
-		// Always use the initial form of the method.
-		return buildTrashTabs(request, binder, model, false);
-	}
 
-	/**
-	 * Returns true if the user has a workspace that can be trashed and
-	 * false otherwise.
-	 *
-	 * Note:  We can't trash LDAP users workspaces or workspaces that
-	 *        contain remote folders.
-	 *	
-     * @param bs
-	 * @param user
-	 * 
-	 * @return
-	 */
-	public static boolean canTrashUserWorkspace(AllModulesInjected bs, User user) {
-		// Does the user have a workspace?
-		Long    userWSId = user.getWorkspaceId();
-		boolean reply    = (null != userWSId);
-		if (reply) {
-			// Yes!  It can be deleted if the user wasn't provisioned
-			// from LDAP and if their workspace doesn't contain any
-			// nested remote folders.
-			reply =
-				((!(user.getIdentityInfo().isFromLdap())) &&
-				 (!(SearchUtils.binderHasNestedRemoteFolders(bs, userWSId))));
-		}
-		return reply;
-	}
-	
 	/*
 	 * Writes logging information about a binder change. 
 	 */
@@ -1131,7 +972,6 @@ public class TrashHelper {
      *
      * @param bs
      * @param binder
-     * 
      * @return
      */
 	@SuppressWarnings("unchecked")
@@ -1148,7 +988,6 @@ public class TrashHelper {
 
 			Map visibleBindersMap = bs.getBinderModule().executeSearchQuery(
 				crit,
-				Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
 				0,		// Start at index 0...
 				2,		// ...requesting a maximum of 2 hits.
 				false);	// false -> Ignore preDeleted entries.
@@ -1204,44 +1043,42 @@ public class TrashHelper {
 	}
 	
 	/*
-	 * Returns a TrashEntity[] of all the items in the trash (non paged
+	 * Returns a TrashEntry[] of all the items in the trash (non paged
 	 * and non-sorted.)  Used to perform purge/restore alls.
 	 */
-	private static TrashEntity[] getAllTrashEntities(AllModulesInjected bs, RenderRequest request) {
-		// Convert the current trash entities to an ArrayList of
-		// TrashEntity's...
+	private static TrashEntry[] getAllTrashEntries(AllModulesInjected bs, RenderRequest request) {
+		// Convert the current trash entries to an ArrayList of TrashEntry's...
 		Long binderId = null;
 		try {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		} catch(PortletRequestBindingException ex) {}
-		return getAllTrashEntities(bs, binderId);
+		return getAllTrashEntries(bs, binderId);
 	}
 
 	/**
-	 * Returns a TrashEntity[] of all the items in the trash (non paged
+	 * Returns a TrashEntry[] of all the items in the trash (non paged
 	 * and non-sorted.)  Used to perform purge/restore alls.
 	 * 
 	 * @param bs
 	 * @param binderId
-	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static TrashEntity[] getAllTrashEntities(AllModulesInjected bs, Long binderId) {
+	public static TrashEntry[] getAllTrashEntries(AllModulesInjected bs, Long binderId) {
 		Binder binder = bs.getBinderModule().getBinder(binderId);
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_OFFSET,    Integer.valueOf(0));
 		options.put(ObjectKeys.SEARCH_MAX_HITS,  (Integer.MAX_VALUE - 1));
 		options.put(ObjectKeys.SEARCH_SORT_NONE, Boolean.TRUE);
-		Map trashSearchMap = getTrashEntities(bs, binder, options);
+		Map trashSearchMap = getTrashEntries(bs, binder, options);
 		ArrayList trashSearchAL = ((ArrayList) trashSearchMap.get(ObjectKeys.SEARCH_ENTRIES));
-		ArrayList<TrashEntity> trashEntitiesAL = new ArrayList<TrashEntity>();
-        for (Iterator trashEntitiesIT=trashSearchAL.iterator(); trashEntitiesIT.hasNext();) {
-			trashEntitiesAL.add(new TrashEntity((Map) trashEntitiesIT.next()));
+		ArrayList<TrashEntry> trashEntriesAL = new ArrayList<TrashEntry>();
+        for (Iterator trashEntriesIT=trashSearchAL.iterator(); trashEntriesIT.hasNext();) {
+			trashEntriesAL.add(new TrashEntry((Map) trashEntriesIT.next()));
 		}
 
-        // ...and return them as a TrashEntity[].
-       	return ((TrashEntity[]) trashEntitiesAL.toArray(new TrashEntity[0]));
+        // ...and return them as a TrashEntry[].
+       	return ((TrashEntry[]) trashEntriesAL.toArray(new TrashEntry[0]));
 	}
 	
 	/*
@@ -1257,53 +1094,40 @@ public class TrashHelper {
 	}
 	
 	/**
-	 * Returns the trash entities for the given binder.
+	 * Returns the trash entries for the given binder.
 	 * 
 	 * @param bs
-	 * @param model
 	 * @param binder
 	 * @param options
-	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static Map getTrashEntities(AllModulesInjected bs, Map<String, Object> model, Binder binder, Map options) {
-		SimpleProfiler.start("GwtTrashHelper.getTrashEntities()");
-		try {
-			// Construct the search Criteria...
-			Criteria crit = new Criteria();
-			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}))
-			    .add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
-	
-			// ...if sorting is enabled...
-			boolean sortDisabled = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_NONE, false);
-			if (!sortDisabled) {
-				// ...add in the sort information...
-				boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
-				String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
-				crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
-				crit.addOrder(new Order(sortBy,                 sortAscend));
-			}
-			
-			// ...and issue the query and return the entities.
-			return
-				bs.getBinderModule().executeSearchQuery(
-					crit,
-					Constants.SEARCH_MODE_NORMAL,
-					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-					true);	// true -> Search deleted entities.
+	public static Map getTrashEntries(AllModulesInjected bs, Binder binder, Map options) {
+		return getTrashEntries(bs, null, binder, options);
+	}
+	@SuppressWarnings("unchecked")
+	public static Map getTrashEntries(AllModulesInjected bs, Map<String,Object>model, Binder binder, Map options) {
+		// Construct the search Criteria...
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}))
+		    .add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
+
+		// ...if sorting is enabled...
+		boolean sortDisabled = getOptionBoolean(options, ObjectKeys.SEARCH_SORT_NONE, false);
+		if (!sortDisabled) {
+			// ...add in the sort information...
+			boolean sortDescend = getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false);
+			String  sortBy      = getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+			crit.addOrder(new Order(sortBy, sortDescend));
 		}
 		
-		finally {
-			SimpleProfiler.stop("GwtTrashHelper.getTrashEntities()");
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static Map getTrashEntities(AllModulesInjected bs, Binder binder, Map options) {
-		// Always use the initial form of the method.
-		return getTrashEntities(bs, null, binder, options);
+		// ...and issue the query and return the entries.
+		return
+			bs.getBinderModule().executeSearchQuery(
+				crit,
+				getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+				getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+				true);	// true -> Search deleted entries.
 	}
 
 	/*
@@ -1338,11 +1162,40 @@ public class TrashHelper {
 		return mvReply;
 	}
 	
+	/*
+	 * Returns an Integer based value from an options Map.  If a value
+	 * for key isn't found, defInt is returned. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static int getOptionInt(Map options, String key, int defInt) {
+		Integer obj = ((Integer) options.get(key));
+		return ((null == obj) ? defInt : obj.intValue());
+	}
+	
+	/*
+	 * Returns a Boolean based value from an options Map.  If a value
+	 * for key isn't found, defBool is returned. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static boolean getOptionBoolean(Map options, String key, boolean defBool) {
+		Boolean obj = ((Boolean) options.get(key));
+		return ((null == obj) ? defBool : obj.booleanValue());
+	}
+	
+	/*
+	 * Returns a String based value from an options Map.  If a value
+	 * for key isn't found, defStr is returned. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static String getOptionString(Map options, String key, String defStr) {
+		String obj = ((String) options.get(key));
+		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
+	}
+
 	/**
 	 * Returns true if binder is a Folder.
 	 * 
 	 * @param binder
-	 * 
 	 * @return
 	 */
 	public static boolean isBinderFolder(Binder binder) {
@@ -1354,7 +1207,6 @@ public class TrashHelper {
 	 * false otherwise. 
 	 * 
 	 * @param binder
-	 * 
 	 * @return
 	 */
 	public static boolean isBinderPredeleted(Binder binder) {
@@ -1373,7 +1225,6 @@ public class TrashHelper {
 	 * Returns true if binder is a Workspace.
 	 * 
 	 * @param binder
-	 * 
 	 * @return
 	 */
 	public static boolean isBinderWorkspace(Binder binder) {
@@ -1381,14 +1232,14 @@ public class TrashHelper {
 	}
 
 	/*
-	 * Called to purge all the entities in the trash. 
+	 * Called to purge all the entries in the trash. 
 	 */
 	private static ModelAndView purgeAll(AllModulesInjected bs, RenderRequest request, RenderResponse response) {
-		// If there are any TrashEntity's...
-		TrashEntity[] trashEntities = getAllTrashEntities(bs, request);
-        if (0 < trashEntities.length) {
+		// If there are any TrashEntry's...
+		TrashEntry[] trashEntries = getAllTrashEntries(bs, request);
+        if (0 < trashEntries.length) {
             // ...purge them.
-        	return purgeEntities(bs, trashEntities, request, response);
+        	return purgeEntries(bs, trashEntries, request, response);
         }
         
 		response.setContentType("text/json");
@@ -1400,7 +1251,6 @@ public class TrashHelper {
 	 * 
 	 * @param bs
 	 * @param binderId
-	 * 
 	 * @throws Exception
 	 */
 	public static void preDeleteBinder(AllModulesInjected bs, Long binderId) throws Exception {
@@ -1442,7 +1292,6 @@ public class TrashHelper {
 	 * @param bs
 	 * @param folderId
 	 * @param entryId
-	 * 
 	 * @throws Exception
 	 */
 	public static void preDeleteEntry(AllModulesInjected bs, Long folderId, Long entryId) throws Exception{
@@ -1476,145 +1325,110 @@ public class TrashHelper {
 			throw tr.m_exception;
 		}
 	}
-
-	/*
-	 * Called to purge the TrashEntity's in trashEntities and return an
-	 * appropriate ModelAndView.
-	 */
-	private static ModelAndView purgeEntities(AllModulesInjected bs, TrashEntity[] trashEntities, RenderRequest request, RenderResponse response) {
-		boolean purgeMirroredSources = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_PURGE_MIRRORED_SOURCES, false);
-		TrashResponse tr = purgeSelectedEntities(bs, trashEntities, purgeMirroredSources);
-		return getMVBasedOnTrashResponse(response, bs, tr);
-	}
 	
-	/**
-	 * Called to purge the TrashEntity's in trashEntities.
-	 * 
-	 * @param bs
-	 * @param trashEntities
-	 * @param purgeMirroredSsources.
+	/*
+	 * Called to purge the TrashEntry's in trashEntries. 
 	 */
-	public static TrashResponse purgeSelectedEntities(AllModulesInjected bs, TrashEntity[] trashEntities, boolean purgeMirroredSources) {
-		int count = ((null == trashEntities) ? 0 : trashEntities.length);
+	private static ModelAndView purgeEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
+		int count = ((null == trashEntries) ? 0 : trashEntries.length);
 		int purgedBinderCount = 0;
-		TrashResponse reply = new TrashResponse(bs);
+		TrashResponse tr = new TrashResponse(bs);
+		boolean purgeMirroredSources = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_PURGE_MIRRORED_SOURCES, false);
 		TrashPurgedBinderTracker purgedBinders = new TrashPurgedBinderTracker();
 		
-		// Scan the TrashEntity's.
-		logger.debug("TrashHelper.purgeSelectedEntities()");
+		// Scan the TrashEntry's.
+		logger.debug("TrashHelper.purgeEntries()");
 		logger.debug("...checking ACLs...");
 		for (int i = 0; i < count; i += 1) {
-			// Is this trashEntitiy a FolderEntry?
-			TrashEntity trashEntity = trashEntities[i];
-			if (null == trashEntity) {
+			// Is this trashEntry a FolderEntry?
+			TrashEntry trashEntry = trashEntries[i];
+			if (null == trashEntry) {
 				continue;
 			}
-			if (trashEntity.isEntry()) {
+			if (trashEntry.isEntry()) {
 				try {
 					// Yes!  Is it predeleted?
-					FolderEntry fe = bs.getFolderModule().getEntry(trashEntity.m_locationBinderId, trashEntity.m_docId);
+					FolderEntry fe = bs.getFolderModule().getEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
 					if (fe.isPreDeleted()) {
 						// Yes!  Does this user have rights to purge it?
-						logger.debug("......checking entry: " + trashEntity.m_locationBinderId + ", " + trashEntity.m_docId);
+						logger.debug("......checking entry: " + trashEntry.m_locationBinderId + ", " + trashEntry.m_docId);
 						if (!(bs.getFolderModule().testAccess(fe, FolderOperation.deleteEntry))) {
 							// No!  Track the error.
 							logger.debug(".........ACL violation!");
-							reply.setACLViolation(trashEntity.m_locationBinderId, trashEntity.m_docId);
+							tr.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
 						}
 					}
 					else {
-						trashEntities[i] = null;
+						trashEntries[i] = null;
 					}
 				}
 				catch (Exception e) {
 					// Something choked trying to do the ACL check.
-					// Has the entity disappeared out from under us?
-					if (e instanceof NoFolderEntryByTheIdException) {
-						// Yes!  Simply skip it.
-						trashEntities[i] = null;
-					}
-					
-					else {
-						// No, something besides the entry disappearing
-						// has happened!  Track the error.
-						logger.debug(".........check failed!");
-						if (e instanceof AccessControlException) reply.setACLViolation(trashEntity.m_docId);
-						else                                     reply.setException(e, trashEntity.m_docId);
-					}
+					// Track the error.
+					logger.debug(".........check failed!");
+					if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
+					else                                     tr.setException(e, trashEntry.m_docId);
 				}
 			}
 					
-			// No, it's not an entry!  Is it a binder?
-			else if (trashEntity.isBinder()) {
+			// No, it's not a binder!  Is it an entry?
+			else if (trashEntry.isBinder()) {
 				try {
 					// Yes!  Is it predeleted?
-					Binder binder = bs.getBinderModule().getBinder(trashEntity.m_docId);
+					Binder binder = bs.getBinderModule().getBinder(trashEntry.m_docId);
 					if (isBinderPredeleted(binder)) {
 						// Yes!  Does this user have rights to purge it?
-						logger.debug("......checking binder:  " + trashEntity.m_docId);
+						logger.debug("......checking binder:  " + trashEntry.m_docId);
 						if (!(bs.getBinderModule().testAccess(binder, BinderOperation.deleteBinder))) {
 							// No!  Track the error.
 							logger.debug(".........ACL violation!");
-							reply.setACLViolation(trashEntity.m_docId);
+							tr.setACLViolation(trashEntry.m_docId);
 						}
 					}
 					else {
-						// No, it isn't predeleted!  Simply skip it.
-						trashEntities[i] = null;
+						trashEntries[i] = null;
 					}
 				}
 				catch (Exception e) {
 					// Something choked trying to do the ACL check.
-					// Has the binder disappeared out from under us?
-					if (e instanceof NoBinderByTheIdException) {
-						// Yes!  Simply skip it.
-						trashEntities[i] = null;
-					}
-					
-					else {
-						// No, something besides the binder
-						// disappearing has happened!  Track the error.
-						logger.debug(".........check failed!");
-						if (e instanceof AccessControlException) reply.setACLViolation(trashEntity.m_docId);
-						else                                     reply.setException(e, trashEntity.m_docId);
-					}
+					// Track the error.
+					logger.debug(".........check failed!");
+					if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
+					else                                     tr.setException(e, trashEntry.m_docId);
 				}
 			}
 			
 			// If we detect an error during the ACL check...
-			if (reply.isError()) {
+			if (tr.isError()) {
 				// ...quit processing items.
 				break;
 			}
-			
-			if (null == trashEntities[i])
-			     logger.debug(".........entity skipped.  It's not predeleted or it has dissapeared.");
-			else logger.debug(".........entity is purgable.");
+			logger.debug(".........entity is purgable.");
 		}
 
 		// Did we detect any ACL violations?
-		if (!(reply.isError())) {
-			// Scan the TrashEntity's again.
+		if (!(tr.isError())) {
+			// Scan the TrashEntry's again.
 			logger.debug("...purging binders...");
 			for (int i = 0; i < count; i += 1) {
 				// Is this a binder?
-				TrashEntity trashEntity = trashEntities[i];
-				if (null == trashEntity) {
+				TrashEntry trashEntry = trashEntries[i];
+				if (null == trashEntry) {
 					continue;
 				}
-				if (trashEntity.isBinder()) {
+				if (trashEntry.isBinder()) {
 					// Yes!  Was this binder purged because it was
 					// contained in a binder that was already purged?
-					if (purgedBinders.isBinderPurged(trashEntity.m_docId)) {
+					if (purgedBinders.isBinderPurged(trashEntry.m_docId)) {
 						// Yes!  Then we don't want to purge it again.
 						// Skip it.
-						logger.debug("......skipping " + trashEntity.m_docId + ", binder purged previously...");
+						logger.debug("......skipping " + trashEntry.m_docId + ", binder purged previously...");
 						continue;
 					}
 					
 					// Track this binder and it's descendants as having
 					// been purged...
-					trackPurgedBinders(bs, trashEntity.m_docId, purgedBinders);
+					trackPurgedBinders(bs, trashEntry.m_docId, purgedBinders);
 					
 					// ...and purge the binder.  Note that purging the
 					// ...binder will purge its descendants too.
@@ -1625,19 +1439,19 @@ public class TrashHelper {
 						//    the delete.  The final part will be
 						//    done below in the call to
 						//    BinderModule.deleteBinderFinish().
-						logger.debug("......purging binder:  " + trashEntity.m_docId + ", Mirrors too:  " + purgeMirroredSources);
-						bs.getBinderModule().deleteBinder(trashEntity.m_docId, purgeMirroredSources, null, true);
+						logger.debug("......purging binder:  " + trashEntry.m_docId + ", Mirrors too:  " + purgeMirroredSources);
+						bs.getBinderModule().deleteBinder(trashEntry.m_docId, purgeMirroredSources, null, true);
 						purgedBinderCount += 1;
 						logger.debug(".........binder purged...");
 					}
 					catch (Exception e) {
 						logger.debug(".........binder purge failed.", e);
-						if (e instanceof AccessControlException) reply.setACLViolation(trashEntity.m_docId);
-						else                                     reply.setException(e, trashEntity.m_docId);
+						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
+						else                                     tr.setException(e, trashEntry.m_docId);
 					}
 					
 					// If we detect an error doing a purge...
-					if (reply.isError()) {
+					if (tr.isError()) {
 						// ...quit processing items.
 						break;
 					}
@@ -1646,30 +1460,30 @@ public class TrashHelper {
 		}
 
 		// Have we detected any errors yet?
-		if (!(reply.isError())) {
-			// No!  Scan the TrashEntity's one more time.
-			logger.debug("...purging entities...");
+		if (!(tr.isError())) {
+			// No!  Scan the TrashEntry's one more time.
+			logger.debug("...purging entries...");
 			for (int i = 0; i < count; i += 1) {
 				// Is this an entry?
-				TrashEntity trashEntity = trashEntities[i];
-				if (null == trashEntity) {
+				TrashEntry trashEntry = trashEntries[i];
+				if (null == trashEntry) {
 					continue;
 				}
-				if (trashEntity.isEntry()) {
+				if (trashEntry.isEntry()) {
 					// Yes!  Was this entry's binder purged above? 
-					if (purgedBinders.isBinderPurged(trashEntity.m_locationBinderId)) {
+					if (purgedBinders.isBinderPurged(trashEntry.m_locationBinderId)) {
 						// Yes!  Then it will have been purged
 						// automatically.  Skip it.
-						logger.debug("......skipping " + trashEntity.m_locationBinderId + ", " + trashEntity.m_docId + ", binder purged previously...");
+						logger.debug("......skipping " + trashEntry.m_locationBinderId + ", " + trashEntry.m_docId + ", binder purged previously...");
 						continue;
 					}
 					
 					// Purge the entry.  Note that purging an entry
 					// will purge its replies.
 					try {
-						logger.debug("......purging entry:  " + trashEntity.m_locationBinderId + ", " + trashEntity.m_docId);
-						if (trashEntity.exists(bs)) {
-							bs.getFolderModule().deleteEntry(trashEntity.m_locationBinderId, trashEntity.m_docId);
+						logger.debug("......purging entry:  " + trashEntry.m_locationBinderId + ", " + trashEntry.m_docId);
+						if (trashEntry.exists(bs)) {
+							bs.getFolderModule().deleteEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
 							logger.debug(".........entry purged...");
 						}
 						else {
@@ -1678,12 +1492,12 @@ public class TrashHelper {
 					}
 					catch (Exception e) {
 						logger.debug(".........entry purge failed.", e);
-						if (e instanceof AccessControlException) reply.setACLViolation(trashEntity.m_locationBinderId, trashEntity.m_docId);
-						else                                     reply.setException(e, trashEntity.m_locationBinderId, trashEntity.m_docId);
+						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
+						else                                     tr.setException(e, trashEntry.m_locationBinderId, trashEntry.m_docId);
 					}
 					
 					// If we detect an error doing a purge...
-					if (reply.isError()) {
+					if (tr.isError()) {
 						// ...quit processing items.
 						break;
 					}
@@ -1701,26 +1515,25 @@ public class TrashHelper {
 			bs.getBinderModule().deleteBinderFinish();
 		}
 		
-		// If we get here, reply refers to the TrashResponse that
-		// describes the results of the purge.  Return it.
-		return reply;
+		// Handle any messages based on the purge.
+		return getMVBasedOnTrashResponse(response, bs, tr);
 	}
 
 	/*
 	 * Updates the RSS feeds for a binder and/or entry.
 	 */
-	private static void refreshRssFeed(AllModulesInjected bs, Binder binder) {
-		bs.getRssModule().deleteRssFeed(binder);
+	@SuppressWarnings("unused")
+	private static void refreshRssFeed(AllModulesInjected bs, Long binderId, Long entryId) {
+		refreshRssFeed(bs, binderId);
 	}
-	
 	private static void refreshRssFeed(AllModulesInjected bs, Long binderId) {
-		// Always use the initial form of the method.
 		refreshRssFeed(bs, bs.getBinderModule().getBinder(binderId));
 	}
-	
 	private static void refreshRssFeed(AllModulesInjected bs, FolderEntry fe) {
-		// Always use the initial form of the method.
 		refreshRssFeed(bs, fe.getParentBinder());
+	}
+	private static void refreshRssFeed(AllModulesInjected bs, Binder binder) {
+		bs.getRssModule().deleteRssFeed(binder);
 	}
 	
 	/**
@@ -1729,9 +1542,6 @@ public class TrashHelper {
      *  
 	 * @param cd
 	 * @param binder
-	 * 
-	 * @throws WriteEntryDataException
-	 * @throws WriteFilesException
 	 */
     public static void registerBinderNames(CoreDao cd, Binder binder, Object rd) throws WriteEntryDataException, WriteFilesException {
     	registerTitle(          cd, binder.getParentBinder(), binder,                          ((TrashRenameData) rd));
@@ -1745,9 +1555,6 @@ public class TrashHelper {
      * @param cd
      * @param folder
      * @param entry
-	 * 
-	 * @throws WriteEntryDataException
-	 * @throws WriteFilesException
      */
     public static void registerEntryNames(CoreDao cd, Folder folder, FolderEntry entry, Object rd) throws WriteEntryDataException, WriteFilesException {
     	if (entry.isTop()) {
@@ -1966,11 +1773,11 @@ public class TrashHelper {
 	 * Called to restore the entries in the trash. 
 	 */
 	private static ModelAndView restoreAll(AllModulesInjected bs, RenderRequest request, RenderResponse response) {
-		// If there are any TrashEntity's...
-		TrashEntity[] trashEntities = getAllTrashEntities(bs, request);
-        if (0 < trashEntities.length) {
+		// If there are any TrashEntry's...
+		TrashEntry[] trashEntries = getAllTrashEntries(bs, request);
+        if (0 < trashEntries.length) {
             // ...restore them.
-        	return restoreEntities(bs, trashEntities, request, response);
+        	return restoreEntries(bs, trashEntries, request, response);
         }
         
 		response.setContentType("text/json");
@@ -2047,91 +1854,71 @@ public class TrashHelper {
 	}
 
 	/**
-	 * Called to restore the TrashEntity's in trashEntities and return
-	 * an appropriate ModelAndView. 
+	 * Called to restore the TrashEntry's in trashEntries. 
 	 * 
 	 * @param bs
-	 * @param trashEntities
+	 * @param trashEntries
 	 * @param request
 	 * @param response
-	 * 
 	 * @return
 	 */
-	public static ModelAndView restoreEntities(AllModulesInjected bs, TrashEntity[] trashEntities, RenderRequest request, RenderResponse response) {
-		// Perform the restore and handle any messages returned.
-		TrashResponse tr = restoreSelectedEntities(bs, trashEntities);
-		return getMVBasedOnTrashResponse(response, bs, tr);
+	public static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry trashEntry) {
+		// Always use the final form of the method.
+		return
+			restoreEntries(
+				bs,
+				new TrashEntry[]{trashEntry},
+				null,	// null -> No RenderRequest.   Used from web services.
+				null);	// null -> No RenderResponse.  Used from web services.
 	}
-	
-	/**
-	 * Called to restore the TrashEntity's in trashEntities. 
-	 * 
-	 * @param bs
-	 * @param trashEntities
-	 * 
-	 * @return
-	 */
-	public static TrashResponse restoreSelectedEntities(AllModulesInjected bs, TrashEntity[] trashEntities) {
-		// Scan the TrashEntity's.
-		int count = ((null == trashEntities) ? 0 : trashEntities.length);
-		TrashResponse reply = new TrashResponse(bs);
+	public static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry[] trashEntries) {
+		// Always use the final form of the method.
+		return
+			restoreEntries(
+				bs,
+				trashEntries,
+				null,	// null -> No RenderRequest.   Used from web services.
+				null);	// null -> No RenderResponse.  Used from web services.
+	}
+	public static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry trashEntry, RenderRequest request, RenderResponse response) {
+		// Always use the final form of the method.
+		return
+			restoreEntries(
+				bs,
+				new TrashEntry[]{trashEntry},
+				request,
+				response);
+	}
+	public static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
+		// Scan the TrashEntry's.
+		int count = ((null == trashEntries) ? 0 : trashEntries.length);
+		TrashResponse tr = new TrashResponse(bs);
 		for (int i = 0; i < count; i += 1) {
-			// Is this trashEntity valid and predeleted?
-			TrashEntity trashEntity = trashEntities[i];
-			if (trashEntity.isPreDeleted(bs)) {
+			// Is this trashEntry valid and predeleted?
+			TrashEntry trashEntry = trashEntries[i];
+			if (trashEntry.isPreDeleted(bs)) {
 				// Yes!  Is it an entry?
-				if (trashEntity.isEntry()) {
+				if (trashEntry.isEntry()) {
 					// Yes!  Restore the entry itself...
-					restoreEntry(bs, trashEntity.m_locationBinderId, trashEntity.m_docId, reply);
-					if (reply.isError()) {
+					restoreEntry(bs, trashEntry.m_locationBinderId, trashEntry.m_docId, tr);
+					if (tr.isError()) {
 						break;
 					}
 				}
 				
 				// No, it isn't an entry!  Is it a binder?
-				else if (trashEntity.isBinder()) {
+				else if (trashEntry.isBinder()) {
 					// Yes!  Restore the binder itself...
-					restoreBinder(bs, trashEntity.m_docId, reply);
-					if (reply.isError()) {
+					restoreBinder(bs, trashEntry.m_docId, tr);
+					if (tr.isError()) {
 						break;
 					}
 				}
 			}
 		}
 		
-		// If we get here, reply refers to the TrashResponse that
-		// describes the results of the restore.  Return it.
-		return reply;
-	}
-	
-	public static ModelAndView restoreEntities(AllModulesInjected bs, TrashEntity trashEntity) {
-		// Always use the initial form of the method.
-		return
-			restoreEntities(
-				bs,
-				new TrashEntity[]{trashEntity},
-				null,	// null -> No RenderRequest.   Used from web services.
-				null);	// null -> No RenderResponse.  Used from web services.
-	}
-	
-	public static ModelAndView restoreEntities(AllModulesInjected bs, TrashEntity[] trashEntities) {
-		// Always use the initial form of the method.
-		return
-			restoreEntities(
-				bs,
-				trashEntities,
-				null,	// null -> No RenderRequest.   Used from web services.
-				null);	// null -> No RenderResponse.  Used from web services.
-	}
-	
-	public static ModelAndView restoreEntities(AllModulesInjected bs, TrashEntity trashEntity, RenderRequest request, RenderResponse response) {
-		// Always use the initial form of the method.
-		return
-			restoreEntities(
-				bs,
-				new TrashEntity[]{trashEntity},
-				request,
-				response);
+		// Handle any messages based on the restore.
+		return getMVBasedOnTrashResponse(response, bs, tr);
 	}
 
 	/*

@@ -87,7 +87,7 @@
 </c:if>
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
-<c:if test="${!ss_fileopenDivSeen}">
+<c:if test="${ss_accessControlMap[ssEntry.id]['modifyEntry'] && !ss_fileopenDivSeen}">
   <div id="ss_div_fileopen${ss_attachments_namespace}" 
     name="ss_div_fileopen${ss_attachments_namespace}" 
     style="visibility:visible;display:block; width:1px; height:1px;">

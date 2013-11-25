@@ -29,20 +29,19 @@
 #macro (ss_printLn $line)$line
 #end
 #macro (ss_print $line)$line#end 
-#macro (ss_eWrapper)#ss_print("padding:10px;margin-top:5px;-moz-border-radius:5px;border-radius:5px;-webkit-border-radius:5px;")#end 
-#macro (ss_eRelated)#ss_print("font-size:.9em;background:#EDEDED;padding:5px 10px;-moz-border-radius:5px;border-radius:5px;-webkit-border-radius:5px;")#end 
+#macro (ss_eWrapper)#ss_print("padding:10px;margin-top:5px;-moz-border-radius:5px;-webkit-border-radius:5px;")#end 
+#macro (ss_eRelated)#ss_print("font-size:.9em;background:#EDEDED;padding:5px 10px;-moz-border-radius:5px;-webkit-border-radius:5px;")#end 
 #macro (ss_entrySubhead)#ss_print("text-align:center;padding:5px;font-size:14px;color:#949494;")#end 
 #macro (ss_eNav)#ss_print("position:relative;")#end 
-#macro (ss_eUserAvatar)#ss_print("background:#c4c4c4;padding:5px;margin-bottom:8px;color:#fff;font-weight:bold;text-decoration:none;-moz-border-radius:5px;border-radius:5px;-webkit-border-radius:5px;")#end 
+#macro (ss_eUserAvatar)#ss_print("background:#c4c4c4;padding:5px;margin-bottom:8px;color:#fff;font-weight:bold;text-decoration:none;-moz-border-radius:5px;-webkit-border-radius:5px;")#end 
 #macro (ss_eDate)#ss_print("color:#505354;font-size:11px;font-weight:normal;padding-left:5px;")#end 
 #macro (ss_eAuthor)#ss_print("font-size:12px;font-weight:bold;margin-left:5px;")#end 
 #macro (ss_eActions)#ss_print("position:absolute;top:12px;right:8px;")#end 
 #macro (ss_eUserAvatarImg)#ss_print("width:24px;vertical-align:middle;padding-right:5px;")#end 
 #macro (ss_eFolderLink)#ss_print("font-size:12px;font-weight:normal;text-transform:none;margin-left:5px;")#end 
-#macro (ss_eFolderBreadcrumb)#ss_print("color:#505354;font-size:11px;font-weight:normal;padding-left:5px;")#end 
 #macro (ss_eLabel)#ss_print("color:#505354;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin:16px 10px 3px 5px;")#end 
 #macro (ss_eLabel2)#ss_print("font-size:13px;margin: 15px 10px 5px 5px;")#end 
-#macro (ss_eChild)#ss_print("margin:1px 1px 1px 15px;padding:8px;background-color:#F6F6F6;border:1px solid #B8B8B8;-moz-border-radius:5px;border-radius:5px;-webkit-border-radius:5px;")#end 
+#macro (ss_eChild)#ss_print("margin:1px 1px 1px 15px;padding:8px;background-color:#F6F6F6;border:1px solid #B8B8B8;-moz-border-radius:5px;-webkit-border-radius:5px;")#end 
 #macro (ss_entryContent)#ss_print("font-size:12px;font-weight:normal;font-family:Arial;margin:5px 5px 10px 15px;")#end
 #macro (ss_eTitle)#ss_print("font-size:1.1em;color:#5691A6;margin:5px;")#end
 #macro (ss_entrySignature)#ss_print("font-size:10px;padding-left:5px;color:#666666;")#end 

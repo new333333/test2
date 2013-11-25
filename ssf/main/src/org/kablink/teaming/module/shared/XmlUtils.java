@@ -136,8 +136,6 @@ public class XmlUtils {
 			 return element.getText();  		 
 		 } else if (type.equals(ObjectKeys.XTAG_TYPE_DESCRIPTION)) {
 			 return new Description(element.getText());
-		 } else if (type.equals(ObjectKeys.XTAG_TYPE_BOOLEAN)) {
-			 return new Boolean(element.getText());
 		 }
 		 return null;
 		 

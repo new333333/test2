@@ -38,37 +38,35 @@ import java.util.Map;
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.util.search.Constants;
-import org.kablink.util.search.FieldFactory;
 
 public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 	
-	@Override
 	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
 		String strToIndex = getStringToIndex(dataElemValue);
 		if(strToIndex != null && !strToIndex.equals("")) {
 			// Handle primary field
-           	Field field = FieldFactory.createField(getSearchFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex(), getOmitTermFreqAndpositions());
+           	Field field = new Field(getSearchFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex());
            	// Handle optional sort field
 			Field sortField = null;
 			if(getSortFieldName(dataElemName) != null && 
 					!getSearchFieldName(dataElemName).equals(getSortFieldName(dataElemName))) {
 				// This data element requires a separate sort field.
-				sortField = FieldFactory.createFieldStoredNotAnalyzed(getSortFieldName(dataElemName), strToIndex.toLowerCase());
+				sortField = new Field(getSortFieldName(dataElemName), strToIndex.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 			}
-			// Handle optional generalText field.
-           	Field generalTextField = null;
+			// Handle optional allText field.
+           	Field allTextField = null;
            	if (!isFieldsOnly(args))
-           		generalTextField =  BasicIndexUtils.generalTextField(strToIndex);
+           		allTextField =  BasicIndexUtils.allTextField(strToIndex);
            	// Put them together.
            	if(sortField != null) {
-           		if(generalTextField != null)
-           			return new Field[] {field, sortField, generalTextField};
+           		if(allTextField != null)
+           			return new Field[] {field, sortField, allTextField};
            		else
            			return new Field[] {field, sortField};
            	}
            	else {
-           		if(generalTextField != null)
-           			return new Field[] {field, generalTextField};
+           		if(allTextField != null)
+           			return new Field[] {field, allTextField};
            		else
            			return new Field[] {field};
            	}
@@ -99,7 +97,7 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 
 	// Default implementation.
 	public Field.Index getFieldIndex() {
-		return Field.Index.ANALYZED_NO_NORMS;
+		return Field.Index.ANALYZED;
 	}
 	
 	// Default implementation.
@@ -114,7 +112,4 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 		return Constants.SORT_FIELD_PREFIX + getSearchFieldName(dataElemName);
 	}
 
-	public boolean getOmitTermFreqAndpositions() {
-		return true;
-	}
 }

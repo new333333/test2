@@ -254,6 +254,6 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	 */
 	public void setLanguage()
 	{
-		language = GwtMainPage.m_requestInfo.getTinyMCELanguage();
+		language = GwtMainPage.m_requestInfo.getLanguage();
 	}
 }// end BrandingTinyMCEConfiguration

@@ -74,16 +74,14 @@ public class Workspace extends Binder  {
 	 */
 	public String getSearchTitle() {
 	   	Integer type = getDefinitionType();
-	   	if ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
-	   			(type.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
+	   	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
     		if (Validator.isNotNull(searchTitle)) return searchTitle;
     	}
 		return super.getSearchTitle();
     }
 	public void setSearchTitle(String searchTitle) {
 	   	Integer type = getDefinitionType();
-    	if ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
-    			(type.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
+    	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
     		this.searchTitle = searchTitle;
     	} else throw new NotSupportedException("errorcode.notsupported.setTitle");
 	}
@@ -145,12 +143,7 @@ public class Workspace extends Binder  {
     	else
     		return getDefs(Definition.WORKSPACE_VIEW);
     }
-
-    @Override
-    protected Binder newInstance() {
-        return new Workspace();
-    }
-
+    
     /**
      * @hibernate.property
      * @return

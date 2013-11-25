@@ -1,9 +1,10 @@
 .tundra .dijitMenu,
 .tundra .dijitMenuBar {
 	border: 1px solid #7eabcd;
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 	background-color: #f7f7f7;
+	
 }
 .tundra .dijitBorderContainer .dijitMenuBar {
 	border:1px solid #ccc;
@@ -12,7 +13,7 @@
 	font-family: sans-serif;
 	margin: 0;
 }
-.tundra .dijitMenuItem {
+.tundra .dijitMenuBar .dijitMenuItem {
 	padding: 4px 5px;
 }
 .tundra .dijitMenuPreviousButton, .tundra .dijitMenuNextButton {
@@ -22,7 +23,6 @@
 	padding: 2px;
 }
 .tundra .dijitMenuPassive .dijitMenuItemHover,
-.tundra .dijitComboBoxMenu .dijitMenuItemHover,
 .tundra .dijitMenuItemSelected {
 	background-color: #3559ac;
 	color:#fff;
@@ -32,11 +32,10 @@
 	height: 16px;
 }
 .tundra .dijitMenuExpand {
-	
 	width: 7px;
 	height: 7px;
 	background-image: url('images/spriteArrows.png');
-	background-position: -14px 0;
+	background-position: -14px 0px;
 }
 .dj_ie6 .tundra .dijitMenuExpand {
 	background-image: url('images/spriteArrows.gif');
@@ -47,21 +46,16 @@
 .tundra .dijitMenuSeparatorBottom {
 	border-top: 1px solid #e8e8e8;
 }
-.tundra .dijitCheckedMenuItem .dijitMenuItemIcon,
-.tundra .dijitRadioMenuItem .dijitMenuItemIcon {
+.tundra .dijitCheckedMenuItemIconChar {
+	display: none;
+}
+.tundra .dijitCheckedMenuItemIcon {
 	background-image: url('images/checkmark.png');
 	background-position: -80px;
 }
-.dj_ie6 .tundra .dijitCheckedMenuItem .dijitMenuItemIcon,
-.dj_ie6 .tundra .dijitRadioMenuItem .dijitMenuItemIcon {
+.dj_ie6 .tundra .dijitCheckedMenuItemIcon {
 	background-image: url('images/checkmark.gif');
 }
-.tundra .dijitCheckedMenuItemChecked .dijitMenuItemIcon {
+.tundra .dijitCheckedMenuItemChecked .dijitCheckedMenuItemIcon {
 	background-position: -64px;
-}
-.tundra .dijitRadioMenuItem .dijitMenuItemIcon {
-	background-position: -110px; 
-}
-.tundra .dijitRadioMenuItemChecked .dijitMenuItemIcon {
-	background-position: -95px;	
 }

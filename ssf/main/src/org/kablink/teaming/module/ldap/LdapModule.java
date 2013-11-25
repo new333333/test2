@@ -37,10 +37,8 @@ import java.util.HashSet;
 
 import javax.naming.NamingException;
 
-import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
-import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 
 
 /**
@@ -52,39 +50,23 @@ public interface LdapModule {
 		manageLdap,
 		manageAuthentication
 	}
-	
-	/**
-	 * 
-	 */
-	public enum LdapSyncMode
-	{
-		PERFORM_SYNC,
-		PREVIEW_ONLY
-	}
-	
 	public boolean testAccess(LdapOperation operation);
 
 	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException;
 	
 	public LdapSchedule getLdapSchedule();
-
-	public boolean hasPasswordExpired( String userName, String ldapConfigId );
 	
 	public boolean isGuidConfigured();
 	
 	public void setLdapSchedule(LdapSchedule schedule);
 
-	public HomeDirInfo getHomeDirInfo( String teamingUserName, String ldapUserName, boolean logErrors ) throws NamingException;
-	
     public String readLdapGuidFromDirectory( String userName, Long zoneId );
 
-    public String readLdapGuidFromDirectory(String userName, Long zoneId, LdapConnectionConfig config);
-
-    public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncMode mode, LdapSyncResults syncResults ) throws LdapSyncException;
+	public void syncAll( boolean syncUsersAndGroups, boolean syncGuids, LdapSyncResults syncResults ) throws LdapSyncException;
 
 	public void syncUser( String teamingUserName, String ldapUserName ) throws NoUserByTheNameException,NamingException;
 	
 	public void syncUser(Long userId) throws NoUserByTheNameException,NamingException;
-
+	
 	public Integer testGroupMembershipCriteria( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException;
 }

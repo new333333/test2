@@ -36,8 +36,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.HttpStatusCodeSupport;
 import org.kablink.util.api.ApiErrorCode;
@@ -48,8 +46,6 @@ public class EntryDataErrors implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static final Log logger = LogFactory.getLog(EntryDataErrors.class);
-
 	private List<Problem> problems;
 	
 	public EntryDataErrors() {
@@ -80,20 +76,17 @@ public class EntryDataErrors implements Serializable {
 		// Problem types
 		public static int GENERAL_PROBLEM = 0;
 		public static int INVALID_HTML = 1;
-		public static int INVALID_CAPTCHA_RESPONSE = 2;
 		
 		// Message codes corresponding to each problem type.
 		public static String[] typeCodes = {
 			"general.error.anErrorOccurred",
-			"general.error.invalidHTML",
-			"captcha.error.invalidResponse"
+			"general.error.invalidHTML"
 		};
 		
 		// API error codes corresponding to each problem type.
 		public static ApiErrorCode[] apiErrorCodes = {
 			ApiErrorCode.SERVER_ERROR,
-			ApiErrorCode.INVALID_HTML,
-			ApiErrorCode.INVALID_CAPTCHA_RESPONSE
+			ApiErrorCode.INVALID_HTML
 		};
 		
 		// HTTP status codes corresponding to each problem type.
@@ -109,7 +102,7 @@ public class EntryDataErrors implements Serializable {
 		public Problem(int type, Exception e) {
 			this.type = type;
 			this.exception = e;
-			logger.error("Entry data error (type=" + type + ")", e);
+			//logger.warn("Entry data error: " + e.getMessage());
 		}
 
 		public Exception getException() {

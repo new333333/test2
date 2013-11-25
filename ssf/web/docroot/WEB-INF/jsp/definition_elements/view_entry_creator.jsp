@@ -49,7 +49,7 @@
     	<c:if test="${status.count == 1}"><c:set var="guestNameEntered" value="${guestName}"/></c:if>
     	<c:if test="${status.count == 2}"><c:set var="guestEmailEntered" value="${guestName}"/></c:if>
     </c:forEach>
-    <span> (<c:if test="${!empty guestNameEntered}">${guestNameEntered}<c:if test="${!empty guestEmailEntered}">, </c:if></c:if>${guestEmailEntered})</span>
+    <span>(<c:if test="${!empty guestNameEntered}">${guestNameEntered}<c:if test="${!empty guestEmailEntered}">, </c:if></c:if>${guestEmailEntered})</span>
   </c:if>
 </c:if>
 </div>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,8 +30,10 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.module.binder;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
@@ -51,28 +53,27 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
-import org.kablink.teaming.module.binder.impl.SimpleNameAlreadyExistsException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.remoting.ws.model.Description;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.util.search.Criteria;
 
+
 /**
- * ?
- * 
  * @author Janet McCann
+ *
  */
-@SuppressWarnings("unchecked")
 public interface BinderModule {
 	public enum BinderOperation {
+		addEntry,
 		addFolder,
 		addWorkspace,
-		changeACL,
 		copyBinder,
 		restoreBinder,
 		preDeleteBinder,
@@ -92,12 +93,7 @@ public interface BinderModule {
 		changeEntryTimestamps,
 		manageSimpleName,
 		export,
-		deleteEntries,
-		allowSharing,
-		allowSharingExternal,
-		allowSharingPublic,
-		allowSharingForward,
-		allowAccessNetFolder
+		deleteEntries
 	}
     /**
      * Add a new <code>Folder</code> or <code>Workspace</code>.  Use definition type to determine which
@@ -111,7 +107,7 @@ public interface BinderModule {
      * @throws WriteFilesException
      * @throws WriteEntryDataException
      */
-	public Binder addBinder(Long parentId, String definitionId, InputDataAccessor inputData,
+    public Binder addBinder(Long parentId, String definitionId, InputDataAccessor inputData,
        		Map fileItems, Map options)
     	throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	/**
@@ -121,17 +117,6 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public void checkAccess(Binder binder, BinderOperation operation)
-		throws AccessControlException;
-	public void checkAccess(User user, Binder binder, BinderOperation operation)
-		throws AccessControlException;
-	/**
-	 * Check access to a binder, throwing an exception if access is denied.
-	 * @param binder
-	 * @param operation
-	 * @param thisLevelOnly  //Don't look for sub-binders down the tree (performance improvement)
-	 * @throws AccessControlException
-	 */
-	public void checkAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly)
 		throws AccessControlException;
 	
     /**
@@ -228,14 +213,10 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource, Map options) 
-			throws AccessControlException;
-		
+		throws AccessControlException;
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean phase1Only) 
-			throws AccessControlException;
-		
-	public void deleteBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean phase1Only, boolean createDbLogForTopBinderOnly) 
-			throws AccessControlException;
-		
+		throws AccessControlException;
+	
 	/**
 	 * Performs phase2 of deleting a binder.  Must be called after calling
 	 * deleteBinder(...) one or more times and specifying to only do phase
@@ -314,9 +295,9 @@ public interface BinderModule {
      * @param preDeleted
      * @return
      */
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults);
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted);
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls);
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults);
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults, boolean preDeleted);
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls);
     /**
 	 * Execute a search query using a <code>Criteria</code>. Limit results to those of a different user
      * @param crit
@@ -326,9 +307,9 @@ public interface BinderModule {
      * @param preDeleted
      * @return
      */
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, Long asUserId);
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, Long asUserId, boolean preDeleted);
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, Long asUserId, boolean preDeleted, boolean ignoreAcls);
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults, Long asUserId);
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults, Long asUserId, boolean preDeleted);
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults, Long asUserId, boolean preDeleted, boolean ignoreAcls);
     /**
 	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
      * @param query
@@ -337,9 +318,9 @@ public interface BinderModule {
      * @param preDeleted
      * @return
      */
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults);
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted);
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls);
+    public Map executeSearchQuery(Document query, int offset, int maxResults);
+    public Map executeSearchQuery(Document query, int offset, int maxResults, boolean preDeleted);
+    public Map executeSearchQuery(Document query, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls);
     /**
 	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
      * @param query
@@ -349,9 +330,9 @@ public interface BinderModule {
      * @param preDeleted
      * @return
      */
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, Long asUserId);
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, Long asUserId, boolean preDeleted);
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, Long asUserId, boolean preDeleted, boolean ignoreAcls);
+    public Map executeSearchQuery(Document query, int offset, int maxResults, Long asUserId);
+    public Map executeSearchQuery(Document query, int offset, int maxResults, Long asUserId, boolean preDeleted);
+    public Map executeSearchQuery(Document query, int offset, int maxResults, Long asUserId, boolean preDeleted, boolean ignoreAcls);
     /**
  	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
      * Optionally provide additional searchOptions.
@@ -360,7 +341,7 @@ public interface BinderModule {
      * @param preDeleted
      * @return
      */
-    public Map executeSearchQuery(Document searchQuery, int searchMode, Map searchOptions);
+    public Map executeSearchQuery(Document searchQuery, Map searchOptions);
     /**
      * Get a binder
      * @param binderId
@@ -369,14 +350,8 @@ public interface BinderModule {
      * @throws AccessControlException
      */
     public Binder getBinder(Long binderId)
-			throws NoBinderByTheIdException, AccessControlException;
-
-    public Binder getBinder(Long binderId, boolean thisLevelOnly)
-			throws NoBinderByTheIdException, AccessControlException;
-
-    public Binder getBinder(Long binderId, boolean thisLevelOnly, boolean returnLimitedBinderIfInferredAccess)
-			throws NoBinderByTheIdException, AccessControlException;
-
+		throws NoBinderByTheIdException, AccessControlException;
+    
     public Binder getBinderWithoutAccessCheck(Long binderId) throws NoBinderByTheIdException;
     
     /**
@@ -385,7 +360,6 @@ public interface BinderModule {
      * @return Binders sorted by title
      */
     public SortedSet<Binder> getBinders(Collection<Long> binderIds);
-    public SortedSet<Binder> getBinders(Collection<Long> binderIds, boolean doAccessCheck);
     /**
      * Search for child binders - 1 level
      * @param binder
@@ -394,7 +368,6 @@ public interface BinderModule {
      */
     public Map getBinders(Binder binder, Map searchOptions);
     public Map getBinders(Binder binder, List binderIds, Map searchOptions);
-
     /**
      * Finds a binder by path name. If no binder exists with the path name,
      * it returns <code>null</code>. If a matching binder exists but the
@@ -406,17 +379,6 @@ public interface BinderModule {
      */
     public Binder getBinderByPathName(String pathName) 
     	throws AccessControlException;
-
-    /**
-     * Finds a binder by parent binder id and title. If no binder exists,
-     * it returns <code>null</code>. If a matching binder exists but the
-     * user has no access to it, it throws <code>AccessControlException</code>.
-     * @param parentBinderId
-     * @param title
-     * @return
-     */
-    public Binder getBinderByParentAndTitle(Long parentBinderId, String title) throws AccessControlException;
-
     /**
      * Traverse the binder tree returing a DOM structure containing workspaces and
      * folders
@@ -503,7 +465,6 @@ public interface BinderModule {
 	 * @param includeEntries
 	 */
     public IndexErrors indexBinderIncremental(Long binderId, boolean includeEntries) throws AccessControlException;
-    public IndexErrors indexBinderIncremental(Long binderId, boolean includeEntries, boolean skipFileContentIndexing) throws AccessControlException;
     /**
      * Index a binder and its child binders, including all entries
      * @param binderId
@@ -524,7 +485,7 @@ public interface BinderModule {
       * @param binderId
       * @return Set of binderIds indexed
       */
-	public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads) throws AccessControlException;
+	public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors) throws AccessControlException;
    
     /**
      * Validate the binder quota values for a set of binder trees
@@ -578,7 +539,7 @@ public interface BinderModule {
 	 * @param toId - destination id
      * @param options - processing options or null
 	 */
-	public Binder moveBinder(Long binderId, Long toId, Map options)
+	public void moveBinder(Long binderId, Long toId, Map options)
 		throws AccessControlException;  
     /**
      * Modify the list of definitions and workflows assocated with a binder
@@ -598,8 +559,7 @@ public interface BinderModule {
 	 */
     public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent)
     	throws AccessControlException;
-    public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent, boolean doAccessCheck) 
-		throws AccessControlException;
+
 	/**
      * Set this inherited.
      * 
@@ -716,7 +676,7 @@ public interface BinderModule {
      * @param community
      * @throws AccessControlException
      */
-	public Tag [] setTag(Long binderId, String newtag, boolean community)
+	public void setTag(Long binderId, String newtag, boolean community) 
 		throws AccessControlException;  
 	/**
 	 * Set the team members for a binder.  By default inherits from parent
@@ -734,14 +694,6 @@ public interface BinderModule {
 	 */
 	public void setTeamMembershipInherited(Long binderId, boolean inherit)
 		throws AccessControlException;
-    /**
-     * Sets a binder's My Files indicator
-     * @param binderId
-     * @param value
-     * @throws AccessControlException
-     */
-	public void setMyFilesDir(Long binderId, boolean value) 
-		throws AccessControlException;
 	/**
 	 * Test access to a binder. 
 	 * @param binder
@@ -749,14 +701,6 @@ public interface BinderModule {
 	 * @return
 	 */
 	public boolean testAccess(Binder binder, BinderOperation operation);
-	/**
-	 * Test access to a binder. 
-	 * @param binder
-	 * @param operation 
-	 * @param thisLevelOnly  //Don't look down the sub-binder tree (performance improvement)
-	 * @return
-	 */
-	public boolean testAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly);
 
 	/**
 	 * Returns <code>SimpleName</code> object matching the name.
@@ -790,7 +734,7 @@ public interface BinderModule {
 	 * 
 	 * @param simpleName
 	 */
-	public void addSimpleName(String name, Long binderId, String binderType) throws SimpleNameAlreadyExistsException;
+	public void addSimpleName(String name, Long binderId, String binderType);
 	
 	/**
 	 * Delete the simple name.
@@ -820,32 +764,4 @@ public interface BinderModule {
 	
 	public void setFileVersionStatus(DefinableEntity entity, FileAttachment fa, int status);
 
-	/**
-	 * Return immediate children entities (entries and binders) of the specified 
-	 * parent binder where those entities are accessible/visible because the user
-	 * has either direct/explicit access or inferred/implicit access to those.
-	 * 
-	 * @param crit
-	 * @param searchMode
-	 * @param offset
-	 * @param maxResults
-	 * @param parentBinderId
-	 * @param parentBinderPath
-	 * @return
-	 */
-    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder);
-
-    /**
-     * Return whether or not the calling user can gain inferred access to the specified
-     * binder because the user has explicit access to at least one descendant binder of
-     * the specified binder. 
-     * 
-     * Note: This method does not take into account whether or not the user has explicit
-     * access to the specified binder. That is something that the caller has to check
-     * separately before invoking this method. 
-     * 
-     * @param binder
-     * @return
-     */
-    public boolean testInferredAccessToBinder(User user, Binder binder);
 }

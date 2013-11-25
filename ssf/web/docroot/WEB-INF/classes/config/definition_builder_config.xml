@@ -83,12 +83,6 @@
 		</operations>
 	</definition>
 	
-	<definition name="externalUserWorkspaceViewDefinition" definitionType="15" caption="__external_user_workspace_view" canBeDeleted="false">
-		<operations>
-			<operation name="addDefinition" item="externalUserWorkspaceViewType" caption="__add_a_new_external_user_workspace_view" />
-		</operations>
-	</definition>
-
 	
 <!-- Items -->
 	<item name="title" caption="__title" type="data" dataType="title" canBeDeleted="true"
@@ -213,7 +207,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
-			<property name="family" caption="__family" type="familySelectboxEntry" 
+			<property name="family" caption="__family" type="selectbox" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
 				<option name="blog" caption="__family_blog" />
@@ -227,8 +221,6 @@
 				<option name="miniblog" caption="__family_miniblog" />
 				<option name="survey" caption="__family_survey" />
 				<option name="guestbook" caption="__family_guestbook" />
-				<option name="comment" caption="__family_comment" />
-				<option name="fileComment" caption="__family_file_comment" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
@@ -615,7 +607,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
-			<property name="family" caption="__family" type="familySelectboxFolder" 
+			<property name="family" caption="__family" type="selectbox" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
 				<option name="blog" caption="__family_blog" />
@@ -1082,11 +1074,6 @@
 				<option name="profileStd" caption="__profile_entry_type_BC" />
 				<option name="profileGWT" caption="__profile_entry_type_GWT" />
 			</property>
-			<property name="family" caption="__family" type="familySelectboxUserProfile" 
-				  default="userProfile" value="userProfile">
-				<option name="userProfile" caption="__family_userProfile" />
-				<help>ihelp.other.definition_family</help>
-			</property>
 		</properties>		
 		<operations>
 			<operation name="addOption" caption="__add" />
@@ -1118,68 +1105,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
 		</jsps>
 	</item>
-
-<!-- Profile Layout Items -->	
-	<item name="conditionalProfileFormItem" caption="__conditional" category="profileFormLayout" display="form">
-		<properties>
-			<property name="license" caption="__licenseOptions" type="selectbox" multipleAllowed="true">
-				<option name="vibe" caption="__licenseVibe" />
-				<option name="filr" caption="__licenseFilr" />
-				<option name="filrAndVibe" caption="__licenseFilrAndVibe" />
-				<option name="guestAccess" caption="__licenseGuestAccess" />
-				<option name="externalUsers" caption="__licenseExternalUsers" />
-				<option name="kablink" caption="__licenseKablink" />
-		    </property>
-		</properties>
-		<options optionCaption="__profile_options">
-			<option_select path="//item[@category='userFormLayout']" optionCaption="__layout_options" />
-			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" >
-			  <exclude name="mashupCanvas"/>
-			</option_select>
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="view">
-		<properties>
-			<property name="license" caption="__licenseOptions" type="selectbox" multipleAllowed="true">
-				<option name="vibe" caption="__licenseVibe" />
-				<option name="filr" caption="__licenseFilr" />
-				<option name="filrAndVibe" caption="__licenseFilrAndVibe" />
-				<option name="guestAccess" caption="__licenseGuestAccess" />
-				<option name="externalUsers" caption="__licenseExternalUsers" />
-				<option name="kablink" caption="__licenseKablink" />
-		    </property>
-		</properties>
-		<options optionCaption="__profile_options">
-			<option name="profileEntryView"/>
-			<option name="profileEntryStandardView" />
-			<option name="profileEntrySimpleView" />
-			<option name="profileEntryBusinessCard"/>
-			<option name="profileEntryMiniBusinessCard" />			
-			<option name="profileTitle" caption="__profile_title"/>
-			<option name="profileEntryDataItem" definitionType="7" />
-			<option name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" 
-				definitionType="7" />
-			<option name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
-				definitionType="7" />
-			<option name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
-				definitionType="7" />
-			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
-				definitionType="7" />
-			<option name="entryAttachments" caption="__entry_attachments" />
-			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select path="//item[@category='userViewLayout']" optionCaption="__layout_options" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
-		</jsps>
-	</item>
-		
+	
 <!-- Profile entry form -->
 
 	<item name="profileEntryFormForm" caption="__form" canBeDeleted="false" 
@@ -1204,7 +1130,6 @@
 				<exclude name="external_user_list"/>
 			</option_select>
 			<option_select path="//item[@category='userFormLayout']" optionCaption="__layout_options" />
-			<option_select path="//item[@category='profileFormLayout']" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
@@ -1397,7 +1322,6 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-
 <!--
   Note: conferencing support has been discontinued
 	<item name="profileConferencingID" caption="__conferencingID" type="data" dataType="id" 
@@ -1429,9 +1353,8 @@
 		</jsps>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>		
--->
-
+	</item>
+-->		
 	<item name="profileTimeZone" caption="__timeZone" type="data" dataType="timeZone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
 		<properties>
@@ -1461,20 +1384,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-<!--
-	<item name="profileManageGroups" caption="__userGroupsListForm" type="data" dataType="groupList" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__userGroupsListForm"/>
-			<property name="name" caption="__data_name" type="text" value="_user_groups_list" 
-			  readonly="true" unique="//item[@type='data']"/>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_groups_form.jsp" />
-		</jsps>
-	</item>
--->
-		<item name="profilePhone" caption="__phone" type="data" dataType="phone" 
+	<item name="profilePhone" caption="__phone" type="data" dataType="phone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__phone"/>
@@ -1956,7 +1866,6 @@
 			<option name="profileEntryDataItem" definitionType="7" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select path="//item[@category='profileViewLayout']" />
 		</options>
 		
 		<jsps>
@@ -1998,7 +1907,6 @@
 		<options optionCaption="__layout_options">
 			<option_select path="//item[@category='userViewLayout']" />
 			<option_select path="//item[@name='entryAttachments']" />
-			<option_select definitionType="7" path="//item[@category='profileViewLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_GWT.jsp" />
@@ -2008,12 +1916,11 @@
 	
 <!-- Profile entry simple profile view -->
 	<item name="profileEntrySimpleView" caption="__profile_entry_simple_view" 
-		  canBeDeleted="false" multipleAllowed="true" display="view">
+		  canBeDeleted="false" multipleAllowed="false" display="view">
 		<options>
 			<option name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" 
 				definitionType="7" initial="true" />
 			<option name="profileEntryDataItem" definitionType="7" />
-			<option_select definitionType="7" path="//item[@category='profileViewLayout']" optionCaption="__layout_options" />
 		</options>
 		
 		<jsps>
@@ -2023,14 +1930,13 @@
 	
 <!-- Profile entry business card view -->
 	<item name="profileEntryBusinessCard" caption="__profile_entry_business_card_definition" 
-		  canBeDeleted="true" multipleAllowed="true" display="view">
+		  canBeDeleted="true" multipleAllowed="false" display="view">
 		<options>
 			<option name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
 				definitionType="7" initial="true" />
 			<option name="profileEntryDataItem" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="7" path="//item[@category='profileViewLayout']" />
 		</options>
 		
 		<jsps>
@@ -2040,14 +1946,13 @@
 	
 <!-- Profile entry business card view -->
 	<item name="profileEntryMiniBusinessCard" caption="__profile_entry_mini_business_card_definition" 
-		  canBeDeleted="true" multipleAllowed="true" display="view">
+		  canBeDeleted="true" multipleAllowed="false" display="view">
 		<options>
 			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
 				definitionType="7" initial="true" />
 			<option name="profileEntryDataItem" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select path="//item[@category='profileViewLayout']" />
 		</options>
 		
 		<jsps>
@@ -2056,7 +1961,7 @@
 	</item>	
 	
 	<item name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
-		  canBeDeleted="false" multipleAllowed="true" display="view">
+		  canBeDeleted="false" multipleAllowed="false" display="view">
 		<properties>
 		    <property name="_elements" caption="__profile_elements_to_show" 
 				  type="selectbox" multipleAllowed="true">
@@ -2090,7 +1995,7 @@
 	</item>
 	
 	<item name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
-		  canBeDeleted="false" multipleAllowed="true" display="view">
+		  canBeDeleted="false" multipleAllowed="false" display="view">
 		<properties>
 		    <property name="_elements" caption="__profile_elements_to_show" 
 				  type="selectbox" multipleAllowed="true">
@@ -2116,7 +2021,7 @@
 	</item>	
 
 	<item name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" 
-		  canBeDeleted="false" multipleAllowed="true" display="view">
+		  canBeDeleted="false" multipleAllowed="false" display="view">
 		<properties>
 		    <property name="_elements" caption="__profile_elements_to_show" 
 				  type="selectbox" multipleAllowed="true">
@@ -2141,8 +2046,7 @@
 		</options>
 	</item>	
 	
-	<item name="profileHeadingPersonalForm" caption="__profile_heading_Personal_div" 
-	  category="userFormLayout" display="form">
+	<item name="profileHeadingPersonalForm" caption="__profile_heading_Personal_div" category="userFormLayout" display="form" canBeDeleted="false" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -2170,8 +2074,7 @@
 		</jsps>
 	</item>	
 
-	<item name="profileHeadingOrgForm" caption="__profile_heading_Org_div" 
-	  category="userFormLayout" display="form">
+	<item name="profileHeadingOrgForm" caption="__profile_heading_Org_div" category="userFormLayout" display="form" canBeDeleted="false" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -2194,8 +2097,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
 		</jsps>
 	</item>	
-	<item name="profileHeadingContactForm" caption="__profile_heading_Contact_div" 
-	  category="userFormLayout" display="form">
+	<item name="profileHeadingContactForm" caption="__profile_heading_Contact_div" category="userFormLayout" display="form" canBeDeleted="false" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -2226,8 +2128,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
 		</jsps>
 	</item>	
-	<item name="profileHeadingOtherForm" caption="__profile_heading_Other_div" 
-	  category="userFormLayout" display="form">
+	<item name="profileHeadingOtherForm" caption="__profile_heading_Other_div" category="userFormLayout" display="form" canBeDeleted="false" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -2246,8 +2147,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
 		</jsps>
 	</item>	
-	<item name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" 
-	  category="userViewLayout" display="view">
+	<item name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -2266,8 +2166,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/profile_section.jsp" />
 		</jsps>
 	</item>	
-	<item name="profileHeadingContactView" caption="__profile_heading_Contact_div" 
-	  category="userViewLayout" display="view">
+	<item name="profileHeadingContactView" caption="__profile_heading_Contact_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -2289,8 +2188,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/profile_section.jsp" />
 		</jsps>
 	</item>	
-	<item name="profileHeadingOrgView" caption="__profile_heading_Org_div" 
-	  category="userViewLayout" display="view">
+	<item name="profileHeadingOrgView" caption="__profile_heading_Org_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -2306,8 +2204,7 @@
 		</jsps>
 	</item>	
 
-	<item name="profileHeadingOtherView" caption="__profile_heading_Other_div" 
-	  category="userViewLayout" display="view">
+	<item name="profileHeadingOtherView" caption="__profile_heading_Other_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -2327,8 +2224,7 @@
 		</jsps>
 	</item>	
 	
-	<item name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" 
-	  category="userViewLayout" display="view">
+	<item name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -2337,8 +2233,7 @@
 		</options>
 	</item>
 
-	<item name="profileSidePanelView" caption="__profile_sidePanel_div" 
-	  category="userViewLayout" display="view">
+	<item name="profileSidePanelView" caption="__profile_sidePanel_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -2383,15 +2278,14 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
-			<property name="family" caption="__family" type="familySelectboxWorkspace" 
+			<property name="family" caption="__family" type="selectbox" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
 				<option name="workspace" caption="__family_workspace" />
-				<option name="landingpage" caption="__family_landingpage" />
+				<option name="team" caption="__family_team" />
 				<option name="blog" caption="__family_blog" />
 				<option name="discussion" caption="__family_discussion" />
 				<option name="project" caption="__family_project" />
-				<option name="team" caption="__family_team" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="icon" caption="__icons.workspace" type="iconList" 
@@ -2555,25 +2449,9 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
-			<property name="family" caption="__family" type="familySelectboxUserWorkspace" 
+			<property name="family" caption="__family" type="selectbox" 
 				  default="user" value="user">
 				<option name="user" caption="__family_user" />
-				<help>ihelp.other.definition_family</help>
-			</property>
-		</properties>
-		<options>
-			<option name="userWorkspaceForm" initial="true" />
-			<option name="userWorkspaceView" initial="true" />
-		</options>
-	</item>
-	
-	<item name="externalUserWorkspaceViewType" definitionType="15" caption="__external_user_workspace_view">
-		<properties>
-			<property name="caption" caption="__caption" type="text" />
-			<property name="name" caption="__name" type="text" />
-			<property name="family" caption="__family" type="familySelectboxExternalUserWorkspace" 
-				  default="external_user" value="external_user">
-				<option name="external_user" caption="__family_external_user" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 		</properties>
@@ -2670,9 +2548,6 @@
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
@@ -2696,16 +2571,12 @@
 				  default="standard" value="standard">
 				<option name="standard" caption="__toolbarType_standard" />
 				<option name="minimal" caption="__toolbarType_minimal" />
-				<option name="mirrored_file" caption="__toolbarType_mirrored_file" />
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
 			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
 				<help>ihelp.designers.field_modification</help>
-			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
 			</property>
 		</properties>
 		<jsps>
@@ -2729,9 +2600,6 @@
 			<property name="height" caption="__height_px" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
-			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
 			</property>
 		</properties>
 		<jsps>
@@ -2761,9 +2629,6 @@
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/number_form.jsp" />
@@ -2786,9 +2651,6 @@
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
-			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
 			</property>
 		</properties>
 		<jsps>
@@ -2817,9 +2679,6 @@
 			</property>
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
-			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
 			</property>
 		</properties>
 		<options>
@@ -2934,9 +2793,6 @@
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<options>
 			<option name="radioSelection" caption="__radio_button_option" />
@@ -3006,9 +2862,6 @@
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
@@ -3027,9 +2880,6 @@
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="value" caption="__value" type="text"/>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/hidden_form.jsp" />
@@ -3037,19 +2887,6 @@
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 	</item>
 	
-	<item name="captcha" caption="__captcha" multipleAllowed="false" type="data" dataType="text" 
-	    category="commonEntryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__captcha" />
-			<property name="name" caption="__name" type="text" value="_captcha" readonly="true" />
-			<property name="guestOnly" caption="__guestOnlyCaptcha" type="boolean" default="true"></property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/captcha.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/captcha.jsp" />
-		</jsps>
-	</item>
-		
 	<item name="graphic" caption="__graphic" type="data" dataType="graphic" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
@@ -3105,12 +2942,6 @@
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="height" caption="__height_px" type="text"/>
-			<property name="toolbarType" caption="__toolbarType" type="selectbox" 
-				  default="standard" value="standard">
-				<option name="standard" caption="__toolbarType_standard" />
-				<option name="minimal" caption="__toolbarType_minimal" />
-				<option name="mirrored_file" caption="__toolbarType_mirrored_file" />
-			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -3321,9 +3152,6 @@
 			<property name="height" caption="__height_px" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
-			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
 			</property>
 		</properties>
 		<jsps>
@@ -3676,91 +3504,6 @@
 		<notify velocity="fieldset.vm"/>
 	</item>
 		
-	<item name="conditional" caption="__conditional" category="generalLayout" display="form">
-		<properties>
-			<property name="license" caption="__licenseOptions" type="selectbox" multipleAllowed="true">
-				<option name="vibe" caption="__licenseVibe" />
-				<option name="filr" caption="__licenseFilr" />
-				<option name="filrAndVibe" caption="__licenseFilrAndVibe" />
-				<option name="guestAccess" caption="__licenseGuestAccess" />
-				<option name="externalUsers" caption="__licenseExternalUsers" />
-				<option name="kablink" caption="__licenseKablink" />
-		    </property>
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option name="title" definitionType="1" caption="__title" />
-			<option name="title" definitionType="5" caption="__title" />
-			<option name="title" definitionType="6" caption="__title" />
-			<option name="title" definitionType="8" caption="__title" />
-			<option name="title" definitionType="12" caption="__title" />
-			<option_select path="//item[@category='commonEntryData']" />
-			<option_select definitionType="1" path="//item[@category='entryData']"  />
-			<option_select definitionType="5" path="//item[@category='folderData']"  />
-			<option_select definitionType="6" path="//item[@category='profileData']"  />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
-			<option_select definitionType="8" path="//item[@category='workspaceData']" />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceData']"  />
-			<option_select definitionType="12" path="//item[@category='workspaceData']" />
-			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" >
-			  <exclude name="mashupCanvas"/>
-			</option_select>
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="conditionalView" caption="__conditional" category="generalViewLayout" display="view">
-		<properties>
-			<property name="license" caption="__licenseOptions" type="selectbox" multipleAllowed="true">
-				<option name="vibe" caption="__licenseVibe" />
-				<option name="filr" caption="__licenseFilr" />
-				<option name="filrAndVibe" caption="__licenseFilrAndVibe" />
-				<option name="guestAccess" caption="__licenseGuestAccess" />
-				<option name="externalUsers" caption="__licenseExternalUsers" />
-				<option name="kablink" caption="__licenseKablink" />
-		    </property>
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option_select definitionType="1" path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="6" path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="7" path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="5" path="//item[@category='commonEntryViewData']">
-				<exclude name="entrySignatureView"/>
-				<exclude name="entryCreatorView"/>
-				<exclude name="entryDateView"/>
-			</option_select>
-			<option_select definitionType="8" path="//item[@category='commonEntryViewData']">
-				<exclude name="entrySignatureView"/>
-				<exclude name="entryCreatorView"/>
-				<exclude name="entryDateView"/>
-			</option_select>
-			<option_select definitionType="12" path="//item[@category='commonEntryViewData']">
-				<exclude name="entrySignatureView"/>
-				<exclude name="entryCreatorView"/>
-				<exclude name="entryDateView"/>
-			</option_select>
-			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select definitionType="5" path="//item[@category='folderViewData']" />
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
-			<option_select definitionType="12" path="//item[@category='workspaceData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
-		</jsps>
-		<notify velocity="conditional.vm"/>
-	</item>
-
 	<item name="divider" caption="__divider" category="generalLayout" display="form">
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
@@ -3779,7 +3522,6 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
-			<property name="tableWidth" caption="__table_width" type="text" default="100%"/>
 			<property name="width1" caption="__col1width" type="text"/>
 			<property name="width2" caption="__col2width" type="text"/>
 			<property name="align1" caption="__col1align" type="selectbox" default="left">
@@ -3831,7 +3573,6 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
-			<property name="tableWidth" caption="__table_width" type="text" default="100%"/>
 			<property name="width1" caption="__col1width" type="text"/>
 			<property name="width2" caption="__col2width" type="text"/>
 		</properties>
@@ -3877,7 +3618,6 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
-			<property name="tableWidth" caption="__table_width" type="text" default="100%"/>
 			<property name="width1" caption="__col1width" type="text"/>
 			<property name="width2" caption="__col2width" type="text"/>
 			<property name="width3" caption="__col3width" type="text"/>
@@ -3940,7 +3680,6 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
-			<property name="tableWidth" caption="__table_width" type="text" default="100%"/>
 			<property name="width1" caption="__col1width" type="text"/>
 			<property name="width2" caption="__col2width" type="text"/>
 			<property name="width3" caption="__col3width" type="text"/>
@@ -3984,8 +3723,7 @@
 	</item>
 
 	<item name="mashupCanvas" caption="__mashup_canvas" category="generalLayout" 
-		type="data" dataType="mashupLayout" canBeDeleted="true" multipleAllowed="false" display="form"
-		license="com.novell.teaming.Vibe kablink">
+		type="data" dataType="mashupLayout" canBeDeleted="true" multipleAllowed="false" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__mashup_canvas"/>
 			<property name="name" caption="__name" type="text"/>

@@ -43,8 +43,6 @@ public interface WorkAreaFunctionMembershipManager {
     
     public void addWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);
     public void copyWorkAreaFunctionMemberships(Long zoneId, WorkArea source, WorkArea destination);
-    public void copyWorkAreaFunctionMemberships(Long zoneId, WorkArea source, WorkArea extSource, WorkArea destination,
-    		boolean justThisScope, String scope);
     public void deleteWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea);
     public void deleteWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);
     
@@ -68,7 +66,6 @@ public interface WorkAreaFunctionMembershipManager {
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea);
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMembershipsByOperation(Long zoneId, WorkArea workArea, WorkAreaOperation workAreaOperation);
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMembershipsByOperation(Long zoneId, WorkAreaOperation workAreaOperation, Set<Long> membersToLookup);
-    public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea, String functionScope);
     /**
      * 
      * @param zoneId
@@ -79,6 +76,4 @@ public interface WorkAreaFunctionMembershipManager {
      */
     public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
             WorkAreaOperation workAreaOperation, Set membersToLookup);   
-    
-    public Function getFunction(Long zoneId, Long functionId);
 }

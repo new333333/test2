@@ -1,20 +1,27 @@
-//>>built
-define("dojox/lang/oo/Filter",["dijit","dojo","dojox"],function(_1,_2,_3){
-_2.provide("dojox.lang.oo.Filter");
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.lang.oo.Filter"]){
+dojo._hasResource["dojox.lang.oo.Filter"]=true;
+dojo.provide("dojox.lang.oo.Filter");
 (function(){
-var oo=_3.lang.oo,F=oo.Filter=function(_4,_5){
-this.bag=_4;
-this.filter=typeof _5=="object"?function(){
-return _5.exec.apply(_5,arguments);
-}:_5;
-},_6=function(_7){
-this.map=_7;
+var oo=dojox.lang.oo,F=oo.Filter=function(_1,_2){
+this.bag=_1;
+this.filter=typeof _2=="object"?function(){
+return _2.exec.apply(_2,arguments);
+}:_2;
+},_3=function(_4){
+this.map=_4;
 };
-_6.prototype.exec=function(_8){
-return this.map.hasOwnProperty(_8)?this.map[_8]:_8;
+_3.prototype.exec=function(_5){
+return this.map.hasOwnProperty(_5)?this.map[_5]:_5;
 };
-oo.filter=function(_9,_a){
-return new F(_9,new _6(_a));
+oo.filter=function(_6,_7){
+return new F(_6,new _3(_7));
 };
 })();
-});
+}

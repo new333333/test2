@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.module.binder.impl;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,10 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
-import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -64,7 +62,6 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
@@ -77,7 +74,6 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.EntryBuilder;
@@ -103,14 +99,12 @@ import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-import org.kablink.util.search.FieldFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 /**
- * Add entries to the binder.
- * 
+ *
+ * Add entries to the binder
  * @author Jong Kim
  */
 @SuppressWarnings("unchecked")
@@ -120,7 +114,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	private static final int DEFAULT_MAX_CHILD_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	//***********************************************************************************************************	
     
-	@Override
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems, Map options) 
     	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
@@ -139,7 +132,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
-        List allUploadItems = new ArrayList(fileUploadItems);
         entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
         if (entryDataErrors.getProblems().size() > 0) {
         	//An error occurred processing the entry Data
@@ -156,8 +148,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	SimpleProfiler.start("addEntry_transactionExecute");
         	// 	The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
-        		@Override
-				public Object doInTransaction(TransactionStatus status) {
+        		public Object doInTransaction(TransactionStatus status) {
         			//need to set entry/binder information before generating file attachments
         			//Attachments/Events need binder info for AnyOwner
                 	SimpleProfiler.start("addEntry_fillIn");
@@ -189,8 +180,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
         	
         	getTransactionTemplate().execute(new TransactionCallback() {
-        		@Override
-				public Object doInTransaction(TransactionStatus status) {
+        		public Object doInTransaction(TransactionStatus status) {
 		        	//See if there were any file notes added
 		        	Set<Attachment> atts = entry.getAttachments();
 		        	for (Attachment att : atts) {
@@ -216,8 +206,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         	// 	The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
-        		@Override
-				public Object doInTransaction(TransactionStatus status) {
+        		public Object doInTransaction(TransactionStatus status) {
                     	//After the entry is successfully added, start up any associated workflows
         			SimpleProfiler.start("addEntry_startWorkflow");
                 	addEntry_startWorkflow(entry, ctx);
@@ -251,39 +240,21 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		ex.setEntityId(null);
         	}
         	throw ex;
-        } catch (DataIntegrityViolationException e) {
-            if (newEntry != null && newEntry.getId()!=null) {
-           		deleteEntry(binder, newEntry, false, new HashMap());
-           	}
-            throw new DataIntegrityViolationException(e.getLocalizedMessage(), e);
         } catch(Exception ex) {
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
-        	if (newEntry != null && newEntry.getId()!=null) {
+        	if (newEntry != null) {
         		deleteEntry(binder, newEntry, false, new HashMap());
         	}
         	throw new WriteEntryDataException(entryDataErrors);
         } finally {
-           	cleanupFiles(allUploadItems);
+           	cleanupFiles(fileUploadItems);       	
             SimpleProfiler.stop("addEntry");
         }
     }
 
-	/*
-	@Override
-	public List<FolderEntry> _addNetFolderEntries(final Folder folder, Definition def, 
-			final List<InputDataAccessor> inputDataList, List<Map> fileItemsList, List<Map> optionsList) 
-    	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
-		// OLD ONE $$$$$ TBR
-		ArrayList<FolderEntry> result = new ArrayList<FolderEntry>(inputDataList.size());
-		for(int i = 0; i < inputDataList.size(); i++) {
-			result.set(i, (FolderEntry) this.addEntry(folder, def, FolderEntry.class, inputDataList.get(i), fileItemsList.get(i), optionsList.get(i)));
-		}
-		return result;
-	}
-	*/
-
-    protected void addEntry_setCtx(Binder binder, Map ctx) {
+    protected void addEntry_setCtx(Binder binder, Map ctx) {    	
     }
+
     
     private void checkInputFilesForNonMirroredBinder(List fileUploadItems, FilesErrors errors) {
 		for (int i = 0; i < fileUploadItems.size();) {
@@ -357,8 +328,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		else {
    			checkInputFilesForMirroredBinder(binder, fileUploadItems, nameErrors);
    		}
-
-        FilesErrors checkSumErrors = getFileModule().verifyCheckSums(fileUploadItems);
    		
    		if (binder.isLibrary()) {
     		// 	Make sure the file name is unique if requested		
@@ -377,17 +346,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		}
    		FilesErrors filterErrors = getFileModule().filterFiles(binder, entry, fileUploadItems);
     	filterErrors.getProblems().addAll(nameErrors.getProblems());
-    	filterErrors.getProblems().addAll(checkSumErrors.getProblems());
     	return filterErrors;
     }
 
     protected FilesErrors addEntry_processFiles(Binder binder, 
     		Entry entry, List fileUploadItems, FilesErrors filesErrors, Map ctx) {
-        boolean skipDbLog = false;
-        if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG))
-        	skipDbLog = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG)).booleanValue();
-
-    	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors, skipDbLog);
+    	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
     }
     
     protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
@@ -430,9 +394,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     protected Entry addEntry_create(Definition def, Class clazz, Map ctx)  {
     	try {
-    		Constructor<Entry> c = clazz.getDeclaredConstructor();
-    		c.setAccessible(true);
-    		Entry entry = (Entry) c.newInstance();
+    		Entry entry = (Entry)clazz.newInstance();
            	entry.setEntryDef(def);
         	if (def != null) {
         		entry.setDefinitionType(new Integer(def.getType()));
@@ -486,13 +448,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     //inside write transaction
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
-        boolean skipDbLog = false;
-        if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG))
-        	skipDbLog = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG)).booleanValue();
-        boolean skipNotifyStatus = false;
-        if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS))
-        	skipNotifyStatus = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS)).booleanValue();
-
     	//create history - using timestamp and version from fillIn
 		if (binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, null, entry.getNormalTitle());
     	
@@ -503,11 +458,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			event.generateUid(entry);
 		}
 		
-		updateParentModTime(binder, ctx);
-		
-		processChangeLog(entry, ChangeLog.ADDENTRY, skipDbLog, skipNotifyStatus);
-		if(!skipDbLog)
-	    	getReportModule().addAuditTrail(AuditType.add, entry);
+		processChangeLog(entry, ChangeLog.ADDENTRY);
+    	getReportModule().addAuditTrail(AuditType.add, entry);
     }
 
     protected void addEntry_indexAdd(Binder binder, Entry entry, 
@@ -517,11 +469,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
     	if (ctx != null) tags = (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS);
     	if (tags == null) tags = new ArrayList();
-    	boolean skipFileContentIndexing = false;
-    	if(ctx != null && ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX) != null)
-    		skipFileContentIndexing = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX)).booleanValue();
-    		
-    	indexEntry(binder, entry, fileUploadItems, null, true, tags, skipFileContentIndexing);
+    	indexEntry(binder, entry, fileUploadItems, null, true, tags);
     }
  
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
@@ -550,8 +498,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
  	
     //no transaction expected
-    @Override
-	public void modifyEntry(final Binder binder, final Entry entry, 
+    public void modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Map options)  
     		throws WriteFilesException, WriteEntryDataException {
@@ -584,7 +531,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
-        List allUploadItems = new ArrayList(fileUploadItems);
 	    entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
         if (entryDataErrors.getProblems().size() > 0) {
         	//An error occurred processing the entry Data
@@ -596,11 +542,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	// The following part requires update database transaction.
 	    	//ctx can be used by sub-classes to pass info
 	    	getTransactionTemplate().execute(new TransactionCallback() {
-	    		@Override
-				public Object doInTransaction(TransactionStatus status) {
+	    		public Object doInTransaction(TransactionStatus status) {
 	    			SimpleProfiler.start("modifyEntry_fillIn");
 	    			modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
 	    			SimpleProfiler.stop("modifyEntry_fillIn");
+	    			SimpleProfiler.start("modifyEntry_startWorkflow");
+	    			modifyEntry_startWorkflow(entry, ctx);
+	    			SimpleProfiler.stop("modifyEntry_startWorkflow");
 	    			SimpleProfiler.start("modifyEntry_postFillIn");
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
 	    			SimpleProfiler.stop("modifyEntry_postFillIn");
@@ -625,8 +573,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	
 	    	SimpleProfiler.start("modifyEntry_transactionExecute2");
 	    	getTransactionTemplate().execute(new TransactionCallback() {
-	    		@Override
-				public Object doInTransaction(TransactionStatus status) {
+	    		public Object doInTransaction(TransactionStatus status) {
 		        	//See if there were any file notes added
 		        	Set<Attachment> atts = entry.getAttachments();
 		        	for (Attachment att : atts) {
@@ -657,18 +604,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	SimpleProfiler.start("modifyEntry_indexRemoveFiles");
 	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex, ctx);
 	    	SimpleProfiler.stop("modifyEntry_indexRemoveFiles");
-
-	    	//After all parts of the modification process has finished, see if there is a workflow to be added or changed.
-	    	SimpleProfiler.start("modifyEntry_transactionExecute3");
-	    	getTransactionTemplate().execute(new TransactionCallback() {
-	    		@Override
-				public Object doInTransaction(TransactionStatus status) {
-	    			SimpleProfiler.start("modifyEntry_startWorkflow");
-	    			modifyEntry_startWorkflow(entry, ctx);
-	    			SimpleProfiler.stop("modifyEntry_startWorkflow");
-	    			return null;
-	    		}});
-	    	SimpleProfiler.stop("modifyEntry_transactionExecute3");
 
 	    	// Can the entry be running a workflow?
 	    	if (entry instanceof WorkflowSupport) {
@@ -710,7 +645,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
         	throw new WriteEntryDataException(entryDataErrors);
  	    }finally {
-		    cleanupFiles(allUploadItems);
+		    cleanupFiles(fileUploadItems);
 	        SimpleProfiler.stop("modifyEntryNormal");
 	    }
 	}
@@ -731,8 +666,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems, ctx);
     	
-	    @SuppressWarnings("unused")
-		final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
+	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
 	    entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
         if (entryDataErrors.getProblems().size() > 0) {
@@ -799,9 +733,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    			}
    		}
    		SimpleProfiler.stop("modifyEntry_filterFiles_validateInput");
-
-        FilesErrors checkSumErrors = getFileModule().verifyCheckSums(fileUploadItems);
-
+   		
    		SimpleProfiler.start("modifyEntry_filterFiles_registerFileName");
     	// 	Make sure the file name is unique if requested		
     	for (int i=0; i<fileUploadItems.size(); ) {
@@ -834,7 +766,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		SimpleProfiler.stop("modifyEntry_filterFiles_filterFiles");
 
    		filterErrors.getProblems().addAll(nameErrors.getProblems());
-       filterErrors.getProblems().addAll(checkSumErrors.getProblems());
     	return filterErrors;
     }
 
@@ -898,15 +829,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //inside write transaction
     protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, 
     		Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
-        boolean skipNotifyStatus = false;
-        if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS))
-        	skipNotifyStatus = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS)).booleanValue();
-
     	//create history - using timestamp and version from fillIn
   		if (entry.isTop() && binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, (String)ctx.get(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE), entry.getNormalTitle());		
     	reorderFiles(entry, inputData, entryData);
     	editFileComments(entry, inputData);
-    	processChangeLog(entry, ChangeLog.MODIFYENTRY, false, skipNotifyStatus);
+    	processChangeLog(entry, ChangeLog.MODIFYENTRY);
     	getReportModule().addAuditTrail(AuditType.modify, entry);
 
     	if(fileRenamesTo != null)
@@ -919,58 +846,35 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, Map ctx) {
-  	   	if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
-  	   	
-    	boolean skipFileContentIndexing = false;
-    	
-    	if(ctx != null && ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX) != null)
-    		skipFileContentIndexing = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX)).booleanValue();
-  	   	
-  	    //tags will be null for now
-    	indexEntry(binder, 
-    			entry, 
-    			fileUploadItems, 
-    			filesToIndex, 
-    			false, 
-    			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )),			
-    			skipFileContentIndexing);
+  	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
+  	    	//tags will be null for now
+    	indexEntry(binder, entry, fileUploadItems, filesToIndex, false, 
+    			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )));
     }
 
     protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
     }
     //***********************************************************************************************************   
     //inside write transaction    
-    @Override
-	public Entry copyEntry(Binder binder, Entry source, Binder destination, String[] toFileNames, Map options) {
+    public Entry copyEntry(Binder binder, Entry source, Binder destination, Map options) {
 		throw new NotSupportedException(
 				"errorcode.notsupported.copyEntry", new String[]{source.getTitle()});
     }
  
-    @Override
-	public void disableEntry(final Principal entry, final boolean disable) {
+    public void disableEntry(final Principal entry, final boolean disable) {
 		SimpleProfiler.start("deleteEntry_transactionExecute");
 		getTransactionTemplate().execute(new TransactionCallback() {
-    		@Override
-			public Object doInTransaction(TransactionStatus status) {
+    		public Object doInTransaction(TransactionStatus status) {
     			SimpleProfiler.start("deleteEntry_disableEntry");
     			entry.setDisabled(disable);
     			SimpleProfiler.stop("deleteEntry_disableEntry");
     			return null;
     		}});
     	SimpleProfiler.stop("deleteEntry_transactionExecute");
- 	   if (disable && (!(entry instanceof UserPrincipal))) {
-		   //Remove the entry from the index
- 	    	final Map ctx = new HashMap();
- 	    	deleteEntry_indexDel(entry.getParentBinder(), entry, ctx);
-	   } else {
-		   //Add the entry to the index
-		   indexEntry(entry);
-	   }
     }
     //***********************************************************************************************************   
     //no transaction expected
-    @Override
-	public void deleteEntry(final Binder parentBinder, final Entry entry, final boolean deleteMirroredSource, Map options) {
+    public void deleteEntry(final Binder parentBinder, final Entry entry, final boolean deleteMirroredSource, Map options) {
         SimpleProfiler.start("deleteEntry");
 
     	final Map ctx = new HashMap();
@@ -988,8 +892,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		SimpleProfiler.start("deleteEntry_transactionExecute");
 		getCoreDao().refresh(parentBinder);
 		getTransactionTemplate().execute(new TransactionCallback() {
-    		@Override
-			public Object doInTransaction(TransactionStatus status) {
+    		public Object doInTransaction(TransactionStatus status) {
     			SimpleProfiler.start("deleteEntry_preDelete");
     			deleteEntry_preDelete(parentBinder, entry, ctx);
     			SimpleProfiler.stop("deleteEntry_preDelete");
@@ -1006,7 +909,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			deleteEntry_postDelete(parentBinder, entry, ctx);
     			SimpleProfiler.stop("deleteEntry_postDelete");
     			for (ChangeLog changeLog:changeLogs) {
-    				ChangeLogUtils.save(changeLog);
+    				getCoreDao().save(changeLog);
     			}
         
     			return null;
@@ -1028,7 +931,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		entry.incrLogVersion();
    		//record current state of object, but don't save until in transaction
    		//this is setup here so the deleteFiles logs have the correct version/date
-   		changeLogs.add(processChangeLogWithSaveFlag(entry, ChangeLog.DELETEENTRY, false));
+   		changeLogs.add(processChangeLog(entry, ChangeLog.DELETEENTRY, false));
    	}
     //inside write transaction
     protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
@@ -1064,7 +967,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     //inside write transaction
     protected void deleteEntry_postDelete(Binder parentBinder, Entry entry, Map ctx) {
-    	this.updateParentModTime(parentBinder, ctx);
    }
     //no transaction
     protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
@@ -1073,15 +975,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
    }
     //***********************************************************************************************************
-    @Override
-	public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options) {
+    public void moveEntry(Binder binder, Entry entry, Binder destination, Map options) {
 		throw new NotSupportedException(
 				"errorcode.notsupported.moveEntry", new String[]{entry.getTitle()});
     }
     //***********************************************************************************************************
     //no transaction
-    @Override
-	public Binder copyBinder(Binder source, Binder destination, Map options) {
+    public Binder copyBinder(Binder source, Binder destination, Map options) {
     	Binder binder = super.copyBinder(source, destination, options);
     	copyEntries(source, binder, options);
     	return binder;
@@ -1089,8 +989,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     //***********************************************************************************************************
     //no transaction
-    @Override
-	public void copyEntries(Binder source, Binder destination, Map options) {
+    public void copyEntries(Binder source, Binder destination, Map options) {
 		throw new NotSupportedException("errorcode.notsupported.copyEntry", "ALL");
 
     }
@@ -1098,15 +997,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     /*
      * classes must provide code to delete files belonging to entries
      */
-    @Override
-	protected abstract void deleteBinder_processFiles(Binder binder, Map ctx);
+    protected abstract void deleteBinder_processFiles(Binder binder, Map ctx);
     /*
      * classes must provide code to delete entries in the binder
      */   
-    @Override
-	protected abstract void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx);
-    @Override
-	protected void deleteBinder_indexDel(Binder binder, Map ctx) {
+    protected abstract void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx);
+    protected void deleteBinder_indexDel(Binder binder, Map ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
     	indexDeleteEntries(binder);
@@ -1119,8 +1015,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		IndexSynchronizationManager.deleteDocuments(new Term(Constants.BINDER_ID_FIELD, binder.getId().toString()));
     }
      //***********************************************************************************************************
-     @Override
-	public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
+     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
     	  		if (!(entry instanceof WorkflowSupport)) return;
   		WorkflowSupport wEntry = (WorkflowSupport)entry;
   		//set up version for all loggin
@@ -1129,11 +1024,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   		if (wEntry.getWorkflowChange() != null) processChangeLog(entry, ChangeLog.STARTWORKFLOW);
   		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
   		indexEntry(entry);
-  		getRssModule().updateRssFeed(entry); 
      }
      //***********************************************************************************************************
-     @Override
-	public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition) {
+     public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition) {
  		if (!(entry instanceof WorkflowSupport)) return;
   		WorkflowSupport wEntry = (WorkflowSupport)entry;
   		//set up version for all loggin
@@ -1142,11 +1035,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   		getWorkflowModule().deleteEntryWorkflow(wEntry, definition);
   		processChangeLog(entry, ChangeLog.ENDWORKFLOW);
    		indexEntry(entry);
-   		getRssModule().updateRssFeed(entry); 
      }
    //***********************************************************************************************************
-    @Override
-	public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
+    public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
 
  		if (!(entry instanceof WorkflowSupport)) return;
  		WorkflowSupport wEntry = (WorkflowSupport)entry;
@@ -1160,8 +1051,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		}
     }
  
-    @Override
-	public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData, Boolean canModifyEntry)  {
+    public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData, Boolean canModifyEntry)  {
 		if (!(entry instanceof WorkflowSupport)) return;
  		WorkflowSupport wEntry = (WorkflowSupport)entry;
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -1243,26 +1133,20 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     /**
      * Index binder and its entries
      */
-    @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
-    	return indexBinder(binder, includeEntries, deleteIndex, tags, false);
-    }
-    
-    @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
+    public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
     	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return errors;
-    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, false, skipFileContentIndexing);
+    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, false);
     	errors.add(entryErrors);
     	return errors;
     }
     
     
     // This method indexes a binder and it's entries by deleting and reindexing each entry one at a time.
-    public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
+    public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
     	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return errors;
-    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, true, skipFileContentIndexing);
+    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, true);
     	errors.add(entryErrors);
     	IndexSynchronizationManager.applyChanges(0);
     	return errors;
@@ -1271,12 +1155,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //If called from write transaction, make sure session is flushed cause this bypasses
     //hibernate loading of collections and goes to database directly.
     protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries) {
-    	return indexEntries(binder, deleteIndex, deleteEntries, false);
-    }
-    
-    //If called from write transaction, make sure session is flushed cause this bypasses
-    //hibernate loading of collections and goes to database directly.
-    protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries, boolean skipFileContentIndexing) {
     	IndexErrors errors = new IndexErrors();
     	SimpleProfiler.start("indexEntries");
     	//may already have been handled with an optimized query
@@ -1301,7 +1179,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			docs.clear();
        			// get 1000 entries, then build collections by hand 
        			//for performance
-       			while (query.hasNext() && (count < SPropsUtil.getInt("index.entries.batch.size", 1000))) {
+       			while (query.hasNext() && (count < 1000)) {
        				Object obj = query.next();
        				if (obj instanceof Object[])
        					obj = ((Object [])obj)[0];
@@ -1328,7 +1206,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        					// Entry already deleted from index, so pretend we are new
        	       			SimpleProfiler.start("indexEntries_indexEntryWithAttachments");
        				   	try {
-       				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags, skipFileContentIndexing);
+       				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags);
        				   		errors.add(entryErrors);
        				   	} catch(Exception e) {
        				   		logger.error("Error indexing entry: (" + entry.getId().toString() + ") " + entry.getTitle(), e);
@@ -1380,8 +1258,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	}
  
     //***********************************************************************************************************
-   	@Override
-	public IndexErrors indexEntries(Collection entries) {
+   	public IndexErrors indexEntries(Collection entries) {
    		IndexErrors errors = new IndexErrors();
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
    			Entry entry = (Entry)iter.next();
@@ -1390,21 +1267,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		}
    		return errors;
    	}
-	
-   	@Override
-	public IndexErrors indexEntries(Collection entries, boolean skipFileContentIndexing) {
-   		IndexErrors errors = new IndexErrors();
+   	protected void moveFiles(Binder binder, Collection entries, Binder destination) {
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
    			Entry entry = (Entry)iter.next();
-   			IndexErrors entryErrors = indexEntry(entry, skipFileContentIndexing);
-   			errors.add(entryErrors);
+   		   	getFileModule().moveFiles(binder, entry, destination, entry);
    		}
-   		return errors;
    	}
-	
+   	   	
     //***********************************************************************************************************
-    @Override
-	public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) {
+    public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) {
         //search engine will only return entries you have access to
          //validate entry count
     	//do actual search index query
@@ -1420,9 +1291,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
         //Total number of results returned
         model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
-        //Count state:  Approximate, there is more, ...
-        model.put(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE, new Boolean(hits.isTotalHitsApproximate()));
-        model.put(ObjectKeys.SEARCH_THERE_IS_MORE,           new Boolean(hits.getThereIsMore()        ));
         return model;
    }
     
@@ -1435,23 +1303,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Map options) {
     	int maxResults = 0;
        	int searchOffset = 0;
-   		boolean includeNestedBinders;
-   		Integer searchMode = null;
-    	Binder searchBinder = binder;
-
         if (options != null) {
         	if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
         		maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
         
         	if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
-    			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
-        	
-       		includeNestedBinders = options.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS);
-       		
-       		searchMode = (Integer) options.get(ObjectKeys.SEARCH_MODE);
-        }
-        else {
-       		includeNestedBinders = false;
+    			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);       
         }
         if (searchOffset < 0) searchOffset = 0;
     	maxResults = getBinderEntries_maxEntries(maxResults); 
@@ -1460,7 +1317,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN)) {
 	   		SearchFilter searchFilter = new SearchFilter(true);
 	   		searchFilter.addEntryId((String) options.get(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN));
-	   		getBinderEntries_getSearchDocument(searchBinder, entryTypes, includeNestedBinders, searchFilter);
+	   		getBinderEntries_getSearchDocument(binder, entryTypes, searchFilter);
+
 	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
        	} else {
 
@@ -1482,89 +1340,42 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
            	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_IS_PERSON) && 
            			(Boolean)options.get(ObjectKeys.SEARCH_IS_PERSON)) {
-           		// This term will only include users consider to be a
-           		// person (i.e., no E-mail posting agent, ...)
            		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndPersonFlagFilter(true);
+           		searchTermFilter.addAndPersonFlagFilter( String.valueOf( Boolean.TRUE ) );
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
-           	// Handle any internal/external user filtering.
-           	Boolean isInternal = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_INTERNAL)) : null);
-           	Boolean isExternal = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_EXTERNAL)) : null);
-           	if ((null != isInternal) && isInternal) {
-           		// This term will only include internal users.
-           		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndInternalFilter(true);
-               	searchFilter.appendFilter(searchTermFilter.getFilter());
-           	}
-           	if ((null != isExternal) && isExternal) {
-           		// This term will only include non-internal (i.e.,
-           		// external) users.
-           		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndInternalFilter(false);
-               	searchFilter.appendFilter(searchTermFilter.getFilter());
-           	}
-
-           	// Handle any enabled/disabled user filtering.
-           	Boolean isDisabledUsers = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_DISABLED_USERS)) : null);
-           	Boolean isEnabledUsers  = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_ENABLED_USERS))  : null);
-           	if ((null != isDisabledUsers) && isDisabledUsers) {
-           		// This term will only include disabled users.
-           		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndDisabledUserFilter(true);
-               	searchFilter.appendFilter(searchTermFilter.getFilter());
-           	}
-           	if ((null != isEnabledUsers) && isEnabledUsers) {
-           		// This term will only include enabled users.
-           		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndDisabledUserFilter(false);
-               	searchFilter.appendFilter(searchTermFilter.getFilter());
-           	}
-
-           	// Handle any virtual/physical filtering.
+        	Binder searchBinder = binder;
         	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_MODE_TYPE)) {
         		ListFolderHelper.ModeType mode = ((ListFolderHelper.ModeType) options.get(ObjectKeys.FOLDER_MODE_TYPE));
         		if ((null != mode) && (ListFolderHelper.ModeType.VIRTUAL == mode)) {
         			searchBinder = null;
         		}
         	}
-
-        	// Finally, perform the search.
-        	getBinderEntries_getSearchDocument(searchBinder, entryTypes, includeNestedBinders, searchFilter);
+        	
+        	getBinderEntries_getSearchDocument(searchBinder, entryTypes, searchFilter);
 	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
         	SearchUtils.getQueryFields(queryTree, options); 
        	}       	
     	
        	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(true, false);
+    	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(options); 
     	so.setSortBy(fields);
+    	Query soQuery = so.getLuceneQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
-    	if(logger.isTraceEnabled()) {
-    		logger.trace("Query is: " + queryTree.asXML());
-    	}
-    	
-    	if(searchMode == null) {
-    		// Search mode is not specified by the caller. Let's see if we can figure it out.
-    		if(searchBinder != null && AccessUtils.testReadAccess(searchBinder)) {
-    			searchMode = Integer.valueOf(Constants.SEARCH_MODE_PREAPPROVED_PARENTS);
-    		}
-    		else {
-    			searchMode = Constants.SEARCH_MODE_NORMAL;
-    		}
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + queryTree.asXML());
+    		logger.debug("Query is: " + soQuery.toString());
     	}
     	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
         try {
-	        //Make sure to get inaccessible sub-folders that have visible folders further down the tree
-        	hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
-	        		so, searchMode.intValue(), searchOffset, 
-	        		maxResults, binder);
+	        hits = luceneSession.search(soQuery, so.getSortBy(), searchOffset, maxResults);
         }
         finally {
             luceneSession.close();
@@ -1573,57 +1384,22 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         return hits;
      
     }
-    
-    private void getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes, boolean includeNestedBinders, SearchFilter searchFilter) {
-    	// Add a new AND block to the search filter.
-		searchFilter.newCurrentFilterTermsBlock(true);
-
-		// Is the search to include nested binders?
-		boolean hasBinder = (null != binder);
-		String binderId = (hasBinder ? String.valueOf(binder.getId()) : null);
-		if (includeNestedBinders) {
-			// Yes!  Add an OR block into the AND added above...
-			Element nestedOrCFT = searchFilter.newNestedFilterTermsBlock(false);
-
-			// ...add an AND to that OR to find the entries...
-    		searchFilter.newNestedFilterTermsBlock(true);
-	   		searchFilter.addDocumentType(Constants.DOC_TYPE_ENTRY);
-			searchFilter.addEntryTypes(entryTypes);
-			if (hasBinder) {
-				searchFilter.addFolderId(binderId);
-			}
-
-			// ...and add another AND to the OR to find the nested
-			// ...binders.
-	   		searchFilter.setCurrentFilterTerms(nestedOrCFT);
-    		searchFilter.newNestedFilterTermsBlock(true);
-	   		searchFilter.addDocumentType(Constants.DOC_TYPE_BINDER);
-	   		if (hasBinder) {
-	   			searchFilter.addBinderParentId(binderId);
-	   		}
-		}
-		
-		else {
-			// No, the search doesn't include nested binders!  Simply
-			// search for the entries.
-			if (hasBinder) {
-				searchFilter.addFolderId(binderId);
-			}
-	   		searchFilter.addDocumentType(Constants.DOC_TYPE_ENTRY);
-			searchFilter.addEntryTypes(entryTypes);
-		}
+    protected void getBinderEntries_getSearchDocument(Binder binder, 
+    		String [] entryTypes, SearchFilter searchFilter) {
+    	
+    	searchFilter.newCurrentFilterTermsBlock(true);
+    	
+    	if (null != binder) {
+    		searchFilter.addFolderId(binder.getId().toString());
+    	}
+   		searchFilter.addDocumentType(Constants.DOC_TYPE_ENTRY);
+   		searchFilter.addEntryTypes(entryTypes);
     }
 
-    @Override
-	public IndexErrors indexEntry(Entry entry) {
-    	return indexEntry(entry.getParentBinder(), entry, null, null, false, null, false);
+
+    public IndexErrors indexEntry(Entry entry) {
+    	return indexEntry(entry.getParentBinder(), entry, null, null, false, null);
     }
-    
-    @Override
-	public IndexErrors indexEntry(Entry entry, boolean skipFileContentIndexing) {
-    	return indexEntry(entry.getParentBinder(), entry, null, null, false, null, skipFileContentIndexing);
-    }
-    
     /**
      * Index entry and optionally its attached files.
      * 
@@ -1636,7 +1412,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
     protected IndexErrors indexEntry(Binder binder, Entry entry, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, boolean newEntry, Collection tags, boolean skipFileContentIndexing) {
+    		Collection<FileAttachment> filesToIndex, boolean newEntry, Collection tags) {
     	// Logically speaking, the only files we need to index are the ones
     	// that have been uploaded (fileUploadItems) and the ones explicitly
     	// specified (in the filesToIndex). In ideal world, indexing only
@@ -1651,7 +1427,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	// Consequently we obtain and pass "all" the attachments to the 
     	// following method and ignore the filesToIndex list (for now).
     	
-    	return indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry, tags, skipFileContentIndexing);
+    	return indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry, tags);
     }
     
     /**
@@ -1670,7 +1446,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
 	protected IndexErrors indexEntryWithAttachments(Binder binder, Entry entry,
-			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags, boolean skipFileContentIndexing) {
+			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags) {
 		IndexErrors errors = new IndexErrors();
 		if(SPropsUtil.getBoolean("indexing.escalate.add.to.update", true))
 			newEntry = false;
@@ -1687,9 +1463,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntry(entry.getParentBinder(), entry, tags));
         //Create separate documents one for each attached file and index them.
         for(FileAttachment fa : fileAttachments) {
+        	FileUploadItem fui = null;
+        	if(fileUploadItems != null)
+        		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryName(), fa.getFileItem().getName());
         	try {
-                IndexSynchronizationManager.deleteDocuments(new Term(Constants.FILE_ONLY_ID_FIELD, fa.getId()));
-        		IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(binder, entry, fa, tags, skipFileContentIndexing));
+        		IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(binder, entry, fa, fui, tags));
            		// Register the index document for indexing.
 	        } catch (Exception ex) {
 		       		//log error but continue
@@ -1699,9 +1477,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
          }
         return errors;
  	}
-	
-    @Override
-	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
+
+    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	SimpleProfiler.start("buildIndexDocumentFromEntry");
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
         boolean fieldsOnly = false;
@@ -1717,28 +1494,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  
         // Add document type
         BasicIndexUtils.addDocType(indexDoc, Constants.DOC_TYPE_ENTRY, fieldsOnly);
-
-        if (binder.isLibrary()) {
-            Field libraryField = FieldFactory.createFieldStoredNotAnalyzed(Constants.IS_LIBRARY_FIELD, Boolean.toString(true));
-            indexDoc.add(libraryField);
-        }
-        
-        if (entry instanceof User) {
-        	//See if this is a hidden user
-        	if (ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(((User) entry).getInternalId()) ||
-        			ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(((User) entry).getInternalId()) ||
-        			ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(((User) entry).getInternalId()) ||
-        			ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(((User) entry).getInternalId())) {
-        		//This is a special user, so mark it hidden to normal searches
-        		EntityIndexUtils.addHiddenSearchField(indexDoc, entry, true);
-        		
-        		if (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(((User) entry).getInternalId())) {
-            		//This is a special user that should not appear in "Find User"
-            		EntityIndexUtils.addHiddenFindUserField(indexDoc, entry, true);
-        		}
-        	}
-        }
-
+                
         // Add the events - special indexing for calendar view
         EntityIndexUtils.addEvents(indexDoc, entry, fieldsOnly);
         
@@ -1752,16 +1508,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	SimpleProfiler.stop("buildIndexDocumentFromEntry");
         return indexDoc;
     }
-    
-    @Override
-	public org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
-	(Binder binder, Entry entry, FileAttachment fa, Collection tags, boolean skipFileContentIndexing) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
+	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui, Collection tags) {
     	SimpleProfiler.start("buildIndexDocumentFromEntryFile");
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	//do common part first. Indexing a file overrides some values
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, true);
         BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_ENTRY, true);
-  		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, tags, binder.isLibrary(), skipFileContentIndexing);
+  		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, fui, tags);
     	SimpleProfiler.stop("buildIndexDocumentFromEntryFile");
    		return indexDoc;
  
@@ -1783,8 +1537,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		EntityIndexUtils.addReadAccess(indexDoc, binder, entry, fieldsOnly);
       		
         EntityIndexUtils.addParentBinder(indexDoc, entry, fieldsOnly);
-        
-        EntityIndexUtils.addEntryPath(indexDoc, entry);
 
         // Add the workflows if any
         EntityIndexUtils.addWorkflow(indexDoc, entry, fieldsOnly);
@@ -1792,23 +1544,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
 
-    @Override
-	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
-		return processChangeLogWithSaveFlag(entry, operation, true);
+    public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
+		return processChangeLog(entry, operation, true);
 	}
-    
-    @Override
-	public ChangeLog processChangeLog(DefinableEntity entity, String operation, boolean skipDbLog, boolean skipNotifyStatus) {
-    	// This implementation simply ignores skipDbLog and skipNotifyStatus arguments.
-		return processChangeLogWithSaveFlag(entity, operation, true);
-	}
-    
-	private ChangeLog processChangeLogWithSaveFlag(DefinableEntity entry, String operation, boolean saveIt) {
-		if (entry instanceof Binder) 
-			return processChangeLog((Binder)entry, operation);
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entry, operation);
-		if (saveIt) 
-			ChangeLogUtils.save(changes);
+	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean saveIt) {
+		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
+		ChangeLog changes = new ChangeLog(entry, operation);
+		ChangeLogUtils.buildLog(changes, entry);
+		if (saveIt) getCoreDao().save(changes);
 		return changes;
 	}
+
 }

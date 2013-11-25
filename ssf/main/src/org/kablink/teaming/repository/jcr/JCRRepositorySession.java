@@ -103,7 +103,7 @@ public class JCRRepositorySession implements RepositorySession {
 	}
 
 	public String createVersioned(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, InputStream in, long size, Long lastModTime) 
+			String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			return createFile(binder, entity, relativeFilePath, in, true);
@@ -114,7 +114,7 @@ public class JCRRepositorySession implements RepositorySession {
 	}
 
 	public void createUnversioned(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, InputStream in, long size, Long lastModTime) 
+			String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			createFile(binder, entity, relativeFilePath, in, false);
@@ -125,7 +125,7 @@ public class JCRRepositorySession implements RepositorySession {
 	}
 
 	public void update(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, InputStream in, long size, Long lastModTime) 
+			String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			updateFile(binder, entity, relativeFilePath, in);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,8 +45,6 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  */
 public class TrackCurrentBinderEvent extends VibeEventBase<TrackCurrentBinderEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
-    
-    private boolean m_forceUIReload;
 
 	/**
 	 * Handler interface for this event.
@@ -60,29 +58,17 @@ public class TrackCurrentBinderEvent extends VibeEventBase<TrackCurrentBinderEve
 	 */
 	public TrackCurrentBinderEvent() {
 		super();
-		
-		m_forceUIReload = true;
-	}
-	
-	/**
-	 * 
-	 */
-	public TrackCurrentBinderEvent( boolean forceUIReload )
-	{
-		super();
-		
-		m_forceUIReload = forceUIReload;
 	}
 	
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
-	 * Implements the VibeEventBase.doDispatch() method.
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @param handler
 	 */
     @Override
-    protected void doDispatch(Handler handler) {
+    protected void dispatch(Handler handler) {
         handler.onTrackCurrentBinder(this);
     }
 	
@@ -118,14 +104,6 @@ public class TrackCurrentBinderEvent extends VibeEventBase<TrackCurrentBinderEve
 		return TeamingEvents.TRACK_CURRENT_BINDER;
 	}
 		
-	/**
-	 * 
-	 */
-	public boolean getForceUIReload()
-	{
-		return m_forceUIReload;
-	}
-	
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

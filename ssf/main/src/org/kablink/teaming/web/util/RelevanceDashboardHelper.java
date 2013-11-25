@@ -71,7 +71,6 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -99,22 +98,7 @@ public class RelevanceDashboardHelper {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 			String relevanceTab = (String)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_TAB);
 			if (!(MiscUtil.hasString(relevanceTab))) {
-				if (Utils.checkIfFilr()) {
-					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES;  //not implemented
-					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
-				} else {
-					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
-				}
-			}
-			//Make sure the selected tab is legal in filr
-			if (Utils.checkIfFilr()) {
-				if (relevanceTab.equals(ObjectKeys.RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS) ||
-						relevanceTab.equals(ObjectKeys.RELEVANCE_DASHBOARD_MINIBLOGS) ||
-						relevanceTab.equals(ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW)) {
-					//This tab is not shown, revert back to the filespaces tab
-					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES;  //not implemented
-					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
-				}
+				relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
 			}
 			if (!type.equals("") && !type.equals(relevanceTab)) {
 				//Remember the last tab
@@ -157,10 +141,9 @@ public class RelevanceDashboardHelper {
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_MINIBLOGS.equals(type)) {
 			setupSharedItemsBeans(bs, userWorkspace, model);
 			setupMiniblogsBean(bs, userWorkspace, model);
-		
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES.equals(type)) {
-			
-		} else if ( ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW.equalsIgnoreCase( type ) ) {
+		}
+		else if ( ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW.equalsIgnoreCase( type ) )
+		{
 		}
 	}
 	
@@ -298,7 +281,7 @@ public class RelevanceDashboardHelper {
 		List groupsS = new ArrayList();
 		List teams = new ArrayList();
 		
-		groups.addAll(profileDao.getApplicationLevelGroupMembership(binder.getOwnerId(), binder.getZoneId()));
+		groups.addAll(profileDao.getAllGroupMembership(binder.getOwnerId(), binder.getZoneId()));
 		Iterator itG = groups.iterator();
 		while (itG.hasNext()) {
 			groupsS.add(itG.next().toString());
@@ -319,7 +302,7 @@ public class RelevanceDashboardHelper {
 			crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
 					(String[])groupsS.toArray(new String[groupsS.size()]), 
 					(String[])teams.toArray(new String[teams.size()]));
-			results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 		} else {
 			//Get the tasks due shortly
 			crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
@@ -327,9 +310,8 @@ public class RelevanceDashboardHelper {
 													(String[])teams.toArray(new String[teams.size()]),
 													fromDate.toDate(),
 													future.toDate());
-			results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 		}
-
 		model.put(WebKeys.MY_TASKS, results.get(ObjectKeys.SEARCH_ENTRIES));
 
 		Map<String, Map> cacheEntryDef = new HashMap();
@@ -377,7 +359,7 @@ public class RelevanceDashboardHelper {
 		
 		Criteria crit = SearchUtils.entriesForUser(binder.getOwnerId());
 	
-		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 		model.put(WebKeys.MY_DOCUMENTS, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -426,7 +408,7 @@ public class RelevanceDashboardHelper {
 		} catch(NoUserByTheIdException e) {}
 		if (trackedPlaces.size() > 0 || trackedPeopleIds.size() > 0) {
 			Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 			model.put(WebKeys.WHATS_NEW_TRACKED_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -480,7 +462,7 @@ public class RelevanceDashboardHelper {
 		}
 		if (myTeams.size() > 0) {
 			Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, teamIds);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 			model.put(WebKeys.WHATS_NEW_TEAM_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -521,7 +503,7 @@ public class RelevanceDashboardHelper {
 			AbstractIntervalView calendarInterval = new OneDayView(new Date());
 			AbstractIntervalView.VisibleIntervalFormattedDates interval = calendarInterval.getVisibleIntervalInTZ();
 			Criteria crit = SearchUtils.entriesForTrackedCalendars(bs, trackedCalendars, interval.startDate, interval.endDate);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 			Date today = new Date();
 			model.put(WebKeys.WHATS_NEW_TRACKED_CALENDARS, results.get(ObjectKeys.SEARCH_ENTRIES));
@@ -575,7 +557,7 @@ public class RelevanceDashboardHelper {
 		
 		Criteria crit = SearchUtils.newEntries();
 	
-		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 		model.put(WebKeys.WHATS_NEW, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -694,9 +676,7 @@ public class RelevanceDashboardHelper {
 	
 	private static void setupTrackedItemsBeans(AllModulesInjected bs, Binder binder, Map model) {
 		if (binder != null && EntityType.workspace.equals(binder.getEntityType()) && 
-				binder.getDefinitionType() != null && 
-				(Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue() ||
-						Definition.EXTERNAL_USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue())) {
+				binder.getDefinitionType() != null && Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
 			if (relevanceMap != null) {
@@ -723,8 +703,7 @@ public class RelevanceDashboardHelper {
 		//What is this user workspace tracking?
 		if (binder != null && EntityType.workspace.equals(binder.getEntityType()) && 
 				binder.getDefinitionType() != null && 
-				(Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue() ||
-					Definition.EXTERNAL_USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue())) {
+				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
 			String page = "0";
 			page = (String) model.get(WebKeys.PAGE_NUMBER);
 			if (page == null || page.equals("")) page = "0";

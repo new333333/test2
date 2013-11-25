@@ -34,8 +34,6 @@ package org.kablink.teaming.gwt.client;
 
 
 
-import java.util.ArrayList;
-
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -48,9 +46,7 @@ public class GwtLoginInfo
 	implements IsSerializable, VibeRpcResponseData
 {
 	private GwtSelfRegistrationInfo m_selfRegInfo;;
-	private ArrayList<GwtOpenIDAuthenticationProvider> m_openIDAuthProviders;
 	private boolean m_allowAutoComplete;
-	private boolean m_allowOpenIdAuthentication;
 	
 	/**
 	 * 
@@ -59,6 +55,7 @@ public class GwtLoginInfo
 	{
 	}
 	
+
 	/**
 	 * 
 	 */
@@ -67,21 +64,6 @@ public class GwtLoginInfo
 		return m_allowAutoComplete;
 	}
 	
-	/**
-	 * 
-	 */
-	public boolean getAllowOpenIdAuthentication()
-	{
-		return m_allowOpenIdAuthentication;
-	}
-	
-	/**
-	 * 
-	 */
-	public ArrayList<GwtOpenIDAuthenticationProvider> getOpenIDAuthenticationProviders()
-	{
-		return m_openIDAuthProviders;
-	}
 	
 	/**
 	 * 
@@ -100,23 +82,7 @@ public class GwtLoginInfo
 		m_allowAutoComplete = allowAutoComplete;
 	}
 	
-	/**
-	 * 
-	 */
-	public void setAllowOpenIdAuthentication( boolean allowOpenIdAuthentication )
-	{
-		m_allowOpenIdAuthentication = allowOpenIdAuthentication;
-	}
 	
-	
-	/**
-	 * Set the list of OpenID authentication providers.
-	 */
-	public void setListOfOpenIDAuthProviders( ArrayList<GwtOpenIDAuthenticationProvider> listOfProviders )
-	{
-		m_openIDAuthProviders = listOfProviders;
-	}
-
 	/**
 	 * 
 	 */
@@ -124,5 +90,6 @@ public class GwtLoginInfo
 	{
 		m_selfRegInfo = selfRegInfo;
 	}
+	
 }
 

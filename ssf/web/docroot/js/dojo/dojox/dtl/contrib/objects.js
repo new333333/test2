@@ -1,9 +1,15 @@
-//>>built
-define("dojox/dtl/contrib/objects",["dojo/_base/lang","../_base"],function(_1,dd){
-var _2=_1.getObject("contrib.objects",true,dd);
-_1.mixin(_2,{key:function(_3,_4){
-return _3[_4];
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.dtl.contrib.objects"]){
+dojo._hasResource["dojox.dtl.contrib.objects"]=true;
+dojo.provide("dojox.dtl.contrib.objects");
+dojo.mixin(dojox.dtl.contrib.objects,{key:function(_1,_2){
+return _1[_2];
 }});
-dd.register.filters("dojox.dtl.contrib",{"objects":["key"]});
-return _2;
-});
+dojox.dtl.register.filters("dojox.dtl.contrib",{"objects":["key"]});
+}

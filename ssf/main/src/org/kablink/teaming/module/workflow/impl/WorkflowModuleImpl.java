@@ -83,9 +83,7 @@ import org.kablink.teaming.jobs.WorkflowTimeout;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
-import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
-import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
@@ -95,10 +93,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
-import org.kablink.util.VibeRuntimeException;
-import org.kablink.util.api.ApiErrorCode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.transaction.TransactionStatus;
@@ -114,10 +109,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
-	}
-	protected RssModule getRssModule() {
-		// Can't use IoC due to circular dependency
-		return (RssModule) SpringContextUtil.getBean("rssModule");
 	}
 
    /**
@@ -139,8 +130,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
  			   logger.error("Cannot instantiate WorkflowTimeout custom class", e);
     		}
     	}
-    	String className = SPropsUtil.getString("job.workflow.timeout.class", "org.kablink.teaming.jobs.DefaultWorkflowTimeout");
-    	return (WorkflowTimeout)ReflectHelper.getInstance(className);		   		
+    	return (WorkflowTimeout)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultWorkflowTimeout.class);		   		
 	}
 	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {
@@ -356,9 +346,11 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    			} else {
 	    				nodesMap.remove(stateName);
 	    			}	
-
+	    			
     				// 	remove any old timers for this node; timers are now done in Vibe code
-    				removeTimer(context, stateNode, "onElapsedTime");
+    				try {
+    					removeTimer(context, stateNode, "onElapsedTime");
+    				} catch(Exception e) {}
 	    		}
 	    	}
 		
@@ -865,11 +857,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
    					 " " + tx.message);
    			} catch (Exception ex) {
    				logger.error("Error processing timeout", ex);
-   				Timer timer = (Timer)context.getSession().load(Timer.class, timerId);
-				if(logger.isDebugEnabled())	logger.debug("Forcibly deleting timer '"+timer+"'");
-				SchedulerSession schedulerSession = context.getSchedulerSession();
-				schedulerSession.deleteTimer(timer);
-
    			} finally {
 				context.close();
 			}
@@ -917,14 +904,13 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     	wfEntry.startWorkflowStateLoopDetector();
 		boolean changed = WorkflowProcessUtils.processConditions(wfEntry, false, false);
 		wfEntry.stopWorkflowStateLoopDetector();
-		Entry entry = (Entry)wfEntry;
 		if (changed) {
+			Entry entry = (Entry)wfEntry;
 			EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());
 			entry.incrLogVersion();
 			processor.processChangeLog(entry, ChangeLog.RESTOREENTRY);
 			processor.indexEntry(entry);
 		}
-		getRssModule().updateRssFeed(entry); 
 		WorkflowProcessUtils.resumeTimers(wfEntry);
     }
 	
@@ -939,8 +925,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			entry.incrLogVersion();
 			processor.processChangeLog(entry, ChangeLog.WORKFLOWTIMEOUT);
 			processor.indexEntry(entry);
-			getRssModule().updateRssFeed(entry); 
 		}
+	
     }
 	
 	private EntryProcessor loadEntryProcessor(Binder binder) {
@@ -950,7 +936,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
         // in this method.
 		return (EntryProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(EntryProcessor.PROCESSOR_KEY));			
 	}
-	class TimerException extends VibeRuntimeException {
+	class TimerException extends RuntimeException {
 		protected Entry entry;
 		protected WorkflowState state;
 		protected String message;
@@ -958,20 +944,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			this.entry = entry;
 			this.state = state;
 			this.message = message;
-		}
-		/* (non-Javadoc)
-		 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-		 */
-		@Override
-		public int getHttpStatusCode() {
-			return 500; // Internal Server Error
-		}
-		/* (non-Javadoc)
-		 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
-		 */
-		@Override
-		public ApiErrorCode getApiErrorCode() {
-			return ApiErrorCode.WORKFLOW_ERROR;
 		}
 		
 	}

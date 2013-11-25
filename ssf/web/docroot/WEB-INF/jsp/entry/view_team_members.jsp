@@ -131,7 +131,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 			<c:if test="${!empty ss_reloadUrl}">
 				<div style="text-align: right; ">
 				  <input type="button" onClick="self.location.href='${ss_reloadUrl}';return false;"
-				    value='<ssf:nlt tag="__return_to" />&nbsp;<ssf:nlt tag="__folder_view" />' >
+				    value='<ssf:nlt tag="__return_to" /> <ssf:nlt tag="__folder_view" />' >
 				</div>
 			</c:if>
 			<% // Navigation links %>

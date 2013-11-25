@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,11 +41,9 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * @author drfoster@novell.com
  */
 public class GetTaskListCmd extends VibeRpcCmd {
-	private boolean	m_applyUsersFilter;	//
-	private Long	m_binderId;			//
-	private String	m_filterType;		//
-	private String	m_modeType;			//
-	private String	m_zoneUUID;			//
+	private Long m_binderId;
+	private String m_filterType;
+	private String m_modeType;
 	
 	/**
 	 * Class constructor.
@@ -54,42 +52,22 @@ public class GetTaskListCmd extends VibeRpcCmd {
 	 * constructor.
 	 */
 	public GetTaskListCmd() {
-		// Simply initialize the super class.
 		super();		
 	}
 
 	/**
 	 * Class constructor.
-	 *
-	 * @param applyUsersFilter
-	 * @param zoneUUID
+	 * 
 	 * @param binderId
 	 * @param filterType
 	 * @param modeType
 	 */
-	public GetTaskListCmd(final boolean applyUsersFilter, final String zoneUUID, final Long binderId, final String filterType, final String modeType) {
-		// Initialize this object...
+	public GetTaskListCmd(Long binderId, String filterType, String modeType) {
 		this();
-
-		// ...and store the parameters.
-		setApplyUsersFilter(applyUsersFilter);
-		setZoneUUID(        zoneUUID        );
-		setBinderId(        binderId        );
-		setFilterType(      filterType      );
-		setModeType(        modeType        );
-	}
-	
-	/**
-	 * Class constructor.
-	 *
-	 * @param zoneUUID
-	 * @param binderId
-	 * @param filterType
-	 * @param modeType
-	 */
-	public GetTaskListCmd(String zoneUUID, Long binderId, String filterType, String modeType) {
-		// Always use the alternate form of the constructor.
-		this(false, zoneUUID, binderId, filterType, modeType);
+		
+		m_binderId   = binderId;
+		m_filterType = filterType;
+		m_modeType   = modeType;
 	}
 	
 	/**
@@ -97,23 +75,10 @@ public class GetTaskListCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean getApplyUsersFilter() {return m_applyUsersFilter;}
-	public Long    getBinderId()         {return m_binderId;        }	
-	public String  getFilterType()       {return m_filterType;      }	
-	public String  getModeType()         {return m_modeType;        }
-	public String  getZoneUUID()         {return m_zoneUUID;        }
+	public Long   getBinderId()   {return m_binderId;  }	
+	public String getFilterType() {return m_filterType;}	
+	public String getModeType()   {return m_modeType;  }	
 	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setApplyUsersFilter(final boolean applyUsersFilter) {m_applyUsersFilter = applyUsersFilter;}
-	public void setBinderId(        final Long    binderId)         {m_binderId         = binderId;        }
-	public void setFilterType(      final String  filterType)       {m_filterType       = filterType;      }
-	public void setModeType(        final String  modeType)         {m_modeType         = modeType;        }
-	public void setZoneUUID(        final String  zoneUUID)         {m_zoneUUID         = zoneUUID;        }
-		
 	/**
 	 * Returns the command's enumeration value.
 	 * 

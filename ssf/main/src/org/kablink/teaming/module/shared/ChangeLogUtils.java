@@ -32,47 +32,28 @@
  */
 package org.kablink.teaming.module.shared;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
-import org.kablink.teaming.module.admin.AdminModule;
-import org.kablink.teaming.module.sharing.SharingModule;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.util.Validator;
 
 
 public class ChangeLogUtils {
-
-	protected static SharingModule getSharingModule() {
-		return (SharingModule)SpringContextUtil.getBean("sharingModule");
-	}
-
-	protected static CoreDao getCoreDao() {
-		return (CoreDao)SpringContextUtil.getBean("coreDao");
-	}
-
-	protected static AdminModule getAdminModule() {
-		return (AdminModule)SpringContextUtil.getBean("adminModule");
-	}
 
 	public static Element buildLog(ChangeLog changes, DefinableEntity entry) {
 		Element element = changes.getEntityRoot();
@@ -80,28 +61,6 @@ public class ChangeLogUtils {
 			EntityIndexUtils.addReadAccess(element, (Binder)entry, true);
 		else
 			EntityIndexUtils.addReadAccess(element, entry.getParentBinder(), entry, true);
-		
-		//See if this is shared
-		ShareItemSelectSpec spec = new ShareItemSelectSpec();
-		spec.setSharedEntityIdentifier(entry.getEntityIdentifier());
-		List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
-		if (!shareItems.isEmpty()) {
-			//Add the sharing actions to this report
- 			Element shares = element.addElement(ObjectKeys.XTAG_ENTITY_SHARES);
- 			for (ShareItem shareItem: shareItems) {
- 				if (shareItem.isLatest()) {
-	 				Date expirationDate = shareItem.getEndDate();
-	 			    SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	 			    sd.setTimeZone(TimeZone.getTimeZone("GMT"));
-	 	 			Element share = shares.addElement(ObjectKeys.XTAG_ENTITY_SHARE);
-	 	 			share.addAttribute(ObjectKeys.XTAG_ENTITY_SHARE_SHARER_ID, String.valueOf(shareItem.getSharerId()));
-	 	 			share.addAttribute(ObjectKeys.XTAG_ENTITY_SHARE_RECIPIENT_TYPE, shareItem.getRecipientType().toString());
-	 	 			share.addAttribute(ObjectKeys.XTAG_ENTITY_SHARE_RECIPIENT_ID, String.valueOf(shareItem.getRecipientId()));
-	 	 			if (expirationDate != null) share.addAttribute(ObjectKeys.XTAG_ENTITY_SHARE_EXPIRATION, sd.format(expirationDate));
-	 	 			share.addAttribute(ObjectKeys.XTAG_ENTITY_SHARE_ROLE, shareItem.getRole().toString());
- 				}
- 			}
-		}
 		
 		if (entry.getCreation() != null)
 			entry.getCreation().addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
@@ -158,34 +117,4 @@ public class ChangeLogUtils {
 		return element;
 	}
 
-	public static ChangeLog create(DefinableEntity entity, String operation) {
-		ChangeLog changes = new ChangeLog(entity, operation);
-		changes.getEntityRoot(); // This causes some base data to be populated in the object
-		return changes;
-	}
-	
-	public static ChangeLog createAndBuild(DefinableEntity entity, String operation) {
-		ChangeLog changes = create(entity, operation);
-		buildLog(changes, entity);
-		return changes;
-	}
-	
-	public static ChangeLog createAndBuild(DefinableEntity entity, String operation, FileAttachment fa) {
-		ChangeLog changes = create(entity, operation);
-		buildLog(changes, fa);
-		return changes;
-	}
-	
-	public static ChangeLog createAndBuild(DefinableEntity entity, String operation, VersionAttachment va) {
-		ChangeLog changes = create(entity, operation);
-		buildLog(changes, va);
-		return changes;
-	}
-	
-	public static void save(ChangeLog changes) {
-		if (getAdminModule().isChangeLogEnabled()) {
-			getCoreDao().save(changes);
-		}
-	}
-	
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,7 +52,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
@@ -66,8 +65,6 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.MiscUtil.IdTriple;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.RelevanceDashboardHelper;
@@ -83,7 +80,6 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 	
 	
 	//caller will retry on OptimisiticLockExceptions
-	@Override
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		if (WebHelper.isUserLoggedIn(request)) {
@@ -102,7 +98,6 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		}
 	}
 	
-	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map formData = request.getParameterMap();
@@ -178,6 +173,12 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		DefinableEntity entity;
+		if (entryId == null) {
+			entity = getBinderModule().getBinder(binderId);
+		} else {
+			entity = getFolderModule().getEntry(binderId, entryId);
+		}
 		Set<Long> ids = new HashSet();
 		ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 		ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
@@ -191,111 +192,56 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 				} catch (Exception ignoreIt) {}
 			}
 		}
-		
-		String baseMailTitle = NLT.get(
-			"relevance.mailShared",
-			new Object[] {
-				Utils.getUserTitle(RequestContextHolder.getRequestContext().getUser())
-			});
-		
-		// If we don't have multiple entry IDs to worry about...
-		List<IdTriple> meIds = MiscUtil.getIdTriplesFromMultipleEntryIds(
-			PortletRequestUtils.getStringParameter(
-				request,
-				WebKeys.URL_MULTIPLE_ENTITY_IDS,
-				""));
-		if (null == meIds) {
-			meIds = new ArrayList<IdTriple>();
+
+		getProfileModule().setShares(entity, ids, teams);
+		String title;
+		String shortTitle;
+		if (entity instanceof Principal) {
+			title = Utils.getUserTitle((Principal)entity);
+		} else {
+			title = entity.getTitle();
 		}
-		if (meIds.isEmpty()) {
-			// ...simply use the single IDs we were given.
-			meIds.add(new IdTriple(binderId, entryId, EntityType.folderEntry.name()));
-		}
-		
-		// Scan the entity IDs...
-		List<String> noAccessPrincipals = null;
-		List combinedErrors = new ArrayList();
-		for (IdTriple meId:  meIds) {
-			// ...accessing the next one as a DefinableEntity.
-			binderId = meId.m_binderId;
-			entryId  = meId.m_entryId;
-			String entityType = meId.m_entityType;
-			DefinableEntity entity;
-			if (entryId == null) {
-				entity = getBinderModule().getBinder(binderId);
-			} else if (!(entityType.equals(EntityType.folderEntry.name()))) {
-				entity = getBinderModule().getBinder(entryId);
-			} else {
-				entity = getFolderModule().getEntry(binderId, entryId);
+		shortTitle = title;
+		if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
+		String addedComments = PortletRequestUtils.getStringParameter(request, "mailBody", "");
+		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
+		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalinkForEmail(entity) +
+				"\">" + title + "</a>\n<br/><br/>\n" + addedComments);
+		try {
+			String mailTitle = NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(RequestContextHolder.getRequestContext().getUser())});
+			mailTitle += " (" + shortTitle +")";
+			Set emailAddress = new HashSet();
+			//See if this user wants to be BCC'd on all mail sent out
+			String bccEmailAddress = user.getBccEmailAddress();
+			if (bccEmailAddress != null && !bccEmailAddress.equals("")) {
+				if (!emailAddress.contains(bccEmailAddress.trim())) {
+					//Add the user's chosen bcc email address
+					emailAddress.add(bccEmailAddress.trim());
+				}
+			}
+			Map status = getAdminModule().sendMail(ids, teams, emailAddress, null, null, mailTitle, body);
+			Set totalIds = new HashSet();
+			totalIds.addAll(ids);
+			Set<Principal> totalUsers = getProfileModule().getPrincipals(totalIds);
+			List<String> noAccessPrincipals = new ArrayList();
+			for (Principal p : totalUsers) {
+				if (p instanceof User) {
+					try {
+						AccessUtils.readCheck((User)p, (DefinableEntity) entity);
+					} catch(AccessControlException e) {
+						noAccessPrincipals.add(Utils.getUserTitle(p) + " (" + p.getName() + ")");
+					}
+				}
 			}
 			
-			getProfileModule().setShares(entity, ids, teams);
-			String title;
-			String shortTitle;
-			if (entity instanceof Principal) {
-				title = Utils.getUserTitle((Principal)entity);
-			} else {
-				title = entity.getTitle();
-			}
-			shortTitle = title;
-			if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
-			String addedComments = PortletRequestUtils.getStringParameter(request, "mailBody", "");
-			// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
-			Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalinkForEmail(entity) +
-					"\">" + title + "</a>\n<br/><br/>\n" + addedComments);
-			try {
-				String mailTitle = (baseMailTitle + " (" + shortTitle +")");
-				Set emailAddress = new HashSet();
-				//See if this user wants to be BCC'd on all mail sent out
-				String bccEmailAddress = user.getBccEmailAddress();
-				if (bccEmailAddress != null && !bccEmailAddress.equals("")) {
-					if (!emailAddress.contains(bccEmailAddress.trim())) {
-						//Add the user's chosen bcc email address
-						emailAddress.add(bccEmailAddress.trim());
-					}
-				}
-				Map status = getAdminModule().sendMail(ids, teams, emailAddress, null, null, mailTitle, body);
-				Set totalIds = new HashSet();
-				totalIds.addAll(ids);
-				Set<Principal> totalUsers = getProfileModule().getPrincipals(totalIds);
-				if (null == noAccessPrincipals) {
-					noAccessPrincipals = new ArrayList<String>();
-				}
-				for (Principal p : totalUsers) {
-					if (p instanceof User) {
-						try {
-							AccessUtils.readCheck((User)p, (DefinableEntity) entity);
-						} catch(AccessControlException e) {
-							noAccessPrincipals.add(Utils.getUserTitle(p) + " (" + p.getName() + "):  " + shortTitle);
-						}
-					}
-				}
-				
-				@SuppressWarnings("unused")
-				MailSentStatus result = (MailSentStatus)status.get(ObjectKeys.SENDMAIL_STATUS);
-				
-				// If there were any errors from this send...
-				List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
-				if ((null != errors) && (!(errors.isEmpty()))) {
-					// ...copy them into the combined errors list.
-					for (Object error:  errors) {
-						combinedErrors.add(error);
-					}
-				}
-				
-			} catch(ConfigurationException e) {
-				// Log the configuration error, and break out of the share loop.
-				response.setRenderParameter(WebKeys.ERROR_MESSAGE, e.getLocalizedMessage());
-				break;
-			}
-		}
-
-		// Finally, store any errors we got back from any of the shares
-		// in the response.
-		if (null != noAccessPrincipals) {
+			@SuppressWarnings("unused")
+			MailSentStatus result = (MailSentStatus)status.get(ObjectKeys.SENDMAIL_STATUS);
 			response.setRenderParameter(WebKeys.EMAIL_FAILED_ACCESS, noAccessPrincipals.toArray(new String[noAccessPrincipals.size()]));
+			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
+			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+		} catch(ConfigurationException e) {
+			response.setRenderParameter(WebKeys.ERROR_MESSAGE, e.getLocalizedMessage());
 		}
-		response.setRenderParameter(WebKeys.ERROR_LIST, (String[])combinedErrors.toArray( new String[0]));
 	}
 	
 	private void ajaxClearUnseenBinder(ActionRequest request, 
@@ -394,8 +340,6 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.ENTRY_ID, entryId.toString());
 		}
-		String multipleEntityIds = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MULTIPLE_ENTITY_IDS, "");
-		model.put(WebKeys.URL_MULTIPLE_ENTITY_IDS, multipleEntityIds);
 		RelevanceDashboardHelper.setupMyTeamsBeans(bs, model);
 		return new ModelAndView("forum/relevance_dashboard/share_this_item", model);
 	}

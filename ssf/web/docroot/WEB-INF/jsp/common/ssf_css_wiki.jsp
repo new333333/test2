@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -82,7 +82,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
     background-color: #EBF5F5;
     padding: 10px;
     -moz-border-radius: 5px;
-    border-radius: 5px;
     -webkit-border-radius: 5px;
     }
 .wiki-topic-content {
@@ -98,7 +97,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
     font-weight: bold;
     padding: 3px 5px;
     -moz-border-radius: 3px;
-    border-radius: 3px;
     -webkit-border-radius: 3px;
     }
 .wiki-page {
@@ -121,7 +119,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	line-height: 28px;
 	z-index: 100;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -141,15 +138,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .wiki-tabs {
     text-align: center;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 	padding: 5px 6px 0px 10px;
-	background-color: #d1d1d1;
-    -moz-border-radius-topright: 5px;
-    -moz-border-radius-topleft: 5px;
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
-    -webkit-border-top-right-radius: 5px;
-    -webkit-border-top-left-radius: 5px;
+	background: #d1d1d1 url(<html:rootPath/>images/pics/blends/gray_blend6_28.png) repeat-x bottom;
+    -moz-border-radius-topright: 6px;
+    -moz-border-radius-topleft: 6px;
+    -webkit-border-top-right-radius: 6px;
+    -webkit-border-top-left-radius: 6px;
     }
 .wiki-tabs table {
 	background-color: transparent;
@@ -163,10 +158,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     display:inline-block;
     cursor: pointer;
     color: #fff;
-    background: #949494;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-    -webkit-border-radius: 3px;
+    background: #505354;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
     }   
 .wiki-tab.on {
     color: #353838;
@@ -178,8 +172,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
     margin: 2px 0px 0px 0px;
     -moz-border-radius-bottomright: 0px;
     -moz-border-radius-bottomleft: 0px;
-    border-bottom-right-radius: 0px;
-    border-bottom-left-radius: 0px;
     -webkit-border-bottom-right-radius: 0px;
     -webkit-border-bottom-left-radius: 0px;
     }
@@ -199,52 +191,20 @@ boolean isIE = BrowserSniffer.is_ie(request);
     }
 
 .wiki-menu a {
-	color: #1f1f1f !important;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
-	border: 1px solid #B8B8B8 !important;
-	font-weight: normal !important;
-	font-size: 11px;
-	padding: 2px 10px  !important;
-	text-decoration:none;	
-  	white-space: nowrap;
-  	cursor: pointer !important;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+    color: #fff;
+    text-decoration: none; 
+    padding: 2px 10px; 
+    font-size: 11px;
+    margin-right: 3px;
+    background: #949494;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
     }
 .wiki-menu a:hover {
-	color: #135c8f !important;
-    text-align: center !important;
-    font-size: 11px !important;
-    font-family: Arial, sans-serif !important;
-    white-space: nowrap !important;
-    text-decoration: none !important;
-  	padding: 2px 10px !important;
-	border: 0px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
-  	<c:if test="<%= isIE %>">
-  		padding: 0px;
-  		padding-top: -2px;
-  		padding-bottom: 1px;
-  		padding-left: 1px; 
-  		padding-right: 1px;
-	</c:if>
+    color: #fff !important;
+    background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
     }   
 .wiki-menu {
     padding: 2px 0px;
@@ -287,7 +247,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
     padding: 3px 8px;
     z-index: 1000;
     -moz-border-radius: 3px;
-    border-radius: 3px;
     -webkit-border-radius: 3px;
     }   
 .wiki-entry-actions img {
@@ -313,7 +272,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .wiki-entry-date, .wiki-entry-locale {
     font-size: 10px;
     color: #666;
-    padding-left: 10px;
+    padding-right: 10px;
     padding-right: 10px;
     white-space: nowrap;
     }

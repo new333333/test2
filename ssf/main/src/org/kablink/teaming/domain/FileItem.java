@@ -48,7 +48,6 @@ import org.kablink.util.Validator;
 public class FileItem  {
     private String name;
     private long length=0;
-    private String md5;
     protected Description description;
 
 	/**
@@ -78,17 +77,6 @@ public class FileItem  {
     }
     public void setLength(long length) {
         this.length = length;
-    }
-
-    /**
-     * @hibernate.property column="fileMd5"
-     * @return MD5 sum of the file
-     */
-    public String getMd5() {
-        return this.md5;
-    }
-    public void setMd5(String md5) {
-        this.md5 = md5;
     }
 
     /**

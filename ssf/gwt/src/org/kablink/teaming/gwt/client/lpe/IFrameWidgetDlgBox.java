@@ -64,7 +64,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 	implements KeyPressHandler
 {
 	private TextBox m_urlTxtBox;
-	private TextBox m_titleTxtBox;
 	private TextBox m_frameNameTxtBox;
 	private TextBox m_heightTxtBox;
 	private TextBox m_widthTxtBox;
@@ -93,7 +92,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
 		IFrameProperties properties;
@@ -132,14 +130,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 		row = 0;
 
 		mainPanel.add( table );
-		
-		// Add lable and edit control for the title.
-		label = new Label( messages.title() );
-		table.setWidget( row, 0, label );
-		m_titleTxtBox = new TextBox();
-		m_titleTxtBox.setVisibleLength( 30 );
-		table.setWidget( row, 1, m_titleTxtBox );
-		++row;
 		
 		// Add label and edit control for frame name.
 		label = new Label( messages.frameNameLabel() );
@@ -226,7 +216,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
-	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		IFrameProperties	properties;
@@ -235,9 +224,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 		
 		// Save away the url
 		properties.setUrl( getUrlValue() );
-		
-		// Save away the title.
-		properties.setTitle( m_titleTxtBox.getText() );
 		
 		// Save the frame name.
 		properties.setName( m_frameNameTxtBox.getText() );
@@ -273,7 +259,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
-	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return m_urlTxtBox;
@@ -304,11 +289,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 			value = "http://";
 		m_urlTxtBox.setText( value );
 		
-		value = properties.getTitle();
-		if ( value == null )
-			value = "";
-		m_titleTxtBox.setText( value );
-		
 		value = properties.getName();
 		if ( value == null )
 			value = "";
@@ -337,7 +317,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 	 * This method gets called when the user types in the height, width, text boxes.
 	 * We only want to let the user enter numbers.
 	 */
-	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;

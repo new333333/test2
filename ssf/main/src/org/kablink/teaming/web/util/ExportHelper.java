@@ -36,7 +36,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -116,6 +115,7 @@ import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.security.AccessControlException;
@@ -251,8 +251,7 @@ public class ExportHelper {
 			Boolean noSubBinders, Set defListAlreadyAdded, StatusTicket statusTicket, Map reportMap) throws Exception {
 		Map<Long,Boolean> binderIdsToExport = new HashMap<Long,Boolean>();
 		binderIdsToExport.put(start.getId(), false);
-		//Get sub-binder list including intermediate binders that may be inaccessible
-		SortedSet<Binder> binders = binderModule.getBinders(binderIds, Boolean.FALSE);
+		SortedSet<Binder> binders = binderModule.getBinders(binderIds);
 		for (Binder binder : binders) {
 			//Mark this binder as having everything exported
 			binderIdsToExport.put(binder.getId(), true);
@@ -280,7 +279,7 @@ public class ExportHelper {
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.BINDER_ID_FIELD));
-		Map binderMap = binderModule.executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMap = binderModule.executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
@@ -518,20 +517,27 @@ public class ExportHelper {
 		String fileName = filename8BitSingleByteOnly(attachment, SPropsUtil
 				.getBoolean("export.filename.8bitsinglebyte.only", true));
 
+		Set fileVersions = attachment.getFileVersions();
+		Iterator<VersionAttachment> versionIter = fileVersions.iterator();
+
 		String fileExt = EntityIndexUtils.getFileExtension(attachment
 				.getFileItem().getName());
 
 		// latest version
-		InputStream fileStream = null;
 
+		VersionAttachment vAttach = versionIter.next();
+
+		InputStream fileStream = null;
 		try {
-			fileStream = fileModule.readFile(binder, entity, attachment);
+			fileStream = fileModule.readFile(binder, entity,
+					vAttach);
 
 			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 			zipOut.putNextEntry(new ZipEntry(pathName + "/" + fileName));
 			FileUtil.copy(fileStream, zipOut);
 			zipOut.closeEntry();
 
+			fileStream.close();
 			Integer count = (Integer)reportMap.get(files);
 			reportMap.put(files, ++count);
 		} catch (Exception e) {
@@ -542,6 +548,7 @@ public class ExportHelper {
 				String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
 						", entryId=" + entity.getId().toString() + ", " + fileName;
 				logger.error(eMsg);
+				if (fileStream != null) fileStream.close();
 				Integer c = (Integer)reportMap.get(errors);
 				reportMap.put(errors, ++c);
 				((List)reportMap.get(errorList)).add(eMsg);
@@ -554,65 +561,49 @@ public class ExportHelper {
 				zipOut.closeEntry();
 			}
 		}
-		finally {
-			try {
-				if(fileStream != null)
-					fileStream.close();
-			}
-			catch(IOException ignore) {}
-		}
 
 		// older versions, from highest to lowest
-		Set fileVersions = attachment.getFileVersions();
-		if (!fileVersions.isEmpty()) {
-			Iterator<VersionAttachment> versionIter = fileVersions.iterator();
-			VersionAttachment vAttach = versionIter.next();		//Skip the latest file - it was already output above
-			for (int i = 1; i < fileVersions.size(); i++) {
-				vAttach = versionIter.next();
-	
-				int versionNum = fileVersions.size() - i;
-	
-				fileStream = null;
-				try {
-					fileStream = fileModule.readFile(binder, entity,
-							vAttach);
+
+		for (int i = 1; i < fileVersions.size(); i++) {
+			vAttach = versionIter.next();
+
+			int versionNum = fileVersions.size() - i;
+
+			fileStream = null;
+			try {
+				fileStream = fileModule.readFile(binder, entity,
+						vAttach);
+
+				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+				zipOut.putNextEntry(new ZipEntry(pathName + "/"
+						+ fileName + ".versions" + "/" + versionNum
+						+ "." + fileExt));
+				FileUtil.copy(fileStream, zipOut);
+				zipOut.closeEntry();
+
+				fileStream.close();
+				Integer count = (Integer)reportMap.get(files);
+				reportMap.put(files, ++count);
+			} catch (Exception e) {
+				if (fileStream == null) {
+					//The file must not exist, so just skip it. This really isn't an error condition.
+				} else {
+					logger.error(e);
+					String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
+							", entryId=" + entity.getId().toString() + ", " + fileName;
+					logger.error(eMsg);
+					if (fileStream != null) fileStream.close();
+					Integer c = (Integer)reportMap.get(errors);
+					reportMap.put(errors, ++c);
+					((List)reportMap.get(errorList)).add(eMsg);
 	
 					// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 					zipOut.putNextEntry(new ZipEntry(pathName + "/"
 							+ fileName + ".versions" + "/" + versionNum
-							+ "." + fileExt));
-					FileUtil.copy(fileStream, zipOut);
+							+ "." + fileExt + ".error_message.txt"));
+					zipOut.write(NLT.get("export.error.attachment",
+							"Error processing this attachment").getBytes());
 					zipOut.closeEntry();
-	
-					Integer count = (Integer)reportMap.get(files);
-					reportMap.put(files, ++count);
-				} catch (Exception e) {
-					if (fileStream == null) {
-						//The file must not exist, so just skip it. This really isn't an error condition.
-					} else {
-						logger.error(e);
-						String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
-								", entryId=" + entity.getId().toString() + ", " + fileName;
-						logger.error(eMsg);
-						Integer c = (Integer)reportMap.get(errors);
-						reportMap.put(errors, ++c);
-						((List)reportMap.get(errorList)).add(eMsg);
-		
-						// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
-						zipOut.putNextEntry(new ZipEntry(pathName + "/"
-								+ fileName + ".versions" + "/" + versionNum
-								+ "." + fileExt + ".error_message.txt"));
-						zipOut.write(NLT.get("export.error.attachment",
-								"Error processing this attachment").getBytes());
-						zipOut.closeEntry();
-					}
-				}
-				finally {
-					try {
-						if(fileStream != null)
-							fileStream.close();
-					}
-					catch(IOException ignore) {}
 				}
 			}
 		}
@@ -1238,7 +1229,7 @@ public class ExportHelper {
 		List<String> newDefIds = new ArrayList<String>();
 
 		logger.debug("Unzipping to disk temporarily...");
-		String tempDir = deploy(zIn, reportMap);
+		String tempDir = deploy(zIn);
 		logger.debug("Unzipping completed");
 
 		try {
@@ -1660,7 +1651,6 @@ public class ExportHelper {
 			StatusTicket statusTicket, Map<String, Principal> nameCache) {
 
 		final Binder topBinder = loadBinder(topBinderId);
-		final Binder parentBinder = loadBinder(parentId);
 
 		final Document doc = getDocument(inputDataAsXML, nameCache);
 		final Map<String, Definition> fDefIdMap = new HashMap<String, Definition>(definitionIdMap);
@@ -1668,24 +1658,9 @@ public class ExportHelper {
 		try {
 			if(logger.isDebugEnabled())
 				logger.debug("Adding binder to parent " + parentId + " with definition " + def.getId());
-			//Make sure there is no other binder with the same name in the destination binder.
-			String title = doc.getRootElement().attributeValue("title", "");
-			if (!title.equals("")) {
-		     	String newTitle = BinderHelper.getUniqueBinderTitleInParent(title, parentBinder, null);
-		    	if (!newTitle.equals(title)) {
-		    		//There was a conflict, so update the title to the unique one
-		    		doc.getRootElement().addAttribute("title", newTitle);
-		    		Element titleAttrEle = (Element)doc.getRootElement().selectSingleNode("./attribute[@name='title']");
-		    		if (titleAttrEle != null) {
-		    			titleAttrEle.setText(newTitle);
-		    		}
-		    	}
-			}
-
-			Binder newBinder = binderModule.addBinder(new Long(parentId),
+			Long newBinderId = binderModule.addBinder(new Long(parentId),
 					def.getId(), new DomInputData(doc, iCalModule),
-					new HashMap(), null);
-			Long newBinderId = newBinder.getId().longValue();
+					new HashMap(), null).getId().longValue();
 			binderIdMap.put(binderId, newBinderId);
 			final Binder binder = loadBinder(newBinderId);
 			String libraryFolder = doc.getRootElement().attributeValue("libraryFolder", "");
@@ -1738,9 +1713,9 @@ public class ExportHelper {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
 			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		} catch (AccessControlException e) {
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		} catch (WriteEntryDataException e) {
 			Integer c = (Integer)reportMap.get(errors);
 			EntryDataErrors errors = e.getErrors();
@@ -1750,7 +1725,7 @@ public class ExportHelper {
 				c++;
 			}
 			reportMap.put(errors, c);
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		}
 	}
 
@@ -1801,7 +1776,7 @@ public class ExportHelper {
 					entryIdMap.remove(entryId);
 					folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 				}
-				throw new RuntimeException(e);
+				throw new RemotingException(e);
 			}
 			// workflows
 			if(logger.isDebugEnabled())
@@ -1848,7 +1823,7 @@ public class ExportHelper {
 				entryIdMap.remove(entryId);
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 			}
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		} catch (WriteEntryDataException e) {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
@@ -1857,7 +1832,7 @@ public class ExportHelper {
 				entryIdMap.remove(entryId);
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 			}
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		}
 	}
 
@@ -1905,7 +1880,7 @@ public class ExportHelper {
 					entryIdMap.remove(entryId);
 					folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 				}
-				throw new RuntimeException(e);
+				throw new RemotingException(e);
 			}
 
 			// workflows
@@ -1943,7 +1918,7 @@ public class ExportHelper {
 				entryIdMap.remove(entryId);
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 			}
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		} catch (WriteEntryDataException e) {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
@@ -1952,7 +1927,7 @@ public class ExportHelper {
 				entryIdMap.remove(entryId);
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 			}
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		}
 	}
 
@@ -2159,32 +2134,24 @@ public class ExportHelper {
 					Integer count = (Integer)reportMap.get(files);
 					reportMap.put(files, ++count);
 				} catch (Exception e) {
+					logger.error(e);
 					Integer c = (Integer)reportMap.get(errors);
 					reportMap.put(errors, ++c);
-					((List)reportMap.get(errorList)).add(NLT.get("export.error.noVersionFile", new String[] {filename}));
+					((List)reportMap.get(errorList)).add(e.getLocalizedMessage() + " (" + filename + ")");
+					throw e;
 				}
 			}
 		}
 
 		try {
 			iStream = new FileInputStream(new File(href));
-			if (iStream != null) {
-				if(logger.isDebugEnabled())
-					logger.debug("Adding file " + filename + " to entry " + entryId + " in binder " + binderId);
-				folderModule.modifyEntry(binderId, entryId, fileDataItemName,
-						filename, iStream, options);
-				iStream.close();
-				Integer count = (Integer)reportMap.get(files);
-				reportMap.put(files, ++count);
-			} else {
-				Integer c = (Integer)reportMap.get(errors);
-				reportMap.put(errors, ++c);
-				((List)reportMap.get(errorList)).add(NLT.get("export.error.noAttachedFile", new String[] {filename}));
-			}
-		} catch (FileNotFoundException fnf) {
-			Integer c = (Integer)reportMap.get(errors);
-			reportMap.put(errors, ++c);
-			((List)reportMap.get(errorList)).add(NLT.get("export.error.noAttachedFile", new String[] {filename}));
+			if(logger.isDebugEnabled())
+				logger.debug("Adding file " + filename + " to entry " + entryId + " in binder " + binderId);
+			folderModule.modifyEntry(binderId, entryId, fileDataItemName,
+					filename, iStream, options);
+			iStream.close();
+			Integer count = (Integer)reportMap.get(files);
+			reportMap.put(files, ++count);
 		} catch (Exception e) {
 			logger.error(e);
 			Integer c = (Integer)reportMap.get(errors);
@@ -2472,7 +2439,7 @@ public class ExportHelper {
 				.randomUUID().toString());
 	}
 
-	private static String deploy(ZipInputStream zipIn, Map reportMap) throws IOException {
+	private static String deploy(ZipInputStream zipIn) throws IOException {
 		File tempDir = getTemporaryDirectory();
 
 		FileUtil.deltree(tempDir);
@@ -2486,31 +2453,20 @@ public class ExportHelper {
 				// extract file to proper temporary directory
 				File inflated;
 				String name = entry.getName();
-				try {
-					inflated = new File(tempDir, name);
-					if (entry.isDirectory()) {
-						inflated.mkdirs();
-						zipIn.closeEntry();
-						continue;
-					} else {
-						inflated.getParentFile().mkdirs();
-						FileOutputStream entryOut = new FileOutputStream(inflated);
-						FileCopyUtils.copy(new ZipEntryStream(zipIn), entryOut);
-						entryOut.close();
-					}
+				inflated = new File(tempDir, name);
+				if (entry.isDirectory()) {
+					inflated.mkdirs();
 					zipIn.closeEntry();
-				} catch(Exception e) {
-					Integer c = (Integer)reportMap.get(errors);
-					reportMap.put(errors, ++c);
-					((List)reportMap.get(errorList)).add(e.getMessage());
-
-					logger.error(e);
+					continue;
+				} else {
+					inflated.getParentFile().mkdirs();
+					FileOutputStream entryOut = new FileOutputStream(inflated);
+					FileCopyUtils.copy(new ZipEntryStream(zipIn), entryOut);
+					entryOut.close();
 				}
+				zipIn.closeEntry();
 			}
 		} catch(Exception e) {
-			Integer c = (Integer)reportMap.get(errors);
-			reportMap.put(errors, ++c);
-			((List)reportMap.get(errorList)).add(e.getMessage());
 			logger.error(e);
 		} finally {
 			zipIn.close();

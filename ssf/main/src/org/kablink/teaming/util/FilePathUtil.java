@@ -172,7 +172,7 @@ public class FilePathUtil {
 	}
 	
 	private static StringBuilder getEntityDirPathInternal(Binder binder, DefinableEntity entity) {
-		String id = entity.getEntityTypedId();
+		String id = entity.getTypedId();
 		if(id == null)
 			throw new IllegalStateException("Entity must have an id");
 		

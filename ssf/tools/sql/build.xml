@@ -9,30 +9,12 @@
 	<property name="main.project.dir" value="${project.dir}/main" />
 	<property name="main.classes.dir" value="${main.project.dir}/${classes.dir}" />
 	<property name="main.hibernate.dir" value="${main.project.dir}/hibernate" />
-	<property name="temporary.dir" value="${basedir}/temp" />
-	<property name="create.dir" value="${temporary.dir}/create" />
-	<property name="update.dir" value="${temporary.dir}/update" />
+	<property name="create.dir" value="${basedir}/create" />
+	<property name="update.dir" value="${basedir}/update" />
+	<property name="update.version.dir" value="${basedir}/update-2.1.0-3.0.0" />
 	<property name="cinternal.dir" value="${create.dir}/internal" />
 	<property name="uinternal.dir" value="${update.dir}/internal" />
-	<property name="changelog.dir" value="${basedir}/scripts/changelog" />
-	<property name="schema.changelog.temp.dir" value="${temporary.dir}/schema-changelog" />
-	<property name="data.changelog.temp.dir" value="${temporary.dir}/data-changelog" />
-	<property name="diff.changelog.temp.dir" value="${temporary.dir}/diff-changelog" />
-	<property name="sql.output.temp.dir" value="${temporary.dir}/sql-output" />
-	<property name="lb.log.level" value="info"/>
-	<property name="lb.contexts" value="schema,data"/>
 	
-	<!-- This overrides the imported definition -->
-	<path id="project.classpath">
-		<pathelement location="${project.dir}/tools/kablink-teaming-tools.jar"/>
-		<fileset dir="${project.dir}/lib">
-			<include name="*.jar" />
-			<exclude name="gwt-servlet.jar" />
-			<!-- Exclude xalan.jar so that it won't be picked up by the JDK. It doesn't handle indentation properly. -->
-			<exclude name="xalan.jar" />
-		</fileset>
-	</path>
-
 	<taskdef name="dbunit"
 	    classname="org.dbunit.ant.DbUnitTask">
 		<classpath>
@@ -40,15 +22,15 @@
 		</classpath>
 	</taskdef>
 
-    <taskdef resource="liquibasetasks.properties" classpathref="project.classpath"/>
-
 	<!--<target name="init-build">
 		<property file="${basedir}/build.${user.name}.properties" />
 		<property file="${basedir}/build.properties" />
 	</target>-->
 	
-	<target name="clean" depends="build-common.clean">
-		<delete dir="${temporary.dir}"/>
+	<target name="clean">
+		<delete dir="${create.dir}"/>
+		<delete dir="${update.dir}"/>
+		<delete dir="${cinternal.dir}"/>
 	</target>
 	
 	<target name="init-database-type">
@@ -56,18 +38,6 @@
 		<property file="${project.dir}/tools/sql/database.properties" />
 	</target>
 	
-	<target name="init-jdbc-connection-settings" depends="init-database-type">
-  		<!--special file incase the dba is not the account that icecore runs on (customer request for oracle) -->
-		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}-dba.properties"/>
-		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
-		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
-	</target>
-		
-	<target name="init-lb-settings" depends="init-database-type">
-		<property file="${project.dir}/tools/sql/lb-${database.type}.${user.name}.properties"/>
-		<property file="${project.dir}/tools/sql/lb-${database.type}.properties"/>
-	</target>
-		
   	<target name="generate-create-tables-script" depends="init-database-type"
   		description="Generate sql script used for creating tables in sitescape database.">
 		<path id="initpath">
@@ -247,7 +217,7 @@
 	<!-- Generate SQL scripts used for creating SS tables and constraints
 		 for each supported database. These scripts are generated from the 
 		 Hibernate mapping files. -->
-	<target name="generate-all-create-scripts">
+	<target name="generate-all-create-scripts" depends="clean">
 		<antcall target="generate-create-tables-script-sqlserver" inheritAll="false"/>
 		<antcall target="generate-create-tables-script-mysql" inheritAll="false"/>
 		<antcall target="generate-create-tables-script-oracle" inheritAll="false"/>
@@ -320,7 +290,11 @@
 		</antcall>
 	</target>
 	<!-- Only called by other targets (like subroutines) -->
-	<target name="execute-script" description="Execute a sql script." depends="init-jdbc-connection-settings">
+	<target name="execute-script" description="Execute a sql script.">
+  		<!--special file incase the dba is not the account that icecore runs on (customer request for oracle) -->
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}-dba.properties"/>
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
 		<sql driver="${jdbc.driver}"
 			url="${jdbc.url}"
 			userid="${jdbc.username}"
@@ -330,512 +304,8 @@
 			<classpath refid="project.classpath"/>
 		</sql>
 	</target>
-		
-	<target name="lb-apply-changelog-to-database" depends="init-lb-settings">
-	    <fail unless="database.type">database.type not set</fail>
-		<echo>database.type=${database.type}</echo>
-	    <fail unless="destination.jdbc.driver">destination.jdbc.driver not set</fail>
-		<echo>destination.jdbc.driver=${destination.jdbc.driver}</echo>
-	    <fail unless="destination.jdbc.url">destination.jdbc.url not set</fail>
-		<echo>destination.jdbc.url=${destination.jdbc.url}</echo>
-	    <fail unless="destination.jdbc.username">destination.jdbc.username not set</fail>
-		<echo>destination.jdbc.username=${destination.jdbc.username}</echo>
-	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
-		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
-			
-		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-master.xml"/>
-
-	    <updateDatabase
-    			logLevel="${lb.log.level}"
-	            changeLogFile="${changelog.file}"
-    	        contexts="${lb.contexts}"
-	            driver="${destination.jdbc.driver}"
-	            url="${destination.jdbc.url}"
-	            username="${destination.jdbc.username}"
-	            password="${destination.jdbc.password}"
-	            dropFirst="false"
-	            classpathref="project.classpath"
-	    />		
-	</target>
 	
-	<target name="lb-apply-changelog-to-database-mysql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="mysql"/>
-		<antcall target="lb-apply-changelog-to-database"/>
-	</target>
-	
-	<target name="lb-apply-changelog-to-database-oracle">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="oracle"/>
-		<antcall target="lb-apply-changelog-to-database"/>
-	</target>
-	
-	<target name="lb-apply-changelog-to-database-sqlserver">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-apply-changelog-to-database"/>
-	</target>
-			
-	<target name="lb-apply-changelog-to-database-all">
-		<antcall target="lb-apply-changelog-to-database-mysql" inheritAll="false"/>
-		<antcall target="lb-apply-changelog-to-database-oracle" inheritAll="false"/>
-		<antcall target="lb-apply-changelog-to-database-sqlserver" inheritAll="false"/>
-	</target>
-
-	<target name="lb-apply-changelog-to-sql-output" depends="init-lb-settings">
-	    <fail unless="database.type">database.type not set</fail>
-		<echo>database.type=${database.type}</echo>
-	    <fail unless="destination.jdbc.driver">destination.jdbc.driver not set</fail>
-		<echo>destination.jdbc.driver=${destination.jdbc.driver}</echo>
-	    <fail unless="destination.jdbc.url">destination.jdbc.url not set</fail>
-		<echo>destination.jdbc.url=${destination.jdbc.url}</echo>
-	    <fail unless="destination.jdbc.username">destination.jdbc.username not set</fail>
-		<echo>destination.jdbc.username=${destination.jdbc.username}</echo>
-	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
-		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
-			
-		<mkdir dir="${sql.output.temp.dir}"/>
-
-		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-master.xml"/>
-
-		<property name="output.file" value="${sql.output.temp.dir}/${database.type}-update.sql"/>
-
-	    <updateDatabase
-    			logLevel="${lb.log.level}"
-	            changeLogFile="${changelog.file}"
-	            contexts="${lb.contexts}"
-	            driver="${destination.jdbc.driver}"
-	            url="${destination.jdbc.url}"
-	            username="${destination.jdbc.username}"
-	            password="${destination.jdbc.password}"
-	            dropFirst="false"
-	            classpathref="project.classpath"
-	    		outputFile="${output.file}"
-	    />		
-	</target>
-	
-	<target name="lb-apply-changelog-to-sql-output-mysql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="mysql"/>
-		<antcall target="lb-apply-changelog-to-sql-output"/>
-	</target>
-	
-	<target name="lb-apply-changelog-to-sql-output-oracle">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="oracle"/>
-		<antcall target="lb-apply-changelog-to-sql-output"/>
-	</target>
-	
-	<target name="lb-apply-changelog-to-sql-output-sqlserver">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-apply-changelog-to-sql-output"/>
-	</target>
-			
-	<target name="lb-apply-changelog-to-sql-output-all">
-		<antcall target="lb-apply-changelog-to-sql-output-mysql" inheritAll="false"/>
-		<antcall target="lb-apply-changelog-to-sql-output-oracle" inheritAll="false"/>
-		<antcall target="lb-apply-changelog-to-sql-output-sqlserver" inheritAll="false"/>
-	</target>
-
-	<target name="lb-markasran-changelog-to-database" depends="init-lb-settings">
-	    <fail unless="database.type">database.type not set</fail>
-		<echo>database.type=${database.type}</echo>
-	    <fail unless="destination.jdbc.driver">destination.jdbc.driver not set</fail>
-		<echo>destination.jdbc.driver=${destination.jdbc.driver}</echo>
-	    <fail unless="destination.jdbc.url">destination.jdbc.url not set</fail>
-		<echo>destination.jdbc.url=${destination.jdbc.url}</echo>
-	    <fail unless="destination.jdbc.username">destination.jdbc.username not set</fail>
-		<echo>destination.jdbc.username=${destination.jdbc.username}</echo>
-	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
-		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
-			
-		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-master.xml"/>
-
-	    <changeLogSync
-    			logLevel="${lb.log.level}"
-	            changeLogFile="${changelog.file}"
-	            contexts="${lb.contexts}"
-	            driver="${destination.jdbc.driver}"
-	            url="${destination.jdbc.url}"
-	            username="${destination.jdbc.username}"
-	            password="${destination.jdbc.password}"
-	            classpathref="project.classpath"
-	    />		
-	</target>
-	
-	<target name="lb-markasran-changelog-to-database-mysql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="mysql"/>
-		<antcall target="lb-markasran-changelog-to-database"/>
-	</target>
-	
-	<target name="lb-markasran-changelog-to-database-oracle">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="oracle"/>
-		<antcall target="lb-markasran-changelog-to-database"/>
-	</target>
-	
-	<target name="lb-markasran-changelog-to-database-sqlserver">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-markasran-changelog-to-database"/>
-	</target>
-			
-	<target name="lb-markasran-changelog-to-database-all">
-		<antcall target="lb-markasran-changelog-to-database-mysql" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-to-database-oracle" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-to-database-sqlserver" inheritAll="false"/>
-	</target>
-	
-	<target name="lb-markasran-changelog-3.3-to-database" depends="init-lb-settings">
-	    <fail unless="database.type">database.type not set</fail>
-		<echo>database.type=${database.type}</echo>
-	    <fail unless="destination.jdbc.driver">destination.jdbc.driver not set</fail>
-		<echo>destination.jdbc.driver=${destination.jdbc.driver}</echo>
-	    <fail unless="destination.jdbc.url">destination.jdbc.url not set</fail>
-		<echo>destination.jdbc.url=${destination.jdbc.url}</echo>
-	    <fail unless="destination.jdbc.username">destination.jdbc.username not set</fail>
-		<echo>destination.jdbc.username=${destination.jdbc.username}</echo>
-	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
-		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
-			
-		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-3.3.xml"/>
-
-	    <changeLogSync
-    			logLevel="${lb.log.level}"
-	            changeLogFile="${changelog.file}"
-	            contexts="${lb.contexts}"
-	            driver="${destination.jdbc.driver}"
-	            url="${destination.jdbc.url}"
-	            username="${destination.jdbc.username}"
-	            password="${destination.jdbc.password}"
-	            classpathref="project.classpath"
-	    />		
-	</target>
-	
-	<target name="lb-markasran-changelog-3.3-to-database-mysql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="mysql"/>
-		<antcall target="lb-markasran-changelog-3.3-to-database"/>
-	</target>
-	
-	<target name="lb-markasran-changelog-3.3-to-database-oracle">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="oracle"/>
-		<antcall target="lb-markasran-changelog-3.3-to-database"/>
-	</target>
-	
-	<target name="lb-markasran-changelog-3.3-to-database-sqlserver">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-markasran-changelog-3.3-to-database"/>
-	</target>
-			
-	<target name="lb-markasran-changelog-3.3-to-database-all">
-		<antcall target="lb-markasran-changelog-3.3-to-database-mysql" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-3.3-to-database-oracle" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-3.3-to-database-sqlserver" inheritAll="false"/>
-	</target>
-
-	<target name="lb-markasran-changelog-to-sql-output" depends="init-lb-settings">
-	    <fail unless="database.type">database.type not set</fail>
-		<echo>database.type=${database.type}</echo>
-	    <fail unless="destination.jdbc.driver">destination.jdbc.driver not set</fail>
-		<echo>destination.jdbc.driver=${destination.jdbc.driver}</echo>
-	    <fail unless="destination.jdbc.url">destination.jdbc.url not set</fail>
-		<echo>destination.jdbc.url=${destination.jdbc.url}</echo>
-	    <fail unless="destination.jdbc.username">destination.jdbc.username not set</fail>
-		<echo>destination.jdbc.username=${destination.jdbc.username}</echo>
-	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
-		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
-			
-		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-master.xml"/>
-
-		<mkdir dir="${sql.output.temp.dir}"/>
-		
-		<property name="output.file" value="${sql.output.temp.dir}/${database.type}-update.sql"/>
-
-			<changeLogSync
-    			logLevel="${lb.log.level}"
-	            changeLogFile="${changelog.file}"
-    	        contexts="${lb.contexts}"
-	            driver="${destination.jdbc.driver}"
-	            url="${destination.jdbc.url}"
-	            username="${destination.jdbc.username}"
-	            password="${destination.jdbc.password}"
-	            classpathref="project.classpath"
-	    		outputFile="${output.file}"
-	    />		
-	</target>
-	
-	<target name="lb-markasran-changelog-to-sql-output-mysql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="mysql"/>
-		<antcall target="lb-markasran-changelog-to-sql-output"/>
-	</target>
-	
-	<target name="lb-markasran-changelog-to-sql-output-oracle">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="oracle"/>
-		<antcall target="lb-markasran-changelog-to-sql-output"/>
-	</target>
-	
-	<target name="lb-markasran-changelog-to-sql-output-sqlserver">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-markasran-changelog-to-sql-output"/>
-	</target>
-			
-	<target name="lb-markasran-changelog-to-sql-output-all">
-		<antcall target="lb-markasran-changelog-to-sql-output-mysql" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-to-sql-output-oracle" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-to-sql-output-sqlserver" inheritAll="false"/>
-	</target>
-	
-	<target name="lb-markasran-changelog-3.3-to-sql-output" depends="init-lb-settings">
-	    <fail unless="database.type">database.type not set</fail>
-		<echo>database.type=${database.type}</echo>
-	    <fail unless="destination.jdbc.driver">destination.jdbc.driver not set</fail>
-		<echo>destination.jdbc.driver=${destination.jdbc.driver}</echo>
-	    <fail unless="destination.jdbc.url">destination.jdbc.url not set</fail>
-		<echo>destination.jdbc.url=${destination.jdbc.url}</echo>
-	    <fail unless="destination.jdbc.username">destination.jdbc.username not set</fail>
-		<echo>destination.jdbc.username=${destination.jdbc.username}</echo>
-	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
-		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
-			
-		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-3.3.xml"/>
-
-		<property name="output.file" value="${sql.output.temp.dir}/${database.type}-update.sql"/>
-
-			<changeLogSync
-    			logLevel="${lb.log.level}"
-	            changeLogFile="${changelog.file}"
-    	        contexts="${lb.contexts}"
-	            driver="${destination.jdbc.driver}"
-	            url="${destination.jdbc.url}"
-	            username="${destination.jdbc.username}"
-	            password="${destination.jdbc.password}"
-	            classpathref="project.classpath"
-	    		outputFile="${output.file}"
-	    />		
-	</target>
-	
-	<target name="lb-markasran-changelog-3.3-to-sql-output-mysql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="mysql"/>
-		<antcall target="lb-markasran-changelog-3.3-to-sql-output"/>
-	</target>
-	
-	<target name="lb-markasran-changelog-3.3-to-sql-output-oracle">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="oracle"/>
-		<antcall target="lb-markasran-changelog-3.3-to-sql-output"/>
-	</target>
-	
-	<target name="lb-markasran-changelog-3.3-to-sql-output-sqlserver">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-markasran-changelog-3.3-to-sql-output"/>
-	</target>
-			
-	<target name="lb-markasran-changelog-3.3-to-sql-output-all">
-		<antcall target="lb-markasran-changelog-3.3-to-sql-output-mysql" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-3.3-to-sql-output-oracle" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-3.3-to-sql-output-sqlserver" inheritAll="false"/>
-	</target>
-	
-	<target name="lb-export-schema-to-changelog" depends="init-lb-settings">
-	    <fail unless="database.type">database.type not set</fail>
-		<echo>database.type=${database.type}</echo>
-	    <fail unless="source.jdbc.driver">source.jdbc.driver not set</fail>
-		<echo>source.jdbc.driver=${source.jdbc.driver}</echo>
-	    <fail unless="source.jdbc.url">source.jdbc.url not set</fail>
-		<echo>source.jdbc.url=${source.jdbc.url}</echo>
-	    <fail unless="source.jdbc.username">source.jdbc.username not set</fail>
-		<echo>source.jdbc.username=${source.jdbc.username}</echo>
-	    <fail unless="source.jdbc.password">source.jdbc.password not set</fail>		
-		<echo>source.jdbc.password=${source.jdbc.password}</echo>
-
-		<mkdir dir="${schema.changelog.temp.dir}"/>
-		
-		<property name="output.file" value="${schema.changelog.temp.dir}/${database.type}-changelog.xml"/>
-
-		<delete file="${output.file}"/>
-		
-		<generateChangeLog
-    		logLevel="${lb.log.level}"
-        	outputFile="${output.file}"
-            driver="${source.jdbc.driver}"
-            url="${source.jdbc.url}"
-            username="${source.jdbc.username}"
-            password="${source.jdbc.password}"
-            classpathref="project.classpath"
-	    />
-	</target>
-	
-	<target name="lb-export-schema-to-changelog-mysql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="mysql"/>
-		<antcall target="lb-export-schema-to-changelog"/>
-	</target>
-	
-	<target name="lb-export-schema-to-changelog-oracle">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="oracle"/>
-		<antcall target="lb-export-schema-to-changelog"/>
-	</target>
-	
-	<target name="lb-export-schema-to-changelog-sqlserver">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-export-schema-to-changelog"/>
-	</target>
-	
-	<target name="lb-export-schema-to-changelog-all">
-		<antcall target="lb-export-schema-to-changelog-mysql" inheritAll="false"/>
-		<antcall target="lb-export-schema-to-changelog-oracle" inheritAll="false"/>
-		<antcall target="lb-export-schema-to-changelog-sqlserver" inheritAll="false"/>
-	</target>
-	
-	<target name="lb-export-data-to-changelog" depends="init-lb-settings">
-	    <fail unless="database.type">database.type not set</fail>
-		<echo>database.type=${database.type}</echo>
-	    <fail unless="source.jdbc.driver">source.jdbc.driver not set</fail>
-		<echo>source.jdbc.driver=${source.jdbc.driver}</echo>
-	    <fail unless="source.jdbc.url">source.jdbc.url not set</fail>
-		<echo>source.jdbc.url=${source.jdbc.url}</echo>
-	    <fail unless="source.jdbc.username">source.jdbc.username not set</fail>
-		<echo>source.jdbc.username=${source.jdbc.username}</echo>
-	    <fail unless="source.jdbc.password">source.jdbc.password not set</fail>		
-		<echo>source.jdbc.password=${source.jdbc.password}</echo>
-
-		<mkdir dir="${data.changelog.temp.dir}"/>
-		
-		<property name="output.file" value="${data.changelog.temp.dir}/${database.type}-changelog.xml"/>
-
-		<delete file="${output.file}"/>
-		
-		<generateChangeLog
-    		logLevel="${lb.log.level}"
-        	outputFile="${output.file}"
-            driver="${source.jdbc.driver}"
-            url="${source.jdbc.url}"
-            username="${source.jdbc.username}"
-            password="${source.jdbc.password}"
-            classpathref="project.classpath"
-			diffTypes="data"
-	    />
-	</target>
-	
-	<target name="lb-export-data-to-changelog-mysql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="mysql"/>
-		<antcall target="lb-export-data-to-changelog"/>
-	</target>
-	
-	<target name="lb-export-data-to-changelog-oracle">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="oracle"/>
-		<antcall target="lb-export-data-to-changelog"/>
-	</target>
-	
-	<target name="lb-export-data-to-changelog-sqlserver">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-export-data-to-changelog"/>
-	</target>
-	
-	<target name="lb-export-data-to-changelog-all">
-		<antcall target="lb-export-data-to-changelog-mysql" inheritAll="false"/>
-		<antcall target="lb-export-data-to-changelog-oracle" inheritAll="false"/>
-		<antcall target="lb-export-data-to-changelog-sqlserver" inheritAll="false"/>
-	</target>
-	
-	<target name="lb-generate-diff-changelog" depends="init-lb-settings">
-	    <fail unless="database.type">database.type not set</fail>
-		<echo>database.type=${database.type}</echo>
-
-		<mkdir dir="${diff.changelog.temp.dir}"/>
-		
-	    <fail unless="first.jdbc.driver">first.jdbc.driver not set</fail>
-		<echo>first.jdbc.driver=${first.jdbc.driver}</echo>
-	    <fail unless="first.jdbc.url">first.jdbc.url not set</fail>
-		<echo>first.jdbc.url=${first.jdbc.url}</echo>
-	    <fail unless="first.jdbc.username">first.jdbc.username not set</fail>
-		<echo>first.jdbc.username=${first.jdbc.username}</echo>
-	    <fail unless="first.jdbc.password">first.jdbc.password not set</fail>		
-		<echo>first.jdbc.password=${first.jdbc.password}</echo>
-
-	    <fail unless="second.jdbc.driver">second.jdbc.driver not set</fail>
-		<echo>second.jdbc.driver=${second.jdbc.driver}</echo>
-	    <fail unless="second.jdbc.url">second.jdbc.url not set</fail>
-		<echo>second.jdbc.url=${second.jdbc.url}</echo>
-	    <fail unless="second.jdbc.username">second.jdbc.username not set</fail>
-		<echo>second.jdbc.username=${second.jdbc.username}</echo>
-	    <fail unless="second.jdbc.password">second.jdbc.password not set</fail>		
-		<echo>second.jdbc.password=${second.jdbc.password}</echo>
-
-		<property name="output.file" value="${diff.changelog.temp.dir}/${database.type}-changelog.xml"/>
-			
-		<delete file="${output.file}"/>
-			
-		<diffDatabaseToChangeLog
-    		logLevel="${lb.log.level}"
-        	outputFile="${output.file}"
-            driver="${first.jdbc.driver}"
-            url="${first.jdbc.url}"
-            username="${first.jdbc.username}"
-            password="${first.jdbc.password}"
-            referenceDriver="${second.jdbc.driver}"
-            referenceUrl="${second.jdbc.url}"
-            referenceUsername="${second.jdbc.username}"
-            referencePassword="${second.jdbc.password}"
-            classpathref="project.classpath"
-	    />
-	</target>
-	
-	<target name="lb-generate-diff-changelog-mysql">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="mysql"/>
-		<antcall target="lb-generate-diff-changelog"/>
-	</target>
-	
-	<target name="lb-generate-diff-changelog-oracle">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="oracle"/>
-		<antcall target="lb-generate-diff-changelog"/>
-	</target>
-	
-	<target name="lb-generate-diff-changelog-sqlserver">
-		<!-- This setting will override the value to be subsequently read from a file -->
-		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-generate-diff-changelog"/>
-	</target>
-	
-	<target name="lb-generate-diff-changelog-all">
-		<antcall target="lb-generate-diff-changelog-mysql" inheritAll="false"/>
-		<antcall target="lb-generate-diff-changelog-oracle" inheritAll="false"/>
-		<antcall target="lb-generate-diff-changelog-sqlserver" inheritAll="false"/>
-	</target>	
-
-	<target name="lb-shell-script-execution-clean">
-		<delete dir="lb-commands/lib"/>
-		<delete dir="lb-commands/scripts"/>
-	</target>
-	
-	<target name="lb-shell-script-execution-prepare">
-		<mkdir dir="lb-commands/lib"/>
-		<copy todir="lb-commands/lib">
-			<fileset dir="${project.dir}/lib" includes="liquibase.jar,mysql-connector.jar,ojdbc6.jar,jtds.jar"/>
-		</copy>
-		<copy todir="lb-commands">
-			<fileset dir="." includes="scripts/changelog/**"/>
-		</copy>
-	</target>
-	
-  	<target name="generate-update-tables-script" depends="init-jdbc-connection-settings"
+  	<target name="generate-update-tables-script" depends="init-database-type"
   		description="Generate update sql script using old database and current build.">
 		<mkdir dir="${update.dir}"/>
 		<mkdir dir="${uinternal.dir}"/>
@@ -850,8 +320,11 @@
         <taskdef classname="org.hibernate.tool.hbm2ddl.SchemaUpdateTask"
 	             classpathref="initpath" name="schemaupdate">
  		</taskdef> 
-
-  		<copy file="${basedir}/hibernate-${database.type}.properties" 
+  		<!--special file incase the dba is not the account that icecore runs on (customer request for oracle) -->
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}-dba.properties"/>
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
+		<copy file="${basedir}/hibernate-${database.type}.properties" 
 			tofile="${uinternal.dir}/hibernate-${database.type}-temp.properties"
 			overwrite="true" />
 		<echo file="${uinternal.dir}//hibernate-${database.type}-temp.properties" append="true" message="${line.separator}hibernate.connection.driver_class ${jdbc.driver}"/>
@@ -924,7 +397,7 @@
 	<!-- Generate SQL scripts used for updateing SS tables and constraints
 		 for each supported database. These scripts are generated from the 
 		 Hibernate mapping files. -->
-	<target name="generate-all-update-scripts">
+	<target name="generate-all-update-scripts" depends="clean">
 		<antcall target="generate-update-tables-script-sqlserver" inheritAll="false"/>
 		<antcall target="generate-update-tables-script-mysql" inheritAll="false"/>
 		<antcall target="generate-update-tables-script-oracle" inheritAll="false"/>

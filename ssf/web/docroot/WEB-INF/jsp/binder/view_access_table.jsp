@@ -32,8 +32,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="org.kablink.teaming.domain.ShareItem" %>
-<% boolean shared; %>
 
 <div id="${ss_accessControlTableDivId}" class="ss_portlet ss_style ss_form">
 <TABLE class="ss_table">
@@ -54,24 +52,11 @@
   <TD valign="top" width="50%">
     <ul style="margin:0px 0px 0px 12px; padding:0px;">
     <c:forEach var="user" items="${ss_accessSortedUsersAll}">
-    	<c:set var="shared" value="false" />
-		<c:forEach var="shareItem1" items="${ss_accessControlShareItems}">
-		  <jsp:useBean id="shareItem1" type="org.kablink.teaming.domain.ShareItem" />
-			<%
-			if (shareItem1.isLatest()) {
-				%>
-				<c:if test="${ss_accessControlShareItemRecipients[shareItem1.id].id == user.id}">
-					<c:set var="shared" value="true" />
-				</c:if>
-				<%
-			}
-			%>
-		</c:forEach>
-		<c:if test="${!empty ssOperationMap['readEntries'].ssUsers[user.id] || shared}">
-		  <li style="list-style: square outside none;">
-		    <span><ssf:userTitle user="${user}"/></span> <span class="ss_smallprint ss_italic">(<ssf:userName user="${user}"/>)</span>
-		  </li>
-		</c:if>
+      <c:if test="${!empty ssOperationMap['readEntries'].ssUsers[user.id]}">
+        <li style="list-style: square outside none;">
+          <span><ssf:userTitle user="${user}"/></span> <span class="ss_smallprint ss_italic">(<ssf:userName user="${user}"/>)</span>
+        </li>
+      </c:if>
     </c:forEach>
     </ul>
     <c:if test="${empty ssOperationMap['readEntries'].ssUsers}">&nbsp;</c:if>
@@ -79,22 +64,9 @@
   <TD valign="top" width="35%">
      <ul style="margin:0px 0px 0px 12px; padding:0px;">
      <c:forEach var="group" items="${ss_accessSortedGroupsAll}">
-    	<c:set var="shared" value="false" />
-		<c:forEach var="shareItem2" items="${ss_accessControlShareItems}">
-		  <jsp:useBean id="shareItem2" type="org.kablink.teaming.domain.ShareItem" />
-			<%
-			if (shareItem2.isLatest()) {
-				%>
-				<c:if test="${ss_accessControlShareItemRecipients[shareItem2.id].id == group.id}">
-					<c:set var="shared" value="true" />
-				</c:if>
-				<%
-			}
-			%>
-		</c:forEach>
-        <c:if test="${!empty ssOperationMap['readEntries'].ssGroups[group.id] || shared}">
-          <li style="list-style: square outside none;">
-          <a href="<ssf:url
+      <c:if test="${!empty ssOperationMap['readEntries'].ssGroups[group.id]}">
+        <li style="list-style: square outside none;">
+        <a href="<ssf:url
 				adapter="true" 
 				crawlable="true"
 				portletName="ss_forum" 
@@ -103,15 +75,15 @@
 				name="operation" value="get_group_list"/><ssf:param 
 				name="groupId" value="${group.id}"/></ssf:url>"
 		     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
-		    <span>${group.title}</span> 
-		    <span class="ss_smallprint ss_italic">(${group.name})</span>
-		    <c:if test="${ss_accessWorkareaIsPersonal && group.id == ss_accessAllUsersGroup}">
-      		  <span class="ss_fineprint" style="vertical-align: super;">1</span>
-      		  <c:set var="allUsersGroupSeen" value="true"/>
-    	    </c:if>
-		  </a>
-          </li>
-        </c:if>
+		  <span>${group.title}</span> 
+		  <span class="ss_smallprint ss_italic">(${group.name})</span>
+		  <c:if test="${ss_accessWorkareaIsPersonal && group.id == ss_accessAllUsersGroup}">
+      		<span class="ss_fineprint" style="vertical-align: super;">1</span>
+      		<c:set var="allUsersGroupSeen" value="true"/>
+    	  </c:if>
+		</a>
+		</li>
+      </c:if>
     </c:forEach>
     </ul>
     <c:if test="${empty ssOperationMap['readEntries'].ssGroups}">&nbsp;</c:if>
@@ -124,22 +96,7 @@
   <TD valign="top">
     <ul style="margin:0px 0px 0px 12px; padding:0px;">
     <c:forEach var="user" items="${ss_accessSortedUsersAll}">
-    	<c:set var="shared" value="false" />
-		<c:forEach var="shareItem3" items="${ss_accessControlShareItems}">
-		  <jsp:useBean id="shareItem3" type="org.kablink.teaming.domain.ShareItem" />
-			<%
-			if (shareItem3.isLatest()) {
-				%>
-				<c:if test="${ss_accessControlShareItemRecipients[shareItem3.id].id == user.id}">
-				  <c:if test="${shareItem3.role == 'EDITOR' || shareItem3.role == 'CONTRIBUTOR'}">
-					<c:set var="shared" value="true" />
-				  </c:if>
-				</c:if>
-				<%
-			}
-			%>
-		</c:forEach>
-      <c:if test="${!empty ssOperationMap['createEntries'].ssUsers[user.id] || shared}">
+      <c:if test="${!empty ssOperationMap['createEntries'].ssUsers[user.id]}">
         <li style="list-style: square outside none;"><span><ssf:userTitle user="${user}"/></span> 
           <span class="ss_smallprint ss_italic">(<ssf:userName user="${user}"/>)</span></li>
       </c:if>
@@ -150,22 +107,7 @@
   <TD valign="top">
      <ul style="margin:0px 0px 0px 12px; padding:0px;">
      <c:forEach var="group" items="${ss_accessSortedGroupsAll}">
-    	<c:set var="shared" value="false" />
-		<c:forEach var="shareItem4" items="${ss_accessControlShareItems}">
-		  <jsp:useBean id="shareItem4" type="org.kablink.teaming.domain.ShareItem" />
-			<%
-			if (shareItem4.isLatest()) {
-				%>
-				<c:if test="${ss_accessControlShareItemRecipients[shareItem4.id].id == group.id}">
-				  <c:if test="${shareItem4.role == 'EDITOR' || shareItem4.role == 'CONTRIBUTOR'}">
-					<c:set var="shared" value="true" />
-				  </c:if>
-				</c:if>
-				<%
-			}
-			%>
-		</c:forEach>
-      <c:if test="${!empty ssOperationMap['createEntries'].ssGroups[group.id] || shared}">
+      <c:if test="${!empty ssOperationMap['createEntries'].ssGroups[group.id]}">
         <li style="list-style: square outside none;"><a href="<ssf:url
 				adapter="true" 
 				crawlable="true"
@@ -199,22 +141,7 @@
   <TD valign="top">
     <ul style="margin:0px 0px 0px 12px; padding:0px;">
     <c:forEach var="user" items="${ss_accessSortedUsersAll}">
-    	<c:set var="shared" value="false" />
-		<c:forEach var="shareItem5" items="${ss_accessControlShareItems}">
-		  <jsp:useBean id="shareItem5" type="org.kablink.teaming.domain.ShareItem" />
-			<%
-			if (shareItem5.isLatest()) {
-				%>
-				<c:if test="${ss_accessControlShareItemRecipients[shareItem5.id].id == user.id}">
-				  <c:if test="${shareItem5.role == 'CONTRIBUTOR'}">
-					<c:set var="shared" value="true" />
-				  </c:if>
-				</c:if>
-				<%
-			}
-			%>
-		</c:forEach>
-      <c:if test="${!empty ssOperationMap['binderAdministration'].ssUsers[user.id] || shared}">
+      <c:if test="${!empty ssOperationMap['binderAdministration'].ssUsers[user.id]}">
         <li style="list-style: square outside none;"><span><ssf:userTitle user="${user}"/></span> 
           <span class="ss_smallprint ss_italic">(<ssf:userName user="${user}"/>)</span></li>
       </c:if>
@@ -225,22 +152,7 @@
   <TD valign="top">
      <ul style="margin:0px 0px 0px 12px; padding:0px;">
      <c:forEach var="group" items="${ss_accessSortedGroupsAll}">
-    	<c:set var="shared" value="false" />
-		<c:forEach var="shareItem6" items="${ss_accessControlShareItems}">
-		  <jsp:useBean id="shareItem6" type="org.kablink.teaming.domain.ShareItem" />
-			<%
-			if (shareItem6.isLatest()) {
-				%>
-				<c:if test="${ss_accessControlShareItemRecipients[shareItem6.id].id == group.id}">
-				  <c:if test="${shareItem6.role == 'CONTRIBUTOR'}">
-					<c:set var="shared" value="true" />
-				  </c:if>
-				</c:if>
-				<%
-			}
-			%>
-		</c:forEach>
-      <c:if test="${!empty ssOperationMap['binderAdministration'].ssGroups[group.id] || shared}">
+      <c:if test="${!empty ssOperationMap['binderAdministration'].ssGroups[group.id]}">
         <li style="list-style: square outside none;"><a href="<ssf:url
 				adapter="true" 
 				crawlable="true"

@@ -57,8 +57,6 @@ public class TopFrame extends JApplet implements Runnable {
     boolean alreadyStarted;
     final String fileReceiverUrlParamName = "fileReceiverUrl";
     String fileReceiverUrl = ""; // where to post files
-    final String fileCheckExistsUrlParamName = "fileCheckExistsUrl";
-    String fileCheckExistsUrl = ""; // where to check files
     final String startingDirParamName = "startingDir";
     String startingDirStr = ""; // dir to place files in when uploading
     DataSink dataSink;

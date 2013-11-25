@@ -54,7 +54,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.DescriptiveResource;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.providers.AuthenticationProvider;
 
 
 public class SpringAuthenticationBeans implements InitializingBean, ApplicationContextAware {

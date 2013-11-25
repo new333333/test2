@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,7 +53,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
-import org.kablink.teaming.web.util.TrashHelper.TrashEntity;
+import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 
 public class TrashBrief implements Serializable {
 	protected static Log logger = LogFactory.getLog(TrashHelper.class);
@@ -69,20 +69,20 @@ public class TrashBrief implements Serializable {
 	 * @param trashEntry
 	 */
 	public TrashBrief() {}
-	public TrashBrief(AllModulesInjected bs, CoreDao cd, TrashEntity trashEntry) {
+	public TrashBrief(AllModulesInjected bs, CoreDao cd, TrashEntry trashEntry) {
 		binderBrief = null;
 		folderEntryBrief = null;
 		
-		// If the TrashEntity is a FolderEntry...
+		// If the TrashEntry is a FolderEntry...
 		if (trashEntry.isEntry()) {
 			// ...construct a FolderEntryBrief object from it.
-			folderEntryBrief = folderEntryBriefFromTrashEntity(bs, trashEntry);
+			folderEntryBrief = folderEntryBriefFromTrashEntry(bs, trashEntry);
 		}
 		
-		// Otherwise, if the TrashEntity is a Binder...
+		// Otherwise, if the TrashEntry is a Binder...
 		else if (trashEntry.isBinder()) {
 			// ...construct a BinderBrief object from it.
-			binderBrief = binderBriefFromTrashEntity(bs, cd, trashEntry);
+			binderBrief = binderBriefFromTrashEntry(bs, cd, trashEntry);
 		}
 	}
 
@@ -127,10 +127,10 @@ public class TrashBrief implements Serializable {
 	}
 	
 	/*
-	 * Creates a BinderBrief from a TrashEntity referencing a Binder.
+	 * Creates a BinderBrief from a TrashEntry referencing a Binder.
 	 */
-	private static BinderBrief binderBriefFromTrashEntity(AllModulesInjected bs, CoreDao cd, TrashEntity te) {
-		// If the TrashEntity isn't a Binder...
+	private static BinderBrief binderBriefFromTrashEntry(AllModulesInjected bs, CoreDao cd, TrashEntry te) {
+		// If the TrashEntry isn't a Binder...
 		if ((null == te) || (!(te.isBinder()))) {
 			// ...we can't construct a BinderBrief for it.
 			return null;
@@ -144,7 +144,7 @@ public class TrashBrief implements Serializable {
 			binder = (Binder) cd.load(Binder.class, id);
 		}
 		catch(Exception e) {
-			logger.warn("TrashBrief.binderBriefFromTrashEntity():  " + e.toString(), e);
+			logger.warn("TrashBrief.binderBriefFromTrashEntry():  " + e.toString(), e);
 			return null;
 		}
 		if (null == binder) {
@@ -205,11 +205,11 @@ public class TrashBrief implements Serializable {
 	}
 	
 	/*
-	 * Creates a FolderEntryBrief from a TrashEntity referencing a
+	 * Creates a FolderEntryBrief from a TrashEntry referencing a
 	 * FolderEntry.
 	 */
-	private static FolderEntryBrief folderEntryBriefFromTrashEntity(AllModulesInjected bs, TrashEntity te) {
-		// If the TrashEntity isn't referencing a FolderEntry...
+	private static FolderEntryBrief folderEntryBriefFromTrashEntry(AllModulesInjected bs, TrashEntry te) {
+		// If the TrashEntry isn't referencing a FolderEntry...
 		if ((null == te) || (!(te.isEntry()))) {
 			// ...we can't construct a FolderEntryBrief for it.
 			return null;

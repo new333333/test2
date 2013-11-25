@@ -35,91 +35,80 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 
 
 /**
- * Class used to implement a button on the main menu bar.  
+ * Class used to implement a menu button that toggles between two
+ * states.  
  * 
  * @author drfoster@novell.com
+ *
  */
-public class MenuBarButton extends VibeMenuItem {
+public class MenuBarButton extends Anchor {
+	private VibeEventBase<?>	m_event;	// The event to fire when the button is clicked.
+	
 	/*
-	 * Inner class that implements selecting a button on the menu.
+	 * Inner class that implements clicking on buttons on the menu.
 	 */
-	private static class MenuButtonSelector implements Command {
-		private VibeEventBase<?>	m_event;	// The event to fire when the button is selected.
-
+	private class MenuButtonSelector implements ClickHandler {
 		/**
-		 * Constructor method.
+		 * Called when the button is clicked.
 		 * 
 		 * @param event
 		 */
-		public MenuButtonSelector(VibeEventBase<?> event) {
-			super();
-			m_event = event;
-		}
-		
-		/**
-		 * Called when the button is selected.
-		 * 
-		 * Implements the Command.execute() method.
-		 */
-		@Override
-		public void execute() {
+		public void onClick(ClickEvent event) {
 			GwtTeaming.fireEvent(m_event);
 		}
 	}
 
-	/*
-	 * Constructor method.
-	 */
-	private MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event, Command command) {
-		// Initialize the super class...
-		super(
-			"",	// Place holder.  Actual HTML supplied later.
-			((null == command)                ?
-				new MenuButtonSelector(event) :
-				command));
-		
-		// ...set item's styles...
-		addStyleName("vibe-mainMenuButton_WidgetAnchor");
-		
-		// ...create the Image...
-		Image img = new Image(imgRes);
-		img.setTitle(imgTitle);
-		img.addStyleName("vibe-mainMenuButton_WidgetImage");
-		
-		// ...and tie things together.
-		FlowPanel imgPanel = new FlowPanel();
-		imgPanel.getElement().appendChild(img.getElement());
-		setHTML(imgPanel.getElement().getInnerHTML());
-	}
-	
 	/**
-	 * Constructor method.
+	 * Class constructor.
 	 * 
 	 * @param imgRes
 	 * @param imgTitle
 	 * @param event
+	 * @param clickHandler
 	 */
+	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event, ClickHandler clickHandler) {
+		// Initialize the super class...
+		super();
+		
+		// ...store the parameters...
+		m_event = event;
+		
+		// Create the Image...
+		Image img = new Image(imgRes);
+		img.setTitle(imgTitle);
+		img.addStyleName("mainMenuButton_WidgetImage");
+		
+		// ...create the Anchor...
+		addStyleName("mainMenuButton_WidgetAnchor");
+		
+		// ...tie things together...
+		getElement().appendChild(img.getElement());
+		if (null == clickHandler) {
+			clickHandler = new MenuButtonSelector();
+		}
+		addClickHandler(clickHandler);
+		
+		// ...add mouse over handling...
+		MenuHoverByWidget hover = new MenuHoverByWidget(this, "subhead-control-bg2");
+		addMouseOverHandler(hover);
+		addMouseOutHandler( hover);
+	}
+	
 	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event) {
-		// Always use the private form of the constructor.
+		// Always use the initial form of the constructor.
 		this(imgRes, imgTitle, event, null);
 	}
 	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param imgRes
-	 * @param imgTitle
-	 * @param command
-	 */
-	public MenuBarButton(ImageResource imgRes, String imgTitle, Command command) {
-		// Always use the private form of the constructor.
-		this(imgRes, imgTitle, null, command);
+	public MenuBarButton(ImageResource imgRes, String imgTitle, ClickHandler clickHandler) {
+		// Always use the initial form of the constructor.
+		this(imgRes, imgTitle, null, clickHandler);
 	}
 }

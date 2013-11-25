@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -66,9 +66,6 @@
 	}// end handleCloseBtn()
 </script>
 
-<c:if test="${GwtReport == 'true'}">
-	<br />
-</c:if>
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 <script type="text/javascript">
@@ -88,7 +85,7 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 	name="binderType" value="${ssBinder.entityType}"/></ssf:url>";
 </script>
 
-<ssf:form titleTag="administration.report.title.quota" ignore="${GwtReport}">
+<ssf:form titleTag="administration.report.title.quota">
 	<table class="ss_style" width="100%"><tr><td>
 	<form class="ss_style ss_form" 
 		action="<ssf:url webPath="reportDownload"/>" 
@@ -96,12 +93,10 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 		name="${formName}">
 
 		<input type="hidden" name="ss_reportType" value="quota"/>
-		<c:if test="${GwtReport != 'true'}">
-			<div class="ss_buttonBarRight">
-				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" />"
-					  onClick="return handleCloseBtn();"/>
-			</div>
-		</c:if>
+		<div class="ss_buttonBarRight">
+			<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" />"
+				  onClick="return handleCloseBtn();"/>
+		</div>
 	   
    		<div class="ss_largeprint ss_bold marginbottom3"><ssf:nlt tag="administration.report.quota"/></div>
 		
@@ -124,12 +119,10 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 				<input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="administration.create.report" />">
 			</div>
 		</div>
-		<c:if test="${GwtReport != 'true'}">
-			<div class="ss_buttonBarRight" style="margin-top: 10px;">
-				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" />"
-					  onClick="return handleCloseBtn();"/>
-			</div>
-		</c:if>
+	   <div class="ss_buttonBarRight" style="margin-top: 10px;">
+		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" />"
+			  onClick="return handleCloseBtn();"/>
+	   </div>
 	</form>
 	</td></tr></table>
 </ssf:form>

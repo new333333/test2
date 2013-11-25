@@ -87,9 +87,6 @@
 	<td valign="top" class="ss_view_info">
 			
 		<div class="ss_searchContainer">
-		  <c:if test="${!empty ss_searchError}">
-		    <div>xxxxxxxxx</div>
-		  </c:if>
 			<div id="ss_content">
 			<c:if test="${quickSearch}">
 				<!-- Quick search form -->

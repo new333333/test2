@@ -56,16 +56,13 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
-import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.rss.RssModule;
-import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.mvc.AbstractController;
@@ -87,7 +84,6 @@ implements AllModulesInjected {
 	private BinderModule binderModule;
 	private LdapModule ldapModule;
 	private ReportModule reportModule;
-	private ResourceDriverModule resourceDriverModule;
 	private FileModule fileModule;
 	private ConvertedFileModule convertedFileModule;
 	private DashboardModule dashboardModule;
@@ -96,7 +92,6 @@ implements AllModulesInjected {
 	private RssModule rssModule;
 	private LicenseModule licenseModule;
 	private ZoneModule zoneModule;
-	private SharingModule sharingModule;
 
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
@@ -209,13 +204,6 @@ implements AllModulesInjected {
 		return reportModule;
 	}
 	
-	public void setResourceDriverModule(ResourceDriverModule resourceDriverModule) {
-		this.resourceDriverModule = resourceDriverModule;
-	}
-	public ResourceDriverModule getResourceDriverModule() {
-		return resourceDriverModule;
-	}
-	
 	public ConferencingModule getConferencingModule() {
 		return conferencingModule;
 	}
@@ -250,15 +238,6 @@ implements AllModulesInjected {
 	}
 	public void setZoneModule(ZoneModule zoneModule) {
 		this.zoneModule = zoneModule;
-	}
-
-	public SharingModule getSharingModule() {
-		if(sharingModule == null)
-			sharingModule = (SharingModule) SpringContextUtil.getBean("sharingModule");
-		return sharingModule;
-	}
-	public void setSharingModule(SharingModule sharingModule) {
-		this.sharingModule = sharingModule;
 	}
 
 	protected void handleActionRequestInternal(ActionRequest request, ActionResponse response)

@@ -36,21 +36,15 @@
 
      -  "Advanced User Guide"
 
-     -  "Quick Start"
-
      -  "Developer Guide"
+
+     -  "Vibe Quick Start"
 
      For more information about Vibe, visit the Kablink Open Collaboration
      Project (http://www.kablink.org).
 
 
-4.0  Documentation Conventions
-
-     In this documentation, a greater-than symbol (>) is used to separate actions
-     within a step and items in a cross-reference path.
-
-
-5.0  Open Source Code
+4.0  Open Source Code
 
      Novell, hereby, offers to give any third party a complete machine-readable
      copy of the source code of Kablink Vibe, under the terms of Sections 1 and 2
@@ -60,7 +54,7 @@
      (http://kablink.org) if you require a copy of the same.
 
 
-6.0  Legal Notices
+5.0  Legal Notices
 
      Novell, Inc. makes no representations or warranties with respect to the
      contents or use of this documentation, and specifically disclaims any

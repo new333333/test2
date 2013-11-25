@@ -1,25 +1,33 @@
-//>>built
-define("dojox/drawing/tools/Pencil",["dojo/_base/lang","../util/oo","../manager/_registry","../stencil/Path"],function(_1,oo,_2,_3){
-var _4=oo.declare(_3,function(){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.drawing.tools.Pencil"]){
+dojo._hasResource["dojox.drawing.tools.Pencil"]=true;
+dojo.provide("dojox.drawing.tools.Pencil");
+dojox.drawing.tools.Pencil=dojox.drawing.util.oo.declare(dojox.drawing.stencil.Path,function(){
 this._started=false;
-},{draws:true,minDist:15,onDown:function(_5){
+},{draws:true,minDist:15,onDown:function(_1){
 this._started=true;
-var p={x:_5.x,y:_5.y};
+var p={x:_1.x,y:_1.y};
 this.points=[p];
 this.lastPoint=p;
 this.revertRenderHit=this.renderHit;
 this.renderHit=false;
 this.closePath=false;
-},onDrag:function(_6){
-if(!this._started||this.minDist>this.util.distance(_6.x,_6.y,this.lastPoint.x,this.lastPoint.y)){
+},onDrag:function(_2){
+if(!this._started||this.minDist>this.util.distance(_2.x,_2.y,this.lastPoint.x,this.lastPoint.y)){
 return;
 }
-var p={x:_6.x,y:_6.y};
+var p={x:_2.x,y:_2.y};
 this.points.push(p);
 this.render();
-this.checkClosePoint(this.points[0],_6);
+this.checkClosePoint(this.points[0],_2);
 this.lastPoint=p;
-},onUp:function(_7){
+},onUp:function(_3){
 if(!this._started){
 return;
 }
@@ -28,14 +36,14 @@ this._started=false;
 this.points=[];
 return;
 }
-var _8=this.getBounds();
-if(_8.w<this.minimumSize&&_8.h<this.minimumSize){
+var _4=this.getBounds();
+if(_4.w<this.minimumSize&&_4.h<this.minimumSize){
 this.remove(this.hit,this.shape,this.closeGuide);
 this._started=false;
 this.setPoints([]);
 return;
 }
-if(this.checkClosePoint(this.points[0],_7,true)){
+if(this.checkClosePoint(this.points[0],_3,true)){
 this.closePath=true;
 }
 this.renderHit=this.revertRenderHit;
@@ -43,8 +51,6 @@ this.renderedOnce=true;
 this.render();
 this.onRender(this);
 }});
-_1.setObject("dojox.drawing.tools.Pencil",_4);
-_4.setup={name:"dojox.drawing.tools.Pencil",tooltip:"Pencil Tool",iconClass:"iconLine"};
-_2.register(_4.setup,"tool");
-return _4;
-});
+dojox.drawing.tools.Pencil.setup={name:"dojox.drawing.tools.Pencil",tooltip:"Pencil Tool",iconClass:"iconLine"};
+dojox.drawing.register(dojox.drawing.tools.Pencil.setup,"tool");
+}

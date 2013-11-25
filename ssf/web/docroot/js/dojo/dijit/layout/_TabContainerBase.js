@@ -1,25 +1,35 @@
-//>>built
-define("dijit/layout/_TabContainerBase",["dojo/text!./templates/TabContainer.html","./StackContainer","./utils","../_TemplatedMixin","dojo/_base/declare","dojo/dom-class","dojo/dom-geometry","dojo/dom-style"],function(_1,_2,_3,_4,_5,_6,_7,_8){
-return _5("dijit.layout._TabContainerBase",[_2,_4],{tabPosition:"top",baseClass:"dijitTabContainer",tabStrip:false,nested:false,templateString:_1,postMixInProperties:function(){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dijit.layout._TabContainerBase"]){
+dojo._hasResource["dijit.layout._TabContainerBase"]=true;
+dojo.provide("dijit.layout._TabContainerBase");
+dojo.require("dijit.layout.StackContainer");
+dojo.require("dijit._Templated");
+dojo.declare("dijit.layout._TabContainerBase",[dijit.layout.StackContainer,dijit._Templated],{tabPosition:"top",baseClass:"dijitTabContainer",tabStrip:false,nested:false,templateString:dojo.cache("dijit.layout","templates/TabContainer.html","<div class=\"dijitTabContainer\">\n\t<div class=\"dijitTabListWrapper\" dojoAttachPoint=\"tablistNode\"></div>\n\t<div dojoAttachPoint=\"tablistSpacer\" class=\"dijitTabSpacer ${baseClass}-spacer\"></div>\n\t<div class=\"dijitTabPaneWrapper ${baseClass}-container\" dojoAttachPoint=\"containerNode\"></div>\n</div>\n"),postMixInProperties:function(){
 this.baseClass+=this.tabPosition.charAt(0).toUpperCase()+this.tabPosition.substr(1).replace(/-.*/,"");
-this.srcNodeRef&&_8.set(this.srcNodeRef,"visibility","hidden");
+this.srcNodeRef&&dojo.style(this.srcNodeRef,"visibility","hidden");
 this.inherited(arguments);
-},buildRendering:function(){
+},postCreate:function(){
 this.inherited(arguments);
 this.tablist=this._makeController(this.tablistNode);
 if(!this.doLayout){
-_6.add(this.domNode,"dijitTabContainerNoLayout");
+dojo.addClass(this.domNode,"dijitTabContainerNoLayout");
 }
 if(this.nested){
-_6.add(this.domNode,"dijitTabContainerNested");
-_6.add(this.tablist.containerNode,"dijitTabContainerTabListNested");
-_6.add(this.tablistSpacer,"dijitTabContainerSpacerNested");
-_6.add(this.containerNode,"dijitTabPaneWrapperNested");
+dojo.addClass(this.domNode,"dijitTabContainerNested");
+dojo.addClass(this.tablist.containerNode,"dijitTabContainerTabListNested");
+dojo.addClass(this.tablistSpacer,"dijitTabContainerSpacerNested");
+dojo.addClass(this.containerNode,"dijitTabPaneWrapperNested");
 }else{
-_6.add(this.domNode,"tabStrip-"+(this.tabStrip?"enabled":"disabled"));
+dojo.addClass(this.domNode,"tabStrip-"+(this.tabStrip?"enabled":"disabled"));
 }
-},_setupChild:function(_9){
-_6.add(_9.domNode,"dijitTabPane");
+},_setupChild:function(_1){
+dojo.addClass(_1.domNode,"dijitTabPane");
 this.inherited(arguments);
 },startup:function(){
 if(this._started){
@@ -31,33 +41,27 @@ this.inherited(arguments);
 if(!this._contentBox||typeof (this._contentBox.l)=="undefined"){
 return;
 }
-var sc=this.selectedChildWidget;
 if(this.doLayout){
-var _a=this.tabPosition.replace(/-h/,"");
-this.tablist.region=_a;
-var _b=[this.tablist,{domNode:this.tablistSpacer,region:_a},{domNode:this.containerNode,region:"center"}];
-_3.layoutChildren(this.domNode,this._contentBox,_b);
-this._containerContentBox=_3.marginBox2contentBox(this.containerNode,_b[2]);
-if(sc&&sc.resize){
-sc.resize(this._containerContentBox);
+var _2=this.tabPosition.replace(/-h/,"");
+this.tablist.layoutAlign=_2;
+var _3=[this.tablist,{domNode:this.tablistSpacer,layoutAlign:_2},{domNode:this.containerNode,layoutAlign:"client"}];
+dijit.layout.layoutChildren(this.domNode,this._contentBox,_3);
+this._containerContentBox=dijit.layout.marginBox2contentBox(this.containerNode,_3[2]);
+if(this.selectedChildWidget){
+if(this.selectedChildWidget.resize){
+this.selectedChildWidget.resize(this._containerContentBox);
+}
 }
 }else{
 if(this.tablist.resize){
-var s=this.tablist.domNode.style;
-s.width="0";
-var _c=_7.getContentBox(this.domNode).w;
-s.width="";
-this.tablist.resize({w:_c});
+this.tablist.resize({w:dojo.contentBox(this.domNode).w});
 }
-if(sc&&sc.resize){
-sc.resize();
+this.selectedChildWidget.resize();
 }
-}
-},destroy:function(_d){
+},destroy:function(){
 if(this.tablist){
-this.tablist.destroy(_d);
+this.tablist.destroy();
 }
 this.inherited(arguments);
 }});
-});
-require({cache:{"url:dijit/layout/templates/TabContainer.html":"<div class=\"dijitTabContainer\">\n\t<div class=\"dijitTabListWrapper\" data-dojo-attach-point=\"tablistNode\"></div>\n\t<div data-dojo-attach-point=\"tablistSpacer\" class=\"dijitTabSpacer ${baseClass}-spacer\"></div>\n\t<div class=\"dijitTabPaneWrapper ${baseClass}-container\" data-dojo-attach-point=\"containerNode\"></div>\n</div>\n"}});
+}

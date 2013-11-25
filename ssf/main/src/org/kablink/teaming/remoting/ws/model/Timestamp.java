@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.remoting.ws.model;
 
-import org.kablink.teaming.domain.HistoryStampBrief;
-
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -46,10 +44,6 @@ public class Timestamp implements Serializable {
 	
 	public Timestamp() {
 	}
-
-    public Timestamp(HistoryStampBrief stamp) {
-        this(stamp.getPrincipalName(), stamp.getPrincipalId(), stamp.getDate());
-    }
 	
 	public Timestamp(String principal, Long principalId, Date date) {
 		Calendar cal = Calendar.getInstance();

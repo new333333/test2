@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.module.zone.impl;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +42,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
@@ -58,9 +56,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
-import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.PostingDef;
@@ -72,7 +68,6 @@ import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowStateHistory;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.ZoneSchedule;
@@ -92,18 +87,12 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.security.impl.AccessControlManagerImpl;
-import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
-import org.kablink.teaming.util.LocaleUtils;
-import org.kablink.teaming.util.TempFileUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
@@ -113,9 +102,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 @SuppressWarnings({ "unchecked", "unused", "deprecation" })
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
-	protected TempFileUtil.OITTempCleanupThread m_oitTempCleanupThread;
 	protected DefinitionModule definitionModule;
-	
 	/**
 	 * Setup by spring
 	 * @param definitionModule
@@ -184,71 +171,49 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	public void setZoneClassManager(ZoneClassManager zoneClassManager) {
 		this.zoneClassManager = zoneClassManager;
 	}
-	
 	/**
      * Called after bean is initialized.  
      * Check on zones
      */
- 	@Override
-	public void afterPropertiesSet() {
- 		// Do nothing
- 	}
-	
- 	@Override
-	public void initZones() {
+ 	public void afterPropertiesSet() {
 		boolean closeSession = false;
 		if (!SessionUtil.sessionActive()) {
 			SessionUtil.sessionStartup();	
 			closeSession = true;
 		}
 		try {
-			final List<Workspace> companies = getTopWorkspacesFromEachZone();
+			final List companies = getCoreDao().findCompanies();
 			final String zoneName = SZoneConfig.getDefaultZoneName();
-
+			//only execting one
 			if (companies.size() == 0) {
 				addZone(zoneName, null);
  			} else {
         		for (int i=0; i<companies.size(); ++i) {
         			final Workspace zone = (Workspace)companies.get(i);
-        			try {
-	    				getTransactionTemplate().execute(new TransactionCallback() {
-	    					@Override
-							public Object doInTransaction(TransactionStatus status) {
-	    						upgradeZoneTx(zone);
-	    						return null;
-	    					}
-	    				});
+ //       			if (zone.getName().equals(zoneName)) {
+        				getTransactionTemplate().execute(new TransactionCallback() {
+        					public Object doInTransaction(TransactionStatus status) {
+        						upgradeZoneTx(zone);
+        						return null;
+        					}
+        				});
         			}
-        			catch(Exception e) {
-        				logger.warn("Failed to upgrade zone " + zone.getZoneId(), e);
-        			}
-        		}
+//        		}
 				//make sure zone is setup correctly
 				getTransactionTemplate().execute(new TransactionCallback() {
-		        	@Override
-					public Object doInTransaction(TransactionStatus status) {
-		        		for (int i=0; i<companies.size(); ++i) {
-		        			Workspace zone = (Workspace)companies.get(i);
-		        			try {
-			        			if (zone.isDeleted()) continue;
-			        			validateZoneTx(zone);
-		        			}
-		        			catch(Exception e) {
-		        				logger.warn("Failed to validate zone " + zone.getZoneId(), e);
-		        			}
-		    	        }
-			        	return null;
-		        	}
+	        	public Object doInTransaction(TransactionStatus status) {
+	        		for (int i=0; i<companies.size(); ++i) {
+	        			Workspace zone = (Workspace)companies.get(i);
+	        			if (zone.isDeleted()) continue;
+	        			validateZoneTx(zone);
+	    	        }
+		        	return null;
+	        	}
 				});
     			for (ZoneSchedule zoneM:startupModules) {
 	        		for (int i=0; i<companies.size(); ++i) {
 	        			Workspace zone = (Workspace)companies.get(i);
-	        			try {
-	        				zoneM.startScheduledJobs(zone);
-	        			}
-	        			catch(Exception e) {
-	        				logger.warn("Failed to start scheduled jobs for zone " + zone.getZoneId(), e);
-	        			}
+	        			zoneM.startScheduledJobs(zone);
 	        		}
     			}
  			
@@ -257,21 +222,15 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			if (closeSession) SessionUtil.sessionStop();
 		}
 
-		// At this point we must flush out any indexing changes that might have occurred
-		// before clearing the context.
-		IndexSynchronizationManager.applyChanges();
-		
  		RequestContextHolder.clear();
  		
  		DefinitionCache.clear();
  	}
  	
-	@Override
 	public Long getZoneIdByZoneName(String zoneName) {
 		Workspace top = getCoreDao().findTopWorkspace(zoneName);
 		return top.getId();
 	}
-	@Override
 	public ZoneConfig getZoneConfig(Long zoneId) throws ZoneException {
 		return getCoreDao().loadZoneConfig(zoneId);
 	}
@@ -367,7 +326,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			for (WorkAreaFunctionMembership wfm:wfms) {
 				ids.addAll(wfm.getMemberIds());				
 			}
-			addGlobalFunctions(zoneConfig);
+			addGlobalFunctions(zoneConfig, ids);
 			//Remove old site_admin right
 			//now remove the old right
 			List<Function>fns = getFunctionManager().findFunctions(top.getId(), siteAdmin);
@@ -535,15 +494,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			ScheduleInfo info = getAdminModule().getFileVersionAgingSchedule();
 			getAdminModule().setFileVersionAgingSchedule(info);
 
-			//Turn on the database log pruning job
-			ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
-			getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
-
-			// Initialize a Thread used to cleanup Oracle Outside-in
-			// temporary files.
-			if (null == m_oitTempCleanupThread) {
-				m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
-			}
 			
 			//If not configured yet,  check old config
 			if (getCoreDao().loadObjects(LdapConnectionConfig.class, null, top.getId()).isEmpty()) {				
@@ -583,18 +533,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
  		}
 		//make sure zoneConfig upto date
- 		
-		//Always do the following items
-		//Get any new definitions and templates
-		getAdminModule().updateDefaultDefinitions(top.getId(), true);
-		getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId(), false);
-		
-		//In general, make sure all of the global functions are there
-		//This call only adds roles that weren't there already
-		addGlobalFunctions(zoneConfig);
-
 		if (version.intValue() <= 2 || zoneConfig.getUpgradeVersion() < ZoneConfig.ZONE_LATEST_VERSION) {
+			//Always do the following items
+			//Get any new definitions and templates
+			getAdminModule().updateDefaultDefinitions(top.getId(), true);
+			getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId(), false);
 			zoneConfig.setUpgradeVersion(ZoneConfig.ZONE_LATEST_VERSION);
+
 			// Whenever the zoneConfig version changes, there may be
 			// tasks the admin needs to perform, based on the version.
 			resetZoneUpgradeTasks(version.intValue(), superU.getId(), top.getId());
@@ -616,7 +561,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			for (WorkAreaFunctionMembership wfm:wfms) {
 				ids.addAll(wfm.getMemberIds());				
 			}
-			addGlobalFunctions(zoneConfig);
+			addGlobalFunctions(zoneConfig, ids);
+		}
+		if (version.intValue() <= 4) {
+			//add new role
+			addViewBinderTitleRole(top);
 		}
 		if (version.intValue() <= 5) {
 			Function readRole = addEntryReadRole(top);
@@ -646,86 +595,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			if(synchAgent != null)
 				setTokenRequesterInitialMembership(zoneConfig, synchAgent);
 		}
-		
-		if(version.intValue() <= 8) {
-			setupInitialOpenIDProviderList();
-		}
-		
-		if(version.intValue() <= 10) {
-			//No longer used
-		}
-		
-		if(version.intValue() <= 11) {
-			correctFilrRoles(zoneConfig);
-		}
-		
-		if (version.intValue() <= 14) {
-			Function function;
-			List<Function> functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
-			for (Function f : functions) {
-				Set wao = f.getOperations();
-				if (wao.contains(WorkAreaOperation.MODIFY_ENTRIES)) {
-					f.addOperation(WorkAreaOperation.RENAME_ENTRIES);
-				}
-				if (wao.contains(WorkAreaOperation.CREATOR_MODIFY)) {
-					f.addOperation(WorkAreaOperation.CREATOR_RENAME);
-				}
-			}
-			getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
-			getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
-		}
-
-		if (version.intValue() <= 15) {
-			if (Utils.checkIfFilr()) {
-				//In Filr, we must reset all of the definitions and templates and definitions automatically
-				//But this is only done when needed (i.e., update the version if another change is made)
-				getAdminModule().updateDefaultDefinitions(top.getId(), false);
-				getTemplateModule().updateDefaultTemplates(top.getId(), true);
-				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
-				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
-			}
-		}
-				
   	}
- 	
- 	private void correctFilrRoles(ZoneConfig zoneConfig) {
-		Function function;
-		List<Function> functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
-		Map<String,Function> functionInternalIds = new HashMap<String,Function>();
-		for (int i = 0; i < functions.size(); i++) {
-			function = (Function)functions.get(i);
-			if (function.getInternalId() != null) 
-				functionInternalIds.put(function.getInternalId(), function);
-		}
-		
-		Function filrViewerRole = functionInternalIds.get(ObjectKeys.FUNCTION_FILR_VIEWER_INTERNALID);
-		if(filrViewerRole != null) {
-			filrViewerRole.setName(ObjectKeys.ROLE_TITLE_FILR_VIEWER);
-			filrViewerRole.getOperations().clear();
-			fillFilrRoleViewer(filrViewerRole);
-			getFunctionManager().updateFunction(filrViewerRole);
-			
-		}
-		
-		Function filrEditorRole = functionInternalIds.get(ObjectKeys.FUNCTION_FILR_EDITOR_INTERNALID);
-		if(filrEditorRole != null) {
-			filrEditorRole.setName(ObjectKeys.ROLE_TITLE_FILR_EDITOR);
-			filrEditorRole.getOperations().clear();
-			fillFilrRoleEditor(filrEditorRole);
-			getFunctionManager().updateFunction(filrEditorRole);
-			
-		}
-		
-		Function filrContributorRole = functionInternalIds.get(ObjectKeys.FUNCTION_FILR_CONTRIBUTOR_INTERNALID);
-		if(filrContributorRole != null) {
-			filrContributorRole.setName(ObjectKeys.ROLE_TITLE_FILR_CONTRIBUTOR);
-			filrContributorRole.getOperations().clear();
-			fillFilrRoleContributor(filrContributorRole);
-			getFunctionManager().updateFunction(filrContributorRole);
-			
-		}
- 	}
- 	
  	/**
  	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name
  	 * we need to find any definitions with the same name and rename those that are duplicates.
@@ -848,14 +718,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zone.getId());
 			getProfileModule().indexEntry(u);
 		}
-		//make sure file sync agent exists
-		if(getFileSyncAgent(zone.getId()) == null) {
-			//need to add it
-			User u = addFileSyncAgent(superU.getParentBinder(), new HistoryStamp(superU));
-			//updates cache
-			getProfileDao().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, zone.getId());
-			getProfileModule().indexEntry(u);
-		}
 		//make sure guest exists
 		User guest=null;
 		try {
@@ -883,20 +745,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			
 			// now see if we find the reserved Guest User
 			guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
-			boolean guestChanged = false;
 			// Make sure guest has password.
 			if(guest.getPassword() == null) {
 				guest.setPassword(guest.getName());
-				guestChanged = true;
-			}
-			// Make sure guest is categorized as external
-			IdentityInfo ii = guest.getIdentityInfo();
-			if(ii.isInternal()) {
-				ii.setInternal(false);
-				guest.setIdentityInfo(ii);
-				guestChanged = true;
-			}
-			if(guestChanged) {
 				getCoreDao().merge(guest);
 			}
 		} catch (NoUserByTheNameException nu) {
@@ -909,10 +760,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		if (guest.getWorkspaceId() == null) {
 			Workspace guestWs = addGuestWorkspace(guest);
 			getAdminModule().setWorkAreaOwner(guestWs, superU.getId(), true);
-			addVisitorRoleToGuestWorkspace(guestWs, zone.getId());
-		} else {
-			Workspace guestWs = (Workspace)getBinderModule().getBinder(guest.getWorkspaceId());
-			addVisitorRoleToGuestWorkspace(guestWs, zone.getId());
+    		List members = new ArrayList();
+    		members.add(guest.getId());
+    		//Let guest be a visitor to the guest workspace
+    		Function visitorsRole = addVisitorsRole(guestWs);
+    		addMembership(guestWs, visitorsRole, guestWs, members);
 		}
 		//make sure allUsers exists
 		try {
@@ -922,23 +774,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			Group g = addAllUserGroup(superU.getParentBinder(), new HistoryStamp(superU));
 			//	updates cache
 			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
-			getProfileModule().indexEntry(g);
-		}
-		//make sure allExtUsers exists
-		try {
-			Group allExtUsers = getProfileDao().getReservedGroup(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zone.getId());
-			// make this this group is categorized as external
-			IdentityInfo ii = allExtUsers.getIdentityInfo();
-			if(ii.isInternal()) {
-				ii.setInternal(false);
-				allExtUsers.setIdentityInfo(ii);
-				getCoreDao().merge(allExtUsers);
-			}
-		} catch (NoGroupByTheNameException nu) {
-			//need to add it
-			Group g = addAllExtUserGroup(superU.getParentBinder(), new HistoryStamp(superU));
-			//	updates cache
-			getProfileDao().getReservedGroup(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zone.getId());
 			getProfileModule().indexEntry(g);
 		}
 		//make sure allApplications exists
@@ -970,54 +805,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		ScheduleInfo info = getAdminModule().getFileVersionAgingSchedule();
 		getAdminModule().setFileVersionAgingSchedule(info);
 
-		//Turn on the database log pruning job
-		ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
-		getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
-
-		// Initialize a Thread used to cleanup Oracle Outside-in
-		// temporary files.
-		if (null == m_oitTempCleanupThread) {
-			m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
-		}
-		
 		//Enable/Disable access control rights
 		if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 			WorkAreaOperation.deleteInstance("viewBinderTitle");
 		}
-		
-		//Make sure the Net Folders workspace exists
-		Binder netFoldersBinder = null;
-		try {
-			netFoldersBinder = getCoreDao().loadReservedBinder(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, zone.getId());
-		} catch(NoBinderByTheNameException e) {}
-		if (netFoldersBinder == null) {
-			//The Net Folders workspace doesn't exist, so create it
-			Workspace top = getCoreDao().findTopWorkspace(zone.getName());
-			HistoryStamp stamp = new HistoryStamp(superU);
-			Workspace netFoldersRoot = addNetFoldersRoot(top, stamp);
-		}
-		//Make sure resource driver map is initialized
-		getResourceDriverManager().resetResourceDriverList();
-		
-		//See if it is time to purge the View as HMTL cache folder
-		Long maxDirSize = SPropsUtil.getLongObject("max.html.cache.size", 0L);
-		if (maxDirSize > 0) {
-			//There is  limit for the html cache. Go check if it is exceeded
-			FileStore cacheFileStoreHtml = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_HTML);
-			File cacheDir = new File(cacheFileStoreHtml.getRootPath() + File.separator + Utils.getZoneKey());
-			if (cacheDir != null && cacheDir.exists()) {
-				//Get the dir size
-				long dirSize = FileUtils.sizeOfDirectory(cacheDir);
-				if (dirSize > maxDirSize) {
-					String cacheDirPath = cacheDir.getAbsolutePath();
-					try {
-						FileUtils.deleteDirectory(cacheDir);
-					} catch(Exception e) {
-						logger.warn("Could not delete HTML cache directory ("+cacheDirPath+") - " + e.getMessage());
-					}
-				}
-			}
-		}
+
 	}
 
  	// Must be running inside a transaction set up by the caller
@@ -1045,7 +837,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		profiles.setFunctionMembershipInherited(false);
 
     		//build user
-    		User user = new User(new IdentityInfo());
+    		User user = new User();
     		user.setName(zoneAdminName);
     		user.setPassword(zoneAdminName);
     		user.setLastName(zoneAdminName);
@@ -1053,8 +845,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		user.setZoneId(top.getId());
     		user.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
     		user.setParentBinder(profiles);
-    		String language = LocaleUtils.getLocaleLanguage();
-    		String country = LocaleUtils.getLocaleCountry();
+    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+    		String country = SPropsUtil.getString("i18n.default.locale.country", "");
     		if (!language.equals("")) {
     			Locale locale = null;
     			if (!country.equals("")) locale = new Locale(language, country);
@@ -1081,7 +873,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			HistoryStamp stamp = new HistoryStamp(user);
     		//add reserved group for use in import templates
     		Group group = addAllUserGroup(profiles, stamp);
-    		Group extGroup = addAllExtUserGroup(profiles, stamp);
     		ApplicationGroup applicationGroup = addAllApplicationGroup(profiles, stamp);
 	
     		Function readRole = addEntryReadRole(top);
@@ -1095,8 +886,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function teamMemberRole = addTeamMemberRole(top);
     		Function binderRole = addBinderRole(top);
     		Function teamWsRole = addTeamWorkspaceRole(top);
-    		addGlobalFunctions(zoneConfig);
-
+    		
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
     		getTemplateModule().updateDefaultTemplates(top.getId(), true);
@@ -1133,16 +923,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		addPosting(profiles, stamp);
     		addJobProcessor(profiles, stamp); 
     		addSynchronizationAgent(profiles, stamp);
-    		addFileSyncAgent(profiles, stamp);
     		addGuest(profiles, stamp); 
     		Workspace globalRoot = addGlobalRoot(top, stamp);		
-    		if (Utils.checkIfFilr() || Utils.checkIfIPrint()) {
-    			//In Filr, the global workspace is hidden
-    			globalRoot.setFunctionMembershipInherited(false);
-    			addMembership(top, visitorsRole, globalRoot, new ArrayList());
-    			addMembership(top, participantsRole, globalRoot, new ArrayList());
-    		}
-    		Workspace netFoldersRoot = addNetFoldersRoot(top, stamp);		
     		Workspace teamRoot = addTeamRoot(top, stamp);
     		teamRoot.setFunctionMembershipInherited(false);
     		
@@ -1159,14 +941,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		// all users visitors at profiles
     		addMembership(top, visitorsRole, profiles, members);
     		// all users participants at teamroot
-    		if (!Utils.checkIfFilr() && !Utils.checkIfIPrint()) {
-    			//For Filr and iPrint, the team workspace is there, but hidden from sight
-    			addMembership(top, participantsRole, teamRoot, members);
-    		}
+    		addMembership(top, participantsRole, teamRoot, members);
     		// all users createWs  at teamroot
-    		if (!Utils.checkIfFilr() && !Utils.checkIfIPrint()) {
-    			addMembership(top, teamWsRole, teamRoot, members);
-    		}
+    		addMembership(top, teamWsRole, teamRoot, members);
     		//add members to participants
     		members.clear();
     		members.add(ObjectKeys.TEAM_MEMBER_ID);
@@ -1183,6 +960,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	
     		members.clear();
     		members.add(user.getId());
+    		addGlobalFunctions(zoneConfig, members);
     		
     		//all applications limited to participant for zone
     		setApplicationGlobalRoles(zoneConfig, applicationGroup, participantsRole);
@@ -1197,7 +975,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		user = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
     		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
     		getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, top.getId());
-    		getProfileDao().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, top.getId());
     		getProfileDao().getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, top.getId());
 
     		ScheduleInfo info = getAdminModule().getNotificationSchedule();
@@ -1212,18 +989,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			info = getAdminModule().getFileVersionAgingSchedule();
 			getAdminModule().setFileVersionAgingSchedule(info);
 
-			//Turn on the database log pruning job
-			ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
-			getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
-			
-			// Initialize a Thread used to cleanup Oracle Outside-in
-			// temporary files.
-			if (null == m_oitTempCleanupThread) {
-				m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
-			}
-			
-			setupInitialOpenIDProviderList();
-
     		return top;
  	}
  	
@@ -1236,8 +1001,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			IndexSynchronizationManager.setForceSequential();
 			try {		
 	  	        zone =  (Workspace) getTransactionTemplate().execute(new TransactionCallback() {
-		        	@Override
-					public Object doInTransaction(TransactionStatus status) {
+		        	public Object doInTransaction(TransactionStatus status) {
 		    			IndexSynchronizationManager.begin();
 	
 		        		Workspace zone = addZoneTx(name, adminName, virtualHost);
@@ -1246,7 +1010,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		    			Workspace guestWs = addGuestWorkspace(guest);
 		        		//now change owner to admin
 		        		getAdminModule().setWorkAreaOwner(guestWs, zone.getOwnerId() ,true);
-		        		addVisitorRoleToGuestWorkspace(guestWs, zone.getId());
 		        		//do now, with request context set - won't have one if here on zone startup
 		        		IndexSynchronizationManager.applyChanges();
 		    		
@@ -1278,28 +1041,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 
     private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {
 		//build allUsers group
-		Group group = new Group(new IdentityInfo());
+		Group group = new Group();
 		group.setName("allUsers");
 		group.setForeignName(group.getName());
 		group.setTitle(NLT.get("administration.initial.group.alluser.title", group.getName()));
 		group.setZoneId(parent.getZoneId());
 		group.setParentBinder(parent);
 		group.setInternalId(ObjectKeys.ALL_USERS_GROUP_INTERNALID);
-		getDefinitionModule().setDefaultEntryDefinition(group);
-		getCoreDao().save(group);
-		group.setCreation(stamp);
-		group.setModification(stamp);
-		return group;
-	}
-    private Group addAllExtUserGroup(Binder parent, HistoryStamp stamp) {
-		//build allExtUsers group
-		Group group = new Group(new IdentityInfo(false, false, true, false));
-		group.setName("allExtUsers");
-		group.setForeignName(group.getName());
-		group.setTitle(NLT.get("administration.initial.group.allextuser.title", group.getName()));
-		group.setZoneId(parent.getZoneId());
-		group.setParentBinder(parent);
-		group.setInternalId(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID);
 		getDefinitionModule().setDefaultEntryDefinition(group);
 		getCoreDao().save(group);
 		group.setCreation(stamp);
@@ -1321,11 +1069,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		group.setModification(stamp);
 		return group;
 	}
-	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String password, String title, String id, IdentityInfo identityInfo) {
+	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String password, String title, String id) {
 		
-		if(identityInfo == null)
-			identityInfo = new IdentityInfo();
-		User user = new User(identityInfo);
+		User user = new User();
 		user.setName(name);
 		if(password != null) // optional field
 			user.setPassword(password);
@@ -1337,8 +1083,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getDefinitionModule().setDefaultEntryDefinition(user);
 		user.setCreation(stamp);
 		user.setModification(stamp);
-		String language = LocaleUtils.getLocaleLanguage();
-		String country = LocaleUtils.getLocaleCountry();
+		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+		String country = SPropsUtil.getString("i18n.default.locale.country", "");
 		if (!language.equals("")) {
 			Locale locale = null;
 			if (!country.equals("")) locale = new Locale(language, country);
@@ -1349,20 +1095,17 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return user;
 	}
 	private User addPosting(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_postingAgent", null, NLT.get("administration.initial.postingAgent.title"), ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, null);
+		return addReservedUser(parent, stamp, "_postingAgent", null, NLT.get("administration.initial.postingAgent.title"), ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID);
 	}
 	private User addJobProcessor(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_jobProcessingAgent", null, NLT.get("administration.initial.jobProcessor.title"), ObjectKeys.JOB_PROCESSOR_INTERNALID, null);
+		return addReservedUser(parent, stamp, "_jobProcessingAgent", null, NLT.get("administration.initial.jobProcessor.title"), ObjectKeys.JOB_PROCESSOR_INTERNALID);
 	}
 	private User addSynchronizationAgent(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_synchronizationAgent", null, NLT.get("administration.initial.synchronizationAgent.title"), ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, null);
-	}
-	private User addFileSyncAgent(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_fileSyncAgent", null, NLT.get("administration.initial.fileSyncAgent.title"), ObjectKeys.FILE_SYNC_AGENT_INTERNALID, null);
+		return addReservedUser(parent, stamp, "_synchronizationAgent", null, NLT.get("administration.initial.synchronizationAgent.title"), ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID);
 	}
 	private User addGuest(Binder parent, HistoryStamp stamp) {
 		String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", ObjectKeys.GUEST);
-		return addReservedUser(parent, stamp, guestName, guestName, NLT.get("administration.initial.guestTitle"), ObjectKeys.GUEST_USER_INTERNALID, new IdentityInfo(false, false, true, false));
+		return addReservedUser(parent, stamp, guestName, guestName, NLT.get("administration.initial.guestTitle"), ObjectKeys.GUEST_USER_INTERNALID);
 		
 	}
 	private Workspace addTeamRoot(Workspace top, HistoryStamp stamp) {
@@ -1418,28 +1161,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getCoreDao().updateFileName(top, global, null, global.getTitle());
 		return global;
 	}
-	private Workspace addNetFoldersRoot(Workspace top, HistoryStamp stamp) {
-		Workspace netFolders = new Workspace();
-		netFolders.setCreation(stamp);
-		netFolders.setModification(stamp);
-		
-		netFolders.setName("_net_folders");
-		netFolders.setTitle(NLT.get("administration.initial.netFolders.title", "Net Folders"));
-		netFolders.setPathName(top.getPathName() + "/" + netFolders.getTitle());
-		netFolders.setZoneId(top.getId());
-		netFolders.setInternalId(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID);
-		netFolders.setIconName("/icons/workspace.gif");
-		getDefinitionModule().setDefaultBinderDefinition(netFolders);
-		top.addBinder(netFolders);
-		netFolders.setDefinitionsInherited(false);
-		List defs = netFolders.getDefinitions();
-		defs.add(netFolders.getEntryDef());
-		
-		//generate id for top and profiles
-		getCoreDao().save(netFolders);
-		getCoreDao().updateFileName(top, netFolders, null, netFolders.getTitle());
-		return netFolders;
-	}
 	private ProfileBinder addPersonalRoot(Workspace top) {
 		ProfileBinder profiles = new ProfileBinder();
 		profiles.setName("_profiles");
@@ -1477,7 +1198,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
-		function.addOperation(WorkAreaOperation.CREATOR_RENAME);
 		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
@@ -1503,17 +1223,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return function;
 	}
 
-	private Function addViewBinderTitleRole(Long zoneId) {
-		Function function = getFunctionManager().findFunctionByName(zoneId, ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
-		if (function != null) {
-			function.setInternalId(ObjectKeys.FUNCTION_VIEW_BINDER_TITLE_INTERNALID);
-			getFunctionManager().updateFunction(function);
-		} else {
+	private Function addViewBinderTitleRole(Workspace top) {
+		Function function = null;
+		if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 			function = new Function();
-			function.setZoneId(zoneId);
+			function.setZoneId(top.getId());
 			function.setName(ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
 			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-			function.setInternalId(ObjectKeys.FUNCTION_VIEW_BINDER_TITLE_INTERNALID);
 			function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
 			//generate functionId
 			getFunctionManager().addFunction(function);
@@ -1529,7 +1245,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
-		function.addOperation(WorkAreaOperation.CREATOR_RENAME);
 		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
@@ -1551,17 +1266,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 		//add all them remove a few
 		for (Iterator iter=WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
-			WorkAreaOperation wao;
-			
-			wao = (WorkAreaOperation) iter.next();
-			if ( wao.equals( WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER ) == false &&
-				 wao.equals( WorkAreaOperation.ALLOW_SHARING_EXTERNAL )  == false &&
-				 wao.equals( WorkAreaOperation.ALLOW_SHARING_FORWARD ) == false &&
-				 wao.equals( WorkAreaOperation.ALLOW_SHARING_INTERNAL ) == false &&
-				 wao.equals( WorkAreaOperation.ALLOW_SHARING_PUBLIC ) == false )
-			{
-				function.addOperation( wao );
-			}
+			function.addOperation((WorkAreaOperation)iter.next());			
 		}
 //		function.removeOperation(WorkAreaOperation.USER_SEE_COMMUNITY);
 		
@@ -1640,7 +1345,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
-		function.addOperation(WorkAreaOperation.RENAME_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
 		
@@ -1657,7 +1361,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
-		function.addOperation(WorkAreaOperation.RENAME_ENTRIES);
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
@@ -1675,7 +1378,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
-		function.addOperation(WorkAreaOperation.RENAME_ENTRIES);
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
@@ -1685,86 +1387,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);
 		return function;
 	}
-
-	private Function addFilrRoleViewer(Long zoneId) {
-		// VIEWER: read only (read, open, file scan)
-		Function function = new Function();
-		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_VIEWER);
-		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_VIEWER_INTERNALID);
-		fillFilrRoleViewer(function);
-		getFunctionManager().addFunction(function);		
-		return function;
-	}
-	//This routine should be kept in sync with the Viewer role definition in ShareItem
-	private void fillFilrRoleViewer(Function function) {
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-	}
-	
-	private Function addFilrRoleEditor(Long zoneId) {
-		// EDITOR: read and write (read, open, file scan, write)
-		Function function = new Function();
-		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_EDITOR); 
-		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_EDITOR_INTERNALID);
-		fillFilrRoleEditor(function);
-		getFunctionManager().addFunction(function);		
-		return function;
-	}
-	//This routine should be kept in sync with the Editor role definition in ShareItem
-	private void fillFilrRoleEditor(Function function) {
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-		// This is tricky. On the file system, the right to modify content of a file is separate from the right
-		// to rename a file. However, traditionally on the Filr side, these two rights were combined into a single
-		// right called MODIFY_ENTRIES. So we address this problem by differentiating those two modes in the 
-		// application layer (as opposed to simply invoking low-level access checking manager), and if it is
-		// detected that the nature of the modification is for renaming, then the right to check against is
-		// escalated from MODIFY_ENTRIES to a pair of CREATE_ENTRIES and DELETE_ENTRIES, which effectively
-		// requires the principal to have the CONTRIBUTOR role on that file.
-		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);		
-	}
-	
-	private Function addFilrRoleContributor(Long zoneId) {
-		// CONTRIBUTOR: all rights (read, open, file scan, write, create, erase/delete, modify/rename)
-		Function function = new Function();
-		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_CONTRIBUTOR);
-		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_CONTRIBUTOR_INTERNALID);
-		fillFilrRoleContributor(function);
-		getFunctionManager().addFunction(function);		
-		return function;
-	}
-	//This routine should be kept in sync with the Contributor role definition in ShareItem
-	private void fillFilrRoleContributor(Function function) {
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
-		function.addOperation(WorkAreaOperation.RENAME_ENTRIES);
-		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
-		function.addOperation(WorkAreaOperation.CREATE_FOLDERS);		
-		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
-		function.addOperation(WorkAreaOperation.BINDER_ADMINISTRATION);
-		function.addOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
-		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
-		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);		
-	}
 	
 	private User getSynchronizationAgent(Long zoneId) {
 		try {
 			return getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zoneId);
-		} catch (NoUserByTheNameException nu) {
-			return null;
-		}
-	}
-	
-	private User getFileSyncAgent(Long zoneId) {
-		try {
-			return getProfileDao().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, zoneId);
 		} catch (NoUserByTheNameException nu) {
 			return null;
 		}
@@ -1793,10 +1419,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 	}
 	
-	private void addGlobalFunctions(ZoneConfig zoneConfig) {
+	private void addGlobalFunctions(ZoneConfig zoneConfig, List ids) {
+		// Do not add default members for this.
+		//Set members = new HashSet(ids);
 		Set<Long> members = new HashSet();
 		Function function;
-		List<Function> functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
+		List functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
 		Map functionNames = new HashMap();
 		Map functionInternalIds = new HashMap();
 		for (int i = 0; i < functions.size(); i++) {
@@ -1863,7 +1491,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
-		
+			
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_OVERRIDE_ONLY_SEE_GROUP_MEMBERS_INTERNALID)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
@@ -1875,256 +1503,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//generate functionId
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_MANAGE_RESOURCE_DRIVERS);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID);
-			function.addOperation(WorkAreaOperation.MANAGE_RESOURCE_DRIVERS);
-			function.setZoneWide(true);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_CREATE_FILESPACES);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID);
-			function.addOperation(WorkAreaOperation.CREATE_FILESPACE);
-			function.setZoneWide(true);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_INTERNAL_SHARING_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_INTERNAL);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_INTERNAL_SHARING_INTERNALID);
-			function.addOperation(WorkAreaOperation.ENABLE_SHARING_INTERNAL);
-			function.setZoneWide(true);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) {
-			if (functionNames.containsKey(ObjectKeys.ROLE_ENABLE_SHARING_EXTERNAL)) {
-				function = (Function)functionNames.get(ObjectKeys.ROLE_ENABLE_SHARING_EXTERNAL);
-			} else {
-				function = new Function();
-			}
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_EXTERNAL);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID);
-			function.addOperation(WorkAreaOperation.ENABLE_SHARING_EXTERNAL);
-			function.setZoneWide(true);
-			//generate functionId
-			if (functionNames.containsKey(ObjectKeys.ROLE_ENABLE_SHARING_EXTERNAL)) {
-				getFunctionManager().updateFunction(function);
-			} else {
-				getFunctionManager().addFunction(function);
-			}
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_PUBLIC);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID);
-			function.addOperation(WorkAreaOperation.ENABLE_SHARING_PUBLIC);
-			function.setZoneWide(true);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		} else {
-			//Due to earlier bug, test that this function is correctly marked as zoneWide
-			function = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID);
-			if (!function.isZoneWide()) {
-				function.setZoneWide(true);
-				getFunctionManager().updateFunction(function);
-			}
-		}
-
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_FORWARD);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID);
-			function.addOperation(WorkAreaOperation.ENABLE_SHARING_FORWARD);
-			function.setZoneWide(true);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID)) {
-			function = getFunctionManager().findFunctionByName(zoneConfig.getZoneId(), ObjectKeys.ROLE_ALLOW_SHARING_INTERNAL);
-			if (function != null) {
-				function.setInternalId(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID);
-				getFunctionManager().updateFunction(function);
-			} else {
-				function = new Function();
-				function.setZoneId(zoneConfig.getZoneId());
-				function.setName(ObjectKeys.ROLE_ALLOW_SHARING_INTERNAL);
-				function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-				function.setInternalId(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID);
-				function.addOperation(WorkAreaOperation.ALLOW_SHARING_INTERNAL);
-				//generate functionId
-				getFunctionManager().addFunction(function);
-				setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-			}
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID)) {
-			if (functionNames.containsKey(ObjectKeys.ROLE_ALLOW_SHARING_EXTERNAL)) {
-				function = (Function)functionNames.get(ObjectKeys.ROLE_ALLOW_SHARING_EXTERNAL);
-			} else {
-				function = new Function();
-			}
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ALLOW_SHARING_EXTERNAL);
-			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID);
-			function.addOperation(WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
-			//generate functionId
-			if (functionNames.containsKey(ObjectKeys.ROLE_ALLOW_SHARING_EXTERNAL)) {
-				getFunctionManager().updateFunction(function);
-			} else {
-				getFunctionManager().addFunction(function);
-			}
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ALLOW_SHARING_PUBLIC);
-			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID);
-			function.addOperation(WorkAreaOperation.ALLOW_SHARING_PUBLIC);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ALLOW_SHARING_FORWARD);
-			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID);
-			function.addOperation(WorkAreaOperation.ALLOW_SHARING_FORWARD);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_INTERNAL_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_ALL_INTERNAL);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_INTERNAL_INTERNALID);
-			function.addOperation(WorkAreaOperation.ENABLE_SHARING_ALL_INTERNAL);
-			function.setZoneWide(true);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
-		if ((Utils.checkIfVibe() || Utils.checkIfKablink() || Utils.checkIfFilrAndVibe()) && 
-				!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID)) {
-			//Don't create this role in Filr
-			if (functionNames.containsKey(ObjectKeys.ROLE_ENABLE_SHARING_ALL_EXTERNAL)) {
-				function = (Function)functionNames.get(ObjectKeys.ROLE_ENABLE_SHARING_ALL_EXTERNAL);
-			} else {
-				function = new Function();
-			}
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_ALL_EXTERNAL);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID);
-			function.addOperation(WorkAreaOperation.ENABLE_SHARING_ALL_EXTERNAL);
-			function.setZoneWide(true);
-			//generate functionId
-			if (functionNames.containsKey(ObjectKeys.ROLE_ENABLE_SHARING_ALL_EXTERNAL)) {
-				getFunctionManager().updateFunction(function);
-			} else {
-				getFunctionManager().addFunction(function);
-			}
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ALLOW_ACCESS_NET_FOLDER);
-			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID);
-			function.addOperation(WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_VIEW_BINDER_TITLE_INTERNALID)) {
-			addViewBinderTitleRole(zoneConfig.getZoneId());
-		}
-		
-		// The next calls should be deleted. These file roles were never shipped
-		//TODO remove these next lines before Filr ships
-		for (Function f : functions) {
-			if (f.getName().equals("__role.FilrFolderRead") || 
-					f.getName().equals("__role.FilrFolderWrite") || 
-					f.getName().equals("__role.FilrFolderOwner") ||
-					f.getName().equals("__role.FilrFileRead") || 
-					f.getName().equals("__role.FilrFileWrite") || 
-					f.getName().equals("__role.FilrFileOwner") ||
-					f.getName().equals("__role.enableChangingAccessControl")) {
-				try{
-					getFunctionManager().deleteFunction(f, true);
-				} catch(Exception e) {
-					logger.warn("Could not delete unused Filr roles");
-				}
-			}
-		}
-		functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
-		functionInternalIds = new HashMap();
-		for (int i = 0; i < functions.size(); i++) {
-			function = (Function)functions.get(i);
-			functionNames.put(function.getName(), function);
-			if (function.getInternalId() != null) functionInternalIds.put(function.getInternalId(), function);
-		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_VIEWER_INTERNALID)) {
-			addFilrRoleViewer(zoneConfig.getZoneId());
-		}
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_EDITOR_INTERNALID)) {
-			addFilrRoleEditor(zoneConfig.getZoneId());
-		}
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_CONTRIBUTOR_INTERNALID)) {
-			addFilrRoleContributor(zoneConfig.getZoneId());
-		} else {
-			//Make sure this role is properly configured
-			Function filrOwnerFunction = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_FILR_CONTRIBUTOR_INTERNALID);
-			if (!filrOwnerFunction.getOperations().contains(WorkAreaOperation.CREATE_FOLDERS)) {
-				//This function needs to be fixed up
-				filrOwnerFunction.addOperation(WorkAreaOperation.CREATE_FOLDERS);
-				getFunctionManager().updateFunction(filrOwnerFunction);
-			}
 		}
 	}
 	
@@ -2160,28 +1538,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			AccessControlManagerImpl.bringAccessCheckBackToNormalForThisThread();
 		}
 	}
-	
-	private void addVisitorRoleToGuestWorkspace(Workspace guestWs, Long zoneId) {
-		User g = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zoneId);
-		//Let guest be a visitor to the guest workspace
-		//Let guest be a visitor to the guest workspace
-		Function visitorsRole = getFunctionManager().findFunctionByName(zoneId, ObjectKeys.ROLE_TITLE_VISITOR);
-		WorkAreaFunctionMembership wafm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(zoneId, guestWs, visitorsRole.getId());
-		if (wafm == null) {
-			wafm = new WorkAreaFunctionMembership();
-		}
-		Set<Long> members = wafm.getMemberIds();
-		if (members == null) {
-			members = new HashSet<Long>();
-		}
-		members.add(g.getId());
-		wafm.setFunctionId(visitorsRole.getId());
-		wafm.setWorkAreaId(guestWs.getWorkAreaId());
-		wafm.setWorkAreaType(guestWs.getWorkAreaType());
-		wafm.setZoneId(zoneId);
-		wafm.setMemberIds(members);
-		getCoreDao().save(wafm);
-	}
 
 	/*
 	 * Depending on the version that we're upgrading from, the admin
@@ -2213,30 +1569,4 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		if (forceTemplatesWarning)   pm.setUserProperty(           superUId, ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES,       null);
 		if (forceVersionReset)       getBinderModule().setProperty(topWSId,  ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION,       null);
 	}
-	
-	private List<Workspace> getTopWorkspacesFromEachZone() {
-		List<Workspace> companies = getCoreDao().findCompanies();
-		
-		List<ZoneInfo> zoneInfos = getZoneInfos();
-		
-		List<Workspace> results = new ArrayList<Workspace>();
-		
-		for(Workspace top:companies) {
-			boolean found = false;
-			for(ZoneInfo zoneInfo:zoneInfos) {
-				if(top.getZoneId().equals(zoneInfo.getZoneId())) {
-					results.add(top);
-					found = true;
-					break;
-				}
-			}
-			if(!found)
-				logger.warn("Zone " + top.getZoneId() + " appears to be broken. Skipping it from loading.");
-		}
-		
-		return results;
-	}
-
-	abstract protected void setupInitialOpenIDProviderList();
-	
 }

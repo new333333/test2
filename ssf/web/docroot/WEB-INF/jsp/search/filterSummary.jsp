@@ -68,13 +68,13 @@
 		<div class="margintop2 marginleft2"><span class="ss_label"><ssf:nlt tag="searchForm.searchText"/>:</span> <c:out value="${ss_filterMap.searchText}" escapeXml="true"/></div>
 	</c:if>
     <c:if test="${! empty ss_filterMap.search_preDeletedOnly}">
-		<div class="margintop2 marginleft2"><ssf:nlt tag="searchForm.searchPredeletedOnly"/></div>
+		<div class="marginleft2"><ssf:nlt tag="searchForm.searchPredeletedOnly"/></div>
 	</c:if>
 	<c:if test="${! empty ss_filterMap.additionalFilters}">
 		<c:if test="${!empty ss_filterMap.additionalFilters.workflow}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.workflow}">
 				<input type="hidden" name="searchWorkflow_hidden" value="${block.searchWorkflow}" />
-				<div class="margintop2 marginleft2">
+				<div class="marginleft2">
 					<span class="ss_label"><ssf:nlt tag="searchForm.label.workflow"/></span>
 					<script type="text/javascript">
 						document.write(ss_searchWorkflows['${block.searchWorkflow}']);
@@ -94,13 +94,13 @@
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.tag}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.tag}">
-				<div class="margintop2 marginleft2">
+				<div class="marginleft2">
 					<c:if test="${!empty block.communityTag}">
 						<span class="ss_label"><ssf:nlt tag="tags.communityTags"/>:</span> ${block.communityTag}
 						<input type="hidden" name="searchCommunityTags_hidden" value="${block.communityTag}" />
 					</c:if>
 				</div>
-				<div class="margintop2 marginleft2">	
+				<div class="marginleft2">	
 					<c:if test="${!empty block.personalTag}">
 						<span class="ss_label"><ssf:nlt tag="tags.personalTags"/>:</span> ${block.personalTag}
 						<input type="hidden" name="searchPersonalTags_hidden" value="${block.personalTag}" />
@@ -110,7 +110,7 @@
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.creator_by_id}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.creator_by_id}">
-				<div class="margintop2 marginleft2">
+				<div class="marginleft2">
 					<span class="ss_label"><ssf:nlt tag="searchForm.label.author"/></span> ${block.authorTitle}
 					<input type="hidden" name="searchAuthors_hidden" value="${block.authorTitle}" />
 					<input type="hidden" name="searchAuthors_selected_hidden" value="${block.authorId}" />
@@ -137,7 +137,7 @@
 					</c:otherwise>
 				</c:choose>
 				
-				<div class="margintop2 marginleft2">
+				<div class="marginleft2">
 					<span class="ss_label"><ssf:nlt tag="searchForm.label.entry"/></span>
 				<script type="text/javascript">
 					document.write(ss_searchEntries['<ssf:escapeJavaScript value="${block.entryType}"/>']);
@@ -170,7 +170,7 @@
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.last_activity}">
 				<% /* There is only one value on the list. */ %>
 				<input type="hidden" name="searchDaysNumber_hidden" value="${block.daysNumber}" />
-				<div class="margintop2 marginleft2">
+				<div class="marginleft2">
 					<span class="ss_label"><ssf:nlt tag="searchForm.label.lastActivityInDays"/></span> ${block.daysNumber}
 				</div>
 			</c:forEach>
@@ -179,7 +179,7 @@
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.creation_date}" varStatus="status">
 				<input type="hidden" name="creation_date_searchStartDate_${status.index}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.startDateNotFormated}" pattern="yyyy-MM-dd" />" />
 				<input type="hidden" name="creation_date_searchEndDate_${status.index}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.endDateNotFormated}" pattern="yyyy-MM-dd" />" />
-				<div class="margintop2 marginleft2">
+				<div class="marginleft2">
 					<span class="ss_label"><ssf:nlt tag="searchForm.label.creationDate"/>:</span>
 					<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.startDateNotFormated}" type="date" /> - <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.endDateNotFormated}" type="date" />
 				</div>
@@ -192,7 +192,7 @@
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.modification_date}" varStatus="status">
 				<input type="hidden" name="modification_date_searchStartDate_${status.index}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.startDateNotFormated}" pattern="yyyy-MM-dd" />" />
 				<input type="hidden" name="modification_date_searchEndDate_${status.index}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.endDateNotFormated}" pattern="yyyy-MM-dd" />" />
-				<div class="margintop2 marginleft2">
+				<div class="marginleft2">
 					<span class="ss_label"><ssf:nlt tag="searchForm.label.modificationDate"/>:</span>
 					<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.startDateNotFormated}" type="date" /> - <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.endDateNotFormated}" type="date" />
 				</div>
@@ -202,7 +202,7 @@
 			</c:forEach>
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.item_types}">
-			<div class="margintop2 marginleft2">
+			<div class="marginleft2">
 				<span class="ss_label"><ssf:nlt tag="searchForm.sectionTitle.ItemType"/>:</span>
 				<c:forEach var="type" items="${ss_filterMap.additionalFilters.item_types}" varStatus="loopStatus">
 					<c:if test="${type.value}">

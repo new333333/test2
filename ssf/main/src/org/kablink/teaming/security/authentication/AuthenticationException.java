@@ -32,9 +32,7 @@
  */
 package org.kablink.teaming.security.authentication;
 
-import org.kablink.util.VibeRuntimeException;
-
-public abstract class AuthenticationException extends VibeRuntimeException {
+public class AuthenticationException extends RuntimeException {
     public AuthenticationException() {
         super();
     }
@@ -47,11 +45,4 @@ public abstract class AuthenticationException extends VibeRuntimeException {
     public AuthenticationException(Throwable cause) {
         super(cause);
     }
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 401; // Unauthorized
-	}
 }

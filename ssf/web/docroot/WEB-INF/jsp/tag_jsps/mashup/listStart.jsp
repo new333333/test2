@@ -53,11 +53,32 @@
 	ss_mashupListDepth = ss_mashupListDepth + 1;
 	request.setAttribute("ss_mashupListDepth", ss_mashupListDepth);
 %>
+<c:set var="mContentClass" value="ss_mashup_list_content" />
+<c:if test="${!empty mashup_attributes['showBorder']}">
+  <c:set var="mContentClass" value="ss_mashup_list_content_border" />
+</c:if>
+
+<c:set var="mWidth" value="" />
+<c:set var="mHeight" value="" />
+<c:set var="mOverflow" value="" />
+<c:if test="${!empty mashup_attributes['width']}">
+  <c:set var="mWidth" >width: ${mashup_attributes['width']};</c:set>
+</c:if>
+<c:if test="${!empty mashup_attributes['height']}">
+  <c:set var="mHeight" >height: ${mashup_attributes['height']};</c:set>
+</c:if>
+<c:if test="${!empty mashup_attributes['overflow']}">
+  <c:set var="mOverflow" >overflow: ${mashup_attributes['overflow']};</c:set>
+</c:if>
 <% if (ss_mashupListDepth > 1) { %>
 <li>
 <% } %>
 
-  <div class="ss_mashup_element" <c:if test="${!empty mashup_attributes['showBorder']}"></c:if>>
+  <div class="ss_mashup_element" 
+    <c:if test="${ssConfigJspStyle != 'form'}">
+      style="${mWidth} overflow: hidden;"
+    </c:if>
+  >
     <div class="ss_mashup_round_top"><div></div></div>
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['title']}">
 	  <c:set var="divClass" value="ss_mashup_list_header_form" />
@@ -76,5 +97,5 @@
 	  </div>
 	</c:if>
   
-	<div class="ss_mashup_list_content">
+	<div class="${mContentClass}" style="${mHeight} ${mOverflow}">
 	<ul>

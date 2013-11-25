@@ -94,11 +94,6 @@ public class InvokeUtil {
     		if(!factorySpecified)
     			setSessionFactoryImplementor((SessionFactoryImplementor)SpringContextUtil.getBean("sessionFactory"));
     		
-    		// Bug 740536  - Can't think of any situation where preserving leading/trailing spaces
-    		// in the original input value is desirable. So we're adding this check at this low level.
-    		if(value instanceof String)
-    			value = ((String) value).trim();
-    		
     		setter.set(target, value, factory);
 
     	} catch (HibernateException e) {

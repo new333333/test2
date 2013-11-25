@@ -1,8 +1,1 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-//>>built
-define("dojo/cldr/nls/ar/number",{"group":",","percentSign":"%","exponential":"E","scientificFormat":"#E0","percentFormat":"#,##0%","list":";","infinity":"∞","minusSign":"-","decimal":".","nan":"NaN","perMille":"‰","decimalFormat":"#,##0.###;#,##0.###-","currencyFormat":"¤ #,##0.00;¤ #,##0.00-","plusSign":"+","decimalFormat-long":"000 تريليون","decimalFormat-short":"000 ترليو"});
+({"group":"٬","percentSign":"٪","exponential":"اس","list":"؛","infinity":"∞","patternDigit":"#","minusSign":"-","decimal":"٫","nan":"ليس رقم","nativeZeroDigit":"٠","perMille":"؉","decimalFormat":"#,##0.###;#,##0.###-","currencyFormat":"¤ #,##0.00;¤ #,##0.00-","plusSign":"+","scientificFormat":"#E0","currencySpacing-afterCurrency-currencyMatch":"[:letter:]","currencySpacing-beforeCurrency-surroundingMatch":"[:digit:]","currencySpacing-afterCurrency-insertBetween":" ","currencySpacing-afterCurrency-surroundingMatch":"[:digit:]","currencySpacing-beforeCurrency-currencyMatch":"[:letter:]","percentFormat":"#,##0%","currencySpacing-beforeCurrency-insertBetween":" "})

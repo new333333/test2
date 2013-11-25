@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,20 +34,19 @@ package org.kablink.teaming.gwt.client.util;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+
 /**
  * Enumeration used to communicate the type of a workspace between the
- * client and the server as part of a GWT RPC command.
+ * client and the server as part of a GWT RPC request.
  * 
  * @author drfoster@novell.com
+ *
  */
 public enum WorkspaceType implements IsSerializable {
 	DISCUSSIONS,
 	GLOBAL_ROOT,
 	LANDING_PAGE,
-	MOBILE_DEVICES,
-	NET_FOLDERS_ROOT,
-	PROFILE_ROOT,				// When used anywhere except the administration console.
-	PROFILE_ROOT_MANAGEMENT,	// When used within          the administration console.
+	PROFILE_ROOT,
 	PROJECT_MANAGEMENT,
 	TEAM,
 	TEAM_ROOT,
@@ -57,46 +56,5 @@ public enum WorkspaceType implements IsSerializable {
 	WORKSPACE,
 	
 	OTHER,
-	NOT_A_WORKSPACE;
-	
-	/**
-	 * Returns true if this WorkspaceType value represents a profile
-	 * root and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isProfileRoot() {
-		return (this.equals(PROFILE_ROOT) || this.equals(PROFILE_ROOT_MANAGEMENT));
-	}
-
-	/**
-	 * Returns true if this WorkspaceType value represents a mobile
-	 * devices view, as used by the administration console and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isMobileDevices() {
-		return this.equals(MOBILE_DEVICES);
-	}
-	
-	/**
-	 * Returns true if this WorkspaceType value represents a profile
-	 * root as used by the administration console and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isProfileRootManagement() {
-		return this.equals(PROFILE_ROOT_MANAGEMENT);
-	}
-	
-	/**
-	 * Returns true if this WorkspaceType value represents a workspace
-	 * and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isWorkspace() {
-		return (!(this.equals(NOT_A_WORKSPACE)));
-	}
+	NOT_A_WORKSPACE,
 }

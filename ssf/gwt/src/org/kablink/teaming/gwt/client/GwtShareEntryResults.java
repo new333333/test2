@@ -34,9 +34,6 @@ package org.kablink.teaming.gwt.client;
 
 
 import java.util.ArrayList;
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.util.GwtShareItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -48,8 +45,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class GwtShareEntryResults implements IsSerializable
 {
-	private ArrayList<GwtShareItemResult> m_listOfSuccesses;	// List of shares we successfully created/modified.
-	private ArrayList<String> m_errors;
+	private ArrayList<GwtUser> m_noReadRights;	// List of users that do not have read rights to the entry being shared.
+	private String[] m_errors;
 	
 	/**
 	 * Constructor method. 
@@ -62,45 +59,14 @@ public class GwtShareEntryResults implements IsSerializable
 	}	
 	
 	/**
-	 * 
+	 * Add the given user to the list of users who do not have read rights to the entry being shared.
 	 */
-	public void addError( String error )
+	public void addUser( GwtUser user )
 	{
-		if ( m_errors == null )
-			m_errors = new ArrayList<String>();
+		if ( m_noReadRights == null )
+			m_noReadRights = new ArrayList<GwtUser>();
 		
-		m_errors.add( error );
-	}
-	
-	/**
-	 * 
-	 */
-	public void addErrors( List<String> errors )
-	{
-		if ( errors != null )
-		{
-			for ( String error : errors )
-			{
-				addError( error );
-			}
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	public void addSuccess( Long id, GwtShareItem gwtShareItem, boolean emailNeeded )
-	{
-		GwtShareItemResult result;
-		
-		if ( m_listOfSuccesses == null )
-			m_listOfSuccesses = new ArrayList<GwtShareItemResult>();
-		
-		result = new GwtShareItemResult();
-		result.setId( id );
-		result.setEmailNeeded( emailNeeded );
-		result.setGwtShareItem( gwtShareItem );
-		m_listOfSuccesses.add( result );
+		m_noReadRights.add( user );
 	}
 
 	/**
@@ -108,17 +74,22 @@ public class GwtShareEntryResults implements IsSerializable
 	 */
 	public String[] getErrors()
 	{
-		if ( m_errors != null )
-			return m_errors.toArray( new String[ m_errors.size() ] );
-	
-		return null;
+		return m_errors;
 	}
 	
 	/**
-	 * Return the list of the shares we created/modified.
+	 * Return the list of users who do not have read rights to the entry being shared.
 	 */
-	public ArrayList<GwtShareItemResult> getSuccesses()
+	public ArrayList<GwtUser> getUsersWithoutReadRights()
 	{
-		return m_listOfSuccesses;
+		return m_noReadRights;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setErrors( String[] errors )
+	{
+		m_errors = errors;
 	}
 }

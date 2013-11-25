@@ -1,35 +1,45 @@
-//>>built
-define("dojox/av/widget/ProgressSlider",["dojo","dijit","dijit/_Widget","dijit/_TemplatedMixin"],function(_1,_2,_3,_4){
-return _1.declare("dojox.av.widget.ProgressSlider",[_3,_4],{templateString:_1.cache("dojox.av.widget","resources/ProgressSlider.html"),postCreate:function(){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.av.widget.ProgressSlider"]){
+dojo._hasResource["dojox.av.widget.ProgressSlider"]=true;
+dojo.provide("dojox.av.widget.ProgressSlider");
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
+dojo.declare("dojox.av.widget.ProgressSlider",[dijit._Widget,dijit._Templated],{templateString:dojo.cache("dojox.av.widget","resources/ProgressSlider.html","<div class=\"Progress\" dojoAttachEvent=\"mousedown:startDrag\">\n    \n    <div class=\"ProgressLoaded\" dojoAttachPoint=\"progressLoaded\"></div>\n    <div class=\"ProgressPosition\" dojoAttachPoint=\"progressPosition\"></div>\n\t<div class=\"ProgressHandle\" dojoAttachPoint=\"handle\" dojoAttachEvent=\"mouseover:handleOver, mouseout:handleOut\"></div>\n</div>\n"),postCreate:function(){
 this.seeking=false;
-this.handleWidth=_1.marginBox(this.handle).w;
-var _5=_1.coords(this.domNode);
-this.finalWidth=_5.w;
-this.width=_5.w-this.handleWidth;
-this.x=_5.x;
-_1.setSelectable(this.domNode,false);
-_1.setSelectable(this.handle,false);
-},setMedia:function(_6,_7){
-this.playerWidget=_7;
-this.media=_6;
-_1.connect(this.media,"onMetaData",this,function(_8){
-if(_8&&_8.duration){
-this.duration=_8.duration;
+this.handleWidth=dojo.marginBox(this.handle).w;
+var _1=dojo.coords(this.domNode);
+this.finalWidth=_1.w;
+this.width=_1.w-this.handleWidth;
+this.x=_1.x;
+dojo.setSelectable(this.domNode,false);
+dojo.setSelectable(this.handle,false);
+},setMedia:function(_2,_3){
+this.playerWidget=_3;
+this.media=_2;
+dojo.connect(this.media,"onMetaData",this,function(_4){
+if(_4&&_4.duration){
+this.duration=_4.duration;
 }
 });
-_1.connect(this.media,"onEnd",this,function(){
-_1.disconnect(this.posCon);
+dojo.connect(this.media,"onEnd",this,function(){
+dojo.disconnect(this.posCon);
 this.setHandle(this.duration);
 });
-_1.connect(this.media,"onStart",this,function(){
-this.posCon=_1.connect(this.media,"onPosition",this,"setHandle");
+dojo.connect(this.media,"onStart",this,function(){
+this.posCon=dojo.connect(this.media,"onPosition",this,"setHandle");
 });
-_1.connect(this.media,"onDownloaded",this,function(_9){
-this.setLoadedPosition(_9*0.01);
-this.width=this.finalWidth*0.01*_9;
+dojo.connect(this.media,"onDownloaded",this,function(_5){
+this.setLoadedPosition(_5*0.01);
+this.width=this.finalWidth*0.01*_5;
 });
-},onDrag:function(_a){
-var x=_a.clientX-this.x;
+},onDrag:function(_6){
+var x=_6.clientX-this.x;
 if(x<0){
 x=0;
 }
@@ -38,41 +48,41 @@ x=this.width-this.handleWidth;
 }
 var p=x/this.finalWidth;
 this.media.seek(this.duration*p);
-_1.style(this.handle,"marginLeft",x+"px");
-_1.style(this.progressPosition,"width",x+"px");
+dojo.style(this.handle,"marginLeft",x+"px");
+dojo.style(this.progressPosition,"width",x+"px");
 },startDrag:function(){
-_1.setSelectable(this.playerWidget.domNode,false);
+dojo.setSelectable(this.playerWidget.domNode,false);
 this.seeking=true;
-this.cmove=_1.connect(_1.doc,"mousemove",this,"onDrag");
-this.cup=_1.connect(_1.doc,"mouseup",this,"endDrag");
+this.cmove=dojo.connect(dojo.doc,"mousemove",this,"onDrag");
+this.cup=dojo.connect(dojo.doc,"mouseup",this,"endDrag");
 },endDrag:function(){
-_1.setSelectable(this.playerWidget.domNode,true);
+dojo.setSelectable(this.playerWidget.domNode,true);
 this.seeking=false;
 if(this.cmove){
-_1.disconnect(this.cmove);
+dojo.disconnect(this.cmove);
 }
 if(this.cup){
-_1.disconnect(this.cup);
+dojo.disconnect(this.cup);
 }
 this.handleOut();
-},setHandle:function(_b){
+},setHandle:function(_7){
 if(!this.seeking){
 var w=this.width-this.handleWidth;
-var p=_b/this.duration;
+var p=_7/this.duration;
 var x=p*w;
-_1.style(this.handle,"marginLeft",x+"px");
-_1.style(this.progressPosition,"width",x+"px");
+dojo.style(this.handle,"marginLeft",x+"px");
+dojo.style(this.progressPosition,"width",x+"px");
 }
-},setLoadedPosition:function(_c){
-_1.style(this.progressLoaded,"width",(this.finalWidth*_c)+"px");
+},setLoadedPosition:function(_8){
+dojo.style(this.progressLoaded,"width",(this.finalWidth*_8)+"px");
 },handleOver:function(){
-_1.addClass(this.handle,"over");
+dojo.addClass(this.handle,"over");
 },handleOut:function(){
 if(!this.seeking){
-_1.removeClass(this.handle,"over");
+dojo.removeClass(this.handle,"over");
 }
-},onResize:function(_d){
-var _e=_1.coords(this.domNode);
-this.finalWidth=_e.w;
+},onResize:function(_9){
+var _a=dojo.coords(this.domNode);
+this.finalWidth=_a.w;
 }});
-});
+}

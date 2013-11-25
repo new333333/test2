@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -228,44 +227,42 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	
 	public void addAuditTrail(AuditTrail auditTrail) {
 		//only log if enabled
-		if (getAdminModule().isAuditTrailEnabled()) {
-			if (allEnabled || enabledTypes.contains(auditTrail.getAuditType())) {
-				if(auditTrail instanceof LoginInfo) {
-					LoginInfo li = (LoginInfo) auditTrail;
-					String authenticatorFrequency = getAuthenticatorFrequency(li.getAuthenticatorName());
-					if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_ALL)) {
-						// each event causes a new record
-						getCoreDao().save(auditTrail);
-					}
-					else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_STRICT)) {
-						// only once record a day for this type
-						List<String> loginInfoIds = getCoreDao().getLoginInfoIds(RequestContextHolder.getRequestContext().getZoneId(), 
-								// NEVER get the user ID from request context. Since this method is being executed with AsAdmin context
-								// during authentication, the value from the request context will always be admin.
-								li.getStartBy(),
-								li.getAuthenticatorName(), 
-								getBeginningOfToday(), 
-								1);
-						if(loginInfoIds.size() == 0)
-							getCoreDao().save(auditTrail);
-					}
-					else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_SOFT)) {
-						Integer loginInfoLastDay = getLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
-								li.getStartBy(),
-								li.getAuthenticatorName());
-						int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-						if(loginInfoLastDay == null || (loginInfoLastDay.intValue() != dayOfYear)) {
-							getCoreDao().save(auditTrail);
-							setLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
-								li.getStartBy(),
-								li.getAuthenticatorName(), 
-								dayOfYear);
-						}
-					}
-				}
-				else {
+		if (allEnabled || enabledTypes.contains(auditTrail.getAuditType())) {
+			if(auditTrail instanceof LoginInfo) {
+				LoginInfo li = (LoginInfo) auditTrail;
+				String authenticatorFrequency = getAuthenticatorFrequency(li.getAuthenticatorName());
+				if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_ALL)) {
+					// each event causes a new record
 					getCoreDao().save(auditTrail);
 				}
+				else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_STRICT)) {
+					// only once record a day for this type
+					List<String> loginInfoIds = getCoreDao().getLoginInfoIds(RequestContextHolder.getRequestContext().getZoneId(), 
+							// NEVER get the user ID from request context. Since this method is being executed with AsAdmin context
+							// during authentication, the value from the request context will always be admin.
+							li.getStartBy(),
+							li.getAuthenticatorName(), 
+							getBeginningOfToday(), 
+							1);
+					if(loginInfoIds.size() == 0)
+						getCoreDao().save(auditTrail);
+				}
+				else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_SOFT)) {
+					Integer loginInfoLastDay = getLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
+							li.getStartBy(),
+							li.getAuthenticatorName());
+					int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+					if(loginInfoLastDay == null || (loginInfoLastDay.intValue() != dayOfYear)) {
+						getCoreDao().save(auditTrail);
+						setLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
+							li.getStartBy(),
+							li.getAuthenticatorName(), 
+							dayOfYear);
+					}
+				}
+			}
+			else {
+				getCoreDao().save(auditTrail);
 			}
 		}
 	}
@@ -388,8 +385,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			} catch(Exception skipThis) {
 				continue;
 			}
-			if (entity == null || entity.isDeleted() || 
-					(entity instanceof FolderEntry && ((FolderEntry)entity).isPreDeleted())) continue;
+			if (entity == null || entity.isDeleted()) continue;
 			row.put(ReportModule.ENTITY, entity);
 			row.put(ReportModule.DATE, cols[2]);
 			row.put(ReportModule.FILE_ID, cols[3]);
@@ -435,7 +431,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		
 		if (userIds.length > 0) {
 			org.kablink.util.search.Criteria crit = SearchUtils.entriesForTrackedMiniBlogs(userIds);
-			Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 	    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
@@ -543,55 +539,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 		return list;
 	}
-
-	public List<ChangeLog> getDeletedBinderLogs(Set<Long> binderIds) {
-		if (binderIds == null || binderIds.isEmpty()) return new ArrayList<ChangeLog>();
-		
-		final Long[] eIds = new Long[binderIds.size()];
-		Iterator iEntryIds = binderIds.iterator();
-		int i = 0;
-		while (iEntryIds.hasNext()) {
-			eIds[i++] = new Long((Long)iEntryIds.next());
-		}
-		final String[] entityTypes = new String[2];
-		entityTypes[0] = EntityIdentifier.EntityType.folder.name();
-		entityTypes[1] = EntityIdentifier.EntityType.workspace.name();
-
-		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(ChangeLog.class)
-				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				.add(Restrictions.in("entityType", entityTypes));
-				crit.add(Restrictions.in("entityId", eIds));
-				crit.addOrder(Order.asc("operationDate"));
-				return crit.list();
-			}});
-		return ids;
-	}
-
-	public List<ChangeLog> getDeletedEntryLogs(Set<Long> entryIds) {
-		if (entryIds == null || entryIds.isEmpty()) return new ArrayList<ChangeLog>();
-		
-		final Long[] eIds = new Long[entryIds.size()];
-		Iterator iEntryIds = entryIds.iterator();
-		int i = 0;
-		while (iEntryIds.hasNext()) {
-			eIds[i++] = new Long((Long)iEntryIds.next());
-		}
-
-		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(ChangeLog.class)
-				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()));
-				crit.add(Restrictions.in("entityId", eIds));
-				crit.addOrder(Order.asc("operationDate"));
-				return crit.list();
-			}});
-		return ids;
-	}
-
-
+	
 	public LicenseStats getLicenseHighWaterMark(final Calendar startDate, final Calendar endDate)
 	{
 		List marks = (List) getHibernateTemplate().execute(new HibernateCallback() {
@@ -604,10 +552,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					.add(Restrictions.lt("snapshotDate", endDate.getTime()))
 					.setProjection(Projections.projectionList()
 							.add(Projections.max("internalUserCount"))
-							.add(Projections.max("externalUserCount"))
-							.add(Projections.max("openIdUserCount"))
-							.add(Projections.max("otherExtUserCount"))
-							.add(Projections.max("guestAccessEnabled")))
+							.add(Projections.max("externalUserCount")))
 							.list();
 				} 
 				catch (Exception ex) {
@@ -621,15 +566,6 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				Object cols[] = (Object[]) marks.get(0);
 				stats.setInternalUserCount(((Long) cols[0]).longValue());
 				stats.setExternalUserCount(((Long) cols[1]).longValue());
-				Long openIdCount = (Long) cols[2];
-				if (openIdCount == null) openIdCount = 0L;
-				stats.setOpenIdUserCount(openIdCount.longValue());
-				Long otherExtCount = (Long) cols[3];
-				if (otherExtCount == null) otherExtCount = 0L;
-				stats.setOtherExtUserCount(otherExtCount.longValue());
-				Boolean guestAccessEnabled = (Boolean) cols[4];
-				if (guestAccessEnabled == null) guestAccessEnabled = Boolean.FALSE;
-				stats.setGuestAccessEnabled(guestAccessEnabled);
 			}
 		} catch(Exception e) {
 			// Ignore problems at startup that cause cols[] to have nulls
@@ -811,7 +747,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 
 	public List<Map<String,Object>> generateActivityReportByUser(final Set<Long> userIdsToReport,
-			final Set<Long> userIdsToSkip, final Date startDate, final Date endDate, final String reportType) {
+			final Date startDate, final Date endDate, final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
         getAdminModule().checkAccess(AdminOperation.report);
 
@@ -821,7 +757,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				try {
 					ProjectionList proj = Projections.projectionList()
 									.add(Projections.groupProperty("startBy"))
-									.add(Projections.groupProperty("startDate"))
+									.add(Projections.max("startDate"))
 									.add(Projections.groupProperty("transactionType"));
 					if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 						proj.add(Projections.rowCount());
@@ -837,11 +773,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.add(Restrictions.in("transactionType", activityTypes))
 						.add(Restrictions.ge("startDate", startDate))
 						.add(Restrictions.lt("startDate", endDate));
-					if (!userIdsToSkip.isEmpty()) {
-						crit.add(Restrictions.not(Restrictions.in("startBy", userIdsToSkip)));
-					}
 					if (!userIdsToReport.isEmpty()) crit.add(Restrictions.in("startBy", userIdsToReport));
-					crit.addOrder(Order.asc("startDate"));
+					crit.addOrder(Order.asc("startBy"));
 					auditTrail = crit.list();
 				} catch(Exception e) {
 				}
@@ -887,7 +820,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		org.kablink.util.search.Criteria crit = SearchUtils.bindersByAccess(userId);
-		Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxResults, userId);
+		Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults, userId);
 
     	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
@@ -990,7 +923,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 			
 			org.kablink.util.search.Criteria crit = SearchUtils.entitiesByDateAndAncestor(binderIds, null, null);
-			Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, user.getId());
+			Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults, user.getId());
 			page++;
 	
 	    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
@@ -1160,7 +1093,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		org.kablink.util.search.Criteria crit = SearchUtils.entries(entryIds);
-		Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+		Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
     	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
@@ -1356,7 +1289,6 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Map<String, Object> row = new HashMap<String, Object>();
 			report.add(row);
 			row.put(ReportModule.USER_ID, cols[0]);
-			row.put(ReportModule.USER_TYPE, cols[0]);
 			
 			Timestamp temp = ((Timestamp) cols[1]);
 			
@@ -1376,7 +1308,6 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Map<String, Object> row = new HashMap<String, Object>();
 			report.add(row);
 			row.put(ReportModule.USER_ID, cols[0]);
-			row.put(ReportModule.USER_TYPE, cols[0]);
 			
 			Timestamp temp = ((Timestamp) cols[1]);
 			

@@ -36,28 +36,40 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 // This annotation is necessary not only for XML but also for JSON representation.
-@XmlRootElement (name="folder_entry")
-public class FolderEntry extends BaseFolderEntry {
-    private HistoryStamp reservation;
+@XmlRootElement
+public class FolderEntry {
 
-    public FolderEntry() {
-    }
-
-    protected FolderEntry(FolderEntry orig) {
-        super(orig);
-        this.reservation = orig.reservation;
-    }
-
-    public HistoryStamp getReservation() {
-        return reservation;
-    }
-
-    public void setReservation(HistoryStamp reservation) {
-        this.reservation = reservation;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new FolderEntry(this);
-    }
+	private Long id;
+	private String title;
+	private String description;
+	
+	//@XmlElement
+	private String[] products = new String[] {"droid", "iPhone", "Nexus"};
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	/*
+	public String[] getProducts() {
+		return products;
+	}
+	public void setProducts(String[] products) {
+		this.products = products;
+	}
+	*/
 }

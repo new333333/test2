@@ -80,7 +80,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public String createVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in, long size, Long lastModTime) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			return createResource(wdr, binder, entry, relativeFilePath, in, true);
 		} catch (IOException e) {
@@ -90,7 +90,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public void createUnversioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in, long size, Long lastModTime) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			createResource(wdr, binder, entry, relativeFilePath, in, false);
 		} catch (IOException e) {
@@ -100,7 +100,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public void update(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in, long size, Long lastModTime) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			updateResource(wdr, binder, entry, relativeFilePath, in);
 		} catch (IOException e) {

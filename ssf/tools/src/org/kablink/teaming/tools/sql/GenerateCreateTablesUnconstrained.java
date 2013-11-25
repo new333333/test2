@@ -95,155 +95,151 @@ public class GenerateCreateTablesUnconstrained {
 		File inputFile = new File(inputFileName);
 		
 		BufferedReader in = new BufferedReader(new FileReader(inputFile));
-		try {
-			//list of tables and columns to convert
-			Map columnConvert = getColumnConvert(new File(inputFile.getParentFile().getParentFile().getParentFile(), "table_column_types"));
-			File createUnconstrainedTablesFile = new File(inputFile.getParentFile(), "internal/create-unconstrained-tables-" + tableGroupName + "-" + databaseTypeStr + ".sql");
-			File addConstraintsFile = new File(inputFile.getParentFile(), "internal/add-constraints-" + tableGroupName + "-" + databaseTypeStr + ".sql");	
-			File dropConstraintsFile = new File(inputFile.getParentFile(), "internal/drop-constraints-" + tableGroupName + "-" + databaseTypeStr + ".sql");
-			File dropTablesFile = new File(inputFile.getParentFile(), "internal/drop-tables-" + tableGroupName + "-" + databaseTypeStr + ".sql");
-			
-			createUnconstrainedTables = new BufferedWriter(new FileWriter(createUnconstrainedTablesFile));
-			addConstraints = new BufferedWriter(new FileWriter(addConstraintsFile));
-			dropConstraints = new BufferedWriter(new FileWriter(dropConstraintsFile));
-			dropTables = new BufferedWriter(new FileWriter(dropTablesFile));
-			if(databaseTypeStr.equals("oracle")) {
-				File createSynonymsFile = new File(inputFile.getParentFile(), "internal/create-synonyms-" + tableGroupName + "-" + databaseTypeStr + ".sql");
-				createSynonyms = new BufferedWriter(new FileWriter(createSynonymsFile));
-			}
-			String line = null;
-			String trimmedLine = null;
-			while((line = in.readLine()) != null) {
-				trimmedLine = line.trim();
-				if (trimmedLine.length() == 0) continue;
-				if (trimmedLine.startsWith("#")) continue;
-				if (trimmedLine.contains("create table") || trimmedLine.contains("CREATE TABLE")) {
-					// Processing "create table" statement
-					createTablesStarted = true;
-					StringBuffer sb = new StringBuffer();
+		//list of tables and columns to convert
+		Map columnConvert = getColumnConvert(new File(inputFile.getParentFile().getParentFile(), "table_column_types"));
+		File createUnconstrainedTablesFile = new File(inputFile.getParentFile(), "internal/create-unconstrained-tables-" + tableGroupName + "-" + databaseTypeStr + ".sql");
+		File addConstraintsFile = new File(inputFile.getParentFile(), "internal/add-constraints-" + tableGroupName + "-" + databaseTypeStr + ".sql");	
+		File dropConstraintsFile = new File(inputFile.getParentFile(), "internal/drop-constraints-" + tableGroupName + "-" + databaseTypeStr + ".sql");
+		File dropTablesFile = new File(inputFile.getParentFile(), "internal/drop-tables-" + tableGroupName + "-" + databaseTypeStr + ".sql");
+		
+		createUnconstrainedTables = new BufferedWriter(new FileWriter(createUnconstrainedTablesFile));
+		addConstraints = new BufferedWriter(new FileWriter(addConstraintsFile));
+		dropConstraints = new BufferedWriter(new FileWriter(dropConstraintsFile));
+		dropTables = new BufferedWriter(new FileWriter(dropTablesFile));
+		if(databaseTypeStr.equals("oracle")) {
+			File createSynonymsFile = new File(inputFile.getParentFile(), "internal/create-synonyms-" + tableGroupName + "-" + databaseTypeStr + ".sql");
+			createSynonyms = new BufferedWriter(new FileWriter(createSynonymsFile));
+		}
+		String line = null;
+		String trimmedLine = null;
+		while((line = in.readLine()) != null) {
+			trimmedLine = line.trim();
+			if (trimmedLine.length() == 0) continue;
+			if (trimmedLine.startsWith("#")) continue;
+			if (trimmedLine.contains("create table") || trimmedLine.contains("CREATE TABLE")) {
+				// Processing "create table" statement
+				createTablesStarted = true;
+				StringBuffer sb = new StringBuffer();
+				sb.append(trimTrailing(line));
+				while(!trimmedLine.endsWith(";")) {
+					line = in.readLine();
+					trimmedLine = line.trim();
 					sb.append(trimTrailing(line));
-					while(!trimmedLine.endsWith(";")) {
-						line = in.readLine();
-						trimmedLine = line.trim();
-						sb.append(trimTrailing(line));
-					}
-					createUnconstrainedTables.write(doTableUtf8(sb.toString(), typeMap, columnConvert));
-					createUnconstrainedTables.newLine();
-					if(createSynonyms!= null) {
-						String [] works = sb.toString().split(",");
-						if (works.length != 0) {
-							String [] first = works[0].split (" ");
-							if (first.length >= 3) {
-								String tableName = first[2];
-								createSynonyms.write("create synonym " + tableName + " for " + schema + "." + tableName + ";");
-								createSynonyms.newLine();
-							}
-						}
-					}
 				}
-				else if (trimmedLine.startsWith("create index") || trimmedLine.startsWith("CREATE INDEX") ||
-						trimmedLine.startsWith("insert") || trimmedLine.startsWith("INSERT")) {
-					// Since "create index" or "insert" can happen at any stage, we must figure out
-					// where we are, and put these statements into right place accordingly. 
-					addConstraintsStarted = true;
-					BufferedWriter bw = addConstraints;
-					bw.write(trimTrailing(line));
-					bw.newLine();
-					while(!trimmedLine.endsWith(";")) {
-						line = in.readLine();
-						trimmedLine = line.trim();
-						bw.write(trimTrailing(line));
-						bw.newLine();					
-					}
-				}
-				else if(trimmedLine.contains("drop constraint") || trimmedLine.contains("drop foreign") ||
-						trimmedLine.contains("DROP CONSTRAINT") || trimmedLine.contains("DROP FOREIGN")) {
-					// Processing statement about dropping constraints
-					dropConstraintsStarted = true;
-					dropConstraints.write(trimTrailing(line));
-					dropConstraints.newLine();
-					while(!trimmedLine.endsWith(";")) {
-						line = in.readLine();
-						trimmedLine = line.trim();
-						dropConstraints.write(trimTrailing(line));
-						dropConstraints.newLine();					
-					}
-				}
-				else if(trimmedLine.contains("drop table") || trimmedLine.contains("DROP TABLE")
-						|| trimmedLine.contains("delete from") || trimmedLine.contains("DELETE FROM")) {
-					// Processing statement about dropping tables
-					dropTablesStarted = true;
-					dropTables.write(trimTrailing(line));
-					dropTables.newLine();
-					while(!trimmedLine.endsWith(";")) {
-						line = in.readLine();
-						trimmedLine = line.trim();
-						dropTables.write(trimTrailing(line));
-						dropTables.newLine();					
-					}		
-				}
-				else if(trimmedLine.contains("alter table") || trimmedLine.contains("ALTER TABLE")) {
-					if(createTablesStarted)
-						addConstraintsStarted = true;
-					else
-						dropConstraintsStarted = true;
-					BufferedWriter bw = selectWriter();
-					bw.write(trimTrailing(line));
-					bw.newLine();
-					while(!trimmedLine.endsWith(";")) {
-						line = in.readLine();
-						trimmedLine = line.trim();
-						bw.write(trimTrailing(line));
-						bw.newLine();					
-					}
-				}
-				else if (trimmedLine.contains("create sequence") || trimmedLine.contains("CREATE SEQUENCE")) {
-					BufferedWriter bw = selectWriter();
-					bw.write(trimTrailing(line));
-					bw.newLine();
-					if(createSynonyms!= null) {
-						String [] works = line.toString().split(" ");
-						if (works.length >= 3) {
-							String seqName = works[2];
-							if (seqName.lastIndexOf(";") > -1) seqName=seqName.substring(0, seqName.lastIndexOf(";"));
-							createSynonyms.write("create synonym " + seqName + " for " + schema + "." + seqName + ";");
+				createUnconstrainedTables.write(doTableUtf8(sb.toString(), typeMap, columnConvert));
+				createUnconstrainedTables.newLine();
+				if(createSynonyms!= null) {
+					String [] works = sb.toString().split(",");
+					if (works.length != 0) {
+						String [] first = works[0].split (" ");
+						if (first.length >= 3) {
+							String tableName = first[2];
+							createSynonyms.write("create synonym " + tableName + " for " + schema + "." + tableName + ";");
 							createSynonyms.newLine();
 						}
 					}
 				}
-				else {
-					// some command/line we don't recognize
-					BufferedWriter bw = selectWriter();
+			}
+			else if (trimmedLine.startsWith("create index") || trimmedLine.startsWith("CREATE INDEX") ||
+					trimmedLine.startsWith("insert") || trimmedLine.startsWith("INSERT")) {
+				// Since "create index" or "insert" can happen at any stage, we must figure out
+				// where we are, and put these statements into right place accordingly. 
+				addConstraintsStarted = true;
+				BufferedWriter bw = addConstraints;
+				bw.write(trimTrailing(line));
+				bw.newLine();
+				while(!trimmedLine.endsWith(";")) {
+					line = in.readLine();
+					trimmedLine = line.trim();
 					bw.write(trimTrailing(line));
-					bw.newLine();
+					bw.newLine();					
 				}
 			}
-			createUnconstrainedTables.close();
-			addConstraints.close();
-			dropConstraints.close();
-			dropTables.close();
-			if(createSynonyms!= null) createSynonyms.close();
-			
-			if(createUnconstrainedTablesFile.length() == 0) {
-				System.out.println("*** WARNING: zero length file [" + createUnconstrainedTablesFile.getAbsolutePath());
-				createUnconstrainedTablesFile.delete();
+			else if(trimmedLine.contains("drop constraint") || trimmedLine.contains("drop foreign") ||
+					trimmedLine.contains("DROP CONSTRAINT") || trimmedLine.contains("DROP FOREIGN")) {
+				// Processing statement about dropping constraints
+				dropConstraintsStarted = true;
+				dropConstraints.write(trimTrailing(line));
+				dropConstraints.newLine();
+				while(!trimmedLine.endsWith(";")) {
+					line = in.readLine();
+					trimmedLine = line.trim();
+					dropConstraints.write(trimTrailing(line));
+					dropConstraints.newLine();					
+				}
 			}
-			if(addConstraintsFile.length() == 0) {
-				System.out.println("*** WARNING: zero length file [" + addConstraintsFile.getAbsolutePath());
-				addConstraintsFile.delete();
+			else if(trimmedLine.contains("drop table") || trimmedLine.contains("DROP TABLE")
+					|| trimmedLine.contains("delete from") || trimmedLine.contains("DELETE FROM")) {
+				// Processing statement about dropping tables
+				dropTablesStarted = true;
+				dropTables.write(trimTrailing(line));
+				dropTables.newLine();
+				while(!trimmedLine.endsWith(";")) {
+					line = in.readLine();
+					trimmedLine = line.trim();
+					dropTables.write(trimTrailing(line));
+					dropTables.newLine();					
+				}		
 			}
-			if(dropConstraintsFile.length() == 0) {
-				System.out.println("*** WARNING: zero length file [" + dropConstraintsFile.getAbsolutePath());
-				dropConstraintsFile.delete();
+			else if(trimmedLine.contains("alter table") || trimmedLine.contains("ALTER TABLE")) {
+				if(createTablesStarted)
+					addConstraintsStarted = true;
+				else
+					dropConstraintsStarted = true;
+				BufferedWriter bw = selectWriter();
+				bw.write(trimTrailing(line));
+				bw.newLine();
+				while(!trimmedLine.endsWith(";")) {
+					line = in.readLine();
+					trimmedLine = line.trim();
+					bw.write(trimTrailing(line));
+					bw.newLine();					
+				}
 			}
-			if(dropTablesFile.length() == 0) {
-				System.out.println("*** WARNING: zero length file [" + dropTablesFile.getAbsolutePath());
-				dropTablesFile.delete();
+			else if (trimmedLine.contains("create sequence") || trimmedLine.contains("CREATE SEQUENCE")) {
+				BufferedWriter bw = selectWriter();
+				bw.write(trimTrailing(line));
+				bw.newLine();
+				if(createSynonyms!= null) {
+					String [] works = line.toString().split(" ");
+					if (works.length >= 3) {
+						String seqName = works[2];
+						if (seqName.lastIndexOf(";") > -1) seqName=seqName.substring(0, seqName.lastIndexOf(";"));
+						createSynonyms.write("create synonym " + seqName + " for " + schema + "." + seqName + ";");
+						createSynonyms.newLine();
+					}
+				}
+			}
+			else {
+				// some command/line we don't recognize
+				BufferedWriter bw = selectWriter();
+				bw.write(trimTrailing(line));
+				bw.newLine();
 			}
 		}
-		finally {
-			in.close();
-		}	
+		
+		createUnconstrainedTables.close();
+		addConstraints.close();
+		dropConstraints.close();
+		dropTables.close();
+		if(createSynonyms!= null) createSynonyms.close();
+		
+		if(createUnconstrainedTablesFile.length() == 0) {
+			System.out.println("*** WARNING: zero length file [" + createUnconstrainedTablesFile.getAbsolutePath());
+			createUnconstrainedTablesFile.delete();
+		}
+		if(addConstraintsFile.length() == 0) {
+			System.out.println("*** WARNING: zero length file [" + addConstraintsFile.getAbsolutePath());
+			addConstraintsFile.delete();
+		}
+		if(dropConstraintsFile.length() == 0) {
+			System.out.println("*** WARNING: zero length file [" + dropConstraintsFile.getAbsolutePath());
+			dropConstraintsFile.delete();
+		}
+		if(dropTablesFile.length() == 0) {
+			System.out.println("*** WARNING: zero length file [" + dropTablesFile.getAbsolutePath());
+			dropTablesFile.delete();
+		}
 	}
 	
 	private static void doUpdate(String inputFileName, String schema) throws IOException {
@@ -255,65 +251,60 @@ public class GenerateCreateTablesUnconstrained {
 		File inputFile = new File(inputFileName);
 		
 		BufferedReader in = new BufferedReader(new FileReader(inputFile));
-		try {
-			//list of tables and columns to convert
-			Map columnConvert = getColumnConvert(new File(inputFile.getParentFile().getParentFile().getParentFile(), "table_column_types"));
-			File updateTablesFile = new File(inputFile.getParentFile(), "internal/update-tables-" + tableGroupName + "-" + databaseTypeStr + ".sql");
-			if(databaseTypeStr.equals("oracle")) {
-				File createSynonymsFile = new File(inputFile.getParentFile(), "internal/create-synonyms-" + tableGroupName + "-" + databaseTypeStr + ".sql");
-				createSynonyms = new BufferedWriter(new FileWriter(createSynonymsFile));
-			}
-			
-			updateTables = new BufferedWriter(new FileWriter(updateTablesFile));
-			String line = null;
-			String trimmedLine = null;
-			while((line = in.readLine()) != null) { 
-				trimmedLine = line.trim();
-				if (trimmedLine.length() == 0) continue;
-				if (trimmedLine.startsWith("#")) continue;
-				trimmedLine = trimmedLine + ";";//on update straight from hibernate, no delimiers
-				if (trimmedLine.contains("create table") || trimmedLine.contains("CREATE TABLE")) {
-					// Processing "create table" statement
-					updateTables.write(doTableUtf8(trimmedLine, typeMap, columnConvert));
-					updateTables.newLine();
-					if(createSynonyms!= null) {
-						String [] works = line.split(",");
-						if (works.length != 0) {
-							String [] first = works[0].split (" ");
-							if (first.length >= 3) {
-								String tableName = first[2];
-								createSynonyms.write("create synonym " + tableName + " for " + schema + "." + tableName + ";");
-								createSynonyms.newLine();
-							}
-						}
-					}
-				}
-				else if (trimmedLine.startsWith("create index") || trimmedLine.startsWith("CREATE INDEX")) {
-					//don't think hibernate generates these
-					updateTables.write(trimmedLine);
-					updateTables.newLine();
-				}
-				else if(trimmedLine.contains("alter table") || trimmedLine.contains("ALTER TABLE")) {
-					updateTables.write(doColumnUtf8(trimmedLine, typeMap, columnConvert));
-					updateTables.newLine();
-				}
-				else if (trimmedLine.contains("create sequence") || trimmedLine.contains("CREATE SEQUENCE")) {
-					updateTables.write(trimmedLine);
-					updateTables.newLine();
-					if(createSynonyms!= null) {
-						String [] works = line.toString().split(" ");
-						if (works.length >= 3) {
-							String seqName = works[2];
-							if (seqName.lastIndexOf(";") > -1) seqName=seqName.substring(0, seqName.lastIndexOf(";"));
-							createSynonyms.write("create synonym " + seqName + " for " + schema + "." + seqName + ";");
+		//list of tables and columns to convert
+		Map columnConvert = getColumnConvert(new File(inputFile.getParentFile().getParentFile(), "table_column_types"));
+		File updateTablesFile = new File(inputFile.getParentFile(), "internal/update-tables-" + tableGroupName + "-" + databaseTypeStr + ".sql");
+		if(databaseTypeStr.equals("oracle")) {
+			File createSynonymsFile = new File(inputFile.getParentFile(), "internal/create-synonyms-" + tableGroupName + "-" + databaseTypeStr + ".sql");
+			createSynonyms = new BufferedWriter(new FileWriter(createSynonymsFile));
+		}
+		
+		updateTables = new BufferedWriter(new FileWriter(updateTablesFile));
+		String line = null;
+		String trimmedLine = null;
+		while((line = in.readLine()) != null) { 
+			trimmedLine = line.trim();
+			if (trimmedLine.length() == 0) continue;
+			if (trimmedLine.startsWith("#")) continue;
+			trimmedLine = trimmedLine + ";";//on update straight from hibernate, no delimiers
+			if (trimmedLine.contains("create table") || trimmedLine.contains("CREATE TABLE")) {
+				// Processing "create table" statement
+				updateTables.write(doTableUtf8(trimmedLine, typeMap, columnConvert));
+				updateTables.newLine();
+				if(createSynonyms!= null) {
+					String [] works = line.split(",");
+					if (works.length != 0) {
+						String [] first = works[0].split (" ");
+						if (first.length >= 3) {
+							String tableName = first[2];
+							createSynonyms.write("create synonym " + tableName + " for " + schema + "." + tableName + ";");
 							createSynonyms.newLine();
 						}
 					}
 				}
 			}
-		}
-		finally {
-			in.close();
+			else if (trimmedLine.startsWith("create index") || trimmedLine.startsWith("CREATE INDEX")) {
+				//don't think hibernate generates these
+				updateTables.write(trimmedLine);
+				updateTables.newLine();
+			}
+			else if(trimmedLine.contains("alter table") || trimmedLine.contains("ALTER TABLE")) {
+				updateTables.write(doColumnUtf8(trimmedLine, typeMap, columnConvert));
+				updateTables.newLine();
+			}
+			else if (trimmedLine.contains("create sequence") || trimmedLine.contains("CREATE SEQUENCE")) {
+				updateTables.write(trimmedLine);
+				updateTables.newLine();
+				if(createSynonyms!= null) {
+					String [] works = line.toString().split(" ");
+					if (works.length >= 3) {
+						String seqName = works[2];
+						if (seqName.lastIndexOf(";") > -1) seqName=seqName.substring(0, seqName.lastIndexOf(";"));
+						createSynonyms.write("create synonym " + seqName + " for " + schema + "." + seqName + ";");
+						createSynonyms.newLine();
+					}
+				}
+			}
 		}
 		
 		updateTables.close();
@@ -410,20 +401,15 @@ public class GenerateCreateTablesUnconstrained {
 	private static 	Map getColumnConvert(File file) throws IOException {
 		Map columnConvert = new HashMap();
 		BufferedReader in = new BufferedReader(new FileReader(file));
-		try {
-			String line,trimmedLine;
-			while((line = in.readLine()) != null) {
-				trimmedLine = line.trim();
-				if (trimmedLine.length() == 0) continue;
-				if (trimmedLine.startsWith("#")) continue;
-				String[] vals = trimmedLine.split(" ");
-				columnConvert.put(vals[0].toLowerCase(), vals);
-			}
-			return columnConvert;
+		String line,trimmedLine;
+		while((line = in.readLine()) != null) {
+			trimmedLine = line.trim();
+			if (trimmedLine.length() == 0) continue;
+			if (trimmedLine.startsWith("#")) continue;
+			String[] vals = trimmedLine.split(" ");
+			columnConvert.put(vals[0].toLowerCase(), vals);
 		}
-		finally {
-			in.close();
-		}
+		return columnConvert;
 	}
 	private static String doTableUtf8(String input, Map typeMap, Map columnConvert) {
 		if (typeMap.isEmpty()) return input;

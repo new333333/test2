@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,9 +53,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -127,7 +125,6 @@ import org.kablink.teaming.module.conferencing.MeetingInfo.MeetingType;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ldap.LdapModule;
-import org.kablink.teaming.module.ldap.LdapModule.LdapSyncMode;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.module.report.ReportModule;
@@ -183,17 +180,14 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
-
 /**
- * ?
- * 
  * @author Peter Hurley
+ *
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class AjaxController  extends SAbstractControllerRetry {
 	
 	//caller will retry on OptimisiticLockExceptions
-	@Override
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -233,9 +227,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 				if (WebHelper.isMethodPost(request)) ajaxUploadImageFile(request, response); 
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
-				if (WebHelper.isMethodPost(request)) ajaxUploadICalendarFile(request, response, false);
-			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE_GWT)) {
-				if (WebHelper.isMethodPost(request)) ajaxUploadICalendarFile(request, response, true);
+				if (WebHelper.isMethodPost(request)) ajaxUploadICalendarFile(request, response);
 			} else if (op.equals(WebKeys.OPERATION_LOAD_ICALENDAR_BY_URL)) {
 				ajaxLoadICalendarByURL(request, response);				
 			} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_CONFIGURATION)) {
@@ -271,7 +263,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 	}
 	
-	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -374,8 +365,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/json/vote_survey", model);				
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 				return new ModelAndView("forum/json/icalendar_upload", model);
-			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE_GWT)) {
-				return new ModelAndView("forum/json/icalendar_upload_gwt", model);
 			} else if (op.equals(WebKeys.OPERATION_UPDATE_TASK)) {
 				return  new ModelAndView("forum/json/update_task", model);
 			}
@@ -483,9 +472,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_FIND_PLACE_FORM)) {
 			return ajaxFindPlaceForm(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
-			return ajaxUploadICalendarFileStatus(request, response, false);
-		} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE_GWT)) {
-			return ajaxUploadICalendarFileStatus(request, response, true);
+			return ajaxUploadICalendarFileStatus(request, response);
 		} else if (op.equals(WebKeys.OPERATION_LOAD_ICALENDAR_BY_URL)) {
 			return ajaxLoadICalendarByURL(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_CONFIGURATION)) {
@@ -585,9 +572,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 		else if (op.equals(WebKeys.OPERATION_VALIDATE_BINDER_QUOTAS)) {
 			return ajaxValidateBinderQuotas(request, response);
-			
-		} else if (op.equals(WebKeys.OPERATION_CHECK_EXISTS_FILES_FROM_APPLET)) {
-			return ajaxCheckIfFilesExist(request, response);
 		}
 		return ajaxReturn(request, response);
 	} 
@@ -890,75 +874,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 	}
 
 	/**
-	 * ?
-	 * 
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	private ModelAndView ajaxCheckIfFilesExist(RenderRequest request, RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		Binder binder = null;
-		Entry entry = null;
-		Long binderId = null;
-		try {
-			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
-		} catch(Exception ex) {}
-		if (binderId != null) {
-			try {
-				binder = getBinderModule().getBinder(binderId);
-			} catch(Exception ex) {}
-		}
-		Long entryId = null;
-		try {
-			entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);				
-		} catch(Exception ex) {}
-		if (entryId != null) {
-			try {
-				entry = getFolderModule().getEntry(binderId, entryId);
-			} catch(Exception ex) {}
-		}
-		String fileNames = PortletRequestUtils.getStringParameter(request, "fileNames", "");
-		List fileNameList = new ArrayList<String>();
-		String[] fns = fileNames.split(",");
-		for (int i = 0; i < fns.length; i++) {
-			if (!fns[i].trim().equals("")) {
-				//See if this file exists
-				if (entry != null) {
-					//This is an entry. Look at the entry's attached files for a match
-					for (FileAttachment fa : entry.getFileAttachments()) {
-						if (fa.getFileExists() && fa.getFileItem().getName().equals(fns[i])) {
-							fileNameList.add(fns[i]);
-							break;
-						}
-					}
-				} else if (binder!= null) {
-					//Now look for an entry in the binder with this name
-					if (binder instanceof Folder) {
-						FolderEntry fe = getFolderModule().getLibraryFolderEntryByFileName((Folder) binder, fns[i]);
-						if (fe != null) {
-							fileNameList.add(fns[i]);
-							continue;
-						}
-					}
-					//This is a binder. Look at the binder's attached files for a match
-					for (FileAttachment fa : binder.getFileAttachments()) {
-						if (fa.getFileExists() && fa.getFileItem().getName().equals(fns[i])) {
-							fileNameList.add(fns[i]);
-							break;
-						}
-					}
-				}
-			}
-		}
-		model.put("fileNames", fileNameList);
-
-		response.setContentType("text/json");
-		return new ModelAndView("forum/json/return_file_names", model);
-	}
-
-	/**
 	 * 
 	 * @param request
 	 * @param response
@@ -1127,8 +1042,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String			syncId;
 		LdapSyncThread	ldapSyncThread;
 		LdapModule		ldapModule;
+		Boolean syncGuids;
 		Boolean syncUsersAndGroups;
-		String[] listOfLdapConfigsToSyncGuid;
 		
 		model = new HashMap();
 		
@@ -1137,8 +1052,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		// Get the id of the sync results we are looking for.
 		syncId = PortletRequestUtils.getStringParameter( request, "ldapSyncResultsId", "" );
 		
-		// Get the list of ldap configs that we need to sync the guid.
-		listOfLdapConfigsToSyncGuid = PortletRequestUtils.getStringParameters( request, "listOfLdapConfigsToSyncGuid" );
+		// Get the flag that tells us whether we should sync the ldap guid
+		syncGuids = PortletRequestUtils.getBooleanParameter( request, "syncGuids", false );
 		
 		// Get the flag that tells us whether we should sync all users and groups.
 		syncUsersAndGroups = PortletRequestUtils.getBooleanParameter( request, "syncUsersAndGroups", false );
@@ -1146,13 +1061,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		// Create an LdapSyncThread object that will do the sync work.
 		// Currently doing the sync on a separate thread does not work.  When doing work on a separate thread
 		// works, replace the call to doLdapSync() with start().
-		ldapSyncThread = LdapSyncThread.createLdapSyncThread(
-														request,
-														syncId,
-														ldapModule,
-														syncUsersAndGroups.booleanValue(),
-														listOfLdapConfigsToSyncGuid,
-														LdapSyncMode.PERFORM_SYNC );
+		ldapSyncThread = LdapSyncThread.createLdapSyncThread( request, syncId, ldapModule, syncUsersAndGroups.booleanValue(), syncGuids.booleanValue() );
 		if ( ldapSyncThread != null )
 		{
 			ldapSyncThread.doLdapSync();
@@ -1813,7 +1722,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 	}
 	
 	private void ajaxUploadICalendarFile(ActionRequest request, 
-			ActionResponse response, boolean gwtRequest) throws Exception {
+			ActionResponse response) throws Exception {
 		// Get a handle on the uploaded file
 		AttendedEntries attendedEntries = new AttendedEntries();
 		String fileHandle = WebHelper.getFileHandleOnUploadedCalendarFile(request);
@@ -1824,7 +1733,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				try {
 					attendedEntries = getIcalModule().parseToEntries(folderId, file.getInputStream());
 				} catch (net.fortuna.ical4j.data.ParserException e) {
-					response.setRenderParameter("ssICalendarException", (gwtRequest ? e.getLocalizedMessage() : "parseException"));
+					response.setRenderParameter("ssICalendarException", "parseException");
 				}
 			}
 			WebHelper.releaseFileHandle(fileHandle);
@@ -1896,7 +1805,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 	}
 	
-	private ModelAndView ajaxUploadICalendarFileStatus(RenderRequest request, RenderResponse response, boolean gwtRequest) {
+	private ModelAndView ajaxUploadICalendarFileStatus(RenderRequest request, RenderResponse response) {
 		int entriesAddedAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryAddedIdsSize", 0);
 		int entriesModifiedAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryModifiedIdsSize", 0);
 		long[] entryAddedIds = PortletRequestUtils.getLongParameters(request, "ssICalendarAddedEntryIds");
@@ -1912,8 +1821,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("exception", exception);
 		
 		response.setContentType("text/html");
-		String jsp = gwtRequest ? "forum/json/icalendar_upload_gwt" : "forum/json/icalendar_upload";
-		return new ModelAndView(jsp, model);
+		return new ModelAndView("forum/json/icalendar_upload", model);
 	}
 	
 	private ModelAndView ajaxLoadICalendarByURL(RenderRequest request, RenderResponse response) {
@@ -2230,22 +2138,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String strURL = adapterUrl.toString();
 		strURL = strURL.replaceAll("&", "&amp;");
 		
-		AdaptedPortletURL adapterUrl2 = new AdaptedPortletURL(request, "ss_forum", Boolean.parseBoolean("true"));
-		adapterUrl2.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-		adapterUrl2.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		adapterUrl2.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-		adapterUrl2.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_CHECK_EXISTS_FILES_FROM_APPLET);
-
-		//This replace has been done AJAX does not allow "&"
-		String strURL2 = adapterUrl2.toString();
-		strURL2 = strURL2.replaceAll("&", "&amp;");
-		
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.BINDER_ID, binderId);
 		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_RECEIVER_URL, strURL);
-		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_CHECK_EXISTS_URL, strURL2);
 		if (binder != null) {
 			Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
 			Long maxUserFileSize = getAdminModule().getUserFileSizeLimit();
@@ -2310,7 +2207,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
 		model.put(WebKeys.URL_OS_INFO, strOSInfo);
         model.put(WebKeys.IS_LICENSE_REQUIRED_EDITION, Boolean.toString(ReleaseInfo.isLicenseRequiredEdition()));
-        model.put(WebKeys.IS_OFFICE_ADD_IN_ALLOWED, (!Utils.checkIfFilr() && !Utils.checkIfIPrint()));
         model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 
 		return new ModelAndView("definition_elements/view_entry_openfile", model);
@@ -2338,7 +2234,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
 		model.put(WebKeys.URL_OS_INFO, strOSInfo);
         model.put(WebKeys.IS_LICENSE_REQUIRED_EDITION, Boolean.toString(ReleaseInfo.isLicenseRequiredEdition()));
-        model.put(WebKeys.IS_OFFICE_ADD_IN_ALLOWED, (!Utils.checkIfFilr() && !Utils.checkIfIPrint()));
         model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 
 		return new ModelAndView("definition_elements/view_entry_openfile", model);
@@ -2369,15 +2264,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String strURL = adapterUrl.toString();
 		strURL = strURL.replaceAll("&", "&amp;");
 		
-		AdaptedPortletURL adapterUrl2 = new AdaptedPortletURL(request, "ss_forum", Boolean.parseBoolean("true"));
-		adapterUrl2.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-		adapterUrl2.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		adapterUrl2.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_CHECK_EXISTS_FILES_FROM_APPLET);
-
-		//This replace has been done AJAX does not allow "&"
-		String strURL2 = adapterUrl2.toString();
-		strURL2 = strURL2.replaceAll("&", "&amp;");
-		
 		//This replace has been done AJAX does not allow "&"
 		String strRefreshURL = adapterFolderRefreshUrl.toString();
 		//strRefreshURL = strRefreshURL.replaceAll("&", "&amp;");
@@ -2387,7 +2273,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.BINDER_IS_LIBRARY, library);
 		model.put(WebKeys.BINDER_ID, binderId);
 		model.put(WebKeys.FOLDER_ATTACHMENT_FILE_RECEIVER_URL, strURL);
-		model.put(WebKeys.FOLDER_ATTACHMENT_FILE_CHECK_EXISTS_URL, strURL2);
 		model.put(WebKeys.FOLDER_ATTACHMENT_APPLET_REFRESH_URL, strRefreshURL);
 		if (binder != null) {
 			Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
@@ -2592,8 +2477,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.URL_DASHBOARD_REQUEST, PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_DASHBOARD_REQUEST, false));
 			Binder binder = getBinderModule().getBinder(binderId);
 			String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, null);
-			String calendarModeType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_MODE_TYPE, "");
-						
+			String calendarModeType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_MODE_TYPE, "");			
+			
 			Map options = new HashMap();
 			boolean eventsByEntry = PortletRequestUtils.getBooleanParameter(request, "ssEntryEvents", false);
 			if (eventsByEntry) {
@@ -2610,7 +2495,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		       	List entries;
 				if (binder instanceof Folder || binder instanceof Workspace) {
 					Document searchFilter = SearchFiltersBuilder.buildGetEntryQuery(request, entryId);
-					Map retMap = getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
+					Map retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 					entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 				} else {
 					//a template
@@ -2694,7 +2579,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 					if ((!virtual) && filtered) {
 						// Yes!  Simply perform the search using that
 						// filter.
-						retMap = getBinderModule().executeSearchQuery(baseFilter, Constants.SEARCH_MODE_NORMAL, options);
+						retMap = getBinderModule().executeSearchQuery(baseFilter, options);
 						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 					}
 					
@@ -2745,7 +2630,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 							modeType = ModeType.MY_EVENTS;
 						}
 						Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
-						retMap = getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
+						retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 						
 						// Are we searching for virtual events?
@@ -2753,7 +2638,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 							// Yes!  Search for the events that are
 							// task entries...
 							searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
-							retMap = getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
+							retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 							List taskEntries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 							int tasks = ((null == taskEntries) ? 0 : taskEntries.size());
 							if (0 < tasks) {
@@ -2854,7 +2739,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 								interval.startDate, interval.endDate));
 					crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
 		
-					Map searchResults = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1000);
+					Map searchResults = getBinderModule().executeSearchQuery(crit, 0, 1000);
 					
 					OrderedMap usersFreeBusyInfo = new LinkedMap();
 					OrderedMap allUsersDates = new LinkedMap();
@@ -3004,11 +2889,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 						model.put(WebKeys.AJAX_ERROR_DETAIL, entry.getTitle());
 					}
 					// 	Next check intra-entry integrity
-					else {
+					else if(Validator.isNotNull(repositoryName)) {
 						if(folder.isMirrored()) {
-							boolean isNetFolder = folder.isAclExternallyControlled();
-							if(Validator.isNotNull(repositoryName) && !ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
-								model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.regularFileInMirroredFolder." + (isNetFolder ? "net" : "mirrored"));					
+							if(!ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+								model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.regularFileInMirroredFolder");					
 							}
 							else if(entryId != 0L) {
 							// 	if entry is not null, the above expression guarantees that
@@ -3018,7 +2902,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 								List<FileAttachment> fas = entry.getFileAttachments(ObjectKeys.FI_ADAPTER); // should be at most 1 in size
 								for(FileAttachment fa : fas) {
 									if(!fileName.equals(fa.getFileItem().getName())) {
-										model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileMultiple." + (isNetFolder ? "net" : "mirrored"));
+										model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileMultiple");
 										model.put(WebKeys.AJAX_ERROR_DETAIL, fa.getFileItem().getName());								
 										break;					
 									}
@@ -3026,8 +2910,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 							}
 						}
 						else {
-							if(Validator.isNotNull(repositoryName) && ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
-								model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileInRegularFolder." + (Utils.checkIfFilr() ? "filr" : "vibe"));							
+							if(ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+								model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileInRegularFolder");							
 							}							
 						}
 					}
@@ -3561,15 +3445,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long groupId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_GROUP_ID);
-		Long teamId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_TEAM_ID);
 		String applicationName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_APPLICATION_GROUP_NAME, "");
 		if (groupId != null) {
 			Group group = (Group)getProfileModule().getEntry(groupId);		
 			model.put(WebKeys.GROUP, group);
 			Set ids = new HashSet();
-			if (ObjectKeys.ALL_USERS_GROUP_INTERNALID.equals(group.getInternalId()) ||
-					ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID.equals(group.getInternalId())) {
-				//We don't try to list all the users or all of the external users. This could take a very long time
+			if (ObjectKeys.ALL_USERS_GROUP_INTERNALID.equals(group.getInternalId())) {
+				//We don't try to list all the users. This could take a very long time
 			} else {
 				List memberList = ((Group)group).getMembers();
 				Iterator itUsers = memberList.iterator();
@@ -3579,23 +3461,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				}
 			}
 			model.put(WebKeys.USERS, getProfileModule().getUsers(ids));
-			model.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));
-		} else if (teamId != null) {
-			Binder binder = getBinderModule().getBinder(teamId);		
-			model.put(WebKeys.TEAM_BINDER, binder);
-			
-			Collection<Principal> usersAndGroups = bs.getBinderModule().getTeamMembers(binder, false);
-			SortedMap<String, User> teamUsers = new TreeMap();
-			SortedMap<String, Group> teamGroups = new TreeMap();
-			for (Principal p : usersAndGroups) {
-				if (p instanceof User) {
-					teamUsers.put(Utils.getUserTitle(p), (User)p);
-				} else if (p instanceof Group) {
-					teamGroups.put(p.getTitle(), (Group)p);
-				}
-			}
-			model.put(WebKeys.USERS, teamUsers.values());
-			model.put(WebKeys.GROUPS, teamGroups.values());
+			model.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));			
 		} else if (!applicationName.equals("")) {
 			ApplicationGroup group = getProfileModule().getApplicationGroup(applicationName);		
 			model.put(WebKeys.GROUP, group);

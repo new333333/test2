@@ -45,7 +45,6 @@ public class UtilityElementProperties
 	implements PropertiesObj
 {
 	private UtilityElement		m_utilityElement;
-	private String m_binderId;
 	
 	/**
 	 * 
@@ -53,7 +52,6 @@ public class UtilityElementProperties
 	public UtilityElementProperties()
 	{
 		m_utilityElement = UtilityElement.LINK_TO_TRACK_FOLDER_OR_WORKSPACE;
-		m_binderId = null;
 	}// end UtilityElementProperties()
 	
 	
@@ -68,7 +66,6 @@ public class UtilityElementProperties
 			
 			utilityElementProps = (UtilityElementProperties) props;
 			setType( utilityElementProps.getType() );
-			setBinderId( utilityElementProps.getBinderId() );
 		}
 	}// end copy()
 	
@@ -84,15 +81,6 @@ public class UtilityElementProperties
 		
 		return str;
 	}// end createConfigString()
-	
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
 	
 	
 	/**
@@ -116,15 +104,6 @@ public class UtilityElementProperties
 	}// end getUtilityElementName()
 	
 
-	/**
-	 * 
-	 */
-	public void setBinderId( String binderId )
-	{
-		m_binderId = binderId;
-	}
-	
-	
 	/**
 	 * 
 	 */

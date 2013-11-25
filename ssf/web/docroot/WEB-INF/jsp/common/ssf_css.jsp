@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -72,10 +72,31 @@ boolean isIE6 = BrowserSniffer.is_ie_6(request);
 <%@ page contentType="text/css" %>
 </c:if>
 <%
-//Color themes: Color themes are no longer available
+//Color themes: 
+//    icib - ICEcore Icy Blue  (default, fallback)
+//    iccg - ICEcore Cool Green
+//    icwg - ICEcore Wintry Gray
+//    cust - Custom
 %>
 
-<jsp:include page="/WEB-INF/jsp/common/css_theme_defaultblue.jsp" />
+<c:set var="ss_color_theme" value="icib" scope="request"/>
+<c:if test="${!empty ssCssTheme}">
+  <c:set var="ss_color_theme" value="${ssCssTheme}" scope="request"/>
+</c:if>
+<c:choose>
+ <c:when test="${ss_color_theme == 'iccg'}">
+  <jsp:include page="/WEB-INF/jsp/common/css_theme_defaultgreen.jsp" />
+ </c:when>
+ <c:when test="${ss_color_theme == 'icwg'}">
+  <jsp:include page="/WEB-INF/jsp/common/css_theme_defaultgray.jsp" />
+ </c:when>
+ <c:when test="${ss_color_theme == 'cust'}">
+  <jsp:include page="/WEB-INF/jsp/common/css_theme_cust.jsp" />
+ </c:when>
+ <c:otherwise>
+  <jsp:include page="/WEB-INF/jsp/common/css_theme_defaultblue.jsp" />
+ </c:otherwise>
+</c:choose>
 <c:if test="${empty ss_skipCssStyles || ss_skipCssStyles != true}">
 .ss_portlet_style {
 <c:if test="${!empty ss_portlet_style_background_color}">
@@ -169,9 +190,7 @@ img { -ms-interpolation-mode: bicubic; }
   	color: ${ss_style_link_hover_color} !important;
 	background: url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
     background-position:  left center;
-	border-radius: 2px;
 	-moz-border-radius: 2px;
-	border-radius: 2px;
 	-webkit-border-radius: 2px;
 	}
 .ss_title_link {
@@ -480,6 +499,7 @@ div.ss_entryContent a:hover {
   	font-size: 10px;
   	padding-right: 5px;
   	color: ${ss_style_metadata_color};
+	white-space: nowrap;
   	}
 .ss_entryDate {
 	color: #666666;
@@ -490,13 +510,8 @@ div.ss_entryContent a:hover {
 	font-family: ${ss_style_title_font_family};
   	font-size: 13px;
   	padding: 5px;
-    border-top: 1px solid #C4C4C4;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 	}
@@ -606,9 +621,7 @@ div.ss_workflow {
   	border: 1px solid #D2D5D1;
   	padding: 4px;
 	margin: 4px 0 4px 0;
-	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
 .ss_replies .ss_entryDescription {
@@ -647,9 +660,7 @@ table.ss_guestbook {
 	background-color: ${ss_entry_description_background_color};
 	margin-bottom: 3px;
 	padding: 5px 0px 0px 5px;
-	border-radius: 3px;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 .ss_tinyControl {
@@ -676,7 +687,7 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
 button, input[type="reset"], input[type="button"], input[type="submit"] {	
 	color:#fff;
  	font-family: ${ss_style_folder_view_font_family};
- 	font-size: 12px;
+ 	font-size: 11px;
 	background: #949494 none repeat scroll 0 0;
 	margin-right:3px;
 	padding: 2px 10px;
@@ -684,10 +695,8 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
   	cursor: pointer;
   	white-space: nowrap;
 	border: 0px;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
     text-align: center !important;
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
@@ -695,30 +704,17 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 	</c:if>
 	}
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
-	color: #135c8f !important;
+	color: #fff;
     text-align: center !important;
-    font-size: 12px !important;
+    font-size: 11px !important;
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
   	padding: 2px 10px !important;
-	border: 0px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
+	border: 0px;
+
   	<c:if test="<%= isIE %>">
   		padding: 0px;
   		padding-top: -2px;
@@ -740,9 +736,7 @@ input[type="button"].n-button {
 	background-color: #81b2bd;
 	border: 0px;
 	height: 20px;
-	border-radius: 15px;
 	-moz-border-radius:15px;
-	border-radius:15px;
 	-webkit-border-radius:15px;
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
@@ -750,25 +744,9 @@ input[type="button"].n-button {
 	</c:if>
 	}
 input[type="button"].n-button:hover {
-	color: #135c8f !important;
-	border: 1px solid #81b2bd;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
   	padding: 2px 10px !important;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
 	}
 
 .n-buttonright {
@@ -788,46 +766,28 @@ input.ss_tinyButton,
 a.ss_tinyButton:link, 
 a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
-	color: #1f1f1f !important;
-	margin-right: 5px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
-	border: 1px solid #B8B8B8 !important;
-	font-weight: normal !important;
-	font-size: 11px;
-	padding: 2px 10px  !important;
-	text-decoration:none;	
+ 	font-size: 11px;
+	background: #949494 none repeat scroll 0 0;
+	color:#FFFFFF !important;
+	margin-right:3px;
+	padding: 2px 10px;
+	text-decoration:none;
+  	cursor: pointer;
   	white-space: nowrap;
-  	cursor: pointer !important;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
 	}
 a.ss_tinyButton:focus,
 a.ss_tinyButton:hover {
+  	color: ${ss_linkbutton_link_hover_color};
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: 11px;
-	color: #135c8f !important;
-	border: 1px solid #81b2bd !important;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
+	color: #fff;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
   	white-space: nowrap;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	-moz-border-radius:10px 10px 10px 10px;
+	-webkit-border-radius:10px 10px 10px 10px;
 }
 
 /* styles for labels: required for forms; optional for views */
@@ -873,20 +833,14 @@ div.ss_tag_content {
 }
 
 .ss_muted_cloud_tag {
-	color: ${ss_style_muted_tag_color};
-	background-color: #ededed;
-	font-size: 13px;
-	padding-right: 2px 6px;
-	line-height: 17px;
-	border: 1px solid #b8b8b8;
-	padding: 2px 6px;
-	border-radius: 4px;
-	-moz-border-radius: 4px;
-	-web-border-radius: 4px;
+  color: ${ss_style_muted_tag_color};
+   font-size: 13px;
+   padding-right: 5px;
+   line-height: 17px;
 }
 .ss_muted_tag_cloud {
   width: 95%;
-  line-height: 28px;
+  padding-top: 1px;
 }
 
 
@@ -929,9 +883,7 @@ div.ss_send_friend {
   padding: 10px;
   background-color: #EBECA5;
   width: 300px;
-  border-radius: 5px;
   -moz-border-radius: 5px;
-  border-radius: 5px;
   -webkit-border-radius: 5px;
 }
 
@@ -1259,15 +1211,15 @@ img.ss_sliding_table_column_image {
   background-color: transparent;
 }
 .ss_sliding_table_row0 {
-  height:26px !important;
+  height:26px;
   background-color: ${ss_sliding_table_row0_background_color}; 
-  line-height:18px !important;
+  line-height:18px;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_sliding_table_row1 {
-  height:26px !important;
+  height:26px;
   background-color: ${ss_sliding_table_row1_background_color}; 
-  line-height:18px !important;
+  line-height:18px;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_highlightEntry {
@@ -1380,7 +1332,7 @@ table.ss_mouseOverInfo {
 	border: 2px solid #72AEB6;
 	border-top: 1px solid #72AEB6;
 	}	
-.ss_tableheader_style, th.ss_sliding_table_row0 {
+.ss_tableheader_style, th.ss_sliding_table_row0, #findThisTable2 tr.ss_sliding_table_row0 td {
 	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
 	background-position:bottom;
 	text-decoration: none;
@@ -1479,9 +1431,7 @@ li.ss_toolbar_gwtui {
 	padding: 2px 10px !important;
 	margin-right: 3px;
 	display: inline-block;
-	border-radius: 10px;
 	-moz-border-radius: 10px;
-	border-radisu: 10px;
 	-webkit-border-radisu: 10px;
 	}
 span.ss_toolbar_inactive {
@@ -1551,9 +1501,9 @@ table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	padding-right:4px;
 	}
 tr.ss_attachments_list_primary_file td, tr.ss_attachments_list_regular_file td {
-	font-size: 12px;
 	padding: 5px 10px 5px 0px;
 	white-space: nowrap;
+	font-size: ${ss_style_font_largestprint};
 	}
 tr.ss_attachments_list_primary_file td {
     background-color: #fff;
@@ -1698,9 +1648,7 @@ div.ss_dashboardProtoDropTarget {
   border: 1px solid ${ss_form_border_color};
   background-color: #fff;
   padding: 5px;
-  border-radius: 3px;
   -moz-border-radius: 3px;
-  border-radius: 3px;
   -webkit-border-radius: 3px;
 <c:if test="<%= isIE %>">
   zoom:1; /* a workaround IE bug - font color not display correctly */
@@ -1879,9 +1827,7 @@ a:hover.ss_box_prev {
 
 /* "newpage" box styles */
 .ss_newpage_box {
-	border-radius: 3px;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
 .ss_newpage_box_header {
@@ -1892,12 +1838,8 @@ a:hover.ss_box_prev {
 	font-weight: bold;
 	padding: 5px;
 	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
@@ -1921,9 +1863,7 @@ a:hover.ss_box_prev {
 
 /* popup box styles */
 .ss_popup_box {
-	border-radius: 3px;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	margin:0px;
 	padding:0px;
@@ -1935,12 +1875,8 @@ a:hover.ss_box_prev {
 	font-weight: bold;
 	padding: 5px;
 	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
- 	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
@@ -2139,12 +2075,8 @@ div.ss_content_outer {		/* also see ss_pseudoPortal */
 	padding:4px 10px;
 	border: 1px solid #b8b8b8;
 	background-color: #fff;
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
 }
@@ -2358,7 +2290,7 @@ div.ss_sidebar_panel_featured {
 	}
 /* titlebar */
 .ss_base_title_bar {
-	background-color: #e0e0e0;
+	background-color: #c4c4c4;
 	color: #333;
 	font-size: ${ss_style_font_normalprint};
 	font-weight: bold;
@@ -2367,12 +2299,8 @@ div.ss_sidebar_panel_featured {
 	padding-top: 5px;
 	padding-left: 5px;
 	padding-right: 5px;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
 	}
@@ -2484,14 +2412,6 @@ div.ss_search_results_pane {
 	padding:0px 15px;
 	background:inherit;
 }
-.ss_search_results_entry_date {
-	font-size: 10px;
-	color: #666666;
-	display: inline;
-	padding-left: 10px;
-	vertical-align: middle;
-}
-
 .ss_search_results_selection_active {
 	background:url(<html:imagesPath/>pics/background_search_results_active.gif) repeat-x !important;
 	text-decoration:none;
@@ -2727,12 +2647,8 @@ div.ss_thumbnail_gallery div {
     font-family: ${ss_style_font_family};
     overflow: hidden;
     background-color: ${ss_gallery_background_color};
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 	}  
@@ -3411,9 +3327,7 @@ a.ss_calendarButton:hover img {
 	padding: 6px;
 	padding-bottom: 9px;
     background: url(<html:imagesPath/>pics/trans30_black.png) repeat;
-	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -3421,12 +3335,8 @@ a.ss_calendarButton:hover img {
 	height: 22px;
 	width: 100%;
 	background-color: #ECECEC;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
 }
@@ -3673,14 +3583,10 @@ div.ss_calendarNaviBar {
 	margin: 0px;
 	padding: 10px;
 	overflow: auto;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
 }
  <c:if test="<%= isIE %>">
 	padding: 0px;
@@ -3704,43 +3610,14 @@ div.ss_calendarNaviBar {
 }
 
 .ss_calendarNaviBar .ss_hoursSelectorTitle {
-	color: #1f1f1f !important;
-	margin-right: 5px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
-	border: 1px solid #B8B8B8;
-	font-weight: normal !important;
-	font-size: 11px !important;
-	padding: 3px 8px  !important;
-	text-decoration:none;	
-	border-radius: 15px;
+	background-color: #e0e0e0;
+	color: #333333;
+	text-decoration: none;
+	border: 1px solid #FFFFFF;
+	font-size: 12px !important;
 	-moz-border-radius: 15px;
-	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
-
-.ss_calendarNaviBar .ss_hoursSelectorTitle:hover {
-	color: #135c8f !important;
-	border: 1px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
-}
-
 
 .ss_calendarNaviBar .ss_calHoursSelectorMenu {
  <c:if test="<%= isIE %>">
@@ -3801,16 +3678,12 @@ div.ss_calendarNaviBar {
  </c:if>	
 	border-top:none;
 	padding: 4px 1px;
-	border-radius: 3px;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 
 .popupMenu {
-	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	background-color: #3A3E40;
 	position: absolute;
@@ -3835,9 +3708,7 @@ div.ss_calendarNaviBar {
 
 .popupMenuItem:hover {
 	background: none repeat scroll 0 0 #505354;
-	border-radius: 3px;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
 .popupMenuItem a {
@@ -3992,9 +3863,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 	margin-top: 20px;
 	background-color: #f6f6f6;
 	padding: 10px;
-	border-radius: 3px;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
 .ss_diff_content .head2 {
@@ -4016,8 +3885,8 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 }
 
 tr.ss_tab_table_columnhead td, tr.ss_tab_table_columnhead th {
-	color: #505354; 
-	padding: 3px 5px 2px 2px; 
+	color: #333; 
+	padding: 4px 5px 4px 2px; 
 	border-bottom: 1px solid #bbbbb9; 
 	white-space: nowrap;
 	background:url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
@@ -4070,9 +3939,7 @@ div.ss_searchContainer ul.ss_nobullet {
 
 div.ss_searchContainer div.ssPageNavi {
 	border-bottom: 1px solid #d2d5d1;
-	border-radius: 0px;
 	-moz-border-radius: 0px;
-	border-radius: 0px;
 	-webkit-border-radius: 0px;
 	}
 div.ss_surveyContainer {
@@ -4104,9 +3971,7 @@ div.ss_searchContainer #ss_content {
 	background: #ebf5f5;
 	padding: 10px 5px 2px 0px;
 	margin:0px;
-	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 #ss_surveyForm {
@@ -4124,7 +3989,7 @@ div.ss_searchFormFooter {
 #ss_searchForm table, #ss_surveyForm_main {
 	background-color: transparent;
 }
-#ss_searchForm input[type="text"] { 
+#ss_searchForm input { 
 	width: 400px;
 	font-size: ${ss_style_font_largerprint};
 	}
@@ -4229,12 +4094,8 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	border-bottom: 0px !important;
 	border-top: 1px solid #d2d5d1;
 	margin-bottom: 3px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 }
@@ -4258,9 +4119,6 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	padding: 0px 24px 0px 0px;
 }
 
-div.ss_search_hit {
-	background: #f6f6f6;
-}
 div.ss_thumbnail {
 	float: left;
 	font-size: 8px;
@@ -4268,10 +4126,10 @@ div.ss_thumbnail {
 	text-align:center;
 	}
 div.ss_thumbnail img {width:24px;height:24px;padding:0px; margin:0px;}
-div.ss_entry, div.ss_reply {
+div.ss_entry {
 	float: left;
 }
-div.ss_entry p, div.ss_reply p {
+div.ss_entry p {
 	margin-top:    2px;
 	margin-bottom: 2px;
 
@@ -4303,8 +4161,7 @@ div.ss_more {
     font-size: 10px;
 }
 div.ss_entryDetails {padding:0px 0px 5px 30px;}
-div.ss_entryDetails2 {padding:0px 0px 0px 0px;}
-div.ss_entryDetails p, div.ss_entryDetails2 p {
+div.ss_entryDetails p {
 	margin: 0px 3px 1px 0px;
 	font-size: ${ss_style_font_smallprint};
 	color: #666;
@@ -4347,58 +4204,17 @@ a.ss_pageNumberCurrent {
 div.ss_options_container {border-bottom:1px solid #afc8e3; margin:0px 0px 0px 0px;padding:0px 12px 12px 12px;}
 div.ss_options {padding: 6px 0px 6px 0px;}
 div.ss_options_container h4 {margin:6px 0px 6px 0px;}
-a.ss_button, a.ss_button:visited {
-	color:#fff;
- 	font-family: ${ss_style_folder_view_font_family};
- 	font-size: 11px;
-	background: #949494 none repeat scroll 0 0;
-	margin-right:3px;
+a.ss_button {
+	background: url(<html:imagesPath/>pics/trans10_black_blend.png) repeat;
+	background-position:bottom;
+	border: 1px solid #ccc;
 	padding: 2px 10px;
-	text-decoration:none;
-  	cursor: pointer;
-  	white-space: nowrap;
-	border: 0px;
-	border-radius: 15px;
 	-moz-border-radius: 15px;
-	border-radius: 15px;
 	-webkit-border-radius: 15px;
-    text-align: center !important;
-	<c:if test="<%= isIE %>">
-  		margin-left: 1px; 
-  		margin-right: 1px;
-	</c:if>
-	}
+}
 a.ss_button:hover {
-	color: #135c8f !important;
-    text-align: center !important;
-    font-size: 11px !important;
-    font-family: Arial, sans-serif !important;
-    white-space: nowrap !important;
-    text-decoration: none !important;
-  	padding: 2px 10px !important;
-	border: 0px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
-  	<c:if test="<%= isIE %>">
-  		padding: 0px;
-  		padding-top: -2px;
-  		padding-bottom: 1px;
-  		padding-left: 1px; 
-  		padding-right: 1px;
-	</c:if>
+	color: #FFFFFF;
+	background: url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
 }
 #ss_filterSummary_content {float:left;}
 #ss_filterSummary_content p, #ss_searchForm_changeBox p {
@@ -4443,14 +4259,11 @@ input.ss_saveQueryName {
 #ss_surveyForm_questions {
 	margin:0px 0px 0px 0px;
 }
-
 div.ss_questionContainer {
 	position: relative;
 	padding: 10px;
 	margin: 10px 0px;
-	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;	
 	-webkit-border-radius: 5px;	
 }
 div.ss_subsection {
@@ -4458,18 +4271,14 @@ div.ss_subsection {
 	padding: 10px;
 	margin: 10px 0px;
 	background-color:#f6f6f6;
-	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;	
 	-webkit-border-radius: 5px;	
 }
 div.ss_subsection2 {
 	padding: 10px;
 	margin: 10px 0px;
 	background-color:#ededed;
-	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;	
 	-webkit-border-radius: 5px;	
 }
 div.ss_questionContainer h4 {
@@ -4493,49 +4302,29 @@ div.ss_questionContainer p {padding-right: 30px;}
 div.ss_questionContainer ol {margin: 10px 0px;}
 
 div.ss_questionContainer a.ss_tinyButton {
-
-	color: #1f1f1f !important;
-	margin-right: 5px;
-	display:block;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
-	border: 1px solid #B8B8B8;
-	font-weight: normal !important;
-	font-size: 11px;
-	padding: 2px 10px !important;
+	background: #949494 none repeat scroll 0 0;
+	color:#FFFFFF !important;
+  	font-size: 11px;
 	margin-right: 10px;
-	text-decoration:none;	
+	padding: 2px 10px;
+	text-decoration:none;
+  	cursor: pointer;
   	white-space: nowrap;
-  	cursor: pointer !important;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
 	}
 div.ss_questionContainer a.ss_tinyButton:focus,
 div.ss_questionContainer a.ss_tinyButton:hover {
   	font-size: 11px;
-	color: #135c8f !important;
-	border: 1px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
+	color: #fff;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
   	white-space: nowrap;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	-moz-border-radius:10px 10px 10px 10px;
+	-webkit-border-radius:10px 10px 10px 10px;
 }
+
+
 
 table.ss_surveys_list, table.ss_milestones_list {
 	width:100%;
@@ -4781,13 +4570,12 @@ div.ss_content_outer table.ss_tasks_list {
 }
 
 table.ss_tasks_list {
-	margin:6px 0px 4px 8px;
+	margin:6px 4px 4px 4px;
 	padding: 0px;
 	border-top: 1px solid #D2D5D1;
 	border-left: 1px solid #D2D5D1;
 	border-right: 1px solid #D2D5D1;
 	border-spacing: 0px;
-	width: 99%;
 	empty-cells: show;
 	border-collapse: collapse;
 }
@@ -4984,9 +4772,7 @@ div.ssPageNavi {
 	padding-top: 3px;
 	padding-bottom: 4px;
 	background-color: #ebf5f5; /* teal 5*/
-	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
 div.ssPageNavi table td {
@@ -5003,7 +4789,6 @@ div.ssPageNavi table td {
 .ssPageNavi .ss_go_to_page {
 	font-size: 11px;
 	color: #333333;
-	padding-right: 8px;
 	}
 .ssPageNavi input.form-text {
 	border: 1px solid #333333;
@@ -5171,9 +4956,7 @@ ul.placesForm, ul.placesForm li {
 	padding: 6px 10px;
 	margin: 1px 4px 4px 4px;
 	border: 1px solid #949494;
-	border-radius: 3px;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
 .ss_combobox_autocomplete_list ul li {
@@ -5223,9 +5006,7 @@ span.ss_infoDivValue {
 	font-size: ${ss_style_font_normalprint};
 	font-family: ${ss_style_font_family};
 	color: ${ss_form_element_text_color};
-	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -5239,8 +5020,6 @@ span.ss_infoDivValue {
 }
 .ss_muster_users:hover {
 	color: #135c8f;
-	font-size: 11px !important;
-	font-weight: normal; 
 }
 .ss_tasks_list .ss_muster_users {
 	font-size: 10px !important;
@@ -5260,9 +5039,7 @@ span.ss_infoDivValue {
 .ss_table_rounded {
 	margin: 12px;
 	background-color: #ededed;
-	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border: 1px solid #c4c4c4;
 	}

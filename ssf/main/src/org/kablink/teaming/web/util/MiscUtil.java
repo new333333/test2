@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,18 +32,13 @@
  */
 package org.kablink.teaming.web.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.security.MessageDigest;
+
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.mail.internet.AddressException;
@@ -55,9 +50,14 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -68,9 +68,10 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.util.StringUtil;
 import org.springframework.web.multipart.MultipartFile;
+
 
 /**
  * This class contains a collection of miscellaneous utility methods.
@@ -79,27 +80,9 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public final class MiscUtil
 {
-	protected static Log m_logger = LogFactory.getLog( MiscUtil.class );
-	
-	// The following are used as the return values for the various
-	// comparators.
-	public final static int COMPARE_EQUAL	=   0;
-	public final static int COMPARE_GREATER	=   1;
-	public final static int COMPARE_LESS	= (-1);
-	
-	public static class IdTriple {
-		public Long		m_binderId;		//
-		public Long		m_entryId;		//
-		public String	m_entityType;	//
-		
-		public IdTriple(Long binderId, Long entryId, String entityType) {
-			super();
-			m_binderId   = binderId;
-			m_entryId    = entryId;
-			m_entityType = entityType;
-		}
-	}
+	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
 
+	
 	/**
 	 * Class constructor that prevents this class from being instantiated.
 	 */
@@ -257,7 +240,7 @@ public final class MiscUtil
 	
 	/**
 	 * This method will return true if the given name is the name of a system user account.
-	 * Currently there are 5 system user accounts: "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
+	 * Currently there are 5 system user accounts: "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
 	 */
 	public static boolean isSystemUserAccount( String name )
 	{
@@ -266,8 +249,7 @@ public final class MiscUtil
 		
 		if ( name.equalsIgnoreCase( "admin" ) || name.equalsIgnoreCase( "guest" ) ||
 			  name.equalsIgnoreCase( "_postingAgent" ) || name.equalsIgnoreCase( "_jobProcessingAgent" ) ||
-			  name.equalsIgnoreCase("_synchronizationAgent") ||
-			  name.equalsIgnoreCase("_fileSyncAgent"))
+			  name.equalsIgnoreCase("_synchronizationAgent"))
 		{
 			return true;
 		}
@@ -409,31 +391,6 @@ public final class MiscUtil
 	}
 
 	/**
-	 * Returns true if a Collection has anything in it and false
-	 * otherwise.
-	 * 
-	 * @param c
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static boolean hasItems(Collection c) {
-		return ((null != c) && (!(c.isEmpty())));
-	}
-	
-	/**
-	 * Returns true if a Map has anything in it and false otherwise.
-	 * 
-	 * @param m
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static boolean hasItems(Map m) {
-		return ((null != m) && (!(m.isEmpty())));
-	}
-	
-	/**
 	 * Returns true is s refers to a non null, non 0 length String and
 	 * false otherwise.
 	 * 
@@ -488,18 +445,6 @@ public final class MiscUtil
 		}
 		return reply;
 	}
-
-	/**
-	 * Returns true if an email address is valid and false otherwise.
-	 * 
-	 * @param ema
-	 * 
-	 * @return
-	 */
-	public static boolean isEmailAddressValid( String usedAs, String ema )
-	{
-		return( null != validateEmailAddress( usedAs, ema ));
-	}// end isEmailAddressValid()
 	
 	/**
 	 * Performs a collated compare on two strings without generating any
@@ -519,23 +464,6 @@ public final class MiscUtil
 				((null == s2) ? "" : s2) );
    }
 
-	/**
-	 * Converts a String to an int protected against any exceptions.
-	 * 
-	 * @param s
-	 * @param def
-	 * 
-	 * @return
-	 */
-	public static int safeSToInt(String s, int def) {
-		int reply = def;
-		if (hasString(s)) {
-			try                  {reply = Integer.parseInt(s);}
-			catch (Exception ex) {reply = def;                }
-		}
-		return reply;
-	}
-	
 	/**
 	 * Returns the ZoneInfo for the zone we're currently running under.
 	 * 
@@ -666,34 +594,6 @@ public final class MiscUtil
 		return reply;
 	}// end validateEmailAddressCollection()
 
-	/**
-	 * Given an email address in string form, returns the corresponding
-	 * InternetAddress if the email address is valid and false
-	 * otherwise.
-	 * 
-	 * @param usedAs
-	 * @param ema
-	 * 
-	 * @return
-	 */
-	public static InternetAddress validateEmailAddress( String usedAs, String ema )
-	{
-		// If we we don't have an email address to validate...
-		ema = (( null == ema ) ? "" : ema.trim()); 
-		if ( 0 == ema.length() )
-		{
-			// ...return null.
-			return null;
-		}
-
-		// Otherwise, construct an InternetAddress from it...
-		InternetAddress ia = new InternetAddress();
-		try { ia.setAddress( ema ); } catch ( Exception e ) {};
-		
-		// ...and validate that.
-		return validateIA( usedAs, ia );
-	}// end validateEmailAddress()
-	
 	/*
 	 * Validates an InternetAddress as containing a valid email
 	 * address.
@@ -812,7 +712,6 @@ public final class MiscUtil
 		String url;
 		String lang;
 		String guideComponent = null;
-		String product;
 		
 		// Get the base help url from ssf-ext.properties.
 		url = SPropsUtil.getString( "help.hostName", "http://www.novell.com" );
@@ -827,17 +726,8 @@ public final class MiscUtil
 		
 		url += "/documentation";
 		
-		product = "/vibe33";
-		
-		// Are we running Filr?
-		if ( Utils.checkIfFilr() )
-		{
-			// Yes
-			url += "/novell-filr1";
-			product = "/filr1";
-		}
 		// Are we running Novell Teaming?
-		else if ( ReleaseInfo.isLicenseRequiredEdition())
+		if ( ReleaseInfo.isLicenseRequiredEdition())
 		{
 			// Yes
 			url += "/vibe33";
@@ -850,17 +740,17 @@ public final class MiscUtil
 			if ( guideName.equalsIgnoreCase( USER_GUIDE ) )
 			{
 				// Get the url to the user guide.
-				guideComponent = product + "_user/data/";
+				guideComponent = "/vibe33_user/data/";
 			}
 			else if ( guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
 			{
 				// Get the url to the advanced user guide.
-				guideComponent = product + "_useradv/data/";
+				guideComponent = "/vibe33_useradv/data/";
 			}
 			else if ( guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
 			{
 				// Get the url to the administration guide.
-				guideComponent = product + "_admin/data/";
+				guideComponent = "/vibe33_admin/data/";
 			}
 			else
 				guideComponent = null;
@@ -956,6 +846,7 @@ public final class MiscUtil
 		return DOC_LANGS[i];
 	}
 	
+	
 	/**
 	 * Returns true if we're to run in HTML standards mode and false
 	 * otherwise.
@@ -963,292 +854,10 @@ public final class MiscUtil
 	 * @return
 	 */
 	public static boolean isHtmlStandardsMode() {
-		return SPropsUtil.getBoolean("html.standards.mode", true);
+		return SPropsUtil.getBoolean("html.standards.mode", false);
 	}
 	
 	public static boolean isHtmlQuirksMode() {
 		return (!(isHtmlStandardsMode()));
 	}
-	
-	/**
-	 * Replaces all occurrences of oldSub with newSub in s.
-	 * 
-	 * The implementation was copied from StringUtil.replace().
-	 * 
-	 * @param s
-	 * @param oldSub
-	 * @param newSub
-	 * 
-	 * @return
-	 */
-	public static String replace(String s, String oldSub, String newSub) {
-		if ((s == null) || (oldSub == null) || (newSub == null)) {
-			return null;
-		}
-
-		int y = s.indexOf(oldSub);
-
-		if (y >= 0) {
-			StringBuffer sb = new StringBuffer();
-			int length = oldSub.length();
-			int x = 0;
-
-			while (x <= y) {
-				sb.append(s.substring(x, y));
-				sb.append(newSub);
-				x = y + length;
-				y = s.indexOf(oldSub, x);
-			}
-
-			sb.append(s.substring(x));
-
-			return sb.toString();
-		}
-		else {
-			return s;
-		}
-	}
-	
-	/**
-	 * Returns a List<IdTriple> of the binder ID/entry ID/entity type
-	 * stored in a multiple entity ID string.
-	 * 
-	 * @param multipleEntityIds
-	 * 
-	 * @return
-	 */
-	public static List<IdTriple> getIdTriplesFromMultipleEntryIds( String multipleEntityIds )
-	{
-		List<IdTriple> reply = new ArrayList<IdTriple>();
-		if ( hasString( multipleEntityIds ) )
-		{
-			String[] meIds = multipleEntityIds.split( "," );
-			for ( String meId:  meIds )
-			{
-				String[] eId = meId.split( ":" );
-				reply.add(new IdTriple(Long.parseLong(eId[0]), Long.parseLong(eId[1]), eId[2]));
-			}
-		}
-		return reply;
-	}
-	
-	/**
-	 * Validates that a Collection<Long> is non-null.
-	 * 
-	 * @param lC
-	 * 
-	 * @return
-	 */
-	public static Collection<Long> validateCL(Collection<Long> lC)
-	{
-		return ( ( null == lC ) ? new HashSet<Long>() : lC );
-	}// end validateCL()
-	
-	/**
-	 * Validates that a Collection<String> is non-null.
-	 * 
-	 * @param lS
-	 * 
-	 * @return
-	 */
-	public static Collection<String> validateCS(Collection<String> sC)
-	{
-		return ( ( null == sC ) ? new HashSet<String>() : sC );
-	}// end validateCS()
-	
-	/**
-	 * Validates that a List<InternetAddress> is non-null.
-	 * 
-	 * @param iaList
-	 * 
-	 * @return
-	 */
-	public static List<InternetAddress> validateIAL( List<InternetAddress> iaList )
-	{
-		return ( ( null == iaList ) ? new ArrayList<InternetAddress>() : iaList );
-	}// end validateIAL()
-	
-	/**
-	 * Validates that a List<Locale> is non-null.
-	 * 
-	 * @param lList
-	 * 
-	 * @return
-	 */
-	public static List<Locale> validateLL( List<Locale> lList )
-	{
-		return ( ( null == lList ) ? new ArrayList<Locale>() : lList );
-	}// end validateIAL()
-	
-	/*
-	 * Converts a byte[] to a string of hex characters.
-	 */
-	private static String baToHS( final byte[] b )
-	{
-		final StringBuffer sb = new StringBuffer( b.length * 2 );
-		final int baLen = b.length;
-		for ( int i = 0; i < baLen; i += 1 )
-		{
-			int v = ( b[i] & 0xff );
-			if ( v < 16 )
-			{
-				sb.append( '0' );
-			}
-			sb.append( Integer.toHexString( v ) );
-		}
-		return sb.toString();
-	}// end baToHS()
-	
-	/**
-	 * Returns the MD5 hash from a byte[].
-	 * 
-	 * @param dataBytes
-	 * 
-	 * @return
-	 * 
-	 * @throws Exception
-	 */
-	public static String getMD5Hash( byte[] dataBytes ) throws Exception
-	{
-		// Read the data through the MD5 digest...
-	    InputStream		input     =  new ByteArrayInputStream( dataBytes );
-	    byte[]			buffer    = new byte[1024];
-	    MessageDigest	md5Digest = MessageDigest.getInstance( "MD5" );
-	    int				read;
-	    do {
-	        read = input.read( buffer );
-	        if ( read > 0 )
-	        {
-	            md5Digest.update( buffer, 0, read );
-	        }
-	    } while ( read != (-1) );
-	    input.close();
-
-	    // ...and return the hash as a string.
-	    return baToHS( md5Digest.digest() );
-	}// end getMD5Hash()
-	
-	public static String getMD5Hash( String data ) throws Exception
-	{
-		// Always use the initial form of the method.
-		return getMD5Hash( data.getBytes() );
-	}// end getMD5Hash()
-
-	/**
-	 * Given a DefinableEntity that's a FolderEntry, returns the
-	 * FileAttachment to use as the entity's primary file attachment,
-	 * if available.  Otherwise, returns null.
-	 * 
-	 * @param de
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static FileAttachment getPrimaryFileAttachment( DefinableEntity de )
-	{
-		// Do we have a DefinableEntity that's a FolderEntry?
-		FileAttachment reply = null;
-		if ( ( null != de ) && ( de instanceof FolderEntry ) )
-		{
-			// Yes!  Does that entry have a primary file attribute?
-			FolderEntry fe = ((FolderEntry) de);
-			Map model  = new HashMap();
-			DefinitionHelper.getPrimaryFile( fe, model );
-			String attrName = ((String) model.get( WebKeys.PRIMARY_FILE_ATTRIBUTE ) );
-			if ( hasString( attrName ) )
-			{
-				// Yes!  Can we access the custom attribute values for
-				// that attribute?
-				CustomAttribute ca = fe.getCustomAttribute( attrName );
-				if ( null != ca )
-				{
-					// Yes!  Does it contain any FileAttachment's?
-					Collection values = ca.getValueSet();
-					if ( hasItems( values ) )
-					{
-						// Yes!  Return the first one.
-						reply = ((FileAttachment) values.iterator().next());
-					}
-				}
-			}
-	
-			// Do we have the FileAttachment for the entry yet?
-			if ( null == reply )
-			{
-				// No!  Does it have any attachments?
-				Collection<FileAttachment> atts = fe.getFileAttachments();
-				if ( hasItems( atts ) ) {
-					// Yes!  Return the first one.
-					reply = ((FileAttachment) atts.iterator().next());
-				}
-			}
-		}
-
-		// If we get here, reply refers to the DefinableEntity's
-		//primary file attachment or is null if one can't be
-		//determined.  Return it.
-		return reply;
-	}
-
-    public static String getPrimaryFileName(DefinableEntity de) {
-        String fName = null;
-        FileAttachment fa = MiscUtil.getPrimaryFileAttachment( de );
-        FileItem fi = fa.getFileItem();
-        if ( null != fi ) {
-            fName = fi.getName();
-        }
-        return fName;
-    }
-
-	/**
-	 * Returns the display string for the product name.
-	 * 
-	 * @param user
-	 * 
-	 * @return
-	 */
-	public static String getProductName( User user )
-	{
-		String keyTail;
-		if ( Utils.checkIfFilr() )
-		     keyTail = "filr";
-		else keyTail = "vibe";
-		return NLT.get( ( "productName." + keyTail ), user.getLocale() );
-	}
-	
-	public static String getProductName()
-	{
-		// Always use the initial form of the method.
-		return getProductName( RequestContextHolder.getRequestContext().getUser() );
-	}
-
-	/**
-	 * If there is more than one entry in a List<String>, it is sorted.
-	 * Simply returns the list it was given, sorted or otherwise. 
-	 *  
-	 * @param ls
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static List<String> sortStringList( List<String> ls ) {
-		if ( ( null != ls ) && ( 1 < ls.size() ) )
-		{
-			StringComparator sc = new StringComparator( RequestContextHolder.getRequestContext().getUser().getLocale() );
-			Collections.sort( ls, sc );
-		}
-		return ls;
-	}
-
-    public static boolean isPdf(String filename) {
-        boolean isPdf = false;
-        if (hasString(filename)) {
-            int pPos = filename.lastIndexOf('.');
-            if (0 < pPos) {
-                isPdf = filename.substring(pPos).toLowerCase().equals(".pdf");
-            }
-        }
-        return isPdf;
-    }
-
 }// end MiscUtil

@@ -33,8 +33,6 @@
  */
 %>
 
-<%@ page import="org.kablink.teaming.util.Utils" %>
-
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("access.configure") %>' scope="request"/>
@@ -87,14 +85,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <c:set var="roleId" value="<%= roleId %>" />
 <div class="ss_portlet diag_modal2">
 	<ssf:form titleTag="access.configure">
-
-<% if ( Utils.checkIfFilr() == false ) { %>
 	<ssf:showHelp guideName="adv_user" pageId="access_mngusers" sectionId="access_mngusers_entry" />
-<% } %>
-<% else { %>
-	<ssf:showHelp guideName="admin" pageId="access_mngusers" sectionId="access_usersgroups-access_mngusers_entry" />
-<% } %>
-
 	<div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
 		<div>
 			<table cellpadding="0" cellspacing="0" width="100%">
@@ -133,53 +124,6 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 			</tr>
 		</table>
 
-<c:set var="accessControlShareItemCount" value="0"/>
-<c:forEach var="shareItem" items="${ss_accessControlShareItems}">
-	<jsp:useBean id="shareItem" type="org.kablink.teaming.domain.ShareItem" />
-	<%
-	if (shareItem.isLatest()) {
-		%>
-		<c:set var="accessControlShareItemCount" value="${accessControlShareItemCount + 1}"/>
-		<%
-	}
-	%>
-</c:forEach>
-
-  <div class="margintop3 ss_newpage_box" style="padding:10px; background-color: #f6f6f6;">
-    <div>
-      <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.sharing"/></span>
-    </div>
-    <c:if test="${accessControlShareItemCount == 0}">
-      <div style="padding-top:6px;">
-        <span><ssf:nlt tag="binder.configure.access_control.sharing.none"><ssf:param
-          name="value" value="${binderType}"/></ssf:nlt></span>
-      </div>
-    </c:if>
-    <c:if test="${accessControlShareItemCount gt 0}">
-      <div style="padding-top:6px;">
-        <c:if test="${accessControlShareItemCount == 1}">
-          <span><ssf:nlt tag="binder.configure.access_control.sharing.one"><ssf:param
-          name="value" value="${binderType}"/></ssf:nlt></span>
-        </c:if>
-        <c:if test="${accessControlShareItemCount gt 1}">
-          <span><ssf:nlt tag="binder.configure.access_control.sharing.more"><ssf:param
-          name="value" value="${binderType}"/><ssf:param 
-            name="value" value="${accessControlShareItemCount}"/></ssf:nlt>
-          </span>
-        </c:if>
-        <span style="padding-left:10px;">
-          <a class="ss_button" href="<ssf:url><ssf:param 
-	  		name="action" value="configure_access_control"/><ssf:param 
-	  		name="actionUrl" value="true"/><ssf:param 
-	  		name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
-	  		name="workAreaType" value="${ssWorkArea.workAreaType}"/><ssf:param
-	  		name="operation" value="manage_sharing"/></ssf:url>"
-          ><ssf:nlt tag="binder.configure.access_control.sharing.manageShares"/></a>
-        </span>
-      </div>
-    </c:if>
-  </div>
-		
 		<div class="margintop3 ss_newpage_box" style="padding:10px; background-color: #f6f6f6;">
 			<c:if test="${ssEntryHasEntryAcl && !ss_accessControlConfigureAllowed}">
 			<div>

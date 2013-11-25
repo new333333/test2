@@ -77,7 +77,47 @@ public class DispatchServer extends GenericServlet {
 		Integer operation = (Integer) req.getAttribute(CrossContextConstants.OPERATION);
 		
 		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) { 
-			throw new UnsupportedOperationException("This operation is no longer supported");
+			if(true)
+				throw new UnsupportedOperationException("This operation is no longer supported");
+			
+			// Authentication request: This is treated differently than regular SSFS requests.
+			String serverName = (String) req.getAttribute(CrossContextConstants.SERVER_NAME);
+			String userName = (String) req.getAttribute(CrossContextConstants.USER_NAME);
+			String password = (String) req.getAttribute(CrossContextConstants.PASSWORD);
+			Boolean ignorePassword = (Boolean) req.getAttribute(CrossContextConstants.IGNORE_PASSWORD);
+			if(ignorePassword == null) {
+				ignorePassword = SPropsUtil.getBoolean("ssfs.ignore.password.enabled", false);
+			}
+
+			String zoneName = getZoneModule().getZoneNameByVirtualHost(serverName);
+			
+			// Clear request context for the thread.
+			RequestContextHolder.clear();
+
+			// Authenticate the user against SSF user database.
+			try {
+				User user = AuthenticationManagerUtil.authenticate
+					(zoneName, userName, password, false, ignorePassword, LoginInfo.AUTHENTICATOR_WEBDAV);
+				req.setAttribute(CrossContextConstants.USER_ID, user.getId());
+			}
+			catch(Exception e) {
+				// Instead of throwing ServletException to indicate an error, we pass
+				// an error status code to the caller by storing it in the servlet
+				// request object. This error handling mechanism may feel less intuitive 
+				// than using an exception. However, throwing a ServletException causes
+				// servlet container to dump the error in a log file along with its
+				// full stack dump (this depends on the container in use) even before
+				// the control actually returns to the caller. This is because, for
+				// cross-context dispatch operation, servlet container is engaged in the
+				// middle. To avoid creating this huge log entry, we will pass error
+				// status using error code (like in C) across cross-context boundary,
+				// rather than utilizing more typical exception mechanism. 
+				
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_AUTHENTICATION_FAILURE);	
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
+				logger.warn(e);
+				return;
+			}		
 		}
 		else { 
 			// Must be a SSFS request: This operation requires normal context

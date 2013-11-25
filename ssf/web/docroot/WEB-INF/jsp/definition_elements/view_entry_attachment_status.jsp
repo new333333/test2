@@ -43,7 +43,7 @@
     ><span id="fileStatus${ss_divCounter}_${ss_attachedFile.id}">
       <c:if test="${ss_attachedFile.fileStatus != 0}">${ss_attachedFile.fileStatusText}</c:if>
       <c:if test="${ss_attachedFile.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
-      </span><img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_sm.png"/></a>
+      </span><img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_arrow.png"/></a>
   </div>
   <div id="ss_fileStatusMenu${ss_divCounter}_${ss_attachedFile.id}" class="ss_actions_bar_submenu" style="position:absolute; display:none;">
     <div><span class="ss_bold" style="padding: 5px; color: #999;"><ssf:nlt tag="file.setStatus"/></span></div>

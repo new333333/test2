@@ -60,7 +60,7 @@ public class DefaultEmailPosting extends SSCronTriggerJob implements EmailPostin
 
 	public void enable(boolean enable, Long zoneId) {
 		//get rid of old functionality when
-		if (enable == false) unscheduleJob(zoneId.toString(), POSTING_GROUP);
+		if (enable == false) removeJob(zoneId.toString(), POSTING_GROUP);
 		else enable(enable, new CronJobDescription(zoneId, zoneId.toString(), POSTING_GROUP, POSTING_DESCRIPTION));
  	}
 

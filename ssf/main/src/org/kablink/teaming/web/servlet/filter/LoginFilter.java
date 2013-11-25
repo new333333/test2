@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,19 +52,12 @@ import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.extuser.ExternalUserRespondingToInvitationException;
-import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetException;
-import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetVerificationException;
-import org.kablink.teaming.extuser.ExternalUserRespondingToVerificationException;
-import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -75,7 +68,6 @@ import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -86,17 +78,11 @@ import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
 
-/**
- * ?
- * 
- * @author ?
- */
 public class LoginFilter  implements Filter {
-	@Override
+
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
 
-	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
@@ -110,8 +96,7 @@ public class LoginFilter  implements Filter {
 				boolean mobileFullUI = false;
 				if (session != null) {
 					Boolean mfu = (Boolean) session.getAttribute(WebKeys.MOBILE_FULL_UI);
-					if (Utils.checkIfFilr() || (mfu != null && mfu)) {
-						//In Filr we don't support the mobile ui. just use the full ui
+					if (mfu != null && mfu) {
 						mobileFullUI = true;
 					}
 				}
@@ -149,17 +134,6 @@ public class LoginFilter  implements Filter {
 					}
 				}
 
-				if(req.getQueryString() != null && req.getQueryString().contains(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN + "=")) {
-					// This might be a response from external user to an invitation. Should check and deal with it if so.
-					ExternalUserUtil.handleResponseToInvitationOrConfirmation(WebHelper.getRequiredSession(req), Http.getCompleteURL(req));
-					
-					// This might be a response from external user to reset their password or verify that
-					// they reset their password.
-					ExternalUserUtil.handleResponseToPwdReset(
-															WebHelper.getRequiredSession( req ),
-															Http.getCompleteURL( req ) );
-				}
-
 				if(WebHelper.isGuestLoggedIn(req)) {
 					// User is logged in as guest, which simply means that the user
 					// is currently accessing Teaming without logging in as a regular 
@@ -182,26 +156,7 @@ public class LoginFilter  implements Filter {
 					
 				}
 			}
-		}
-		catch(ExternalUserRespondingToInvitationException e) {
-			// This is NOT an error. Just re-throw it.
-			throw e;
-		}
-		catch(ExternalUserRespondingToVerificationException e) {
-			// This is NOT an error. Just re-throw it.
-			throw e;
-		}
-		catch( ExternalUserRespondingToPwdResetException e )
-		{
-			// This is NOT an error. Just re-throw it.
-			throw e;
-		}
-		catch( ExternalUserRespondingToPwdResetVerificationException e )
-		{
-			// This is NOT an error. Just re-throw it.
-			throw e;
-		}
-		catch(Exception e) {
+		} catch(Exception e) {
 			res.sendRedirect(getErrorUrl(req, e.getLocalizedMessage()));
 		}
 	}
@@ -286,16 +241,11 @@ public class LoginFilter  implements Filter {
 		return url;
 	}
 	
-	@Override
 	public void destroy() {
 	}
 
 	protected void handleGuestAccess(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-		Boolean readFileWithGuestAccessFlag = getReadFileWithGuestAccessFlag(req);
-		boolean isReadFile                  = (null != readFileWithGuestAccessFlag);
-		boolean isReadFileWithGuestAccess   = (isReadFile && readFileWithGuestAccessFlag);
-		
-		if (isReadFileWithGuestAccess || isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
+		if(isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
 			chain.doFilter(req, res);										
 		}
 		else {				
@@ -314,18 +264,25 @@ public class LoginFilter  implements Filter {
 					req.setAttribute(WebKeys.REFERER_URL, refererURL);
 				chain.doFilter(req, res);										
 			}
+/*			// Dead code.
+			else if(1 == 0 && (BrowserSniffer.is_wap_xhtml(req) || 
+					BrowserSniffer.is_blackberry(req) || 
+					BrowserSniffer.is_iphone(req))) {
+				// Mobile interaction. 
+				// Guest access not allowed. Redirect the guest to the login page.
+				res.sendRedirect(getMobileLoginURL(req, currentURL));
+			}
+*/
 			else {
 				// The guest is requesting a non-mobile page that isn't the login form.
 				// We need to check whether we should allow this or not.
-				if ((!isReadFile) && guestAccessAllowed()) { 
+				if(guestAccessAllowed()) { 
 					// Guest access allowed. Let it proceed as normal.
 					req.setAttribute(WebKeys.REFERER_URL, currentURL);
 					chain.doFilter(req, res);											
 				}
 				else {
-					// It's a readFile URL to an entry that the Guest
-					// can't access or Guest access not allowed.
-					// Redirect the Guest to the login page.
+					// Guest access not allowed. Redirect the guest to the login page.
 					res.sendRedirect(getLoginURL(req, currentURL));
 				}
 			}
@@ -374,8 +331,8 @@ public class LoginFilter  implements Filter {
 		String reply = getWorkspaceURLImpl(req);
 		if (MiscUtil.hasString(reply)) {
 			if (0 < reply.indexOf("/do?"))
-			     reply += ("?" + WebKeys.URL_NOVL_ROOT_FLAG + "=1");
-			else reply += ("/" + WebKeys.URL_NOVL_ROOT_FLAG + "/1");
+			     reply += ("?" + WebKeys.URL_VIBEONPREM_ROOT_FLAG + "=1");
+			else reply += ("/" + WebKeys.URL_VIBEONPREM_ROOT_FLAG + "/1");
 		}
 		return reply;
 	}
@@ -403,7 +360,6 @@ public class LoginFilter  implements Filter {
 						defaultBinderId = binderId;
 						callback = new RunasCallback()
 						{
-							@Override
 							public Object doAs()
 							{
 								@SuppressWarnings("unused")
@@ -430,7 +386,7 @@ public class LoginFilter  implements Filter {
 					}
 				}
 				
-				// If we get here, guest does not have access to the default home page.
+				// If we get here, guest does not have access to the guest default home page.
 			}
 
 			// Do we have a default home page for the logged in user?
@@ -444,7 +400,6 @@ public class LoginFilter  implements Filter {
 			//This user is logged in. Look for a default home page
 			try {
 				String url = (String)RunasTemplate.runas(new RunasCallback() {
-					@Override
 					public Object doAs() {
 						//See if this binder exists and is accessible. 
 						//  If not, go to the user workspace page instead
@@ -466,7 +421,6 @@ public class LoginFilter  implements Filter {
 				final Long binderId = homePageConfig.getDefaultHomePageId();
 				try {
 					return (String) RunasTemplate.runas(new RunasCallback() {
-						@Override
 						public Object doAs() {
 							//See if this binder exists and is accessible. 
 							//  If not, go to the user workspace page instead
@@ -486,14 +440,8 @@ public class LoginFilter  implements Filter {
 		}
 		
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
-			@Override
 			public Object doAs() {
-				return
-					PermaLinkUtil.getUserPermalink(
-						req,
-						userId,
-						GwtUIHelper.isActivityStreamOnLogin(),
-						Utils.checkIfFilr());
+				return PermaLinkUtil.getUserPermalink(req, userId, GwtUIHelper.isActivityStreamOnLogin());
 			}
 		}, WebHelper.getRequiredZoneName(req));									
 	}
@@ -506,7 +454,6 @@ public class LoginFilter  implements Filter {
 			userId = WebHelper.getRequiredUserId(req).toString();
 		
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
-			@Override
 			public Object doAs() {
 				return WebUrlUtil.getWapLandingPage(req, userId);
 			}
@@ -520,100 +467,12 @@ public class LoginFilter  implements Filter {
 		else
 			return false;
 	}
-
-	/*
-	 * Returns an indicator of whether the request URL is a readFile
-	 * URL and if it is, whether Guest has access to the entry.
-	 * 
-	 * Assumption:  Called as Guest.
-	 * 
-	 * Returns:
-	 *    null          -> The request isn't a readFile URL.
-	 *    Boolean.FALSE -> The request is    a readFile URL but Guest can't access it.
-	 *    Boolean.TRUE  -> The request is    a readFile URL and Guest can   access it.
-	 */
-	protected Boolean getReadFileWithGuestAccessFlag(HttpServletRequest req) {
-		// If we don't have a path...
-		String path = req.getPathInfo();
-		if (null == path) {
-			// ...it can't be a readFile URL.
-			return null;
-		}
-		
-		// Are we looking at a readFile URL?
-		Boolean reply;
-		if (path.startsWith("/" + WebKeys.SERVLET_READ_FILE + "/" + WebKeys.URL_ENTITY_TYPE_SHARE)) {
-			//This is probably a share with public link. Let it go through. It will get checked by the readFile controller
-			reply = true;
-		} else if (path.startsWith("/" + WebKeys.SERVLET_READ_FILE + "/")) {
-			// Yes!  Can we find the folderEntry marker within it?
-			String feIdMarker = (WebKeys.URL_FOLDER_ENTRY + "/");
-			int    feIdPos    = path.indexOf(feIdMarker);
-			if (0 < feIdPos) {
-				FolderEntry fe;
-				try {
-					// Yes!  Try to access the entry as Guest.
-					final String fePart = path.substring(feIdPos + feIdMarker.length());
-					final Long   feId   = Long.parseLong(fePart.substring(0, fePart.indexOf('/')));
-						fe = ((FolderEntry) RunasTemplate.runas(
-							new RunasCallback() {
-								@Override
-								public Object doAs() {
-									return getFolderModule().getEntry(null, feId);
-								}
-							},
-							WebHelper.getRequiredZoneName(req),
-							WebHelper.getRequiredUserId(  req)));
-				}
-				catch (Exception ex) {
-					// Failure possibilities:  AccessControlException,
-					// NumericFormatException, ...
-					fe = null;
-				}
-					
-				// Return true if Guest can access the entry and false
-				// otherwise.
-				reply = new Boolean(null != fe);
-			}
-			
-			else {
-				String wsIdMarker;
-				int wsIdPos;
-				
-				wsIdMarker = "workspace" + "/";
-				wsIdPos = path.indexOf( wsIdMarker );
-				
-				// Did we find "workspace"?
-				if ( wsIdPos >= 0 )
-				{
-					// Yes.
-					// No need to check to see if the user has rights to the workspace.
-					reply = new Boolean( true );
-				}
-				else
-				{
-					// No, we found readFile but couldn't find the
-					// folderEntry or workspace marker.
-					reply = Boolean.FALSE;
-				}
-			}
-		}
-		
-		else {
-			// No, this isn't a readFile URL.
-			reply = null;
-		}
-
-		// If we get here, reply refers to the appropriate Boolean
-		// value for the request's readFile URL analysis.  Return it.
-		return reply;
-	}
 	
 	protected boolean isPathPermittedUnauthenticated(String path) {
 		return (path != null && 
 				(path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || 
 						path.equals("/"+WebKeys.SERVLET_PORTAL_LOGOUT) || 
-//						path.startsWith("/"+WebKeys.SERVLET_READ_FILE+"/") ||	// readFile is now checked via call to getReadFileWithGuestAccessFlag(). 
+						path.startsWith("/"+WebKeys.SERVLET_READ_FILE+"/") || 
 						path.startsWith("/"+WebKeys.SERVLET_VIEW_CSS+"/") ||
 						path.equals("/"+WebKeys.SERVLET_VIEW_CSS)));
 	}
@@ -646,10 +505,6 @@ public class LoginFilter  implements Filter {
 		return (BinderModule) SpringContextUtil.getBean("binderModule");
 	}	
 
-	private FolderModule getFolderModule() {
-		return (FolderModule) SpringContextUtil.getBean("folderModule");
-	}	
-
 	private ZoneModule getZoneModule() {
 		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
 	}	
@@ -672,21 +527,22 @@ public class LoginFilter  implements Filter {
 	 * Look at the url in the request and determine if it should be converted to a permalink.
 	 * The url needs to be converted to a permalink if the action parameter equals
 	 * "view_ws_listing" or "view_folder_listing" or "view_profile_listing" or "view_folder_entry" or "view_profile_entry"
-	 * and the url does NOT have the GWT URL parameter marking.
+	 * and the url does NOT have the parameter "vibeonprem"
 	 */
-	@SuppressWarnings("deprecation")
 	private boolean shouldUrlBeConvertedToAPermalink( HttpServletRequest req )
 	{
-		// Does the URL have the GWT URL parameter.
-		if (MiscUtil.hasString( req.getParameter( WebKeys.URL_NOVL_URL_FLAG                  )) ||
-		    MiscUtil.hasString( req.getParameter( WebKeys.URL_VIBE_URL_FLAG_DEPRECATED       )) ||
-			MiscUtil.hasString( req.getParameter( WebKeys.URL_VIBEONPREM_URL_FLAG_DEPRECATED )))
+		String action;
+		String param;
+		
+		// Does the url have the "vibeonprem" parameter.
+		param = req.getParameter( WebKeys.URL_VIBEONPREM_URL_FLAG );
+		if ( param != null && param.length() > 0 )
 		{
 			// Yes, no need to convert it.
 			return false;
 		}
 		
-		String action = req.getParameter( "action" );
+		action = req.getParameter( "action" );
 		if ( action != null &&
 			 (action.equalsIgnoreCase( WebKeys.ACTION_VIEW_WS_LISTING ) ||
 			  action.equalsIgnoreCase( WebKeys.ACTION_VIEW_FOLDER_LISTING ) ||

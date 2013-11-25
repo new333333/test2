@@ -11,7 +11,6 @@
 	<definitionFile>config/definitions/_discussionReply.xml</definitionFile>		
 	<definitionFile>config/definitions/_discussions.xml</definitionFile>		
 	<definitionFile>config/definitions/_libraryEntry.xml</definitionFile>		
-	<definitionFile>config/definitions/_libraryEntryComment.xml</definitionFile>		
 	<definitionFile>config/definitions/_guestbookEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_milestoneEntry.xml</definitionFile>	
 	<definitionFile>config/definitions/_taskEntry.xml</definitionFile>		
@@ -34,15 +33,12 @@
 	<definitionFile>config/definitions/_wikiFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_workspace.xml</definitionFile>
 	<definitionFile>config/definitions/_userWorkspace.xml</definitionFile>
-	<definitionFile>config/definitions/_externalUserWorkspace.xml</definitionFile>
 	<definitionFile>config/definitions/_projectWorkspace.xml</definitionFile>
 	<definitionFile>config/definitions/_team_workspace.xml</definitionFile>
 	<definitionFile>config/definitions/_team_root.xml</definitionFile>
 	<definitionFile>config/definitions/_welcomeWorkspace.xml</definitionFile>
 	<definitionFile>config/definitions/_mirroredFileEntry.xml</definitionFile>
 	<definitionFile>config/definitions/_mirroredFileFolder.xml</definitionFile>
-	<definitionFile>config/definitions/_mirroredFilrFileEntry.xml</definitionFile>
-	<definitionFile>config/definitions/_mirroredFilrFileFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_publish_workflow.xml</definitionFile>
 	<templateFile>config/templates/_folder_blog.xml</templateFile>
 	<templateFile>config/templates/_folder_calendar.xml</templateFile>
@@ -56,15 +52,9 @@
 	<templateFile>config/templates/_folder_task.xml</templateFile>
 	<templateFile>config/templates/_folder_survey.xml</templateFile>
 	<templateFile>config/templates/_folder_mirrored_file.xml</templateFile>
-	<templateFile>config/templates/_folder_filr_root.xml</templateFile>
-	<templateFile>config/templates/_folder_filr_home_folder.xml</templateFile>
-	<templateFile>config/templates/_folder_filr_netfolder.xml</templateFile>
-	<templateFile>config/templates/_folder_filr_root_cloud.xml</templateFile>
-	<templateFile>config/templates/_folder_filr_cloud_folder.xml</templateFile>
 	<templateFile>config/templates/_workspace.xml</templateFile>
 	<templateFile>config/templates/_workspace_team.xml</templateFile>
 	<templateFile>config/templates/_workspace_user.xml</templateFile>
-	<templateFile>config/templates/_workspace_external_user.xml</templateFile>
 	<templateFile>config/templates/_workspace_project_management.xml</templateFile>
 	<templateFile>config/templates/_workspace_discussions.xml</templateFile>
 	<templateFile>config/templates/_workspace_welcome.xml</templateFile>

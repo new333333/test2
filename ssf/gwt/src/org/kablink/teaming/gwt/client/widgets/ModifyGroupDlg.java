@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
@@ -54,19 +53,15 @@ import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDynamicMembershipCriteriaCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipTypeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetIsDynamicGroupMembershipAllowedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNumberOfMembersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.ModifyStaticMembershipDlg.StaticMembershipInfo;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -99,33 +94,18 @@ public class ModifyGroupDlg extends DlgBox
 	private TextBox m_nameTxtBox;
 	private TextBox m_titleTxtBox;
 	private TextArea m_descTextArea;
-	private FlexTable m_rbTable;
 	private RadioButton m_staticRb;
 	private RadioButton m_dynamicRb;
-	private Button m_editMembershipBtn;
-	private Button m_viewMembershipBtn;
 	private ModifyStaticMembershipDlg m_staticMembershipDlg;
 	private ModifyDynamicMembershipDlg m_dynamicMembershipDlg;
 	private GwtDynamicGroupMembershipCriteria m_dynamicMembershipCriteria;
 	private Integer m_numDynamicMembers;
 	private boolean m_dynamicMembershipAllowed;
-	private boolean m_externalMembersAllowed = false;
-
-	/**
-	 * Callback interface to interact with the "modify group" dialog
-	 * asynchronously after it loads. 
-	 */
-	public interface ModifyGroupDlgClient
-	{
-		void onSuccess( ModifyGroupDlg mgDlg );
-		void onUnavailable();
-	}
-
-
+	
 	/**
 	 * 
 	 */
-	private ModifyGroupDlg(
+	public ModifyGroupDlg(
 		boolean autoHide,
 		boolean modal,
 		int xPos,
@@ -140,7 +120,6 @@ public class ModifyGroupDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
 		GwtTeamingMessages messages;
@@ -200,96 +179,54 @@ public class ModifyGroupDlg extends DlgBox
 		
 		// Create the controls for static and dynamic group membership
 		{
+			FlexTable table2;
+			Button btn;
 			FlexCellFormatter cellFormatter2;
-
-			m_rbTable = new FlexTable();
-			cellFormatter2 = m_rbTable.getFlexCellFormatter();
-
+			ClickHandler clickHandler;
+			
+			table2 = new FlexTable();
+			cellFormatter2 = table2.getFlexCellFormatter();
+			
 			// Add the radio buttons
 			m_staticRb = new RadioButton( "membershipType", messages.modifyGroupDlgStaticLabel() );
-			m_rbTable.setWidget( 0, 0, m_staticRb );
+			table2.setWidget( 0, 0, m_staticRb );
 			m_dynamicRb = new RadioButton( "membershipType", messages.modifyGroupDlgDynamicLabel() );
-			m_rbTable.setWidget( 1, 0, m_dynamicRb );
+			table2.setWidget( 1, 0, m_dynamicRb );
 			
 			// Add "Edit group membership" button
-			{
-				ClickHandler clickHandler;
-
-				m_editMembershipBtn = new Button( messages.modifyGroupDlgEditGroupMembershipLabel() );
-				m_editMembershipBtn.addStyleName( "teamingButton" );
-				m_editMembershipBtn.getElement().getStyle().setMarginLeft( 10, Unit.PX );
-				m_rbTable.setWidget( 0, 1, m_editMembershipBtn );
-				cellFormatter2.setRowSpan( 0, 1, 2 );
-				
-				clickHandler = new ClickHandler()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onClick( ClickEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							/**
-							 * 
-							 */
-							@Override
-							public void execute()
-							{
-								// Invoke the "edit group membership" dialog.
-								invokeEditGroupMembershipDlg();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-					
-				};
-				m_editMembershipBtn.addClickHandler( clickHandler );
-			}
+			btn = new Button( messages.modifyGroupDlgEditGroupMembershipLabel() );
+			btn.addStyleName( "teamingButton" );
+			btn.getElement().getStyle().setMarginLeft( 10, Unit.PX );
+			table2.setWidget( 0, 1, btn );
+			cellFormatter2.setRowSpan( 0, 1, 2 );
 			
-			// Add "View group membership" button
+			clickHandler = new ClickHandler()
 			{
-				ClickHandler clickHandler;
-
-				m_viewMembershipBtn = new Button( messages.modifyGroupDlgViewGroupMembershipLabel() );
-				m_viewMembershipBtn.addStyleName( "teamingButton" );
-				m_viewMembershipBtn.getElement().getStyle().setMarginLeft( 10, Unit.PX );
-				m_rbTable.setWidget( 0, 1, m_viewMembershipBtn );
-				cellFormatter2.setRowSpan( 0, 1, 2 );
-				
-				clickHandler = new ClickHandler()
+				/**
+				 * 
+				 */
+				public void onClick( ClickEvent event )
 				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onClick( ClickEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							/**
-							 * 
-							 */
-							@Override
-							public void execute()
-							{
-								// Invoke the "view group membership" dialog.
-								invokeViewGroupMembershipDlg();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
+					Scheduler.ScheduledCommand cmd;
 					
-				};
-				m_viewMembershipBtn.addClickHandler( clickHandler );
-			}
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						public void execute()
+						{
+							// Invoke the "edit group membership" dialog.
+							invokeEditGroupMembershipDlg();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				
+			};
+			btn.addClickHandler( clickHandler );
 			
-			table.setWidget( nextRow, 0, m_rbTable );
+			table.setWidget( nextRow, 0, table2 );
 			cellFormatter.setColSpan( nextRow, 0, 2 );
 			
 			++nextRow;
@@ -363,17 +300,10 @@ public class ModifyGroupDlg extends DlgBox
 		}
 		
 		// Issue an rpc request to create the group.
-		cmd = new CreateGroupCmd(
-							getGroupName(),
-							getGroupTitle(),
-							getGroupDesc(),
-							getIsMembershipDynamic(),
-							m_externalMembersAllowed,
-							m_groupMembership,
-							m_dynamicMembershipCriteria );
+		cmd = new CreateGroupCmd( getGroupName(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
-	
+
 	/**
 	 * This gets called when the user presses ok.  If we are editing an existing group
 	 * we will issue an rpc request to save the group and then call m_editSuccessfulHandler.
@@ -410,14 +340,13 @@ public class ModifyGroupDlg extends DlgBox
 		// after we successfully create/modify a group.
 		return false;
 	}
-	
+
 	/**
 	 * Get the data from the controls in the dialog box.
 	 */
-	@Override
 	public Object getDataFromDlg()
 	{
-		// Return something.  Doesn't matter what because editSuccessful() does the work.
+		// Return something.  Doesn't matter what since we only have a close button.
 		return Boolean.TRUE;
 	}
 	
@@ -446,9 +375,6 @@ public class ModifyGroupDlg extends DlgBox
 				public void onSuccess( VibeRpcResponse result )
 				{
 					m_dynamicMembershipCriteria = ((GwtDynamicGroupMembershipCriteria) result.getResponseData());
-					
-					// Enable the ok button
-					setOkEnabled( true );
 				}						
 			};
 			
@@ -460,7 +386,6 @@ public class ModifyGroupDlg extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
-	@Override
 	public FocusWidget getFocusWidget()
 	{
 		if ( m_groupInfo == null )
@@ -524,9 +449,6 @@ public class ModifyGroupDlg extends DlgBox
 					
 					responseData = ((GetGroupMembershipRpcResponseData) result.getResponseData());
 					m_groupMembership = responseData.getMembers();
-					
-					// Enable the ok button
-					setOkEnabled( true );
 				}						
 			};
 			
@@ -552,21 +474,6 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
-	 * 
-	 */
-	@Override
-	public HelpData getHelpData()
-	{
-		HelpData helpData;
-		
-		helpData = new HelpData();
-		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "groups_manage" );
-		
-		return helpData;
-	}
-	
-	/**
 	 * Return whether membership is dynamic.
 	 */
 	private boolean getIsMembershipDynamic()
@@ -575,14 +482,14 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
-	 * Issue an ajax request to get the membership information for the group
+	 * Issue an ajax request to get the membership type (static or dynamic) for the group
 	 * we are working with.
 	 */
-	private void getMembershipInfo()
+	private void getMembershipType()
 	{
 		if ( m_groupInfo != null )
 		{
-			GetGroupMembershipInfoCmd cmd;
+			GetGroupMembershipTypeCmd cmd;
 			AsyncCallback<VibeRpcResponse> rpcCallback;
 			
 			rpcCallback = new AsyncCallback<VibeRpcResponse>()
@@ -598,12 +505,10 @@ public class ModifyGroupDlg extends DlgBox
 				@Override
 				public void onSuccess( VibeRpcResponse result )
 				{
-					GroupMembershipInfo membershipInfo;
+					BooleanRpcResponseData responseData;
 					
-					membershipInfo = ((GroupMembershipInfo) result.getResponseData());
-					m_groupInfo.setMembershipInfo(
-												membershipInfo.getIsMembershipDynamic(),
-												membershipInfo.getIsExternalAllowed() );
+					responseData = ((BooleanRpcResponseData) result.getResponseData());
+					m_groupInfo.setIsMembershipDynamic( responseData.getBooleanValue() );
 
 					// Is the membership dynamic?
 					if ( m_groupInfo.getIsMembershipDynamic() )
@@ -618,7 +523,6 @@ public class ModifyGroupDlg extends DlgBox
 							
 							cmd = new Scheduler.ScheduledCommand()
 							{
-								@Override
 								public void execute()
 								{
 									getDynamicMembershipCriteria();
@@ -640,7 +544,6 @@ public class ModifyGroupDlg extends DlgBox
 							
 							cmd = new Scheduler.ScheduledCommand()
 							{
-								@Override
 								public void execute()
 								{
 									getGroupMembership();
@@ -652,7 +555,7 @@ public class ModifyGroupDlg extends DlgBox
 				}						
 			};
 			
-			cmd = new GetGroupMembershipInfoCmd( m_groupInfo.getId() );
+			cmd = new GetGroupMembershipTypeCmd( m_groupInfo.getId() );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 	}
@@ -706,7 +609,6 @@ public class ModifyGroupDlg extends DlgBox
 		m_groupMembership = new ArrayList<GwtTeamingItem>();
 		m_dynamicMembershipCriteria = new GwtDynamicGroupMembershipCriteria();
 		m_dynamicMembershipAllowed = true;
-		m_externalMembersAllowed = false;
 		
 		// Issue an rpc request to see if dynamic group membership is allowed.
 		isDynamicGroupMembershipAllowed();
@@ -714,36 +616,30 @@ public class ModifyGroupDlg extends DlgBox
 		// Clear existing data in the controls.
 		m_nameTxtBox.setText( "" );
 		m_titleTxtBox.setText( "" );
-		m_titleTxtBox.setEnabled( true );
 		m_descTextArea.setText( "" );
-		m_descTextArea.setEnabled( true );
 		
 		// Are we modifying an existing group?
 		if ( m_groupInfo != null )
 		{
 			// Yes
-			// Disable the ok button until we have all the data we need.
-			setOkEnabled( false );
-			
 			// Schedule an ajax request to get the membership type (dynamic or static).
 			{
 				Scheduler.ScheduledCommand cmd;
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
-					@Override
 					public void execute()
 					{
-						getMembershipInfo();
+						getMembershipType();
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
 			}
-
+			
 			m_numDynamicMembers = null;
 			
 			// Update the dialog's header to say "Edit Group"
-			setCaption( GwtTeaming.getMessages().modifyGroupDlgHeader( m_groupInfo.getTitle() ) );
+			setHeaderText( GwtTeaming.getMessages().modifyGroupDlgHeader( m_groupInfo.getTitle() ) );
 			
 			// Hide the "Name" field.
 			m_nameLabel.setVisible( false );
@@ -751,51 +647,18 @@ public class ModifyGroupDlg extends DlgBox
 			
 			m_titleTxtBox.setText( groupInfo.getTitle() );
 			m_descTextArea.setText( groupInfo.getDesc() );
-			
-			// Enable/disable controls depending on whether this group was provisioned from ldap
-			{
-				// Are we dealing with a group provisioned from ldap?
-				if ( m_groupInfo.getIsFromLdap() )
-				{
-					// Replace the "edit membership" button with "view membership" button
-					m_rbTable.setWidget( 0, 1, m_viewMembershipBtn );
-					m_titleTxtBox.setEnabled( false );
-					m_descTextArea.setEnabled( false );
-					m_staticRb.setEnabled( false );
-					m_dynamicRb.setEnabled( false );
-				}
-				else
-				{
-					// Replace the "view membership" button with the "edit membership" button.
-					m_rbTable.setWidget( 0, 1, m_editMembershipBtn );
-					m_titleTxtBox.setEnabled( true );
-					m_descTextArea.setEnabled( true );
-					m_staticRb.setEnabled( true );
-					m_dynamicRb.setEnabled( true );
-				}
-			}
 		}
 		else
 		{
-			// No
-			// Enable the ok button
-			setOkEnabled( true );
-			
 			m_numDynamicMembers = new Integer( 0 );
-
+			
 			// Update the dialog's header to say "Add Group"
-			setCaption( GwtTeaming.getMessages().addGroupDlgHeader() );
+			setHeaderText( GwtTeaming.getMessages().addGroupDlgHeader() );
 			
 			// Show the "Name" field.
 			m_nameLabel.setVisible( true );
 			m_nameTxtBox.setVisible( true );
 			
-			// Replace the "view membership" button with the "edit membership" button.
-			m_rbTable.setWidget( 0, 1, m_editMembershipBtn );
-
-			m_staticRb.setEnabled( true );
-			m_dynamicRb.setEnabled( true );
-
 			// Default the membership to "static"
 			m_staticRb.setValue( true );
 			m_dynamicRb.setValue( false );
@@ -812,8 +675,6 @@ public class ModifyGroupDlg extends DlgBox
 		{
 			int x;
 			int y;
-			boolean externalAllowed;
-			boolean groupExistsInDb;
 			
 			// No
 			// Get the position of this dialog.
@@ -828,37 +689,18 @@ public class ModifyGroupDlg extends DlgBox
 				// ModifyStaticMembershipDlg.
 				handler = new EditSuccessfulHandler()
 				{
+					@SuppressWarnings("unchecked")
 					@Override
 					public boolean editSuccessful( Object obj )
 					{
-						if ( obj instanceof StaticMembershipInfo )
-						{
-							StaticMembershipInfo membershipInfo;
-							
-							membershipInfo = (StaticMembershipInfo) obj;
-							m_groupMembership = membershipInfo.getMembershipList();
-							
-							m_externalMembersAllowed = membershipInfo.getIsExternalMembersAllowed();
-						}
-						
+						m_groupMembership = (List<GwtTeamingItem>) obj;
 						return true;
 					}
 				};
-				m_staticMembershipDlg = new ModifyStaticMembershipDlg( true, false, handler, null, x, y );
+				m_staticMembershipDlg = new ModifyStaticMembershipDlg( false, true, handler, null, x, y );
 			}
 			
-			if ( m_groupInfo != null )
-			{
-				groupExistsInDb = true;
-				externalAllowed = m_groupInfo.getIsExternalAllowed();
-			}
-			else
-			{
-				groupExistsInDb = false;
-				externalAllowed = m_externalMembersAllowed;
-			}
-			
-			m_staticMembershipDlg.init( getGroupName(), m_groupMembership, externalAllowed, groupExistsInDb );
+			m_staticMembershipDlg.init( getGroupName(), m_groupMembership );
 			m_staticMembershipDlg.setPopupPosition( x, y );
 			m_staticMembershipDlg.show();
 		}
@@ -866,7 +708,6 @@ public class ModifyGroupDlg extends DlgBox
 		{
 			int x;
 			int y;
-			Long groupId;
 			
 			// Yes
 			// Is dynamic group membership allowed?
@@ -900,33 +741,9 @@ public class ModifyGroupDlg extends DlgBox
 				m_dynamicMembershipDlg = new ModifyDynamicMembershipDlg( false, true, handler, null, x, y );
 			}
 			
-			groupId = null;
-			if ( m_groupInfo != null )
-				groupId = m_groupInfo.getId();
-			
-			m_dynamicMembershipDlg.init( m_dynamicMembershipCriteria, m_numDynamicMembers, groupId );
+			m_dynamicMembershipDlg.init( m_dynamicMembershipCriteria, m_numDynamicMembers );
 			m_dynamicMembershipDlg.setPopupPosition( x, y );
 			m_dynamicMembershipDlg.show();
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	private void invokeViewGroupMembershipDlg()
-	{
-		// Create a popup that will display the membership of this group.
-		if ( m_groupInfo != null )
-		{
-			GroupMembershipPopup popup;
-			
-			popup = new GroupMembershipPopup(
-											true,
-											false,
-											m_groupInfo.getName(),
-											m_groupInfo.getId().toString() );
-
-			popup.showRelativeTo( m_viewMembershipBtn );
 		}
 	}
 	
@@ -1037,44 +854,5 @@ public class ModifyGroupDlg extends DlgBox
 		// Issue an rpc request to update the group.
 		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
-	}
-
-	/**
-	 * Loads the ModifyGroupDlg split point and returns an instance
-	 * of it via the callback.
-	 * 
-	 */
-	public static void createAsync(
-							final boolean autoHide,
-							final boolean modal,
-							final int left,
-							final int top,
-							final ModifyGroupDlgClient mgDlgClient )
-	{
-		GWT.runAsync( ModifyGroupDlg.class, new RunAsyncCallback()
-		{
-			@Override
-			public void onFailure(Throwable reason)
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ModifyGroupDlg() );
-				if ( mgDlgClient != null )
-				{
-					mgDlgClient.onUnavailable();
-				}
-			}
-
-			@Override
-			public void onSuccess()
-			{
-				ModifyGroupDlg mgDlg;
-				
-				mgDlg = new ModifyGroupDlg(
-										autoHide,
-										modal,
-										left,
-										top );
-				mgDlgClient.onSuccess( mgDlg );
-			}
-		});
 	}
 }

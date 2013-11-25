@@ -1,20 +1,20 @@
-﻿Novell Vibe 3.2
+﻿Novell Vibe 3.3
 
 1.0  Démarrage rapide
 
      La configuration système requise ainsi que des instructions détaillées
      d'installation du logiciel sont disponibles pour les administrateurs de
-     Novell Vibe dans le "Vibe 3.2 Installation Guide (Guide d'installation de
+     Novell Vibe dans le "Vibe 3.3 Installation Guide (Guide d'installation de
      Vibe OnPrem 3)." Les instructions de configuration des sites Vibe ainsi que
      d'administration et de maintenance quotidienne de ces sites sont disponibles
-     dans le manuel "Vibe  3.2 Administration Guide" (Guide d'administration de
+     dans le manuel "Vibe  3.3 Administration Guide" (Guide d'administration de
      Vibe OnPrem 3).
 
      Une fois votre site Vibe configuré, les utilisateurs de Vibe peuvent obtenir
-     des instructions dans le "Guide de l'utilisateur de Vibe  3.2" et le manuel
-     "Vibe 3.2 Advanced User Guide" (Guide de l'utilisateur avancé de Vibe
-     OnPrem 3). (Un "Guide de démarrage rapide de Vibe  3.2" est fourni dans les
-     langues pour lesquelles le "Guide de l'utilisateur de Vibe  3.2" n'est pas
+     des instructions dans le "Guide de l'utilisateur de Vibe  3.3" et le manuel
+     "Vibe 3.3 Advanced User Guide" (Guide de l'utilisateur avancé de Vibe
+     OnPrem 3). (Un "Guide de démarrage rapide de Vibe  3.3" est fourni dans les
+     langues pour lesquelles le "Guide de l'utilisateur de Vibe  3.3" n'est pas
      disponible.)
 
      Vous pouvez afficher l'aide en ligne de Vibe lorsque vous vous loguez à
@@ -24,18 +24,18 @@
 2.0  Problèmes connus
 
      Pour obtenir une liste à jour des problèmes connus de cette version,
-     reportez-vous au fichier lisezmoi complet du produit Novell Vibe 3.2
-     disponible sur le site Web de documentation de Novell Vibe  3.2
-     (http://www.novell.com/documentation/vibe32).
+     reportez-vous au fichier lisezmoi complet du produit Novell Vibe 3.3
+     disponible sur le site Web de documentation de Novell Vibe  3.3
+     (http://www.novell.com/documentation/vibe33).
 
 
 3.0  Documentation
 
-     Toute la documentation Novell Vibe 3.2 est disponible sur le site Web de
-     documentation de Novell Vibe  3.2
-     (http://www.novell.com/documentation/vibe32) :
+     Toute la documentation Novell Vibe 3.3 est disponible sur le site Web de
+     documentation de Novell Vibe  3.3
+     (http://www.novell.com/documentation/vibe33) :
 
-     -  Fichier lisezmoi complet du produit Vibe 3.2
+     -  Fichier lisezmoi complet du produit Vibe 3.3
 
      -  "Guide d'installation"
 
@@ -45,9 +45,13 @@
 
      -  "Advanced User Guide" (Guide de l'utilisateur avancé)
 
-     -  "Démarrage rapide"
-
      -  "Developer Guide" (Guide du développeur)
+
+     -  "Démarrage rapide de Novell Vibe"
+
+     -  "Démarrage rapide de Novell Vibe Desktop"
+
+     -  "Démarrage rapide de Novell Vibe Add-In"
 
      Outre la documentation relative au produit Novell Vibe, d'autres ressources
      fournissent des informations sur Vibe.
@@ -66,14 +70,7 @@
      Collaboration Project (http://www.kablink.org).
 
 
-4.0  Conventions relatives à la documentation
-
-     Dans cette documentation, le signe supérieur à (>) est utilisé pour séparer
-     les opérations d'une même procédure ainsi que les éléments d'un chemin de
-     renvoi.
-
-
-5.0  Mentions légales
+4.0  Mentions légales
 
      Novell, Inc. exclut toute garantie relative au contenu ou à l'utilisation de
      cette documentation. En particulier, Novell ne garantit pas que cette
@@ -104,15 +101,16 @@
      (http://www.novell.com/info/exports/) pour plus d'informations sur
      l'exportation des logiciels Novell. Novell décline toute responsabilité dans
      le cas où vous n'obtiendriez pas les approbations d'exportation nécessaires.
+     
 
-     Copyright © 2008-2011 Novell, Inc. Tous droits réservés. Cette publication
+     Copyright © 2008-2012 Novell, Inc. Tous droits réservés. Cette publication
      ne peut être reproduite, photocopiée, stockée sur un système de recherche
      documentaire ou transmise, même en partie, sans le consentement écrit
      explicite préalable de l'éditeur.
 
      Pour connaître les marques commerciales de Novell, reportez-vous à la liste
      des marques commerciales et des marques de service de Novell
-     (http://www.novell.com/company/legal/trademarks/tmlist.html).
+     (http://www.novell.com/company/legal/trademarks/tmlist.html). 
 
      Toutes les marques commerciales de fabricants tiers appartiennent à leur
      propriétaire respectif.

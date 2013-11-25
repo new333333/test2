@@ -114,7 +114,7 @@ public class EnhancedViewProperties
 		m_zoneUUID = null;
 		m_rpcInProgress = false;
 		
-		// Default the width and height to nothing
+		// Default the width and height to 100%
 		m_width = -1;
 		m_widthUnits = Style.Unit.PCT;
 		m_height = -1;
@@ -127,7 +127,6 @@ public class EnhancedViewProperties
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -142,7 +141,6 @@ public class EnhancedViewProperties
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -165,7 +163,6 @@ public class EnhancedViewProperties
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -180,7 +177,6 @@ public class EnhancedViewProperties
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolderEntry gwtFolderEntry ;
@@ -202,7 +198,6 @@ public class EnhancedViewProperties
 	/**
 	 * 
 	 */
-	@Override
 	public void copy( PropertiesObj props )
 	{
 		if ( props instanceof EnhancedViewProperties )
@@ -230,7 +225,6 @@ public class EnhancedViewProperties
 				m_zoneUUID = null;
 			}
 			
-			m_zoneUUID = evProps.getZoneUUID();
 			m_entryId = newEntryId;
 			m_entryName = evProps.getEntryName();
 			m_folderId = newFolderId;
@@ -250,7 +244,6 @@ public class EnhancedViewProperties
 	/**
 	 * Return the properties as a string that can be stored in the db.
 	 */
-	@Override
 	public String createConfigString()
 	{
 		String str;
@@ -468,7 +461,6 @@ public class EnhancedViewProperties
 		return m_viewType;
 	}
 	
-	
 	/**
 	 * Return the zone uuid
 	 */
@@ -556,7 +548,7 @@ public class EnhancedViewProperties
 	public void setJspName( String name )
 	{
 		m_jspName = name;
-		
+
 		if ( m_jspName != null )
 		{
 			if ( m_jspName.equalsIgnoreCase( "landing_page_entry.jsp" ) )

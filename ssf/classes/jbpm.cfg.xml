@@ -10,12 +10,7 @@
     </service>
     <service name="message" factory="org.jbpm.msg.db.DbMessageServiceFactory" />
     <service name="scheduler" factory="org.jbpm.scheduler.db.DbSchedulerServiceFactory" />
-<!--
-Disable logging service to prevent database constraint errors from occuring when
-deleting workflow-controlled entries or workflow definition elements from the
-system. Bug #632990 and #752954.
-    
-    <service name="logging" factory="org.jbpm.logging.db.DbLoggingServiceFactory" />
+<!--    <service name="logging" factory="org.jbpm.logging.db.DbLoggingServiceFactory" />
 
 -->
     <service name="authentication" factory="org.jbpm.security.authentication.DefaultAuthenticationServiceFactory" />

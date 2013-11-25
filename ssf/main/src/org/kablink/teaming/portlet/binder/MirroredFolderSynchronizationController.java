@@ -46,7 +46,6 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.MailTreeHelper;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ScheduleHelper;
 import org.kablink.teaming.web.util.WebHelper;
@@ -61,7 +60,8 @@ public class MirroredFolderSynchronizationController extends  SAbstractControlle
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		response.setRenderParameters(formData);		
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
-			ScheduleInfo config = NetFolderHelper.getMirroredFolderSynchronizationSchedule(binderId);			
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			ScheduleInfo config = getFolderModule().getSynchronizationSchedule(zoneId, binderId);			
 			config.setSchedule(ScheduleHelper.getSchedule(request, "sync"));
 			config.setEnabled(PortletRequestUtils.getBooleanParameter(request, "enabled", false));
 			getFolderModule().setSynchronizationSchedule(config, binderId);			
@@ -78,7 +78,8 @@ public class MirroredFolderSynchronizationController extends  SAbstractControlle
 		}
 		HashMap model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		ScheduleInfo config = NetFolderHelper.getMirroredFolderSynchronizationSchedule(binderId);		
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ScheduleInfo config = getFolderModule().getSynchronizationSchedule(zoneId, binderId);		
 		
 		model.put(WebKeys.SCHEDULE_INFO, config);
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));

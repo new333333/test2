@@ -33,12 +33,11 @@
 package org.kablink.teaming.taglib;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.kablink.teaming.ssfs.util.SsfsUtil;
-import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.util.BrowserSniffer;
 
 
 public class IfSupportsEditInPlaceTag extends TagSupport {
@@ -50,15 +49,13 @@ public class IfSupportsEditInPlaceTag extends TagSupport {
 
 		HttpServletRequest req =
 			(HttpServletRequest)pageContext.getRequest();
-		HttpSession ses = req.getSession(false);
 		
 		if(relativeFilePath == null)
 			throw new JspException("File path must be specified");
 		
 		if(SsfsUtil.supportAttachmentEdit() && 
 				SsfsUtil.supportsEditInPlace(relativeFilePath, browserType) &&
-				SsfsUtil.supportApplets(req) &&
-				!WebHelper.isUserAuthenticatedViaOpenid(ses))
+				SsfsUtil.supportApplets(req))
 			return EVAL_BODY_INCLUDE;
 		else
 			return SKIP_BODY;

@@ -36,9 +36,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
-import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
-
 /**
  * @hibernate.subclass discriminator-value="folder" dynamic-update="true"
  * 
@@ -208,14 +205,9 @@ public class Folder extends Binder {
     		return getDefs(definitionType);
     	else
     		return getDefs(Definition.FOLDER_VIEW);
-    }
-
-    @Override
-    protected Binder newInstance() {
-        return new Folder();
-    }
-
-    /**
+    }	    
+    
+     /**
      * Processor type for folders may be different and dependent on
      * the definition
      * @param processorKey
@@ -259,5 +251,4 @@ public class Folder extends Binder {
 	public void setPreDeletedBy(Long preDeletedBy) {
 		this.preDeletedBy = preDeletedBy;
 	}
-	
 }

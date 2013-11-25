@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,12 +30,13 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.profile.widgets;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.presence.InstantMessageClickHandler;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
@@ -54,11 +55,14 @@ import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -66,6 +70,9 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -77,13 +84,15 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This is the QuickView Dialog
  * 
  * @author nbjensen
+ *
  */
-public class GwtQuickViewDlg extends DlgBox {
+public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 
 	private String binderId;
 	private Grid grid;
@@ -107,20 +116,24 @@ public class GwtQuickViewDlg extends DlgBox {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private GwtQuickViewDlg(int pos, int pos2, String binderId, String userName, Element element) {
-		super(true, false, pos, pos2);
+	private GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
+			int pos2, String binderId, String userName, Element element) {
+		super(autoHide, modal, pos, pos2);
 
 		this.binderId = binderId;
 		this.userName = userName;
 		this.clientElement = element;
 
 		createAllDlgContent("", null, null, null);
+		
+		// Register a preview-event handler.  We do this so we can see the mouse-down event
+		// in and out side of the widget.
+		Event.addNativePreviewHandler( this );
 	}
 
 	/**
 	 * Create the header, content and footer for the dialog box.
 	 */
-	@Override
 	public void createAllDlgContent(String caption,
 			EditSuccessfulHandler editSuccessfulHandler,// We will call this
 														// handler when the user
@@ -184,12 +197,10 @@ public class GwtQuickViewDlg extends DlgBox {
 		rightPanel.addStyleName("qViewRight");
 		mainPanel.add(rightPanel);
 
-		if (!(GwtClientHelper.isLicenseFilr())) {
-			Panel statusPanel = createStatusPanel();
-			rightPanel.add(statusPanel);
-		}
-		
+		Panel statusPanel = createStatusPanel();
 		Panel infoPanel = createInfoPanel();
+
+		rightPanel.add(statusPanel);
 		rightPanel.add(infoPanel);
 
 		return mainPanel;
@@ -216,13 +227,10 @@ public class GwtQuickViewDlg extends DlgBox {
 										"qView-a", "qView-action");
 		profileBtn.addClickHandler(new WorkspaceEventHandler(true));
 		
-		boolean isFilr = GwtClientHelper.isLicenseFilr();
-		if (!isFilr) {
-			workspaceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewWorkspace(),
-											 GwtTeaming.getMessages().qViewWorkspaceTitle(),
-											 "qView-a",	"qView-action");
-			workspaceBtn.addClickHandler(new WorkspaceEventHandler(false));
-		}
+		workspaceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewWorkspace(),
+										 GwtTeaming.getMessages().qViewWorkspaceTitle(),
+										 "qView-a",	"qView-action");
+		workspaceBtn.addClickHandler(new WorkspaceEventHandler(false));
 		
 		instantMessageBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewInstantMessage(),
 				GwtTeaming.getMessages().qViewInstantMessageTitle(),
@@ -230,7 +238,6 @@ public class GwtQuickViewDlg extends DlgBox {
 		instantMessageBtn.addClickHandler(new InstantMessageClickHandler(binderId) {
 				// Override onClick so we can hide the dialog after launching
 				// the instant message.
-				@Override
 				public void onClick(ClickEvent event) {
 					super.onClick(event);
 					hide();
@@ -238,89 +245,72 @@ public class GwtQuickViewDlg extends DlgBox {
 			});
 		instantMessageBtn.setVisible(false);
 
-		if (!isFilr) {
-			followBtn = new QuickViewAction("", "", "qView-a",
-										    "qView-action-following");
-	
-			// Add a clickhandler to the "advanced" link. When the user clicks on
-			// the link we
-			// will invoke the "edit advanced branding" dialog.
-			clickHandler = new ClickHandler() {
-				/**
-				 * Invoke the "edit advanced branding" dialog
-				 */
-				@Override
-				public void onClick(ClickEvent event) {
-					if(followBtn.isChecked()) {
-						unFollowAction();
-					} else {
-						followAction();
-					}
-				}// end onClick()
-	
-				private void followAction() {
-					TrackBinderCmd cmd;
-					
-					cmd = new TrackBinderCmd( binderId );
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-					{
-						@Override
-						public void onFailure( Throwable t )
-						{
-							GwtClientHelper.handleGwtRPCFailure(
-								t,
-								GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
-								binderId);
-						}//end onFailure()
-						
-						@Override
-						public void onSuccess( VibeRpcResponse response )
-						{
-							boolean success = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
-							if (success)
-							     updateFollowingButton(true);
-							else GwtClientHelper.deferredAlert(GwtTeaming.getMessages().qViewErrorCantTrack());
-						}// end onSuccess()
-					});
+		followBtn = new QuickViewAction("", "", "qView-a",
+									    "qView-action-following");
+
+		// Add a clickhandler to the "advanced" link. When the user clicks on
+		// the link we
+		// will invoke the "edit advanced branding" dialog.
+		clickHandler = new ClickHandler() {
+			/**
+			 * Invoke the "edit advanced branding" dialog
+			 */
+			public void onClick(ClickEvent event) {
+				if(followBtn.isChecked()) {
+					unFollowAction();
+				} else {
+					followAction();
 				}
-	
-				private void unFollowAction() {
-					UntrackPersonCmd cmd;
-					
-					cmd = new UntrackPersonCmd( binderId );
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+			}// end onClick()
+
+			private void followAction() {
+				TrackBinderCmd cmd;
+				
+				cmd = new TrackBinderCmd( binderId );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+				{
+					public void onFailure( Throwable t )
 					{
-						@Override
-						public void onFailure( Throwable t )
-						{
-							GwtClientHelper.handleGwtRPCFailure(
-								t,
-								GwtTeaming.getMessages().rpcFailure_UntrackingPerson(),
-								binderId);
-						}//end onFailure()
-						
-						@Override
-						public void onSuccess( VibeRpcResponse response )
-						{
-							boolean success = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
-							if (success)
-							     updateFollowingButton(false);
-							else GwtClientHelper.deferredAlert(GwtTeaming.getMessages().qViewErrorCantUntrack());
-						}// end onSuccess()
-					});
-				}
-			};
-			followBtn.addClickHandler(clickHandler);
-		}
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
+							binderId);
+					}//end onFailure()
+					
+					public void onSuccess( VibeRpcResponse response )
+					{
+						updateFollowingButton(true);
+					}// end onSuccess()
+				});
+			}
+
+			private void unFollowAction() {
+				UntrackPersonCmd cmd;
+				
+				cmd = new UntrackPersonCmd( binderId );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+				{
+					public void onFailure( Throwable t )
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_UntrackingPerson(),
+							binderId);
+					}//end onFailure()
+					
+					public void onSuccess( VibeRpcResponse response )
+					{
+						updateFollowingButton(false);
+					}// end onSuccess()
+				});
+			}
+		};
+		followBtn.addClickHandler(clickHandler);
 		
 		panel.add(profileBtn);
-		if (!isFilr) {
-			panel.add(workspaceBtn);
-		}
+		panel.add(workspaceBtn);
 		panel.add(instantMessageBtn);
-		if (!isFilr) {
-			panel.add(followBtn);
-		}
+		panel.add(followBtn);
 
 		return panel;
 	}
@@ -366,8 +356,7 @@ public class GwtQuickViewDlg extends DlgBox {
 	 * Override the createFooter() method so we can control what buttons are in
 	 * the footer.
 	 */
-	@Override
-	public FlowPanel createFooter() {
+	public Panel createFooter() {
 		FlowPanel panel;
 
 		panel = new FlowPanel();
@@ -379,7 +368,6 @@ public class GwtQuickViewDlg extends DlgBox {
 	/**
 	 * Override the createHeader() method because we need to make it nicer.
 	 */
-	@Override
 	public Panel createHeader(String caption) {
 		FlowPanel panel;
 
@@ -412,7 +400,6 @@ public class GwtQuickViewDlg extends DlgBox {
 		panel.add(closeA);
 
 		closeA.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				hide();
 			}
@@ -429,7 +416,7 @@ public class GwtQuickViewDlg extends DlgBox {
 	@Override
 	public FocusWidget getFocusWidget() {
 
-		return ((null == workspaceBtn) ? profileBtn : workspaceBtn);
+		return workspaceBtn;
 	}
 
 	/**
@@ -454,7 +441,6 @@ public class GwtQuickViewDlg extends DlgBox {
 		// create an async callback to handle the result of the request to get
 		// the state:
 		AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
-			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -464,7 +450,6 @@ public class GwtQuickViewDlg extends DlgBox {
 				hide();
 			}
 
-			@Override
 			public void onSuccess( VibeRpcResponse response ) {
 				ProfileInfo profile;
 				
@@ -477,12 +462,12 @@ public class GwtQuickViewDlg extends DlgBox {
 						avatar.setUrl(url);
 					} else {
 						FlowPanel w = (FlowPanel)avatar.getParent();
-						w.addStyleName("qViewPhoto");
-//						w.addStyleName("qViewPhoto_No");
+						w.removeStyleName("qViewPhoto");
+						w.addStyleName("qViewPhoto_No");
 						FlowPanel panel = new FlowPanel();
 						w.add(panel);
 						panel.addStyleName("qViewPhotoHeight_No");
-						panel.addStyleName("qViewPhoto_none");
+						panel.addStyleName("ss_profile_photo_box_empty");
 						avatar.removeFromParent();
 					}
 				} else {
@@ -526,14 +511,12 @@ public class GwtQuickViewDlg extends DlgBox {
 			this.showProfile = profile;
 		}
 		
-		@Override
 		public void onClick(ClickEvent event) {
 			GetBinderPermalinkCmd cmd;
 			
 			cmd = new GetBinderPermalinkCmd( binderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
-				@Override
 				public void onFailure( Throwable t ) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
@@ -541,10 +524,10 @@ public class GwtQuickViewDlg extends DlgBox {
 						binderId);
 				}//end onFailure()
 				
-				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					String binderUrl;
+					OnSelectBinderInfo osbInfo;
 					StringRpcResponseData responseData;
 
 					responseData = (StringRpcResponseData) response.getResponseData();
@@ -565,15 +548,16 @@ public class GwtQuickViewDlg extends DlgBox {
 						
 						return;
 					}
-
+					
 					if(showProfile){
 						binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "showProfile" );
 					} else {
 						binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "showWorkspace" );
 					}
+					osbInfo = new OnSelectBinderInfo( binderId, binderUrl, false, Instigator.PROFILE_QUICK_VIEW_SELECT );
 					
 					//Fire event to notify that a selection has changed
-					EventHelper.fireChangeContextEventAsync( binderId, binderUrl, Instigator.PROFILE_QUICK_VIEW_SELECT );
+					GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 					
 					hide();
 				}// end onSuccess()
@@ -591,7 +575,6 @@ public class GwtQuickViewDlg extends DlgBox {
 		cmd = new IsPersonTrackedCmd( binderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
-					@Override
 					public void onFailure( Throwable t )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
@@ -600,7 +583,6 @@ public class GwtQuickViewDlg extends DlgBox {
 							binderId);
 					}//end onFailure()
 					
-					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
 						Boolean success;
@@ -619,16 +601,14 @@ public class GwtQuickViewDlg extends DlgBox {
 	 * @param isFollowing
 	 */
 	private void updateFollowingButton(boolean isFollowing) {
-		if (null != followBtn) {
-			if(isFollowing) {
-				followBtn.setText(GwtTeaming.getMessages().qViewFollowing());
-				followBtn.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
-				followBtn.setChecked(true);
-			} else {
-				followBtn.setText(GwtTeaming.getMessages().qViewFollow());
-				followBtn.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
-				followBtn.setChecked(false);
-			}
+		if(isFollowing) {
+			followBtn.setText(GwtTeaming.getMessages().qViewFollowing());
+			followBtn.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
+			followBtn.setChecked(true);
+		} else {
+			followBtn.setText(GwtTeaming.getMessages().qViewFollow());
+			followBtn.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
+			followBtn.setChecked(false);
 		}
 	}
 	
@@ -637,7 +617,6 @@ public class GwtQuickViewDlg extends DlgBox {
 		GetUserStatusCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
 
-			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -645,7 +624,6 @@ public class GwtQuickViewDlg extends DlgBox {
 					binderId );
 			}
 
-			@Override
 			public void onSuccess( VibeRpcResponse response ) {
 				UserStatus result = null;
 				
@@ -675,7 +653,6 @@ public class GwtQuickViewDlg extends DlgBox {
 			this.mbBinderId = binderId;
 		}
 		
-		@Override
 		public void onClick(ClickEvent event) {
 
 			GetMicroBlogUrlCmd cmd;
@@ -688,7 +665,6 @@ public class GwtQuickViewDlg extends DlgBox {
 
 		
 		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
-			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -696,7 +672,6 @@ public class GwtQuickViewDlg extends DlgBox {
 					binderId );
 				}
 
-				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					String url = null;
 					
@@ -717,9 +692,7 @@ public class GwtQuickViewDlg extends DlgBox {
 			};
 	}
 
-	@SuppressWarnings("unused")
 	private class ConferencingClickHandler implements ClickHandler {
-		@Override
 		public void onClick(ClickEvent event) {
 			GetAddMeetingUrlCmd cmd;
 			
@@ -727,7 +700,6 @@ public class GwtQuickViewDlg extends DlgBox {
 			cmd = new GetAddMeetingUrlCmd( binderId );
 			GwtClientHelper.executeCommand( cmd,
 					new AsyncCallback<VibeRpcResponse>() {
-						@Override
 						public void onSuccess( VibeRpcResponse response ) {
 							String url=null;
 							
@@ -744,7 +716,6 @@ public class GwtQuickViewDlg extends DlgBox {
 								hide();
 							}
 						}
-						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -754,6 +725,100 @@ public class GwtQuickViewDlg extends DlgBox {
 					});
 		}
 	}
+	
+	/**
+	 * Show this dialog.
+	 */
+	public void show()
+	{
+		// Is this dialog suppose to be modal
+		if ( m_modal )
+		{
+			// Yes
+			// If there is already a dialog visible then the glass panel is already visible.
+			// We don't want 2 glass panels.
+			if ( m_numDlgsVisible == 0 )
+			{
+				setGlassEnabled( true );
+				setGlassStyleName( "n-Transparent-Black-Div" );
+			}
+		}
+		
+		if ( m_visible == false )
+			++m_numDlgsVisible;
+		
+		m_visible = true;
+		
+		// Show this dialog.
+		super.show();
+		
+		// Get the widget that should be given the focus when this dialog is displayed.
+		m_focusWidget = getFocusWidget();
+		
+		// We need to set the focus after the dialog has been shown.  That is why we use a timer. 
+		if ( m_focusWidget != null )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+					if ( m_focusWidget != null )
+						m_focusWidget.setFocus( true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}// end show()
+	
+	/**
+	 * Using this onPreviewNativeEvent to check if the mouse click is in the input widget 
+	 */
+	public void onPreviewNativeEvent(NativePreviewEvent previewEvent) {
+
+
+		int eventType = previewEvent.getTypeInt();
+		
+		// We are only interested in mouse-down events.
+		if ( eventType != Event.ONMOUSEDOWN )
+			return;
+		
+		NativeEvent nativeEvent = previewEvent.getNativeEvent();
+		//EventTarget target = event.getEventTarget();
+		
+		if ( isMouseOver(this, nativeEvent.getClientX(), nativeEvent.getClientY())) {
+			return;
+		} else {
+			hide();
+			return;
+		}
+	}
+	
+	/**
+	 * Determine if the given coordinates are over this control.
+	 */
+	public boolean isMouseOver( Widget widget, int mouseX, int mouseY )
+	{
+		int left;
+		int top;
+		int width;
+		int height;
+		
+		// Get the position and dimensions of this control.
+		left = widget.getAbsoluteLeft() - widget.getElement().getOwnerDocument().getScrollLeft();
+		top = widget.getAbsoluteTop() - widget.getElement().getOwnerDocument().getScrollTop();
+		height = widget.getOffsetHeight();
+		width = widget.getOffsetWidth();
+		
+		//Window.alert("mouseX: "+ mouseX + " mouseY: "+ mouseY + " left: "+ left + " top: "+ top + " height: "+ height + " width: "+ width + " ScrollTop: "+widget.getElement().getOwnerDocument().getScrollTop());
+		
+		// Is the mouse over this control?
+		if ( mouseY >= top && mouseY <= (top + height) && mouseX >= left && (mouseX <= left + width) )
+			return true;
+		
+		return false;
+	}// end isMouseOver()
 	
 	private class QuickViewAction extends Anchor {
 
@@ -793,7 +858,6 @@ public class GwtQuickViewDlg extends DlgBox {
 			}
 			
 			addMouseOverHandler(new MouseOverHandler() {
-				@Override
 				public void onMouseOver(MouseOverEvent event) {
 					if(labelStyle.equals("qView-action-following") ){
 						panel.addStyleName("qView-action2");
@@ -803,7 +867,6 @@ public class GwtQuickViewDlg extends DlgBox {
 				}});
 			
 			addMouseOutHandler(new MouseOutHandler(){
-				@Override
 				public void onMouseOut(MouseOutEvent event) {
 					if(labelStyle.equals("qView-action-following") ){
 						panel.removeStyleName("qView-action2");
@@ -844,7 +907,6 @@ public class GwtQuickViewDlg extends DlgBox {
 			}
 		}
 		
-		@Override
 		public void setText(String text) {
 			if(label!=null){
 				label.setText(text);
@@ -867,6 +929,8 @@ public class GwtQuickViewDlg extends DlgBox {
 	 * Loads the GwtQuickViewDlg split point and returns an
 	 * instance of it via the callback.
 	 * 
+	 * @param autoHide
+	 * @param modal
 	 * @param pos
 	 * @param pos2
 	 * @param binderId
@@ -875,6 +939,8 @@ public class GwtQuickViewDlg extends DlgBox {
 	 * @param qvdClient
 	 */
 	public static void createAsync(
+			final boolean autoHide,
+			final boolean modal,
 			final int pos,
 			final int pos2,
 			final String binderId,
@@ -884,7 +950,7 @@ public class GwtQuickViewDlg extends DlgBox {
 		GWT.runAsync(GwtQuickViewDlg.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				GwtQuickViewDlg qvd = new GwtQuickViewDlg(pos, pos2, binderId, userName, element);
+				GwtQuickViewDlg qvd = new GwtQuickViewDlg(autoHide, modal, pos, pos2, binderId, userName, element);
 				qvdClient.onSuccess(qvd);
 			}
 			

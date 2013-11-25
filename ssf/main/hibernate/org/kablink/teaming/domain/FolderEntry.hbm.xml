@@ -17,7 +17,6 @@
 	<property name="deleted"/>
 	<property name="subscribed"/>
 	<property name="hasEntryAcl" access="field"/>
-	<property name="hasEntryExternalAcl" access="field"/>
 	<property name="checkFolderAcl" access="field"/>
     <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="customAttributes">
       <!--<cache usage="read-write"/>-->

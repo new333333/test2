@@ -36,8 +36,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.HttpStatusCodeSupport;
 import org.kablink.util.api.ApiErrorCode;
@@ -47,8 +45,6 @@ import org.kablink.util.api.ApiErrorCodeSupport;
 public class FilesErrors implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
-	private static final Log logger = LogFactory.getLog(FilesErrors.class);
 	
 	private List<Problem> problems;
 	
@@ -94,8 +90,7 @@ public class FilesErrors implements Serializable {
 		public static int PROBLEM_REGULAR_FILE_IN_MIRRORED_FOLDER   = 9;
 		public static int PROBLEM_MIRRORED_FILE_READONLY_DRIVER		= 10;
 		public static int PROBLEM_ENCRYPTION_FAILED					= 11;
-		public static int PROBLEM_CHECKSUM_MISMATCH                 = 12;
-
+		
 		// Message codes corresponding to each regular problem type.
 		public static String[] typeCodes = {
 			"file.error.other",
@@ -109,8 +104,7 @@ public class FilesErrors implements Serializable {
 			"file.error.mirrored.file.multiple",
 			"file.error.regular.file.in.mirrored.folder",
 			"file.error.mirrored.file.readonly.driver",
-			"file.error.encryption.failed",
-			"file.error.checksum.mismatch",
+			"file.error.encryption.failed"
 		};
 		
 		// API error codes corresponding to each regular problem type.
@@ -126,8 +120,7 @@ public class FilesErrors implements Serializable {
 			ApiErrorCode.MIRRORED_MULTIPLE,
 			ApiErrorCode.REGULAR_FILE_IN_MIRRORED_FOLDER,
 			ApiErrorCode.MIRRORED_READONLY_DRIVER,
-			ApiErrorCode.FILE_ENCRYPTION_FAILED,
-			ApiErrorCode.FILE_CHECKSUM_FAILED,
+			ApiErrorCode.FILE_ENCRYPTION_FAILED
 		};
 		
 		// HTTP status codes corresponding to each regular problem type.
@@ -143,8 +136,7 @@ public class FilesErrors implements Serializable {
 			400,
 			400,
 			400,
-			500,
-			400,
+			500
 		};
 
 		private String repositoryName; // required
@@ -155,26 +147,15 @@ public class FilesErrors implements Serializable {
 		
 		public Problem(String repositoryName, String fileName, 
 				int type) {
-			this(fileName, type);
-			// Don't include repository name in the error any longer. It has no meaning to end users.
-			//this.repositoryName = repositoryName;
-			if(logger.isDebugEnabled())
-				logger.error("Error (type=" + type + ") on file '" + fileName + "'");
+			this.repositoryName = repositoryName;
+			this.fileName = fileName;
+			this.type = type;
 		}
 		
 		public Problem(String repositoryName, String fileName, 
 				int type, Exception exception) {
-			this(fileName, type);
-			// Don't include repository name in the error any longer. It has no meaning to end users.
-			//this.repositoryName = repositoryName;
-			this.exception = exception;		
-			if(logger.isDebugEnabled())
-				logger.error("Error (type=" + type + ") on file '" + fileName + "'", exception);
-		}
-		
-		private Problem(String fileName, int type) {
-			this.fileName = fileName;
-			this.type = type;
+			this(repositoryName, fileName, type);
+			this.exception = exception;
 		}
 		
 		public Exception getException() {

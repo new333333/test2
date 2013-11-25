@@ -33,10 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.EnhancedViewWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.http.client.URL;
 
@@ -47,19 +43,16 @@ import com.google.gwt.http.client.URL;
  */
 public class EnhancedViewConfig extends ConfigItem
 {
-	private String m_lpBinderId;	// landing page binder id
 	private EnhancedViewProperties		m_properties;
 	
 	/**
 	 * 
 	 */
-	public EnhancedViewConfig( String configStr, String style, String binderId )
+	public EnhancedViewConfig( String configStr )
 	{
 		String[] results;
 		
-		m_lpBinderId = binderId;	// landing page binder id
 		m_properties = new EnhancedViewProperties();
-		setLandingPageStyle( style );
 		
 		// Split the configuration data into its parts.  ie jspName=xxx
 		results = configStr.split( "[,;]" );
@@ -183,14 +176,14 @@ public class EnhancedViewConfig extends ConfigItem
 								if ( index != -1 )
 								{
 									String numValue;
-									int height;
+									int width;
 									
 									// Yes
 									numValue = value.substring( 0, index );
 									try
 									{
-										height = Integer.parseInt( numValue );
-										m_properties.setHeight( height );
+										width = Integer.parseInt( numValue );
+										m_properties.setHeight( width );
 									}
 									catch (Exception ex)
 									{
@@ -232,23 +225,6 @@ public class EnhancedViewConfig extends ConfigItem
 	public void addChild( ConfigItem configItem )
 	{
 		// Nothing to do.
-	}
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		return EnhancedViewWidget.createWidget( this, widgetStyles, m_lpBinderId );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public EnhancedViewDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new EnhancedViewDropWidget( lpe, this );
 	}
 	
 	

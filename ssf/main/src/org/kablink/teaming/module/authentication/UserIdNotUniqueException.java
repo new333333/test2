@@ -33,7 +33,7 @@
 
 package org.kablink.teaming.module.authentication;
 
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.AuthenticationException;
 
 /**
  * This exception is used at login when we determine that the user id specified by

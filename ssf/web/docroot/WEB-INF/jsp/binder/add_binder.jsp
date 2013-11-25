@@ -203,7 +203,11 @@ function ss_checkForm(obj) {
   method="post" onSubmit="return ss_checkForm(this);">
   
 <div style="text-align:right; padding:10px;">
+	<c:if test="${empty ss_accessControlMap || 
+	  empty ss_accessControlMap.createWorkspace || 
+	  ss_accessControlMap.createWorkspace}">
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" onClick="ss_buttonSelect('okBtn');">
+	</c:if>
 	<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 </div>
   
@@ -218,9 +222,26 @@ function ss_checkForm(obj) {
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 </fieldset>
 <br/>
+<c:if test="${!empty ss_accessControlMap && 
+  !empty ss_accessControlMap.createWorkspace && 
+  !ss_accessControlMap.createWorkspace}">
+<span class="ss_errorLabel">
+  <c:set var="userTitle"><ssf:userTitle user="${ssUser}"/></c:set>
+  <ssf:nlt tag="errorcode.operation.denied">
+    <ssf:param name="value" value="${userTitle}"/>
+    <ssf:param name="value" useBody="true"><ssf:nlt tag="workarea_operation.createWorkspaces"/></ssf:param>
+    <ssf:param name="value" value="${ssBinder.title}"/>
+  </ssf:nlt>
+</span>
+<br/>
+<br/>
+</c:if>
 </td></tr>
 </c:if>
 
+<c:if test="${empty ss_accessControlMap || 
+  empty ss_accessControlMap.createWorkspace || 
+  ss_accessControlMap.createWorkspace}">
 <tr><td>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="general.title" /></legend>
@@ -458,10 +479,15 @@ function ss_checkForm(obj) {
 </div>
 </td></tr>
 </c:if>
+</c:if>
 
 </table>
 <div style="text-align: right; margin: 20px;">
+	<c:if test="${empty ss_accessControlMap || 
+	  empty ss_accessControlMap.createWorkspace || 
+	  ss_accessControlMap.createWorkspace}">
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" onClick="ss_buttonSelect('okBtn');">
+	</c:if>
 	<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 </div>
 </form>

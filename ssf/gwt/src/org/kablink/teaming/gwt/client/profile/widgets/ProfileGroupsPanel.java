@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,19 +43,15 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.GroupMembershipPopup;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.UIObject;
 
-/**
- * ?
- * 
- * @author nbjensen@novell.com
- */
+
 public class ProfileGroupsPanel extends ProfileSectionPanel  {
 
 	private final String IDBASE = "myGroups_";
@@ -78,14 +74,12 @@ public class ProfileGroupsPanel extends ProfileSectionPanel  {
 		
 		cmd = new GetGroupsCmd( profileRequestInfo.getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GwtGroups(),
 					profileRequestInfo.getBinderId());
 			}
-			@Override
 			public void onSuccess(VibeRpcResponse response)  {
 				
 				List<GroupInfo> gList;
@@ -103,10 +97,8 @@ public class ProfileGroupsPanel extends ProfileSectionPanel  {
 					// ...creating an item structure for each.
 					GroupInfo group = gIT.next();
 					String groupId = (IDBASE + group.getId().toString());
-
-					GroupClickHandler gch = new GroupClickHandler(group);
-					sbA = new SideBarAnchor(groupId, group.getTitle(), group.getTitle(), gch);
-					gch.setShowRelativeTo(sbA);
+					
+					sbA = new SideBarAnchor(groupId, group.getTitle(), group.getTitle(), new GroupClickHandler(group));
 					boolean visible = true;
 					if(groupCount > 3){
 						visible = false;
@@ -136,9 +128,8 @@ public class ProfileGroupsPanel extends ProfileSectionPanel  {
 	 * Inner class that handles clicks on individual groups.
 	 */
 	private class GroupClickHandler implements ClickHandler {
-		private GroupInfo				m_group;			// The m_group clicked on.
-		private GroupMembershipPopup	m_gmp;				//
-		private UIObject				m_showRelativeTo;	//
+		@SuppressWarnings("unused")
+		private GroupInfo group;	// The group clicked on.
 
 		/**
 		 * Class constructor.
@@ -147,7 +138,7 @@ public class ProfileGroupsPanel extends ProfileSectionPanel  {
 		 */
 		GroupClickHandler(GroupInfo g) {
 			// Simply store the parameter.
-			m_group = g;
+			group = g;
 		}
 
 		/**
@@ -155,27 +146,54 @@ public class ProfileGroupsPanel extends ProfileSectionPanel  {
 		 * 
 		 * @param event
 		 */
-		@Override
 		public void onClick(ClickEvent event) {
-			if (null == m_gmp) {
-				m_gmp = new GroupMembershipPopup(
-					true,	// true  -> Auto hide.
-					false,	// false -> Not modal.
-					m_group.getTitle(),
-					String.valueOf(m_group.getId()));
-			}
-			if (null == m_showRelativeTo)
-			     m_gmp.center();
-			else m_gmp.showRelativeTo(m_showRelativeTo);
-		}
 
-		/**
-		 * Stores the widget to show the GroupMembership popup relative to.
-		 * 
-		 * @param showRelativeTo
-		 */
-		public void setShowRelativeTo(UIObject showRelativeTo) {
-			m_showRelativeTo = showRelativeTo;
 		}
 	}
+
+	protected void expand2() {
+		
+		Window.alert("Expand button pressed");
+		
+//		// Scan the groups...
+//		int groupCount = 0;
+//		SideBarAnchor sbA;
+//		for (Iterator<GroupInfo> gIT = groupList.iterator(); gIT.hasNext(); ) {
+//			
+//			//if 
+//			if(groupCount == 1) {
+//				String groupId = (IDBASE + "More");
+//				sbA = new SideBarAnchor(groupId, "More", "", new GroupClickHandler(new GroupInfo()));
+//				return;
+//			}
+//			
+//			// ...creating an item structure for each.
+//			GroupInfo group = gIT.next();
+//			String groupId = (IDBASE + group.getBinderId());
+//			
+//			sbA = new SideBarAnchor(groupId, group.getTitle(), group.getEntityPath(), new GroupClickHandler(group));
+//			addContentWidget(sbA);
+//			groupCount += 1;
+//		}
+	}
+	
+	/*
+	 * This method will be called to goto a permalink URL received as a
+	 * parameter.
+	 * 
+	 */
+	@SuppressWarnings("unused")
+	private void gotoUrl( Object obj, boolean isPermalink )
+	{
+		if ( obj instanceof String )
+		{
+			GwtClientHelper.jsLoadUrlInTopWindow( (String) obj );
+			
+//			if (isPermalink)
+//			     Window.Location.replace( (String) obj );
+//			else GwtClientHelper.jsLoadUrlInTopWindow( (String) obj );
+		}
+		else
+			Window.alert( "in gotoUrl() and obj is not a String object" );
+	}//end gotoUrl()
 }

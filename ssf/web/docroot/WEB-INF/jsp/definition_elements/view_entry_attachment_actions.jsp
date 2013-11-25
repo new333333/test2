@@ -71,7 +71,7 @@
     <a href="javascript: ;" 
       onClick="ss_showHideMenuDiv('ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}');return false;"
     ><ssf:nlt tag="file.actions"/>
-    <img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_sm.png"/></a>
+    <img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_arrow.png"/></a>
   </div>
   <div id="ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}" 
       class="ss_actions_bar_submenu" style="position:absolute; display:none;">

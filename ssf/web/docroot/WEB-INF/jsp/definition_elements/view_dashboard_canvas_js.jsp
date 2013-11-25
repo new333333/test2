@@ -35,23 +35,25 @@
 <% //View dashboard canvas (javascript) %>
 <script type="text/javascript">
 //Initialize the variables only once
-if (typeof ss_dbrn == 'undefined' || ss_dbrn == null) {
-	ss_dbrn = Math.round(Math.random()*999999)
-	ss_componentTextHide = "<ssf:nlt tag="toolbar.hideDashboard"/>"
-	ss_componentTextShow = "<ssf:nlt tag="toolbar.showDashboard"/>"
-	ss_componentSrcHide = "<html:imagesPath/>icons/accessory_hide.gif"
-	ss_componentSrcShow = "<html:imagesPath/>icons/accessory_show.gif"
-	ss_componentAltHide = "<ssf:nlt tag="button.hide"/>"
-	ss_componentAltShow = "<ssf:nlt tag="button.show"/>"
-	ss_toolbarAddContent = "<ssf:nlt tag="dashboard.addContent"/>"
-	ss_toolbarHideContent = "<ssf:nlt tag="dashboard.addContentOff"/>"
-	ss_toolbarShowControls = "<ssf:nlt tag="dashboard.showHiddenControls"/>"
-	ss_toolbarHideControls = "<ssf:nlt tag="dashboard.showHiddenControlsOff"/>"
-	ss_dashboardConfirmDelete = "<ssf:nlt tag="dashboard.confirmDelete"/>";
-	ss_dashboardConfirmDeleteLocal = "<ssf:nlt tag="dashboard.confirmDeleteLocal"/>";
-	ss_dashboardConfirmDeleteGlobal = "<ssf:nlt tag="dashboard.confirmDeleteGlobal"/>";
-	ss_dashboardConfirmDeleteBinder = "<ssf:nlt tag="dashboard.confirmDeleteBinder"/>";
-	ss_dashboardConfirmDeleteUnknown = "<ssf:nlt tag="dashboard.confirmDeleteUnknown"/>";
+if (!ss_dbrn) {
+	var ss_dbrn = Math.round(Math.random()*999999)
+	var ss_componentTextHide = "<ssf:nlt tag="toolbar.hideDashboard"/>"
+	var ss_componentTextShow = "<ssf:nlt tag="toolbar.showDashboard"/>"
+	var ss_componentSrcHide = "<html:imagesPath/>icons/accessory_hide.gif"
+	var ss_componentSrcShow = "<html:imagesPath/>icons/accessory_show.gif"
+	var ss_componentAltHide = "<ssf:nlt tag="button.hide"/>"
+	var ss_componentAltShow = "<ssf:nlt tag="button.show"/>"
+	var ss_toolbarAddContent = "<ssf:nlt tag="dashboard.addContent"/>"
+	var ss_toolbarHideContent = "<ssf:nlt tag="dashboard.addContentOff"/>"
+	var ss_toolbarShowControls = "<ssf:nlt tag="dashboard.showHiddenControls"/>"
+	var ss_toolbarHideControls = "<ssf:nlt tag="dashboard.showHiddenControlsOff"/>"
+	var ss_dashboardConfirmDelete = "<ssf:nlt tag="dashboard.confirmDelete"/>";
+	var ss_dashboardConfirmDeleteLocal = "<ssf:nlt tag="dashboard.confirmDeleteLocal"/>";
+	var ss_dashboardConfirmDeleteGlobal = "<ssf:nlt tag="dashboard.confirmDeleteGlobal"/>";
+	var ss_dashboardConfirmDeleteBinder = "<ssf:nlt tag="dashboard.confirmDeleteBinder"/>";
+	var ss_dashboardConfirmDeleteUnknown = "<ssf:nlt tag="dashboard.confirmDeleteUnknown"/>";
+
+
 }
 var ${renderResponse.namespace}_dashboard_control_count = 0;
 var ${renderResponse.namespace}_dashboard_border_count = 0;

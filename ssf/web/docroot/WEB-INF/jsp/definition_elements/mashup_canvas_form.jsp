@@ -43,15 +43,6 @@
 <%@ page import="org.kablink.teaming.domain.FileAttachment" %>
 <%@ page import="org.kablink.teaming.domain.FileItem" %>
 
-<% // The DlgBox class uses JQuery to make dialogs draggable. %>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.draggable.js"></script>
-<script type="text/javascript">
-	// Relinquish jQuery's control of the $ variable.
-    jQuery.noConflict();
-</script>
-
 <c:set var="ss_mashupItemId" value="0" scope="request"/>
 <%  
 	Long ss_mashupTableDepth = Long.valueOf(0);
@@ -76,7 +67,7 @@
 // m_landingPageConfig holds the string that defines the content of this landing page and is referenced by the GWT code.
 var m_landingPageConfig = null;
 
-m_landingPageConfig = { configData : '<ssf:escapeJavaScript value="${ssDefinitionEntry.customAttributes[property_name].value}" />', mashupPropertyName: '<ssf:escapeJavaScript value="${ss_mashupPropertyName}" />', binderId: '', language : '${ssUser.locale.language}', contentCss : '<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>', propertiesXML : '<ssf:escapeJavaScript value="${ss_mashupProperties}" />', tinyMCELang : '${tinyMCELang}' };
+m_landingPageConfig = { configData : '<ssf:escapeJavaScript value="${ssDefinitionEntry.customAttributes[property_name].value}" />', mashupPropertyName: '<ssf:escapeJavaScript value="${ss_mashupPropertyName}" />', binderId: '', language : '${ssUser.locale.language}', contentCss : '<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>', propertiesXML : '<ssf:escapeJavaScript value="${ss_mashupProperties}" />' };
 
 // Create an array of objects where each object holds the name and id of a file attachment.
 <c:if test="${!empty ssBinder}">

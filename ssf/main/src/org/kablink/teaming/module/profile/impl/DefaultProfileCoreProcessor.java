@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,6 +45,7 @@ import java.util.TimeZone;
 import java.util.Locale;
 
 import org.dom4j.Element;
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -61,11 +62,11 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
@@ -88,7 +89,6 @@ import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.Validator;
@@ -97,20 +97,17 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 /**
- * ?
- * 
+ *
  * @author Jong Kim
  */
-@SuppressWarnings("unchecked")
 public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	implements ProfileCoreProcessor {
 	DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, NLT.getTeamingLocale() );
 	//inside write transaction    
-	@Override
-	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, boolean skipDbLog) {
+	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
 		if(logger.isDebugEnabled())
 			logger.debug("Deleting binder [" + binder.getPathName() + "]");
-		if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource, options, skipDbLog);
+		if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource, options);
 		else {
 			//if binder is marked deleted, we are called from cleanup code without a transaction 
 			final ProfileBinder pBinder = (ProfileBinder)binder;
@@ -119,7 +116,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			Boolean done=Boolean.FALSE;
 			while (!done) {
 				done = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
-					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						SFQuery query = getProfileDao().queryAllPrincipals(new FilterControls(), pBinder.getZoneId()); 
 						try {
@@ -174,7 +170,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	}
 	    
 	//inside write transaction    
-	@Override
 	public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
 		//don't remove from parent, cause needs zone pointer for request context setup on zone delete
 		//mark for delete now and continue later
@@ -182,7 +177,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	} 
 	    
 	//inside write transaction    
-	@Override
 	protected void deleteBinder_processFiles(Binder binder, Map ctx) {
 		getFileModule().deleteFiles(binder, binder, false, null);
 	}
@@ -190,7 +184,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
  
        //*******************************************************************/
   	//not supported
-	@Override
 	public void moveBinder(Binder source, Binder destination, Map options) {
 		throw new NotSupportedException("errorcode.notsupported.moveBinder");
 	
@@ -201,22 +194,18 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		throw new NotSupportedException("errorcode.notsupported.copyBinder");
 	
 	}
-	@Override
 	public boolean checkMoveBinderQuota(Binder source, Binder destination) {
 		return false;
 	}
-	@Override
 	public boolean checkMoveEntryQuota(Binder source, Binder destination, FolderEntry entry) {
 		return false;
 	}
     //*******************************************************************/
     //inside write transaction    
-    @Override
-	protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+    protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	super.addBinder_fillIn(parent,binder, inputData, entryData, ctx);
     	Integer type = binder.getDefinitionType();
-    	if ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
-    			type.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
+    	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
     		Principal u = binder.getCreation().getPrincipal(); //creator is user
     		if (!(u instanceof User)) {
     			u = getProfileDao().loadUserPrincipal(u.getId(), u.getZoneId(), false);
@@ -228,11 +217,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
    	
     }
     //inside write transaction    
-    @Override
-	protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+    protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	Integer type = binder.getDefinitionType();
-    	if ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
-    			type.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
+    	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
     		Principal u = binder.getCreation().getPrincipal(); //creator is user
     		if (!(u instanceof User)) {
     			u = getProfileDao().loadUserPrincipal(u.getId(), u.getZoneId(), false);
@@ -248,15 +235,13 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
             
     //inside write transaction
-   @Override
-protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
+   protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
         ((Principal)entry).setZoneId(binder.getZoneId());
         doProfileEntryFillin(entry, inputData, entryData);
         super.addEntry_fillIn(binder, entry, inputData, entryData, ctx);
      }
     //inside write transaction
-    @Override
-	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//make user the user is owner so create_modify access works
     	if (entry instanceof User) {
     		entry.getCreation().setPrincipal((User)entry);
@@ -266,8 +251,7 @@ protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inp
     }
        
     //***********************************************************************************************************	
-    @Override
-	protected void modifyEntry_setCtx(Entry entry, Map ctx) {
+    protected void modifyEntry_setCtx(Entry entry, Map ctx) {
     	super.modifyEntry_setCtx(entry, ctx);
     	if (entry instanceof GroupPrincipal) {
     		ctx.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, new HashSet(((GroupPrincipal)entry).getMembers()));
@@ -279,15 +263,13 @@ protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inp
     	}
     }
     //inside write transaction
-   @Override
-protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
+   protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	//see if we have updates to fields not covered by definition build
     	doProfileEntryFillin(entry, inputData, entryData);
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
     }
    //inside write transaction
-   @Override
-protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, 
+   protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, 
    		Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
 	   super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
 	   if (entry instanceof User) {
@@ -296,12 +278,9 @@ protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAcces
 	   }
 		   
    }
-   @Override
-protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
+   protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
    		InputDataAccessor inputData, List fileUploadItems, 
    		Collection<FileAttachment> filesToIndex, Map ctx) {
-	   if((entry instanceof Group) && ((Group)entry).isLdapContainer())
-		   return; // Do NOT index container group
 	   //index self
 	   super.modifyEntry_indexAdd(binder, entry, 
 		   		inputData, fileUploadItems, filesToIndex, ctx);
@@ -367,10 +346,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 				   logger.error("Cannot instantiate UserTitleChange custom class", ex);
 			   }
 	   		}
-	   		if (job == null) { 
-	   			String className = SPropsUtil.getString("job.user.title.change.class", "org.kablink.teaming.jobs.DefaultUserTitleChange");
-	   			job = (UserTitleChange)ReflectHelper.getInstance(className);
-	   		}
+	   		if (job == null) job = (UserTitleChange)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultUserTitleChange.class);
 			job.schedule(user, binderIds, entryIds); 	
 	   }	   
    }
@@ -382,15 +358,6 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
      */
     protected void doProfileEntryFillin(Entry entry, InputDataAccessor inputData, Map entryData) {
     	if (entry instanceof User) {
-           	// Handle the disabled attribute
-       		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_DISABLED ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_DISABLED ) )
-       		{
-        		String disabled;
-        		
-        		disabled = inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_DISABLED );
-    			entryData.put( ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.valueOf( disabled ) );
-        	} 
-
     		if (inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE) && !entryData.containsKey(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) {
     			entryData.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, inputData.getSingleValue(ObjectKeys.FIELD_USER_DISPLAYSTYLE));
     		}
@@ -418,25 +385,14 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 					}
    			}
     		}
-    		// Unfortunately, we don't have the ability to express in the definition that a field value should be in 
-    		// lower case. Consequently, we need to special handle these values here to make sure they are converted
-    		// to lower case before being stored in the database. 
-    		// TODO Enhance definition builder to be able to express this.
-    		if(entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL))
-    			entryData.put(ObjectKeys.FIELD_USER_EMAIL, ((String)entryData.get(ObjectKeys.FIELD_USER_EMAIL)).toLowerCase());
-    		if(entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL_MOBILE))
-    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_MOBILE, ((String)entryData.get(ObjectKeys.FIELD_USER_EMAIL_MOBILE)).toLowerCase());
-    		if(entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL_TEXT))
-    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_TEXT, ((String)entryData.get(ObjectKeys.FIELD_USER_EMAIL_TEXT)).toLowerCase());
-    			
     		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL)) {
-    			entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL).toLowerCase());
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL_MOBILE) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL_MOBILE)) {
-    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_MOBILE, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_MOBILE).toLowerCase());
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_MOBILE, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_MOBILE));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL_TEXT) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL_TEXT)) {
-    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_TEXT, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_TEXT).toLowerCase());
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_TEXT, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_TEXT));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_TIMEZONE) && !entryData.containsKey(ObjectKeys.FIELD_USER_TIMEZONE)) {
     			Object tz = inputData.getSingleObject(ObjectKeys.FIELD_USER_TIMEZONE);
@@ -457,10 +413,6 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
     		if (inputData.exists(ObjectKeys.FIELD_USER_TWITTERID) && !entryData.containsKey(ObjectKeys.FIELD_USER_TWITTERID)) {
     			entryData.put(ObjectKeys.FIELD_USER_TWITTERID, inputData.getSingleValue(ObjectKeys.FIELD_USER_TWITTERID));
     		}
-        	if ( inputData.exists( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE ) && !entryData.containsKey( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE ) )
-        	{
-        		entryData.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, inputData.getSingleObject( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE ) );
-        	}
     	} else if(entry instanceof Application) {
         	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_POST_URL) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_POST_URL)) {
     			entryData.put(ObjectKeys.FIELD_APPLICATION_POST_URL, inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_POST_URL));
@@ -505,7 +457,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
         		}
 	   			entryData.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
         	}
-
+        	
         	if ( inputData.exists( ObjectKeys.FIELD_GROUP_DYNAMIC ) && !entryData.containsKey( ObjectKeys.FIELD_GROUP_DYNAMIC ) )
         	{
         		entryData.put( ObjectKeys.FIELD_GROUP_DYNAMIC, inputData.getSingleObject( ObjectKeys.FIELD_GROUP_DYNAMIC ) );
@@ -515,27 +467,13 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
         	{
         		entryData.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, inputData.getSingleValue( ObjectKeys.FIELD_GROUP_LDAP_QUERY ) );
         	}
-        	
-        	if ( inputData.exists( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER ) && !entryData.containsKey( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER ) )
-        	{
-        		entryData.put( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER, inputData.getSingleObject( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER ) );
-        	}
-    	}
-    	
-    	if(entry instanceof UserPrincipal) {
-    		if(((UserPrincipal) entry).getIdentityInfo() == null) {
-    			IdentityInfo identityInfo = (IdentityInfo)inputData.getSingleObject(ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO);
-    			if(identityInfo == null)
-    				identityInfo = new IdentityInfo(); // Create one with default settings
-    			((UserPrincipal) entry).setIdentityInfo(identityInfo);
-    		}
-    	}
+    	} 
     	
    		if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_THEME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_THEME)) {
 			entryData.put(ObjectKeys.FIELD_PRINCIPAL_THEME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_THEME));
 		}
    		if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME)) {
-    		entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME).toLowerCase());
+    		entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME));
     	} 
        	if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_NAME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_NAME)) {
     		entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_NAME));
@@ -547,24 +485,6 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
     		entryData.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID ) );
     	} 
 
-       	// Handle the objectSid attribute
-   		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID ) )
-   		{
-    		entryData.put( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID ) );
-    	} 
-
-       	// Handle the samAccountName attribute
-   		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME ) )
-   		{
-    		entryData.put( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME ).toLowerCase() );
-    	} 
-
-       	// Handle the domainName attribute
-   		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME ) )
-   		{
-    		entryData.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME ) );
-    	} 
-
    		String name = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_NAME);
        	if (Validator.isNotNull(name)) {
        		//remove blanks
@@ -574,30 +494,26 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
           		//setting the name -  force foreign name to be same if not supplied
           		//preserve case on foreign name
                	String foreignName = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME);
-          		if (Validator.isNull(foreignName)) entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name.toLowerCase()); 
+          		if (Validator.isNull(foreignName)) entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name); 
           	}
        	}
        	
     }
     //***********************************************************************************************************
     
-   	@Override
-	protected SFQuery indexEntries_getQuery(Binder binder) {
-   		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneId(), true);	// true -> Include disabled.
+   	protected SFQuery indexEntries_getQuery(Binder binder) {
+   		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneId());
    	}
-   	@Override
-	protected boolean indexEntries_validate(Binder binder, Entry entry) {
+   	protected boolean indexEntries_validate(Binder binder, Entry entry) {
    		Principal p = (Principal)entry;
    		//don't index job processor
    		if (p.isReserved() && ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(p.getInternalId())) return false;
    		return true;
    	}
-   	@Override
-	protected void indexEntries_load(Binder binder, List entries)  {
+   	protected void indexEntries_load(Binder binder, List entries)  {
    		// bulkd load any collections that neeed to be indexed
    		getProfileDao().bulkLoadCollections((List<Principal>)entries);
    	}
-	@Override
 	protected Map indexEntries_loadTags(Binder binder, List<Entry> entries) {
 		List<EntityIdentifier> uIds = new ArrayList();
 		List<EntityIdentifier> gIds = new ArrayList();
@@ -616,8 +532,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	}
 
     //***********************************************************************************************************
-    @Override
-	protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
+    protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
     	
        	if (entry instanceof User) {
        		User p = (User)entry;
@@ -641,26 +556,17 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 
     //***********************************************************************************************************    
  
-    @Override
-	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
+    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	
 		if (entry instanceof User) {
 			User user = (User)entry;
 			ProfileIndexUtils.addName(indexDoc, user, false);
 			ProfileIndexUtils.addWorkspaceId(indexDoc, user);
-			ProfileIndexUtils.addAvatarId(indexDoc, user);
 			ProfileIndexUtils.addPersonFlag(indexDoc, user);
-			ProfileIndexUtils.addIdentityInfo(indexDoc, user);
-			ProfileIndexUtils.addEmail(indexDoc, user);
-			ProfileIndexUtils.addDisabled(indexDoc, user);
-			ProfileIndexUtils.addIsLdapContainer( indexDoc, (User)entry );
 		} else if(entry instanceof Group) {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
 	        ProfileIndexUtils.addDynamic(indexDoc, (Group)entry, false);	
-			ProfileIndexUtils.addIdentityInfo( indexDoc, (UserPrincipal)entry );
-			ProfileIndexUtils.addIsLdapContainer( indexDoc, (Group)entry );
-			ProfileIndexUtils.addIsFromLdap( indexDoc, (Group)entry );
 		} else if(entry instanceof Application) {
 	        ProfileIndexUtils.addName(indexDoc, (Application)entry, false);	
 		} else if(entry instanceof ApplicationGroup) {
@@ -676,7 +582,6 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
      * reindex all users unnecessarily
      * Files are not handled here
      */
-	@Override
 	public void syncEntry(final Principal entry, final InputDataAccessor inputData, Map options) {
 		final Map ctx = new HashMap();
 		if (options != null) ctx.putAll(options);
@@ -686,8 +591,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	        
         // The following part requires update database transaction.
         Boolean changed = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
-        	@Override
-			public Object doInTransaction(TransactionStatus status) {
+        	public Object doInTransaction(TransactionStatus status) {
         		boolean result1 = syncEntry_fillIn(entry, inputData, entryData, ctx);
 	                
         		boolean result2 = syncEntry_postFillIn(entry, inputData, entryData, ctx);
@@ -739,17 +643,15 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	 * is an InputDataAccessor of updates.  Only index entries that change.
 	 * Store the list of entries that were sync'd in syncResults.
 	 */
-	@Override
-	public Map syncEntries(
+	public void syncEntries(
 		final Map entries,
 		final Map options,
 		PartialLdapSyncResults syncResults ) {
-		if (entries.isEmpty()) return null;
+		if (entries.isEmpty()) return;
 	    
         // The following part requires update database transaction.
         Map changedEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
-        	@Override
-			public Object doInTransaction(TransactionStatus status) {
+        	public Object doInTransaction(TransactionStatus status) {
         		Map changes = new HashMap();
                  for (Iterator i=entries.entrySet().iterator(); i.hasNext();) {
                 	 Map.Entry mEntry = (Map.Entry)i.next();
@@ -787,7 +689,6 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	    	}
 	    }
 		
-	    return changedEntries;
 	}
     protected Map syncNewEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
     	return addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
@@ -823,23 +724,20 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
      * @param syncResults
      * @return
      */
-    @Override
     public List syncNewEntries(
     	final Binder binder,
     	final Definition definition,
     	final Class clazz,
     	final List inputAccessors,
     	Map options,
-    	PartialLdapSyncResults syncResults,
-    	final IdentityInfo identityInfo) {
+    	PartialLdapSyncResults syncResults ) {
 	   if (inputAccessors.isEmpty()) return new ArrayList();
 	   SimpleProfiler.start("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.
    		final Map ctx = new HashMap();
    		if (options != null) ctx.putAll(options);
 		Map<Principal, InputDataAccessor> newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
-	        	@Override
-				public Object doInTransaction(TransactionStatus status) {
+	        	public Object doInTransaction(TransactionStatus status) {
 	        		Map newEntries = new HashMap();
 	           		StringBuffer inList = new StringBuffer();
           			for (int i=0; i<inputAccessors.size(); ++i) {
@@ -848,16 +746,12 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	        			Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	   	        
 	        			Entry entry = syncNewEntry_create(definition, clazz, ctx);
-	        				        			
 	        			//	need to set entry/binder information before generating file attachments
 	        			//	Attachments/Events need binder info for AnyOwner
 	        			syncNewEntry_fillIn(binder, entry, inputData, entryData, ctx);
 	                
 	        			syncNewEntry_preSave(binder, entry, inputData, entryData, ctx);    
 
-	        			if(entry instanceof UserPrincipal) 
-	        				((UserPrincipal)entry).setIdentityInfo(identityInfo);
-	        			
 	        			syncNewEntry_save(binder, entry, inputData, entryData, ctx);      
 	       	    		inList.append(entry.getId().toString() + ",");
 	       	    	 	                
@@ -901,15 +795,13 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 		
 	}
 
-    @Override
-	protected String getEntryPrincipalField() {
+    protected String getEntryPrincipalField() {
     	return Constants.DOCID_FIELD;
     }
-	@Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entry, operation);
-		Element element = changes.getEntityRoot();
+		ChangeLog changes = new ChangeLog(entry, operation);
+		Element element = ChangeLogUtils.buildLog(changes, entry);
 		//add principal fields
 		Principal prin = (Principal)entry;
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_PRINCIPAL_NAME, ObjectKeys.XTAG_TYPE_STRING, prin.getName());
@@ -940,7 +832,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOCALE, user.getLocale());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_PASSWORD, user.getPassword());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_DIGESTSEED, user.getDigestSeed());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_FIRST_LOGINDATE, user.getFirstLoginDate());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOGINDATE, user.getLoginDate());
 
 		} else if(prin instanceof Group) {
 			Group group = (Group)prin;
@@ -952,14 +844,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 			ApplicationGroup group = (ApplicationGroup)prin;
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_APPLICATION_GROUP_MEMBERS, LongIdUtil.getIdsAsString(group.getMembers()));			
 		}
-		ChangeLogUtils.save(changes);
+		getCoreDao().save(changes);
 		return changes;
 	}    
-	
-    protected void addEntry_indexAdd(Binder binder, Entry entry, 
-    		InputDataAccessor inputData, List fileUploadItems, Map ctx){
-    	if((entry instanceof Group) && ((Group)entry).isLdapContainer())
-    		return; // Do NOT index container group
-    	super.addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
-    }
 }

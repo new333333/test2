@@ -60,7 +60,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.module.binder.impl.SimpleNameAlreadyExistsException;
 import org.kablink.teaming.smtp.SMTPManager;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SPropsUtil;
@@ -160,11 +159,7 @@ public class ConfigureController extends AbstractBinderController {
 				}
 				SimpleName simpleUrl = getBinderModule().getSimpleName(name);
 				if (simpleUrl == null) {
-					try {
-						getBinderModule().addSimpleName(name, binderId, binder.getEntityType().name());
-					} catch(SimpleNameAlreadyExistsException e) {
-						response.setRenderParameter(WebKeys.SIMPLE_URL_EMAIL_NAME_EXISTS_ERROR, "true");
-					}
+					getBinderModule().addSimpleName(name, binderId, binder.getEntityType().name());
 				} else if (!simpleUrl.getBinderId().equals(binderId)) {
 					response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, "true");
 				}
@@ -173,11 +168,7 @@ public class ConfigureController extends AbstractBinderController {
 				if (prefix.toLowerCase().equals(user.getUrlSafeName().toLowerCase())) {
 					SimpleName simpleUrl = getBinderModule().getSimpleName(prefix);
 					if (simpleUrl == null) {
-						try {
-							getBinderModule().addSimpleName(prefix, binderId, binder.getEntityType().name());
-						} catch(SimpleNameAlreadyExistsException e) {
-							response.setRenderParameter(WebKeys.SIMPLE_URL_EMAIL_NAME_EXISTS_ERROR, "true");
-						}
+						getBinderModule().addSimpleName(prefix, binderId, binder.getEntityType().name());
 					} else if (simpleUrl.getBinderId().equals(binderId)) {
 						response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, "true");
 					} else {
@@ -285,7 +276,6 @@ public class ConfigureController extends AbstractBinderController {
 		}
 		model.put(WebKeys.FIXUP_THREAD_STATUS, fixFolderDefsStatus);
 		model.put(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR));
-		model.put(WebKeys.SIMPLE_URL_EMAIL_NAME_EXISTS_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_EMAIL_NAME_EXISTS_ERROR));
 		model.put(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR));
 		model.put(WebKeys.SIMPLE_URL_INVALID_CHARACTERS, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_INVALID_CHARACTERS));
 		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);
@@ -361,8 +351,6 @@ public class ConfigureController extends AbstractBinderController {
 		if (binderType.equals(EntityType.workspace)) {
 			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(null, Definition.USER_WORKSPACE_VIEW));
-			} else if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
-				model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(null, Definition.EXTERNAL_USER_WORKSPACE_VIEW));
 			} else {
 				model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(), Definition.WORKSPACE_VIEW));
 			}

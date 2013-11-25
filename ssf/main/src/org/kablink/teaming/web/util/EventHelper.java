@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -227,21 +227,19 @@ public class EventHelper {
 	 */
 	private static int adjustForHolidays(Date dateIn, Date dateOut, boolean forward, List<Date> holidays, int hDays) {
 		while (true) {
-			// What's the earlier and later date?
-			Date baseDateIn  = stripTimeFromDate(dateIn );
-			Date baseDateOut = stripTimeFromDate(dateOut);
-			long earlierDate;
-			long laterDate;
-			if (forward) {earlierDate = baseDateIn.getTime();  laterDate = baseDateOut.getTime();}
-			else         {earlierDate = baseDateOut.getTime(); laterDate = baseDateIn.getTime(); }
+			// What's the earlier and later times?
+			long earlierTime;
+			long laterTime;
+			if (forward) {earlierTime = dateIn.getTime();  laterTime = dateOut.getTime();}
+			else         {earlierTime = dateOut.getTime(); laterTime = dateIn.getTime(); }
 
 			// Scan the holidays.
 			int adjustmentDays = 0;
 			for (Date holiday:  holidays) {
 				// Does this holiday occur between the earlier and
-				// later dates?
-				long hDate = holiday.getTime();
-				if ((hDate >= earlierDate) && (hDate <= laterDate)) {
+				// later times?
+				long hTime = holiday.getTime();
+				if ((hTime >= earlierTime) && (hTime <= laterTime)) {
 					// Yes!  Then we need to adjust for it. 
 					adjustmentDays += 1;
 				}
@@ -365,7 +363,7 @@ public class EventHelper {
 			
 		} else {
 			// No, we are showing physical events!
-			String filterName = ((null == request) ? "" : PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, ""));
+			String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "");
 			searchFilter = new SearchFilter();
 			searchFilter.addFilterName(filterName);
 
@@ -798,24 +796,6 @@ public class EventHelper {
         }
 	}
 	
-	/*
-	 * Returns a Date with the time stripped from it.
-	 */
-	private static Date stripTimeFromDate(Date d) {
-		// Construct a Calendar using the Date...
-		Calendar dCal = Calendar.getInstance();
-		dCal.setTime(new Date(d.getTime()));
-		
-		// ...set its time fields to 0...
-		dCal.set(Calendar.HOUR_OF_DAY, 0);
-		dCal.set(Calendar.MINUTE,      0);
-		dCal.set(Calendar.SECOND,      0);
-		dCal.set(Calendar.MILLISECOND, 0);
-
-		// ...and return its new Date portion.
-		return dCal.getTime();
-	}
-
 	/*
 	 * Scan the List<Date> of holidays and any that fall on one of the
 	 * weekend days are discarded.

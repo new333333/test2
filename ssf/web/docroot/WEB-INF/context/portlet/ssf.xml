@@ -95,12 +95,9 @@
 	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchIndexController" />
 	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchNodesController" />
 	<bean id="adminConfigureScheduleController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureScheduleController" />
-	<bean id="adminConsoleHomePageController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.AdminConsoleHomePageController" />
 	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LogFileController" />
 	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
 	<bean id="adminManageQuotasController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageQuotasController" />
-	<bean id="adminManageFileUploadLimitsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageFileUploadLimitsController" />
-	<bean id="adminManageResourceDriverController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageResourceDriverController" />
 	<bean id="adminManageUserAccountsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageUserAccountsController" />
 	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationsController" />
 	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationGroupsController" />
@@ -113,8 +110,6 @@
 	<bean id="loginController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.LoginController" />
 	
 	<bean id="manageRuntimeStatisticsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageRuntimeStatisticsController" />
-
-	<bean id="executeJspController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ExecuteJspController" />
 	
  	<!-- Handlers -->
 
@@ -176,8 +171,6 @@
 						<entry key="view_entry_acl_report"><ref bean="entryAclReportController"/></entry>
 						<entry key="view_success"><ref bean="viewSuccessController"/></entry>
 
-						<entry key="execute_jsp"><ref bean="executeJspController"/></entry>
-
 						<!-- Keys starting with "__" can handle the user not being logged in -->
 						<entry key="__view_presence"><ref bean="updatePresenceController"/></entry>
 						<entry key="__ajax_request"><ref bean="folderAjaxController"/></entry>
@@ -221,8 +214,6 @@
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
 						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
 						<entry key="manage_quotas"><ref bean="adminManageQuotasController"/></entry>
-						<entry key="manage_file_upload_limits"><ref bean="adminManageFileUploadLimitsController"/></entry>
-						<entry key="manage_resource_drivers"><ref bean="adminManageResourceDriverController"/></entry>
 						<entry key="manage_user_accounts"><ref bean="adminManageUserAccountsController"/></entry>
 						<entry key="manage_applications"><ref bean="adminManageApplicationsController"/></entry>
 						<entry key="manage_application_groups"><ref bean="adminManageApplicationGroupsController"/></entry>
@@ -231,7 +222,6 @@
 						<entry key="manage_definitions"><ref bean="manageDefinitionsController"/></entry>
 						<entry key="manage_extensions"><ref bean="extensionsController"/></entry>
 						<entry key="manage_runtime_statistics"><ref bean="manageRuntimeStatisticsController"/></entry>
-						<entry key="view_admin_console_home_page"><ref bean="adminConsoleHomePageController"/></entry>
 
 					</map>
 				</entry>

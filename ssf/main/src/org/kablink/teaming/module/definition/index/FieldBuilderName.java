@@ -32,5 +32,5 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-public class FieldBuilderName extends FieldBuilderGenericAnalyzed {
+public class FieldBuilderName extends FieldBuilderGenericNotAnalyzed {
 }

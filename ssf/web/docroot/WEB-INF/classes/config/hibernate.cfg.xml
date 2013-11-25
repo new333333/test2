@@ -32,10 +32,8 @@
 		<property name="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>
 		<!-- Ehcache configuration file --> 
 		<property name="net.sf.ehcache.configurationResourceName">/config/ehcache-hibernate.xml</property>
-		<!-- memcached cache entry timeout in seconds -->
+		<!-- memcached cache timeout -->
 		<property name="hibernate.memcached.cacheTimeSeconds">3600</property>
-		<!-- memcached operation timeout in milliseconds -->
-		<property name="hibernate.memcached.operationTimeout">2000</property>
 		<!-- Enable query cache -->
  		<property name="hibernate.cache.use_query_cache">true</property>
  		<!-- Enable second-level cache -->
@@ -74,10 +72,8 @@
 	    <mapping resource="org/kablink/teaming/domain/PostingDef.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Principal.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Ratings.hbm.xml"/>
-	    <mapping resource="org/kablink/teaming/domain/ResourceDriver.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SeenMap.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SharedEntity.hbm.xml"/>
-	    <mapping resource="org/kablink/teaming/domain/ShareItem.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SimpleName.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Subscription.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Tag.hbm.xml"/>
@@ -93,8 +89,6 @@
 	    <mapping resource="org/kablink/teaming/domain/EmailLog.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/BinderQuota.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/FolderEntryStats.hbm.xml"/>
-	    <mapping resource="org/kablink/teaming/domain/OpenIDProvider.hbm.xml"/>
-	    <mapping resource="org/kablink/teaming/domain/BinderState.hbm.xml"/>
 	    
 	    <!-- jbpms -->
 	    <mapping resource="org/jbpm/graph/action/Script.hbm.xml"/>
@@ -232,7 +226,6 @@
  		<class-cache class="org.kablink.teaming.domain.Membership" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.PostingDef" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Principal" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.ShareItem" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.SimpleName" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Subscription" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Tag" usage="read-write"/>
@@ -245,8 +238,6 @@
  		<class-cache class="org.kablink.teaming.security.function.Function" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.security.function.Condition" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.security.function.WorkAreaFunctionMembership" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.OpenIDProvider" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.BinderState" usage="read-write"/>
  		
  		<collection-cache collection="org.kablink.teaming.domain.FileAttachment.fileVersions" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.Binder.binders" usage="read-write"/>

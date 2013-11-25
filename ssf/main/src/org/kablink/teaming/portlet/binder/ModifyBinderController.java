@@ -113,10 +113,7 @@ public class ModifyBinderController extends AbstractBinderController {
 
 			//StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
 			StatusTicket statusTicket = null;
-			// 5/20/2013 JK (Bug 818957) - We no longer allow foreground execution of full sync as of Filr 1.1.
-			// When we enable this line of code again, we need to think through all the ramification and make
-			// sure it doesn't screw up the overall design approach.
-			if(getFolderModule().fullSynchronize(binderId, null, statusTicket)) {
+			if(getFolderModule().synchronize(binderId, statusTicket)) {
 				// The binder was not deleted (typical situation). 
 				// Setup the right view which will override the previous setup.
 				setupViewBinder(response, binderId, binderType);
@@ -198,18 +195,9 @@ public class ModifyBinderController extends AbstractBinderController {
 				//retrieve binder so we can return to parent
 				Binder binder = getBinderModule().getBinder(binderId);			
 				Binder parentBinder = binder.getParentBinder();			
-				boolean doPurge = (binder.isMirrored() || Boolean.parseBoolean(purgeImmediately));
-				//Make sure this isn't a system user workspace being deleted
-				if (BinderHelper.isBinderSystemUserWS(binder)) {
-					throw
-						new NotSupportedException(
-							(doPurge                                               ?
-								"errorcode.notsupported.deleteBinder.systemUserWS" :
-								"errorcode.notsupported.preDeleteBinder.systemUserWS"));
-				}
 				//get view data, before binder is deleted
 				setupViewBinder(response, binder);
-				if (doPurge) {
+				if (binder.isMirrored() || Boolean.parseBoolean(purgeImmediately)) {
 					getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource), null);
 				}
 				else {

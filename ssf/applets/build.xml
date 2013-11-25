@@ -4,11 +4,19 @@
 	<property environment="env" />
 	<property file="../build.${user.name}.properties" />
 	<property file="../build.properties" />
-	
-	<target name="library">
+
+	<target name="clean-library">
+		<delete dir="lib"/>
 	</target>
 	
-	<target name="clean">
+	<target name="library">
+		<mkdir dir="lib"/>
+		<copy todir="lib">
+			<fileset dir="../lib" includes="${libraries.applets}" />
+		</copy>
+	</target>
+	
+	<target name="clean" depends="clean-library">
 		<ant dir="workflow-viewer" target="clean" />
 		<ant dir="droptarget" target="clean" />
 		<ant dir="fileopen" target="clean" />

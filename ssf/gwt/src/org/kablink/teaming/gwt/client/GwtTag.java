@@ -54,15 +54,6 @@ public class GwtTag extends GwtTeamingItem implements IsSerializable {
 	}
 		
 	/**
-	 * 
-	 */
-	@Override
-	public String getImageUrl()
-	{
-		return "";
-	}
-	
-	/**
 	 * Returns the tag name.
 	 */
 	public String getTagName() {
@@ -72,7 +63,6 @@ public class GwtTag extends GwtTeamingItem implements IsSerializable {
 	/**
 	 * 
 	 */
-	@Override
 	public String getName()
 	{
 		return getTagName();
@@ -104,7 +94,6 @@ public class GwtTag extends GwtTeamingItem implements IsSerializable {
 	/**
 	 * 
 	 */
-	@Override
 	public String getTitle()
 	{
 		return "";

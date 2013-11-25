@@ -254,11 +254,7 @@ private static DataFlavor javaStringDataFlavor;
           Iterator fileIter = xferFileList.iterator();
           if (xferFileList.size() > 0) {
             fileLoadingInProgress();
-            PostFiles poster = new PostFiles(topframe,
-            		topframe.getParameter("fileReceiverUrl"),
-            		topframe.getParameter("fileCheckExistsUrl"),
-            		xferFileList, 
-            		topDir);
+            PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
             poster.start();
           }
           else {
@@ -420,11 +416,7 @@ private static DataFlavor javaStringDataFlavor;
           Iterator fileIter = xferFileList.iterator();
           if (xferFileList.size() > 0) {
             fileLoadingInProgress();
-            PostFiles poster = new PostFiles(topframe,
-            		topframe.getParameter("fileReceiverUrl"),
-            		topframe.getParameter("fileCheckExistsUrl"),
-            		xferFileList, 
-            		topDir);
+            PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
             poster.start();
           }
           else {

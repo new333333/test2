@@ -43,7 +43,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.remoting.ws.RemotingException;
+import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.model.DefinableEntity;
 import org.kablink.teaming.remoting.ws.model.FolderEntry;
 import org.kablink.teaming.remoting.ws.model.Timestamp;

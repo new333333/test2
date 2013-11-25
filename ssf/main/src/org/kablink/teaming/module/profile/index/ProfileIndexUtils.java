@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,137 +37,58 @@ import org.apache.lucene.document.Field;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-import org.kablink.util.search.FieldFactory;
 
 import static org.kablink.util.search.Constants.*;
-
 /**
  * This class contains non-standard indexing logic specific to profile elements. 
  * In other word, only those processing behaviors beyond and above that provided
- * by the factory-shipped FieldBuilder* classes must be coded up here. Otherwise,
+ * by the fatory-shipped FieldBuilder* classes must be coded up here. Otherwise,
  * NEVER add hard-coded behavior here.
- *
- * @author ?
+ * 
  */
 public class ProfileIndexUtils {
 	  public static void addName(Document doc, User user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = FieldFactory.createFieldStoredNotAnalyzed(LOGINNAME_FIELD, user.getName());
+        Field docNumField = new Field(LOGINNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         doc.add(docNumField);
     }    
     public static void addName(Document doc, Group user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = FieldFactory.createFieldStoredNotAnalyzed(GROUPNAME_FIELD, user.getName());
+        Field docNumField = new Field(GROUPNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         doc.add(docNumField);
     }      
     public static void addName(Document doc, Application application, boolean fieldsOnly) {
-        Field nameField = FieldFactory.createFieldStoredNotAnalyzed(APPLICATION_NAME_FIELD, application.getName());
-        doc.add(nameField);
+        Field docNumField = new Field(APPLICATION_NAME_FIELD, application.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        doc.add(docNumField);
     }    
     public static void addName(Document doc, ApplicationGroup appGroup, boolean fieldsOnly) {
-        Field nameField = FieldFactory.createFieldStoredNotAnalyzed(APPLICATION_GROUPNAME_FIELD, appGroup.getName());
-        doc.add(nameField);
+        Field docNumField = new Field(APPLICATION_GROUPNAME_FIELD, appGroup.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        doc.add(docNumField);
     }      
 
-    public static void addEmail(Document doc, User user) {
-    	// Does the user have an email address?
-    	String ema = user.getEmailAddress();
-        if (ema!=null) {
-        	// Yes!  Add it to the index.
-            Field emailAddressField = FieldFactory.createFieldStoredNotAnalyzed(EMAIL_FIELD, ema);
-            doc.add(emailAddressField);
-
-            // Does that email address have a domain part?
-            int atPos = ema.lastIndexOf('@');
-            if (0 < atPos) {
-            	String domain = ema.substring(atPos + 1);
-            	if ((null != domain) && (0 < domain.length())) {
-            		// Yes!  Add that to the index too.
-                    Field domainField = FieldFactory.createFieldStoredNotAnalyzed(EMAIL_DOMAIN_FIELD, domain);
-                    doc.add(domainField);
-            	}
-            }
-        }
-    }
-
-    public static void addDisabled(Document doc, User user) {
-        Field disabledUserField = FieldFactory.createFieldStoredNotAnalyzed(DISABLED_USER_FIELD, String.valueOf(user.isDisabled()));
-        doc.add(disabledUserField);
-    }
-
-    public static void addAvatarId(Document doc, User user) {
-        String attachmentId = user.getAvatarAttachmentId();
-        if (attachmentId != null) {
-    		Field attachmentIdField = FieldFactory.createFieldStoredNotAnalyzed(AVATAR_ID_FIELD, attachmentId);
-    		doc.add(attachmentIdField);
-    	}
-    }      
     public static void addWorkspaceId(Document doc, User user) {
     	if (user.getWorkspaceId() != null) {
-    		Field workspaceIdField = FieldFactory.createFieldStoredNotAnalyzed(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString());
+    		Field workspaceIdField = new Field(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     		doc.add(workspaceIdField);
     	}
-    }
+    }      
     public static void addReservedId(Document doc, Principal principal, boolean fieldsOnly) {
     	if (Validator.isNotNull(principal.getInternalId())) {
-    		Field resIdField =  FieldFactory.createFieldStoredNotAnalyzed(RESERVEDID_FIELD, principal.getInternalId());
-    		doc.add(resIdField);
+    		Field docNumField =  new Field(RESERVEDID_FIELD, principal.getInternalId(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+    		doc.add(docNumField);
     	}
     } 
     public static void addPersonFlag(Document doc, User user) {
-        Field personField = FieldFactory.createFieldStoredNotAnalyzed(PERSONFLAG_FIELD, String.valueOf(user.isPerson()));
-        doc.add(personField);
-    }
-    
-    public static void addIdentityInfo(Document doc, UserPrincipal user) {
-        Field field = FieldFactory.createFieldStoredNotAnalyzed(IDENTITY_INTERNAL_FIELD, String.valueOf(user.getIdentityInfo().isInternal()));
-        doc.add(field);    	
+        Field docNumField = new Field(PERSONFLAG_FIELD, String.valueOf(user.isPerson()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        doc.add(docNumField);
     }
     
     public static void addDynamic(Document doc, Group group, boolean fieldsOnly) {
-    	Field dynamicField = FieldFactory.createFieldStoredNotAnalyzed(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE));
+    	Field dynamicField = new Field(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	doc.add(dynamicField);
-    }
-
-    /**
-     * 
-     */
-    public static void addIsLdapContainer( Document doc, User user )
-    {
-		Field path = FieldFactory.createFieldStoredNotAnalyzed( IS_LDAP_CONTAINER_FIELD, Constants.FALSE );
-		doc.add( path );
-    }
-
-    /**
-     * 
-     */
-    public static void addIsLdapContainer( Document doc, Group group )
-    {
-		Field path = FieldFactory.createFieldStoredNotAnalyzed( IS_LDAP_CONTAINER_FIELD, (group.isLdapContainer() ? Constants.TRUE : Constants.FALSE) );
-		doc.add( path );
-    }
-
-    /**
-     * 
-     */
-    public static void addIsFromLdap( Document doc, Group group )
-    {
-    	IdentityInfo idInfo;
-    	Field fromLdapField;
-    	boolean fromLdap;
-
-    	fromLdap = false;
-    	idInfo = group.getIdentityInfo();
-    	if ( idInfo != null )
-    		fromLdap = idInfo.isFromLdap();
-    	
-    	fromLdapField = FieldFactory.createFieldStoredNotAnalyzed( IS_GROUP_FROM_LDAP_FIELD, (fromLdap ? Constants.TRUE : Constants.FALSE) );
-    	doc.add( fromLdapField );
     }
 }

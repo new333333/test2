@@ -35,7 +35,6 @@ package org.kablink.teaming.security.function;
 import java.util.List;
 
 import org.kablink.teaming.NoObjectByTheIdException;
-import org.kablink.teaming.NoObjectByTheNameException;
 
 /**
  *
@@ -47,7 +46,6 @@ public interface FunctionManager {
     
     public void deleteFunctions(Long zoneId);
     public List deleteFunction(Function function);
-    public List deleteFunction(Function function, boolean force);
     
     public void updateFunction(Function function);
     
@@ -63,5 +61,4 @@ public interface FunctionManager {
      */
     public ConditionEvaluationResult evaluateConditionalClauses(Function function);
 
-    public Function findFunctionByName(Long zoneId, String name) throws NoObjectByTheNameException;
 }

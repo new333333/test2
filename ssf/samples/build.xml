@@ -4,8 +4,8 @@
 	<target name="clean">
 		<ant dir="extendedws" target="clean" />
 		<ant dir="extension/VideoEntry" target="clean" />
-		<!--<ant dir="portal/jsr168" target="clean" />
-		<ant dir="portlet" target="clean" />-->
+		<ant dir="portal/jsr168" target="clean" />
+		<ant dir="portlet" target="clean" />
 		<ant dir="remoteapp" target="clean" />
 		<ant dir="wsclient" target="clean" />
 		<ant dir="backgroundjob" target="clean" />
@@ -15,8 +15,8 @@
 
 	<target name="compile">
 		<ant dir="extendedws" target="compile" />
-		<!--<ant dir="portal/jsr168" target="compile" />
-		<ant dir="portlet" target="compile" />-->
+		<ant dir="portal/jsr168" target="compile" />
+		<ant dir="portlet" target="compile" />
 		<ant dir="remoteapp" target="compile" />
 		<ant dir="wsclient" target="compile" />
 		<ant dir="backgroundjob" target="compile" />
@@ -27,8 +27,8 @@
 	<target name="build">
 		<ant dir="extendedws" target="build" />
 		<ant dir="extension/VideoEntry" target="build" />
-		<!--<ant dir="portal/jsr168" target="build" />
-		<ant dir="portlet" target="build" />-->
+		<ant dir="portal/jsr168" target="build" />
+		<ant dir="portlet" target="build" />
 		<ant dir="remoteapp" target="build" />
 		<ant dir="wsclient" target="build" />
 		<ant dir="backgroundjob" target="build" />

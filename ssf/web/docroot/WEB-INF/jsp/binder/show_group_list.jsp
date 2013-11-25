@@ -40,13 +40,8 @@
 </ssf:ifadapter>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_style ss_portlet" style="padding:10px;">
-
-<c:set var="formTitle" value="${ssGroup.title} (${ssGroup.name})"/>
-<c:if test="${empty ssGroup && !empty ssTeamBinder}">
-  <c:set var="formTitle" value="${ssTeamBinder.title}"/>
-</c:if>
   
-<ssf:form title="${formTitle}">
+<ssf:form title="${ssGroup.title} (${ssGroup.name})">
 
 <c:if test="${!empty ssUsers}">
 <br/>
@@ -85,19 +80,12 @@
   </c:forEach>
 </c:if>
 
-<c:if test="${empty ssGroups && !empty ssGroup}">
+<c:if test="${empty ssGroups}">
 	<jsp:useBean id="ssGroup" type="org.kablink.teaming.domain.Group" scope="request"/>
     <% if (ObjectKeys.ALL_USERS_GROUP_INTERNALID.equals(ssGroup.getInternalId())) { %>
     	<div style="padding:20px;">
     		<span class="ss_italic">
     			<ssf:nlt tag="group.allusers.contains"/>
-    		</span>
-    	</div>
-    <% } %>
-    <% if (ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID.equals(ssGroup.getInternalId())) { %>
-    	<div style="padding:20px;">
-    		<span class="ss_italic">
-    			<ssf:nlt tag="group.allextusers.contains"/>
     		</span>
     	</div>
     <% } %>

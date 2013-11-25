@@ -33,7 +33,6 @@
 package org.kablink.teaming.ssfs.server.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -604,15 +603,8 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		InputStream fromContent = bs.getFileModule().readFile
 		(fromEntry.getParentFolder(), fromEntry, fromFA);
 	
-		try {
-			createLibraryFolderEntry(toParentFolder, fileName, fromContent, 
-				fromFA.getModification().getDate(), null);
-		}
-		finally {
-			try {
-				fromContent.close();
-			} catch (IOException ignore) {}
-		}
+		createLibraryFolderEntry(toParentFolder, fileName, fromContent, 
+				fromFA.getModification().getDate());
 	}
 	
 	/**
@@ -631,14 +623,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		InputStream fromContent = bs.getFileModule().readFile
 		(fromEntry.getParentFolder(), fromEntry, fromFA);
 	
-		try {
-			modifyLibraryFolderEntry(toEntry, fileName, fromContent, fromFA.getModification().getDate(), null);
-		}
-		finally {
-			try {
-				fromContent.close();
-			} catch (IOException ignore) {}
-		}
+		modifyLibraryFolderEntry(toEntry, fileName, fromContent, fromFA.getModification().getDate());
 	}
 	
 	private String objectInfo(Map uri, Map objMap) throws NoAccessException {
@@ -800,10 +785,10 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	}
 	
 	private void createLibraryFolderEntry(Folder folder, String fileName, 
-			InputStream content, Date modDate, String expectedMd5)
+			InputStream content, Date modDate)
 	throws NoAccessException {
 		try {
-			FolderUtils.createLibraryEntry(folder, fileName, content, modDate, expectedMd5, true);
+			FolderUtils.createLibraryEntry(folder, fileName, content, modDate, true);
 		}
 		catch(ConfigurationException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
@@ -820,10 +805,10 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	}
 	
 	private void modifyLibraryFolderEntry(FolderEntry entry, String fileName, 
-			InputStream content, Date modDate, String expectedMd5)
+			InputStream content, Date modDate) 
 	throws NoAccessException {
 		try {
-			FolderUtils.modifyLibraryEntry(entry, fileName, content, null, modDate, expectedMd5, true, null, null);
+			FolderUtils.modifyLibraryEntry(entry, fileName, content, modDate, true);
 		}
 		catch(ConfigurationException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
@@ -882,9 +867,9 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		}
 		
 		if(entry == null)
-			createLibraryFolderEntry((Folder) parentBinder, fileName, content, null, null);
+			createLibraryFolderEntry((Folder) parentBinder, fileName, content, null);
 		else
-			modifyLibraryFolderEntry(entry, fileName, content, null, null);
+			modifyLibraryFolderEntry(entry, fileName, content, null);
 	}
 	
 	/**
@@ -919,7 +904,11 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	private Long createLibraryFolder(Binder parentBinder, String folderName)
 	throws NoAccessException {
 		try {
-			return FolderUtils.createLibraryFolder(parentBinder, folderName).getId();
+			Long folderId = FolderUtils.createLibraryFolder(parentBinder, folderName).getId();
+			if(parentBinder.getEntityType() == EntityType.folder) {
+				bs.getBinderModule().setDefinitionsInherited(folderId, true);
+			}
+			return folderId;
 		}
 		catch(ConfigurationException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
@@ -984,11 +973,11 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	}
 	
 	private Set<String> getChildFolderNames(Folder folder) {
-		return bs.getFolderModule().getSubfoldersTitles(folder, true);
+		return bs.getFolderModule().getSubfoldersTitles(folder);
 	}
 	
 	private Set<String> getLibraryFolderChildrenFileNames(Folder libraryFolder) {
-		return bs.getFileModule().getChildrenFileDataFromIndex(libraryFolder.getId()).keySet();
+		return bs.getFileModule().getChildrenFileNames(libraryFolder).keySet();
 	}
 		
 	private void removeResource(Map uri, Map objMap) throws NoAccessException {
@@ -1078,7 +1067,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	private void moveResource(Map sourceUri, Map sourceMap, Map targetUri, 
 			Map targetMap) throws NoAccessException {
 		try {
-			bs.getFolderModule().moveEntry(null, getFolderEntry(sourceMap).getId(), getParentBinder(targetMap).getId(), null, null);
+			bs.getFolderModule().moveEntry(null, getFolderEntry(sourceMap).getId(), getParentBinder(targetMap).getId(), null);
 		}
 		catch(AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());

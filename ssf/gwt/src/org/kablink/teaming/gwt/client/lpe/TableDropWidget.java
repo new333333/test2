@@ -154,7 +154,7 @@ public class TableDropWidget extends DropWidget
 						configItem = tableColConfig.get( i );
 						
 						// Create the appropriate DropWidget based on the configuration data.
-						dropWidget = configItem.createDropWidget( m_lpe );
+						dropWidget = DropWidget.createDropWidget( m_lpe, configItem );
 						
 						// Add the widget to the col's drop zone.
 						if ( dropWidget != null )
@@ -164,7 +164,7 @@ public class TableDropWidget extends DropWidget
 				else
 				{
 					// Create the appropriate DropWidget based on the configuration data.
-					dropWidget = configData.createDropWidget( m_lpe );
+					dropWidget = DropWidget.createDropWidget( m_lpe, configData );
 					
 					// Add the widget to the col's drop zone.
 					dropZone.addWidgetToDropZone( dropWidget );
@@ -301,7 +301,6 @@ public class TableDropWidget extends DropWidget
 	/**
 	 * Check to see if this widget contains the given DropZone.
 	 */
-	@Override
 	public boolean containsDropZone( DropZone dropZone )
 	{
 		int row;
@@ -357,7 +356,6 @@ public class TableDropWidget extends DropWidget
 	/**
 	 * Create a configuration string that represents this widget and that can be stored in the db.
 	 */
-	@Override
 	public String createConfigString()
 	{
 		String configStr;
@@ -433,7 +431,6 @@ public class TableDropWidget extends DropWidget
 	/**
 	 * Return the drag proxy object that should be displayed when the user drags this item.
 	 */
-	@Override
 	public DragProxy getDragProxy()
 	{
 		if ( m_dragProxy == null )
@@ -449,7 +446,6 @@ public class TableDropWidget extends DropWidget
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
-	@Override
 	public void getPropertiesDlgBox( int xPos, int yPos, DlgBoxClient dBoxClient )
 	{
 		// Have we already created a dialog?
@@ -515,7 +511,6 @@ public class TableDropWidget extends DropWidget
 	/**
 	 * Set the DropZone this widget lives in.
 	 */
-	@Override
 	public void setParentDropZone( DropZone dropZone )
 	{
 		int row;
@@ -558,7 +553,6 @@ public class TableDropWidget extends DropWidget
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
-	@Override
 	public void updateWidget( Object props )
 	{
 		int i;
@@ -612,11 +606,7 @@ public class TableDropWidget extends DropWidget
 				// Yes
 				while ( numRows < m_flexTable.getRowCount() )
 				{
-					int rowIndex;
-					
-					// Remove the last row in the table.
-					rowIndex = m_flexTable.getRowCount() - 1;
-					m_flexTable.removeRow( rowIndex );
+					m_flexTable.removeRow( 0 );
 				}
 			}
 			// Do we need to add rows to the existing table?
@@ -626,20 +616,18 @@ public class TableDropWidget extends DropWidget
 				while ( numRows > m_flexTable.getRowCount() )
 				{
 					int col;
-					int rowIndex;
 					
-					rowIndex = m_flexTable.getRowCount();
-					m_flexTable.insertRow( rowIndex );
+					m_flexTable.insertRow( 0 );
 					
 					// Add the appropriate number of columns to the row.
 					for (col = 0; col < numColumns; ++col)
 					{
 						DropZone	dropZone;
 						
-						m_flexTable.addCell( rowIndex );
+						m_flexTable.addCell( 0 );
 						dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
 						dropZone.setParentDropZone( getParentDropZone() );
-						m_flexTable.setWidget( rowIndex, col, dropZone );
+						m_flexTable.setWidget( 0, col, dropZone );
 					}
 				}
 			}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,25 +44,20 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
-import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
-import org.kablink.teaming.domain.MobileDevices;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SharedEntity;
-import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -71,15 +66,8 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
-import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings("unchecked")
+
 public interface ProfileModule {
 	public enum ProfileOperation {
 		addEntry,
@@ -93,7 +81,7 @@ public interface ProfileModule {
 	 * @param options - additional processing options or null (See ObjectKeys.INPUT_OPTION_DELETE_USE_WORKSPACE)
 	 * @throws AccessControlException
 	 */
-	public void addEntries(Document doc, Map options) throws AccessControlException;
+	 public void addEntries(Document doc, Map options) throws AccessControlException;
 	 /**
 	  * Add a new group
 	  * @param definitionId
@@ -118,9 +106,6 @@ public interface ProfileModule {
 	  */
 	 public User addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException, WriteEntryDataException;
-	 
-	 public User addUser(InputDataAccessor inputData)
-				throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	 
 	 /**
 	  * Add a user workspace from the user workspace template
@@ -159,10 +144,7 @@ public interface ProfileModule {
 	 * @param options - additional processing options or null
 	 * @return created user object
 	 */
-	public User addUserFromPortal(IdentityInfo identityInfo, String userName, String password, Map updates, Map options);
-
-    public User findOrAddExternalUser(String emailAddress);
-
+	public User addUserFromPortal(String userName, String password, Map updates, Map options);
 	/**
 	 * Check access to a binder, throwing an exception if access is denied
 	 * @param user
@@ -271,14 +253,6 @@ public interface ProfileModule {
 	 */
     public Map getGroups() 
     	throws AccessControlException;
-    
-	/**
-	 * Return a list of LDAP container groups.
-	 * @return
-	 * @throws AccessControlException
-	 */
-    public List<Group> getLdapContainerGroups();
-    
     /**
      * Same as {@link getGroups(Long) getGroups} except additional search options may be supplied
      * @param searchOptions
@@ -295,11 +269,6 @@ public interface ProfileModule {
      */
 	public SortedSet<Group> getGroups(Collection<Long> groupIds)
 		throws AccessControlException;
-	
-	/**
-	 * Return a list of groups that meet the given filter
-	 */
-	public List<Group> getGroups( GroupSelectSpec groupSelectSpec );
 	
 	/**
 	 * Return List of Binders owned by users in the list
@@ -370,13 +339,6 @@ public interface ProfileModule {
      */
     public UserProperties getUserProperties(Long userId, Long folderId);
     
-	/**
-	 * Return general user properties
-	 * @param groupId
-	 * @return
-	 */
-    public UserProperties getGroupProperties(Long groupId);
-    
     /**
      * Get user by name
      * @param name
@@ -390,13 +352,6 @@ public interface ProfileModule {
      * @return
      */
     public User getUserDeadOrAlive( String name );
-    
-    /**
-     * Get user by id even deleted or disabled users.
-     * @param name
-     * @return
-     */
-    public User getUserDeadOrAlive( Long userId );
     
     /**
 	 * Return search results for users
@@ -418,7 +373,6 @@ public interface ProfileModule {
 	 */
     public SortedSet<User> getUsers(Collection<Long> userIds);
     public User findUserByName(String username) throws NoUserByTheNameException;
-    public User getReservedUser(String internalId) throws NoUserByTheNameException;
    
     /**
      * 
@@ -446,7 +400,7 @@ public interface ProfileModule {
      * @param entry
      */
 	public IndexErrors indexEntry(Principal entry);
-	
+
 	/**
 	 * Index all of the entries found in the given Collection
 	 * @param entries
@@ -481,11 +435,11 @@ public interface ProfileModule {
 	  
 	/**
 	 * Update user from information from the portal.
-	 * r
+	 * 
 	 * @param user
 	 * @param updates
 	 */
-	public void modifyUserFromPortal(Long userId, Map updates, Map options);
+	public void modifyUserFromPortal(User user, Map updates, Map options);
 	/**
 	 * Set a property for a binder
 	 * @param userId - null for current user
@@ -520,24 +474,6 @@ public interface ProfileModule {
      * @return
      */
     public UserProperties setUserProperties(Long userId, Map<String, Object> values);
-    
-    /**
-     * Set a general user property.
-     * @param groupId
-     * @param property
-     * @param value - null to remove value
-     * @return
-     */
-    public UserProperties setGroupProperty(Long groupId, String property, Object value);
-    /**
-     * Refer to {@link #setUserProperty(Long, String, Object) setUserProperty}
-     * This is an optimization to set multiple properties in 1 transaction.
-     * @param groupId
-     * @param values
-     * @return
-     */
-    public UserProperties setGroupProperties(Long groupId, Map<String, Object> values);
-    
     /**
      * Mark an entry as seen
      * @param userId
@@ -812,15 +748,6 @@ public interface ProfileModule {
     public SortedSet<IndividualPrincipal> getIndividualPrincipals(Collection<Long> individualIds);
 
     public void changePassword(Long userId, String oldPassword, String newPassword);
-
-    /**
-     * Returns true if the logged in user must provide the current password of the specified user in
-     * order to change the user's password.  Ordinary users need to provide the old password in order
-     * to change their own, but super users do not.
-     * @param userId
-     * @return
-     */
-    public boolean mustSupplyOldPasswordToSetNewPassword(Long userId);
     
     /**
      * Returns a set of users matching the email, sorted by title
@@ -849,113 +776,4 @@ public interface ProfileModule {
      */
 	public List<Group> getUserGroups(Long userId) throws AccessControlException;
 
-    public List<Binder> getUserFavorites(Long userId) throws AccessControlException;
-
-    public List<TeamInfo> getUserTeams(Long userId);
-    
-    public void setFirstLoginDate(Long userId);
-
-    /**
-     * Interacts with a user's workspace pre-deleted flag.
-     */
-    public Boolean getUserWorkspacePreDeleted(Long userId);
-    public void    setUserWorkspacePreDeleted(Long userId, boolean userWorkspacePreDeleted);
-
-    /**
-     * Interacts with a user or group's download enabled flag.
-     */
-    public Boolean getDownloadEnabled(Long upId);
-    public void    setDownloadEnabled(Long upId, Boolean downloadEnabled);
-
-    /**
-     * Interacts with a user or group's web access enabled flag.
-     */
-    public Boolean getWebAccessEnabled(Long upId);
-    public void    setWebAccessEnabled(Long upId, Boolean webAccessEnabled);
-
-    /**
-     * Interacts with a user or group's adHoc folders enabled flag.
-     */
-    public Boolean getAdHocFoldersEnabled(Long upId);
-    public void    setAdHocFoldersEnabled(Long upId, Boolean adHocFoldersEnabled);
-
-    /**
-     * Returns a Collection<User> of all the external user's the
-     * current user has rights to see.
-     * 
-     * @return
-     */
-    public Collection<User> getAllExternalUsers();
-    
-    /**
-     * Returns a Collection<User> of all the users that have mobile
-     * devices.
-     *  
-     * @return
-     */
-    public Collection<User> getAllUsersWithMobileDevices();
-    
-    /**
-     * Get'er methods for the Mobile Application Management (MAM)
-     * settings.
-     * 
-     * Returns a user's MobileDevices, if any are defined.
-     * 
-     * @return
-     */
-    public MobileDevices getMobileDevices(Long userId);
-    
-    /**
-     * Set'er methods for the Mobile Application Management (MAM)
-     * settings.
-     *
-     * Stores a MobileDevices as part of a user.
-     * 
-     * @param
-     */
-    public void setMobileDevices(Long userId, MobileDevices mobileDevices);
-    
-    /**
-     * Returns a PrincipalMobileAppsConfig for the user or group as
-     * read from its UserProperties.
-     * 
-     * @param principalId
-     * 
-     * @return
-     */
-    public PrincipalMobileAppsConfig getPrincipalMobileAppsConfig(Long principalId);
-    
-    /**
-     * Returns a PrincipalDesktopAppsConfig for the user or group as
-     * read from its UserProperties.
-     * 
-     * @param principalId
-     * 
-     * @return
-     */
-    public PrincipalDesktopAppsConfig getPrincipalDesktopAppsConfig(Long principalId);
-
-    /**
-     * Writes the settings from a PrincipalMobileAppsConfig to the
-     * user's or group's UserProperties.
-     * 
-     * @param principalId
-     * @param principalsAreUsers 
-     * 
-     * @param pConfig
-     */
-    public void savePrincipalMobileAppsConfig(Long       principalId,  boolean principalIsUser,    PrincipalMobileAppsConfig config);
-    public void savePrincipalMobileAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalMobileAppsConfig config);
-    
-    /**
-     * Writes the settings from a PrincipalMobileAppsConfig to the
-     * user's or group's UserProperties.
-     * 
-     * @param principalId
-     * @param principalsAreUsers 
-     * 
-     * @param pConfig
-     */
-    public void savePrincipalDesktopAppsConfig(Long       principalId,  boolean principalIsUser,    PrincipalDesktopAppsConfig config);
-    public void savePrincipalDesktopAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalDesktopAppsConfig config);
 }

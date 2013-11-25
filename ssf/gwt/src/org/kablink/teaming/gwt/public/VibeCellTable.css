@@ -20,7 +20,7 @@
 	gwt-image: 'headerBackground';
 	background-repeat: repeat-x;
 	background-position: bottom;
-	/* border-right: 1px solid #d2d5d1; */
+	border-right: 1px solid #d2d5d1;
 	border-top: 1px solid #d2d5d1;
 	border-bottom: 1px solid #b8b8b8;
 	padding: 2px 8px;
@@ -30,7 +30,7 @@
 	overflow: hidden;
 	white-space: nowrap;
 	font-weight: normal;
-	text-shadow: 0px 0px 0 transparent;
+	text-shadow: 0px 0px 0 #DDDDFF;
 	height: 22px;
 }
 

@@ -66,12 +66,12 @@ public class TableWidgetDlgBox extends DlgBox
 	implements ChangeHandler, KeyPressHandler
 {
 	private TextBox m_numRowsCtrl = null;
-	private CheckBox m_showBorderCkBox = null;
-	private ListBox m_numColsCtrl = null;
-	private ArrayList<TextBox> m_colWidths = null;
+	private CheckBox		m_showBorderCkBox = null;
+	private ListBox		m_numColsCtrl = null;
+	private ArrayList<TextBox>	m_colWidths = null;
 	private ArrayList<ListBox> m_colWidthUnits = null;
-	private VerticalPanel m_mainPanel = null;
-	private FlexTable m_table = null;
+	private VerticalPanel	m_mainPanel = null;
+	private FlexTable		m_table = null;
 	
 	/**
 	 * 
@@ -481,6 +481,7 @@ public class TableWidgetDlgBox extends DlgBox
 		
 		return numRows; 
 	}
+
 	/**
 	 * Return true if the "show border" checkbox is checked.
 	 */

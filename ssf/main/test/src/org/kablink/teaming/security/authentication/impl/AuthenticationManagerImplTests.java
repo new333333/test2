@@ -37,7 +37,6 @@ import org.kablink.teaming.security.authentication.impl.AuthenticationManagerImp
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
@@ -63,14 +62,49 @@ public class AuthenticationManagerImplTests extends AbstractTransactionalDataSou
 		// Set up mock object and control
 		profileDaoControl = MockControl.createControl(ProfileDao.class);
 		profileDaoMock = (ProfileDao) profileDaoControl.getMock();
-		user = new User(new IdentityInfo());
+		user = new User();
 //		user.setZoneName("testZone");
 		user.setName("testUser");
-		user.setForeignName("testUser");
 		
 		// Set up the actual object that we are testing.
 		authMgr = new AuthenticationManagerImpl();
 		authMgr.setProfileDao(profileDaoMock);
 	}
+	
+	public void testAuthenticateOk() {
+		// Define expected behavior of the mock object.
+		profileDaoControl.reset();
+		profileDaoMock.findUserByName("testUser", "testZone");
+		profileDaoControl.setReturnValue(user);
+		profileDaoControl.replay();
+		
+		user.setPassword("testPassword");
 
+		// Execute the method being tested.
+		User authenticatedUser = authMgr.authenticate("testZone", "testUser", "testPassword", false, false, null);
+		assertEquals(user, authenticatedUser);
+		
+		// Verifies that all expectations have been met.
+		profileDaoControl.verify();
+	}
+	
+	public void testAuthenticateUserDoesNotExistException() {
+		// Define expected behavior of the mock object. 
+		profileDaoControl.reset();
+		profileDaoMock.findUserByName("testUser", "testZone");
+		profileDaoControl.setThrowable(new NoUserByTheNameException(""));
+		profileDaoControl.replay();
+		
+		// Execute the method being tested.
+		try {
+			authMgr.authenticate("testZone", "testUser", "testPassword", false, false, "test");
+			fail("Should throw UserDoesNotExistException");
+		}
+		catch(UserDoesNotExistException e) {
+			assertTrue(true); // All is well
+		}
+		
+		// Verifies that all expectations have been met.
+		profileDaoControl.verify();
+	}
 }

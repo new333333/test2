@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -51,6 +51,7 @@ import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
 
+
 /**
  * ?
  *  
@@ -60,74 +61,48 @@ public class SsfsUtil {
 	private static String[] editInPlaceFileExtensionsIE;
 	private static String[] editInPlaceFileExtensionsNonIE;
 	
-	private static Boolean hudsonWebdavEnabled;
-	
-	private static String getEntryUrl(PortletRequest pReq, HttpServletRequest hReq, Binder binder, 
+	public static String getEntryUrl(PortletRequest req, Binder binder, 
 			DefinableEntity entity, String strRepositoryName) {
-		StringBuffer sb;
-		if (null != pReq)
-		     sb = getInternalCommonPart(pReq, binder, entity);
-		else sb = getInternalCommonPart(hReq, binder, entity);
+		StringBuffer sb = getInternalCommonPart(req, binder, entity);
 		
-		if(isHudsonWebdavEnabled()) {
-			return sb.toString();
-		}
-		else {
-			return sb.append("attach/").
-			append(strRepositoryName).
-			append("/").toString();
-		}
-	}
-	
-	public static String getEntryUrl(PortletRequest pReq, Binder binder, 
-			DefinableEntity entity, String strRepositoryName) {
-		return getEntryUrl(pReq, null, binder, entity, strRepositoryName);
-	}
-	
-	public static String getEntryUrl(HttpServletRequest hReq, Binder binder, 
-			DefinableEntity entity, String strRepositoryName) {
-		return getEntryUrl(null, hReq, binder, entity, strRepositoryName);
+		return sb.append("attach/").
+		append(strRepositoryName).
+		append("/").toString();
 	}
 		
+	@SuppressWarnings("unused")
 	public static String getInternalAttachmentUrl(HttpServletRequest req, 
 			Binder binder, DefinableEntity entity, FileAttachment fa) {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);
 		String strFileName = fa.getFileItem().getName();
 		String strUrlEncoded = WebUrlUtil.urlEncodeFilename(strFileName);
 		
-		if(isHudsonWebdavEnabled()) {
-			sb.append(fa.getId()).
-			append("/").
-			append(strUrlEncoded);
-		}
-		else {
+		if (fa == null) {
+			sb.append("attach/unknown/");
+		} else {
 			sb.append("attach/").
 			append(fa.getRepositoryName()).
 			append("/").
-			append(strUrlEncoded);
+			append(strUrlEncoded).toString();
 		}
-
 		return sb.toString();
 	}
 
+	@SuppressWarnings("unused")
 	public static String getInternalAttachmentUrlEncoded(PortletRequest req, Binder binder, 
 			DefinableEntity entity, FileAttachment fa) throws Exception {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);
 		String strFileName = fa.getFileItem().getName();
 		String strUrlEncoded = WebUrlUtil.urlEncodeFilename(strFileName);
 		
-		if(isHudsonWebdavEnabled()) {
-			sb.append(fa.getId()).
-			append("/").
-			append(strUrlEncoded);
-		}
-		else {
+		if (fa == null) {
+			sb.append("attach/unknown/");
+		} else {
 			sb.append("attach/").
 			append(fa.getRepositoryName()).
 			append("/");
-			sb.append(strUrlEncoded);			
+			sb.append(strUrlEncoded);
 		}
-
 		return sb.toString();
 	}
 	
@@ -137,18 +112,11 @@ public class SsfsUtil {
 		String strFileName = fa.getFileItem().getName();
 		String strUrlEncoded = WebUrlUtil.urlEncodeFilename(strFileName);
 		
-		if(isHudsonWebdavEnabled()) {
-			return sb.append(fa.getId()).
-			append("/").
-			append(strUrlEncoded).toString();
-		}
-		else {
-			return sb.append("file").
-			append("/").		
-			append(elemName).
-			append("/").
-			append(strUrlEncoded).toString();
-		}
+		return sb.append("file").
+		append("/").		
+		append(elemName).
+		append("/").
+		append(strUrlEncoded).toString();
 	}
 	
 	public static String getInternalTitleFileUrl(HttpServletRequest req, 
@@ -157,19 +125,12 @@ public class SsfsUtil {
 		String strFileName = fa.getFileItem().getName();
 		String strUrlEncoded = WebUrlUtil.urlEncodeFilename(strFileName);
 		
-		if(isHudsonWebdavEnabled()) {
-			return sb.append(fa.getId()).
-			append("/").
-			append(strUrlEncoded).toString();
-		}
-		else {
-			// Library type element is singleton (ie, at most one instance),
-			// and therefore we do not need to encode element name in url.
-			
-			return sb.append("library").
-			append("/").		
-			append(strUrlEncoded).toString();
-		}
+		// Library type element is singleton (ie, at most one instance),
+		// and therefore we do not need to encode element name in url.
+		
+		return sb.append("library").
+		append("/").		
+		append(strUrlEncoded).toString();
 	}
 	
 	public static String getMobileUrl(PortletRequest req) {
@@ -185,40 +146,22 @@ public class SsfsUtil {
 	public static String getLibraryBinderUrl(HttpServletRequest req, Binder binder) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
-		if(isHudsonWebdavEnabled()) {
-			return sb.append("dav").
-					append(binder.getPathName()).toString();
-		}
-		else {
-			return sb.append("files/library"). // follow Slide's convention
-			append(binder.getPathName()).toString();
-		}
+		return sb.append("files/library"). // follow Slide's convention
+		append(binder.getPathName()).toString();
 	}
 	
 	public static String getLibraryBinderUrl(HttpServletRequest req, String binderPath) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
-		if(isHudsonWebdavEnabled()) {
-			return sb.append("dav").
-					append(binderPath).toString();
-		}
-		else {
-			return sb.append("files/library"). // follow Slide's convention
-			append(binderPath).toString();
-		}
+		return sb.append("files/library"). // follow Slide's convention
+		append(binderPath).toString();
 	}
 	
 	public static String getLibraryBinderUrl(PortletRequest req, Binder binder) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
-		if(isHudsonWebdavEnabled()) {
-			return sb.append("dav").
-					append(binder.getPathName()).toString();
-		}
-		else {
-			return sb.append("files/library"). // follow Slide's convention
-			append(binder.getPathName()).toString();
-		}
+		return sb.append("files/library"). // follow Slide's convention
+		append(binder.getPathName()).toString();
 	}
 	
 	public static String getLibraryBinderUrl(Binder binder) {
@@ -233,32 +176,22 @@ public class SsfsUtil {
 			DefinableEntity entity) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
-		if(isHudsonWebdavEnabled()) {
-			return sb.append("dave/");
-		}
-		else {
-			return sb.append("files/internal/"). // follow Slide's convention
-			append(binder.getId()).
-			append("/").
-			append(entity.getId()).
-			append("/");
-		}
+		return sb.append("files/internal/"). // follow Slide's convention
+		append(binder.getId()).
+		append("/").
+		append(entity.getId()).
+		append("/");	
 	}
 	
 	private static StringBuffer getInternalCommonPart(PortletRequest req, Binder binder, 
 			DefinableEntity entity) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
-		if(isHudsonWebdavEnabled()) {
-			return sb.append("dave/");
-		}
-		else {
-			return sb.append("files/internal/"). // follow Slide's convention
-			append(binder.getId()).
-			append("/").
-			append(entity.getId()).
-			append("/");	
-		}
+		return sb.append("files/internal/"). // follow Slide's convention
+		append(binder.getId()).
+		append("/").
+		append(entity.getId()).
+		append("/");	
 	}
 	
 	public static String[] getEditInPlaceExtensions(boolean isIE) { 
@@ -426,11 +359,5 @@ public class SsfsUtil {
 			return false;
 		}
 		return true;
-	}
-	
-	private static boolean isHudsonWebdavEnabled() {
-		if(hudsonWebdavEnabled == null)
-			hudsonWebdavEnabled = SPropsUtil.getBoolean("hudson.webdav.enabled", true);
-		return hudsonWebdavEnabled;
 	}
 }

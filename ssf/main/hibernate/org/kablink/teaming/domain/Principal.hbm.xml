@@ -44,9 +44,6 @@
     <property name="name" length="128"/>
     <property name="foreignName" length="255" />
     <property name="ldapGuid" length="128" index="ldapGuid_principal"/>
-    <property name="objectSid" length="128" index="objectSid_principal"/>
-    <property name="samAccountName" length="128"/>
-    <property name="domainName" length="255" />
 	<property name="theme" length="64"/>
     <properties name="nameKey" unique="true" update="false" insert="false">
       <property name="zoneId" update="false" insert="false"/>
@@ -81,18 +78,9 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
-	<component name="identityInfo" class="org.kablink.teaming.domain.IdentityInfo" access="field">
-	  <property name="internal" not-null="true"/>
-	  <property name="fromLdap" not-null="true"/>
-	  <property name="fromLocal" not-null="true"/>
-	  <property name="fromOpenid" not-null="true"/>
-	</component>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.UserPrincipal">
 	  	<property name="diskQuota" access="field"/>
 	  	<property name="fileSizeLimit" access="field"/>
-	  	<property name="downloadEnabled" access="field"/>
-	  	<property name="webAccessEnabled" access="field"/>
-	  	<property name="adHocFoldersEnabled" access="field"/>
 	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
 	      <!--<cache usage="read-write"/>-->
 	      <key column="userId"/>
@@ -106,11 +94,10 @@
 	      </bag>
 	      <property name="dynamic" access="field"/>
 	      <property name="ldapQuery" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
-	      <property name="ldapContainer" access="field"></property>
 	    </subclass>
 	    <subclass name="org.kablink.teaming.domain.User" node="User" discriminator-value="user" dynamic-update="true">
 	      <property name="displayStyle" length="16"/>
-	      <property name="firstLoginDate" column="loginDate"/>
+	      <property name="loginDate"/>
 	      <property name="firstName" access="field" length="64"/>
 	      <property name="lastName" access="field" length="64"/>
 	      <property name="middleName" access="field" length="64"/>
@@ -125,17 +112,11 @@
 	      <property name="maxGroupsQuota" access="field"/>
 	      <property name="maxGroupsFileSizeLimit" access="field"/>
 	      <property name="diskSpaceUsed" access="field"/>
-	      <property name="password" access="field" length="128"/>
+	      <property name="password" access="field" length="64"/>
 		  <property name="pwdenc" access="field" length="32"/>
 		  <property name="timeZone" access="field" length="80"/>
 		  <property name="locale" access="field" length="32"/>
 		  <property name="digestSeed"/>
-		  <property name="extProvState" access="field" type="short"/>
-		  <property name="extProvSeed"/>
-		  <property name="workspacePreDeleted" access="field"/>
-		  <component name="mobileDevices" class="org.kablink.teaming.domain.MobileDevices">
-		  	<property name="mobileDevices" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
-		  </component>
 	    </subclass>
   	</subclass>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.ApplicationPrincipal">
@@ -160,17 +141,12 @@
 	    </subclass>
   	</subclass>
   </class>
-  <query name="find-User-Company"><![CDATA[from org.kablink.teaming.domain.User user where user.name=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
-  <query name="find-User-Company-DeadOrAlive"><![CDATA[from org.kablink.teaming.domain.User user where user.name=:userName and user.zoneId=:zoneId]]></query>
-  <query name="find-Principal-Company"><![CDATA[from org.kablink.teaming.domain.Principal user where user.name=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
-  <query name="find-Principal-id-Company"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.name=:name and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
-  
+  <query name="find-User-Company"><![CDATA[from org.kablink.teaming.domain.User user where lower(user.name)=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  <query name="find-User-Company-DeadOrAlive"><![CDATA[from org.kablink.teaming.domain.User user where lower(user.name)=:userName and user.zoneId=:zoneId]]></query>
+  <query name="find-Principal-Company"><![CDATA[from org.kablink.teaming.domain.Principal user where lower(user.name)=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
   <query name="find-User-By-LdapGuid-Company"><![CDATA[from org.kablink.teaming.domain.User user where user.ldapGuid=:ldapGuid and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
-  <query name="find-Principal-id-By-LdapGuid-Company"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.ldapGuid=:ldapGuid and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
-  <query name="find-User-By-ForeignName"><![CDATA[from org.kablink.teaming.domain.User user where user.foreignName=:foreignName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
-  <query name="find-Principal-id-By-ForeignName"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.foreignName=:foreignName and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
-  <query name="find-User-By-ObjectSid"><![CDATA[from org.kablink.teaming.domain.User user where user.objectSid=:objectSid and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
-  <query name="find-Principal-id-By-ObjectSid"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.objectSid=:objectSid and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
-  <query name="find-Principal-id-By-Domain-Sam"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.domainName=:domainName and p.samAccountName=:samAccountName and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
-  
+
+  <query name="find-User-Company-By-Range"><![CDATA[from org.kablink.teaming.domain.User user where user.name>=:lowerUserName and user.name<=:upperUserName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  <query name="find-User-Company-DeadOrAlive-By-Range"><![CDATA[from org.kablink.teaming.domain.User user where user.name>=:lowerUserName and user.name<=:upperUserName and user.zoneId=:zoneId]]></query>
+  <query name="find-Principal-Company-By-Range"><![CDATA[from org.kablink.teaming.domain.Principal user where user.name>=:lowerUserName and user.name<=:upperUserName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
 </hibernate-mapping>

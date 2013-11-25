@@ -41,7 +41,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.util.XmlFileUtil;
 
 /**
@@ -85,9 +84,6 @@ public class ChangeLog extends ZonedObject {
 	public static final String ACCESSMODIFY="modifyAccess";
 	public static final String CHANGETIMESTAMPS="changeTimestamps";
 	public static final String UPDATEMODIFICATIONSTAMP="updateModificationStamp";
-	public static final String SHARE_ADD="shareEntityAdd";
-	public static final String SHARE_MODIFY="shareEntityModify";
-	public static final String SHARE_DELETE="shareEntityDelete";
 	
 	protected static final Log logger = LogFactory.getLog(ChangeLog.class);
 	
@@ -96,8 +92,7 @@ public class ChangeLog extends ZonedObject {
 	protected String userName;
 	protected Long userId;
 	protected Date operationDate;
-	protected String xmlStrDeprecated=null; // This is old field that maps to uncompressed lob column in the database
-	protected String xmlStr=null; // This is new field that maps to compressed blob column in the database
+	protected String xmlString=null;
 	protected Document document=null;
 	protected Long entityId;
 	protected String entityType;
@@ -106,14 +101,13 @@ public class ChangeLog extends ZonedObject {
 	protected String docNumber;
 	protected String owningBinderKey;  //used for queries
 	
-	// For use by Hibernate only
-	private ChangeLog() {
+	public ChangeLog() {
 	}
 	public ChangeLog(DefinableEntity entity, String operation) {
 		this(entity, operation, (Principal)null);
 	}
 	
-	protected ChangeLog(DefinableEntity entity, String operation, Principal principal) {	
+	public ChangeLog(DefinableEntity entity, String operation, Principal principal) {	
 		Binder binder;
 		if (entity instanceof Binder) {
 			binder = (Binder)entity;
@@ -126,14 +120,7 @@ public class ChangeLog extends ZonedObject {
 		if(binder.getBinderKey() != null) // temporary workaround for issue #515
 			this.owningBinderKey = binder.getBinderKey().getSortKey();
 		this.operation = operation;
-		if (operation.equals("addWorkflowResponse") && entity instanceof WorkflowSupport) {
-			WorkflowSupport wfEntry = (WorkflowSupport)entity;
-			User user = RequestContextHolder.getRequestContext().getUser();
-			this.operationDate = new Date();
-			this.userName = user.getName();
-			this.userId = user.getId();
-			this.zoneId = user.getZoneId();
-		} else if (operation.contains("Workflow") && entity instanceof WorkflowSupport) {
+		if (operation.contains("Workflow") && entity instanceof WorkflowSupport) {
 			WorkflowSupport wfEntry = (WorkflowSupport)entity;
 			this.operationDate = wfEntry.getWorkflowChange().getDate();
 			this.userName = wfEntry.getWorkflowChange().getPrincipal().getName();
@@ -303,36 +290,24 @@ public class ChangeLog extends ZonedObject {
 		return root;
 	}
 	
-	// For use by Hibernate only
-    private String getXmlStrDeprecated() {
-    	// Return the same value so that Hibernate won't unnecessarily try to update old change log records
-    	// created prior to our recent change incorporating data compression.
-    	return xmlStrDeprecated;
-    }
- 
-	// For use by Hibernate only
-    private String getXmlStr() {
-    	// If XML document is present, serialize it into the new field.
-    	if ((xmlStr == null) && (document != null)) {
+    /**
+     * Return the XML document as a string.
+     * @hibernate.property type="org.springframework.orm.hibernate3.support.ClobStringType"
+     */
+    public String getXmlString() {
+    	if ((xmlString == null) && (document != null)) {
     		try {
-    			xmlStr = XmlFileUtil.writeString(document, OutputFormat.createCompactFormat());
+    			xmlString = XmlFileUtil.writeString(document, OutputFormat.createCompactFormat());
              } catch (Exception ex) {
             	 throw new IllegalArgumentException(ex.getLocalizedMessage());
              }	
     	}
-    	return xmlStr;
+    	return xmlString;
     }
-    
-	// For use by Hibernate only
-    private void setXmlStrDeprecated(String xmlStrDeprecated) {
-        this.xmlStrDeprecated=xmlStrDeprecated;
+ 
+    protected void setXmlString(String xmlString) {
+        this.xmlString=xmlString;
     }
-    
-	// For use by Hibernate only
-    private void setXmlStr(String xmlStr) {
-        this.xmlStr=xmlStr;
-    }
-    
     public String getXmlNoHeader() {
     	String xml = null;
     	if (document == null) getDocument();
@@ -348,26 +323,16 @@ public class ChangeLog extends ZonedObject {
     	return xml;
     }
  
-    // Used by application
     public Document getDocument() {
-    	if (document != null) 
-    		return document;
-    	
-    	if (xmlStr != null) {
-	    	try {
-	    		document = XmlFileUtil.generateXMLFromString(xmlStr);
-	        } catch (Exception ex) {
-	        	throw new IllegalArgumentException(ex.getLocalizedMessage());
-	        }
-    	}
-    	else if (xmlStrDeprecated != null) {
-	    	try {
-	    		document = XmlFileUtil.generateXMLFromString(xmlStrDeprecated);
-	        } catch (Exception ex) {
-	        	throw new IllegalArgumentException(ex.getLocalizedMessage());
-	        }
-    	}
+    	if (document != null) return document;
+    	if (xmlString == null) return null;
+    	try {
+    		document = XmlFileUtil.generateXMLFromString(xmlString);
+        } catch (Exception ex) {
+        	throw new IllegalArgumentException(ex.getLocalizedMessage());
+       }
         return document;
     }
+
 
 }

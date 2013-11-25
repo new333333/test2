@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.portlet.administration;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -56,7 +55,6 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -68,21 +66,18 @@ import org.springframework.web.portlet.ModelAndView;
 
 
 public class ConfigureLdapController extends  SAbstractController {
-	@SuppressWarnings("unchecked")
-	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			LdapSchedule schedule = getLdapModule().getLdapSchedule();
 			if (schedule != null)
 			{
+				boolean syncGuids;
 				boolean syncAllUsersAndGroups;
-				String listOfLdapConfigsToSyncGuid;
 				
 				schedule.getScheduleInfo().setSchedule(ScheduleHelper.getSchedule(request, null));
 				schedule.getScheduleInfo().setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
-				schedule.setUserDelete( PortletRequestUtils.getBooleanParameter( request, "notInLdap", false ) );
-				
+				schedule.setUserDelete(PortletRequestUtils.getBooleanParameter(request, "userDelete", false));
 				schedule.setUserWorkspaceDelete(PortletRequestUtils.getBooleanParameter(request, "userWorkspaceDelete", false));
 				schedule.setGroupDelete(PortletRequestUtils.getBooleanParameter(request, "groupDelete", false));
 				schedule.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
@@ -108,9 +103,6 @@ public class ConfigureLdapController extends  SAbstractController {
 						String principal = cNode.selectSingleNode("principal").getText();
 						String credentials = cNode.selectSingleNode("credentials").getText();
 						String url = cNode.selectSingleNode("url").getText();
-						// If the protocol is uppercase, users can't log in.  See bug 823936.
-						if ( url != null )
-							url = url.toLowerCase();
 						String userIdAttribute = cNode.selectSingleNode("userIdAttribute").getText();
 						String[] mappings = StringUtil.split(cNode.selectSingleNode("mappings").getText(), "\n");
 						LinkedList<LdapConnectionConfig.SearchInfo> userQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
@@ -227,23 +219,21 @@ public class ConfigureLdapController extends  SAbstractController {
 				// Save the ldap configuration.
 				getLdapModule().setLdapSchedule(schedule);
 
+				// Does the user want to sync guids?
+				syncGuids = PortletRequestUtils.getBooleanParameter( request, "syncGuids", false );
+				
 				// Does the user want to sync all users and groups?
 				syncAllUsersAndGroups = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
-
-				// Get the list of ldap configs that we need to sync the guid
-				listOfLdapConfigsToSyncGuid = PortletRequestUtils.getStringParameter( request, "listOfLdapConfigsToSyncGuid", "" );
 				
 				// Do we need to start a sync?
-				if ( (listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length() > 0 ) ||
-					  syncAllUsersAndGroups == true )
+				if ( syncGuids == true || syncAllUsersAndGroups == true )
 				{
 					// Yes
 					// Pass this fact back to the page.  When the page loads it will issue an ajax
 					// request to start the sync.
 					response.setRenderParameter( "startLdapSync", "true" );
 					response.setRenderParameter( "syncAllUsersAndGroups", Boolean.toString( syncAllUsersAndGroups ) );
-					if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length() > 0 )
-						response.setRenderParameter( "listOfLdapConfigsToSyncGuid", listOfLdapConfigsToSyncGuid );
+					response.setRenderParameter( "syncGuids", Boolean.toString( syncGuids ) );
 				}
 			}
 		} else
@@ -251,8 +241,6 @@ public class ConfigureLdapController extends  SAbstractController {
 		
 	}
 
-	@SuppressWarnings({"unchecked"})
-	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 
@@ -274,31 +262,7 @@ public class ConfigureLdapController extends  SAbstractController {
 
 		model.put( "startLdapSync", request.getParameter( "startLdapSync" ) );
 		model.put( "syncAllUsersAndGroups", request.getParameter( "syncAllUsersAndGroups" ) );
-		
-		// Add the list of ldap configs to sync the guid
-		{
-			String commaSepList;
-			ArrayList<String> list;
-			
-			list = new ArrayList<String>();
-			commaSepList = PortletRequestUtils.getStringParameter( request,  "listOfLdapConfigsToSyncGuid", "" );
-			if ( commaSepList != null && commaSepList.length() > 0 )
-			{
-				String[] listOfLdapConfigsToSyncGuid;
-				
-				listOfLdapConfigsToSyncGuid = commaSepList.split( "," );
-				if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length > 0 )
-				{
-					for ( String nextLdapUrl : listOfLdapConfigsToSyncGuid )
-					{
-						list.add( nextLdapUrl );
-					}
-				}
-				else
-					list.add( commaSepList );
-			}
-			model.put( "listOfLdapConfigsToSyncGuid", list );
-		}
+		model.put( "syncGuids", request.getParameter( "syncGuids" ) );
 
 		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapSchedule());
 		model.put(WebKeys.LDAP_CONNECTION_CONFIGS, getAuthenticationModule().getLdapConnectionConfigs());
@@ -312,12 +276,6 @@ public class ConfigureLdapController extends  SAbstractController {
 		// Add the default locale to the response.
 		defaultLocaleId = getDefaultLocaleId();
 		model.put( WebKeys.DEFAULT_LOCALE, defaultLocaleId );
-
-		// Add the product name, Vibe or Filr
-		if ( Utils.checkIfFilr() )
-			model.put( "productName", "Filr" );
-		else
-			model.put( "productName", "Vibe" );
 		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, model);
 		

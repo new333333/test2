@@ -119,9 +119,6 @@ public class Restrictions
 			if(exact) {
 				element.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, Constants.EXACT_PHRASE_TRUE);
 			}
-			else {
-				element.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, Constants.EXACT_PHRASE_FALSE);				
-			}
 			return element;
 		}
 	}
@@ -146,9 +143,6 @@ public class Restrictions
 				Element element = super.toQuery(root, value);
 				if(exact) {
 					element.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, Constants.EXACT_PHRASE_TRUE);
-				}
-				else {
-					element.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, Constants.EXACT_PHRASE_FALSE);					
 				}
 			}
 			

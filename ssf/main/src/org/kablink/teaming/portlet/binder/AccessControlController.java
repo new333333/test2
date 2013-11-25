@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,15 +32,12 @@
  */
 package org.kablink.teaming.portlet.binder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -49,27 +46,18 @@ import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.AccessUtils;
-import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -81,29 +69,27 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WorkAreaHelper;
 import org.springframework.web.portlet.ModelAndView;
 
+
 /**
  * This controller/jsp is used by administration/ConfigureAccessController
  * Keep in sync
- * 
  * @author Peter Hurley
+ *
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class AccessControlController extends AbstractBinderController {
-	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(request.getParameterMap());
-		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");	
-
 		//navigation links still use binderId
 		Long workAreaId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (workAreaId == null) workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
 		WorkArea workArea = null;
 		request.setAttribute("roleId", "");
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE, "");	
-		if (ZoneConfig.WORKAREA_TYPE.equals(type)) {
+		if (EntityIdentifier.EntityType.zone.name().equals(type)) {
 			workArea = getZoneModule().getZoneConfig(workAreaId);
 		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
 			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
@@ -120,10 +106,6 @@ public class AccessControlController extends AbstractBinderController {
 				getAccessResults(request, functionMemberships);
 				if (workArea instanceof Entry) {
 					Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", false);
-					if (!((Entry)workArea).hasEntryAcl() && !formData.containsKey("includeFolderAcl")) {
-						//When transitioning from no ACL to having an ACL, start with including the folder ACL
-						includeFolderAcl = Boolean.TRUE;
-					}
 					getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE, includeFolderAcl);
 				}
 				getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
@@ -155,10 +137,6 @@ public class AccessControlController extends AbstractBinderController {
 				} else if (aclType.equals("entry")) {
 					//Set the entry acl
 					Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", false);
-					if (!((FolderEntry)workArea).hasEntryAcl() && !formData.containsKey("includeFolderAcl")) {
-						//When transitioning from no ACL to having an ACL, start with including the folder ACL
-						includeFolderAcl = Boolean.TRUE;
-					}
 					Map functionMemberships = new HashMap();
 					getAccessResults(request, functionMemberships);
 					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
@@ -167,25 +145,16 @@ public class AccessControlController extends AbstractBinderController {
 				}
 			}
 		
-		} else if (formData.containsKey("revokeBtn") && WebHelper.isMethodPost(request)) {
-			Long shareItemId = PortletRequestUtils.getLongParameter(request, WebKeys.SHARE_ITEM_ID);
-			if (shareItemId != null) {
-				getSharingModule().deleteShareItem(shareItemId);
-			}
-		
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			if (workArea instanceof TemplateBinder) {
 				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, workAreaId.toString());
-			} else if (operation.equals(WebKeys.OPERATION_MANAGE_ACCESS_SHARING)){
-				response.setRenderParameter(WebKeys.URL_OPERATION, "");
 			} else {
 				setupCloseWindow(response);
 			}
 			
 		}
 	}
-	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -198,7 +167,7 @@ public class AccessControlController extends AbstractBinderController {
 		Map model = new HashMap();
 		Map formData = request.getParameterMap();
 		try {
-			if (ZoneConfig.WORKAREA_TYPE.equals(type)) {
+			if (EntityIdentifier.EntityType.zone.name().equals(type)) {
 				ZoneConfig zone = getZoneModule().getZoneConfig(workAreaId);
 				model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(zone.getZoneId()));
 				wArea = zone;
@@ -231,7 +200,6 @@ public class AccessControlController extends AbstractBinderController {
 				}
 				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, configureAccess);
 				model.put(WebKeys.DEFINITION_ENTRY, entry);
-				model.put(WebKeys.BINDER, entry.getParentBinder());
 				
 			} else {
 				Binder binder = getBinderModule().getBinder(workAreaId);			
@@ -260,9 +228,6 @@ public class AccessControlController extends AbstractBinderController {
 		setupAccess(this, request, response, wArea, model);
 		model.put(WebKeys.ACCESS_ALL_USERS_GROUP, Utils.getAllUsersGroupId());
 		model.put(WebKeys.ACCESS_WORKAREA_IS_PERSONAL, Utils.isWorkareaInProfilesTree(wArea));		
-		
-		//Set up the beans for shared requests
-		setupSharedBeans(this, wArea, model);
 
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			//Cannot do these things as guest
@@ -271,8 +236,6 @@ public class AccessControlController extends AbstractBinderController {
 		}
 		if (operation.equals(WebKeys.OPERATION_VIEW_ACCESS)) {
 			return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
-		} else if (operation.equals(WebKeys.OPERATION_MANAGE_ACCESS_SHARING)) {
-			return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_SHARING, model);
 		} else {
 			if (wArea instanceof Entry) {
 				return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_ENTRY, model);
@@ -322,112 +285,21 @@ public class AccessControlController extends AbstractBinderController {
 	}
 	//used by ajax controller
 	public static void setupAccess(AllModulesInjected bs, RenderRequest request, RenderResponse response, WorkArea wArea, Map model) {
-		setupAccessImpl(bs, request, response, wArea, model);
-	}
-	public static void setupAccess(AllModulesInjected bs, WorkArea wArea, Map model) {
-		setupAccessImpl(bs, null, null, wArea, model);
-	}
-	private static void setupAccessImpl(AllModulesInjected bs, RenderRequest request, RenderResponse response, WorkArea wArea, Map model) {
 		String scope = ObjectKeys.ROLE_TYPE_BINDER;
-		List<Function> extraFunctions = new ArrayList<Function>();
+		if (wArea instanceof Entry) scope = ObjectKeys.ROLE_TYPE_ENTRY;
 		if (wArea instanceof ZoneConfig) scope = ObjectKeys.ROLE_TYPE_ZONE;
-		if (wArea instanceof Entry) {
-			scope = ObjectKeys.ROLE_TYPE_ENTRY;
-			//See if this entry's ACL is externally controlled
-			Binder parentBinder = ((Entry) wArea).getParentBinder();
-			if (((Entry) wArea).hasEntryExternalAcl() || parentBinder instanceof AclResourceDriver) {
-				//This entry has its ACL controlled externally
-				model.put(WebKeys.WORKAREA_IS_EXTERNAL_ACLS, Boolean.TRUE);
-				AclResourceDriver ard = (AclResourceDriver)parentBinder.getResourceDriver();
-				scope = ard.getRegisteredRoleTypeName();
-				//Get the list of other entry functions that can also be used with this WorkArea
-				//These roles cannot have any rights that are being controlled externally
-				List<Function> entryFunctions = bs.getAdminModule().getFunctions(ObjectKeys.ROLE_TYPE_ENTRY);
-				List<WorkAreaOperation> ardWaos = wArea.getExternallyControlledRights();
-				//Now check if this role is OK to be used
-				for (Function f : entryFunctions) {
-					//If there are no operations (aka rights) that are being controlled by the external ACL 
-					//  in this function, then it is OK to be included in the list
-					boolean addThisFunction = true;
-					Set<WorkAreaOperation> waos = f.getOperations();
-					for (WorkAreaOperation wao : waos) {
-						if (ardWaos.contains(wao)) {
-							addThisFunction = false;
-							break;
-						}
-					}
-					if (addThisFunction) {
-						//This function is ok to use
-						extraFunctions.add(f);
-					}
-				}
-			}
-		}
-		if (wArea instanceof Binder && ((Binder)wArea).isMirrored()) {
-			//This is a mirrored folder. See if it is an external ACL controlled folder
-			Binder binder = (Binder) wArea;
-			if (binder.getResourceDriver() instanceof AclResourceDriver) {
-				//This is a mirrored folder with external ACLs
-				model.put(WebKeys.WORKAREA_IS_EXTERNAL_ACLS, Boolean.TRUE);
-				AclResourceDriver ard = (AclResourceDriver)binder.getResourceDriver();
-				scope = ard.getRegisteredRoleTypeName();
-				//Get the list of other binder functions that can also be used with this WorkArea
-				//These roles cannot have any rights that are being controlled externally
-				List<Function> binderFunctions = bs.getAdminModule().getFunctions(ObjectKeys.ROLE_TYPE_BINDER);
-				List<WorkAreaOperation> ardWaos = wArea.getExternallyControlledRights();
-				List<WorkAreaFunctionMembership> memberships = bs.getAdminModule().getWorkAreaFunctionMemberships(wArea);
-				//Now check if this role is OK to be used
-				for (Function f : binderFunctions) {
-					//If there are no operations (aka rights) that are being controlled by the external ACL 
-					//  in this function, then it is OK to be included in the list
-					boolean addThisFunction = true;
-					Set<WorkAreaOperation> waos = f.getOperations();
-					for (WorkAreaOperation wao : waos) {
-						if (ardWaos.contains(wao)) {
-							addThisFunction = false;
-							if ((null != request) && "true".equals(request.getParameter("showAll"))) {
-								//Check if there are members in this function
-								for (WorkAreaFunctionMembership membership : memberships) {
-									if (membership.getFunctionId() == f.getId() && !(membership.getMemberIds().isEmpty())) {
-										//Override the rule if there is a membership in this function. We don't want it to be invisible
-										addThisFunction = true;
-									}
-								}
-							}
-							break;
-						}
-					}
-					if (addThisFunction) {
-						//This function is ok to use
-						extraFunctions.add(f);
-					}
-				}
-			}
-		}
 		List functions = bs.getAdminModule().getFunctions(scope);
-		if (!extraFunctions.isEmpty()) {
-			for (Function f : extraFunctions) {
-				if (!functions.contains(f)) functions.add(f);
-			}
-		}
 		List membership;
-		boolean zoneWide = wArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE);
+		boolean zoneWide = wArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name());
 		if (wArea.isFunctionMembershipInherited()) {
 			membership = bs.getAdminModule().getWorkAreaFunctionMembershipsInherited(wArea);
 		} else {
 			membership = bs.getAdminModule().getWorkAreaFunctionMemberships(wArea);
 		}
-		if (null == request)
-			 WorkAreaHelper.buildAccessControlTableBeans(bs,                    wArea, functions, membership, model       );
-		else WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, wArea, functions, membership, model, false);
+		WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, wArea, functions, 
+				membership, model, false);
 
-		Object	hiO = model.get(WebKeys.ACCESS_HONOR_INHERITANCE);
-		boolean hi  = ((null != hiO) && (hiO instanceof Boolean) && ((Boolean) hiO));
-		boolean checkInherited;
-		if (hi)
-		     checkInherited =    wArea.isFunctionMembershipInherited();
-		else checkInherited = (!(wArea.isFunctionMembershipInherited()));
-		if (checkInherited) {
+		if (!wArea.isFunctionMembershipInherited()) {
 			WorkArea parentArea = wArea.getParentWorkArea();
 			if (parentArea != null) {
 				List parentMembership;
@@ -437,9 +309,8 @@ public class AccessControlController extends AbstractBinderController {
 					parentMembership = bs.getAdminModule().getWorkAreaFunctionMemberships(parentArea);
 				}
 				Map modelParent = new HashMap();
-				if (null == request)
-				     WorkAreaHelper.buildAccessControlTableBeans(bs,                    parentArea, functions, parentMembership, modelParent      );
-				else WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, parentArea, functions, parentMembership, modelParent, true);
+				WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, parentArea, 
+						functions, parentMembership, modelParent, true);
 				model.put(WebKeys.ACCESS_PARENT, modelParent);
 				WorkAreaHelper.mergeAccessControlTableBeans(model);
 			}
@@ -447,35 +318,6 @@ public class AccessControlController extends AbstractBinderController {
 		
 		//Set up the role beans
 		WorkAreaHelper.buildAccessControlRoleBeans(bs, model, zoneWide);
-	}
-	
-	//Routine to build the beans for the report of share requests for this workarea
-	public void setupSharedBeans(AllModulesInjected bs, WorkArea wArea, Map model) {
-		//Get the list of ShareItems that reference this workarea
-		if (wArea instanceof DefinableEntity) {
-			List sortedUsersAll = (List)model.get(WebKeys.ACCESS_SORTED_USERS_ALL);
-			List sortedGroupsAll = (List)model.get(WebKeys.ACCESS_SORTED_GROUPS_ALL);
-			ShareItemSelectSpec spec = new ShareItemSelectSpec();
-			spec.setSharedEntityIdentifier(((DefinableEntity)wArea).getEntityIdentifier());
-			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
-			model.put(WebKeys.ACCESS_CONTROL_SHARE_ITEMS, shareItems);
-			
-			//Now load in the recipient objects
-			Map<Long, Boolean> deleteRights = new HashMap<Long, Boolean>();
-			Map<Long, DefinableEntity> recipients = new HashMap<Long, DefinableEntity>();
-			for (ShareItem shareItem : shareItems) {
-				recipients.put(shareItem.getId(), getSharingModule().getSharedRecipient(shareItem));
-				deleteRights.put(shareItem.getId(), getSharingModule().testAccess(shareItem, SharingModule.SharingOperation.deleteShareItem));
-				Principal p = bs.getProfileModule().getEntry(shareItem.getRecipientId());
-				if (shareItem.getRecipientType().equals(ShareItem.RecipientType.user)) {
-					if (!sortedUsersAll.contains(p)) sortedUsersAll.add(p);
-				} else {
-					if (!sortedGroupsAll.contains(p)) sortedGroupsAll.add(p);
-				}
-			}
-			model.put(WebKeys.ACCESS_CONTROL_SHARE_ITEM_RECIPIENTS, recipients);
-			model.put(WebKeys.ACCESS_CONTROL_SHARE_ITEM_DELETE_RIGHTS, deleteRights);
-		}
 	}
 
 }

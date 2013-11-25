@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,8 +38,9 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.PopupPanel;
 
+
 /**
- * Implements an extension of GWT's PopupPanel so that Vibe can
+ * Implements an extension of GWT's PopupPanel so that Teaming can
  * expose the roll down animation feature from it.
  *  
  * @author drfoster@novell.com
@@ -54,8 +55,6 @@ public class TeamingPopupPanel extends PopupPanel {
 	 */
 	public TeamingPopupPanel(boolean autoHide, boolean modal) {
 		super(autoHide, modal);
-
-		setStyleName( "teamingPopupPanel_NoClip", true );
 	}
 
 	public TeamingPopupPanel(boolean autoHide) {
@@ -70,13 +69,6 @@ public class TeamingPopupPanel extends PopupPanel {
 		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 	}
 
-	/**
-	 * Sets the popup panel's animation type to one way corner.
-	 */
-	public void setAnimationTypeToOneWayCorner() {
-		setAnimationType(PopupPanel.AnimationType.ONE_WAY_CORNER);
-	}
-
 	/*
 	 * Overrides PopupPanel.onPreviewNativeEvent() to address an issue
 	 * with PopupPanel's in FF closing with auto hide if the user
@@ -84,7 +76,6 @@ public class TeamingPopupPanel extends PopupPanel {
 	 * 
 	 * Note:  This was implemented as a fix for Bugzilla bug#628120.
 	 */
-	@Override
 	protected void onPreviewNativeEvent(NativePreviewEvent nativeEvent) {
 		// Is this an auto hide PopupPanel?
 		if (isAutoHideEnabled()) {
@@ -94,37 +85,22 @@ public class TeamingPopupPanel extends PopupPanel {
 		    if (0 != (type & Event.MOUSEEVENTS)) {
 				// Yes!  Is it targeted to the root <HTML>?
 			    EventTarget target = event.getEventTarget();
-			    if ( target != null )
-			    {
-				    Element element = Element.as(target);
-					String tagName = element.getTagName();
-					if (tagName.equalsIgnoreCase("html")) {
-						// Yes!  Then we don't want the PopupPanel to have it.
-						// On FF, if it gets it, it won't let the user scroll
-						// by clicking on the scroll bar.
-						nativeEvent.consume();
-						nativeEvent.cancel();
-						
-						return;
-					}
-			    }
+			    Element element = Element.as(target);
+				String tagName = element.getTagName();
+				if (tagName.equalsIgnoreCase("html")) {
+					// Yes!  Then we don't want the PopupPanel to have it.
+					// On FF, if it gets it, it won't let the user scroll
+					// by clicking on the scroll bar.
+					nativeEvent.consume();
+					nativeEvent.cancel();
+					
+					return;
+				}
 		    }
 		}
 		
 		// If we get here, we need to pass the event on through the
 		// PopupPanel's handler.
 		super.onPreviewNativeEvent(nativeEvent);
-	}
-
-	/**
-	 * Provides access to the PopupPanel's glass Element.
-	 * 
-	 * Required since PopupPanel.getClassElement() is protected and
-	 * can't be called directly otherwise.
-	 * 
-	 * @return
-	 */
-	public Element getPopupGlassElement() {
-		return super.getGlassElement();
 	}
 }

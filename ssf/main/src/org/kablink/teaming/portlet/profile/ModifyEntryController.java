@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,6 @@ package org.kablink.teaming.portlet.profile;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,22 +43,19 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -67,15 +63,14 @@ import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.GetterUtil;
+import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
 /**
  * @author Peter Hurley
  *
  */
-@SuppressWarnings("unchecked")
 public class ModifyEntryController extends SAbstractController {
-	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 
@@ -89,7 +84,10 @@ public class ModifyEntryController extends SAbstractController {
 			Map options = new HashMap();
 			options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, GetterUtil.getBoolean(deleteWs, false));
 			getProfileModule().deleteEntry(entryId, options);			
-			setupReloadOpener(response, binderId, entryId);
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if (formData.containsKey("okBtn") && op.equals(WebKeys.OPERATION_DISABLE) && WebHelper.isMethodPost(request)) {
 			getProfileModule().disableEntry(entryId, true);			
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
@@ -144,15 +142,12 @@ public class ModifyEntryController extends SAbstractController {
 		        		binder = getProfileModule().getProfileBinder();
 		        	} catch(AccessControlException ex) {}
 		        	
-		            Principal p = getProfileModule().getEntry(entryId);
-		            if (binder == null || !getProfileModule().testAccess(binder, ProfileOperation.manageEntries) ||
-		            		!(p instanceof User) || user.getName().equals(p.getName()) || ((User)p).isSuper()) {
+		            if (binder == null || !getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
 		            	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
 
 		            	//Check that the user knows the current password
-		            	if ( (p instanceof User && !password.equals("") && !password.equals(password3)) ||
-		            			(p instanceof User && !password.equals("") && !password.equals(password3) && 
-		            			(user.getName().equals(p.getName()) || ((User)p).isSuper()) ))
+		            	Principal p = getProfileModule().getEntry(entryId);
+		            	if ( p instanceof User && !password.equals("") && !password.equals(password3) )
 		            	{
 		            		// If the user didn't enter the current password or they entered it incorrectly, tell them about it.
 		            		if ( passwordOriginal.equals("") || 
@@ -179,34 +174,8 @@ public class ModifyEntryController extends SAbstractController {
 	            }
 	            
 				getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
-				
-				//Now look to see if there were groups specified (but only if allowed to manage these
-				ProfileBinder binder = getProfileModule().getProfileBinder();
-				if (getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
-					Principal p = getProfileModule().getEntry(entryId);
-					Document def = p.getEntryDefDoc();
-					if (def != null) {
-						Element manageGroupEle = (Element) def.getRootElement().selectSingleNode("//item[@name='profileManageGroups']");
-						if (manageGroupEle != null) {
-							String[] idList = new String[0];
-							if (PortletRequestUtils.getStringParameter(request, WebKeys.URL_USER_GROUPS_LIST) != null) {
-								idList = PortletRequestUtils.getStringParameter(request, WebKeys.URL_USER_GROUPS_LIST).split(" ");
-								for (String uid : idList) {
-									try {
-										Long id = Long.valueOf(uid.trim());
-										Principal group = getProfileModule().getEntry(id); 
-										if (group instanceof GroupPrincipal && group.getIdentityInfo().isFromLocal()) {
-											((GroupPrincipal) group).addMember(p);
-										}
-									} catch(Exception e) {}
-								}
-							}
-						}
-					}
-				}
 	
 				//See if there was a request to reorder the graphic files
-				@SuppressWarnings("unused")
 				String graphicFileIds = PortletRequestUtils.getStringParameter(request, "_graphic_id_order", "");
 	        }
 	       
@@ -244,13 +213,11 @@ public class ModifyEntryController extends SAbstractController {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);
 	}
-	@SuppressWarnings("unused")
 	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 	}
-	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 		RenderResponse response) throws Exception {
 
@@ -289,7 +256,7 @@ public class ModifyEntryController extends SAbstractController {
 			}
 			
 			// Was this Principal sync'd from an ldap source?
-			if((entry instanceof User) && !(((User)entry).getIdentityInfo().isFromLocal()))
+			if ( !entry.isLocal() )
 			{
 				// Yes, don't let the user change the password.
 				readOnly.put( "password", Boolean.TRUE );

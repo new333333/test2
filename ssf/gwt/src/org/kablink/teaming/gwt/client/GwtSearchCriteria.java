@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -72,12 +72,10 @@ public class GwtSearchCriteria
 		ENTRIES,
 		ENTRY_FIELDS,
 		ENTRY_TYPES,
-		FOLDERS,	// Folders only.
 		GROUP,
 		PERSON,
 		PERSONAL_TAGS,
-		PLACES,		// Folders and workspaces.
-		PRINCIPAL,	// Users and Groups
+		PLACES,
 		TAG,
 		TEAMS,
 		USER,
@@ -95,9 +93,6 @@ public class GwtSearchCriteria
 	private SearchType m_searchType = SearchType.ENTRIES;
 	private boolean m_sendingEmail = false;	// Is the search part of a "sending email" ui?
 	private SearchScope m_searchScope = SearchScope.SEARCH_ENTIRE_SITE;
-	private boolean m_searchForInternalPrincipals = false;	// When searching for users/groups should we search for internal users/groups?
-	private boolean m_searchForExternalPrincipals = false;	// When searching for users/groups should we search for external users/groups?
-	private boolean m_searchForLdapGroups = true;			// When search for groups should we include ldap groups.
 
 	/**
 	 * 
@@ -171,30 +166,6 @@ public class GwtSearchCriteria
 		return m_pageNumber;
 	}// end getPageNumber()
 	
-	
-	/**
-	 * 
-	 */
-	public boolean getSearchForExternalPrincipals()
-	{
-		return m_searchForExternalPrincipals;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getSearchForInternalPrincipals()
-	{
-		return m_searchForInternalPrincipals;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getSearchForLdapGroups()
-	{
-		return m_searchForLdapGroups;
-	}
 	
 	/**
 	 * 
@@ -294,30 +265,6 @@ public class GwtSearchCriteria
 		m_pageNumber = pageNumber;
 	}// end setPageNumber()
 	
-	
-	/**
-	 * 
-	 */
-	public void setSearchForExternalPrincipals( boolean external )
-	{
-		m_searchForExternalPrincipals = external;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setSearchForInternalPrincipals( boolean internal )
-	{
-		m_searchForInternalPrincipals = internal;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setSearchForLdapGroups( boolean search )
-	{
-		m_searchForLdapGroups = search;
-	}
 	
 	/**
 	 * 

@@ -34,23 +34,20 @@ package org.kablink.teaming.domain;
 
 import org.kablink.teaming.domain.HistoryStamp;
 
-import javax.persistence.Transient;
-import java.util.Date;
-
 /**
  * @author janet
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public abstract class PersistentLongIdTimestampObject extends PersistentLongIdObject 
+public class PersistentLongIdTimestampObject extends PersistentLongIdObject 
 	implements PersistentLongIdTimestamp, Comparable {
     protected HistoryStamp creation;
     protected HistoryStamp modification;
     
     public PersistentLongIdTimestampObject() {
     }
-    public PersistentLongIdTimestampObject(PersistentLongIdTimestampObject source) {
+    public PersistentLongIdTimestampObject(DefinableEntity source) {
 		 creation = new HistoryStamp(source.getCreation().getPrincipal(), source.getCreation().getDate());
 		 modification = new HistoryStamp(source.getModification().getPrincipal(), source.getModification().getDate());
     }
@@ -71,11 +68,6 @@ public abstract class PersistentLongIdTimestampObject extends PersistentLongIdOb
     }
     public void setModification(HistoryStamp stamp) {
         this.modification = stamp;
-    }
-
-    @Transient
-    public Date getModificationDate() {
-        return this.modification==null ? null : this.modification.getDate();
     }
     public int compareTo(Object o) {
     	int result;

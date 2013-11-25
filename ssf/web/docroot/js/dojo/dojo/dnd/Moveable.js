@@ -1,81 +1,77 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/dnd/Moveable",["../_base/array","../_base/declare","../_base/lang","../dom","../dom-class","../Evented","../on","../topic","../touch","./common","./Mover","../_base/window"],function(_1,_2,_3,_4,_5,_6,on,_7,_8,_9,_a,_b){
-var _c=_2("dojo.dnd.Moveable",[_6],{handle:"",delay:0,skip:false,constructor:function(_d,_e){
-this.node=_4.byId(_d);
-if(!_e){
-_e={};
+
+if(!dojo._hasResource["dojo.dnd.Moveable"]){
+dojo._hasResource["dojo.dnd.Moveable"]=true;
+dojo.provide("dojo.dnd.Moveable");
+dojo.require("dojo.dnd.Mover");
+dojo.declare("dojo.dnd.Moveable",null,{handle:"",delay:0,skip:false,constructor:function(_1,_2){
+this.node=dojo.byId(_1);
+if(!_2){
+_2={};
 }
-this.handle=_e.handle?_4.byId(_e.handle):null;
+this.handle=_2.handle?dojo.byId(_2.handle):null;
 if(!this.handle){
 this.handle=this.node;
 }
-this.delay=_e.delay>0?_e.delay:0;
-this.skip=_e.skip;
-this.mover=_e.mover?_e.mover:_a;
-this.events=[on(this.handle,_8.press,_3.hitch(this,"onMouseDown")),on(this.handle,"dragstart",_3.hitch(this,"onSelectStart")),on(this.handle,"selectstart",_3.hitch(this,"onSelectStart"))];
-},markupFactory:function(_f,_10,_11){
-return new _11(_10,_f);
+this.delay=_2.delay>0?_2.delay:0;
+this.skip=_2.skip;
+this.mover=_2.mover?_2.mover:dojo.dnd.Mover;
+this.events=[dojo.connect(this.handle,"onmousedown",this,"onMouseDown"),dojo.connect(this.handle,"ondragstart",this,"onSelectStart"),dojo.connect(this.handle,"onselectstart",this,"onSelectStart")];
+},markupFactory:function(_3,_4){
+return new dojo.dnd.Moveable(_4,_3);
 },destroy:function(){
-_1.forEach(this.events,function(_12){
-_12.remove();
-});
+dojo.forEach(this.events,dojo.disconnect);
 this.events=this.node=this.handle=null;
 },onMouseDown:function(e){
-if(this.skip&&_9.isFormElement(e)){
+if(this.skip&&dojo.dnd.isFormElement(e)){
 return;
 }
 if(this.delay){
-this.events.push(on(this.handle,_8.move,_3.hitch(this,"onMouseMove")),on(this.handle,_8.release,_3.hitch(this,"onMouseUp")));
+this.events.push(dojo.connect(this.handle,"onmousemove",this,"onMouseMove"),dojo.connect(this.handle,"onmouseup",this,"onMouseUp"));
 this._lastX=e.pageX;
 this._lastY=e.pageY;
 }else{
 this.onDragDetected(e);
 }
-e.stopPropagation();
-e.preventDefault();
+dojo.stopEvent(e);
 },onMouseMove:function(e){
 if(Math.abs(e.pageX-this._lastX)>this.delay||Math.abs(e.pageY-this._lastY)>this.delay){
 this.onMouseUp(e);
 this.onDragDetected(e);
 }
-e.stopPropagation();
-e.preventDefault();
+dojo.stopEvent(e);
 },onMouseUp:function(e){
 for(var i=0;i<2;++i){
-this.events.pop().remove();
+dojo.disconnect(this.events.pop());
 }
-e.stopPropagation();
-e.preventDefault();
+dojo.stopEvent(e);
 },onSelectStart:function(e){
-if(!this.skip||!_9.isFormElement(e)){
-e.stopPropagation();
-e.preventDefault();
+if(!this.skip||!dojo.dnd.isFormElement(e)){
+dojo.stopEvent(e);
 }
 },onDragDetected:function(e){
 new this.mover(this.node,e,this);
-},onMoveStart:function(_13){
-_7.publish("/dnd/move/start",_13);
-_5.add(_b.body(),"dojoMove");
-_5.add(this.node,"dojoMoveItem");
-},onMoveStop:function(_14){
-_7.publish("/dnd/move/stop",_14);
-_5.remove(_b.body(),"dojoMove");
-_5.remove(this.node,"dojoMoveItem");
-},onFirstMove:function(){
-},onMove:function(_15,_16){
-this.onMoving(_15,_16);
-var s=_15.node.style;
-s.left=_16.l+"px";
-s.top=_16.t+"px";
-this.onMoved(_15,_16);
-},onMoving:function(){
-},onMoved:function(){
+},onMoveStart:function(_5){
+dojo.publish("/dnd/move/start",[_5]);
+dojo.addClass(dojo.body(),"dojoMove");
+dojo.addClass(this.node,"dojoMoveItem");
+},onMoveStop:function(_6){
+dojo.publish("/dnd/move/stop",[_6]);
+dojo.removeClass(dojo.body(),"dojoMove");
+dojo.removeClass(this.node,"dojoMoveItem");
+},onFirstMove:function(_7){
+},onMove:function(_8,_9){
+this.onMoving(_8,_9);
+var s=_8.node.style;
+s.left=_9.l+"px";
+s.top=_9.t+"px";
+this.onMoved(_8,_9);
+},onMoving:function(_a,_b){
+},onMoved:function(_c,_d){
 }});
-return _c;
-});
+}

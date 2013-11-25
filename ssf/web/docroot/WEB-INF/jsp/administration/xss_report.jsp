@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -82,22 +82,8 @@ var m_noProblemsFound;
 var m_cantInvokeAccessControl;
 var m_modifyUrl;
 
-// Load the various strings we will need.
-m_unknownEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.unknownEntryType" /></ssf:escapeJavaScript>';
-m_workspaceEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.workspaceEntryType" /></ssf:escapeJavaScript>';
-m_folderEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryType" /></ssf:escapeJavaScript>';
-m_folderEntryEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryEntryType" text="Entry" /></ssf:escapeJavaScript>';
-m_userEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.userEntryType" text="User" /></ssf:escapeJavaScript>';
-m_profilesEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.profilesEntryType" /></ssf:escapeJavaScript>';
-m_cantInvokeAccessControl = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.cantInvokeAccessControl" /></ssf:escapeJavaScript>';
-m_noProblemsFound = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.xss.noProblems" text="No XSS problems found." /></ssf:escapeJavaScript>';
+ss_createOnLoadObj( 'xssReport', onLoadEventHandler );
 
-m_modify = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.xss.modify" text="Modify" /></ssf:escapeJavaScript>';
-
-// Get the url we need to invoke the page.
-m_viewPermalinkUrl = "<ssf:url action="view_permalink" />";
-m_modifyBinderUrl = "<ssf:url action="modify_binder" />";
-m_modifyEntryUrl = "<ssf:url action="modify_folder_entry" />";
 
 /**
  * Add an entry to the page for the given object the user has access to.
@@ -385,6 +371,33 @@ function invokeXssModify( entry ) {
 
 
 /**
+ * This function gets called when the page is loaded.
+ */
+function onLoadEventHandler()
+{
+	var form;
+	
+	// Load the various strings we will need.
+	m_unknownEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.unknownEntryType" /></ssf:escapeJavaScript>';
+	m_workspaceEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.workspaceEntryType" /></ssf:escapeJavaScript>';
+	m_folderEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryType" /></ssf:escapeJavaScript>';
+	m_folderEntryEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryEntryType" text="Entry" /></ssf:escapeJavaScript>';
+	m_userEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.userEntryType" text="User" /></ssf:escapeJavaScript>';
+	m_profilesEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.profilesEntryType" /></ssf:escapeJavaScript>';
+	m_cantInvokeAccessControl = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.cantInvokeAccessControl" /></ssf:escapeJavaScript>';
+	m_noProblemsFound = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.xss.noProblems" text="No XSS problems found." /></ssf:escapeJavaScript>';
+
+	m_modify = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.xss.modify" text="Modify" /></ssf:escapeJavaScript>';
+
+	// Get the url we need to invoke the page.
+	m_viewPermalinkUrl = "<ssf:url action="view_permalink" />";
+	m_modifyBinderUrl = "<ssf:url action="modify_binder" />";
+	m_modifyEntryUrl = "<ssf:url action="modify_folder_entry" />";
+}// end onLoadEventHandler()
+
+
+
+/**
  * Remove any access report data from the page.
  */
 function removeXssReportDataFromPage()
@@ -439,7 +452,7 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 			<c:set var="formName">${renderResponse.namespace}fm</c:set>
 			<c:set var="formTitle"><%= NLT.get( "administration.report.title.xss", "XSS Report" ) %></c:set>
 
-			<ssf:form title="${formTitle}" ignore="${GwtReport}">
+			<ssf:form title="${formTitle}">
 				<form class="ss_style ss_form" 
 					action="<ssf:url webPath="reportDownload"/>" 
 					method="post" 
@@ -505,12 +518,10 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 
 				<div style="margin-top: 2em !important;">
 				<input type="submit" class="ss_submit" name="okBtn" 
-				  value="<c:if test="${GwtReport == 'true'}"><ssf:nlt tag="button.runReport" text="Run Report"/></c:if><c:if test="${GwtReport != 'true'}"><ssf:nlt tag="button.ok" text="OK"/></c:if>" onclick="getXssReport();ss_startSpinner();return false;">
+				  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="getXssReport();ss_startSpinner();return false;">
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<c:if test="${GwtReport != 'true'}">
-					<input type="submit" class="ss_submit" name="closeBtn" 
-					 value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
-				</c:if>
+				<input type="submit" class="ss_submit" name="closeBtn" 
+				 value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
 				</div>
 			  </form>
 			</ssf:form>

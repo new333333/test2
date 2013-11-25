@@ -61,6 +61,13 @@
 	 <table cellpadding="0" cellspacing="0">
 	 <tr>
 	   <td valign="top">
+	   <ssf:tree treeName="ss_binderTitle${nextBinder.id}${renderResponse.namespace}" 
+ 			  treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
+ 			  topId="${nextBinder.id}" rootOpen="false" 
+ 			  showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" 
+ 			  namespace="${renderResponse.namespace}"
+ 			  highlightNode="${nextBinder.id}"
+ 			  titleClass="" />
  		   </td>
  		   <%  if (!parentTree2.empty()) {  %>
  		     <td><div class="ss_profile_box_h1 ss_treeWidget"><img src="<html:rootPath/>images/pics/breadspace.gif" border="0" align="absmiddle"></div>

@@ -13,8 +13,6 @@
 		<pathelement path="${classpath}" />
 		<pathelement location="${project.dir}/ws-client/kablink-teaming-wsclient.jar"         />
 		<pathelement location="${project.dir}/tools/gwt/gwt-user.jar"                         />
-		<pathelement location="${project.dir}/tools/gwt/gwt-dnd.jar"                          />
-		<pathelement location="${project.dir}/tools/gwt/gwt-log.jar"                          />
 		<pathelement location="${project.dir}/tools/gwt/validation-api-1.0.0.GA.jar"          />
 		<pathelement location="${project.dir}/tools/gwt/validation-api-1.0.0.GA-sources.jar"  />
 		<fileset dir="${project.dir}/lib">
@@ -34,7 +32,6 @@
 	<propertycopy name="app.server.lib.dir" from="app.server.${portal.type}.${app.server.type}.lib.dir" />
 	<propertycopy name="app.server.ssf.dir" from="app.server.${portal.type}.${app.server.type}.ssf.dir" />
 	<propertycopy name="app.server.ssfs.dir" from="app.server.${portal.type}.${app.server.type}.ssfs.dir" />
-	<propertycopy name="app.server.webdav.dir" from="app.server.${portal.type}.${app.server.type}.webdav.dir" />
 
 	<tstamp>
 	    <format property="new.static.dir" pattern="dd-MM-yyyy-hhmm" />
@@ -117,7 +114,6 @@
 			srcdir="${source.dir}"
 			source="${javac.source}"
 			target="${javac.target}"
-			encoding="UTF-8"
 		/>
 	</target>
 
@@ -136,7 +132,6 @@
 			srcdir="${source.dir}"
 			source="1.4"
 			target="1.4"
-			encoding="UTF-8"
 		/>
 	</target>
 
@@ -215,8 +210,7 @@
 			fork="${javac.fork}"
 			memoryMaximumSize="${javac.memoryMaximumSize}"
 			nowarn="${javac.nowarn}"
-			srcdir="${test.source.dir}"
-			encoding="UTF-8">
+			srcdir="${test.source.dir}">
 			<classpath location="${test.classes.dir}"/>
 			<classpath refid="project.classpath"/>
 		</javac>

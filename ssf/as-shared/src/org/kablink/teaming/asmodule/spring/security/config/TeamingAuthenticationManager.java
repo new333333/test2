@@ -32,24 +32,16 @@
  */
 package org.kablink.teaming.asmodule.spring.security.config;
 
-import java.util.List;
-
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.config.NamespaceAuthenticationManager;
 
-//public class TeamingAuthenticationManager extends NamespaceAuthenticationManager {
-public class TeamingAuthenticationManager extends ProviderManager {
+public class TeamingAuthenticationManager extends NamespaceAuthenticationManager {
 
 	protected String authenticator = "unknown";
 	protected String enableKey = null;
 	
-    public TeamingAuthenticationManager(List<AuthenticationProvider> providers) {
-    	super(providers);
-    }
-
 	public void setAuthenticator(String authenticator) {
 		this.authenticator = authenticator;
 	}
@@ -58,11 +50,10 @@ public class TeamingAuthenticationManager extends ProviderManager {
 		this.enableKey = enableKey;
 	}
 	
-	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+	public Authentication doAuthentication(Authentication authentication) throws AuthenticationException {
 		AuthenticationContextHolder.setAuthenticationContext(authenticator, enableKey);
 		try {
-			return super.authenticate(authentication);
+			return super.doAuthentication(authentication);
 		}
 		finally {
 			AuthenticationContextHolder.clear();

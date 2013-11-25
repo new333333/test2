@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
-    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
 
 	<!-- ============================== Modules ============================= -->
 
@@ -14,8 +14,6 @@
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="fileModule"><ref bean="fileModule"/></property>
     	<property name="binderModule"><ref bean="binderModule"/></property>
-		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
-		<property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
 	</bean>
 
 	<bean id="licenseModuleTarget" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.license.impl.BaseLicenseModule">
@@ -40,7 +38,6 @@
 					<ref bean="licenseModule"/>
 					<ref bean="mailModule"/>
 					<ref bean="workflowModule"/>
-					<ref bean="sharingModule"/>
 					</list>
 				</property>
 			</bean>
@@ -73,9 +70,6 @@
 	</bean>
 	
 	<bean id="licenseManager" class="org.kablink.teaming.license.impl.NullLicenseManager"/>
-	
-	<bean id="objectCache" class="org.kablink.teaming.objcache.impl.NullObjCache">
- 	</bean>
 	
 	<!-- ============================== Document Converter ============================ -->
 
@@ -120,10 +114,9 @@
 	</bean>
 
     <!-- ============================= Conferencing Service    ============================ -->
-    <!-- ============================= This has been discintinued    ============================ -->
 	<bean id="conferencingModuleImpl" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.conferencing.impl.ConferencingModuleImpl">
-		<property name="conferencingURL"><value></value></property>
-		<property name="enabled"><value>false</value></property>
+		<property name="conferencingURL"><value>${conferencing.service.url}</value></property>
+		<property name="enabled"><value>${conferencing.service.enable}</value></property>
 	</bean>
 
 	<!-- =========================== Timer-based scheduler for non-stateful jobs ====================== -->
@@ -142,16 +135,6 @@
 					</property>
 				</bean>
 			</list>
-		</property>
-	</bean>
-	
-	<!-- ============================== Security related beans ============================== -->
-
-	<bean id="authenticationModule" parent="baseTransactionProxy" depends-on="sPropsUtil">
-		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.authentication.impl.BaseAuthenticationProviderModule">
-				<property name="zoneModule"><ref bean="zoneModule"/></property>
-			</bean>
 		</property>
 	</bean>
 	

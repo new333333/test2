@@ -32,7 +32,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="org.kablink.teaming.util.Utils" %>
 
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
@@ -116,27 +115,18 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 <td valign="top">
-<span class="ss_bold ss_largerprint"><ssf:nlt tag="access.configure"/></span>
-<% if ( Utils.checkIfFilr() == false ) { %>
-	<ssf:showHelp guideName="adv_user" pageId="access_mngusers" />
-<% } %>
-<% else { %>
-	<ssf:showHelp guideName="admin" pageId="access_mngusers" sectionId="access_usersgroups" />
-<% } %>
+<span class="ss_bold ss_largerprint"><ssf:nlt tag="access.configure"/></span> <ssf:showHelp guideName="adv_user" pageId="access_mngusers" />
 <br/>
 <br/>
 <c:choose>
 <c:when test="${ssWorkArea.workAreaType == 'folder'}">
-  <c:set var="binderType"><ssf:nlt tag="binder.configure.access_control.sharing.folder"/></c:set>
   <span><ssf:nlt tag="access.currentFolder"/></span>
 <span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
 </c:when>
 <c:when test="${ssWorkArea.workAreaType == 'zone'}">
-  <c:set var="binderType" value=""/>
   <span><ssf:nlt tag="access.zone"/></span>
 </c:when>
 <c:otherwise>
-  <c:set var="binderType"><ssf:nlt tag="binder.configure.access_control.sharing.workspace"/></c:set>
   <span><ssf:nlt tag="access.currentWorkspace"/></span>
 	<% //need to check tags for templates %>
 	<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
@@ -145,7 +135,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <br/>
 <c:if test="${ssWorkArea.workAreaType != 'zone'}">
 <form name="${renderResponse.namespace}changeOwnerForm" id="${renderResponse.namespace}changeOwnerForm" 
-  class="ss_form" method="post" style="display:inline;" >
+  class="ss_form" method="post" style="display:inline;" action="" >
 <c:if test="${ssWorkArea.workAreaType == 'folder'}">
   <span><ssf:nlt tag="access.folderOwner"/></span>
 </c:if>
@@ -226,56 +216,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   <br/>
 </c:if>
 
-<c:set var="accessControlShareItemCount" value="0"/>
-<c:forEach var="shareItem" items="${ss_accessControlShareItems}">
-	<jsp:useBean id="shareItem" type="org.kablink.teaming.domain.ShareItem" />
-	<%
-	if (shareItem.isLatest()) {
-		%>
-		<c:set var="accessControlShareItemCount" value="${accessControlShareItemCount + 1}"/>
-		<%
-	}
-	%>
-</c:forEach>
 
-<c:if test="${ssWorkArea.workAreaType != 'zone'}">
-<ssf:box style="rounded">
-  <div style="padding:4px 8px;">
-    <div>
-      <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.sharing"/></span>
-    </div>
-    <c:if test="${accessControlShareItemCount == 0}">
-      <div style="padding-top:6px;">
-        <span><ssf:nlt tag="binder.configure.access_control.sharing.none"><ssf:param
-          name="value" value="${binderType}"/></ssf:nlt></span>
-      </div>
-    </c:if>
-    <c:if test="${accessControlShareItemCount gt 0}">
-      <div style="padding-top:6px;">
-        <c:if test="${accessControlShareItemCount == 1}">
-          <span><ssf:nlt tag="binder.configure.access_control.sharing.one"><ssf:param
-          name="value" value="${binderType}"/></ssf:nlt></span>
-        </c:if>
-        <c:if test="${accessControlShareItemCount gt 1}">
-          <span><ssf:nlt tag="binder.configure.access_control.sharing.more"><ssf:param
-          name="value" value="${binderType}"/><ssf:param 
-            name="value" value="${accessControlShareItemCount}"/></ssf:nlt>
-          </span>
-        </c:if>
-        <span style="padding-left:10px;">
-          <a class="ss_button" href="<ssf:url><ssf:param 
-	  		name="action" value="configure_access_control"/><ssf:param 
-	  		name="actionUrl" value="true"/><ssf:param 
-	  		name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
-	  		name="workAreaType" value="${ssWorkArea.workAreaType}"/><ssf:param
-	  		name="operation" value="manage_sharing"/></ssf:url>"
-          ><ssf:nlt tag="binder.configure.access_control.sharing.manageShares"/></a>
-        </span>
-      </div>
-    </c:if>
-  </div>
-</ssf:box>
-</c:if>
 
 <ssf:box style="rounded">
 <div style="padding:4px 8px;">
@@ -444,16 +385,11 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
 		<c:set var="ss_roleWasAdded" value="false"/>
 	    <c:forEach var="function" items="${ssFunctions}">
-	     <c:if test="${(function.scope == ssWorkArea.workAreaType && !ssWorkAreaIsExternalAcls) || 
-	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'workspace' && !ssWorkAreaIsExternalAcls) || 
-	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'folder' && !ssWorkAreaIsExternalAcls) || 
-	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'profiles' && !ssWorkAreaIsExternalAcls) || 
-	     		(ssWorkAreaIsExternalAcls && function.scope == 'filr') ||
-	     		(!empty ssFunctionsAllowed[function.id])}">
+	     <c:if test="${function.scope == ssWorkArea.workAreaType || 
+	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'workspace') || 
+	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'folder') || 
+	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'profiles')}">
 	      <c:set var="includeRole" value="1"/>
-	      <c:if test="${function.scope == 'filr'}">
-	        <c:set var="includeRole" value="0"/>
-	      </c:if>
 	      <c:forEach var="sortedFunction" items="${ss_accessSortedFunctions}">
 	        <c:if test="${sortedFunction.id == function.id}">
 	          <c:set var="includeRole" value="0"/>
@@ -498,14 +434,14 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 
 <c:if test="${ssWorkArea.workAreaType == 'zone'}">
 <div style="padding-bottom:10px;">
-	<ssf:nlt tag="access.zone.applicationsFiltering"/>
+* <ssf:nlt tag="access.zone.applicationsFiltering"/>
 </div>
 </c:if>
 
-<span class="ss_small"><ssf:nlt tag="access.superUser">
+<span class="ss_italic ss_small">[<ssf:nlt tag="access.superUser">
   <ssf:param name="value" useBody="true"><ssf:userTitle user="${ss_superUser}"/></ssf:param>
   <ssf:param name="value" useBody="true"><ssf:userName user="${ss_superUser}"/></ssf:param>
-  </ssf:nlt></span><br/>
+  </ssf:nlt>]</span><br/>
 </div>
 </ssf:box>
 

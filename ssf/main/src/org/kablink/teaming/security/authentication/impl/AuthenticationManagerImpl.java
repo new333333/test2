@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,64 +38,35 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.InternalException;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.IdentityInfo;
-import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
-import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.admin.AdminModule;
-import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
-import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.LdapModule;
-import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.report.ReportModule;
-import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
-import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.zone.ZoneException;
-import org.kablink.teaming.runasync.RunAsyncManager;
-import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.security.authentication.UserMismatchException;
-import org.kablink.teaming.spring.security.AuthenticationThreadLocal;
+import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.util.encrypt.EncryptUtil;
-import org.kablink.teaming.util.stringcheck.StringCheckUtil;
-import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.NetFolderHelper;
-import org.kablink.util.api.ApiErrorCode;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.liferay.util.Validator;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings({"unchecked","unused"})
 public class AuthenticationManagerImpl implements AuthenticationManager,InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -106,12 +77,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	private String[] userModify;
 	private ReportModule reportModule;
 	private LdapModule ldapModule;
-	private TemplateModule templateModule;
-	private BinderModule binderModule;
-	private FolderModule folderModule;
-	private ResourceDriverModule resourceDriverModule;
-	private ProcessorManager processorManager;
-	private RunAsyncManager runAsyncManager;
 
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -151,42 +116,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	 * 
 	 * @return
 	 */
-	protected BinderModule getBinderModule()
-	{
-		return binderModule;
-	}
-	
-	/**
-	 * 
-	 * @param binderModule
-	 */
-	public void setBinderModule( BinderModule binderModule )
-	{
-		this.binderModule = binderModule;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	protected FolderModule getFolderModule()
-	{
-		return folderModule;
-	}
-	
-	/**
-	 * 
-	 * @param folderModule
-	 */
-	public void setFolderModule( FolderModule folderModule )
-	{
-		this.folderModule = folderModule;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
 	protected LdapModule getLdapModule()
 	{
 		return ldapModule;
@@ -202,77 +131,14 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	}
 
 	/**
-	 * 
-	 * @return
-	 */
-	protected ResourceDriverModule getResourceDriverModule()
-	{
-		return resourceDriverModule;
-	}
-	
-	/**
-	 * 
-	 * @param resourceDriverModule
-	 */
-	public void setResourceDriverModule( ResourceDriverModule resourceDriverModule )
-	{
-		this.resourceDriverModule = resourceDriverModule;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	protected TemplateModule getTemplateModule()
-	{
-		return templateModule;
-	}
-	
-	/**
-	 * 
-	 * @param templateModule
-	 */
-	public void setTemplateModule( TemplateModule templateModule )
-	{
-		this.templateModule = templateModule;
-	}
-
-	protected ProcessorManager getProcessorManager() {
-		return processorManager;
-	}
-
-	public void setProcessorManager(ProcessorManager processorManager) {
-		this.processorManager = processorManager;
-	}
-
-	/**
-	 * 
-	 */
-	protected RunAsyncManager getRunAsyncManager()
-	{
-		return runAsyncManager;
-	}
-
-	/**
-	 * 
-	 */
-	public void setRunAsyncManager( RunAsyncManager runAsyncManager )
-	{
-		this.runAsyncManager = runAsyncManager;
-	}
-
-	/**
      * Called after bean is initialized.  
      */
- 	@Override
-	public void afterPropertiesSet() {
+ 	public void afterPropertiesSet() {
 		userModify = SPropsUtil.getStringArray("portal.user.auto.synchronize", ",");
  	}
  	
-	@Override
-	public User authenticate(AuthenticationServiceProvider authenticationServiceProvider, 
-			String zoneName, String userName, String password,
-			boolean createUser, boolean updateUser, boolean passwordAutoSynch, boolean ignorePassword, 
+	public User authenticate(String zoneName, String userName, String password,
+			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException
 	{
@@ -287,80 +153,26 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		ldapModule = getLdapModule();
 		syncUser = false;
 		
-		Long zoneId = getCoreDao().findTopWorkspace(zoneName).getZoneId();
-		boolean webClient = ( authenticatorName != null && authenticatorName.equalsIgnoreCase( "web" ) );
-		
 		try
 		{
 			if (!hadSession)
 				SessionUtil.sessionStartup();	
 			
-			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
-				user = fetchOpenidUser(zoneName, userName);
-				
-				int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
-				if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_FIRST_LOGIN_ONLY) {
-					if(user.getFirstLoginDate() != null)
-						updates.clear(); // This is not the first time logging in. Should not sync. Clear all attributes.
-				}
-				else if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_EVERY_LOGIN) {
-					// Should sync.
-				}
-				else { // never
-					updates.clear(); // Should not sync.
-				}
-				
-				if(User.ExtProvState.credentialed == user.getExtProvState() || User.ExtProvState.verified == user.getExtProvState()) {
-					// This external user has already gone through the self-provisioning step where
-					// he at least supplied credential information (along with first and last name).
-					// In this case, we should not allow the first/last names from OpenID provider
-					// to overwrite the values that the user supplied explicitly through self-provisioning.
-					updates.remove(ObjectKeys.FIELD_USER_FIRSTNAME);
-					updates.remove(ObjectKeys.FIELD_USER_LASTNAME);
-				}
-			}
-			else {
-				user = doAuthenticateUser(authenticationServiceProvider, zoneName, userName, password, passwordAutoSynch, ignorePassword);
-			}
-			
-			// If still here, a matching user account has been found.
-			
+			user = doAuthenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			//Make sure this user account hasn't been disabled
 			if (!user.isActive() && !MiscUtil.isSystemUserAccount( userName )) {
 				//This account is not active
 				throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
 			}
-
-			// If this authentication is from the web client for a user
-			// that's restricted from using the web client...
-			if (webClient && (!(AdminHelper.getEffectiveWebAccessSetting(adminModule, profileModule, user)))) {
-				// ...don't allow things to proceed.
-				UserAccountNotActiveException uaEx = new UserAccountNotActiveException(NLT.get("error.webAccessRestricted"));
-				uaEx.setApiErrorCode(ApiErrorCode.USERACCOUNT_WEBACCESS_BLOCKED);
-				throw uaEx;
-			}
-			
-			// Again, the user account already exists, so we can safely rule out creation situation.
-			if (updateUser & updates != null && !updates.isEmpty()) { 
-				// Updating user profile is permitted and there are some update data
-				if(authenticationServiceProvider != AuthenticationServiceProvider.LOCAL) {
-	   				// We don't want to sync ldap attributes if the user is one of the 5
-	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
-	   				// Is the user a system user account?
-	   				if ( !MiscUtil.isSystemUserAccount( userName ) )
-	   				{
-	   					// No
-	   					syncUser = true;
-	   				}					
-				}
-				else {
-					// This means one of the three.
-					// 1. internal local user
-					// 2. LDAP user authenticated against cached local data due to unreachable LDAP server
-					// 3. external user registered with Filr
-					// In all three cases, there's nothing to sync.
-					syncUser = false;
-				}
+			if (updates != null && !updates.isEmpty()) {
+   				// We don't want to sync ldap attributes if the user is one of the 5
+   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
+   				// Is the user a system user account?
+   				if ( !MiscUtil.isSystemUserAccount( userName ) )
+   				{
+   					// No
+   					syncUser = true;
+   				}
 			}
 			if (user.getWorkspaceId() == null)
 				getProfileModule().addUserWorkspace(user, null);
@@ -369,48 +181,20 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 		} 
 		catch (UserDoesNotExistException nu) {
-			// Matching user account doesn't exist in the database yet
  			if (createUser) {
-				if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
-					int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
-					if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_NEVER) {
- 						// Don't allow profile sync as we create new user account. We will only store email address.
- 						removeEverythingButEmailAddress(updates); 							
-					}
- 			 		// Make sure foreign name is identical to name.
- 					updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, userName.toLowerCase());
- 					// For external users, there's no need for separate step for synchronizing profile info
- 					// because all the information is already ready and presented to the method that creates the user.
- 					syncUser = false;
- 					// Note: This code never gets executed, because we do not allow self provisioning for OpenID user.
- 					// That is createUser will never be set to true under this situation.
- 	 				user=getProfileModule().addUserFromPortal(
- 	 						new IdentityInfo(false, false, false, true),
- 	 						userName, password, updates, null);
-				}
-				else if(AuthenticationServiceProvider.LDAP == authenticationServiceProvider ||
-							AuthenticationServiceProvider.PRE == authenticationServiceProvider) {
- 					syncUser = true;
- 	 				user=getProfileModule().addUserFromPortal(
- 	 						new IdentityInfo(true, true, false, false),
- 	 						userName, password, updates, null);
-					}
-				else {
-					throw new InternalException("Cannot create a new user account when auth service provider is " + authenticationServiceProvider.name());	
-				}
-				
+ 				user=getProfileModule().addUserFromPortal(userName, password, updates, null);
  				if(user == null)
  					throw nu;
+
+ 				syncUser = true;
  				
  				if(authenticatorName != null)
  					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
- 			}
- 			else {
- 				throw nu;
- 			}
+ 			} 
+ 			else throw nu;
 		} 
 		catch (UserAccountNotActiveException nu) {
- 			throw nu;
+ 			throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
 		} finally {
 			if (!hadSession) SessionUtil.sessionStop();			
 		}
@@ -418,141 +202,52 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		// Do we need to sync attributes from the ldap directory into Teaming for this user?
 		if ( syncUser && user != null )
 		{
-			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
-		 		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-		            	user.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
-		 		// Make sure foreign name is identical to name.
-				updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, user.getName().toLowerCase());
-		 		processor.syncEntry(user, new MapInputData(StringCheckUtil.check(updates)), null);
-			}
-			else {
-				// Yes
-				try
-				{
-					// The Teaming user name and the ldap user name may not be the same name.
-					ldapModule.syncUser( user.getName(), userName );
-				}
-				catch (NamingException ex)
-				{
-					// Nothing to do.
-				}
-			}
-		}
-		
-		// Are we running Filr and are we dealing with a user imported from ldap?
-		if ( createUser && Utils.checkIfFilr() && user.getIdentityInfo().isFromLdap() )
-		{
-			HomeDirInfo homeDirInfo;
-			
 			// Yes
 			try
 			{
-				boolean logErrors = false;
-				
-				// We only want to log errors when the client is the browser.  Otherwise, we
-				// generate too many errors in the log.
-				if ( webClient )
-				{
-					logErrors = true;
-				}
-				
-				// Does this user have a home directory attribute in ldap?
-				homeDirInfo = ldapModule.getHomeDirInfo( user.getName(), userName, logErrors );
-				if ( homeDirInfo != null )
-				{
-					// Yes
-					// Create/update the home directory net folder for this user.
-					try
-					{
-						NetFolderHelper.createHomeDirNetFolder(
-															getProfileModule(),
-															getTemplateModule(),
-															getBinderModule(),
-															getFolderModule(),
-															getAdminModule(),
-															getResourceDriverModule(),
-															getRunAsyncManager(),
-															homeDirInfo,
-															user,
-															webClient );
-					}
-					catch ( Exception ex )
-					{
-						logger.error( "Unable to create home directory net folder, server: " + homeDirInfo.getServerAddr() + " error: " + ex.toString() );
-					}
-				}
-				else
-				{
-					// We only want to delete the home dir net folder if the web client is the one
-					// making the request.
-					if ( webClient )
-					{
-						Binder netFolderBinder;
-						
-						// The user does not have a home directory attribute.
-						// Does the user already have a home dir net folder?
-						// Does a net folder already exist for this user's home directory
-						netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
-																			binderModule,
-																			user.getWorkspaceId() );
-						if ( netFolderBinder != null )
-						{
-							// Yes
-							// Delete the home net folder.
-							try
-							{
-								NetFolderHelper.deleteNetFolder( getFolderModule(), netFolderBinder.getId(), false );
-							}
-							catch ( Exception e )
-							{
-								logger.error( "Error deleting home net folder: " + netFolderBinder.getName(), e );
-							}
-						}
-					}
-				}
+				// The Teaming user name and the ldap user name may not be the same name.
+				ldapModule.syncUser( user.getName(), userName );
 			}
-			catch ( NamingException ex )
+			catch (NamingException ex)
 			{
-				logger.error( "Unable to read home directory information for user: " + user.getName() );
+				// Nothing to do.
 			}
-		}
-
-		// If still here, it means that authentication was successful.
-		// Has the user logged in before?
-		if( user.getFirstLoginDate() == null )
-		{
-			boolean setFirstLoginDate = true;
-			
-			// No
-			// Are we dealing with the admin user?
-			if ( Utils.checkIfFilr() && ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
-			{
-				// Yes
-				// Don't set the first login date.  We will set it after the admin has
-				// changed the default password.
-				setFirstLoginDate = false;
-			}
-			
-			if ( setFirstLoginDate )
-				getProfileModule().setFirstLoginDate(user.getId());
 		}
 		
 		SimpleProfiler.stop( "3x-AuthenticationManagerImpl.authenticate()" );
 		return user;
 	}
 
-	private void removeEverythingButEmailAddress(Map<String,String> updates) {
-		if(updates == null) return;
-		String emailAddress = updates.get("emailAddress");
-		updates.clear();
-		if(Validator.isNotNull(emailAddress))
-			updates.put("emailAddress", emailAddress);
+	public User authenticate(String zoneName, String username, String password,
+			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
+		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {
+		validateZone(zoneName);
+		User user=null;
+		boolean hadSession = SessionUtil.sessionActive();
+		try {
+			if (!hadSession) SessionUtil.sessionStartup();	
+			user = doAuthenticate(zoneName, username, password, passwordAutoSynch, ignorePassword);
+			if(authenticatorName != null)
+				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+		} finally {
+			if (!hadSession) SessionUtil.sessionStop();			
+		}
+		return user;
 	}
 	
-	/*
-	 * Handle authentication for all requests that didn't use OpenID. 
+	/**
+	 * 
+	 * @param zoneName
+	 * @param username
+	 * @param password
+	 * @param passwordAutoSynch
+	 * @param ignorePassword
+	 * @return
+	 * @throws PasswordDoesNotMatchException
+	 * @throws UserDoesNotExistException
+	 * @throws UserAccountNotActiveException
 	 */
-	protected User doAuthenticateUser(AuthenticationServiceProvider authenticationServiceProvider, String zoneName, String username, String password,
+	protected User doAuthenticate(String zoneName, String username, String password,
 				boolean passwordAutoSynch, boolean ignorePassword)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {
 		User user = null;
@@ -564,8 +259,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 
 			ldapGuid = null;
 			
-			if(AuthenticationServiceProvider.LOCAL != authenticationServiceProvider)
+			// Are we dealing with one of the system accounts? ie admin
+			if ( !MiscUtil.isSystemUserAccount( username ) )
 			{
+				LdapModule ldapModule;
 				Binder top;
 				Long zoneId;
 
@@ -575,7 +272,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		    	zoneId = top.getZoneId();
 
 		    	// Read this user's ldap guid from the ldap directory.
-				ldapGuid = readLdapGuidFromDirectory( username, zoneId );
+				ldapModule = getLdapModule();
+				ldapGuid = ldapModule.readLdapGuidFromDirectory( username, zoneId );
 				
 				// Did we find an ldap guid for this user?
 				if ( ldapGuid != null && ldapGuid.length() > 0 )
@@ -657,13 +355,13 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			throw new UserAccountNotActiveException("User account disabled or deleted [" 
 						+ zoneName + "," + username + "]", e);
     	}
-
+    	
     	if(password != null) {
     		if(!EncryptUtil.checkPassword(password, user)) {
 	   			// Password does not match.
 	   			if(passwordAutoSynch) {
 	   				// We don't want to sync the password if the user is one of the 5
-	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
+	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
 	   				// Is the user a system user account?
 	   				if ( !MiscUtil.isSystemUserAccount( username ) )
 	   				{
@@ -699,47 +397,12 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return user;
 	}
 
-	protected User fetchOpenidUser(String zoneName, String username) {
-		User user = null;
-		try {
-			user = getProfileDao().findUserByName(username, zoneName);
-		} catch (NoWorkspaceByTheNameException e) {
-     		if (user == null) {
-    			throw new UserDoesNotExistException("Unrecognized user [" 
-     						+ zoneName + "," + username + "]", e);
-    		}
-    	} catch (NoUserByTheNameException e) {
-			try {
-				// Try to find the user even if disabled or deleted
-				user = getProfileDao().findUserByNameDeadOrAlive( username, zoneName );				
-				throw new UserAccountNotActiveException("User account disabled or deleted [" 
-						+ zoneName + "," + username + "]", e);
-
-			} catch (NoUserByTheNameException ex) {
-				throw new UserDoesNotExistException("Unrecognized user [" 
-						+ zoneName + "," + username + "]", e);
-			}
-    	} catch (UserAccountNotActiveException e) {
-			throw new UserAccountNotActiveException("User account disabled or deleted [" 
-						+ zoneName + "," + username + "]", e);
-    	}
-    	// Only external users can use OpenID.
-		if(user.getIdentityInfo().isInternal()) {
-			// This shouldn't happen
-			logger.warn("External user with username '" + username + "' matched an internal user account with id=" + user.getId());
-			throw new UserDoesNotExistException("Unauthorized user [" 
-						+ zoneName + "," + username + "]");
-		}
-		return user;
-	}
-
 	void modifyPassword(User user, String password) {
 		Map updates = new HashMap();
 		updates.put("password", password);
-		getProfileModule().modifyUserFromPortal(user.getId(), updates, null);
+		getProfileModule().modifyUserFromPortal(user, updates, null);
 	}
 	
-	@Override
 	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
 		validateZone(zoneName);
@@ -773,32 +436,5 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	private void validateZone(String zoneName) throws ZoneException {
 		if(!zoneName.equals(RequestContextHolder.getRequestContext().getZoneName()))
 			throw new ZoneException("Authentication is permitted only against the context zone"); 
-	}
-	
-	private String readLdapGuidFromDirectory(String username, Long zoneId) {
-		String ldapGuid;
-		
-		LdapConnectionConfig ldapConnectionConfig = null;
-		
-		String ldapConnectionConfigId = (String) AuthenticationThreadLocal.get("ldapConnectionConfigId");
-		
-		if(ldapConnectionConfigId != null) {
-			try {
-				ldapConnectionConfig = (LdapConnectionConfig) getCoreDao().load(LdapConnectionConfig.class, ldapConnectionConfigId);
-			}
-			catch(Exception e) {
-				logger.warn("Error loading LDAP connection config object by ID [" + ldapConnectionConfigId + "]");
-			}
-		}
-		
-		if(ldapConnectionConfig != null) {
-			// Limit search in LDAP only to the specific LDAP source identified by this configuration object.
-			ldapGuid = ldapModule.readLdapGuidFromDirectory( username, zoneId, ldapConnectionConfig);
-		}
-		else {
-			ldapGuid = ldapModule.readLdapGuidFromDirectory( username, zoneId );
-		}
-		
-		return ldapGuid;
 	}
 }

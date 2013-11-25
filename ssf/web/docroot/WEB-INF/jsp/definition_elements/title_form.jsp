@@ -49,7 +49,7 @@
 	String caption1 = (String) request.getAttribute("property_caption");
 	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
 %>
-<c:if test="${!property_generated && !ssBinder.mirrored}">
+<c:if test="${!property_generated}">
 
 <c:if test='${ssBinderMarker}'>
  <script type="text/javascript">
@@ -97,18 +97,20 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		  <c:if test='${ssBinderMarker}'>
 		    onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'${property_name}_label', 'ss_titleCheck');"
 		  </c:if>
-		  <c:if test="${empty ssEntryTitle && !empty ssEntry && empty ssDefinitionEntry}">
-		      value="<ssf:escapeQuotes><ssf:nlt tag="reply.re.title"><ssf:param 
-		        name="value" useBody="true">${ssEntry.title}</ssf:param></ssf:nlt></ssf:escapeQuotes>"
-		  </c:if>
-		  <c:if test="${!empty ssEntryTitle}">
-		      value="<ssf:escapeQuotes><c:out value="${ssEntryTitle}"/></ssf:escapeQuotes>"
-		  </c:if>
-		  <c:if test="${empty ssEntryTitle && !empty ssDefinitionEntry.title}">
-		     value="<ssf:escapeQuotes><c:out value="${ssDefinitionEntry.title}"/></ssf:escapeQuotes>"
-		  </c:if>
-		>
-	</div>
+		 <c:if test="${empty ssDefinitionEntry.title}">
+		   <c:if test="${empty ssEntryTitle && !empty ssEntry && empty ssDefinitionEntry}">
+		     value="<ssf:escapeQuotes><ssf:nlt tag="reply.re.title"><ssf:param 
+		       name="value" useBody="true">${ssEntry.title}</ssf:param></ssf:nlt></ssf:escapeQuotes>"
+		   </c:if>
+		   <c:if test="${!empty ssEntryTitle || empty ssEntry}">
+		     value="<ssf:escapeQuotes><c:out value="${ssEntryTitle}"/></ssf:escapeQuotes>"
+		   </c:if>
+		 </c:if>
+		 <c:if test="${!empty ssDefinitionEntry.title}">
+		   value="<ssf:escapeQuotes><c:out value="${ssDefinitionEntry.title}"/></ssf:escapeQuotes>"
+		 </c:if>
+		 >
+		</div>
 <script type="text/javascript">
 function ss_validateEntryTitle(eTitle) {
 	var sTitle = ss_validateEntryTextFieldLength(eTitle.value);

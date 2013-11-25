@@ -37,7 +37,6 @@ import java.util.Set;
 import java.util.Map;
 
 import org.apache.lucene.document.Field;
-import org.kablink.util.search.FieldFactory;
 
 /**
  *
@@ -56,7 +55,7 @@ public class FieldBuilderExternalUserlist extends AbstractFieldBuilder {
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
 	        val = ((String) it.next());
-	        field = FieldFactory.createField(fieldName, val, getFieldStore(), getFieldIndex());
+	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        fields[i] = field;
         }
         

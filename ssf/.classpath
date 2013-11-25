@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
-	<classpathentry kind="src" path="samples/rest-client/src"/>
-	<classpathentry kind="src" path="rest-client/src"/>
-	<classpathentry kind="src" path="indexer-lucene/test/src"/>
 	<classpathentry kind="src" path="ssr/src"/>
 	<classpathentry kind="src" path="rest/src"/>
 	<classpathentry kind="src" path="rest-shared/src"/>
@@ -27,6 +24,7 @@
 	<classpathentry kind="src" path="ws-client/src"/>
 	<classpathentry kind="src" path="slide-webdavclient/src"/>
 	<classpathentry kind="src" path="commons-httpclient-contrib/src"/>
+	<classpathentry kind="src" path="lucene-contrib/src"/>
 	<classpathentry kind="src" path="jboss-portal/src"/>
 	<classpathentry kind="src" path="tools/src"/>
 	<classpathentry kind="src" path="ssfs/src"/>
@@ -119,7 +117,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/subethasmtp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-net.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload.jar"/>
-	<classpathentry kind="lib" path="lib/commons-compress.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-core.jar"/>
@@ -128,14 +125,10 @@
 	<classpathentry exported="true" kind="lib" path="lib/jsp-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/servlet-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/md5crypt.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/gwt-servlet-deps.jar"/>
-	<classpathentry kind="lib" path="lib/gwt-cal.jar"/>
-	<classpathentry kind="lib" path="lib/gwt-crypto.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/gwt-dnd.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/gwt-log.jar"/>
-	<classpathentry kind="lib" path="lib/lib-gwt-file.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/gwt-dev.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/gwt-user.jar"/>
+	<classpathentry kind="lib" path="lib/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javaxt-core.jar" sourcepath="/usr/local/javaxt-core/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtidy.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.springframework.aop.jar"/>
@@ -163,33 +156,11 @@
 	<classpathentry exported="true" kind="lib" path="lib/jersey-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jersey-json.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jersey-server.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/lucene-snowball.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hibernate-jpa-2.0-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hibernate-memcached.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spymemcached.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmemcached.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jersey-apache-client.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/lucene-analyzers.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jaxb-impl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/liquibase-hibernate.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/liquibase.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/milton-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/milton-servlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/groovy-all.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-config.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-web.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-xc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/lucene-queries.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/gwt-user.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/gwt-dev.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA.jar" sourcepath="tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/openid4java.jar"/>
-	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+	<classpathentry kind="lib" path="lib/commons-compress.jar"/>
+	<classpathentry kind="output" path="output"/>
 </classpath>

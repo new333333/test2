@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,7 +53,6 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -61,11 +60,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 
-/**
- * ?
- * 
- * @author ?
- */
 @SuppressWarnings("unchecked")
 public class NotifyVisitor {
 	protected Log logger = LogFactory.getLog(getClass());
@@ -160,14 +154,6 @@ public class NotifyVisitor {
 	public String getPermaLink(DefinableEntity entity) {
 		return PermaLinkUtil.getPermalinkForEmail(entity);
 	}
-	public String getInvitePermaLink(DefinableEntity entity, String encodedExternalUserId) {
-		return getPermalinkWithEncodedExternalUserId(entity, encodedExternalUserId);
-	}
-	private String getPermalinkWithEncodedExternalUserId(DefinableEntity entity, String encodedExternalUserId) {
-		String param = (ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN + "=" + encodedExternalUserId);
-		String url   = (PermaLinkUtil.getPermalinkForEmail(entity) + "&" + param);
-		return url;
-	}
 	public String getFileLink(FileAttachment attachment) {
 		return PermaLinkUtil.getFilePermalinkForEmail(attachment);
 	}
@@ -190,35 +176,27 @@ public class NotifyVisitor {
 		return result;
 	}
 	public String getUserThumbnailInlineImage(Principal p) {
+		ConvertedFileModule convertedFileModule = (ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule");
 		String s_photo = "";
 		String ext = "";
 		if (!this.notifyDef.isRedacted()) {
-			try {
-				Set photos = null;
-				CustomAttribute ca = p.getCustomAttribute("picture");
-				if (ca != null) photos = ca.getValueSet();
-				if (photos != null) {
-					FileAttachment photo = (FileAttachment)photos.iterator().next();
-					String fileName = photo.getFileItem().getName();
-					if (fileName.lastIndexOf(".") > 0) {
-						ext = fileName.substring(fileName.lastIndexOf(".")+1);
-					}
-					ByteArrayOutputStream baos = new ByteArrayOutputStream(
-							SSBlobSerializableType.OUTPUT_BYTE_ARRAY_INITIAL_SIZE);
-					ConvertedFileModule convertedFileModule = ((ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule"));
-					convertedFileModule.readThumbnailFile(p.getParentBinder(), p, photo, baos);
-					try {
-						s_photo = new String(Base64.encodeBase64(baos.toByteArray()),"utf-8");
-					} catch (UnsupportedEncodingException e) {
-						s_photo = "";
-					}
+			Set photos = null;
+			CustomAttribute ca = p.getCustomAttribute("picture");
+			if (ca != null) photos = ca.getValueSet();
+			if (photos != null) {
+				FileAttachment photo = (FileAttachment)photos.iterator().next();
+				String fileName = photo.getFileItem().getName();
+				if (fileName.lastIndexOf(".") > 0) {
+					ext = fileName.substring(fileName.lastIndexOf(".")+1);
 				}
-			}
-			
-			catch (Exception ex) {
-				NotifyBuilderUtil.logger.error("Error processing thumbnail image for '" + p.getTitle() + "' :", ex);
-				s_photo = "";
-				ext     = "";
+				ByteArrayOutputStream baos = new ByteArrayOutputStream(
+						SSBlobSerializableType.OUTPUT_BYTE_ARRAY_INITIAL_SIZE);
+				convertedFileModule.readThumbnailFile(p.getParentBinder(), p, photo, baos);
+				try {
+					s_photo = new String(Base64.encodeBase64(baos.toByteArray()),"utf-8");
+				} catch (UnsupportedEncodingException e) {
+					s_photo = "";
+				}
 			}
 		}
 		if (!s_photo.equals("") && !ext.equals("")) {
@@ -278,14 +256,5 @@ public class NotifyVisitor {
 		}
 		return result;
 	}
-	
-	public boolean isAttachmentOverQuota(FileAttachment att) {
-		boolean result =  Utils.testSendMailAttachmentSize(att);
-		return !result;
-	}
 
-	public boolean isAttachmentsOverQuota(Set<FileAttachment> atts) {
-		boolean result = Utils.testSendMailAttachmentsSize(atts);
-		return !result;
-	}
 }

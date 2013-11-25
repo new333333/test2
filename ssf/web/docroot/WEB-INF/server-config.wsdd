@@ -8,7 +8,6 @@
 		<parameter name="axis.sendMinimizedElements" value="true"/>
 		<parameter name="attachments.Directory" value="./ssf-ws/attachments"/>
 		<parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
-		<!--<parameter name="dotNetSoapEncFix" value="true"/>-->
 		<requestFlow>
 			<handler type="java:org.apache.axis.handlers.JWSHandler">
 				<parameter name="scope" value="session"/>

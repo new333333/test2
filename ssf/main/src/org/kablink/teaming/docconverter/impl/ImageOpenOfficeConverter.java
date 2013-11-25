@@ -45,14 +45,12 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.docconverter.IImageConverterManager;
 import org.kablink.teaming.docconverter.ImageConverter;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.FileStore;
@@ -89,7 +87,7 @@ public class ImageOpenOfficeConverter
 	{
 		super();
 		_defaultImage = DirPath.getThumbnailDirPath() + File.separator + "NoImage.jpeg";
-		_cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_IMAGE);
+		_cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
 	}
 	
 	public void afterPropertiesSet() throws Exception {
@@ -209,12 +207,5 @@ public class ImageOpenOfficeConverter
 			FileAttachment fa) throws UncheckedIOException,
 			RepositoryServiceException {
 		super.deleteConvertedFile(binder, entry, fa, THUMB_SUBDIR, IMG_FILE_SUFFIX);
-	}
-	
-	@Override
-	public void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry,
-			FileAttachment fa) throws UncheckedIOException,
-			RepositoryServiceException {
-		// Only used for HTML conversions.
 	}
 }

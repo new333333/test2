@@ -46,8 +46,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class GetGroupMembershipRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private List<GwtTeamingItem> m_members;
-	private int m_numMembers;	// m_numMembers may be a different value than m_members.size()
-								// because we may be retrieving only part of the entire list.
 	
 	/**
 	 * Class constructor.
@@ -57,8 +55,6 @@ public class GetGroupMembershipRpcResponseData implements IsSerializable, VibeRp
 	 */
 	public GetGroupMembershipRpcResponseData() {
 		super();
-		
-		m_numMembers = 0;
 	}
 
 	/**
@@ -77,21 +73,5 @@ public class GetGroupMembershipRpcResponseData implements IsSerializable, VibeRp
 	 */
 	public List<GwtTeamingItem> getMembers() {
 		return m_members;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getTotalNumberOfMembers()
-	{
-		return m_numMembers;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setTotalNumberOfMembers( int numMembers )
-	{
-		m_numMembers = numMembers;
 	}
 }

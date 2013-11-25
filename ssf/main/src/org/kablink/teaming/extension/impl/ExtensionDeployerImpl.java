@@ -403,7 +403,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 						SAXReader xIn = new SAXReader(false);
 						final Document document = xIn.read(template);
 						// attempt to add
-						getTemplateModule().addTemplate(null, document, true);
+						getTemplateModule().addTemplate(document, true);
 					} catch (DocumentException e) {
 						logger.warn("Malformed template file " + extension.getPath(), e);
 					}
@@ -768,7 +768,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		catch (Exception ex) {
 
 			if(ex instanceof DefinitionInvalidOperation){
-				throw (DefinitionInvalidOperation) ex;
+				throw new DefinitionInvalidOperation();
 			}
 			
 			logger.error("Error in deployer", ex);

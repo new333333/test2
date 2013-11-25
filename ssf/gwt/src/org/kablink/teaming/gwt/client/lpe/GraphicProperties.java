@@ -33,16 +33,9 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFileUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -56,7 +49,6 @@ public class GraphicProperties
 	private boolean m_showBorder;
 	private String m_graphicName;
 	private String m_graphicId;
-	private String m_binderId;
 	
 	// The following data members are used to define the width and height of the view.
 	private int m_width;
@@ -96,7 +88,6 @@ public class GraphicProperties
 			graphicProps = (GraphicProperties) props;
 			m_graphicName = graphicProps.getGraphicName();
 			m_graphicId = graphicProps.getGraphicId();
-			m_binderId = graphicProps.getBinderId();
 			m_showBorder = graphicProps.getShowBorderValue();
 			m_width = graphicProps.getWidth();
 			m_widthUnits = graphicProps.getWidthUnits();
@@ -134,6 +125,7 @@ public class GraphicProperties
 		// Has a width been set?
 		if ( m_width > 0 )
 		{
+			// Yes, add the width
 			str += ",width=" + String.valueOf( m_width );
 			if ( m_widthUnits == Style.Unit.PCT )
 				str += "%";
@@ -144,6 +136,7 @@ public class GraphicProperties
 		// Has a height been set?
 		if ( m_height > 0 )
 		{
+			// Yes, add the height
 			str += ",height=" + String.valueOf( m_height );
 			if ( m_heightUnits == Style.Unit.PCT )
 				str += "%";
@@ -162,15 +155,6 @@ public class GraphicProperties
 
 		return str;
 	}// end createConfigString()
-	
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
 	
 	
 	/**
@@ -243,15 +227,6 @@ public class GraphicProperties
 	/**
 	 * 
 	 */
-	public void setBinderId( String binderId )
-	{
-		m_binderId = binderId;
-	}
-	
-	
-	/**
-	 * 
-	 */
 	public void setGraphicId( String id )
 	{
 		m_graphicId = id;
@@ -268,46 +243,6 @@ public class GraphicProperties
 	
 	
 	/**
-	 * Get the url needed to display this image
-	 */
-	public void getGraphicUrl( final GetterCallback<String> callback )
-	{
-		GetFileUrlCmd cmd;
-		
-		cmd = new GetFileUrlCmd( m_binderId, m_graphicName );
-		
-		// Issue an ajax request to get the url needed to display the graphic.
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			public void onFailure( Throwable caught )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_GetFileUrl(),
-						getGraphicName() );
-			}
-
-			/**
-			 * 
-			 */
-			public void onSuccess( VibeRpcResponse result )
-			{
-				String url;
-				StringRpcResponseData responseData;
-
-				responseData = ((StringRpcResponseData) result.getResponseData());
-				url = responseData.getStringValue();
-				
-				// Return the url
-				callback.returnValue( url );
-			}
-		} );
-	}
-	
-	/**
 	 * 
 	 */
 	public void setHeight( int height )
@@ -315,15 +250,15 @@ public class GraphicProperties
 		m_height = height;
 	}
 	
-	/**
-	 * 
-	 */
 	public void setHeightUnits( Style.Unit units )
 	{
 		// Ignore this.  The height is always in px
 		m_heightUnits = Style.Unit.PX;
 	}
 	
+	/**
+	 * 
+	 */
 	/**
 	 * 
 	 */

@@ -65,7 +65,7 @@ public class DefaultFillEmailSubscription extends SimpleTriggerJob implements Fi
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
 		//assume old job from v1 where each changed entry registered a job
 		if (!zoneId.toString().equals(context.getTrigger().getJobName())) {
-				deleteJob(context);
+				removeJob(context);
 		} else {			
 			if (!coreDao.loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
 				logger.debug("Sending mail is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
@@ -80,7 +80,7 @@ public class DefaultFillEmailSubscription extends SimpleTriggerJob implements Fi
     }
 
 	public void remove(Long zoneId) {
-		unscheduleJob(zoneId.toString(), SUBSCRIPTION_GROUP);		
+		removeJob(zoneId.toString(), SUBSCRIPTION_GROUP);		
 	}
 	
     public void schedule(Long zoneId, Date changeDate, int minutes) {

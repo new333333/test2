@@ -100,21 +100,21 @@
   
   <div>
     <br/>
-  <span><ssf:nlt tag="license.key.uid"/>&nbsp;${ssLicenseKey}</span>
+  <span><ssf:nlt tag="license.key.uid"/> ${ssLicenseKey}</span>
     <br/>
-  <span><ssf:nlt tag="license.key.issued"/>&nbsp;${ssLicenseIssued}</span>
+  <span><ssf:nlt tag="license.key.issued"/> ${ssLicenseIssued}</span>
     <br/>
-  <span><ssf:nlt tag="license.key.issuer"/>&nbsp;${ssLicenseIssuer}</span>
-    <br/>
-    <br/>
-  <span><ssf:nlt tag="license.product.id"/>&nbsp;${ssLicenseProductID}</span>
-    <br/>
-  <span><ssf:nlt tag="license.product.title"/>&nbsp;${ssLicenseProductTitle}</span>
-    <br/>
-  <span><ssf:nlt tag="license.product.version"/>&nbsp;${ssLicenseProductVersion}</span>
+  <span><ssf:nlt tag="license.key.issuer"/> ${ssLicenseIssuer}</span>
     <br/>
     <br/>
-  <span><ssf:nlt tag="license.effective"/>&nbsp;${ssLicenseEffective}</span>
+  <span><ssf:nlt tag="license.product.id"/> ${ssLicenseProductID}</span>
+    <br/>
+  <span><ssf:nlt tag="license.product.title"/> ${ssLicenseProductTitle}</span>
+    <br/>
+  <span><ssf:nlt tag="license.product.version"/> ${ssLicenseProductVersion}</span>
+    <br/>
+    <br/>
+  <span><ssf:nlt tag="license.effective"/> ${ssLicenseEffective}</span>
     <br/>
     <br/>
 
@@ -157,16 +157,17 @@
   	</c:forEach>
   	<br/>
   </c:if>
-  <c:if test="${!empty ssLicenseContact}">
-    <span><ssf:nlt tag="license.contact"/> ${ssLicenseContact}</span>
+  <span><ssf:nlt tag="license.contact"/> ${ssLicenseContact}</span>
     <br/>
-  </c:if>
-  <hr shade=noshade size=1/>
+	<hr shade=noshade size=1/>
 	
   </div>
   </c:if>
   
   <div class="ss_style">
+    <div class="ss_license">
+	${ssLicense}
+	</div>
 <c:if test='${empty ssLicenseException}'>
   <ssf:ifLicenseExpired><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expired.warning"/></span></div></ssf:ifLicenseExpired>
   <ssf:ifLicenseExpired invert="true">

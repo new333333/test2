@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,8 +30,11 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+/*
+ * Created on Nov 16, 2004
+ *
+ */
 package org.kablink.teaming.module.profile.impl;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,14 +51,12 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.NotSupportedException;
+import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.UserExistsException;
@@ -65,8 +66,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.dao.util.FilterControls;
-import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Attachment;
@@ -82,22 +81,15 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
-import org.kablink.teaming.domain.HistoryStampBrief;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
-import org.kablink.teaming.domain.MobileDevices;
-import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.domain.NoApplicationByTheNameException;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
-import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SharedEntity;
-import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -119,44 +111,28 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
-import org.kablink.teaming.runas.RunasCallback;
-import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
+import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
-import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.ResolveIds;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
-import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.PermaLinkUtil;
-import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * ?
- * 
- * Created on Nov 16, 2004
- * 
- * @author ?
- */
+
 @SuppressWarnings("unchecked")
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
@@ -226,8 +202,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * @see org.kablink.teaming.module.binder.BinderModule#checkAccess(org.kablink.teaming.domain.Binder, java.lang.String)
 	 */
     //NO transaction
-    @Override
-	public boolean testAccess( User user, ProfileBinder binder, ProfileOperation operation)
+    public boolean testAccess( User user, ProfileBinder binder, ProfileOperation operation)
     {
 		try
 		{
@@ -246,8 +221,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * @see org.kablink.teaming.module.binder.BinderModule#checkAccess(org.kablink.teaming.domain.Binder, java.lang.String)
 	 */
     //NO transaction
-    @Override
-	public boolean testAccess(ProfileBinder binder, ProfileOperation operation) {
+    public boolean testAccess(ProfileBinder binder, ProfileOperation operation) {
 		try {
 			checkAccess(binder, operation);
 			return true;
@@ -259,7 +233,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     /**
      * 
      */
-	@Override
 	public void checkAccess( User user, ProfileBinder binder, ProfileOperation operation) throws AccessControlException
 	{
 		switch (operation)
@@ -276,8 +249,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}// end checkAccess()
 	
 	
-    @Override
-	public void checkAccess(ProfileBinder binder, ProfileOperation operation) throws AccessControlException {
+    public void checkAccess(ProfileBinder binder, ProfileOperation operation) throws AccessControlException {
 		switch (operation) {
 			case addEntry:
 		    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);
@@ -311,7 +283,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * @see org.kablink.teaming.module.profile.ProfileModule#testAccess(org.kablink.teaming.domain.Principal, java.lang.String)
 	 */
     //NO transaction
-	@Override
 	public boolean testAccess(Principal entry, ProfileOperation operation) {
 		try {
 			checkAccess(entry, operation);
@@ -320,7 +291,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return false;
 		}
 	}
-	@Override
 	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException {
 		switch (operation) {
 			case modifyEntry:
@@ -350,7 +320,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	/**
 	 * Determine if the Guest user has "create entry" rights to the profile binder.
 	 */
-	@Override
 	public boolean doesGuestUserHaveAddRightsToProfileBinder()
 	{
 		ProfileBinder	profileBinder;
@@ -399,7 +368,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	/**
 	 * Return the guest user object.
 	 */
-	@Override
 	public User getGuestUser()
 	{
 		ProfileDao	profileDao;
@@ -414,40 +382,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}// end getGuestUser()
 	
 	
-	private Group getGroup(Long groupId, boolean modify) {
-  		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		Group group = getProfileDao().loadGroup(groupId, currentUser.getZoneId());
-		if (modify) AccessUtils.modifyCheck(group);
-		else AccessUtils.readCheck(group);
-		return group;
-	}
-	
-	private User getUser(Long userId, boolean modify, boolean checkActive) {
+	private User getUser(Long userId, boolean modify) {
   		User currentUser = RequestContextHolder.getRequestContext().getUser();
    		User user;
 		if (userId == null) user = currentUser;
 		else if (userId.equals(currentUser.getId())) user = currentUser;
 		else {
-			if (checkActive)
-			     user = getProfileDao().loadUser(           userId, currentUser.getZoneId());
-			else user = getProfileDao().loadUserDeadOrAlive(userId, currentUser.getZoneId());
+			user = getProfileDao().loadUser(userId, currentUser.getZoneId());
 			if (modify) AccessUtils.modifyCheck(user);
 			else AccessUtils.readCheck(user);
 		}
 		return user;		
-	}
-	private User getUser(Long userId, boolean modify) {
-		return getUser(userId, modify, true);
-	}
-	private UserPrincipal getUserPrincipal(Long prinId, boolean modify, boolean checkActive) {
-   		UserPrincipal up = getProfileDao().loadUserPrincipal(prinId, RequestContextHolder.getRequestContext().getZoneId(), checkActive);
-  		User currentUser = RequestContextHolder.getRequestContext().getUser();
-  		if (!(currentUser.getId().equals(up.getId()))) {
-			if (modify)
-			     AccessUtils.modifyCheck(up);
-			else AccessUtils.readCheck(  up);
-  		}
-		return up;		
 	}
 	private UserProperties getProperties(User user, Long binderId) {
 		UserProperties uProps=null;
@@ -473,29 +418,22 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			if(sc != null) {
 				uProps = (UserProperties)sc.getProperty(key);
 				if (uProps == null) {
-					//Start with an empty set of properties for this guest user session
-					UserProperties gProps = new UserProperties(user.getId());
+					//load any saved props
+					UserProperties gProps = getProfileDao().loadUserProperties(user.getId());
 					uProps = new GuestProperties(gProps);
 					RequestContextHolder.getRequestContext().getSessionContext().setProperty(key, uProps);				
 				}
 			}
 			else {
 				// For whatever reason, there is no session context for the user
-				UserProperties gProps = new UserProperties(user.getId());
-				uProps = new GuestProperties(gProps);
+				uProps = getProfileDao().loadUserProperties(user.getId());
 			}
 		} else {
-			uProps = getPrincipalProperties(user.getId());
+			uProps = getProfileDao().loadUserProperties(user.getId());
 		}
 		return uProps;
 	}
-	
-	private UserProperties getPrincipalProperties(Long principalId) {
-		return getProfileDao().loadUserProperties(principalId);
-	}
-	
 	//RO transaction
-	@Override
 	public ProfileBinder getProfileBinder() {
 	   ProfileBinder binder = loadProfileBinder();
 		// Check if the user has "read" access to the folder.
@@ -503,13 +441,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   return binder;
     }
 	//RO transaction
-	@Override
 	public Long getProfileBinderId() {
 	   return loadProfileBinder().getId();
     }
 
 	//RO transaction
-	@Override
 	public Map<String, Definition> getProfileBinderEntryDefsAsMap() {
 	   ProfileBinder binder = loadProfileBinder();
 	   try {
@@ -520,37 +456,32 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   return DefinitionHelper.getEntryDefsAsMap(binder);
     }
 
-    @Override
-	public Long getEntryWorkspaceId(Long principalId) {
+    public Long getEntryWorkspaceId(Long principalId) {
         Principal p = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);              
         return  p.getWorkspaceId();
     }
     
-	@Override
 	public List reindexPersonalUserOwnedBinders(Set<Principal> userIds) {
     	List<Long> binderIds = new ArrayList<Long>();
     	if (userIds == null) return binderIds;
     	binderIds = getProfileDao().getOwnedBinders(userIds);
     	
     	//Limit this list to binders under the Profiles binder
-    	@SuppressWarnings("unused")
-		Long profileBinderId = getProfileBinderId();
-    	//Get sub-binder list including intermediate binders that may be inaccessible
-    	Set<Binder> binders = getBinderModule().getBinders(binderIds, Boolean.FALSE);
+    	Long profileBinderId = getProfileBinderId();
+    	Set<Binder> binders = getBinderModule().getBinders(binderIds);
     	for (Binder b : binders) {
     		if (!Utils.isWorkareaInProfilesTree(b)) binderIds.remove(b.getId());  //Remove any binder not under the profiles binder
     	}
     	
     	// Create background job to reindex the list of binders
     	User user = RequestContextHolder.getRequestContext().getUser();
-    	String className = SPropsUtil.getString("job.binder.reindex.class", "org.kablink.teaming.jobs.DefaultBinderReindex");
-		BinderReindex job = (BinderReindex)ReflectHelper.getInstance(className);
-		job.scheduleNonBlocking(binderIds, user, false); 
+		BinderReindex job=null;
+		if (job == null) job = (BinderReindex)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultBinderReindex.class);
+		job.schedule(binderIds, user); 
     	return binderIds;
     }
 
     //RW transaction
-	@Override
 	public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value) {
    		User user = getUser(userId, true);
 		UserProperties uProps=getProperties(user, binderId);
@@ -563,7 +494,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		return uProps;
    }
     //RW transaction
-	@Override
 	public UserProperties setUserProperties(Long userId, Long binderId, Map<String, Object> values) {
    		User user = getUser(userId, true);
 		UserProperties uProps=getProperties(user, binderId);
@@ -581,15 +511,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	   
 	//RO transaction
-   @Override
-public UserProperties getUserProperties(Long userId, Long binderId) {
+   public UserProperties getUserProperties(Long userId, Long binderId) {
   		User user = getUser(userId, false);
 		return getProperties(user, binderId);
    }
 
    //RW transaction
-   @Override
-public UserProperties setUserProperty(Long userId, String property, Object value) {
+   public UserProperties setUserProperty(Long userId, String property, Object value) {
  		User user = getUser(userId, true);
 		UserProperties uProps = getProperties(user);
 		uProps.setProperty(property, value); 	
@@ -601,8 +529,7 @@ public UserProperties setUserProperty(Long userId, String property, Object value
 		return uProps;
     }
    //RW transaction
-   @Override
-public UserProperties setUserProperties(Long userId, Map<String, Object> values) {
+   public UserProperties setUserProperties(Long userId, Map<String, Object> values) {
 		User user = getUser(userId, true);
 		UserProperties uProps = getProperties(user);
 		UserProperties gProps = null;
@@ -618,54 +545,25 @@ public UserProperties setUserProperties(Long userId, Map<String, Object> values)
 	  
    }
 	//RO transaction
-   @Override
-public UserProperties getUserProperties(Long userId) {
+   public UserProperties getUserProperties(Long userId) {
 		User user = getUser(userId, false);
 		return getProperties(user);
    }
-   
-   //RW transaction
-   @Override
-public UserProperties setGroupProperty(Long groupId, String property, Object value) {
- 		getGroup(groupId, true);	// Validates access controls.
-		UserProperties uProps = getPrincipalProperties(groupId);
-		uProps.setProperty(property, value); 	
-		return uProps;
-    }
-   //RW transaction
-   @Override
-public UserProperties setGroupProperties(Long groupId, Map<String, Object> values) {
-		getGroup(groupId, true);	// Validates access controls.
-		UserProperties uProps = getPrincipalProperties(groupId);
-		for (Map.Entry<String, Object> me: values.entrySet()) {
- 			uProps.setProperty(me.getKey(), me.getValue()); 
- 		}
-		return uProps;
-	  
-   }
-	//RO transaction
-   @Override
-public UserProperties getGroupProperties(Long groupId) {
-		return getPrincipalProperties(groupId);
-   }
  	//RO transaction
-   @Override
-public SeenMap getUserSeenMap(Long userId) {
+   public SeenMap getUserSeenMap(Long userId) {
 		User user = getUser(userId, false);
 		if (user.isShared()) return new SharedSeenMap(user.getId());
  		return getProfileDao().loadSeenMap(user.getId());
    }
    //RW transaction
-   @Override
-public void setSeen(Long userId, Entry entry) {
+   public void setSeen(Long userId, Entry entry) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
 		SeenMap seen = getProfileDao().loadSeenMap(user.getId());
 		seen.setSeen(entry);
   }
    //RW transaction
-   @Override
-public void setSeen(Long userId, Collection<Entry> entries) {
+   public void setSeen(Long userId, Collection<Entry> entries) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
 		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
@@ -673,8 +571,7 @@ public void setSeen(Long userId, Collection<Entry> entries) {
 			seen.setSeen(reply);
 		}
   }  	
-   @Override
-public void setSeenIds(Long userId, Collection<Long> entryIds) {
+   public void setSeenIds(Long userId, Collection<Long> entryIds) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
 		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
@@ -684,8 +581,7 @@ public void setSeenIds(Long userId, Collection<Long> entryIds) {
   }  	
 
    //RW transaction
-   @Override
-public void setUnseen(Long userId, Collection<Long> entryIds) {
+   public void setUnseen(Long userId, Collection<Long> entryIds) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
 		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
@@ -695,46 +591,39 @@ public void setUnseen(Long userId, Collection<Long> entryIds) {
    }  	
 
    //RW transaction
-   @Override
-public void setStatus(String status) {
+   public void setStatus(String status) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setStatus(status);
    }  	
    //RW transaction
-   @Override
-public void setStatusDate(Date statusDate) {
+   public void setStatusDate(Date statusDate) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setStatusDate(statusDate);
    }  
 
    //RW transaction
-   @Override
-public void setDiskQuota(long megabytes) {
+   public void setDiskQuota(long megabytes) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setDiskQuota(megabytes);
    }  
 
    //RW transaction
-   @Override
-public void resetDiskUsage() {
+   public void resetDiskUsage() {
 	   getProfileDao().resetDiskUsage(RequestContextHolder.getRequestContext().getZoneId());
    }  
    
    //RO transaction
-   @Override
-public long getDiskQuota() {
+   public long getDiskQuota() {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    return user.getDiskQuota();
    } 
    
-   @Override
-public long getMaxUserQuota() {
+   public long getMaxUserQuota() {
 	   Long userId = RequestContextHolder.getRequestContext().getUserId();
 	   return getMaxUserQuota(userId);
    }
 
-   @Override
-public long getMaxUserQuota(Long userId) {
+   public long getMaxUserQuota(Long userId) {
 		// first check properties to see if quotas are enabled on this system
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
 				RequestContextHolder.getRequestContext().getZoneId());
@@ -757,8 +646,7 @@ public long getMaxUserQuota(Long userId) {
 	}
    
    // RW transaction
-   @Override
-public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
+   public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 		//Set each users individual quota
      	for (Long id : userIds) {
 			User user = (User)getProfileDao().loadUserDeadOrAlive(id, RequestContextHolder.getRequestContext().getZoneId());
@@ -766,10 +654,9 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
      	}
 	}
    
-    //RW transaction
+	//RW transaction
 	//Called when adding users to a group
-	@Override
-	public void setUserGroupDiskQuotas(Collection<Long> userIds, Group group) {
+    public void setUserGroupDiskQuotas(Collection<Long> userIds, Group group) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Long newDiskQuota = group.getDiskQuota();
 		List userList = getProfileDao().loadUserPrincipals(userIds, zoneId, false);
@@ -788,10 +675,9 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 			}
 		}
 	}
-	   
+   
 	//Called when deleting users from a group
-    @Override
-	public void deleteUserGroupDiskQuotas(Collection<Long> userIds, Group group) {
+    public void deleteUserGroupDiskQuotas(Collection<Long> userIds, Group group) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Long newDiskQuota = group.getDiskQuota();
 		List userList = getProfileDao().loadUserPrincipals(userIds, zoneId, false);
@@ -805,7 +691,7 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 				
 				//If the new value is less than or equal to what the user had, we must recalculate the quota
 				if (currentUserMaxGroupDiskQuota <= newDiskQuota) {
-					Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
+					Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
 					List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
 					Long maxGroupQuota = 0L;
 					for (Group g : groups) {
@@ -816,9 +702,8 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 			}
 		}
 	}
-
-    @Override
-	public void setGroupDiskQuotas(Collection<Long> groupIds, long newQuotaMegabytes) {
+    
+    public void setGroupDiskQuotas(Collection<Long> groupIds, long newQuotaMegabytes) {
 		// iterate through the members of a group - set each members max group quota to the 
 	    // maximum value of all the groups they're a member of.
 	   Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -850,7 +735,7 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 							//  then we have to calculate the new maximum
 							} else if (currentUserMaxGroupQuota <= originalGroupQuota &&
 									newQuotaMegabytes < originalGroupQuota) {
-								Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
+								Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
 								List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
 								Long maxGroupQuota = 0L;
 								for (Group g : groups) {
@@ -866,8 +751,7 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 	}
    
    // RW transaction
-   @Override
-public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) {
+   public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) {
 		//Set each users individual quota
      	for (Long id : userIds) {
 			User user = (User)getProfileDao().loadUserDeadOrAlive(id, RequestContextHolder.getRequestContext().getZoneId());
@@ -877,8 +761,7 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
    
 	//RW transaction
 	//Called when adding users to a group
-	@Override
-	public void setUserGroupFileSizeLimits(Collection<Long> userIds, Group group) {
+    public void setUserGroupFileSizeLimits(Collection<Long> userIds, Group group) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Long newFileSizeLimit = group.getFileSizeLimit();	//can be null
 		List userList = getProfileDao().loadUserPrincipals(userIds, zoneId, false);
@@ -901,7 +784,6 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 	}
 	
 	//Called when removing users from a group
-	@Override
 	public void deleteUserGroupFileSizeLimits(Collection<Long> userIds, Group group) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Long newFileSizeLimit = group.getFileSizeLimit();	//can be null
@@ -918,7 +800,7 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 				//  then we must recalculate the limit
 				if (newFileSizeLimit != null && currentUserMaxGroupFileSizeLimit != null && 
 						newFileSizeLimit >= currentUserMaxGroupFileSizeLimit) {
-					Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
+					Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
 					List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
 					Long maxGroupFileSizeLimit = 0L;
 					for (Group g : groups) {
@@ -936,7 +818,6 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 		}
 	}
 	
-	@Override
 	public void setGroupFileSizeLimits(Collection<Long> groupIds, Long newFileSizeLimit) {
 		// iterate through the members of a group - set each member's max file size limit to the 
 	    // maximum value of all the groups they're a member of.
@@ -971,7 +852,7 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 						} else if (originalFileSizeLimit != null && 
 								currentUserMaxGroupFileSizeLimit <= originalFileSizeLimit &&
 								(newFileSizeLimit == null || newFileSizeLimit < originalFileSizeLimit)) {
-							Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
+							Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
 							List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
 							Long maxGroupFileSizeLimit = 0L;
 							for (Group g : groups) {
@@ -992,21 +873,18 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 	}
    
    // This returns a list of all disabled user account ids 
-   @Override
-public List<Long> getDisabledUserAccounts() {
+   public List<Long> getDisabledUserAccounts() {
 	   return getProfileDao().getDisabledUserAccounts(RequestContextHolder.getRequestContext().getZoneId());
    }
    
    // this returns non-zero quotas (any quota which has been set by the admin)
-   @Override
-public List getNonDefaultQuotas(String type) {
+   public List getNonDefaultQuotas(String type) {
 	   return getProfileDao().getNonDefaultQuotas(type,
 				RequestContextHolder.getRequestContext().getZoneId());
    }
    
    // this returns non-zero file size limits (any limit which has been set by the admin)
-   @Override
-public List getNonDefaultFileSizeLimits(String type) {
+   public List getNonDefaultFileSizeLimits(String type) {
 	   return getProfileDao().getNonDefaultFileSizeLimits(type,
 				RequestContextHolder.getRequestContext().getZoneId());
    }
@@ -1024,14 +902,12 @@ public List getNonDefaultFileSizeLimits(String type) {
 		user.setMaxGroupsQuota(maxGroupsQuota);
 	}
 
-   @Override
-public boolean isDiskQuotaExceeded() {
+   public boolean isDiskQuotaExceeded() {
 	   if (checkDiskQuota() == ObjectKeys.DISKQUOTA_EXCEEDED) return true;
 	   else return false;
    }
    
-   @Override
-public boolean isDiskQuotaHighWaterMarkExceeded() {
+   public boolean isDiskQuotaHighWaterMarkExceeded() {
 	   if (checkDiskQuota() == ObjectKeys.DISKQUOTA_HIGHWATERMARK_EXCEEDED) return true;
 	   else return false;
    }
@@ -1069,54 +945,28 @@ public boolean isDiskQuotaHighWaterMarkExceeded() {
    }
    
    // RO transaction
-   @Override
-public Group getGroup(String name) {
+   public Group getGroup(String name) {
 	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
 	  if (!(p instanceof Group)) throw new NoGroupByTheNameException(name);
 	  checkReadAccess(p);			
 	  return (Group)p;
    }
 	//RO transaction
-   @Override
-public Map getGroups() {
+   public Map getGroups() {
 	   Map options = new HashMap();
 	   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
 	   return getGroups(options);
    }
-
-   /**
-	 * Return a list of groups that meet the given filter
-	*/
-   //RO transaction
-   @Override
-   public List<Group> getGroups( GroupSelectSpec groupSelectSpec )
-   {
-	   List<Group> listOfGroups;
-
-	   listOfGroups = getProfileDao().findGroups( groupSelectSpec );
-	   
-	   return listOfGroups;
-   }
-   
-   //RO transaction
-   @Override
-   public List<Group> getLdapContainerGroups() {
-	   return getProfileDao().loadLdapContainerGroups(RequestContextHolder.getRequestContext().getZoneId());
-   }
-
+ 
 	//RO transaction
-   @Override
-public Map getGroups(Map options) {
+   public Map getGroups(Map options) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
-		options.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, groupDocType, options);        
     }
 	//RO transaction
-	@Override
 	public SortedSet<Group> getGroups(Collection<Long> entryIds) {
 		//does read access check
-		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -1126,12 +976,10 @@ public Map getGroups(Map options) {
 	}
 	
 	//RO transaction
-	@Override
 	public Principal getEntry(String name) {
 		return getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	//RO transaction
-	@Override
 	public Principal getEntry(Long principalId) {
         Principal p = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);              
 		//give users read access to their own entry
@@ -1140,10 +988,8 @@ public Map getGroups(Map options) {
         return p;
     }
 
-	@Override
 	public SortedSet<Principal> getPrincipals(Collection<Long> ids) {
 		//does read access check
-		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
  	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -1153,12 +999,12 @@ public Map getGroups(Map options) {
 	}
     
     //***********************************************************************************************************	
-	@Override
 	public IndexErrors indexEntry(Principal entry) {
         ProfileCoreProcessor processor=loadProcessor((ProfileBinder)entry.getParentBinder());
         return processor.indexEntry(entry);
 	}
 
+	
 	/**
 	 * Index all of the entries found in the given Collection
 	 * @param entries
@@ -1173,15 +1019,14 @@ public Map getGroups(Map options) {
         return processor.indexEntries( entries );
 	}
 
+
     //NO transaction
-    @Override
-	public void modifyEntry(Long id, InputDataAccessor inputData) 
+    public void modifyEntry(Long id, InputDataAccessor inputData) 
 	throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	modifyEntry(id, inputData, null, null, null, null);
     }
     //NO transaction
-   @Override
-public void modifyEntry(Long entryId, InputDataAccessor inputData, 
+   public void modifyEntry(Long entryId, InputDataAccessor inputData, 
 		   Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
    		throws AccessControlException, WriteFilesException, WriteEntryDataException {
 	   Principal entry = getProfileDao().loadPrincipal(entryId, RequestContextHolder.getRequestContext().getZoneId(), false);              
@@ -1209,8 +1054,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
       }
 
    //NO transaction
-    @Override
-	public void addEntries(Document doc, Map options) {
+    public void addEntries(Document doc, Map options) {
        ProfileBinder binder = loadProfileBinder();
        checkAccess(binder, ProfileOperation.manageEntries);
        //process the document
@@ -1220,8 +1064,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
        List<String> deleteNames = new ArrayList();
 	   Definition defaultUserDef = binder.getDefaultEntryDef();		
 	   if (defaultUserDef == null) {
-		   // This user object is only used temporarily, so it doesn't really matter which identity source we set it to.
-		   User temp = new User(new IdentityInfo());
+		   User temp = new User();
 		   getDefinitionModule().setDefaultEntryDefinition(temp);
 		   defaultUserDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 	   }
@@ -1303,7 +1146,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
     	   }
        }
 
-	   Group temp = new Group(new IdentityInfo());
+	   Group temp = new Group();
 	   getDefinitionModule().setDefaultEntryDefinition(temp);
 	   Definition defaultGroupDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
    	   addEntries(groupList, Group.class, binder, defaultGroupDef, options);  	   
@@ -1311,8 +1154,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
   	//no transaction
     private void deleteEntries(final ProfileBinder binder, final Collection<Principal> entries, final Map options) {
 		getTransactionTemplate().execute(new TransactionCallback() {
-        	@Override
-			public Object doInTransaction(TransactionStatus status) {
+        	public Object doInTransaction(TransactionStatus status) {
         		   try {
         			   for (Principal p:entries) {
         				   deleteEntry(p.getId(), options);
@@ -1389,8 +1231,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
 							logger.info("'" + iter.next() + "'");
 						}
 					}
-					// In this call context, we're simply assuming that we're creating internal local principals (is it safe?) 
-					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()), options, null, new IdentityInfo());
+					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()), options, null);
 					//processor commits entries - so update indexnow
 					IndexSynchronizationManager.applyChanges();
 					//flush from cache
@@ -1403,8 +1244,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
   	   }
     }
     //NO transaction
-    @Override
-	public Workspace addUserWorkspace(User entry, Map options) throws AccessControlException {
+    public Workspace addUserWorkspace(User entry, Map options) throws AccessControlException {
         if (entry.getWorkspaceId() != null) {
         	try {
         		return (Workspace)getCoreDao().loadBinder(entry.getWorkspaceId(), entry.getZoneId()); 
@@ -1420,14 +1260,8 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
   					!ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(entry.getInternalId()) &&
-  					!ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
-  				List templates;
-  				if (!entry.getIdentityInfo().isInternal()) {
-  					templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.EXTERNAL_USER_WORKSPACE_VIEW);
-  				} else {
-  					templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
-  				}
+  				List templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
 
   				if (!templates.isEmpty()) {
   					//	pick the first
@@ -1439,12 +1273,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
   			if (ws == null) {
   				//just load a workspace without all the stuff underneath
   				//processor handles transaction
-  				Definition userDef;
-  				if (!entry.getIdentityInfo().isInternal()) {
-  					userDef = getDefinitionModule().addDefaultDefinition(Definition.EXTERNAL_USER_WORKSPACE_VIEW);
-  				} else {
-  					userDef = getDefinitionModule().addDefaultDefinition(Definition.USER_WORKSPACE_VIEW);
-  				}
+  				Definition userDef = getDefinitionModule().addDefaultDefinition(Definition.USER_WORKSPACE_VIEW);
   				ProfileCoreProcessor processor=loadProcessor((ProfileBinder)entry.getParentBinder());
   				Map updates = new HashMap();
   				updates.put(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
@@ -1469,8 +1298,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
 
 
     //RW transaction
-    @Override
-	public Folder addUserMiniBlog(User entry) throws AccessControlException {
+    public Folder addUserMiniBlog(User entry) throws AccessControlException {
         if (entry.getMiniBlogId() != null) {
         	try {
         		Folder miniblog = (Folder)getCoreDao().loadBinder(entry.getMiniBlogId(), entry.getZoneId()); 
@@ -1489,7 +1317,6 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
   					!ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(entry.getInternalId()) &&
-  					!ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
 				TemplateBinder miniblogTemplate = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MINIBLOG);
 				if (miniblogTemplate != null) {
@@ -1559,8 +1386,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
    }
 
    //RW transaction
-   @Override
-public Folder setUserMiniBlog(User entry, Long folderId) throws AccessControlException {
+   public Folder setUserMiniBlog(User entry, Long folderId) throws AccessControlException {
 		Folder miniBlog = null;
 		
 		entry.setMiniBlogId(folderId);
@@ -1571,8 +1397,7 @@ public Folder setUserMiniBlog(User entry, Long folderId) throws AccessControlExc
    }
 
    //RW transaction
-   @Override
-public void disableEntry(Long principalId, boolean disabled) {
+   public void disableEntry(Long principalId, boolean disabled) {
        Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
        checkAccess(entry, ProfileOperation.deleteEntry);
        if (entry.isReserved()) {
@@ -1582,15 +1407,11 @@ public void disableEntry(Long principalId, boolean disabled) {
 	   processor.disableEntry(entry, disabled);
    }
    //RW transaction
-   @Override
-public void deleteEntry(Long principalId, Map options) {
+   public void deleteEntry(Long principalId, Map options) {
 	   deleteEntry(principalId, options, false);
    }
    //RW transaction
-   @Override
-public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
-	   boolean delMirroredFolderSource = (!(Utils.checkIfFilr()));	// Only delete mirrored source by default if not Filr.
-	   
+   public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
         Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
         checkAccess(entry, ProfileOperation.deleteEntry);
        	if (entry.isReserved()) 
@@ -1599,35 +1420,27 @@ public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
         ProfileCoreProcessor processor=loadProcessor(binder);
        	processor.deleteEntry(binder, entry, true, options); 
        	boolean delWs = Boolean.FALSE;
-       	if (options != null )
-       	{
-       		if ( options.containsKey(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE) )
-       			delWs = (Boolean)options.get(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE);
-       		
-       		if ( options.containsKey( ObjectKeys.INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE ) )
-       			delMirroredFolderSource = (Boolean) options.get( ObjectKeys.INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE );
+       	if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE)) {
+       		delWs = (Boolean)options.get(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE);
        	}
-       	
        	if (Boolean.TRUE.equals(delWs) && (entry instanceof User)) {
         	//delete workspace
         	User u = (User)entry;
         	Long wsId = u.getWorkspaceId();
         	if (wsId != null) {
         		try {
-        			getBinderModule().deleteBinder(wsId, delMirroredFolderSource, options, phase1Only);
+        			getBinderModule().deleteBinder(wsId, true, options, phase1Only);
         			u.setWorkspaceId(null);       		
         		} catch (Exception ue) {}    
         	}
         }
      }
    // no transaction
-	@Override
 	public void deleteEntryFinish() {
 		getBinderModule().deleteBinderFinish();
 	}
     //RO transaction
-    @Override
-	public User getUser(String name) {
+    public User getUser(String name) {
  	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
  	  if (!(p instanceof User)) throw new NoUserByTheNameException(name);
  	  return (User)p;
@@ -1640,8 +1453,7 @@ public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
      * @return
      */
     //RO transaction
-    @Override
-	public User getUserDeadOrAlive( String name )
+    public User getUserDeadOrAlive( String name )
     {
  	  Principal principal;
  	  
@@ -1651,64 +1463,32 @@ public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
  	  
  	  return (User)principal;
     }
-    
-    
-    /**
-     * Get user by id even deleted or disabled users.
-     * @param name
-     * @return
-     */
-    //RO transaction
-    @Override
-	public User getUserDeadOrAlive( Long userId )
-    {
- 	  Principal principal;
-
- 	  principal = getProfileDao().loadUserPrincipal(
- 			  									userId,
- 			  									RequestContextHolder.getRequestContext().getZoneId(),
- 			  									false );
-
- 	  if ( !(principal instanceof User) )
- 		  throw new NoUserByTheIdException( userId );
- 	  
- 	  return (User) principal;
-    }
-    
-    
 
     //RO transaction
-   @Override
-public Map getUsers() {
+   public Map getUsers() {
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
     	return getUsers(options);
     }
 	//RO transaction
-    @Override
-	public Map getUsers(Map options) {
+    public Map getUsers(Map options) {
 		//does read check
 		ProfileBinder binder = getProfileBinder();
-		options.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, userDocType, options);
         
    }
 	//RO transaction 
-	@Override
 	public SortedSet<User> getUsers(Collection<Long> entryIds) {
-		//does read check on Profiles binder
+		//does read check
+		ProfileBinder profile = getProfileBinder();
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<User> result = new TreeSet(c);
-       	try {
-			ProfileBinder profile = getProfileBinder();
-	       	result.addAll(getProfileDao().loadUsers(entryIds, profile.getZoneId()));
-       	} catch(AccessControlException ace) {}
+       	result.addAll(getProfileDao().loadUsers(entryIds, profile.getZoneId()));
  		return result;
 	}
 	  
 	//RO transaction
-	@Override
 	public SortedSet<User> getUsersFromPrincipals(Collection<Long> principalIds) {
 		//does read check
 		ProfileBinder profile = getProfileBinder();
@@ -1716,26 +1496,18 @@ public Map getUsers() {
 		return getUsers(ids);
 	}
 
-	@Override
 	public User findUserByName(String username)  throws NoUserByTheNameException {
 		return getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneId());
-	}
-	
-	@Override
-	public User getReservedUser(String internalId) throws NoUserByTheNameException {
-		return getProfileDao().getReservedUser(internalId, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
 	/**
 	 * Find the User with the given ldap guid
 	 */
-	@Override
 	public User findUserByLdapGuid( String ldapGuid )  throws NoUserByTheNameException
 	{
 		return getProfileDao().findUserByLdapGuid( ldapGuid, RequestContextHolder.getRequestContext().getZoneId() );
 	}// end findUserByLdapGuid()
 	
-	@Override
 	public Collection<Principal> getPrincipalsByName(Collection<String> names) throws AccessControlException {
 		Map params = new HashMap();
 		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
@@ -1751,14 +1523,12 @@ public Map getUsers() {
 			this.source = source;
 			this.fieldsOnly = false;
 		}
-		@Override
 		public String getSingleValue(String key) {
 			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 			if (result == null) return null;
 			else return result.getTextTrim();
 		}
 
-		@Override
 		public String[] getValues(String key) {
 			List<Element> result = source.selectNodes("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 			if ((result == null) || result.isEmpty()) return null;
@@ -1769,57 +1539,47 @@ public Map getUsers() {
 			return resultVals;
 		}
 
-		@Override
 		public Date getDateValue(String key) {
 			return DateHelper.getDateFromInput(this, key);
 		}
 
-		@Override
 		public Event getEventValue(String key, boolean hasDuration, boolean hasRecurrence)
 		{
 			return EventHelper.getEventFromMap(this, key, hasDuration, hasRecurrence);
 		}
 
-		@Override
 		public Survey getSurveyValue(String key)
 		{
 			return new Survey(key);
 		}
 		
-		@Override
 		public Description getDescriptionValue(String key) {
 			return new Description(getSingleValue(key));
 		}
 
-		@Override
 		public boolean exists(String key) {
 			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 			if (result == null) return false;
 			return true;
 		}
 
-		@Override
 		public Object getSingleObject(String key) {
 			return (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 		}
-		@Override
 		public int getCount() {
 			return source.nodeCount();
 		}
 
-		@Override
 		public void setFieldsOnly(Boolean fieldsOnly) {
 			this.fieldsOnly = fieldsOnly;
 		}
-		@Override
 		public boolean isFieldsOnly() {
 			return this.fieldsOnly;
 		}
 	}
 	
     //NO transaction
-	@Override
-	public User addUserFromPortal(IdentityInfo identityInfo, String userName, String password, Map updates, Map options) {
+	public User addUserFromPortal(String userName, String password, Map updates, Map options) {
 		if(updates == null)
 			updates = new HashMap();
 		
@@ -1846,8 +1606,7 @@ public Map getUsers() {
 			if (userDef == null) userDef = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_ENTRY_VIEW);
 			List<InputDataAccessor>accessors = new ArrayList();
 			accessors.add(new MapInputData(newUpdates));
-		
-			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors, options, null, identityInfo).get(0);
+			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors, options, null).get(0);
 			// flush user before adding workspace
 			IndexSynchronizationManager.applyChanges();
 			
@@ -1862,11 +1621,9 @@ public Map getUsers() {
 	}
 
     //No transaction
-	@Override
-	public void modifyUserFromPortal(Long userId, Map updates, Map options) {
+	public void modifyUserFromPortal(User user, Map updates, Map options) {
 		if (updates == null)
 			return; // nothing to update with
-		User user = getProfileDao().loadUser(userId, (Long) null);
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(user).resolve();
 		try {
@@ -1886,88 +1643,33 @@ public Map getUsers() {
 			RequestContextHolder.setRequestContext(oldCtx);				
 		};
 	}
-
-    @Override
-	public User findOrAddExternalUser(final String emailAddress) {
-        User user;
-        try
-        {
-            // Does a Vibe account exist with the given name?
-            user = getUser( emailAddress );
-        }
-        catch ( Exception ex )
-        {
-            RunasCallback callback;
-
-            // If we get here a Vibe account does not exist for the given external user.
-            // Create one.
-            callback = new RunasCallback()
-            {
-                @Override
-                public Object doAs()
-                {
-                    HashMap updates;
-                    User user;
-
-                    updates = new HashMap();
-                    updates.put( ObjectKeys.FIELD_USER_EMAIL, emailAddress );
-                    updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, emailAddress );
-                    updates.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, User.ExtProvState.initial );
-                    // Do NOT set the "fromOpenid" bit on initially. We will set it when the user actually
-                    // logs in and binds a valid OpenID account with the email address specified during sharing.
-                    user = addUserFromPortal(
-                            new IdentityInfo(false, false, false, false),
-                            emailAddress,
-                            null,
-                            updates,
-                            null );
-
-                    return user;
-                }
-            };
-
-            user = (User) RunasTemplate.runasAdmin(
-                    callback,
-                    RequestContextHolder.getRequestContext().getZoneName());
-        }
-        return user;
-    }
-
 	protected class SharedSeenMap extends SeenMap {
 		public SharedSeenMap(Long principalId) {
 			super(principalId);
 		}
-	    @Override
-		public void setSeen(Entry entry) {	    	
+	    public void setSeen(Entry entry) {	    	
 	    }
-	    @Override
-		public void setSeen(FolderEntry entry) {
+	    public void setSeen(FolderEntry entry) {
 	    }
-	    @Override
-		public boolean checkIfSeen(FolderEntry entry) {
+	    public boolean checkIfSeen(FolderEntry entry) {
 	    	return true;
 	    }
-		@Override
 		protected boolean checkAndSetSeen(FolderEntry entry, boolean setIt) {
 			return true;
 		}
-		@Override
 		public boolean checkAndSetSeen(Map entry, boolean setIt) {
 			return true;
 		}	
-	    @Override
-		public boolean checkIfSeen(Map entry) {
+	    public boolean checkIfSeen(Map entry) {
 	    	return true;
 	    }   
 	    
-		@Override
 		public boolean checkAndSetSeen(Long id, Date modDate, boolean setIt) {
 			return true;
 		}
     }
 
     //RW transaction
-	@Override
 	public void deleteUserByName(String userName,  Map options) {
 		try {
 			User user = getProfileDao().findUserByName(userName, 
@@ -1978,7 +1680,6 @@ public Map getUsers() {
 	}
 	
 	//NO transaction
-	@Override
 	public User addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException, WriteEntryDataException, PasswordMismatchException {
 		if (inputData.getSingleValue("password") == null || inputData.getSingleValue("password").equals(""))
@@ -1988,20 +1689,6 @@ public Map getUsers() {
 		return (User) addIndividualPrincipal(definitionId, inputData, fileItems, options, User.class);
 	}
 	//NO transaction
-	@Override
-	public User addUser(InputDataAccessor inputData)
-				throws AccessControlException, WriteFilesException, WriteEntryDataException {
-		ProfileBinder binder = this.getProfileBinder();
-		List defaultEntryDefinitions = binder.getEntryDefinitions();
-		String definitionId = null;
-		if (!defaultEntryDefinitions.isEmpty()) {
-			Definition def = (Definition) defaultEntryDefinitions.get(0);
-			definitionId = def.getId();
-		}
-		return this.addUser(definitionId, inputData, new HashMap(), null);
-	}
-	//NO transaction
-	@Override
 	public Application addApplication(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException, WriteEntryDataException {
@@ -2010,8 +1697,7 @@ public Map getUsers() {
     	return (Application) addIndividualPrincipal(definitionId, inputData, fileItems, options, Application.class);
 	}
     //NO transaction
-    @Override
-	public Group addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+    public Group addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException {
         ProfileBinder binder = loadProfileBinder();
         checkAccess(binder, ProfileOperation.manageEntries);
@@ -2019,7 +1705,6 @@ public Map getUsers() {
     }
 	
     //NO transaction
-	@Override
 	public ApplicationGroup addApplicationGroup(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException, WriteEntryDataException {
@@ -2045,65 +1730,12 @@ public Map getUsers() {
            		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_VIEW);
         }
         try {
-        	String name;
-        	Principal principal;
-        	
-        	// Does a user or group or application or application group already exist with this name?
-        	name = inputData.getSingleValue( "name" );
-        	principal = doesPrincipalExist( name );
-        	if ( principal != null )
-        	{
-        		EntityType entityType;
-        		
-        		// Yes
-        		entityType = principal.getEntityType();
-        		switch ( entityType )
-        		{
-        		case application:
-        			throw new ApplicationExistsException();
-
-        		case applicationGroup:
-        			throw new ApplicationGroupExistsException();
-        		
-        		case group:
-        			throw new GroupExistsException();
-        			
-        		case user:
-        			throw new UserExistsException();
-        			
-        		default:
-        			throw new UserExistsException();
-        		}
-
-        	}
-        	
         	Entry newEntry = loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
 
             //Added to allow default groups to be defined for users in ssf.properties file
             if (clazz.equals(User.class))  //only do this for users not applications (maybe later;-)
             {
                 List<Element> groups  = SZoneConfig.getElements("defaultGroupsOnAcctCreation/group");
-                if (!groups.isEmpty()) {
-                    for (Element elem: groups) {  //loop through all returned group names from properties file
-                        try {
-                            Group group = this.getGroup(elem.attributeValue("name"));
-                            if (group!=null){ //make sure it finds the group.  what to do if it doesn't?
-                                Map updates = new HashMap();
-                                List members = new ArrayList(group.getMembers());
-                                members.add((UserPrincipal)newEntry);
-                                updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
-                                this.modifyEntry(group.getId(), new MapInputData(updates));
-                            }
-                        }catch (Exception e) {
-                            //Do nothing.  User just won't exist in a group that was wrong anyway.
-                            //won't completely abandon creation though.  Some may be defined correctly.
-                            //Should log it.
-                            logger.warn("Warning: User could not be added to default group.  Please check that " +
-                            "the defined group in the properties file matches the one in the running system: ", e);
-                        }
-                    }
-                }
-                groups  = SZoneConfig.getElements("defaultGroupsOnExtAcctCreation/group");
                 if (!groups.isEmpty()) {
                     for (Element elem: groups) {  //loop through all returned group names from properties file
                         try {
@@ -2178,6 +1810,7 @@ public Map getUsers() {
         			
         		default:
         			throw new UserExistsException();
+
         		}
 
         	}
@@ -2191,15 +1824,13 @@ public Map getUsers() {
         }
 	}
     //RO transaction
-    @Override
-	public ApplicationGroup getApplicationGroup(String name) {
+    public ApplicationGroup getApplicationGroup(String name) {
  	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
  	  if (!(p instanceof ApplicationGroup)) throw new NoGroupByTheNameException(name);
  	  return (ApplicationGroup)p;
     }
 
 	//RO transaction
-	@Override
 	public Map getApplicationGroups() throws AccessControlException {
 		   Map options = new HashMap();
 		   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
@@ -2207,19 +1838,15 @@ public Map getUsers() {
 	}
 	
 	//RO transaction
-	@Override
 	public Map getApplicationGroups(Map searchOptions) throws AccessControlException {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
-		searchOptions.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, applicationGroupDocType, searchOptions);        
 	}
 	
 	//RO transaction
-	@Override
 	public SortedSet<ApplicationGroup> getApplicationGroups(Collection<Long> groupIds) throws AccessControlException {
 		//does read access check
-		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -2229,7 +1856,6 @@ public Map getUsers() {
 	}
 	
 	//RO transaction
-	@Override
 	public Map getGroupPrincipals() throws AccessControlException {
 		   Map options = new HashMap();
 		   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
@@ -2237,19 +1863,15 @@ public Map getUsers() {
 	}
 	
 	//RO transaction
-	@Override
 	public Map getGroupPrincipals(Map searchOptions) throws AccessControlException {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
-		searchOptions.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, groupPrincipalDocType, searchOptions);        
 	}
 	
 	//RO transaction
-	@Override
 	public SortedSet<GroupPrincipal> getGroupPrincipals(Collection<Long> groupIds) throws AccessControlException {
 		//does read access check
-		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -2259,33 +1881,28 @@ public Map getUsers() {
 	}
 	
     //RO transaction
-    @Override
-	public Application getApplication(String name) {
+    public Application getApplication(String name) {
  	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
  	  if (!(p instanceof Application)) throw new NoApplicationByTheNameException(name);
  	  return (Application)p;
     }
 	//RO transaction
-	@Override
 	public Map getApplications() {
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
     	return getApplications( options);
 	}
 	//RO transaction
-	@Override
 	public Map getApplications(Map searchOptions) {
 		Map result = new HashMap();
 		//does read access check
 		try {
 			ProfileBinder binder = getProfileBinder();
-			searchOptions.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
 	        result = loadProcessor(binder).getBinderEntries(binder, applicationDocType, searchOptions);
 		} catch(AccessControlException e) {}
 		return result;
 	}
 	//RO transaction
-	@Override
 	public SortedSet<Application> getApplications(Collection<Long> applicationIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -2301,25 +1918,20 @@ public Map getUsers() {
 	}
 	
 	//RO transaction
-	@Override
 	public Map getIndividualPrincipals() {
 		   Map options = new HashMap();
 		   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
 		   return getIndividualPrincipals(options);	
 	}
 	//RO transaction
-	@Override
 	public Map getIndividualPrincipals( Map searchOptions) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
-		searchOptions.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, individualPrincipalDocType, searchOptions);        
 	}
 	//RO transaction
-	@Override
 	public SortedSet<IndividualPrincipal> getIndividualPrincipals(Collection<Long> individualIds) {
 		//does read access check
-		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -2328,19 +1940,16 @@ public Map getUsers() {
 		return result;	
 	}
 	//RO transaction
-	@Override
 	public Map getPrincipals( Map searchOptions) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
-		searchOptions.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, allPrincipalDocType, searchOptions);        
 	}
     //RO transaction
-    @Override
-	public List<SharedEntity> getShares(Long userId, Date after) {
+    public List<SharedEntity> getShares(Long userId, Date after) {
 	    User user = getUser(userId, false);
 	    //get list of all groups user is a member of.
-	    Set<Long> accessIds = getProfileDao().getApplicationLevelPrincipalIds(user);
+	    Set<Long> accessIds = getProfileDao().getPrincipalIds(user);
 		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
 		Set<Long>binderIds = new HashSet();
 		for(Map binder : myTeams) {
@@ -2393,8 +2002,7 @@ public Map getUsers() {
 	  return shares;
     }
     //RW transaction
-    @Override
-	public void setShares(DefinableEntity entity, Collection<Long> principalIds, Collection<Long> binderIds) {
+    public void setShares(DefinableEntity entity, Collection<Long> principalIds, Collection<Long> binderIds) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
     	if (principalIds != null) {
     		for (Long p: principalIds) {
@@ -2420,18 +2028,17 @@ public Map getUsers() {
 //  	return getAccessControlManager().testOperation(this.getProfileBinder(), WorkAreaOperation.USER_SEE_ALL);        
   }
 
-  @Override
-public void changePassword(Long userId, String oldPassword, String newPassword) {
+  public void changePassword(Long userId, String oldPassword, String newPassword) {
 	  if(newPassword == null || newPassword.equals(""))
 		  throw new PasswordMismatchException("errorcode.password.cannotBeNull");
+	  
 	  User user = getUser(userId, true);
-
-      if (mustSupplyOldPasswordToSetNewPassword(userId)) {
+	  ProfileBinder profileBinder = loadProfileBinder();
+	  
+      if (!testAccess(profileBinder, ProfileOperation.manageEntries)) {
     	  // The user making the call does not have the right to manage profile entries. 
     	  // In this case, we require that the old password be specified. 
     	  // Note: This code needs to be kept in synch with the similar check in ModifyEntryController.java.
-    	  // We require users changing their own password to know the old one
-    	  // We also require that anyone changing the admin password know the old one
     	  if(oldPassword == null || 
     			  oldPassword.equals("") || 
     			  !EncryptUtil.checkPassword(oldPassword, user))
@@ -2442,19 +2049,8 @@ public void changePassword(Long userId, String oldPassword, String newPassword) 
       user.setPassword(newPassword);
   }
   
-  @Override
-public boolean mustSupplyOldPasswordToSetNewPassword(Long userId) {
-	  User currentUser = RequestContextHolder.getRequestContext().getUser();
-	  User user = getUser(userId, true);
-	  ProfileBinder profileBinder = loadProfileBinder();
-
-      return (!testAccess(profileBinder, ProfileOperation.manageEntries) || currentUser.getName().equals(user.getName()) ||
-    		  user.isSuper() );
-  }
-
   //RO transaction
-  @Override
-public SortedSet<User> getUsersByEmail(String emailAddress, String emailType) {
+  public SortedSet<User> getUsersByEmail(String emailAddress, String emailType) {
 	  List<Principal> principals = getProfileDao().loadPrincipalByEmail(emailAddress, emailType, RequestContextHolder.getRequestContext().getZoneId());
       Comparator c = new PrincipalComparator(RequestContextHolder.getRequestContext().getUser().getLocale());
       TreeSet<User> result = new TreeSet(c);
@@ -2469,8 +2065,7 @@ public SortedSet<User> getUsersByEmail(String emailAddress, String emailType) {
 	  return result;
   }
   
-  @Override
-public String[] getUsernameAndDecryptedPassword(String username) {
+  public String[] getUsernameAndDecryptedPassword(String username) {
 	  String[] result = new String[2];
 	  try {
 		  User user = findUserByName(username);
@@ -2482,608 +2077,11 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 	  return result;
   }
   
-	@Override
 	public List<Group> getUserGroups(Long userId) throws AccessControlException {
 		//does read access check
-		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
-		Set<Long> groupIds = getProfileDao().getApplicationLevelGroupMembership(userId, RequestContextHolder.getRequestContext().getZoneId());
+		Set<Long> groupIds = getProfileDao().getAllGroupMembership(userId, RequestContextHolder.getRequestContext().getZoneId());
 		return getProfileDao().loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
 	}
-
-    @Override
-	public List<Binder> getUserFavorites(Long userId) {
-        List<Binder> binders = new ArrayList<Binder>();
-        Document favorites = null;
-        UserProperties userProperties = getUserProperties(userId);
-        Object obj = userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
-
-        if(obj != null) {
-            if(obj instanceof Document) {
-                favorites = (Document)obj;
-            } else {
-                try {
-                    favorites = DocumentHelper.parseText((String) obj);
-                } catch (DocumentException e) {}
-            }
-        }
-
-        if(favorites != null) {
-            java.util.Iterator it = favorites.getRootElement().selectNodes("favorite[@type=\"binder\"]").iterator();
-            while(it.hasNext()) {
-                Element e = (Element)it.next();
-                Binder binder = getBinderIfAccessible(Long.valueOf(e.attributeValue("value")));
-                if(binder != null){
-                    binders.add(binder);
-                }
-            }
-        }
-        return binders;
-    }
-
-    @Override
-	public List<TeamInfo> getUserTeams(Long userId) {
-        List<Map> myTeams = getBinderModule().getTeamMemberships(userId);
-
-        List<TeamInfo> teamList = new ArrayList<TeamInfo>();
-        for(Map binder : myTeams) {
-            String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
-            Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
-            Boolean library = null;
-            String libraryStr = (String) binder.get(Constants.IS_LIBRARY_FIELD);
-            if(Constants.TRUE.equals(libraryStr))
-                library = Boolean.TRUE;
-            else if(Constants.FALSE.equals(libraryStr))
-                library = Boolean.FALSE;
-
-            Boolean mirrored = null;
-            String mirroredStr = (String) binder.get(Constants.IS_MIRRORED_FIELD);
-            if(Constants.TRUE.equals(mirroredStr))
-                mirrored = Boolean.TRUE;
-            else if(Constants.FALSE.equals(mirroredStr))
-                mirrored = Boolean.FALSE;
-
-            Boolean homeDir = null;
-            String homeDirStr = (String) binder.get(Constants.IS_HOME_DIR_FIELD);
-            if(Constants.TRUE.equals(homeDirStr))
-                homeDir = Boolean.TRUE;
-            else if(Constants.FALSE.equals(homeDirStr))
-                homeDir = Boolean.FALSE;
-
-            Boolean myFilesDir = null;
-            String myFilesDirStr = (String) binder.get(Constants.IS_MYFILES_DIR_FIELD);
-            if(Constants.TRUE.equals(myFilesDirStr))
-                myFilesDir = Boolean.TRUE;
-            else if(Constants.FALSE.equals(myFilesDirStr))
-                myFilesDir = Boolean.FALSE;
-
-            UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.CREATORID_FIELD)));
-            UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.MODIFICATIONID_FIELD)));
-
-            Long parentBinderId = null;
-            String parentBinderIdStr = (String) binder.get(Constants.BINDERS_PARENT_ID_FIELD);
-            if(Validator.isNotNull(parentBinderIdStr))
-                parentBinderId = Long.valueOf(parentBinderIdStr);
-
-            TeamInfo info = new TeamInfo();
-            info.setId(binderId);
-            info.setTitle((String) binder.get(Constants.TITLE_FIELD));
-            info.setEntityType((String)binder.get(Constants.ENTITY_FIELD));
-            info.setFamily((String) binder.get(Constants.FAMILY_FIELD));
-            info.setLibrary(library);
-            info.setDefinitionType(Integer.valueOf((String)binder.get(Constants.DEFINITION_TYPE_FIELD)));
-            info.setPath((String) binder.get(Constants.ENTITY_PATH));
-            info.setCreation(
-                    new HistoryStampBrief(((creator != null)? creator.getName() : (String) binder.get(Constants.CREATOR_NAME_FIELD)),
-                            Long.valueOf((String)binder.get(Constants.CREATORID_FIELD)),
-                            (Date) binder.get(Constants.CREATION_DATE_FIELD)));
-            info.setModification(
-                    new HistoryStampBrief(((modifier != null)? modifier.getName() : (String) binder.get(Constants.MODIFICATION_NAME_FIELD)),
-                            Long.valueOf((String)binder.get(Constants.MODIFICATIONID_FIELD)),
-                            (Date) binder.get(Constants.MODIFICATION_DATE_FIELD)));
-            info.setPermaLink(PermaLinkUtil.getPermalink(binder));
-            info.setMirrored(mirrored);
-            info.setHomeDir(homeDir);
-            info.setMyFilesDir(myFilesDir);
-            info.setParentBinderId(parentBinderId);
-            teamList.add(info);
-        }
-        return teamList;
-    }
-
-    private org.kablink.teaming.domain.Binder getBinderIfAccessible(Long binderId) {
-   		try {
-   			return getBinderModule().getBinder(binderId);
-   		}
-   		catch(NoBinderByTheIdException e) {
-   			return null;
-   		}
-   		catch(AccessControlException e) {
-   			return null;
-   		}
-   	}
-
-    @Override
-	public void setFirstLoginDate(Long userId) {
-		User user = getUser(userId, true);
-		if(user.getFirstLoginDate() != null)
-			return; // This user already logged in before. Shouldn't update it (or shall we throw an exception?)
-		user.setFirstLoginDate(new Date()); // Set it to current date/time.
-    }
-    
-
-    /**
-     * Returns a User's workspace pre-deleted flag.
-     * 
-     * @param userId
-     */
-    //RO transaction
-    @Override
-    public Boolean getUserWorkspacePreDeleted(Long userId) {
-   		User user = getUser(userId, true, false);
-		return user.isWorkspacePreDeleted();
-    }
-    
-    /**
-     * Sets a User's workspace pre-deleted flag.
-     * 
-     * @param userId
-     * @param userWorkspacePreDeleted
-     */
-    //RW transaction
-    @Override
-    public void setUserWorkspacePreDeleted(Long userId, boolean userWorkspacePreDeleted) {
-   		User user = getUser(userId, true, false);
-		user.setWorkspacePreDeleted(userWorkspacePreDeleted);
-    }
-
-    /**
-     * Returns a user or group's download enabled flag.
-     * 
-     * @param upId
-     */
-    //RO transaction
-    @Override
-    public Boolean getDownloadEnabled(Long upId) {
-   		UserPrincipal up = getUserPrincipal(upId, false, false);
-		return up.isDownloadEnabled();
-    }
-    
-    /**
-     * Sets a user or group's downloadEnabled flag.
-     * 
-     * @param upId
-     * @param downloadEnabled
-     */
-    //RW transaction
-    @Override
-    public void setDownloadEnabled(Long upId, Boolean downloadEnabled) {
-   		UserPrincipal up = getUserPrincipal(upId, true, false);
-		up.setDownloadEnabled(downloadEnabled);
-    }
-
-    /**
-     * Returns a user or group's web access enabled flag.
-     * 
-     * @param upId
-     */
-    //RO transaction
-    @Override
-    public Boolean getWebAccessEnabled(Long upId) {
-   		UserPrincipal up = getUserPrincipal(upId, false, false);
-		return up.isWebAccessEnabled();
-    }
-    
-    /**
-     * Sets a user or group's web access enabled flag.
-     * 
-     * @param upId
-     * @param webAccessEnabled
-     */
-    //RW transaction
-    @Override
-    public void setWebAccessEnabled(Long upId, Boolean webAccessEnabled) {
-   		UserPrincipal up = getUserPrincipal(upId, true, false);
-		up.setWebAccessEnabled(webAccessEnabled);
-    }
-
-    /**
-     * Returns a user or group's adHoc folders flag.
-     * 
-     * @param upId
-     */
-    //RO transaction
-    @Override
-    public Boolean getAdHocFoldersEnabled(Long upId) {
-   		UserPrincipal up = getUserPrincipal(upId, false, false);
-		return up.isAdHocFoldersEnabled();
-    }
-    
-    /**
-     * Sets a user or group's web access enabled flag.
-     * 
-     * @param upId
-     * @param aAdHocFoldersEnabled
-     */
-    //RW transaction
-    @Override
-    public void setAdHocFoldersEnabled(Long upId, Boolean adHocFoldersEnabled) {
-   		UserPrincipal up = getUserPrincipal(upId, true, false);
-		up.setAdHocFoldersEnabled(adHocFoldersEnabled);
-    }
-
-    /**
-     * Returns a Collection<User> of all the external user's the
-     * current user has rights to see.
-     * 
-     * @return
-     */
-    @Override
-    public Collection<User> getAllExternalUsers() {
-    	// Allocate a collection we can return.
-		List<User> reply = new ArrayList<User>();
-
-		// Can we access the ID of the all external users group?
-    	ProfileDao pd            = getProfileDao();
-    	Long       zoneId        = RequestContextHolder.getRequestContext().getZoneId();
-    	Long       allExtUsersId = pd.getReservedGroupId(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zoneId);
-    	if (null == allExtUsersId) {
-    		// No!  Bail.
-    		return reply;
-    	}
-    	
-		// Can we get the members of the group?
-    	List<Long> allExtUsersIds = new ArrayList<Long>();
-    	allExtUsersIds.add(allExtUsersId);
-    	Set<Long> extIds = pd.explodeGroups(allExtUsersIds, zoneId);
-    	if (!(MiscUtil.hasItems(extIds))) {
-    		// No!  Bail.
-    		return reply;
-    	}
-    	
-		// Resolve the members.  We call ResolveIDs.getPrincipals()
-		// because it handles deleted users and users the logged-in
-    	// user has rights to see.  Does the groups members resolve
-    	// to any users?
-		List<Principal> extUsers = ResolveIds.getPrincipals(extIds);
-		if (!(MiscUtil.hasItems(extUsers))) {
-			// No!  Bail.
-			return reply;
-		}
-
-		// Scan the group members.
-		for (Principal p:  extUsers) {
-			// Is this member a non reserved User?
-			if ((p instanceof UserPrincipal) && (!(p.isReserved()))) {
-				// Yes!  Add it to the reply collection.
-				reply.add((User) p);
-			}
-		}
-
-		// If we get here, reply refers to a Collection<User> of the
-		// external users.  Return it.
-    	return reply;
-    }
-    
-    /**
-     * Returns a Collection<User> of all the users that have mobile
-     * devices.
-     *  
-     * @return
-     */
-    @Override
-    public Collection<User> getAllUsersWithMobileDevices() {
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		FilterControls filter = new FilterControls();
-		filter.addNotNull("mobileDevices");
-		List<User> users = getCoreDao().loadObjects(User.class, filter, zoneId);
-		return users;
-    }
-    
-    /**
-     * Get'er methods for the Mobile Application Management (MAM)
-     * settings.
-     * 
-     * Returns a user's MobileDevices, if any are defined.
-     * 
-     * @return
-     */
-    @Override
-    public MobileDevices getMobileDevices(Long userId) {
-   		User user = getUser(userId, false, true);
-   		return ((null == user) ? null : user.getMobileDevices());
-    }
-    
-    /**
-     * Set'er methods for the Mobile Application Management (MAM)
-     * settings.
-     *
-     * Stores a MobileDevices as part of a user.
-     * 
-     * @param
-     */
-    @Override
-    public void setMobileDevices(Long userId, MobileDevices mobileDevices) {
-   		User user = getUser(userId, true, true);
-   		if (null != user) {
-   			user.setMobileDevices(mobileDevices);
-   		}
-    }
-    
-    /**
-     * Returns a PrincipalMobileAppsConfig for the user or group as
-     * read from its UserProperties.
-     * 
-     * @param principalId
-     * 
-     * @return
-     */
-    @Override
-	public PrincipalMobileAppsConfig getPrincipalMobileAppsConfig(Long principalId) {
-    	PrincipalMobileAppsConfig reply = new PrincipalMobileAppsConfig();
-    	reply.setUseDefaultSettings(true);
-    	
-    	UserProperties up = getPrincipalProperties(principalId);
-		if (null != up) {
-			Object accessValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR);
-			if ((null != accessValue) && (accessValue instanceof String)) {
-				reply.setMobileAppsEnabled(Boolean.valueOf((String) accessValue));
-			}
-
-			Object pwdValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD);
-			if ((null != pwdValue) && (pwdValue instanceof String)) {
-				reply.setAllowCachePwd(Boolean.valueOf((String) pwdValue));
-			}
-			
-			Object contentValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT);
-			if ((null != contentValue) && (contentValue instanceof String)) {
-				reply.setAllowCacheContent(Boolean.valueOf((String) contentValue));
-			}
-			
-			Object playValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS);
-			if ((null != playValue) && (playValue instanceof String)) {
-				reply.setAllowPlayWithOtherApps(Boolean.valueOf((String) playValue));
-			}
-
-			// Mobile Application Management (MAM) settings.
-			Object cutCopyEnabledValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED);
-			if ((null != cutCopyEnabledValue) && (cutCopyEnabledValue instanceof String)) {
-				reply.setMobileCutCopyEnabled(Boolean.valueOf((String) cutCopyEnabledValue));
-			}
-			
-			Object androidScreenCaptureEnabledValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED);
-			if ((null != androidScreenCaptureEnabledValue) && (androidScreenCaptureEnabledValue instanceof String)) {
-				reply.setMobileAndroidScreenCaptureEnabled(Boolean.valueOf((String) androidScreenCaptureEnabledValue));
-			}
-			
-			Object disableOnJailBrokenValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES);
-			if ((null != disableOnJailBrokenValue) && (disableOnJailBrokenValue instanceof String)) {
-				reply.setMobileDisableOnRootedOrJailBrokenDevices(Boolean.valueOf((String) disableOnJailBrokenValue));
-			}
-			
-			Object openInValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_OPEN_IN);
-			if ((null != openInValue) && (openInValue instanceof String)) {
-				reply.setMobileOpenIn(MobileOpenInSetting.valueOf(Integer.parseInt((String) openInValue)));
-			}
-			
-			Object androidApplicationsValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS);
-			if ((null != androidApplicationsValue) && (androidApplicationsValue instanceof String)) {
-				String[]     aaArray = StringUtil.unpack((String) androidApplicationsValue);
-				List<String> aaList = new ArrayList<String>();
-				ListUtil.arrayStringToListString(aaArray, aaList);
-				reply.setAndroidApplications(MiscUtil.sortStringList(aaList));
-			}
-			
-			Object iosApplicationsValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS);
-			if ((null != iosApplicationsValue) && (iosApplicationsValue instanceof String)) {
-				String[]     iosArray = StringUtil.unpack((String) iosApplicationsValue);
-				List<String> iosList = new ArrayList<String>();
-				ListUtil.arrayStringToListString(iosArray, iosList);
-				reply.setIosApplications(MiscUtil.sortStringList(iosList));
-			}
-
-			if ((null != accessValue)                          ||
-					(null != pwdValue)                         ||
-					(null != contentValue)                     ||
-					(null != playValue)                        ||
-					(null != cutCopyEnabledValue)              ||
-					(null != androidScreenCaptureEnabledValue) ||
-					(null != disableOnJailBrokenValue)         ||
-					(null != openInValue)                      ||
-					(null != androidApplicationsValue)         ||
-					(null != iosApplicationsValue)) {
-				reply.setUseDefaultSettings(false);
-			}
-		}
-		
-		return reply;
-    }
-    
-    /**
-     * Returns a PrincipalDesktopAppsConfig for the user or group as
-     * read from its UserProperties.
-     * 
-     * @param principalId
-     * 
-     * @return
-     */
-    @Override
-    public PrincipalDesktopAppsConfig getPrincipalDesktopAppsConfig(Long principalId) {
-    	PrincipalDesktopAppsConfig reply = new PrincipalDesktopAppsConfig();
-    	reply.setUseDefaultSettings(true);
-    	
-    	UserProperties up = getPrincipalProperties(principalId);
-		if (null != up)
-		{
-			Object accessValue = up.getProperty(ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR);
-			if ((null != accessValue) && (accessValue instanceof String)) {
-				reply.setIsFileSyncAppEnabled(Boolean.valueOf((String) accessValue));
-			}
-
-			Object pwdValue = up.getProperty(ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD);
-			if ((null != pwdValue) && (pwdValue instanceof String)) {
-				reply.setAllowCachePwd( Boolean.valueOf((String) pwdValue));
-			}
-			
-			if ((null != accessValue) || (null != pwdValue)) {
-				reply.setUseDefaultSettings(false);
-			}
-		}
-		
-    	return reply;
-    }
-    
-    /**
-     * Writes the settings from a PrincipalMobileAppsConfig to the
-     * user's or group's UserProperties.
-     * 
-     * @param principalId
-     * @param principalsAreUsers 
-     * 
-     * @param pConfig
-     */
-    @Override
-    public void savePrincipalMobileAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalMobileAppsConfig config) {
-    	// If we don't have anything to save...
-    	if (((!(MiscUtil.hasItems(principalIds)))) || (null == config)) {
-    		// ...bail.
-    		return;
-    	}
-
-    	// Extract the values from the PrincipalMobileAppsConfig.
-		String accessValue;
-		String pwdValue;
-		String contentValue;
-		String playValue;
-		
-		// Mobile Application Management (MAM) settings.
-		String cutCopyEnabledValue;
-		String androidScreenCaptureEnabledValue;
-		String disableOnJailBrokenValue;
-		String openInValue;
-		String androidApplicationsValue;
-		String iosApplicationsValue;
-		
-		if (config.getUseDefaultSettings()) {
-			accessValue  =
-			contentValue =
-			playValue    =
-			pwdValue     = null;
-			
-			// Mobile Application Management (MAM) settings.
-			cutCopyEnabledValue              =
-			androidScreenCaptureEnabledValue =
-			disableOnJailBrokenValue         =
-			openInValue                      =
-			androidApplicationsValue         =
-			iosApplicationsValue             = null;
-		}
-		
-		else {
-			accessValue  = String.valueOf(config.getMobileAppsEnabled()     );
-			contentValue = String.valueOf(config.getAllowCacheContent()     );
-			playValue    = String.valueOf(config.getAllowPlayWithOtherApps());
-			pwdValue     = String.valueOf(config.getAllowCachePwd()         );
-			
-			// Mobile Application Management (MAM) settings.
-			cutCopyEnabledValue              = String.valueOf(config.getMobileCutCopyEnabled()                    );
-			androidScreenCaptureEnabledValue = String.valueOf(config.getMobileAndroidScreenCaptureEnabled()       );
-			disableOnJailBrokenValue         = String.valueOf(config.getMobileDisableOnRootedOrJailBrokenDevices());
-			openInValue                      = String.valueOf(config.getMobileOpenIn().ordinal()                  );
-			
-			List<String> aaList = MiscUtil.sortStringList(config.getAndroidApplications());
-			String[] aaArray = ((null == aaList) ? new String[0] : aaList.toArray(new String[0]));
-			androidApplicationsValue = StringUtil.pack(aaArray);
-			
-			List<String> iosList = MiscUtil.sortStringList(config.getIosApplications());
-			String[] iosArray = ((null == iosList) ? new String[0] : iosList.toArray(new String[0]));
-			iosApplicationsValue = StringUtil.pack(iosArray);
-		}
-
-    	// Store the properties to save into a Map<String, Object> so
-    	// we can write them out in a single transaction...
-		Map<String, Object> propMap = new HashMap<String, Object>();
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR,          accessValue );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD,            pwdValue    );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT,        contentValue);
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS, playValue   );
-		
-		// Mobile Application Management (MAM) settings.
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED,                         cutCopyEnabledValue             );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED,           androidScreenCaptureEnabledValue);
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES, disableOnJailBrokenValue        );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_OPEN_IN,                                  openInValue                     );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS,                     androidApplicationsValue        );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS,                         iosApplicationsValue            );
-		
-		// ...and write them out to the appropriate object.
-		for (Long pId : principalIds) {
-			if (principalsAreUsers)
-			     setUserProperties( pId, propMap);
-			else setGroupProperties(pId, propMap);
-		}
-    }
-    
-    @Override
-    public void savePrincipalMobileAppsConfig(Long principalId, boolean principalIsUser, PrincipalMobileAppsConfig config) {
-    	// Always use the initial form of the method.
-    	if ((null != principalId) && (null != config)) {
-    		List<Long> principalIds = new ArrayList<Long>();
-    		principalIds.add(principalId);
-    		savePrincipalMobileAppsConfig(principalIds, principalIsUser, config);
-    	}
-    }
-    
-    /**
-     * Writes the settings from a PrincipalMobileAppsConfig to the
-     * user's or group's UserProperties.
-     * 
-     * @param principalId
-     * @param principalsAreUsers 
-     * 
-     * @param pConfig
-     */
-    @Override
-    public void savePrincipalDesktopAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalDesktopAppsConfig config) {
-    	// If we don't have anything to save...
-    	if (((!(MiscUtil.hasItems(principalIds)))) || (null == config)) {
-    		// ...bail.
-    		return;
-    	}
-
-    	// Extract the values from the PrincipalDesktopAppsConfig.
-		String accessValue;
-		String pwdValue;
-		if (config.getUseDefaultSettings()) {
-			accessValue =
-			pwdValue    = null;
-		}
-		else {
-			accessValue = String.valueOf(config.getIsFileSyncAppEnabled());
-			pwdValue    = String.valueOf(config.getAllowCachePwd()       );
-		}
-		
-    	// Store the properties to save into a Map<String, Object> so
-    	// we can write them out in a single transaction...
-		Map<String, Object> propMap = new HashMap<String, Object>();
-		propMap.put(ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR, accessValue);
-		propMap.put(ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD,   pwdValue   );
-
-		// ...and write them out to the appropriate object.
-		for (Long pId : principalIds) {
-			if (principalsAreUsers)
-			     setUserProperties( pId, propMap);
-			else setGroupProperties(pId, propMap);
-		}
-    }
-    
-    @Override
-    public void savePrincipalDesktopAppsConfig(Long principalId, boolean principalIsUser, PrincipalDesktopAppsConfig config) {
-    	// Always use the initial form of the method.
-    	if ((null != principalId) && (null != config)) {
-    		List<Long> principalIds = new ArrayList<Long>();
-    		principalIds.add(principalId);
-    		savePrincipalDesktopAppsConfig(principalIds, principalIsUser, config);
-    	}
-    }
 }
+

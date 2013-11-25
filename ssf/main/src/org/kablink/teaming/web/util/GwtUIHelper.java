@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,11 +32,9 @@
  */
 package org.kablink.teaming.web.util;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,32 +49,23 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
-import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
@@ -91,19 +80,37 @@ import org.springframework.web.portlet.ModelAndView;
  */
 public class GwtUIHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtUIHelper.class);
-
+	
 	// Used to write a flag to the session cache regarding the state
 	// of the GWT UI.
 	private final static String GWT_UI_ENABLED_FLAG = "gwtUIEnabled";
 	
-	// String used to recognize an '&' formatted URL vs. a '/'
+	// ssf*.properties settings that affect various aspects of the GWT
+	// based UI.
+	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN = SPropsUtil.getBoolean("activity.stream.on.login",  true);
+	
+	// String used to recognized an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
 	
-	// The keys into the session cache to store the GWT UI top ranked
-	// people and places beans.
+	// The key into the session cache to store the GWT UI tab and
+	// toolbar beans.
+	public final static String CACHED_TABS_KEY				= "gwt-ui-tabs";
+	public final static String CACHED_TOOLBARS_KEY			= "gwt-ui-toolbars";
 	public final static String CACHED_TOP_RANKED_PEOPLE_KEY	= "gwt-ui-topRankedPeople";
 	public final static String CACHED_TOP_RANKED_PLACES_KEY	= "gwt-ui-topRankedPlaces";
+	
+	// The names of the toolbar beans stored in the session cache for
+	// the GWT UI.
+	private final static String[] CACHED_TOOLBARS = new String[] {
+		WebKeys.CALENDAR_IMPORT_TOOLBAR,
+		WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR,
+		WebKeys.FOLDER_ACTIONS_TOOLBAR,
+		WebKeys.FOLDER_TOOLBAR,
+		WebKeys.FOLDER_VIEWS_TOOLBAR,
+		WebKeys.GWT_MISC_TOOLBAR,
+		WebKeys.WHATS_NEW_TOOLBAR,
+	};
 	
 	// Values used to communicate the Vibe product that's running.
 	//
@@ -136,25 +143,17 @@ public class GwtUIHelper {
 	private static       int     TREE_TITLE_FORMAT         = (-1);
 	private static final int     TREE_TITLE_FORMAT_DEFAULT = 0;
 	private static final String  TREE_TITLE_FORMAT_KEY     = "wsTree.titleFormat";
-	
-	// The following is used as a 'hard coded' unknown activity stream.
-	// We need that within this modules since we can't refer to
-	// anything on the org.kabalink.teaming.gwt side of the fence from
-	// here.
-	private final static int	UNKNOWN_ACTIVITY_STREAM	= 0;	// ActivityStream.UNKNOWN.
 
-	/**
-	 * Inner class used by addTrackBinderToToolbar() to assist in
-	 * building the toolbar items to support tracking.
-	 */
-	public static class TrackInfo {
-		public String m_event;
-		public String m_resourceKey;
-		public String m_tbName;
+	// Inner class used exclusively by addTrackBinderToToolbar() to
+	// assist in building the toolbar items to support tracking.
+	private static class TrackInfo {
+		String m_event;
+		String m_resourceKey;
+		String m_tbName;
 		
 		TrackInfo(String tbName, String event, String resourceKey) {
-			m_tbName      = tbName;
-			m_event       = event;
+			m_tbName = tbName;
+			m_event  = event;
 			m_resourceKey = resourceKey;
 		}
 	}
@@ -395,13 +394,74 @@ public class GwtUIHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void addTrackBinderToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
-		// Get a List<TrackInfo> that describes what track operations
-		// we'll need in the menu.
-		List<TrackInfo> tiList = getTrackInfoList(bs, binder);
+		// Construct an ArrayList to hold TrackInfo objects that
+		// describe what track operations we'll need in the menu.
+		ArrayList<TrackInfo> tiList = new ArrayList<TrackInfo>();
+
+		// What do we know about this binder?
+		Long binderId = binder.getId();
+		boolean binderIsWorkspace     = (binder instanceof Workspace);
+		boolean binderIsCalendar      = BinderHelper.isBinderCalendar(binder);
+		boolean binderIsUserWorkspace = BinderHelper.isBinderUserWorkspace(binder);
+		boolean binderTracked         = BinderHelper.isBinderTracked(bs, binderId);
+		boolean personTracked         = BinderHelper.isPersonTracked(bs, binderId);
+
+		// Build TrackInfo objects for the toolbar items we need to add
+		// for tracking (or untracking) whatever we're looking at.
+		if (binderTracked) {
+			if (personTracked) {
+				// User workspace:  Tracked / Person:  Tracked.
+				tiList.add(    new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
+			}
+			else {
+				if (binderIsUserWorkspace) {
+					// User workspace:  Tracked / Person:  Not Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+					tiList.add(new TrackInfo("trackPerson", "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
+				}
+				else if (binderIsWorkspace) {
+					// Workspace:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+				}
+				else if (binderIsCalendar) {
+					// Calendar:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisCalendarNot"));				
+				}
+				else {
+					// Folder:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisFolderNot"));				
+				}
+			}
+		}
+		else {
+			if (personTracked) {
+				// User workspace:  Not Tracked / Person:  Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
+			}
+			else if (binderIsUserWorkspace) {
+				// User workspace:  Not Tracked / Person:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
+			}
+			else if (binderIsWorkspace) {
+				// Workspace:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
+			}
+			else if (binderIsCalendar) {
+				// Calendar:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisCalendar"));				
+			}
+			else {
+				// Folder:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisFolder"));				
+			}
+		}
 
 		// Scan the TrackInfo objects we generated...
-		for (TrackInfo ti:  tiList) {
+		for (Iterator<TrackInfo> tiIT = tiList.iterator(); tiIT.hasNext(); ) {
 			// ...adding a toolbar item for each.
+			TrackInfo ti = tiIT.next();
 			addEventToToolbar(tb, ti.m_tbName, ti.m_event, NLT.get(ti.m_resourceKey));
 		}
 	}
@@ -489,7 +549,7 @@ public class GwtUIHelper {
 		// UI is active.  Is it?
 		if (isGwtUIActive(request)) {
 			// Yes!  Add an about toolbar item.
-			addAboutToToolbar(bs, request, model, gwtMiscToolbar);
+			addAboutToToolbar( bs, request, model, gwtMiscToolbar);
 			
 			// Do we have a binder and are we running as other than
 			// guest?
@@ -512,18 +572,13 @@ public class GwtUIHelper {
 		}
 	}
 
-	/**
+	/*
 	 * Generates the appropriate resource key for the given binder.
 	 * 
 	 * Note:  The logic for which key is based on the logic from
 	 *        sidebar_track2.jsp.
-	 *        
-	 * @param binder
-	 * @param keyBase
-	 * 
-	 * @return
 	 */
-	public static String buildRelevanceKey(Binder binder, String keyBase) {
+	private static String buildRelevanceKey(Binder binder, String keyBase) {
 		String relevanceKey = keyBase;
 		switch (binder.getEntityType()) {
 		case workspace:
@@ -577,56 +632,76 @@ public class GwtUIHelper {
 	private static void cacheToolbarBeansImpl(HttpServletRequest hRequest, Map model) {
 		// If we don't have an HttpServletRequest...
 		if (null == hRequest) {
-			// ...we can't cache anything.  Bail.
+			// ...bail.
 			return;
 		}
 
 		// Clear any previous stuff we may have cached.
 		HttpSession hSession = WebHelper.getRequiredSession(hRequest);
+		hSession.removeAttribute(CACHED_TABS_KEY);
+		hSession.removeAttribute(CACHED_TOOLBARS_KEY);
 		hSession.removeAttribute(CACHED_TOP_RANKED_PEOPLE_KEY);
 		hSession.removeAttribute(CACHED_TOP_RANKED_PLACES_KEY);
 
 		// If we're not in GWT UI mode...
 		if (!(isGwtUIActive(hRequest))) {
-			// ...we don't cache anything.  Bail.
+			// ...bail.
 			return;
 		}
 
 		// If we don't have a model or the model data is empty...
 		if ((null == model) || (0 == model.size())) {
-			// ...we can't cache anything.  Bail.
+			// ...bail.
 			return;
 		}
 
-		// Finally, cache the other stuff we store in the session.
+		// Scan the names of toolbars we need to cache.
+		HashMap<String, Map> tbHM = new HashMap<String, Map>();
+		for (int i = 0; i < CACHED_TOOLBARS.length; i += 1) {
+			// Does a toolbar by this name exist?
+			String tbName = CACHED_TOOLBARS[i];
+			Map tb = ((Map) model.get(tbName));
+			if ((null != tb) && (!(tb.isEmpty()))) {
+				// Yes! Add it to the HashMap.
+				fixupAdaptedPortletURLs(tb);
+				tbHM.put(tbName, tb);
+			}
+		}
+
+		// Finally, store the stuff we cache in the session cache.
+		hSession.setAttribute(CACHED_TABS_KEY,              new GwtUISessionData(model.get(WebKeys.TABS)));
+		hSession.setAttribute(CACHED_TOOLBARS_KEY,          new GwtUISessionData(tbHM));
 		hSession.setAttribute(CACHED_TOP_RANKED_PEOPLE_KEY, new GwtUISessionData(model.get(WebKeys.FOLDER_ENTRYPEOPLE)));
 		hSession.setAttribute(CACHED_TOP_RANKED_PLACES_KEY, new GwtUISessionData(model.get(WebKeys.FOLDER_ENTRYPLACES)));
 	}
 
-	/**
-	 * Return the 'AdHoc folder' setting from the given user or group
-	 * (i.e., a UserPrinciapl object.)
+	/*
+	 * Walks the toolbar map and stores the URL from any
+	 * AdaptedPortletURL in its string form.
 	 * 
-	 * @param bs
-	 * @param upId
-	 * 
-	 * @return
+	 * We do this because when the GWT UI code accesses the toolbars,
+	 * it cannot process the AdaptedPortletURL as a string as an NPE 
+	 * is generated when we try to convert it. 
 	 */
-	public static Boolean getAdhocFolderSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, upId);
+	@SuppressWarnings("unchecked")
+	private static void fixupAdaptedPortletURLs(Map tbMap) {
+		Set tbKeySet = tbMap.keySet();
+		for (Iterator tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); ) {
+			Object tbKeyO = tbKeyIT.next();
+			if (tbKeyO instanceof String) {
+				String tbKey = ((String) tbKeyO);
+				Object tbO = tbMap.get(tbKey);
+				if (tbO instanceof AdaptedPortletURL) {
+					String url = ((AdaptedPortletURL) tbO).toString();
+					tbMap.put(tbKey + URLFIXUP_PATCH, url);
+				}
+				else if (tbO instanceof Map) {
+					fixupAdaptedPortletURLs((Map) tbO);
+				}
+			}
+		}
 	}
 
-	/**
-	 * Return the 'AdHoc folder' setting from the zone.
-	 * 
-	 * @param ami,
-	 * 
-	 * @return
-	 */
-	public static Boolean getAdhocFolderSettingFromZone(AllModulesInjected ami) {
-		return AdminHelper.getAdhocFolderSettingFromZone(ami);
-	}
-	
 	/**
 	 * Returns a Binder from it's ID guarding against any exceptions.
 	 * If an exception is caught, null is returned. 
@@ -694,30 +769,6 @@ public class GwtUIHelper {
 	public static Binder getBinderSafely2(BinderModule bm, String binderId) throws AccessControlException, NoBinderByTheIdException {
 		// Always use the initial form of this method.
 		return getBinderSafely2(bm, Long.parseLong(binderId));
-	}
-	
-	/**
-	 * Return the 'Download' setting from the given user or group
-	 * (i.e., UserPrincipal object.)
-	 * 
-	 * @param bs
-	 * @param upId
-	 * 
-	 * @return
-	 */
-	public static Boolean getDownloadSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return AdminHelper.getDownloadSettingFromUserOrGroup(bs, upId);
-	}
-
-	/**
-	 * Return the 'Download' setting from the zone.
-	 * 
-	 * @param bs
-	 * 
-	 * @return
-	 */
-	public static Boolean getDownloadSettingFromZone(AllModulesInjected bs) {
-		return AdminHelper.getDownloadSettingFromZone(bs);
 	}
 	
 	/**
@@ -812,116 +863,30 @@ public class GwtUIHelper {
 	}
 		
 	/**
-	 * Returns information about the groups of a specific user.
-	 * 
-	 * @param bs
-	 * @param userId 
-	 * 
-	 * @return
-	 */
-	public static List<Group> getGroups(Principal p) {
-		ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-	    Set<Long> groupIds = profileDao.getApplicationLevelPrincipalIds(p);
-	    groupIds.remove(p.getId());
-		return profileDao.loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static List<Group> getGroups(Long userId) {
-		// Scan the groups the current user is a member of...
-		List<Group> reply;
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		List users = ResolveIds.getPrincipals(userIds, true);
-		if (MiscUtil.hasItems(users))
-		     reply = getGroups((Principal) users.get(0));
-		else reply = new ArrayList<Group>();
-		
-		// If we get here, reply refers to the List<Group> of the
-		// groups the user is a member of.  Return it.
-		return reply;
-	}
-	
-	/**
-	 * Returns an Integer based value from an options Map.  If a value
-	 * for key isn't found, defInt is returned.
-	 * 
-	 * @param options
-	 * @param key
-	 * @param defInt
-	 *  
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static int getOptionInt(Map options, String key, int defInt) {
-		Integer obj = ((Integer) options.get(key));
-		return ((null == obj) ? defInt : obj.intValue());
-	}
-	
-	/**
-	 * Returns a Boolean based value from an options Map.  If a value
-	 * for key isn't found, defBool is returned. 
-	 * 
-	 * @param options
-	 * @param key
-	 * @param defBool
-	 *  
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static boolean getOptionBoolean(Map options, String key, boolean defBool) {
-		Boolean obj = ((Boolean) options.get(key));
-		return ((null == obj) ? defBool : obj.booleanValue());
-	}
-	
-	/**
-	 * Returns a String based value from an options Map.  If a value
-	 * for key isn't found, defStr is returned. 
-	 * 
-	 * @param options
-	 * @param key
-	 * @param defStr
-	 *  
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static String getOptionString(Map options, String key, String defStr) {
-		String obj = ((String) options.get(key));
-		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
-	}
-
-	/**
 	 * Returns the string representation of the top most workspace ID.
-	 * 
-	 * If requested, when the true top workspace ID can't be accessed,
-	 * the current user's workspace ID is returned.
+	 * If the true top workspace ID can't be accessed, the current
+	 * user's workspace ID is returned.
 	 * 
 	 * @param bs
-	 * @param defaultToUsersWS
 	 * 
 	 * @return
 	 */
-	public static String getTopWSIdSafely(AllModulesInjected bs, boolean defaultToUsersWS) {
+	public static String getTopWSIdSafely(AllModulesInjected bs) {
 		Long topWSId;
 		
 		try {
-			topWSId = bs.getWorkspaceModule().getTopWorkspaceId();
+			topWSId = bs.getWorkspaceModule().getTopWorkspace().getId();
 		}
 		catch (Exception e) {
 			topWSId = null;
 		}
-		if ((null == topWSId) && defaultToUsersWS) {
+		if (null == topWSId) {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			topWSId = bs.getProfileModule().getEntryWorkspaceId(user.getId());
 		}
 		
 		String reply = ((null == topWSId) ? "" : String.valueOf(topWSId.longValue()));
 		return reply;
-	}
-	
-	public static String getTopWSIdSafely(AllModulesInjected bs) {
-		// Always use the initial form of the method.
-		return getTopWSIdSafely(bs, true);	// true -> Default to user's WS if top WS can't be accessed.
 	}
 
 	/*
@@ -949,82 +914,6 @@ public class GwtUIHelper {
 	 */
 	private static boolean hasRefererUrl(PortletRequest pRequest) {
 		return (0 < getRefererUrl(pRequest).length());
-	}
-
-	/**
-	 * Returns a List<TrackInfo> of how a binder is being tracked.
-	 * 
-	 * @param bs
-	 * @param binder
-	 * 
-	 * @return
-	 */
-	public static List<TrackInfo> getTrackInfoList(AllModulesInjected bs, Binder binder) {
-		// Construct an ArrayList to hold TrackInfo objects that
-		// describe what track operations we'll need in the menu.
-		List<TrackInfo> tiList = new ArrayList<TrackInfo>();
-
-		// What do we know about this binder?
-		Long binderId = binder.getId();
-		boolean binderIsWorkspace     = (binder instanceof Workspace);
-		boolean binderIsCalendar      = BinderHelper.isBinderCalendar(bs,  binder);
-		boolean binderIsUserWorkspace = BinderHelper.isBinderUserWorkspace(binder);
-		boolean binderTracked         = BinderHelper.isBinderTracked(bs, binderId);
-		boolean personTracked         = BinderHelper.isPersonTracked(bs, binderId);
-
-		// Build TrackInfo objects for the toolbar items we need to add
-		// for tracking (or untracking) whatever we're looking at.
-		if (binderTracked) {
-			if (personTracked) {
-				// User workspace:  Tracked / Person:  Tracked.
-				tiList.add(    new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
-				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
-			}
-			else {
-				if (binderIsUserWorkspace) {
-					// User workspace:  Tracked / Person:  Not Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
-					tiList.add(new TrackInfo("trackPerson", "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
-				}
-				else if (binderIsWorkspace) {
-					// Workspace:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
-				}
-				else if (binderIsCalendar) {
-					// Calendar:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisCalendarNot"));				
-				}
-				else {
-					// Folder:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisFolderNot"));				
-				}
-			}
-		}
-		else {
-			if (personTracked) {
-				// User workspace:  Not Tracked / Person:  Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
-				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
-			}
-			else if (binderIsUserWorkspace) {
-				// User workspace:  Not Tracked / Person:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
-			}
-			else if (binderIsWorkspace) {
-				// Workspace:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
-			}
-			else if (binderIsCalendar) {
-				// Calendar:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisCalendar"));				
-			}
-			else {
-				// Folder:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisFolder"));				
-			}
-		}
-		
-		return tiList;
 	}
 	
 	/**
@@ -1054,41 +943,6 @@ public class GwtUIHelper {
 		}
 		return reply;
 	}
-
-	/**
-	 * Return the 'WebAccess' setting from the given user or group
-	 * (i.e., UserPrincipal object.)
-	 * 
-	 * @param bs
-	 * @param upId
-	 * 
-	 * @return
-	 */
-	public static Boolean getWebAccessSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return AdminHelper.getWebAccessSettingFromUserOrGroup(bs, upId);
-	}
-
-	/**
-	 * Return the 'WebAccess' setting from the zone.
-	 * 
-	 * @param bs
-	 * 
-	 * @return
-	 */
-	public static Boolean getWebAccessSettingFromZone(AllModulesInjected bs) {
-		return AdminHelper.getWebAccessSettingFromZone(bs);
-	}
-	
-	/*
-	 * Returns true if the current user has access to the root
-	 * workspace and false otherwise.
-	 */
-	private static boolean hasRootDirAccess(AllModulesInjected bs) {
-		Workspace topWS;
-		try                  {topWS = bs.getWorkspaceModule().getTopWorkspace();}
-		catch (Exception ex) {topWS = null;                                     }
-		return (null != topWS);
-	}
 	
 	/**
 	 * Returns true if we're supposed to start with an activity stream
@@ -1097,9 +951,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static boolean isActivityStreamOnLogin() {
-		return (
-			(!(Utils.checkIfFilr())) &&									// Not Filr and...
-			SPropsUtil.getBoolean("activity.stream.on.login",  true));	// ...default at login is activity streams.
+		return IS_ACTIVITY_STREAMS_ON_LOGIN;
 	}
 	
 	/**
@@ -1137,7 +989,7 @@ public class GwtUIHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		return ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
 	}
-
+	
 	/**
 	 * Returns true if the GWT UI should be active and false otherwise.
 	 * 
@@ -1220,53 +1072,18 @@ public class GwtUIHelper {
 		return sessionCaptive.booleanValue();
 	}
 
-	/**
-	 * Returns true if the Vibe UI is in landing page debug mode and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isVibeDebugLP() {
-		return SPropsUtil.getBoolean("ssf.lp.debug.enabled", false);
-	}
-	
-	/**
-	 * Returns true if the Vibe UI is in debug mode and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isVibeUiDebug() {
-		return SPropsUtil.getBoolean("ssf.ui.debug.enabled", false);
-	}
-	
 	/*
 	 * Returns true if a request is a Vibe root URL or refers to a Vibe
 	 * root URL and returns false otherwise.
 	 */
-	@SuppressWarnings("deprecation")
 	private static boolean isVibeRootRequest(PortletRequest pRequest) {
 		// Is the base request a Vibe root URL?
-		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_NOVL_ROOT_FLAG, "");
+		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBEONPREM_ROOT_FLAG, "");
 		boolean reply = MiscUtil.hasString(urlParam);
-		if (!(reply)) {
-			urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBE_ROOT_FLAG_DEPRECATED, "");
-			reply = MiscUtil.hasString(urlParam);
-			if (!(reply)) {
-				urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBEONPREM_ROOT_FLAG_DEPRECATED, "");
-				reply = MiscUtil.hasString(urlParam);
-			}
-		}
 		if (!(reply)) {
 			// No!  Does the request refer to a Vibe root URL?
 			urlParam = getRefererUrl(pRequest);
-			reply = (0 < urlParam.indexOf(WebKeys.URL_NOVL_ROOT_FLAG));
-			if (!reply) {
-				reply = (0 < urlParam.indexOf(WebKeys.URL_VIBE_ROOT_FLAG_DEPRECATED));
-				if (!reply) {
-					reply = (0 < urlParam.indexOf(WebKeys.URL_VIBEONPREM_ROOT_FLAG_DEPRECATED));
-				}
-			}
+			reply = (0 < urlParam.indexOf(WebKeys.URL_VIBEONPREM_ROOT_FLAG));
 		}
 		
 		// If we get here, reply is true if the request is a Vibe root
@@ -1275,13 +1092,9 @@ public class GwtUIHelper {
 		return reply;
 	}
 	
-	/**
+	/*
 	 * Takes a Binder permalink and does what's necessary to bring up
 	 * the trash on that Binder.
-	 * 
-	 * @param binderPermalink
-	 * 
-	 * @return
 	 */
 	public static String getTrashPermalink(String binderPermalink) {
 		return appendUrlParam(binderPermalink, WebKeys.URL_SHOW_TRASH, "true");
@@ -1320,8 +1133,9 @@ public class GwtUIHelper {
 	 * 
 	 * @return
 	 */
-	public static String getHelpUrl() {
-		return MiscUtil.getHelpUrl("user", null, null);
+	public static String getHelpUrl()
+	{
+		return MiscUtil.getHelpUrl( "user", null, null );
 	}
 
 	/**
@@ -1410,36 +1224,24 @@ public class GwtUIHelper {
 	 * definition of m_requestInfo in GwtMainPage.jsp.
 	 * 
 	 * Items included are:
-	 * - vibeUIDebug
-	 * - vibeLPDebug
-	 * - vibeProduct
 	 * - sessionCaptive
 	 * - isNovellTeaming
-	 * - isFilr
-	 * - isFilrAndVibe
 	 * - isTinyMCECapable
-	 * - tinyMCELang
+	 * - vibeProduct
 	 * - productName
 	 * - ss_helpUrl
 	 * - topWSId
 	 * - showWhatsNew
-	 * - showCollection
-	 * - isFormLoginAllowed
 	 * 
 	 * @param request
 	 * @param bs
 	 * @param model
 	 */
 	public static void setCommonRequestInfoData(PortletRequest request, AllModulesInjected bs, Map<String, Object> model) {
-		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		
 		// Put out the flag indicating whether the UI should be in
 		// debug mode (i.e., perform extra checking, display messages,
 		// ...)
-		model.put(WebKeys.VIBE_UI_DEBUG, isVibeUiDebug());
-		
-		// Put out the flag indicating whether the landing page is in debug mode.
-		model.put(WebKeys.VIBE_LP_DEBUG, isVibeDebugLP());
+		model.put(WebKeys.VIBE_UI_DEBUG, SPropsUtil.getBoolean("ssf.ui.debug.enabled", false));
 		
 		// Put out the flag indicating which product we're running as.
 		// Note that we do this first as it has the side affect of
@@ -1453,48 +1255,22 @@ public class GwtUIHelper {
 		// Put out the flag that tells us if we are running Novell or
 		// Kablink Vibe.
 		String isNovellTeaming = Boolean.toString(ReleaseInfo.isLicenseRequiredEdition());
-		model.put("isNovellTeaming", isNovellTeaming);
+		model.put( "isNovellTeaming", isNovellTeaming );
 		
-		// Put out the flag that tells us if we are running Filr.
-		boolean isLicenseFilr = Utils.checkIfFilr();
-		model.put("isLicenseFilr", Boolean.toString(isLicenseFilr));
-		
-		// Put out the flag that tells us if we are running Filr and Vibe.
-		boolean isLicenseFilrAndVibe = Utils.checkIfFilrAndVibe();
-		model.put("isLicenseFilrAndVibe", Boolean.toString(isLicenseFilrAndVibe));
-		
-		// Put out the flag that tells us if we are running the Vibe UI (which also includes Kablink).
-		boolean isLicenseVibe = (Utils.checkIfVibe() || Utils.checkIfKablink());
-		model.put("isLicenseVibe", Boolean.toString(isLicenseVibe));
-		
-		// Put out the flag indicating if the user is a site
-		// administrator.
-		boolean isSiteAdmin = bs.getAdminModule().testAccess(AdminOperation.manageFunction);
-		model.put("isSiteAdmin", Boolean.toString(isSiteAdmin));
-		
-		// Put out flags indicating if the user is Guest or an external user.
-		model.put("isGuestUser",       currentUser.isShared()                      );
-		model.put("isExternalUser", (!(currentUser.getIdentityInfo().isInternal())));
-		
-		// Put out a flag indicating if the user should see a 'Public'
-		// collection.
-		model.put("showPublicCollection", AdminHelper.getEffectivePublicCollectionSetting(bs, currentUser));
-		
-		// Put out the flag that tells us if the tinyMCE editor will
-		// work on the device we are running on.  Get the list of user
-		// agents that the tinyMCE editor won't run on.
-		HttpServletRequest hRequest = WebHelper.getHttpServletRequest(request);
-		String unsupportedUserAgents = SPropsUtil.getString("TinyMCE.notSupportedUserAgents", "");
-		
-		// See if the tinyMCE editor is capable of running on the current device.
-		boolean isCapable = BrowserSniffer.is_TinyMCECapable(hRequest, unsupportedUserAgents);
-		model.put("isTinyMCECapable", Boolean.toString(isCapable));
-		
-		// Add the language code the tinyMCE editor will use.  It is different from the
-		// language is running in in the following way.  If the user is running
-		// Traditional Chinese the language code will be "tw".  If the user is running
-		// Simplified Chinese the language code will be "zh".
-		model.put("tinyMCELang", getTinyMCELanguage());
+		// Put out the flag that tells us if the tinyMCE editor will work on the device we are running on.
+		{
+			boolean isCapable;
+			String unsupportedUserAgents;
+			HttpServletRequest hRequest;
+			
+			// Get the list of user agents that the tinyMCE editor won't run on.
+			hRequest = WebHelper.getHttpServletRequest( request );
+			unsupportedUserAgents = SPropsUtil.getString( "TinyMCE.notSupportedUserAgents", "" );
+			
+			// See if the tinyMCE editor is capable of running on the current device.
+			isCapable = BrowserSniffer.is_TinyMCECapable( hRequest, unsupportedUserAgents );
+			model.put( "isTinyMCECapable", Boolean.toString( isCapable ) );
+		}
 
 		// Put out the name of the product (Novell or Kablink Vibe)
 		// that's running.
@@ -1502,171 +1278,24 @@ public class GwtUIHelper {
 		model.put("productName", productName);
 			
 		// Put out the main help URL for Vibe.
-		model.put(WebKeys.URL_HELPURL, getHelpUrl());
+		model.put(WebKeys.URL_HELPURL, GwtUIHelper.getHelpUrl());
 
 		// Put out the ID of the top Vibe workspace.
-		String topWSId = getTopWSIdSafely(bs);
+		String topWSId = GwtUIHelper.getTopWSIdSafely(bs);
 		model.put("topWSId", topWSId);
-		
-		// Put out the flag indicating whether cloud folders are
-		// enabled.
-		model.put(
-			WebKeys.CLOUD_FOLDERS_ENABLED,
-			(Utils.checkIfFilr() && CloudFolderHelper.CLOUD_FOLDERS_ENABLED));
-		
-		// Put out a flag indicating whether the current user has
-		// access to the root workspace.
-		model.put(WebKeys.HAS_ROOT_DIR_ACCESS, hasRootDirAccess(bs));
-
-		// Put out the character the current user uses for a decimal
-		// separator.
-		DecimalFormat df = ((DecimalFormat) DecimalFormat.getInstance(currentUser.getLocale()));
-		DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
-		char decimalSeparator = dfs.getDecimalSeparator();
-		model.put(WebKeys.DECIMAL_SEPARATOR, new String(new char[]{decimalSeparator}));
-
-		// Is the request to activate an activity stream? 
-		String	showWhatsNewS        = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
-		boolean	showWhatsNew         = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
-		boolean	showSpecificWhatsNew = false;
-		if (showWhatsNew) {
-			// Yes!  Does it contain a specific activity stream to
-			// activate?
-			String	asS                  = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC, "");
-			if (MiscUtil.hasString(asS)) {
-				// Yes!  Is it valid?
-				int		as       = UNKNOWN_ACTIVITY_STREAM;
-				Long	asItemId = null;
-				try                  {as = Integer.parseInt(asS);  }
-				catch (Exception ex) {as = UNKNOWN_ACTIVITY_STREAM;}
-				if (UNKNOWN_ACTIVITY_STREAM != as) {
-					// Yes!  Is there an ID parameter?
-					String asItemIdS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC_ID, "");
-					if (MiscUtil.hasString(asItemIdS)) {
-						try                  {asItemId = Long.parseLong(asItemIdS);         }
-						catch (Exception ex) {asItemId = null; as = UNKNOWN_ACTIVITY_STREAM;}
-					}
-				}
-	
-				// If we need to activate a specific activity stream...
-				showSpecificWhatsNew = (UNKNOWN_ACTIVITY_STREAM != as);
-				if (showSpecificWhatsNew) {
-					// ...put that information into the model.
-					model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC,    String.valueOf(as));
-					model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC_ID, String.valueOf((null == asItemId) ? (-1) : asItemId.longValue()));
-				}
-			}
-			
-			// If we don't need to activate a specific activity stream...
-			if (!showSpecificWhatsNew) {
-				// ...put that information into the model as well.
-				model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC,    String.valueOf(UNKNOWN_ACTIVITY_STREAM));
-				model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC_ID, String.valueOf(-1)                     );
-			}
-		}
-
-		// Are we in Filr mode?
-		if (isLicenseFilr) {
-			// Yes!  In Filr mode, we only show what's new if a
-			// specific activity stream was requested.
-			showWhatsNew = showSpecificWhatsNew;
-			
-			// Does the user have rights to see other users?
-			{
-				Binder binder;
-				boolean canSeeOtherUsers;
-				CoreDao coreDao;
-				
-				coreDao = (CoreDao) SpringContextUtil.getBean( "coreDao" );
-				binder = coreDao.loadReservedBinder(
-												ObjectKeys.PROFILE_ROOT_INTERNALID,
-												RequestContextHolder.getRequestContext().getZoneId() );
-				canSeeOtherUsers = bs.getBinderModule().testAccess( binder, BinderOperation.readEntries );
-				model.put( "canSeeOtherUsers", String.valueOf( canSeeOtherUsers ) );
-			}
-		}
 		
 		// Put out a true/false indicator as to the state of the
 		// activity streams based user interface.
-		model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));
-
-		// Are we activating an activity stream?
-		if (!showWhatsNew) {
-			// No!  If there's a show collection setting...
-			String showCollection = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_COLLECTION, "");
-			if (MiscUtil.hasString(showCollection)) {
-				// ...put that out.
-				int sc = Integer.parseInt(showCollection);
-				if (PermaLinkUtil.COLLECTION_USER_DEFAULT == sc) {
-					if      (SearchUtils.userCanAccessMyFiles(bs, currentUser)) sc = PermaLinkUtil.COLLECTION_MY_FILES;
-					else if (currentUser.isShared() && isLicenseFilr)           sc = PermaLinkUtil.COLLECTION_SHARED_PUBLIC;
-					else                                                        sc = PermaLinkUtil.COLLECTION_SHARED_WITH_ME;
-					showCollection = String.valueOf(sc);
-				}
-				model.put(WebKeys.URL_SHOW_COLLECTION, showCollection);
-			}
-		}
+		String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
+		boolean showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
+		model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));		
 
 		// Put out the flag indicating whether login is allowed via our standard login dialog.
 		// Logging in via our standard login dialog will be disabled if we are running behind
 		// a single-sign on product such as NAM.
 		Boolean loginDisallowed;
-		loginDisallowed = SPropsUtil.getBoolean("form.login.auth.disallowed", false);
-		model.put(WebKeys.IS_FORM_LOGIN_ALLOWED, (!loginDisallowed));
-		
-		// Add the id of the "all external users" group.
-		{
-			Long id;
-			
-			id = Utils.getAllExtUsersGroupId();
-			if ( id != null )
-				model.put( "allExternalUsersGroupId", id.toString() );
-		}
-		
-		// Add the id of the "all users" or "all internal users" group.
-		{
-			Long id;
-			
-			id = Utils.getAllUsersGroupId();
-			if ( id != null )
-				model.put( "allInternalUsersGroupId", id.toString() );
-		}
-		
-		// Add the id of the "guest" user.
-		{
-			Long id;
-			
-			id = Utils.getGuestId( bs );
-			if ( id != null )
-				model.put( "guestId", id.toString() );
-		}
-
-		// Add a flag that will allow the admin to not show the "show people" link in the mast head
-		{
-			Boolean allowShowPeople;
-		
-			allowShowPeople = SPropsUtil.getBoolean( "allow.show.people", true );
-			model.put( "allowShowPeople", allowShowPeople );
-		}
-	}
-	
-	/**
-	 * Return the language the tinyMCE editor should use.  The language is different from the
-	 * language the user is running in in the following way.  If the user is running
-	 * Traditional Chinese the language code will be "tw".  If the user is running
-	 * Simplified Chinese the language code will be "zh".
-	 */
-	public static String getTinyMCELanguage() {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String langCode = user.getLocale().getLanguage();
-		String country = user.getLocale().getCountry();
-		if ((null != country) && country.equalsIgnoreCase("tw")) {
-			langCode = "tw";
-		}
-		else if ((null != country) && country.equalsIgnoreCase("cn")) {
-			langCode = "zh";
-		}
-		return langCode;
+		loginDisallowed = SPropsUtil.getBoolean( "form.login.auth.disallowed", false );
+		model.put( WebKeys.IS_FORM_LOGIN_ALLOWED,  !loginDisallowed );
 	}
 	
 	/**
@@ -1696,7 +1325,7 @@ public class GwtUIHelper {
 		// titles in yet...
 		if ((-1) == TREE_TITLE_FORMAT) {
 			// ...read it now.
-			TREE_TITLE_FORMAT = SPropsUtil.getInt(
+			TREE_TITLE_FORMAT = SPropsUtil.getInt( 
 				TREE_TITLE_FORMAT_KEY,
 				TREE_TITLE_FORMAT_DEFAULT);
 

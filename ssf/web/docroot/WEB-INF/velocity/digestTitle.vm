@@ -52,17 +52,8 @@
     <br/>
     <div>
       <span style="#ss_labelLeft()">${ssVisitor.getNLT("notify.forum.label")}</span>
-	  <span style="#ss_eFolderLink()">
-        #if ($ssVisitor.Entity.ParentBinder.ParentBinder)
-	      <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.ParentBinder)"
-	        title="$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.PathName})"
-	      >$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.Title})</a>
-	      / 
-	    #end
-	    <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder)">
-	      $esc.html(${ssVisitor.Entity.ParentBinder.Title})
-	    </a>
-	  </span>
+	  <span style="#ss_eFolderLink()"><a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder)">
+	    $esc.html(${ssVisitor.Entity.ParentBinder.Title})</a></span>
     </div>
     <span style="#ss_labelLeft()">${ssVisitor.getNLT("notify.fromLabel")}</span>&nbsp;$esc.html(${ssElement.attributeValue('notifyFrom')})<br/>
     <span style="#ss_labelLeft()">${ssVisitor.getNLT("notify.date")}</span>&nbsp;${ssElement.attributeValue('notifyDate')}<br/>

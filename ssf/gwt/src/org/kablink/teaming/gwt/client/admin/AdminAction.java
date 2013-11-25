@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,51 +30,41 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.admin;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+
 /**
- * This class defines all the possible types of administration actions
- * that a user can perform.
+ * This class defines all the possible types of administration actions that a user can perform.
  * 
- * @author jwootton@novell.com
+ * @author jwootton
  */
 public enum AdminAction implements IsSerializable
 {
 	ACCESS_CONTROL_FOR_ZONE_ADMIN_FUNCTIONS( "Access control for zone administration functions" ),
 	ADD_USER( "Add user" ),
-	CONFIGURE_ADHOC_FOLDERS( "Configure adhoc folder" ),
 	CONFIGURE_EMAIL( "Configure email" ),
 	CONFIGURE_FILE_SYNC_APP( "Configure File Sync App" ),
 	CONFIGURE_FILE_VERSION_AGING( "Configure file version aging" ),
 	CONFIGURE_FOLDER_INDEX( "Configure folder index" ),
 	CONFIGURE_FOLDER_SEARCH_NODES( "Configure folder search nodes" ),
+	CONFIGURE_GUEST_ACCESS( "Configure guest access" ),
 	CONFIGURE_HOME_PAGE( "Configure home page" ),
 	CONFIGURE_MOBILE_ACCESS( "Configure mobile access" ),
-	CONFIGURE_MOBILE_APPS( "Configure Mobile Apps" ),
-	CONFIGURE_NAME_COMPLETION( "Configure name completion settings" ),
 	CONFIGURE_ROLE_DEFINITIONS( "Configure role definitions" ),
 	CONFIGURE_SCHEDULE( "Configure weekend and holiday schedule" ),
 	CONFIGURE_SEARCH_INDEX( "Configure search index" ),
-	CONFIGURE_SHARE_SETTINGS( "Configure share settings" ),
-	CONFIGURE_USER_ACCESS( "Configure user access" ),
 	FORM_VIEW_DESIGNER( "Form/View Designer" ),
 	IMPORT_PROFILES( "Import profiles" ),
-	JITS_ZONE_CONFIG( "Jits zone configuration" ),
 	LDAP_CONFIG( "LDAP configuration" ),
 	MANAGE_APPLICATIONS( "Manage applications" ),
 	MANAGE_APPLICATION_GROUPS( "Manage application groups" ),
-	MANAGE_DATABASE_PRUNE( "Manage database prune" ),
 	MANAGE_EXTENSIONS( "Manage extensions" ),
 	MANAGE_GROUPS( "Manage groups" ),
 	MANAGE_LICENSE( "Manage license" ),
-	MANAGE_NET_FOLDERS( "Manage net folders" ),
 	MANAGE_QUOTAS( "Manage quotas" ),
-	MANAGE_FILE_UPLOAD_LIMITS( "Manage file upload limits" ),
-	MANAGE_MOBILE_DEVICES( "Manage mobile devices" ),
-	MANAGE_RESOURCE_DRIVERS( "Manage resource drivers" ),
-	MANAGE_SHARE_ITEMS( "Manage share items" ),
 	MANAGE_USER_ACCOUNTS( "Manage user accounts" ),
 	MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES( "Manage workspace and folder templates" ),
 	MANAGE_ZONES( "Manage zones" ),
@@ -91,7 +81,6 @@ public enum AdminAction implements IsSerializable
 	REPORT_VIEW_CHANGELOG( "Report: view change log" ),
 	REPORT_VIEW_CREDITS( "Report: view credits" ),
 	REPORT_VIEW_SYSTEM_ERROR_LOG( "Report: view system error log" ),
-	RUN_A_REPORT( "Reports: select a report to run" ),
 	SITE_BRANDING( "Site branding" ),
 
 	// This is used as a default case to store a AdminAction when
@@ -114,26 +103,5 @@ public enum AdminAction implements IsSerializable
 	{
 		return m_unlocalizedDesc;
 	}// end getUnlocalizedDesc()
-	
-	/**
-	 * Converts the ordinal value of an AdminAction to its enumeration
-	 * equivalent.
-	 * 
-	 * @param actionOrdinal
-	 * 
-	 * @return
-	 */
-	public static AdminAction getEnum( int actionOrdinal )
-	{
-		AdminAction action;
-		try
-		{
-			action = AdminAction.values()[actionOrdinal];
-		}
-		catch ( ArrayIndexOutOfBoundsException e )
-		{
-			action = AdminAction.UNDEFINED;
-		}
-		return action;
-	}// end getEnum()
+
 }// end AdminAction

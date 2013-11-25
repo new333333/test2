@@ -48,7 +48,6 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Group;
@@ -66,8 +65,8 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.ChainedInputData;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.BaseService;
-import org.kablink.teaming.remoting.ws.RemotingException;
 import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.GroupBrief;
@@ -454,16 +453,36 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 	}
 
 	public BinderBrief[] profile_getFavorites(String accessToken) {
-        List<Binder> binders = getProfileModule().getUserFavorites(null);
-		List<BinderBrief> briefs = new ArrayList<BinderBrief>();
-        for (Binder binder : binders) {
-            BinderBrief brief = new BinderBrief();
-            fillBinderBriefModel(brief, binder);
-            briefs.add(brief);
-        }
-
-		BinderBrief[] ret = new BinderBrief[briefs.size()];
-        briefs.toArray(ret);
+		List<BinderBrief> binders = new ArrayList<BinderBrief>();
+		Document favorites = null;
+		UserProperties userProperties = getProfileModule().getUserProperties(null);
+		Object obj = userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
+		
+		if(obj != null) {
+			if(obj instanceof Document) {
+				favorites = (Document)obj;
+			} else {
+				try {
+					favorites = DocumentHelper.parseText((String)obj);
+				} catch (DocumentException e) {}
+			}
+		}
+		
+		if(favorites != null) {
+			java.util.Iterator it = favorites.getRootElement().selectNodes("favorite[@type=\"binder\"]").iterator();
+			while(it.hasNext()) {
+				Element e = (Element)it.next();
+				org.kablink.teaming.domain.Binder binder = getBinderIfAccessible(Long.valueOf(e.attributeValue("value")));
+				if(binder != null){
+					BinderBrief brief = new BinderBrief();
+					fillBinderBriefModel(brief, binder);
+					binders.add(brief);
+				}
+			}
+		}
+		
+		BinderBrief[] ret = new BinderBrief[binders.size()];
+		binders.toArray(ret);
 		return ret;
 	}
 

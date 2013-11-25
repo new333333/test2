@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,7 +43,6 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
@@ -78,24 +79,23 @@ import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Tag;
-import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
-import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.ResourceSession;
 import org.kablink.teaming.jobs.BinderReindex;
 import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
 import org.kablink.teaming.jobs.MirroredFolderSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
@@ -109,29 +109,26 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.rss.RssModule;
-import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.EntryBuilder;
 import org.kablink.teaming.module.shared.InputDataAccessor;
-import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.shared.XmlUtils;
-import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
+import org.kablink.teaming.relevance.RelevanceManager;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.relevance.util.RelevanceUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.search.LuceneReadSession;
+import org.kablink.teaming.search.LuceneWriteSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -140,24 +137,20 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
-import org.kablink.util.search.FieldFactory;
-import org.quartz.SchedulerException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+
 /**
- * ?
+ *
  * 
- * @author ?
  */
-@SuppressWarnings({"unchecked", "unused"})
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
 	private static  String[] docTypes = new String[] {Constants.DOC_TYPE_ENTRY,Constants.DOC_TYPE_ATTACHMENT};
@@ -167,6 +160,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	fieldsOnlyIndexArgs.put(DefinitionModule.INDEX_FIELDS_ONLY, Boolean.TRUE);
 	}
     
+ 
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
@@ -226,14 +220,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		this.rssModule = rssModule;
 	}
 	
-	private TemplateModule templateModule;
-	protected TemplateModule getTemplateModule() {
-		return templateModule;
-	}
-	public void setTemplateModule(TemplateModule templateModule) {
-		this.templateModule = templateModule;
-	}
-	
 	private TransactionTemplate transactionTemplate;
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
@@ -252,8 +238,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
 	//***********************************************************************************************************	
     //no transaction    
-    @Override
-	public Binder addBinder(final Binder parent, Definition def, Class clazz, 
+    public Binder addBinder(final Binder parent, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
@@ -269,7 +254,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
-        List allUploadItems = new ArrayList(fileUploadItems);
         EntryDataErrors entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
         if (entryDataErrors.getProblems().size() > 0) {
         	//An error occurred processing the entry Data
@@ -293,15 +277,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	entryData.put("title", title);
 	        }
 	        if (Validator.isNull(title)) throw new TitleException("");
-    		if (Validator.containsPathCharacters(title)) throw new IllegalCharacterInNameException("errorcode.title.pathCharacters", new Object[]{title}); 
+    		if (Validator.containsPathCharacters(title)) throw new IllegalCharacterInNameException("errorcode.title.pathCharacters", new Object[]{title});
 	        
 	        binder.setPathName(parent.getPathName() + "/" + title);
 	        
 	        SimpleProfiler.start("addBinder_transactionExecute");
 	        // The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	@Override
-				public Object doInTransaction(TransactionStatus status) {
+	        	public Object doInTransaction(TransactionStatus status) {
 	                //need to set entry/binder information before generating file attachments
 	                //Attachments/Events need binder info for AnyOwner
 	                addBinder_fillIn(parent, binder, inputData, entryData, ctx);
@@ -350,7 +333,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    	}
     	}
     	finally {
-	        cleanupFiles(allUploadItems);
+	        cleanupFiles(fileUploadItems);
     	}
     }
     //inside write transaction    
@@ -362,11 +345,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
   		FilesErrors nameErrors = new FilesErrors();
    		
    		checkInputFileNames(fileUploadItems, nameErrors);
-
-        FilesErrors checkSumErrors = getFileModule().verifyCheckSums(fileUploadItems);
   		FilesErrors filterErrors = getFileModule().filterFiles(binder, binder, fileUploadItems);
     	filterErrors.getProblems().addAll(nameErrors.getProblems());
-        filterErrors.getProblems().addAll(checkSumErrors.getProblems());
     	return filterErrors;
     }
 
@@ -415,17 +395,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         processCreationTimestamp(binder, ctx);
         processModificationTimestamp(binder, binder.getCreation(), ctx);
         binder.setLogVersion(Long.valueOf(1));
-        
-        Principal owner = binder.getCreation().getPrincipal();
-        if(ctx.containsKey(ObjectKeys.INPUT_OPTION_OWNER_ID)) {
-        	try {
-        		owner = getProfileDao().loadUser((Long)ctx.get(ObjectKeys.INPUT_OPTION_OWNER_ID), RequestContextHolder.getRequestContext().getZoneId());
-        	}
-        	catch(Exception e) {
-        		logger.warn("Error loading owning user '" + ctx.get(ObjectKeys.INPUT_OPTION_OWNER_ID).toString() + "'. Defaulting to creator.");
-        	}
-        }
-        binder.setOwner(owner);
+        binder.setOwner(binder.getCreation().getPrincipal());
 
        	//force a lock so contention on the sortKey is reduced
         Object lock = ctx.get(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
@@ -450,12 +420,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		}
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
    			entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_UNIQUETITLES)));
-   		}
-  		if (inputData.exists(ObjectKeys.FIELD_BINDER_INHERITFUNCTIONS) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_INHERITFUNCTIONS)) {
-   			entryData.put(ObjectKeys.FIELD_BINDER_INHERITFUNCTIONS, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_INHERITFUNCTIONS)));
-   		}
-  		if (inputData.exists(ObjectKeys.FIELD_BINDER_INHERITDEFINITIONS) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_INHERITDEFINITIONS)) {
-   			entryData.put(ObjectKeys.FIELD_BINDER_INHERITDEFINITIONS, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_INHERITDEFINITIONS)));
    		}
   		if (inputData.exists(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS)) {
    			entryData.put(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS)));
@@ -483,7 +447,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  					binder.setResourceDriverName(parent.getResourceDriverName());
  				}
  				else {
- 					throw new ConfigurationException("errorcode.mirrored.folder.requires.resource.driver." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), new Object[]{});
+ 					throw new ConfigurationException("errorcode.mirrored.folder.requires.resource.driver", new Object[]{});
  				}
  			}
  			else {
@@ -514,26 +478,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		if(parent.isMirrored() && parent.getResourceDriverName() == null) {
 			// We  allow adding sub-folder to a mirrored folder that has not been fully configured yet,
 			// since it can lead to 
-			throw new NotSupportedException("errorcode.notsupported.addBinder.unconfiguredParentMirroredBinder." + (parent.isAclExternallyControlled() ? "net" : "mirrored"), 
+			throw new NotSupportedException("errorcode.notsupported.addBinder.unconfiguredParentMirroredBinder", 
 					new String[] {binder.getPathName()});
 		}		
 		
-		if (binder.isMirrored() || parent.isMirrored()) { 
-			// The newly created binder is a mirrored one or its parent is one.
+		if(binder.isMirrored()) { // The newly created binder is a mirrored one.
 			// Make sure that the resource path we store is normalized.
-			if (!binder.isMirrored()) {
-				//If the binder is not mirrored, force it to be mirrored since only mirrored folders are allowed in a mirrored folder.
-				binder.setMirrored(true);
-			}
 	    	normalizeResourcePathIfInInput(binder, inputData);
-	    	binder.setResourceDriverName(parent.getResourceDriverName());
 						
 	    	if(binder.getResourceDriverName() != null) {
 				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
 				ResourceSession session = null;
 				try {
 					if(binder.getResourcePath() == null && parent.getResourcePath() != null) {
-						session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.CREATE_FOLDER, parent);
+						session = driver.openSession();
 						session.setPath(parent.getResourcePath(), binder.getTitle());
 						binder.setResourcePath(session.getPath());
 						normalizeResourcePath(binder);
@@ -546,12 +504,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 					if(Boolean.TRUE.equals(synchToSource)) {
 						
 						if(driver.isReadonly()) {
-							throw new NotSupportedException("errorcode.notsupported.addMirroredBinder.readonly." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), 
+							throw new NotSupportedException("errorcode.notsupported.addMirroredBinder.readonly", 
 									new String[] {binder.getPathName(), driver.getTitle()});
 						}
 						else {
 							if(session == null) {						
-								session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.CREATE_FOLDER, parent);
+								session = driver.openSession();
 								session.setPath(binder.getResourcePath());
 							}
 							
@@ -578,10 +536,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
    //inside write transaction    
     protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
-		boolean skipDbLog = false;
-		if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG))
-			skipDbLog = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG)).booleanValue();
-
   		if (inputData.exists(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS)) {
   			List<WorkAreaFunctionMembership> wfms = (List)inputData.getSingleObject(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS);
   			if (wfms != null && !wfms.isEmpty()) { 
@@ -612,12 +566,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			Event event = it.next();
 			event.generateUid(binder);
 		}
-	
+		
  		//create history - using timestamp and version from fillIn
-    	processChangeLog(binder, ChangeLog.ADDBINDER, skipDbLog);
-
-		if(!skipDbLog)
-	    	getReportModule().addAuditTrail(AuditType.add, binder);
+    	processChangeLog(binder, ChangeLog.ADDBINDER);
+    	getReportModule().addAuditTrail(AuditType.add, binder);
     	
     	
     	// Should have a BinderQuota for the newly created binder.
@@ -639,8 +591,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		bq.setDiskSpaceUsedCumulative(0L);
     		getCoreDao().save(bq);
     	}
-    	
-    	updateParentModTime(parent, ctx);
     }
 
     //inside write transaction    
@@ -682,102 +632,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    			if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
    				entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
    			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_IS_HOME_DIR ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_IS_HOME_DIR ) )
-   			{
-   				Boolean homeDir = null;
-   				
-   				homeDir = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_IS_HOME_DIR ) );
-   				if ( homeDir != null )
-   					entryData.put( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, homeDir );
-   			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR ) )
-   			{
-   				Boolean myFilesDir = null;
-   				
-   				myFilesDir = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR ) );
-   				if ( myFilesDir != null )
-   					entryData.put( ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR, myFilesDir );
-   			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA ) )
-   			{
-   				Boolean allow = null;
-   				
-   				allow = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA ) );
-   				if ( allow != null )
-   					entryData.put( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA, allow );
-   			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA ) )
-   			{
-   				Boolean allow = null;
-   				
-   				allow = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA ) );
-   				if ( allow != null )
-   					entryData.put( ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA, allow );
-   			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_INDEX_CONTENT ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_INDEX_CONTENT ) )
-   			{
-   				Boolean index = null;
-   				
-   				index = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_INDEX_CONTENT ) );
-   				if ( index != null )
-   					entryData.put( ObjectKeys.FIELD_BINDER_INDEX_CONTENT, index );
-   			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_JITS_ENABLED ) &&
-   				 !entryData.containsKey( ObjectKeys.FIELD_BINDER_JITS_ENABLED ) )
-   			{
-   				Boolean enabled = null;
-   				
-   				enabled = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_JITS_ENABLED ) );
-   				if ( enabled != null )
-   					entryData.put( ObjectKeys.FIELD_BINDER_JITS_ENABLED, enabled );
-   			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE ) &&
-   				 !entryData.containsKey( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE ) )
-   			{
-   				Long value;
-   				
-   				value = Long.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE ) );
-   				if ( value != null )
-   					entryData.put( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE, value );
-   			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE ) &&
-      			 !entryData.containsKey( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE ) )
-   			{
-   				Long value;
-   				
-   				value = Long.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE ) );
-   				if ( value != null )
-   					entryData.put( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE, value );
-   			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION ) &&
-         		 !entryData.containsKey( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION ) )
-  			{
-  				Object value;
-  				
-  				value = inputData.getSingleObject( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION );
-				entryData.put( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION, value );
-  			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY ) )
-   			{
-   				Boolean dirOnly = null;
-   				Object value;
-   				
-   				value = inputData.getSingleObject( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY ); 
-   				if ( value != null )
-   	   				dirOnly = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY ) );
- 
-   				entryData.put( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY, dirOnly );
-   			}
    		}
    		Boolean library = null;
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY))
@@ -788,8 +642,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  	}
     //***********************************************************************************************************
     //no transaction    
-    @Override
-	public void modifyBinder(final Binder binder, final InputDataAccessor inputData, 
+    public void modifyBinder(final Binder binder, final InputDataAccessor inputData, 
     		Map fileItems, final Collection deleteAttachments, Map options) 
     		throws AccessControlException, WriteFilesException, WriteEntryDataException {
 	
@@ -802,7 +655,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
-        List allUploadItems = new ArrayList(fileUploadItems);
 	    EntryDataErrors entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
         if (entryDataErrors.getProblems().size() > 0) {
         	//An error occurred processing the entry Data
@@ -818,8 +670,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    SimpleProfiler.start("modifyBinder_transactionExecute");
 	    	// The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	@Override
-				public Object doInTransaction(TransactionStatus status) {
+	        	public Object doInTransaction(TransactionStatus status) {
 	        		String oldTitle = binder.getTitle();
 	        		String oldNormalTitle = binder.getNormalTitle();
 	        		modifyBinder_fillIn(binder, inputData, entryData, ctx);
@@ -875,7 +726,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    		return;
 	    	}
 	    } finally {
-		    cleanupFiles(allUploadItems);
+		    cleanupFiles(fileUploadItems);
 	    }
 	}
     //no transaction    
@@ -888,10 +739,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
   		FilesErrors nameErrors = new FilesErrors();
    		
    		checkInputFileNames(fileUploadItems, nameErrors);
-        FilesErrors checkSumErrors = getFileModule().verifyCheckSums(fileUploadItems);
   		FilesErrors filterErrors = getFileModule().filterFiles(binder, binder, fileUploadItems);
     	filterErrors.getProblems().addAll(nameErrors.getProblems());
-    	filterErrors.getProblems().addAll(checkSumErrors.getProblems());
     	return filterErrors;
     }
 
@@ -959,11 +808,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
     		
     		if(driver.isReadonly()) {
-				throw new NotSupportedException("errorcode.notsupported.renameMirroredBinder.readonly." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), 
+				throw new NotSupportedException("errorcode.notsupported.renameMirroredBinder.readonly", 
 						new String[] {binder.getPathName(), driver.getTitle()});
     		}
     		else {
-				ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.UPDATE, binder.getParentBinder()).setPath(binder.getResourcePath());
+				ResourceSession session = driver.openSession().setPath(binder.getResourcePath());
 				try {
 					session.move(binder.getParentBinder().getResourcePath(), newTitle);
 					
@@ -1053,22 +902,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     //***********************************************************************************************************
     //inside write transaction    
-    @Override
-	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, boolean skipDbLog) {
+    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
     	if (binder.isReserved() && !binder.getRoot().isDeleted()) 
     		throw new NotSupportedException(
     				"errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()});
-    	
+    	SimpleProfiler.start("deleteBinder_preDelete");
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
      	deleteBinder_setCtx(binder, ctx);
-     	
-        SimpleProfiler.start("deleteBinder_indexDel");
-        deleteBinder_indexDel(binder, ctx);
-        SimpleProfiler.stop("deleteBinder_indexDel");
-     
-    	SimpleProfiler.start("deleteBinder_preDelete");
-        deleteBinder_preDelete(binder,ctx, skipDbLog);
+        deleteBinder_preDelete(binder,ctx);
         SimpleProfiler.stop("deleteBinder_preDelete");
         
         SimpleProfiler.start("deleteBinder_processFiles");
@@ -1094,9 +936,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         deleteBinder_postDelete(binder, ctx);
         SimpleProfiler.stop("deleteBinder_postDelete");
         
-        SimpleProfiler.start("deleteBinder_deleteRssFeed");
-        doRssDelete(binder);
-        SimpleProfiler.stop("deleteBinder_deleteRssFeed");
+        SimpleProfiler.start("deleteBinder_indexDel");
+        deleteBinder_indexDel(binder, ctx);
+        SimpleProfiler.stop("deleteBinder_indexDel");
      
         //SimpleProfiler.done(logger);
     }
@@ -1105,19 +947,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     //inside write transaction    
-   protected void deleteBinder_preDelete(Binder binder, Map ctx, boolean skipDbLog) { 
+   protected void deleteBinder_preDelete(Binder binder, Map ctx) { 
      	//create history - using timestamp and version from fillIn
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setModification(new HistoryStamp(user));
         binder.incrLogVersion();
-    	processChangeLog(binder, ChangeLog.DELETEBINDER, skipDbLog);
-        if(!skipDbLog) {
-        	// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
-        	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate());
-        }
+    	processChangeLog(binder, ChangeLog.DELETEBINDER);
+   		// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
+    	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate());
     	if ((binder.getDefinitionType() != null) &&
-    			(binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW ||
-    				binder.getDefinitionType() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
+    			binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
     		//remove connection
    			Principal owner = binder.getCreation().getPrincipal(); //creator is user
    			if (binder.getId().equals(owner.getWorkspaceId()))
@@ -1127,8 +966,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
     			RequestContextHolder.getRequestContext().getZoneId(), binder);
 	    
-    	//remove share items associated with this binder or with any entries within this binder
-    	getCoreDao().purgeShares(binder, true);
+
     }
   
     
@@ -1139,38 +977,33 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //inside write transaction    
    protected void deleteBinder_mirrored(Binder binder, boolean deleteMirroredSource, Map ctx) {
+	   // Delete associated schedule, if any.
+	   if(binder.isMirrored()) {
+		   MirroredFolderSynchronization sync = new DefaultMirroredFolderSynchronization();
+		   ScheduleInfo si = sync.getScheduleInfo(binder.getZoneId(), binder.getId());
+		   if(si != null && si.isEnabled()) {
+			   si.setEnabled(false);
+			   sync.setScheduleInfo(si, binder.getId());
+		   }
+	   }
+	   
 	   	// Delete the source resource, if so required.
     	if(deleteMirroredSource && binder.isMirrored() && binder.getResourceDriverName() != null) {
     		try {
 				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
 
 				if(driver.isReadonly()) {
-					throw new NotSupportedException("errorcode.notsupported.deleteMirroredBinder.readonly." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), 
+					throw new NotSupportedException("errorcode.notsupported.deleteMirroredBinder.readonly", 
 							new String[] {binder.getPathName(), driver.getTitle()});
 				}
 				else {
-					//Guard against deleting the whole mirrored source by accident
-					boolean okToDeleteSource = true;
-					if (binder.isAclExternallyControlled() && 
-							binder.getParentBinder() != null && binder.getParentBinder().isAclExternallyControlled() &&
-							binder.getParentBinder().getResourceDriverName().equals(binder.getResourceDriverName())) {
-						
-						//This is a sub-folder of a net folder. Check that it has a proper resource path
-						if (binder.getResourcePath() == null || binder.getResourcePath().equals("") || 
-								binder.getResourcePath().equals("/")) {
-							//Don't allow deleting of this source because it looks like the configuration wasn't properly completed.
-							okToDeleteSource = false;
-						}
-					}
-					if (okToDeleteSource) {
-		    			ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.DELETE, binder.getParentBinder()).setPath(binder.getResourcePath());
-		    			try {
-		    				session.delete();
-		    			}
-		    			finally {
-		    				session.close();
-		    			}	
-					}
+	    			ResourceSession session = driver.openSession().setPath(binder.getResourcePath());
+	    			try {
+	    				session.delete();
+	    			}
+	    			finally {
+	    				session.close();
+	    			}	
 				}
     		}
     		catch(NotSupportedException e) {
@@ -1201,14 +1034,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void deleteBinder_indexDel(Binder binder, Map ctx) {
         // Delete the document that's currently in the index.
     	indexDeleteBinder(binder);
-    	// Flush out index changes immediately rather than waiting for the module interceptor to do it.
-    	IndexSynchronizationManager.applyChanges();
     }
     
     //***********************************************************************************************************
     //inside write transaction    
-    @Override
-	public void moveBinder(Binder source, Binder destination, Map options) {
+    public void moveBinder(Binder source, Binder destination, Map options) {
     	if (source.equals(destination)) return;
     	if (source.isReserved() || source.isZone()) 
     		throw new NotSupportedException(
@@ -1223,10 +1053,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if (!checkMoveBinderQuota(source, destination)) {
     		throw new NotSupportedException("errorcode.notsupported.moveBinderDestinationQuota", new String[] {destination.getPathName()});
     	}
-    	
- 		//Clear the RSS feed of the original source binder before it is moved
- 		doRssUpdate(source);
-
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
      	moveBinder_setCtx(source, destination, ctx);
@@ -1236,14 +1062,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	moveBinder_postMove(source, destination, resourcePathAffected, ctx);
     	
  		moveBinder_index(source, ctx);
- 		
- 		//Clear the RSS feed of its new destination after the move
- 		doRssUpdate(source);
+
     }
     
     //Check to see if destination folder has enough quota
-    @Override
-	public boolean checkMoveBinderQuota(Binder source, Binder destination) {
+    public boolean checkMoveBinderQuota(Binder source, Binder destination) {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	if (getBinderModule().isBinderDiskQuotaEnabled()) {
 	    	Long minQuotaLeft = getBinderModule().getMinBinderQuotaLeft(destination);
@@ -1272,8 +1095,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
 
     //Check to see if destination folder has enough quota
-    @Override
-	public boolean checkMoveEntryQuota(Binder source, Binder destination, FolderEntry entry) {
+    public boolean checkMoveEntryQuota(Binder source, Binder destination, FolderEntry entry) {
     	SortedSet<FileAttachment> atts = entry.getFileAttachments();
     	Long totalFileSizes = 0L;
     	for (FileAttachment att : atts) {
@@ -1348,12 +1170,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     					ResourceDriver driver = getResourceDriverManager().getDriver(source.getResourceDriverName());
     					
     		    		if(driver.isReadonly()) {
-    						throw new NotSupportedException("errorcode.notsupported.moveMirroredBinder.readonly." + (destination.isAclExternallyControlled() ? "net" : "mirrored"), 
+    						throw new NotSupportedException("errorcode.notsupported.moveMirroredBinder.readonly", 
     								new String[] {source.getPathName(), driver.getTitle()});
     		    		}
     		    		else {
         					// We can/must move the resource.
-	    					ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.MOVE_FOLDER, source.getParentBinder(), destination).setPath(source.getResourcePath()); 
+	    					ResourceSession session = driver.openSession().setPath(source.getResourcePath()); 
 	    					try {
 	    						session.move(destination.getResourcePath(), source.getTitle());  	
 	    						// Do not yet update the resource path in the source, it will be done by callder.
@@ -1373,14 +1195,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			else {
 					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
 							+ "] because the source is not top-level mirrored and the destination is not mirrored");
-		      		throw new NotSupportedException("errorcode.notsupported.moveBinderMirroredToNonMirrored." + (source.isAclExternallyControlled() ? "net" : "mirrored"));  				
+		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});  				
     			}
     		}
     		else { // top-level mirrored
     			if(destination.isMirrored()) {
 					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
 							+ "] because the source is top-level mirrored and the destination is already mirrored");
-		      		throw new NotSupportedException("errorcode.notsupported.moveBinderTopMirroredDestinationMirrored." + (source.isAclExternallyControlled() ? "net" : "mirrored"));
+		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
     			}
     			else {
     				// Does not involve resource moving.
@@ -1404,13 +1226,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	//Only need to update this on top level of binder tree.  Children relative to the same binder
 		//remove title from old parent
     	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
-		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);
-		// Let's check if the caller also wants to change the title of the binder while moving it.
-		String newTitle = (ctx==null)?null:(String)ctx.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE);
-		if(Validator.isNotNull(newTitle))
-			source.setTitle(newTitle);
-
-        source.copyInheritedDefinitions();
+		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);		
 		source.move(destination);
     	//now add name to new parent 
 		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
@@ -1450,8 +1266,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void moveBinder_log(Binder binder, HistoryStamp stamp) {
     	binder.setModification(stamp);
  		binder.incrLogVersion();
- 		ChangeLog changes = ChangeLogUtils.create(binder, ChangeLog.MOVEBINDER);
- 		ChangeLogUtils.save(changes);
+ 		ChangeLog changes = new ChangeLog(binder, ChangeLog.MOVEBINDER);
+    	changes.getEntityRoot();
+    	getCoreDao().save(changes);
 
     }
     //inside write transaction    
@@ -1464,15 +1281,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //somewhere up the parent chain we have a new parent
     //don't have to do all the work immediate parent had to do
     //inside write transaction    
-	@Override
 	public void moveBinderFixup(Binder binder) {
 		getCoreDao().move(binder);
 		
 	}
     //***********************************************************************************************************
     //no transaction    
-    @Override
-	public Binder copyBinder(final Binder source, final Binder destination, final Map options) {
+    public Binder copyBinder(final Binder source, final Binder destination, final Map options) {
     	//Check if moving a binder into itself or into a sub binder of itself
     	Binder parent = destination;
     	while (parent != null) {
@@ -1494,35 +1309,47 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
     	copyBinder_setCtx(source, destination, ctx);
-		//Make sure there is no other binder with the same name in the parent.
-     	String newTitle = BinderHelper.getUniqueBinderTitleInParent(source.getTitle(), destination, (options==null)?null:(String)options.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE));
-     	final Binder binder = copyBinder_create(source, destination, newTitle, ctx);
+     	final Binder binder = copyBinder_create(source, ctx);
+     	makeBinderTitleUniqueInParent(binder, destination);		//Make sure there is no other binder with the same name in the parent.
+        // The following part requires update database transaction.
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+                //need to set entry/binder information before generating file attachments
+                //Attachments/Events need binder info for AnyOwner
+        		copyBinder_fillIn(source, destination, binder, ctx);
+                                
+                copyBinder_preSave(source, destination, binder, ctx);      
+
+                copyBinder_save(source, destination, binder, ctx);      
+                
+                copyBinder_postSave(source, destination, binder, ctx);
+                //register title for uniqueness for webdav; always ensure binder titles are unique in parent
+                getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
+                if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
+                return null;
+        	}
+        });
+ 		copyBinder_index(binder, ctx);
  		return binder;
     }
     //no transaction    
     protected void copyBinder_setCtx(Binder source, Binder destination, Map ctx) {
     }
     //no transaction - should be overridden 
-	protected Binder copyBinder_create(Binder source, Binder destination, String title, Map ctx) {
-	   Binder sampleBinder = source;
-	   if (destination.isAclExternallyControlled() || destination.isMirrored()) {
-		   //When the destination is a remote disk folder, make the new binder the same type as the destination
-		   sampleBinder = destination;
+   protected Binder copyBinder_create(Binder source, Map ctx) {
+	   Class params[] = new Class[] {source.getClass()};
+	   try {
+		   Constructor construct = source.getClass().getConstructor(params);
+		   return (Binder)construct.newInstance(new Object[]{source});
+	   } catch (Exception ex) {
 	   }
-       Map data = new HashMap();
-       data.put("title", title);
-       InputDataAccessor inputData = new MapInputData(data);
-       Binder binder = null;
-       try {
-			binder = addBinder(destination, sampleBinder.getEntryDef(), sampleBinder.getClass(), inputData, null, null);
-			//Also copy the configured definitions from the sample
-			binder.setDefinitions(sampleBinder.getDefinitions());
-			getCoreDao().flush();
-       } catch (Exception e) {}
-       
-       return binder;
-   }
+	   try {
+		   return source.getClass().newInstance();
+	   } catch (Exception ex) {
+		   return null;
+	   }
 
+   }
    //inside write transaction    
    protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, Map ctx) {  
        binder.setLogVersion(Long.valueOf(1));
@@ -1550,7 +1377,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			getCoreDao().save(myDashboard);
 		  }
 		//copy all file attachments; need to do first so custom file attributes have a real object to reference
-		getFileModule().copyFiles(source, source, binder, binder, null);
+		getFileModule().copyFiles(source, source, binder, binder);
 		EntryBuilder.copyAttributes(source, binder);
   		getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(binder.getZoneId(), source, binder);
   		List<Tag> tags = getCoreDao().loadAllTagsByEntity(source.getEntityIdentifier());
@@ -1573,37 +1400,47 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	indexBinder(binder, false, false, null); 
     }
     
+    //Make sure binder title is unique
+    //If it is not unique, then change it to be unique by adding "(n)" to the name
+    protected void makeBinderTitleUniqueInParent(Binder binder, Binder parent) {
+    	List<Binder> subBinders = parent.getBinders();
+    	Set<String> binderTitles = new HashSet<String>();
+    	for (Binder b : subBinders) {
+    		binderTitles.add(b.getTitle().toLowerCase());
+    	}
+    	String title = binder.getTitle();
+    	int maxTries = 100;
+    	Pattern p = Pattern.compile("(^.*\\()([0-9]+)\\)$");
+    	while (binderTitles.contains(title.toLowerCase())) {
+    		//There is another binder with this title. Try the next title higher
+    		Matcher m = p.matcher(title);
+    		if (m.find()) {
+    			String t1 = m.group(1);
+    			String n = m.group(2);
+    			Integer n2 = Integer.valueOf(n) + 1;
+    			title = t1 + String.valueOf(n2) + ")";		//Rebuild the title with the (number) incremented
+    		} else {
+    			title = title + "(2)";
+    		}
+    		if (--maxTries <= 0) break;
+    	}
+    	if (!title.equals(binder.getTitle())) {
+    		//There was a conflict, so update the title and the normalized title
+    		binder.setTitle(title);
+    	}
+    }
+
     //********************************************************************************************************
-    @Override
-	public Map getBinders(Binder binder, Map searchOptions) {
+    public Map getBinders(Binder binder, Map searchOptions) {
         //search engine will only return binder you have access to
          //validate entry count
     	//do actual search index query
         Hits hits = getBinders_doSearch(binder, searchOptions);
         //iterate through results
-        return buildResultMap(binder, hits);
-   }
-
-    @Override
-	public Map getBinders(Binder binder, List binderIds, Map searchOptions) {
-        //search engine will only return binder you have access to
-         //validate entry count
-    	//do actual search index query 
-        Hits hits = getBinders_doSearch(binderIds, searchOptions);
-        return buildResultsMap(hits);
-    }
-
-    private Map buildResultMap(Binder binder, Hits hits) {
-        Map model = buildResultsMap(hits);
-        model.put(ObjectKeys.BINDER, binder);
-        return model;
-    }
-
-    private Map buildResultsMap(Hits hits) {
-        //iterate through results
         List childBinders = SearchUtils.getSearchEntries(hits);
 
-        Map model = new HashMap();
+       	Map model = new HashMap();
+        model.put(ObjectKeys.BINDER, binder);      
         model.put(ObjectKeys.SEARCH_ENTRIES, childBinders);
         model.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
         //Total number of results found
@@ -1611,7 +1448,25 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         //Total number of results returned
         model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
         return model;
-    }
+   }
+
+    public Map getBinders(Binder binder, List binderIds, Map searchOptions) {
+        //search engine will only return binder you have access to
+         //validate entry count
+    	//do actual search index query 
+        Hits hits = getBinders_doSearch(binderIds, searchOptions);
+        //iterate through results
+        List childBinders = SearchUtils.getSearchEntries(hits);
+
+       	Map model = new HashMap();
+        model.put(ObjectKeys.SEARCH_ENTRIES, childBinders);
+        model.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
+        //Total number of results found
+        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
+        //Total number of results returned
+        model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
+        return model;
+   }
 
     protected int getBinders_maxEntries(int maxChildEntries) {
         return maxChildEntries;
@@ -1657,32 +1512,33 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		searchFilter.addBinderParentIds(binderIds);
        	}
        	
-       	if (binder != null) {
-            getBinders_getSearchDocument(binder, searchFilter);
-        }
+       	if (binder != null) getBinders_getSearchDocument(binder, searchFilter);
        	
        	org.dom4j.Document queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), searchOptions);
       	
       	SearchUtils.getQueryFields(queryTree, searchOptions); 
-    	if(logger.isTraceEnabled()) {
-    		logger.trace("Query is: " + queryTree.asXML());
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + queryTree.asXML());
     	}
        	
        	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(true, false);
+    	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(searchOptions); 
     	so.setSortBy(fields);
+    	Query soQuery = so.getLuceneQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+    	
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + soQuery.toString());
+    	}
     	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	Hits hits = null;
         try {
-        	hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
-        			so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, searchOffset, maxResults,
-        			binder);
+        	hits = luceneSession.search(soQuery, so.getSortBy(), searchOffset, maxResults);
         }
         finally {
             luceneSession.close();
@@ -1701,13 +1557,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //not really meant to be overridden, but here to share code
  
-    @Override
-	public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries) {
-    	indexFunctionMembership(binder, cascade, runInBackground, indexEntries, false);
-    }
-    
-    @Override
-	public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
+    public void indexFunctionMembership(Binder binder, boolean cascade) {
 		String value = EntityIndexUtils.getFolderAclString(binder);
     	if (cascade) {
     		Map params = new HashMap();
@@ -1719,7 +1569,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		List<Long>ids = pruneUpdateList(binder, notBinders);
     		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
-    			doFieldUpdate(binder, ids, Constants.FOLDER_ACL_FIELD, value, runInBackground, indexEntries, skipFileContentIndexing);
+    			doFieldUpdate(binder, ids, Constants.FOLDER_ACL_FIELD, value);
     			doRssUpdate(binder);
     		} else {
     			//revert to walking the tree
@@ -1734,7 +1584,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	    			candidates.addAll(c.getBinders());
     	    		}
     	    		if (binders.size() >= limit) {
-    	    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value,indexEntries);
+    	    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value);
     	    			doRssUpdate(binders);
     	    			//evict used binders so don't fill session cache, but don't evict starting binder
     	    			if (binders.get(0).equals(binder)) binders.remove(0);
@@ -1743,18 +1593,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	    		}
     	    	}
     	       	//finish list
-    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value, indexEntries);
+    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value);
     			doRssUpdate(binders);
     		}
     	} else {
-       		doFieldUpdate(binder, Constants.FOLDER_ACL_FIELD, value, runInBackground, indexEntries, skipFileContentIndexing);
+       		doFieldUpdate(binder, Constants.FOLDER_ACL_FIELD, value);
        		doRssUpdate(binder);
        	    		
     	}
     	
     }
-     @Override
-	public void indexTeamMembership(Binder binder, boolean cascade) {
+     public void indexTeamMembership(Binder binder, boolean cascade) {
     	String value = binder.getTeamMemberString();
     	if (cascade) {
     		Map params = new HashMap();
@@ -1766,7 +1615,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		List<Long>ids = pruneUpdateList(binder, notBinders);
        		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
-          		doFieldUpdate(binder, ids, Constants.TEAM_ACL_FIELD, value, null, false);
+          		doFieldUpdate(binder, ids, Constants.TEAM_ACL_FIELD, value);
           		doRssUpdate(binder);
        		} else {
        			List<Binder> binders = new ArrayList();
@@ -1780,7 +1629,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         				candidates.addAll(c.getBinders());
            			} 
        	    		if (binders.size() >= limit) {
-       	    			doFieldUpdate(binders, Constants.TEAM_ACL_FIELD, value, false);
+       	    			doFieldUpdate(binders, Constants.TEAM_ACL_FIELD, value);
        	    			doRssUpdate(binders);
        	    			//evict used binders so don't fill session cache, but don't evict starting binder
        	    			if (binders.get(0).equals(binder)) binders.remove(0);
@@ -1789,11 +1638,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         			}
         		}
         		//finish list
-        		doFieldUpdate(binders, Constants.TEAM_ACL_FIELD, value, false);
+        		doFieldUpdate(binders, Constants.TEAM_ACL_FIELD, value);
         		doRssUpdate(binders);
        		}
     	} else {
-    		doFieldUpdate(binder, Constants.TEAM_ACL_FIELD, value, null, false);
+    		doFieldUpdate(binder, Constants.TEAM_ACL_FIELD, value);
     		doRssUpdate(binder);
     	}
     	
@@ -1824,18 +1673,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	 return ids;
    
      }
-     @Override
-	public void indexOwner(Collection<Binder>binders, Long ownerId) {
+     public void indexOwner(Collection<Binder>binders, Long ownerId) {
   		String value = Constants.EMPTY_ACL_FIELD;
  		if (ownerId != null) value = ownerId.toString();
- 		doFieldUpdate(binders, Constants.BINDER_OWNER_ACL_FIELD, value, false);     		
+ 		doFieldUpdate(binders, Constants.BINDER_OWNER_ACL_FIELD, value);     		
      }
 
-     private void executeUpdateQuery(Criteria crit, String field, String value, Boolean runInBackground, boolean indexEntries) {
-    	 executeUpdateQuery(crit, field, value, runInBackground, indexEntries, false);
-     }
-     
-     private void executeUpdateQuery(Criteria crit, String field, String value, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
+     private void executeUpdateQuery(Criteria crit, String field, String value) {
 
 		org.apache.lucene.document.Document doc;
 		List<Long> binders = new ArrayList<Long>();
@@ -1846,15 +1690,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		// Get a list of the binders which need to be reindexed
 		LuceneReadSession luceneSessionn = getLuceneSessionFactory()
 				.openReadSession();
-		QueryBuilder qbb = new QueryBuilder(false, false); 
+		QueryBuilder qbb = new QueryBuilder(false); 
 		
 		crit.add(conjunction().add(
 				eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER)));
-		
-		SearchObject so = qbb.buildQuery(crit.toQuery());
-		
-		Hits hits = luceneSessionn.search(RequestContextHolder.getRequestContext().getUserId(), so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
-				so.getLuceneQuery());
+		Hits hits = luceneSessionn.search(qbb.buildQuery(crit.toQuery(), true)
+				.getLuceneQuery());
 		luceneSessionn.close();
 		for (int i = 0; i < hits.length(); i++) {
 			doc = hits.doc(i);
@@ -1866,37 +1707,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				}
 			}
 		}
-		
-		if(Boolean.FALSE.equals(runInBackground)) {
-	    	for (Long id:binders) {
-				try {
-					getBinderModule().indexBinderIncremental(id, indexEntries, skipFileContentIndexing);
-				} catch (NoObjectByTheIdException ex) {
-					//gone, skip it
-				} catch (Exception ex) {
-					//try again
-					logger.error(NLT.get("profile.titlechange.index.error") + " (binder " + id.toString() + ") " + ex.toString());
-					continue;
-				}
-	    	}
-		}
-		else {
-			// Setup the background job for reindexing
-			User user = RequestContextHolder.getRequestContext().getUser();
-			String className = SPropsUtil.getString("job.binder.reindex.class", "org.kablink.teaming.jobs.DefaultBinderReindex");
-			BinderReindex job = (BinderReindex)ReflectHelper.getInstance(className);
-			job.scheduleNonBlocking(binders, user, indexEntries); 
-		}
+		// Setup the background job for reindexing
+		User user = RequestContextHolder.getRequestContext().getUser();
+		BinderReindex job=null;
+		if (job == null) job = (BinderReindex)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultBinderReindex.class);
+		job.schedule(binders, user); 
 
 	}
      
      // this will update the binder, its attachments and entries, and
 		// subfolders and entries that inherit
-     private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value, Boolean runInBackground, boolean indexEntries) {
-    	 doFieldUpdate(binder, notBinderIds, field, value, runInBackground, indexEntries, false);
-     }
-     
-      private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
+     private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value) {
  		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index 
  		Criteria crit = new Criteria()
@@ -1907,16 +1728,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				.add(in(Constants.ENTRY_ANCESTRY, LongIdUtil.getIdsAsStringSet(notBinderIds)))
 			);
  		}
-		executeUpdateQuery(crit, field, value, runInBackground, indexEntries, skipFileContentIndexing);
+		executeUpdateQuery(crit, field, value);
     }
 
-    //this will update just the binder, its attachments and entries only
-    private void doFieldUpdate(Binder binder, String field, String value, Boolean runInBackground, boolean indexEntries) {
-    	doFieldUpdate(binder, field, value, runInBackground, indexEntries, false);
-    }
-    
+
   	//this will update just the binder, its attachments and entries only
-     private void doFieldUpdate(Binder binder, String field, String value, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
+     private void doFieldUpdate(Binder binder, String field, String value) {
   		// Now, create a query which can be used by the index update method to modify all the
  		// entries, replies, attachments, and binders(workspaces) in the index 
     	//_binderId= OR (_docId= AND (_docType=binder OR _attType=binder)) 
@@ -1931,10 +1748,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			)
     		)
     	);
-		executeUpdateQuery(crit, field, value, runInBackground, indexEntries, skipFileContentIndexing);
+		executeUpdateQuery(crit, field, value);
      }
  
-    private void doFieldUpdate(Collection<Binder>binders, String field, String value, boolean indexEntries) {
+    private void doFieldUpdate(Collection<Binder>binders, String field, String value) {
      	if (binders.isEmpty()) return;
  		// Now, create a query which can be used by the index update method to modify all the
  		// entries, replies, attachments, and binders(workspaces) in the index 
@@ -1954,14 +1771,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			)
     		)
     	);
-		executeUpdateQuery(crit, field, value, null, indexEntries);
+		executeUpdateQuery(crit, field, value);
      }
     
-    private void doRssDelete(Binder binder) {
-  		// Delete the rss index
-    	this.getRssModule().deleteRssFeed(binder);
-     }
- 
     private void doRssUpdate(Binder binder) {
   		// Delete the rss index since it's invalid once you change the acls
     	this.getRssModule().deleteRssFeed(binder);
@@ -1977,57 +1789,38 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      }
 
     //***********************************************************************************************************
-    @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries) {
+    public IndexErrors indexBinder(Binder binder, boolean includeEntries) {
     	//call overloaded methods
     	IndexErrors errors = indexBinder(binder, includeEntries, true, null);   
    		return errors;
     }
     
-    @Override
-	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries) {
-    	return indexBinderIncremental(binder, includeEntries, false);
+    public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries) {
+    	//call overloaded methods
+    	IndexErrors errors = loadIndexTreeIncremental(binder);   
+   		return errors;
     }
     
-    @Override
-	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean skipFileContentIndexing) {
-    	//call overloaded methods
-    	IndexErrors errors = loadIndexTreeIncremental(binder, includeEntries, skipFileContentIndexing);   
-   		return errors;
-    } 
-    
-    @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
+    public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
     	IndexErrors errors = indexBinder(binder, null, null, !deleteIndex, tags);    	
    		return errors;
     	
     }
-    
-    @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
-    	// Ignore skipFileContentIndexing arg
-    	return indexBinder(binder, includeEntries, deleteIndex, tags);
-    }
     //***********************************************************************************************************
     //It is assumed that the index has been deleted for each binder to be index
-    @Override
-	public Collection indexTree(Binder binder, Collection exclusions) {
+    public Collection indexTree(Binder binder, Collection exclusions) {
    		IndexErrors errors = new IndexErrors();
     	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET, errors);
     }
-   	@Override
-	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
+   	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
    		IndexErrors errors = new IndexErrors();
    		return indexTree(binder, exclusions, statusTicket, errors);
    	}
-   	@Override
-	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
+   	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
    		return loadIndexTree(binder, exclusions, statusTicket, errors);
    	}
    	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
    		//get all the ids of child binders. order for statusTicket to make some sense
-   		if(logger.isDebugEnabled())
-   			logger.debug("Fetching IDs of all binders at or below [" + binder.getPathName() + "]");
    		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
 				binder.getBinderKey().getSortKey() + "%' order by x.binderKey.sortKey", null);
 		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
@@ -2037,11 +1830,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		for (int i=0; i<ids.size(); i+=inClauseLimit) {
 			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
 			params.put("pList", subList);
-			if(logger.isDebugEnabled())
-				logger.debug("Loading " + subList.size() + " binder objects");
 			List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
-			if(logger.isDebugEnabled())
-				logger.debug("Bulk loading collections for " + binders.size() + " binders");
 			getCoreDao().bulkLoadCollections(binders);
 			List<EntityIdentifier> folderIds = new ArrayList();
 			List<EntityIdentifier> workspaceIds = new ArrayList();
@@ -2054,14 +1843,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				else 
 					otherIds.add(e.getEntityIdentifier());
 			}
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + folderIds.size() + " folders");
 			Map tagMap = getCoreDao().loadAllTagsByEntity(folderIds);
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + workspaceIds.size() + " workspaces");
 			tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + otherIds.size() + " others");
 			tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
 
 			for (Binder b:binders) {
@@ -2071,28 +1854,19 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
 	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
 	   	   		
-				if(logger.isDebugEnabled())
-					logger.debug("Indexing binder [" + b.getPathName() + "]");
 	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags);
 	   	    	errors.add(binderErrors);
-	   	    	
-				if(logger.isDebugEnabled())
-					logger.debug("Evicting tags and binder");
 	   	    	getCoreDao().evict(tags);
 	   	    	getCoreDao().evict(b);
 	   	    	bindersIndexed++;
 			}
-			if(logger.isDebugEnabled())
-				logger.debug("Applying changes to index");
 	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 		}
-		if(logger.isDebugEnabled())
-			logger.debug("Processed " + ids.size() + " binders");
    		return ids;
 
    	}
 
-   	private IndexErrors loadIndexTreeIncremental(Binder binder, boolean includeEntries, boolean skipFileContentIndexing) {
+   	private IndexErrors loadIndexTreeIncremental(Binder binder) {
 		IndexErrors errors = new IndexErrors();
 		// load the binder
 		Map params = new HashMap();
@@ -2116,9 +1890,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			IndexErrors binderErrors = null;
 			if (processor instanceof AbstractEntryProcessor) {
 				binderErrors = ((AbstractEntryProcessor) processor)
-						.indexBinderIncremental(b, includeEntries, false, tags, skipFileContentIndexing);
+						.indexBinderIncremental(b, true, false, tags);
 			} else {
-				binderErrors = processor.indexBinder(b, includeEntries, false, tags);
+				binderErrors = processor.indexBinder(b, true, false, tags);
 			}
 			errors.add(binderErrors);
 			getCoreDao().evict(tags);
@@ -2149,8 +1923,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			this.newDiskSpaceUsedCumulative = null;
 		}
 	}
-    @Override
-	public Collection validateBinderQuotasTree(Binder binder, StatusTicket statusTicket, 
+    public Collection validateBinderQuotasTree(Binder binder, StatusTicket statusTicket, 
     		List<Long> errors) {
     	final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	final List<Long> binderQuotasToUpdate = new ArrayList<Long>();
@@ -2210,8 +1983,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				SimpleProfiler.start("validateBinderQuotasTree");
 		        // The following part requires update database transaction.
 		        getTransactionTemplate().execute(new TransactionCallback() {
-		        	@Override
-					public Object doInTransaction(TransactionStatus status) {
+		        	public Object doInTransaction(TransactionStatus status) {
 		        		//Go through all binders to validate and update the disk space used values
 		        		//  This step makes sure each binder has a BinderQuota in the database
 		        		for (Long binderId : binderQuotasToUpdate) {
@@ -2262,8 +2034,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         //Now, the map is updated with new cumulative counts, look for changes to be written to the database
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
-        	@Override
-			public Object doInTransaction(TransactionStatus status) {
+        	public Object doInTransaction(TransactionStatus status) {
         		//Go through all binders to validate and update the disk space used values
         		//  This step makes sure each binder has a BinderQuota in the database
         		for (Long binderId : binderQuotasMap.keySet()) {
@@ -2293,14 +2064,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
 
     //Routine to calculate the aging date for each file in a binder
-    @Override
-	public void setFileAgingDates(Binder binder) {
+    public void setFileAgingDates(Binder binder) {
     	//Nothing to be done here. It is all done in FolderCoreProcessor
     }
-   	
+    
     //Routine to see if this binder is empty
-    @Override
-	public boolean isFolderEmpty(final Binder binder) {
+    public boolean isFolderEmpty(final Binder binder) {
     	return true;
     }
    	
@@ -2437,7 +2206,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder, true);
         BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_BINDER, true);
 
-  	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, tags, false, false);
+  	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, fui, tags);
        	return indexDoc;
      }
 
@@ -2450,36 +2219,19 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @return
      */
     protected void buildIndexDocumentFromFile
-    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, Collection tags, boolean isLibraryFile, boolean skipFileContentIndexing) {
+    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, Collection tags) {
 
+		// Get the Text converter from manager
 		String text = "";
-		//See if the file contents are supposed to be indexed
-		//The root folder of a folder chain dictates if file contents are to be indexed
-		Binder rootFolder = AccessUtils.getRootFolder(entity);
-		Field contentIndexTypeField;
-		if (!skipFileContentIndexing && (rootFolder == null || rootFolder.getIndexContent())) {
-			//The file contents of files in this folder are to be added to the index
-			// Get the Text converter from manager
-	    	TextConverter converter = textConverterManager.getConverter();
-			try {
-				text = converter.convert(binder, entity, fa);
-			}
-			catch (Exception e) {
-				// Most likely conversion did not succeed, nothing client
-				// can do about this limitation of software.
-				String eMsg = e.toString();
-				logger.error("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1 ):  " + eMsg);
-				if (logger.isDebugEnabled()) {
-					logger.debug("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1:STACK )", e);
-				}
-			}
-			// Indicate that file content is being indexed.
-            contentIndexTypeField = FieldFactory.createFieldStoredNotAnalyzed(Constants.CONTENT_INDEXED_FIELD, Constants.TRUE);
-		} else {
-			//The text contents are not added
-	        contentIndexTypeField = FieldFactory.createFieldStoredNotAnalyzed(Constants.CONTENT_INDEXED_FIELD, Constants.FALSE);
+    	TextConverter converter = textConverterManager.getConverter();
+		try {
+			text = converter.convert(binder, entity, fa);
 		}
-        indexDoc.add(contentIndexTypeField);
+		catch (Exception e) {
+			// Most likely conversion did not succeed, nothing client
+			// can do about this limitation of software.
+			logger.error("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1 ):  ", e);
+		}
 			
 		// Is there a relevance engine engine enabled?
     	Relevance relevanceEngine = getRelevanceManager().getRelevanceEngine();
@@ -2505,12 +2257,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
         // Add file info
         EntityIndexUtils.addFileAttachment(indexDoc, fa, true);
-
-        if (isLibraryFile) {
-            Field libraryField = FieldFactory.createFieldStoredNotAnalyzed(Constants.IS_LIBRARY_FIELD, Boolean.toString(true));
-            indexDoc.add(libraryField);
-        }
-
+        
         // Add creation-date from entity
         EntityIndexUtils.addCreation(indexDoc, entity.getCreation(), true);
         // Add modification-date from file
@@ -2522,8 +2269,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         if (tags == null) tags =  getCoreDao().loadAllTagsByEntity(entity.getEntityIdentifier());
         EntityIndexUtils.addTags(indexDoc, entity, tags, true);
         
-        //needs to be last item cause removes extraneous generaltext fields
-   		EntityIndexUtils.addFileAttachmentGeneralText(indexDoc);
+        //needs to be last item cause removes extraneous alltext fields
+   		EntityIndexUtils.addFileAttachmentAllText(indexDoc);
    
     }
     
@@ -2584,49 +2331,31 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add ancestry 
         EntityIndexUtils.addAncestry(indexDoc, entity, fieldsOnly);
         
-    	EntityIndexUtils.addResourceDriverName( indexDoc, entity, fieldsOnly );
-
-    	EntityIndexUtils.addNetFolderResourcePath( indexDoc, entity, fieldsOnly );
-
         if (entity instanceof Binder) {
             //Add binder path
         	EntityIndexUtils.addBinderPath(indexDoc, (Binder) entity, fieldsOnly);
-        	EntityIndexUtils.addBinderIconName(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsLibrary(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsMirrored(indexDoc, (Binder) entity, fieldsOnly);
-        	EntityIndexUtils.addBinderIsHomeDir(indexDoc, (Binder) entity, fieldsOnly);
-        	EntityIndexUtils.addBinderIsMyFilesDir(indexDoc, (Binder) entity, fieldsOnly);
-        	EntityIndexUtils.addBinderHasResourceDriver(indexDoc, (Binder) entity, fieldsOnly);
-        	EntityIndexUtils.addBinderIsTopFolder(indexDoc, (Binder) entity, fieldsOnly);
-        	EntityIndexUtils.addBinderCloudFolderInfo( indexDoc, (Binder) entity, fieldsOnly );
-        	if (entity instanceof Folder) {
-               	EntityIndexUtils.addFolderFileTime( indexDoc, (Folder) entity, fieldsOnly );
-        	}
         }
-        
+ 
         // Add data fields driven by the entry's definition object. 
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
-			@Override
 			public void visit(Element entryElement, Element flagElement, Map args)
 			{
                 if (flagElement.attributeValue("apply").equals("true")) {
                 	String fieldBuilder = flagElement.attributeValue("fieldBuilder");
-                	String excludeFromSearchIndex = DefinitionUtils.getPropertyValue(entryElement, "excludeFromSearchIndex");
-                	if (excludeFromSearchIndex == null || !excludeFromSearchIndex.equals("true")) {
-						String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
-						if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
-						args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
-	                	Field[] fields = FieldBuilderUtil.buildField(entity,
-	                         nameValue, fieldBuilder, args);
-	                	if (fields != null) {
-	                		for (int i = 0; i < fields.length; i++) {
-	                			indexDoc.add(fields[i]);
-	                		}
-	                    }
-                	}
+					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
+					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
+					args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
+                	Field[] fields = FieldBuilderUtil.buildField(entity,
+                         nameValue, fieldBuilder, args);
+                	if (fields != null) {
+                		for (int i = 0; i < fields.length; i++) {
+                			indexDoc.add(fields[i]);
+                		}
+                    }
                 }
 			}
-			@Override
 			public String getFlagElementName() { return "index"; }
 		};
 		if (!fieldsOnly) {
@@ -2772,41 +2501,25 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         }
 		
 	}
-	
-	@Override
 	public ChangeLog processChangeLog(Binder binder, String operation) {
-		return processChangeLog(binder, operation, false);
-	}
-	
-	@Override
-	public ChangeLog processChangeLog(Binder binder, String operation, boolean skipDbLog) {
-		ChangeLog changes = null;
-		
-		if(!skipDbLog) {
-			//any changes here should be considered to template export
-			changes = ChangeLogUtils.createAndBuild(binder, operation);
-			Element element = changes.getEntityRoot();
-			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
-			if (!binder.isFunctionMembershipInherited()) {
-				List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
-						binder.getZoneId(), binder);
-				for (WorkAreaFunctionMembership wfm: wfms) {
-					wfm.addChangeLog(element);
-				}
+		ChangeLog changes = new ChangeLog(binder, operation);
+		//any changes here should be considered to template export
+		Element element = ChangeLogUtils.buildLog(changes, binder);
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
+		if (!binder.isFunctionMembershipInherited()) {
+			List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
+					binder.getZoneId(), binder);
+			for (WorkAreaFunctionMembership wfm: wfms) {
+				wfm.addChangeLog(element);
 			}
-			if (operation.equals(ChangeLog.DELETEBINDER) || operation.equals(ChangeLog.PREDELETEBINDER)) {
-				//Add the path so it can be shown in the activity reports
-				XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_PATH, binder.getPathName());
-			}
-			ChangeLogUtils.save(changes);
 		}
-		
+		getCoreDao().save(changes);
 		return changes;
 	}
 	/*************************************************************************************************/
@@ -2851,32 +2564,24 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	protected void processCreationTimestamp(DefinableEntity entity, Map options) {
 		User user;
-		if (options != null && (
-				options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) ||
-				options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_ID) ||
-				options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_NAME))) {
+		if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE)) {
 			Calendar date = (Calendar)options.get(ObjectKeys.INPUT_OPTION_CREATION_DATE);
 			Long id = (Long)options.get(ObjectKeys.INPUT_OPTION_CREATION_ID);
 			String name = (String)options.get(ObjectKeys.INPUT_OPTION_CREATION_NAME);
-			processCreationTimestamp(entity, date, id, name);
+			if(id != null) { // id specified
+				user = getProfileDao().loadUser(id, RequestContextHolder.getRequestContext().getZoneId());
+			}
+			else if(Validator.isNotNull(name)) { // name specified
+				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneId());				
+			}
+			else { // neither id nor name specified
+				user = RequestContextHolder.getRequestContext().getUser();				
+			}
+			entity.setCreation(new HistoryStamp(user, date.getTime()));
 		} else {
 			entity.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 		}
 	}
-	protected void processCreationTimestamp(DefinableEntity entity, Calendar date, Long id, String name) {
-		User user;
-		if(id != null) { // id specified
-			user = getProfileDao().loadUser(id, RequestContextHolder.getRequestContext().getZoneId());
-		}
-		else if(Validator.isNotNull(name)) { // name specified
-			user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneId());				
-		}
-		else { // neither id nor name specified
-			user = RequestContextHolder.getRequestContext().getUser();				
-		}
-		entity.setCreation(new HistoryStamp(user, (date != null)? date.getTime():new Date()));
-	}
-
 	protected void processModificationTimestamp(DefinableEntity entity, HistoryStamp fallback, Map options) {
 		User user;
 		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE))) return;
@@ -2884,36 +2589,21 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			Calendar date = (Calendar)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE);
 			Long id = (Long)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_ID);
 			String name = (String)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME);
-			processModificationTimestamp(entity, date, id, name);
+			if(id != null) { // id specified
+				user = getProfileDao().loadUser(id,  RequestContextHolder.getRequestContext().getZoneId());
+			}
+			else if(Validator.isNotNull(name)) { // name specified
+				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneId());				
+			}
+			else { // neither id nor name specified
+				user = RequestContextHolder.getRequestContext().getUser();				
+			}
+			entity.setModification(new HistoryStamp(user, date.getTime()));
 		} else if (fallback != null) {
 			entity.setModification(fallback);
 		} else {
 			entity.setModification(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));			
 		}
 	}
-	protected void processModificationTimestamp(DefinableEntity entity, Calendar date, Long id, String name) {
-		User user;
-		if(id != null) { // id specified
-			user = getProfileDao().loadUser(id,  RequestContextHolder.getRequestContext().getZoneId());
-		}
-		else if(Validator.isNotNull(name)) { // name specified
-			user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneId());				
-		}
-		else { // neither id nor name specified
-			user = RequestContextHolder.getRequestContext().getUser();				
-		}
-		entity.setModification(new HistoryStamp(user, date.getTime()));
-	}
-	
-    @Override
-	public void updateParentModTime(final Binder parentBinder, Map options) {
-		if(parentBinder != null && 
-				parentBinder.getInternalId() == null &&
-				!(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
-    		// Set the modification time to the "current" time.
-			parentBinder.getModification().setDate(new Date());
-			// Reindex
-			indexBinder(parentBinder, false);
-		}
-	}
+
 }

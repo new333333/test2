@@ -16,7 +16,6 @@
 		<property name="gwt.war"    value="-war www"                            />
 	</target>
 	<target name="init-gwt-builds">
-		<!-- Development vs. Production. -->
 		<condition property="development.build">
 			<equals arg1="${build.gwt.mode}" arg2="development" />
 		</condition>
@@ -25,27 +24,6 @@
 				<isset property="development.build"/>
 			</not>
 		</condition>
-
-		<!-- Deploy or Drop GWT symbol maps. -->
-		<condition property="drop.symbol.maps">
-			<equals arg1="${gwt.symbol.maps}" arg2="drop" />
-		</condition>
-		<condition property="deploy.symbol.maps">
-			<not>
-				<isset property="drop.symbol.maps"/>
-			</not>
-		</condition>
-		
-		<!-- Code fragment handling. -->
-		<if>
-			<isset property="gwt.merge.fragments" />
-			<then>
-				<property name="gwt.codeFragments" value="-XfragmentCount ${gwt.merge.fragments}" />
-			</then>
-			<else>
-				<property name="gwt.codeFragments" value="" />
-			</else>
-		</if>
 	</target>
 	<target name="init-gwt-production" if="production.build">
 		<echo message="Compiling ${build.gwt.module} for production."/>
@@ -64,20 +42,10 @@
 		<property name="gwt.additionalArgs1" value="-draftCompile -ea"       />
 	</target>
 
-	<!-- Compilation report handling. -->
-	<if>
+	<!-- Are we supposed to generate a compilation report? -->
+	<condition property="gwt.additionalArgs2" value="-compileReport" else="">
 		<istrue value="${build.gwt.compileReport}" />
-		<then>
-			<property name="gwt.additionalArgs2" value="-compileReport" />
-			<property name="gwt.java.xms"        value="-Xms2g"         />
-			<property name="gwt.java.xmx"        value="-Xmx4g"         />
-		</then>
-		<else>
-			<property name="gwt.additionalArgs2" value=""       />
-			<property name="gwt.java.xms"        value="-Xms1g" />
-			<property name="gwt.java.xmx"        value="-Xmx2g" />
-		</else>
-	</if>
+	</condition>
 	
 	<!-- Define the platform that we're building on. -->
 	<condition property="build.mac"      value="true" else="false">                                     <os family="mac"     />      </condition>
@@ -99,14 +67,12 @@
 	<!-- Set the desired classpath. -->
 	<fileset id="gwtjars" dir="${gwt.dir}">
 		<include name="gwt-user.jar"                        />
-		<include name="gwt-dnd.jar"                         />
-		<include name="gwt-log.jar"                         />
 		<include name="validation-api-1.0.0.GA.jar"         />
 		<include name="validation-api-1.0.0.GA-sources.jar" />
 		<include name="${gwt.dev.jar}"                      />
 	</fileset>
 	<fileset id="libjars" dir="${lib.dir}">
-		<include name="*.jar" />
+		<include name="*jar" />
 	</fileset>
 	<pathconvert property="gwtjars" refid="gwtjars" />
 	<pathconvert property="libjars" refid="libjars" />
@@ -122,9 +88,9 @@
 			<fileset dir="." includes="${jar.file}" />
 		</delete>
 		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="classes" includes="**/*" />
-			<fileset dir="extras"                  />
-			<fileset dir="www"                     />
+			<fileset dir="classes" />
+			<fileset dir="extras"  />
+			<fileset dir="www"     />
 		</delete>
 	</target>
 
@@ -134,20 +100,20 @@
 	<target name="compile-gwt" depends="init-gwt-build">
 		<!-- Compile the GWT stuff into www. -->
 		<java
-				classpath="src:${gwt.dir}/gwt-user.jar:${lib.dir}/gwt-cal.jar:${lib.dir}/lib-gwt-file.jar:${lib.dir}/gwt-crypto.jar:${gwt.dir}/gwt-dnd.jar:${gwt.dir}/gwt-log.jar:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${gwt.dir}/${gwt.dev.jar}:"
+				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${gwt.dir}/${gwt.dev.jar}:"
 				failonerror="true"
 				classname="com.google.gwt.dev.Compiler"
 				fork="true">
 			<!-- GWT Compiler JVM arguments. -->
-			<jvmarg value="${gwt.java.xms}"          />
-			<jvmarg value="${gwt.java.xmx}"          />
-			<jvmarg value="-Xss256m"                 />
+			<jvmarg value="-Xms1024m"                />
+			<jvmarg value="-Xmx1024m"                />
+			<jvmarg value="-Xss16m"                  />
 			<jvmarg value="-Xverify:none"            />
-			<jvmarg value="-XX:PermSize=256m"        />
-			<jvmarg value="-XX:MaxPermSize=512m"     />
+			<jvmarg value="-XX:PermSize=32m"         />
+			<jvmarg value="-XX:MaxPermSize=32m"      />
 			<jvmarg value="-Djava.awt.headless=true" />
 			<!-- GWT Compiler arguments. -->
-			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.codeFragments} ${gwt.localWorkers} ${gwt.additionalArgs1} ${gwt.additionalArgs2} ${gwt.module}" />
+			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.localWorkers} ${gwt.additionalArgs1} ${gwt.additionalArgs2} ${gwt.module}" />
 		</java>
 	</target>
 
@@ -168,15 +134,5 @@
 		        	<include name="**/*"/>
 			</fileset>
 		</copy>			
-		<antcall target="clean-symbol-maps" />
-	</target>
-	
-	<target name="clean-symbol-maps" if="drop.symbol.maps">
-		<echo message="...removing symbol maps."/>
-		<delete>
-		        <fileset dir="${app.server.ssf.dir}/${web.static.path}/js/gwt/WEB-INF/deploy/gwtteaming/symbolMaps">
-		        	<include name="**/*"/>
-			</fileset>
-		</delete>			
 	</target>
 </project>

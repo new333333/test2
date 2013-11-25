@@ -1,28 +1,39 @@
-//>>built
-define("dojox/rpc/JsonRPC",["dojo","dojox","dojox/rpc/Service","dojo/errors/RequestError"],function(_1,_2,_3,_4){
-function _5(_6){
-return {serialize:function(_7,_8,_9,_a){
-var d={id:this._requestId++,method:_8.name,params:_9};
-if(_6){
-d.jsonrpc=_6;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.rpc.JsonRPC"]){
+dojo._hasResource["dojox.rpc.JsonRPC"]=true;
+dojo.provide("dojox.rpc.JsonRPC");
+dojo.require("dojox.rpc.Service");
+(function(){
+function _1(_2){
+return {serialize:function(_3,_4,_5,_6){
+var d={id:this._requestId++,method:_4.name,params:_5};
+if(_2){
+d.jsonrpc=_2;
 }
-return {data:_1.toJson(d),handleAs:"json",contentType:"application/json",transport:"POST"};
-},deserialize:function(_b){
-if("Error"==_b.name||_b instanceof _4){
-_b=_1.fromJson(_b.responseText);
+return {data:dojo.toJson(d),handleAs:"json",contentType:"application/json",transport:"POST"};
+},deserialize:function(_7){
+if("Error"==_7.name){
+_7=dojo.fromJson(_7.responseText);
 }
-if(_b.error){
-var e=new Error(_b.error.message||_b.error);
-e._rpcErrorObject=_b.error;
+if(_7.error){
+var e=new Error(_7.error.message||_7.error);
+e._rpcErrorObject=_7.error;
 return e;
 }
-return _b.result;
+return _7.result;
 }};
 };
-_2.rpc.envelopeRegistry.register("JSON-RPC-1.0",function(_c){
-return _c=="JSON-RPC-1.0";
-},_1.mixin({namedParams:false},_5()));
-_2.rpc.envelopeRegistry.register("JSON-RPC-2.0",function(_d){
-return _d=="JSON-RPC-2.0";
-},_1.mixin({namedParams:true},_5("2.0")));
-});
+dojox.rpc.envelopeRegistry.register("JSON-RPC-1.0",function(_8){
+return _8=="JSON-RPC-1.0";
+},dojo.mixin({namedParams:false},_1()));
+dojox.rpc.envelopeRegistry.register("JSON-RPC-2.0",function(_9){
+return _9=="JSON-RPC-2.0";
+},_1("2.0"));
+})();
+}

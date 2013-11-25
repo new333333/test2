@@ -742,11 +742,10 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 						"Destination file [" + dest.getAbsolutePath() + "] already exists and could not be deleted");
 			}
 
-			FileOutputStream out = null;
-			InputStream in = null;
 			try {
-				out = new FileOutputStream(dest);
-				in = getInputStream();
+				
+				FileOutputStream out = new FileOutputStream(dest);
+				InputStream in = getInputStream();
 				FileCopyUtils.copy(in, out);
 /*				dest.this.fileItem.write(dest);
 				if (logger.isDebugEnabled()) {
@@ -759,28 +758,14 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 							action + " to [" + dest.getAbsolutePath() + "]");
 				}
 */
-			} catch (IOException ex) {
+				}
+			catch (IOException ex) {
 				throw ex;
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				logger.error("Could not transfer to file", ex);
 				throw new IOException("Could not transfer to file: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
-			} finally {
-				if (in != null) {
-					try {
-						in.close();
-					} catch(Exception e) {
-						logger.error("Could not transfer to file");
-					}
-				}
-				if (out != null) {
-					try {
-						out.close();
-					} catch(Exception e) {
-						logger.error("Could not transfer to file");
-					}
-				}
 			}
-		
 		}		
 	}
 }

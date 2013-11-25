@@ -9,7 +9,6 @@
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
 		<fileset dir="../lib" includes="*.jar" />
-		<pathelement path="${project.dir}/util/classes" />
 	</path>
 
 	<target name="deploy" depends="jar">

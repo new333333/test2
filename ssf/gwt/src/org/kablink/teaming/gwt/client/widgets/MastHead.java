@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,45 +30,28 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.widgets;
 
-import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
-import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
-import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
-import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
+import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
-import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.MastheadUnhighlightAllActionsEvent;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
-import org.kablink.teaming.gwt.client.mainmenu.GlobalSearchComposite;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.widgets.FilrActionsCtrl.FilrActionType;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -77,45 +60,34 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * This widget will display the MastHead
- * 
- * @author jwootton@Novell.com
+ * This widget will display the MastHead 
  */
 public class MastHead extends Composite
 	implements ClickHandler,
 	// Event handlers implemented by this class.
-		ActivityStreamExitEvent.Handler,
 		ContextChangedEvent.Handler,
 		MastheadHideEvent.Handler,
-		MastheadShowEvent.Handler,
-		MastheadUnhighlightAllActionsEvent.Handler
+		MastheadShowEvent.Handler
 {
 	private BrandingPanel m_siteBrandingPanel = null;
 	private BrandingPanel m_binderBrandingPanel = null;
 	private RequestInfo m_requestInfo = null;
 	private String m_mastheadBinderId = null;
 	private FlowPanel m_mainMastheadPanel = null;
-	private HorizontalPanel m_globalActionsPanel = null;
-	private FlowPanel m_userNamePanel;
+	private FlowPanel m_globalActionsPanel = null;
+	private InlineLabel m_logoutLink = null;
 	private InlineLabel m_loginLink = null;
 	private InlineLabel m_userName = null;
 	private Label m_betaLabel = null;
 	private MastheadPopupMenu m_popupMenu = null;
-	private UserActionsPopup m_userActionsPopup = null;
-	private FilrActionsCtrl m_filrActionsCtrl;
-	private String m_personalWorkspacesUrl = null;
-	private FlowPanel m_browsePanel = null;
 
 	private GwtBrandingData m_siteBrandingData = null;
-	private boolean m_siteBrandingRetrieved = false;
 	private GwtBrandingData m_binderBrandingData = null;
 	
 	// m_rpcGetSiteBrandingCallback is our callback that gets called when the ajax request to get the site branding data completes.
@@ -128,15 +100,12 @@ public class MastHead extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		TeamingEvents.ACTIVITY_STREAM_EXIT,
-
 		// Context events.
 		TeamingEvents.CONTEXT_CHANGED,
 		
 		// Masthead events.
 		TeamingEvents.MASTHEAD_HIDE,
 		TeamingEvents.MASTHEAD_SHOW,
-		TeamingEvents.MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS,
 	};
 		
 	
@@ -146,7 +115,7 @@ public class MastHead extends Composite
 	public MastHead( RequestInfo requestInfo )
 	{
 		Scheduler.ScheduledCommand cmd;
-		final boolean beta = true;
+		final boolean beta = false;
 		
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
@@ -171,260 +140,81 @@ public class MastHead extends Composite
 		m_mainMastheadPanel.add( m_binderBrandingPanel );
 		
 		// Create a place for the beta text to go.
-		if ( beta && m_requestInfo.isLicenseFilr() == false )
+		if ( beta )
 		{
-			String productName;
-			
-			if ( m_requestInfo.isLicenseFilr() )
-			{
-				productName = GwtTeaming.getMessages().novellFilr();
-			}
-			else
-			{
-				productName = m_requestInfo.getProductName();
-			}
-			
+			String productName = m_requestInfo.getProductName();
 			m_betaLabel = new Label( GwtTeaming.getMessages().betaWithProduct( productName ) );
 			m_betaLabel.addStyleName( "mastheadBeta" );
 			m_mainMastheadPanel.add( m_betaLabel );
 		}
 		
-		// Are we running Filr?
-		if ( m_requestInfo.isLicenseFilr() )
-		{
-			GlobalSearchComposite globalSearchWidget;
-			FlowPanel globalSearchPanel;
-			
-			// Yes
-			// Create a link for the user to click on that will invoke "Users in the system" page
-			if ( GwtTeaming.m_requestInfo.getAllowShowPeople() )
-			{
-				FlowPanel panel;
-				FlowPanel imgPanel;
-				Image img;
-				
-				panel = new FlowPanel();
-				panel.getElement().setId( "mastheadFilr_PeoplePanel" );
-				panel.addStyleName( "mastheadFilr_PeoplePanel" );
-				
-				imgPanel = new FlowPanel();
-				imgPanel.addStyleName( "mastheadFilr_PeopleImgPanel" );
-				img = new Image( GwtTeaming.getImageBundle().userList() );
-				img.setTitle( GwtTeaming.getMessages().invokeUserListHint() );
-				img.addStyleName( "mastheadFilr_PeopleImg" );
-				img.addClickHandler( new ClickHandler()
-				{
-					@Override
-					public void onClick( ClickEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								invokeUsersPage();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				} );
-				imgPanel.add( img );
-				panel.add( imgPanel );
-				
-				m_mainMastheadPanel.add( panel );
-			}
-			
-			// Create a link for the user to click on that will invoke "what's new"
-			{
-				FlowPanel panel;
-				FlowPanel imgPanel;
-				Image img;
-				
-				panel = new FlowPanel();
-				panel.getElement().setId( "mastheadFilr_WhatsNewPanel" );
-				panel.addStyleName( "mastheadFilr_WhatsNewPanel" );
-				
-				imgPanel = new FlowPanel();
-				imgPanel.addStyleName( "mastheadFilr_WhatsNewImgPanel" );
-				img = new Image( GwtTeaming.getImageBundle().masthead_WhatsNew() );
-				img.setTitle( GwtTeaming.getMessages().whatsNew() );
-				img.addStyleName( "mastheadFilr_WhatsNewImg" );
-				img.addClickHandler( new ClickHandler()
-				{
-					@Override
-					public void onClick( ClickEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								invokeWhatsNew();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				} );
-				imgPanel.add( img );
-				panel.add( imgPanel );
-				
-				m_mainMastheadPanel.add( panel );
-			}
-			
-			// Create a link for the user to click on that will display the browse control
-			{
-				FlowPanel imgPanel;
-				Image img;
-				
-				m_browsePanel = new FlowPanel();
-				m_browsePanel.getElement().setId( "mastheadFilr_BrowseFilrPanel" );
-				m_browsePanel.addStyleName( "mastheadFilr_BrowseFilrPanel" );
-				
-				imgPanel = new FlowPanel();
-				imgPanel.addStyleName( "mastheadFilr_BrowseFilrImgPanel" );
-				img = new Image( GwtTeaming.getImageBundle().mastheadBrowseFilr() );
-				img.setTitle( GwtTeaming.getMessages().masthead_BrowseFilr() );
-				img.addStyleName( "mastheadFilr_BrowseFilrImg" );
-				img.addClickHandler( new ClickHandler()
-				{
-					@Override
-					public void onClick( ClickEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								displayBrowseControl( m_browsePanel );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				} );
-				imgPanel.add( img );
-				m_browsePanel.add( imgPanel );
-				m_browsePanel.setVisible( false );
-				
-				m_mainMastheadPanel.add( m_browsePanel );
-			}
-			
-			// Create a Filr Actions panel
-			m_filrActionsCtrl = new FilrActionsCtrl();
-			m_filrActionsCtrl.addStyleName( "mastheadFilrActionsPanel" );
-			m_mainMastheadPanel.add( m_filrActionsCtrl );
-			
-			// Add the search control
-			globalSearchPanel = new FlowPanel();
-			globalSearchPanel.addStyleName( "mastheadFilrSearchComposite" );
-			globalSearchWidget = new GlobalSearchComposite( false );
-			globalSearchPanel.add( globalSearchWidget );
-			
-			m_mainMastheadPanel.add( globalSearchPanel );
-		}
-		
 		// Create the panel that will hold the global actions such as Administration", "Logout" etc
 		{
-			m_globalActionsPanel = new HorizontalPanel();
+			m_globalActionsPanel = new FlowPanel();
 			m_globalActionsPanel.addStyleName( "mastheadGlobalActionsPanel" );
 			
 			// Create a label that holds the logged-in user's name.
 			{
-				Image img;
-				
-				m_userNamePanel = new FlowPanel();
-				m_userNamePanel.setStylePrimaryName( "mastheadUserName" );
-				
-				// Are we dealing with the guest user?
-				if ( GwtClientHelper.isCurrentUserGuest() == false )
-				{
-					// No
-					m_userNamePanel.addStyleName( "brandingLink" );
-					m_userNamePanel.addDomHandler( this, ClickEvent.getType() );
-				}
-				else
-				{
-					// Yes
-					m_userNamePanel.addStyleName( "guestLabel" );
-				}
-				
-				m_globalActionsPanel.add( m_userNamePanel );
-
 				String userName = requestInfo.getUserName();
 				if ( !GwtClientHelper.hasString( userName ) )
 				{
 					userName = requestInfo.getUserLoginId();
 				}
 				m_userName = new InlineLabel( userName );
+				m_userName.setStylePrimaryName( "mastheadUserName" );
+				m_userName.addStyleName( "brandingLink" );
+				m_userName.addClickHandler( this );
 				m_userName.getElement().setId( "mhUserName" );
-				m_userNamePanel.add( m_userName );
-
-				if ( GwtClientHelper.isCurrentUserGuest() == false )
-				{
-					img = new Image( GwtTeaming.getImageBundle().mastheadActions2() );
-					img.getElement().setAttribute( "align", "absmiddle" );
-					m_userNamePanel.add( img );
-				}
+				m_globalActionsPanel.add( m_userName );
 			}
 			
-			// Add login to the masthead.
-			addLoginAction();
+			// Add Login or Logout to the masthead.
+			addLoginLogoutAction();
 
-			// We only show the popup menu if we are not running Filr.
-			if ( m_requestInfo.isLicenseFilr() == false )
+			// Create the actions popup menu.
+			m_popupMenu = new MastheadPopupMenu( m_mastheadBinderId, m_requestInfo.isUserLoggedIn(), true, true );
+			
+			// Add an image for the user to click on to pop up the actions menu
 			{
-				// Create the actions popup menu.
-				m_popupMenu = new MastheadPopupMenu( m_mastheadBinderId, m_requestInfo.isUserLoggedIn(), true, true );
+				ClickHandler clickHandler;
+				final FlowPanel panel;
+				Image img;
 				
-				// Add an image for the user to click on to pop up the actions menu
+				// Add a separator
 				{
-					ClickHandler clickHandler;
-					final FlowPanel panel;
-					Image img;
+					InlineLabel separator;
 					
-					// Add a separator
-					if ( m_requestInfo.isUserLoggedIn() == false )
-					{
-						InlineLabel separator;
-						
-						separator = new InlineLabel( "|" );
-						separator.addStyleName( "mastheadActionsSeparator" );
-						m_globalActionsPanel.add( separator );
-					}
-					
-					panel = new FlowPanel();
-					panel.addStyleName( "mastheadMenuPanel" );
-					panel.addStyleName( "brandingLink" );
-					
-					clickHandler = new ClickHandler()
-					{
-						/**
-						 * 
-						 */
-						@Override
-						public void onClick( ClickEvent event )
-						{
-							m_popupMenu.showRelativeToTarget( panel );
-						}
-					};
-	
-					img = new Image( GwtTeaming.getImageBundle().mastheadActions() );
-					img.addClickHandler( clickHandler );
-					img.getElement().setAttribute( "align", "absmiddle" );
-					panel.add( img );
-					
-					img = new Image( GwtTeaming.getImageBundle().mastheadActions2() );
-					img.addClickHandler( clickHandler );
-					img.getElement().setAttribute( "align", "absmiddle" );
-					panel.add( img );
-					
-					m_globalActionsPanel.add( panel );
+					separator = new InlineLabel( "|" );
+					separator.addStyleName( "mastheadActionsSeparator" );
+					m_globalActionsPanel.add( separator );
 				}
+				
+				panel = new FlowPanel();
+				panel.addStyleName( "mastheadMenuPanel" );
+				panel.addStyleName( "brandingLink" );
+				
+				clickHandler = new ClickHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onClick( ClickEvent event )
+					{
+						m_popupMenu.showRelativeTo( panel );
+					}
+				};
+
+				img = new Image( GwtTeaming.getImageBundle().mastheadActions() );
+				img.addClickHandler( clickHandler );
+				img.getElement().setAttribute( "align", "absmiddle" );
+				panel.add( img );
+				
+				img = new Image( GwtTeaming.getImageBundle().mastheadActions2() );
+				img.addClickHandler( clickHandler );
+				img.getElement().setAttribute( "align", "absmiddle" );
+				panel.add( img );
+				
+				m_globalActionsPanel.add( panel );
 			}
 			
 			m_mainMastheadPanel.add( m_globalActionsPanel );
@@ -436,7 +226,6 @@ public class MastHead extends Composite
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -451,17 +240,14 @@ public class MastHead extends Composite
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( final VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
 				
 				m_siteBrandingData = (GwtBrandingData) response.getResponseData();
-				m_siteBrandingRetrieved = true;
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
-					@Override
 					public void execute()
 					{
 						// Update the site branding panel with the branding data
@@ -481,7 +267,6 @@ public class MastHead extends Composite
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -496,7 +281,6 @@ public class MastHead extends Composite
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
@@ -505,7 +289,6 @@ public class MastHead extends Composite
 
 				cmd = new Scheduler.ScheduledCommand()
 				{
-					@Override
 					public void execute()
 					{
 						// Update the binder branding panel with the branding data
@@ -521,16 +304,12 @@ public class MastHead extends Composite
 			}// end onSuccess()
 		};
 
-		// Check to see if there are any upgrade actions that need to be performed.
-		checkForUpgradeActions();
-		
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_mainMastheadPanel );
 
 		// Issue an ajax request to get the site branding.
 		cmd = new Scheduler.ScheduledCommand()
 		{
-			@Override
 			public void execute()
 			{
 				getSiteBrandingDataFromServer();
@@ -541,74 +320,37 @@ public class MastHead extends Composite
 
 
 	/**
-	 * Adjust the height of the branding panels
+	 * Add the "login" or "logout" action to the global actions part of the masthead.
 	 */
-	private void adjustBrandingPanelsHeight()
-	{
-		final int minHeight;
-		Scheduler.ScheduledCommand cmd;
-
-		if ( m_filrActionsCtrl != null )
-			minHeight = m_filrActionsCtrl.getOffsetHeight() + 12;
-		else
-			minHeight = 50;
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				Scheduler.ScheduledCommand cmd2;
-
-				if ( m_siteBrandingPanel != null )
-				{
-					m_siteBrandingPanel.setMinHeight( minHeight );
-					m_siteBrandingPanel.adjustBrandingPanelHeight();
-				}
-				
-				cmd2 = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						if ( m_binderBrandingPanel != null )
-						{
-							m_binderBrandingPanel.setMinHeight( minHeight );
-							m_binderBrandingPanel.adjustBrandingPanelHeight();
-						}
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd2 );
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}
-	
-	/**
-	 * Add the "login" action to the global actions part of the masthead.
-	 */
-	private void addLoginAction()
+	private void addLoginLogoutAction()
 	{
 		Element linkElement;
 
-		// Is the user logged in?
-		if ( m_requestInfo.isUserLoggedIn() == false )
+		// Add a separator
 		{
-			FlowPanel panel;
+			InlineLabel separator;
 			
-			// Add a separator
-			{
-				InlineLabel separator;
-				
-				separator = new InlineLabel( "|" );
-				separator.addStyleName( "mastheadActionsSeparator" );
-				m_globalActionsPanel.add( separator );
-			}
+			separator = new InlineLabel( "|" );
+			separator.addStyleName( "mastheadActionsSeparator" );
+			m_globalActionsPanel.add( separator );
+		}
 
-			// No, add the "login" action.
-			panel = new FlowPanel();
-			panel.addStyleName( "brandingLink" );
+		// Is the user logged in?
+		if ( m_requestInfo.isUserLoggedIn() )
+		{
+			// Yes, add the "logout" action.
+			m_logoutLink = new InlineLabel( GwtTeaming.getMessages().logoutHint() );
+			m_logoutLink.addStyleName( "brandingLink" );
+			m_logoutLink.addClickHandler( this );
+			m_logoutLink.setTitle( GwtTeaming.getMessages().logoutHint() );
+			linkElement = m_logoutLink.getElement();
+			linkElement.setId( "mhLogoutAction" );
 			
+			m_globalActionsPanel.add( m_logoutLink );
+		}
+		else
+		{
+			// No, add the "login" action.
 			m_loginLink = new InlineLabel( GwtTeaming.getMessages().loginHint() );
 			m_loginLink.addStyleName( "brandingLink" );
 			m_loginLink.addClickHandler( this );
@@ -616,104 +358,10 @@ public class MastHead extends Composite
 			linkElement = m_loginLink.getElement();
 			linkElement.setId( "mhLoginAction" );
 			
-			panel.add( m_loginLink );
-			m_globalActionsPanel.add( panel );
+			m_globalActionsPanel.add( m_loginLink );
 		}
 	}
 	
-	
-	/**
-	 * Issue an ajax request to see if the user has rights to run the "site administration" page.
-	 * If they do we will check to see if there are any upgrade actions that need to be done.
-	 */
-	private void checkForUpgradeActions()
-	{
-		AsyncCallback<VibeRpcResponse> rpcCallback;
-
-		rpcCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				// Note:  We don't pass a string here such as
-				//   rpcFailure_GetSiteAdminUrl() because it would
-				//   get displayed for guest, and all other
-				//   non-admin users.  Not passing a string here
-				//   allows the proper exception handling to occur
-				//   but will NOT display an error to the user.
-				GwtClientHelper.handleGwtRPCFailure( t );
-			}
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				String url;
-				StringRpcResponseData responseData;
-				
-				responseData = (StringRpcResponseData) response.getResponseData();
-				url = responseData.getStringValue();
-				
-				// Did we get a url for the "site administration" action?
-				if ( url != null && url.length() > 0 )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					// Yes
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						/**
-						 * 
-						 */
-						@Override
-						public void execute()
-						{
-							// Since the user has administration rights, show them a list of
-							// upgrade tasks that still need to be performed.
-							// Sent event to check for tasks
-							AdministrationUpgradeCheckEvent.fireOne();
-							
-							// Show the image the admin can click on to invoke the browse control.
-							if ( m_browsePanel != null )
-								m_browsePanel.setVisible( true );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			}
-		};
-		
-		// Issue an ajax request to get the url for the "site administration" action.
-		{
-			GetSiteAdminUrlCmd cmd;
-
-			cmd = new GetSiteAdminUrlCmd( getBinderId() );
-			GwtClientHelper.executeCommand( cmd, rpcCallback );
-		}
-	}
-
-	/**
-	 * Display the browse control
-	 */
-	private void displayBrowseControl( Widget relativeTo )
-	{
-		OnBrowseHierarchyInfo browseInfo;
-		BrowseHierarchyEvent browseEvent;
-
-		// Fire the event that will display the browse panel
-		browseInfo = new OnBrowseHierarchyInfo( relativeTo );
-		browseEvent = new BrowseHierarchyEvent();
-		browseEvent.setOnBrowseHierarchyInfo( browseInfo );
-
-		//GwtTeaming.fireEvent( new InvokeChangePasswordDlgEvent() );
-		GwtTeaming.fireEvent( browseEvent );
-	}
 	
 	/**
 	 * Return the binder id we are working with.
@@ -752,14 +400,6 @@ public class MastHead extends Composite
 
 
 	/**
-	 * Return whether or not we have retrieved the site branding
-	 */
-	public boolean hasSiteBrandingBeenRetrieved()
-	{
-		return m_siteBrandingRetrieved;
-	}
-	
-	/**
 	 * Return the height of the masthead
 	 */
 	public int getHeight()
@@ -773,16 +413,6 @@ public class MastHead extends Composite
 		if ( m_binderBrandingPanel.isVisible() )
 			height += m_binderBrandingPanel.getOffsetHeight();
 		
-		// Are we running Filr?
-		if ( m_requestInfo.isLicenseFilr() && m_filrActionsCtrl != null )
-		{
-			int filrActionsCtrlHeight;
-			
-			filrActionsCtrlHeight = m_filrActionsCtrl.getOffsetHeight() + 10;
-			if ( filrActionsCtrlHeight > height )
-				height = filrActionsCtrlHeight;
-		}
-
 		return height;
 	}// end getHeight()
 	
@@ -809,261 +439,40 @@ public class MastHead extends Composite
 		GwtClientHelper.executeCommand( cmd, m_rpcGetSiteBrandingCallback );
 	}
 	
+
 	/**
 	 * Hide the logout link.  We will do this if we are running in captive mode.
 	 */
 	public void hideLogoutLink()
 	{
-		if ( m_userActionsPopup != null )
-			m_userActionsPopup.hideLogoutLink();
+		if ( m_logoutLink != null )
+			m_logoutLink.setVisible( false );
 	}
 	
-	/**
-	 * Highlight the appropriate panel in the masthead 
-	 */
-	private void highlightSelectedAction( String actionId )
-	{
-		Element panel;
-		
-		// Remove the highlighted style from all of the actions
-		MastheadUnhighlightAllActionsEvent.fireOne();
-		
-		// Highlight the selected action
-		panel = Document.get().getElementById( actionId );
-		if ( panel != null )
-			panel.addClassName( "FilrAction_Selected" );
-	}
 	
-
-
-	/**
-	 * 
-	 */
-	private void invokeUserActionsPopup()
-	{
-		if ( m_userActionsPopup == null )
-		{
-			m_userActionsPopup = new UserActionsPopup( m_userName.getText(), true, false );
-
-			// Set the position of the popup
-			{
-				int left;
-				int top;
-				
-				left = m_userNamePanel.getAbsoluteLeft() - (m_userNamePanel.getOffsetWidth() / 2);
-				top = m_userNamePanel.getAbsoluteTop() + m_userNamePanel.getOffsetHeight() + 12;
-				m_userActionsPopup.setPopupPosition( left, top );
-			}
-		}
-
-		m_userActionsPopup.setPopupPositionAndShow( new PopupPanel.PositionCallback()
-		{
-			@Override
-			public void setPosition(int offsetWidth, int offsetHeight)
-			{
-				int left;
-				int top;
-				
-				// Align the right edge of the popup with the right edge of the user name
-				left = m_userNamePanel.getAbsoluteLeft();
-				left -= (offsetWidth - m_userNamePanel.getOffsetWidth());
-				left -= 20;
-				top = m_userNamePanel.getAbsoluteTop() + m_userNamePanel.getOffsetHeight() + 12;
-				m_userActionsPopup.setPopupPosition( left, top );
-				
-				m_userActionsPopup.setPopupPosition( left, top );
-			}
-		} );
-	}
-	
-	/**
-	 * 
-	 */
-	private void invokeUsersPage()
-	{
-		// Do we have the url to the "personal workspaces" binder?
-		if ( m_personalWorkspacesUrl == null )
-		{
-			GetSystemBinderPermalinkCmd cmd;
-			AsyncCallback<VibeRpcResponse> rpcCallback;
-
-			// No
-			rpcCallback = new AsyncCallback<VibeRpcResponse>()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onFailure( Throwable t )
-				{
-					// Note:  We don't pass a string here such as
-					//   rpcFailure_GetSiteAdminUrl() because it would
-					//   get displayed for guest, and all other
-					//   non-admin users.  Not passing a string here
-					//   allows the proper exception handling to occur
-					//   but will NOT display an error to the user.
-					GwtClientHelper.handleGwtRPCFailure( t );
-				}
-		
-				/**
-				 * 
-				 * @param result
-				 */
-				@Override
-				public void onSuccess( VibeRpcResponse response )
-				{
-					String url;
-					StringRpcResponseData responseData;
-					
-					responseData = (StringRpcResponseData) response.getResponseData();
-					url = responseData.getStringValue();
-					
-					// Did we get a url for the "personal workspace"?
-					if ( url != null && url.length() > 0 )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						// Yes
-						m_personalWorkspacesUrl = url;
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							/**
-							 * 
-							 */
-							@Override
-							public void execute()
-							{
-								invokeUsersPage();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				}
-			};
-			
-			// Issue an ajax request to get the "personal workspaces" url
-			cmd = new GetSystemBinderPermalinkCmd( SystemBinderType.PROFILE_ROOT );
-			GwtClientHelper.executeCommand( cmd, rpcCallback );
-		}
-		else
-		{
-			OnSelectBinderInfo osbInfo;
-			
-			// Invoke the "Users" page.
-			osbInfo = new OnSelectBinderInfo(
-										m_personalWorkspacesUrl,
-										Instigator.GOTO_CONTENT_URL );
-			GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
-
-			// Highlight the "Show People" panel.
-			highlightSelectedAction( "mastheadFilr_PeoplePanel" );
-		}
-	}
-	
-	/**
-	 * Invoke the Whats New page
-	 */
-	private void invokeWhatsNew()
-	{
-		ActivityStreamInfo asi;
-		ActivityStream as;
-		
-		// Highlight the "Whats new" panel.
-		highlightSelectedAction( "mastheadFilr_WhatsNewPanel" );
-		
-		FilrActionsCtrl.closeAdminConsole();
-
-		asi = new ActivityStreamInfo();
-
-		// Get the selected action from the FilrActionsCtrl
-		if ( m_filrActionsCtrl != null )
-		{
-			FilrActionType filrActionType;
-
-			filrActionType = m_filrActionsCtrl.getSelectedActionType();
-
-			// Figure out which collection point is selected and invoke "what's new"
-			// on that collection point.
-			switch ( filrActionType )
-			{
-			case MY_FILES:
-				as = ActivityStream.MY_FILES;
-				break;
-			
-			case NET_FOLDERS:
-				as = ActivityStream.NET_FOLDERS;
-				break;
-				
-			case SHARED_BY_ME:
-				as = ActivityStream.SHARED_BY_ME;
-				break;
-				
-			case SHARED_WITH_ME:
-				as = ActivityStream.SHARED_WITH_ME;
-				break;
-			
-			case SHARED_PUBLIC:
-				as = ActivityStream.SHARED_PUBLIC;
-				break;
-			
-			case UNKNOWN:
-			default:
-				as = ( GwtClientHelper.isGuestUser() ? ActivityStream.SHARED_PUBLIC : ActivityStream.SHARED_WITH_ME );
-				break;
-			}
-		}
-		else
-		{
-			as = ActivityStream.CURRENT_BINDER;
-			//!!!asi.setBinderId( m_mastheadBinderId );
-		}
-
-		asi.setActivityStream( as );
-		
-		GwtTeaming.fireEvent( new ActivityStreamEnterEvent( asi, ActivityStreamDataType.OTHER ) );
-	}
-	
-	/**
-	 * Handles ActivityStreamExitEvent's received by this class.
-	 *
-	 * Implements the ActivityStreamExitEvent.Handler.onActivityStreamExit() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onActivityStreamExit( ActivityStreamExitEvent event )
-	{
-		unhighlightAllActions();
-	}
-
 	/**
 	 * This method gets called when the user clicks on something in the branding panel.
 	 */
-	@Override
 	public void onClick( ClickEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-		final Widget eventSource;
+		Widget eventSource;
 		
 		// Get the widget that was clicked on.
 		eventSource = (Widget) event.getSource();
 
-		cmd = new Scheduler.ScheduledCommand()
+		// Send Appropriate event
+		if ( eventSource == m_logoutLink )
 		{
-			@Override
-			public void execute() 
-			{
-				if ( eventSource == m_loginLink )
-				{
-					LoginEvent.fireOne();
-				}
-				else if ( eventSource == m_userName || eventSource == m_userNamePanel )
-				{
-					invokeUserActionsPopup();
-				}
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+			LogoutEvent.fireOne();
+		}
+		else if ( eventSource == m_loginLink )
+		{
+			LoginEvent.fireOne();
+		}
+		else if ( eventSource == m_userName )
+		{
+			GotoMyWorkspaceEvent.fireOne();
+		}
 	}// end onClick()
 	
 	
@@ -1106,9 +515,9 @@ public class MastHead extends Composite
 
 	
 	/**
-	 * Set the font color used in the "global actions" panel and in the FilrActions widget.
+	 * Set the font color used in the "global actions" panel.
 	 */
-	private void setMastheadFontColor()
+	private void setGlobalActionsFontColor()
 	{
 		Element element;
 		Style style;
@@ -1136,18 +545,13 @@ public class MastHead extends Composite
 			// Yes
 			// Change the color of the font used to display the user's name.
 			style.setColor( fontColor );
-			
 		}
 		else
 		{
 			// Go back to the font color defined in the style sheet.
 			style.clearColor();
 		}
-
-		// Set the font color used by the FilrActionsCtrl
-		if ( m_filrActionsCtrl != null )
-			m_filrActionsCtrl.setFontColor( fontColor );
-
+		
 		if ( m_betaLabel != null )
 		{
 			element = m_betaLabel.getElement();
@@ -1166,20 +570,41 @@ public class MastHead extends Composite
 				style.clearColor();
 			}
 		}
-	}
+	}// end setGlobalActionsFontColor()
 	
 	
 	/**
 	 * 
 	 */
-	@Override
 	public void setVisible( boolean visible )
 	{
 		super.setVisible( visible );
 
 		if ( visible == true )
 		{
-			adjustBrandingPanelsHeight();
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+					Scheduler.ScheduledCommand cmd2;
+
+					if ( m_siteBrandingPanel != null )
+						m_siteBrandingPanel.adjustBrandingPanelHeight();
+					
+					cmd2 = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							if ( m_binderBrandingPanel != null )
+								m_binderBrandingPanel.adjustBrandingPanelHeight();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd2 );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
@@ -1269,28 +694,36 @@ public class MastHead extends Composite
 			}
 		}
 		
-		// Set the font color used in the mast head
-		setMastheadFontColor();
+		// Set the font color used in the global actions panel.
+		setGlobalActionsFontColor();
 
 		// Adjust the height of the branding panels.
-		adjustBrandingPanelsHeight();
-	}// end showBranding()
+		{
+			Scheduler.ScheduledCommand cmd;
 	
-	/**
-	 * Unhighlight all sub-actions
-	 */
-	private void unhighlightAllActions()
-	{
-		Element panel;
-		
-		panel = Document.get().getElementById( "mastheadFilr_PeoplePanel" );
-		if ( panel != null )
-			panel.removeClassName( "FilrAction_Selected" );
-		
-		panel = Document.get().getElementById( "mastheadFilr_WhatsNewPanel" );
-		if ( panel != null )
-			panel.removeClassName( "FilrAction_Selected" );
-	}
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+					Scheduler.ScheduledCommand cmd2;
+	
+					if ( m_siteBrandingPanel != null )
+						m_siteBrandingPanel.adjustBrandingPanelHeight();
+					
+					cmd2 = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							if ( m_binderBrandingPanel != null )
+								m_binderBrandingPanel.adjustBrandingPanelHeight();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd2 );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}// end showBranding()
 	
 	/**
 	 * Handles ContextChangedEvent's received by this class.
@@ -1305,12 +738,7 @@ public class MastHead extends Composite
 		OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
 		if ( GwtClientHelper.validateOSBI( osbInfo, false ))
 		{
-			BinderInfo bi = osbInfo.getBinderInfo();
-			if ( GwtClientHelper.isBinderInfoMyFilesHome( bi ) )
-			{
-				bi = GwtClientHelper.buildMyFilesBinderInfo();
-			}
-			setBinderId( bi.getBinderId() );
+			setBinderId( osbInfo.getBinderId().toString() );
 		}
 	}// end onContextChanged()
 	
@@ -1325,8 +753,6 @@ public class MastHead extends Composite
 	public void onMastheadHide( MastheadHideEvent event )
 	{
 		setVisible( false );
-		
-		SizeChangedEvent.fireOne();
 	}// end onMastheadHide()
 	
 	/**
@@ -1340,17 +766,5 @@ public class MastHead extends Composite
 	public void onMastheadShow( MastheadShowEvent event )
 	{
 		setVisible( true );
-		
-		SizeChangedEvent.fireOne();
-	}// end onMastheadShow()
-	
-	
-	/**
-	 * Handles the MastheadUnhighlightAllActionsEvent received by this class.
-	 */
-	@Override
-	public void onMastheadUnhighlightAllActions( MastheadUnhighlightAllActionsEvent event )
-	{
-		unhighlightAllActions();
-	}
+	}// end onMastheadShow()	
 }// end MastHead

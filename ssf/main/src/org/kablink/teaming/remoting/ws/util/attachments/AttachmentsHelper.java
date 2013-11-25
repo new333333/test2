@@ -50,7 +50,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.remoting.ws.RemotingException;
+import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.util.FileUtil;
@@ -162,7 +162,7 @@ public class AttachmentsHelper  {
 		}
 
 		// Wrap it up in a datastructure expected by our app.
-		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh, null); 
+		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh, null, null); 
 		// Create a map of file item names to items 
 		Map fileItems = new HashMap();
 		fileItems.put(fileUploadDataItemName, mf);

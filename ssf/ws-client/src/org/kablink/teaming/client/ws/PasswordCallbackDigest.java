@@ -39,7 +39,7 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.ws.security.WSPasswordCallback;
-import org.kablink.util.PasswordHashEncryptor;
+import org.kablink.util.PasswordEncryptor;
 
 
 /**
@@ -85,7 +85,7 @@ public class PasswordCallbackDigest implements CallbackHandler {
                 	// Note: You need to know which encryption algorithm the Teaming server
                 	// uses to encrypt user passwords, and pass that information to the
                 	// encrypt method call below.
-                	String encryptedPassword = PasswordHashEncryptor.encrypt("MD5", password);
+                	String encryptedPassword = PasswordEncryptor.encrypt("MD5", password);
                 	//System.out.println(encryptedPassword);
                 	pc.setPassword(encryptedPassword);
                 }

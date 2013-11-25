@@ -33,7 +33,6 @@
 package org.kablink.teaming.security.accesstoken;
 
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.util.api.ApiErrorCode;
 
 public class InvalidAccessTokenException extends AccessControlException {
 	
@@ -45,12 +44,4 @@ public class InvalidAccessTokenException extends AccessControlException {
 		super(InvalidAccessTokenlException_ErrorCode, new Object[] {accessToken});
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
-	 */
-	@Override
-	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.ACCESS_TOKEN_INVALID;
-	}
 }

@@ -36,6 +36,8 @@ import java.util.Date;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization.SyncJobDescription;
+import org.kablink.teaming.jobs.SSCronTriggerJob.CronJobDescription;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
@@ -63,7 +65,7 @@ public class DefaultFolderNotification extends SSCronTriggerJob implements Folde
 			Date end = mail.sendNotifications(folderId, (Date)jobDataMap.get("lastNotification") );
 			jobDataMap.put("lastNotification", end);
 		} catch (NoBinderByTheIdException nf) {
-			deleteJobOnError(context,nf);
+			removeJobOnError(context,nf);
 		} 
     }
 

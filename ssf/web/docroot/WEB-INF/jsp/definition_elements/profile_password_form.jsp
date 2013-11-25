@@ -34,22 +34,15 @@
 %>
 <% //Password form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="org.kablink.teaming.domain.User" %>
-<%@ page import="org.kablink.teaming.domain.Principal" %>
 <%
 	String caption = (String) request.getAttribute("property_caption");
 	if (caption == null) {caption = "";}
-	Principal targetUser = (Principal) request.getAttribute("ssEntry");
-	boolean isSuper = false;
-	if (targetUser instanceof User) isSuper = ((User)targetUser).isSuper();
 %>
 <c:if test="${empty ss_profile_entry_form || not ss_profile_entry_form}">
-<c:set var="isSuper" value="<%= isSuper %>"/>
 <div class="ss_entryContent">
   <c:if test="${empty ssReadOnlyFields['password']}">
 	<div class="ss_labelAbove"><%= caption %></div>
-	<c:if test="${!empty ssDefinitionEntry.password && (!ss_isBinderAdmin || 
-			ssDefinitionEntry.name == ssUser.name || isSuper)}">
+	<c:if test="${!empty ssDefinitionEntry.password && !ss_isBinderAdmin}">
 		<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_original"/></div>
 		<input type="password" size="40" name="password_original" class="ss_text" autocomplete="off" />
 	</c:if>

@@ -7,16 +7,20 @@
 .dijitToasterMessage{ 
 	color:#fff;
 }
-.dijitToasterWarning,
+.dijitToasterWarning{ }
 .dijitToasterError,
 .dijitToasterFatal{
 	font-weight:bold;
 	color:#fff;
 }
 .dijitToasterWarning .dijitToasterContent{
+	padding:1em;
+	padding-top:0.25em;
 	background:#d4d943;
 } 
 .dijitToasterError .dijitToasterContent{
+	padding:1em;
+	padding-top:0.25em;
 	background:#c46600;
 }
  
@@ -30,5 +34,6 @@
 	position: absolute;
 	width: 17.5em;
 	margin: 0px;
-	font:0.75em;
+	font:0.75em Tahoma, Helvetica, Verdana, Arial;
 }
+ 

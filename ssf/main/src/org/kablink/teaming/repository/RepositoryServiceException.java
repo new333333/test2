@@ -32,10 +32,7 @@
  */
 package org.kablink.teaming.repository;
 
-import org.kablink.util.VibeRuntimeException;
-import org.kablink.util.api.ApiErrorCode;
-
-public class RepositoryServiceException extends VibeRuntimeException {
+public class RepositoryServiceException extends RuntimeException {
 	
 	public RepositoryServiceException() {
         super();
@@ -49,19 +46,5 @@ public class RepositoryServiceException extends VibeRuntimeException {
     public RepositoryServiceException(Throwable cause) {
         super(cause);
     }
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 500; // Internal Server Error
-	}
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
-	 */
-	@Override
-	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.REPOSITORY_ERROR; 
-	}
 
 }

@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.security.authentication;
 
-import org.kablink.util.api.ApiErrorCode;
-
 public class PasswordDoesNotMatchException extends AuthenticationException {
     public PasswordDoesNotMatchException() {
         super();
@@ -47,12 +45,5 @@ public class PasswordDoesNotMatchException extends AuthenticationException {
     public PasswordDoesNotMatchException(Throwable cause) {
         super(cause);
     }
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
-	 */
-	@Override
-	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.BAD_CREDENTIALS;
-	}
 
 }

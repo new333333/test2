@@ -33,7 +33,7 @@
 package org.kablink.teaming.remoting.ws.service.ical.attachments;
 
 import org.apache.axis.attachments.AttachmentPart;
-import org.kablink.teaming.remoting.ws.RemotingException;
+import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.attachments.AttachmentsHelper;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 

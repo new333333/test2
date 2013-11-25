@@ -92,13 +92,6 @@ public interface LicenseManager {
 	 * @return
 	 */
 	public boolean isAuthorizedByLicense(String featureName);
-	public boolean isAuthorizedByLicense(String featureName, boolean ignoreExpiration);
-	
-	/**
-	 * See what type of license this is (kablink, vibe, filr, or iprint)
-	 * @return
-	 */
-	public String getLicenseType();
 	
 	/**
 	 * 
@@ -132,11 +125,4 @@ public interface LicenseManager {
 	 * @return Total number of external users from all licenses
 	 */
 	public long getExternalUsers();
-
-	
-	/**
-	 * 
-	 * @return whether there is a valid license loaded
-	 */
-	public boolean validLicenseExists();
 }

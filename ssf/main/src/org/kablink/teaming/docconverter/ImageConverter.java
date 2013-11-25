@@ -43,7 +43,6 @@ import java.io.OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentException;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
@@ -59,10 +58,6 @@ public abstract class ImageConverter extends Converter<ImageConverter.Parameters
 	protected static final String SCALED_SUBDIR = "scaled";
 	protected static final String THUMB_SUBDIR = "thumb";
 	protected static final String IMG_FILE_SUFFIX = ".jpg";
-
-	public ImageConverter() {
-		super(ObjectKeys.CONVERTER_DIR_IMAGE);
-	}
 
 	public InputStream convertToScaledImage(Binder binder, DefinableEntity entry, FileAttachment fa, ImageConverter.Parameters parameters)
 	throws IOException

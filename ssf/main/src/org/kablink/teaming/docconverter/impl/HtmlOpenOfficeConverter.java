@@ -56,7 +56,6 @@ import org.kablink.teaming.docconverter.util.OpenOfficeHelper;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.web.util.MiscUtil;
 
@@ -282,12 +281,5 @@ public class HtmlOpenOfficeConverter
 			FileAttachment fa) throws UncheckedIOException,
 			RepositoryServiceException {
 		super.deleteConvertedFile(binder, entry, fa, this.HTML_SUBDIR, this.HTML_FILE_SUFFIX);
-	}
-
-	public void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry,
-			FileAttachment fa) throws UncheckedIOException,
-			RepositoryServiceException {
-		String subDir = HTML_PUBLIC_SUBDIR + String.valueOf(shareItem.getId());
-		super.deleteConvertedFile(binder, entry, fa, subDir, HtmlConverter.HTML_FILE_SUFFIX);
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,9 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.rpc.shared;
+
 
 /**
  * This class holds all of the information necessary to execute the
@@ -50,7 +52,6 @@ public class ReplyToEntryCmd extends VibeRpcCmd {
 	 * constructor.
 	 */
 	public ReplyToEntryCmd() {
-		// Initialize the super class.
 		super();		
 	}
 
@@ -62,18 +63,11 @@ public class ReplyToEntryCmd extends VibeRpcCmd {
 	 * @param title
 	 */
 	public ReplyToEntryCmd(String entryId, String description, String title) {
-		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
-		setEntryId(    entryId    );
-		setDescription(description);
-		setTitle(      title      );
-	}
-	
-	public ReplyToEntryCmd(Long entryId, String description, String title) {
-		// Always use the previous form of the constructor.
-		this( String.valueOf( entryId ), description, title );
+		m_entryId     = entryId;
+		m_description = description;
+		m_title       = title;
 	}
 	
 	/**
@@ -100,9 +94,9 @@ public class ReplyToEntryCmd extends VibeRpcCmd {
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param
+	 * @param description
+	 * @param title
 	 */
-	public void setEntryId(    String entryId)     {m_entryId     = entryId;    }
 	public void setDescription(String description) {m_description = description;}
 	public void setTitle(      String title)       {m_title       = title;      }
 }

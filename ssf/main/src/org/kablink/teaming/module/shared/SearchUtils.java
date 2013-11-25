@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,11 +48,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.search.SortField;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -60,44 +59,21 @@ import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
-import org.kablink.teaming.fi.auth.AuthException;
-import org.kablink.teaming.fi.connection.ResourceDriver;
-import org.kablink.teaming.fi.connection.ResourceDriverManager;
-import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
-import org.kablink.teaming.fi.connection.acl.AclResourceSession;
-import org.kablink.teaming.fi.connection.acl.ResourceItem;
 import org.kablink.teaming.lucene.Hits;
-import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.util.LanguageTaster;
-import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.SearchFieldResult;
-import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterToSearchBooleanConverter;
-import org.kablink.teaming.search.postfilter.PostFilterCallback;
 import org.kablink.teaming.task.TaskHelper;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EventHelper;
-import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-import org.kablink.util.search.Criteria;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings("unchecked")
+
 public class SearchUtils {
 	private static class AssigneeAttrTag {
 		String attr;
@@ -133,14 +109,14 @@ public class SearchUtils {
 		ArrayList<Map> childEntries = new ArrayList(hits.length());
 		try {
 			int count=0;
-			Fieldable fld;
+			Field fld;
 			while (count < hits.length()) {
 				HashMap ent = new HashMap();
 				Document doc = hits.doc(count);
 				//enumerate thru all the returned fields, and add to the map object
-				List flds = doc.getFields();
-				for(int i = 0; i < flds.size(); i++) {
-					fld = (Fieldable)flds.get(i);
+				Enumeration flds = doc.fields();
+				while (flds.hasMoreElements()) {
+					fld = (Field)flds.nextElement();
 					//TODO This hack needs to go.
 					if (SearchUtils.isDateField(fld.name())) {
 						try {
@@ -177,11 +153,11 @@ public class SearchUtils {
 		for (org.apache.lucene.document.Document doc : entries) {
 			HashMap ent = new HashMap();
 			childEntries.add(ent);
-			Fieldable fld;
+			Field fld;
 			//enumerate thru all the returned fields, and add to the map object
-			List flds = doc.getFields();
-			for(int i = 0; i < flds.size(); i++) {
-				fld = (Fieldable)flds.get(i);
+			Enumeration flds = doc.fields(); 
+			while (flds.hasMoreElements()) {
+				fld = (Field)flds.nextElement();
 				if (fld.isStored()) {
 					//TODO This hack needs to go.
 					if (SearchUtils.isDateField(fld.name())) {
@@ -304,23 +280,7 @@ public class SearchUtils {
   			currentBinderId = (String)options.get(ObjectKeys.SEARCH_DASHBOARD_CURRENT_BINDER_ID);
   		}
   		org.dom4j.Document qTree = SearchFilterToSearchBooleanConverter.convertSearchFilterToSearchBoolean(searchFilter, currentBinderId);
-   		
-  		//See if there are criteria to be merged
-  		if (options != null && options.containsKey(ObjectKeys.SEARCH_CRITERIA_AND)) {
-  			Criteria crit = (Criteria)options.get(ObjectKeys.SEARCH_CRITERIA_AND);
-  			if (crit != null) {
-  				Element rootEle = crit.toQuery().getRootElement();
-  				if (rootEle != null) {
-  						Element critEle = rootEle.element(Constants.AND_ELEMENT);
-  						Element qTreeRootEle = qTree.getRootElement();
-  						if (critEle != null && qTreeRootEle != null && 
-  								qTreeRootEle.element(Constants.AND_ELEMENT) != null) {
-  							qTreeRootEle.element(Constants.AND_ELEMENT).add((Element)critEle.clone());
-  						}
-  				}
-  			}
-  		}
-  		return qTree;
+   		return qTree;
   	}
   	
   	public static void getQueryFields(org.dom4j.Document queryTree, Map options) {
@@ -388,18 +348,6 @@ public class SearchUtils {
     		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, org.kablink.util.search.Constants.ENTRY_ANCESTRY);
     		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText((String) options.get(ObjectKeys.SEARCH_ANCESTRY));
-    	}
-    	if (options.containsKey(ObjectKeys.SEARCH_HIDDEN)) {
-    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, org.kablink.util.search.Constants.HIDDEN_FROM_SEARCH_FIELD);
-    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    		child.setText((String) options.get(ObjectKeys.SEARCH_HIDDEN));
-    	}
-    	if (options.containsKey(ObjectKeys.SEARCH_FIND_USER_HIDDEN)) {
-    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, org.kablink.util.search.Constants.HIDDEN_FROM_FIND_USER_FIELD);
-    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    		child.setText((String) options.get(ObjectKeys.SEARCH_FIND_USER_HIDDEN));
     	}
 
     	//See if there are event days (modification is also an event)
@@ -609,203 +557,5 @@ public class SearchUtils {
 		
 		// Store the assignees that we're searching for.
 		searchFilter.addEntries(entries, "userGroupTeam");		
-	}
-	
-	/**
-	 * Wraps the request to the search index with a check for jits need on the binder
-	 * in order to add a simple near-real-time directory navigation support. 
-	 * 
-	 * @param luceneSession
-	 * @param contextUserId
-	 * @param aclQueryStr
-	 * @param mode
-	 * @param query
-	 * @param sort
-	 * @param offset
-	 * @param size
-	 * @param parentBinderId
-	 * @param parentBinderPath
-	 * @return
-	 * @throws LuceneException
-	 */
-	public static Hits searchFolderOneLevelWithInferredAccess(LuceneReadSession luceneSession,
-			Long contextUserId, 
-			SearchObject so,
-			int mode, 
-			int offset, 
-			int size, 
-			Binder parentBinder)
-					throws LuceneException, AuthException {
-		if(so == null)
-			throw new IllegalArgumentException("Search object must be specifed");
-		
-		String aclQueryStr = so.getAclQueryStr();
-		Query query = so.getLuceneQuery();
-		Sort sort = so.getSortBy();
-		
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Query is: " + query.toString());
-    	}
-
-		try {
-			if(parentBinder.isMirrored() && parentBinder instanceof Folder) {			
-				if(!getFolderModule().jitSynchronize((Folder)parentBinder)) {
-					// As result of JITS, the parent binder just disappeared from the system.
-					// We have to somehow notify the caller of this situation - 
-					// Shall we throw an exception or return an empty hits? Each has pros and cons.
-					// Exception throwing is more unpredictable and risky since it's not exactly
-					// clear how various clients would behave upon the error. So instead, we will
-					// throw an empty result, which will make the caller think that this binder
-					// has no children. And then this binder can disapear more graciously from
-					// the client's view when the caller invokes this method on the binder's 
-					// parent at a later time.
-					
-					//throw new NoBinderByTheIdException(parentBinder.getId());
-					return new Hits(0);
-				}
-			}	
-		}
-		catch(AuthException e) {
-			throw e; // Propagate this up
-		}
-		catch(Exception ignore) {
-			// Ignore all other exceptions
-		}
-		
-		Binder netFoldersBinder = org.kablink.teaming.search.SearchUtils.getNetFoldersRootBinder();
-		
-		if(netFoldersBinder != null && netFoldersBinder.getId().equals(parentBinder.getId())) {
-			// Getting a list of net folders that the user has access to. This requires special processing and
-			// filtering to ensure that the result only contains those net folders that meet all of the 
-			// following requirements.
-			// 1. The admin has granted the user "access net folder" right on the specific net folder.
-			// 2. The user has file system access to the net folder via either direct access or inferred access.
-			// 3. The user should not see this net folder listed under his "Net Folders" collection view just 
-			//    because some other user shared with him this net folder or anything within that net folder
-			//    (i.e., sub-folder or file within).
-			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), mode, query, sort, offset, size,
-					new PostFilterCallback() {
-				public boolean doFilter(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
-					// This filter implementation ignores the second arg.
-					String resourceDriverName = doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
-					if(resourceDriverName == null) 
-						return false; // no resource driver
-					String resourcePath = doc.get(Constants.RESOURCE_PATH_FIELD);
-					if(resourcePath == null)
-						resourcePath = ""; // It is possible to define a net folder without specifying a sub-path.
-					AclResourceSession session = openAclResourceSession(resourceDriverName);				
-					if(session == null)
-						return false; // cannot obtain session for the user
-					try {
-						session.setPath(resourcePath);
-						return session.isVisible();
-					}
-					finally {
-						session.close();
-					}
-				}
-			});
-			
-			//return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
-		}
-		else if(parentBinder.noAclDredgedWithEntries()) {
-			// The parent binder is a net folder which does not store file ACLs in the search index.
-			// We need to consolidate the information in the search index with the dynamic list
-			// obtained from the file system in order to determine which subset of the children
-			// the user has access to.
-			
-			List<String> childrenTitles = null;
-			if(Validator.isNotNull(aclQueryStr)) {
-				// We must apply access check one way or another
-				childrenTitles = getChildrenTitlesFromSourceSystem(parentBinder);
-			}
-			else {
-				// The user is not confined by access check (e.g. admin), which means that 
-				// dynamic filtering against file system is not necessary either.
-			}
-			
-		    return luceneSession.searchNetFolderOneLevel(contextUserId, aclQueryStr, childrenTitles, query, sort, offset, size);
-		}
-		else {
-			// All other cases
-			return luceneSession.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
-		}
-	}
-	
-	private static List<String> getChildrenTitlesFromSourceSystem(Binder parentBinder) {
-		AclResourceSession session = openAclResourceSession((AclResourceDriver) parentBinder.getResourceDriver());
-		
-		if(session == null)
-			return null; // The source system doesn't recognize this user. 
-		
-		try {
-			session.setPath(parentBinder.getResourcePath());
-			List<ResourceItem> children = session.getChildren(false, false, false, false);
-			List<String> titles = null;
-			if(children != null && children.size() > 0) {
-				titles = new ArrayList<String>(children.size());
-				for(ResourceItem child:children) {
-					titles.add(child.getName());
-				}
-			}
-			return titles;
-		}
-		catch(Exception e) {
-			logger.error("Error getting listing for folder [" + parentBinder.getPathName() + "] with resource path [" + 
-					parentBinder.getResourcePath() + "] through net folder server '" + parentBinder.getResourceDriverName() + "'");
-			return null;
-		}
-		finally {
-			session.close();
-		}
-	}
-	
-	public static AclResourceSession openAclResourceSession(String resourceDriverName) {
-		ResourceDriver driver;
-		
-		try {
-			driver = getResourceDriverManager().getDriver(resourceDriverName);
-		}
-		catch(Exception e) {
-			logger.warn("Can not find resource driver by name '" + resourceDriverName + "'", e);
-			return null;
-		}
-		
-		return openAclResourceSession(driver);
-	}
-	
-	public static AclResourceSession openAclResourceSession(ResourceDriver driver) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-
-		if(!(driver instanceof AclResourceDriver)) {
-			logger.warn("Unable to open session on resource driver '" + driver.getName() + "' for user '" + user.getName() + " because the driver is of class '" + driver.getClass().getName() + "'");
-			return null;
-		}
-
-		if(user.getIdentityInfo().isFromLdap()) {
-			if(logger.isDebugEnabled())
-				logger.debug("Opening a session on resource driver '" + driver.getName() + "' for user '" + user.getName() + "' to check access");
-			
-			try {
-				return getResourceDriverManager().openSessionUserMode((AclResourceDriver) driver);
-			} catch (AclItemPrincipalMappingException e) {
-				if(logger.isDebugEnabled())
-					logger.debug("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + user.getName() + "'");
-				return null;
-			}
-		}
-		else {
-			if(logger.isTraceEnabled())
-				logger.trace("No need to open a session on resource driver '" + driver.getName() + "' for user '" + user.getName() + "' to check access because the user is not provisioned from LDAP");
-			return null;			
-		}
-	}
-	
-	private static FolderModule getFolderModule() {
-		return (FolderModule) SpringContextUtil.getBean("folderModule");
-	}
-	
-	private static ResourceDriverManager getResourceDriverManager() {
-		return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
 	}
 }

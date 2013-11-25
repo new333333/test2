@@ -32,10 +32,7 @@
  */
 package org.kablink.teaming.taglib;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
@@ -46,12 +43,9 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
-import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.util.NLT;
@@ -201,15 +195,6 @@ public class PresenceInfoTag extends BodyTagSupport {
 			httpReq.setAttribute(WebKeys.PRESENCE_DIV_ID, this.optionsDivId);
 			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_OPTIONS_INLINE, this.showOptionsInline);
 			httpReq.setAttribute(WebKeys.PRESENCE_IM_URL, imProtocolString);
-
-			//See if this user can reference the profiles binder
-			ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
-			Boolean canReferenceProfilesBinder = false;
-			try {
-				Binder pb = profileModule.getProfileBinder();
-				canReferenceProfilesBinder = true;
-			} catch(Exception e) {}
-			httpReq.setAttribute(WebKeys.SHOW_USER_CAN_ACCESS_PROFILES_BINDER, canReferenceProfilesBinder);
 
 			// Output the presence info
 			String jsp = "/WEB-INF/jsp/tag_jsps/presence/show_dude.jsp";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,11 +36,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * ?
- * 
- * @author ?
- */
 public class Restrictions {
 	abstract static class SingleFieldCriterion implements Criterion
 	{
@@ -50,7 +45,6 @@ public class Restrictions {
 			this.name = name;
 		}
 		
-		@Override
 		public List<Object> getParameterValues()
 		{
 			return new LinkedList<Object>();
@@ -74,12 +68,10 @@ public class Restrictions {
 			this.value = value;
 		}
 		
-		@Override
 		public List<Object> getParameterValues()
 		{
 			return Arrays.asList(value);
 		}
-		@Override
 		public String toSQLString(String alias)
 		{
 			return getFieldName(alias) + getComparator() + "? ";
@@ -92,18 +84,7 @@ public class Restrictions {
 		{
 			super(name, value);
 		}
-		@Override
 		protected String getComparator() { return "="; }
-	}
-	
-	static class NotEqCriterion extends SingleValueCriterion
-	{
-		public NotEqCriterion(String name, Object value)
-		{
-			super(name, value);
-		}
-		@Override
-		protected String getComparator() { return "<>"; }
 	}
 	
 	static class NotNullCriterion extends SingleFieldCriterion
@@ -112,7 +93,6 @@ public class Restrictions {
 		{
 			super(name);
 		}
-		@Override
 		public String toSQLString(String alias)
 		{
 			return getFieldName(alias) + " is not null";
@@ -125,7 +105,6 @@ public class Restrictions {
 		{
 			super(name);
 		}
-		@Override
 		public String toSQLString(String alias)
 		{
 			return getFieldName(alias) + " is null";
@@ -137,16 +116,10 @@ public class Restrictions {
 		return new EqCriterion(name, value);
 	}
 
-	public static Criterion notEq(String name, Object value)
-	{
-		return new NotEqCriterion(name, value);
-	}
-
 	public static Criterion notNull(String name)
 	{
 		return new NotNullCriterion(name);
 	}
-
 	public static Criterion isNull(String name)
 	{
 		return new IsNullCriterion(name);

@@ -32,46 +32,6 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+public class Binder {
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Date;
-
-@XmlRootElement (name="binder")
-@JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
-public class Binder extends DefinableEntity {
-    private String path;
-    private LibraryInfo libraryInfo;
-
-    public Binder() {
-        setDocType("binder");
-    }
-
-    protected Binder(Binder orig) {
-        super(orig);
-        this.path = orig.path;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    @XmlElement(name = "library_info")
-    public LibraryInfo getLibraryInfo() {
-        return libraryInfo;
-    }
-
-    public void setLibraryInfo(LibraryInfo libraryInfo) {
-        this.libraryInfo = libraryInfo;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new Binder(this);
-    }
 }

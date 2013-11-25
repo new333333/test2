@@ -128,22 +128,16 @@ public class GwtRpcController extends RemoteServiceServlet
             if ( ( null != parameters ) && ( 0 < parameters.length ) && ( parameters[0] instanceof HttpRequestInfo ) )
             {
             	HttpServletRequest req;
-            	HttpServletResponse resp;
             	HttpRequestInfo ri;
             	
             	// Yes!  Get the HttpServletRequest we are working with.
             	req = getThreadLocalRequest();
-            	
-            	// Get the HttpServletResponse
-            	resp = getThreadLocalResponse();
             	
             	// Get the HttpRequestInfo object that is the first
             	// parameter and drop in the current
             	// HttpServletRequest.
             	ri = ((HttpRequestInfo) parameters[0]);                
             	ri.setRequestObj( req );
-            	ri.setResponseObj( resp );
-            	ri.setServletContext( getServletContext() );
             	
             	// Is the user logged in?
             	if ( WebHelper.isGuestLoggedIn( req ) )

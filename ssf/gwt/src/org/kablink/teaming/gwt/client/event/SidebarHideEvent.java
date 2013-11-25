@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,7 +47,6 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class SidebarHideEvent extends VibeEventBase<SidebarHideEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 	
-	private boolean m_hiddenByEmptySidebar;
 	private boolean m_resizeContentImmediately;
 
 	/**
@@ -59,41 +58,17 @@ public class SidebarHideEvent extends VibeEventBase<SidebarHideEvent.Handler> {
 	
 	/**
 	 * Class constructor.
-	 */
-	public SidebarHideEvent() {
-		// Initialize the super class...
-		super();
-		
-		// ...and initialize everything else.
-		setHiddenByEmptySidebar(    false);
-		setResizeContentImmediately(true );
-	}
-	
-	/**
-	 * Class constructor.
 	 * 
 	 * @param resizeContentImmediately
 	 */
 	public SidebarHideEvent(boolean resizeContentImmediately) {
-		// Initialize the this object...
-		this();
-		
-		// ...and store the parameter.
-		setResizeContentImmediately(resizeContentImmediately);
+		super();		
+		m_resizeContentImmediately = resizeContentImmediately;
 	}
 	
-	/**
-	 * Class constructor.
-	 * 
-	 * @param resizeContentImmediately
-	 */
-	public SidebarHideEvent(boolean resizeContentImmediately, boolean hiddenByEmptySidebar) {
-		// Initialize the this object...
-		this();
-		
-		// ...and store the parameters.
-		setResizeContentImmediately(resizeContentImmediately);
-		setHiddenByEmptySidebar(    hiddenByEmptySidebar    );
+	public SidebarHideEvent() {
+		// Always use the initial form of the constructor.
+		this(true);
 	}
 	
 	/**
@@ -101,26 +76,17 @@ public class SidebarHideEvent extends VibeEventBase<SidebarHideEvent.Handler> {
 	 * 
 	 * @return
 	 */
-	public boolean getHiddenByEmptySidebar()     {return m_hiddenByEmptySidebar;    }
 	public boolean getResizeContentImmediately() {return m_resizeContentImmediately;}
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setHiddenByEmptySidebar(    boolean hiddenByEmptySidebar)     {m_hiddenByEmptySidebar     = hiddenByEmptySidebar;    }
-	public void setResizeContentImmediately(boolean resizeContentImmediately) {m_resizeContentImmediately = resizeContentImmediately;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
-	 * Implements the VibeEventBase.doDispatch() method.
+	 * Implements GwtEvent.dispatch()
 	 * 
 	 * @param handler
 	 */
 	@Override
-	protected void doDispatch(Handler handler) {
+	protected void dispatch(Handler handler) {
 		handler.onSidebarHide(this);
 	}
 	

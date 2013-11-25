@@ -72,12 +72,11 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
     		InputDataAccessor inputData, List fileUploadItems,
     		Collection<FileAttachment> filesToIndex, Map ctx) {
     }
-    @Override
-    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, boolean skipDbLog) {
+    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
     	//Delete the template.  The interalId isn't meant
     	// to force the template allways exist
     	binder.setInternalId(null); 
-    	super.deleteBinder(binder, deleteMirroredSource, options, skipDbLog);
+    	super.deleteBinder(binder, deleteMirroredSource, options);
     		
     }
   	//not supported
@@ -92,9 +91,6 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 		return false;
 	}
     public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
-    	return indexBinder(binder, includeEntries, deleteIndex, tags, false);
-    }
-    public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
    		//nothing to do    	    	
     	return new IndexErrors();
     }
@@ -116,7 +112,7 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 	public ChangeLog processChangeLog(Binder binder, String operation) { 
 		return null;
 	}
-    public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries) {
+    public void indexFunctionMembership(Binder binder, boolean cascade) {
     	//don't index
     }
     public void indexTeamMembership(Binder binder, boolean cascade) {

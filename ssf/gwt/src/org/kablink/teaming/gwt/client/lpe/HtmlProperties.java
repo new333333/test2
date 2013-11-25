@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -54,7 +53,7 @@ public class HtmlProperties
 {
 	private String m_html;
 	private String m_markedUpHtml;		// html that has markup still in it.
-	private GetterCallback<String> m_getterCallback;
+	private boolean m_isRpcInProgress;
 	
 	/**
 	 * 
@@ -63,7 +62,7 @@ public class HtmlProperties
 	{
 		m_html = null;
 		m_markedUpHtml = null;
-		m_getterCallback = null;
+		m_isRpcInProgress = false;
 	}
 	
 	
@@ -80,6 +79,7 @@ public class HtmlProperties
 
 			setHtml( htmlProps.getHtml() );
 			m_markedUpHtml = htmlProps.getMarkedUpHtml();
+			m_isRpcInProgress = false;
 		}
 	}
 	
@@ -119,14 +119,20 @@ public class HtmlProperties
 	}
 	
 	/**
+	 * 
+	 */
+	public boolean isRpcInProgress()
+	{
+		return m_isRpcInProgress;
+	}
+	
+	/**
 	 * Issue an ajax request to parse the html and replace any markup with the appropriate html.
 	 * For example, replace {{attachmentUrl: somename.png}} with a url that looks like:
 	 * http://somehost/ssf/s/readFile.../somename.png
 	 */
-	public void replaceMarkup( String binderId, GetterCallback<String> callback )
+	public void replaceMarkup( String binderId )
 	{
-		m_getterCallback = callback;
-		
 		// Do we have html that has any markup in it?
 		if ( m_markedUpHtml != null && m_markedUpHtml.length() > 0 && binderId != null && binderId.length() > 0 )
 		{
@@ -135,6 +141,7 @@ public class HtmlProperties
 			// Issue an ajax request to parse the html and replace any markup with the appropriate html.
 			// For example, replace {{attachmentUrl: somename.png}} with a url that looks like:
 			// http://somehost/ssf/s/readFile/.../somename.png.
+			m_isRpcInProgress = true;
 			MarkupStringReplacementCmd cmd = new MarkupStringReplacementCmd( binderId, m_markedUpHtml, "form" );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
@@ -144,12 +151,8 @@ public class HtmlProperties
 					GwtClientHelper.handleGwtRPCFailure(
 						caught,
 						GwtTeaming.getMessages().rpcFailure_markupStringReplacement() );
-
+					m_isRpcInProgress = false;
 					m_markedUpHtml = null;
-
-					// Inform the callback that the rpc request failed.
-					if ( m_getterCallback != null )
-						m_getterCallback.returnValue( null);
 				}// end onFailure()
 
 				@Override
@@ -159,17 +162,12 @@ public class HtmlProperties
 					String newHtml = responseData.getStringValue();
 					
 					setHtml( newHtml );
+					m_isRpcInProgress = false;
 					m_markedUpHtml = null;
-
-					// Inform the callback that the rpc request finished.
-					if ( m_getterCallback != null )
-						m_getterCallback.returnValue( newHtml );
 				}// end onSuccess()
 				
 			} );
 		}
-		else
-			m_getterCallback.returnValue( null );
 	}
 	
 	

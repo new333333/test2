@@ -150,12 +150,8 @@ public class WSExport extends WSClientBase
 			File entryFile = new File(parent, safeName(root) + ".xml");
 			entryFile.createNewFile();
 			FileWriter writer = new FileWriter(entryFile);
-			try {
-				writer.write(xml, 0, xml.length());
-			}
-			finally {
-				writer.close();
-			}
+			writer.write(xml, 0, xml.length());
+			writer.close();
 		} catch(IOException e) {
 			System.err.println("Could not write entry data for folder " + folderId + ", entry " +
 					root.attributeValue("id") + " - " + root.attributeValue("title"));

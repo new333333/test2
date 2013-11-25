@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,16 +32,14 @@
  */
 package org.kablink.teaming.dao;
 
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
-import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.dao.util.SFQuery;
-import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
@@ -53,7 +51,6 @@ import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
-import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
@@ -61,7 +58,6 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Rating;
 import org.kablink.teaming.domain.SeenMap;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -70,12 +66,10 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Visits;
 import org.springframework.dao.DataAccessException;
 
+
 /**
  * Interface to handle principals.
- * 
- * @author Jong Kim
  */
-@SuppressWarnings("unchecked")
 public interface ProfileDao {
 	/**
 	 * Optional optimization used to bulk load principal collections.  Used to
@@ -124,33 +118,15 @@ public interface ProfileDao {
  	public User findUserByName(String principalName, Long zoneId) 
 		throws NoUserByTheNameException;
 
- 	public User findUserByForeignName(String foreignName, Long zoneId) 
-		throws NoUserByTheNameException;
-
  	public User findUserByLdapGuid( String ldapGuid, Long zoneId ) 
- 	 		throws NoUserByTheNameException;
- 	 	
- 	public Long findPrincipalIdByLdapGuid(String ldapGuid, Long zoneId);
- 	 	
- 	public User findUserByObjectSid( String objectSid, Long zoneId ) 
- 	 	 		throws NoUserByTheNameException;
- 	 	 	
- 	public Long findPrincipalIdByObjectSid(String objectSid, Long zoneId);
- 	 	 	
- 	public Long findPrincipalIdByForeignName(String foreignName, Long zoneId);
- 	
- 	public Long findPrincipalIdByName(String name, Long zoneId);
-
- 	public Long findPrincipalIdByDomainAndSamaccount(String domainName, String samaccountName, Long zoneId);
+ 		throws NoUserByTheNameException;
 
  	public Principal findPrincipalByName(String name, Long zoneId) 
  		throws NoPrincipalByTheNameException;
- 	public Set<Long> getApplicationLevelGroupMembership(Long principalId, Long zoneId);
  	public Set<Long> getAllGroupMembership(Long principalId, Long zoneId);
  	public List<Long> getMembership(Long groupId, Long zoneId);
  	public List<Long> getOwnedBinders(final Set<Principal> users);
-	public Set<Long> getApplicationLevelPrincipalIds(Principal principal);
-	public Set<Long> getAllPrincipalIds(Principal principal);
+	public Set<Long> getPrincipalIds(Principal principal);
 	public ProfileBinder getProfileBinder(Long zoneId);
 	public Group getReservedGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
 	public Long getReservedGroupId(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
@@ -165,7 +141,7 @@ public interface ProfileDao {
     public List<UserPrincipal> loadUserPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
 	public Rating loadRating(Long userId, EntityIdentifier entityId);
     public SeenMap loadSeenMap(Long userId);
-	public List<SharedEntity> loadSharedEntities(Collection ids, Collection binderIds, Date after, Long zoneId); 	
+    public List<SharedEntity> loadSharedEntities(Collection ids, Collection binderIds, Date after, Long zoneId); 	
    	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);
   /**
      * Load a user that is neither deleted or disabled. Check that user is in zone.
@@ -186,7 +162,6 @@ public interface ProfileDao {
 	public void markEntriesDeleted(ProfileBinder binder, Collection<Principal> entries);
 
     public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId) throws DataAccessException;
-    public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId, boolean includeDisabled) throws DataAccessException;
     public SFQuery queryGroups(FilterControls filter, Long zoneId) throws DataAccessException; 
     public SFQuery queryUsers(FilterControls filter, Long zoneId) throws DataAccessException;    
      
@@ -270,119 +245,4 @@ public interface ProfileDao {
  	 * Get the list of disabled user accounts.
  	 */
  	public List<Long> getDisabledUserAccounts(final long zoneId);
- 	
- 	/**
- 	 * Load a <code>ShareItem</code> given its id.
- 	 * If the object is not found, it throws <code>NoShareItemByTheIdException</code>.
- 	 * 
- 	 * @param shareItemId
- 	 * @return
- 	 * @throws NoShareItemByTheIdException
- 	 */
- 	public ShareItem loadShareItem(Long shareItemId) throws NoShareItemByTheIdException;
- 	
- 	/**
- 	 * Load a list of <code>ShareItem</code> given their ids.
- 	 * Unlike <code>loadShareItem</code> method, this method does not return error when
- 	 * not all of the objects are found by the specified ids. Instead, it will only return
- 	 * those objects successfully found.
- 	 * 
- 	 * @param shareItemIds
- 	 * @return
- 	 */
- 	public List<ShareItem> loadShareItems(Collection<Long> shareItemIds); 
- 	
- 	/**
- 	 * Return IDs of users, groups, and teams that are granted specified right to the specified entity.
- 	 * 
- 	 * @param sharedEntityIdentifier
- 	 * @param rightName
- 	 * @return
- 	 */
- 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntity(EntityIdentifier sharedEntityIdentifier, String rightName);
- 	
- 	/**
- 	 * Return IDs of users, groups, and teams that are granted specified right to at least one of the specified entities.
- 	 * 
- 	 * @param sharedEntityIdentifier
- 	 * @param rightName
- 	 * @return
- 	 */
- 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntities(Collection<EntityIdentifier> sharedEntityIdentifiers, String rightName);
- 	
- 	/**
- 	 * Return IDs of users, groups, and teams that are granted at least one of the specified
- 	 * rights to at least one of the specified entities.
- 	 * 
- 	 * @param sharedEntityIdentifier
- 	 * @param rightName
- 	 * @return
- 	 */
- 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightsToSharedEntities(Collection<EntityIdentifier> sharedEntityIdentifiers, String[] rightNames);
- 	
- 	/** 
- 	 * Find a list of <code>Group</code> meeting the specified selection criteria.
- 	 * 
- 	 * @return
- 	 */
- 	public List<Group> findGroups( GroupSelectSpec groupSelectSpec );
-
- 	/** 
- 	 * Find a list of <code>ShareItem</code> meeting the specified selection criteria.
- 	 * 
- 	 * @param selectSpec
- 	 * @return
- 	 */
- 	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec);
-
- 	/**
- 	 * Find a list <code>ShareItem</code> that have been expired but yet to be handled.
- 	 * 
- 	 * @return
- 	 */
- 	public List<ShareItem> findExpiredAndNotYetHandledShareItems();
- 	
- 	/**
- 	 * Get a list of LDAP users and groups that are members of the specified LDAP container group.
- 	 * The result contains all descendants recursively, not just immediate children. 
- 	 * 
- 	 * @param containerGroup
- 	 * @return
- 	 */
- 	public List<Principal> getLdapContainerGroupMembers(Group containerGroup);
-
- 	/**
- 	 * Get a list of IDs of the LDAP container groups that the specified principal is a member
- 	 * of either directly (i.e., immediate child) or indirectly via recursion (i.e., descendant).
- 	 * 
- 	 * @param principalId
- 	 * @param zoneId
- 	 * @return
- 	 */
- 	public List<Long> getMemberOfLdapContainerGroupIds(Long principalId, Long zoneId);
- 	
- 	/**
- 	 * Load LDAP container groups.
- 	 * 
- 	 * @param filter
- 	 * @param zoneId
- 	 * @return
- 	 * @throws DataAccessException
- 	 */
-    public List<Group> loadLdapContainerGroups(Long zoneId); 
-
-    /**
-     * Update the various db tables to necessary to support a user being renamed.
-     */
-    public void renameUser( User user );
-    
-    
- 	/**
- 	 * Return IDs of sharers of the specified entities.
- 	 * 
- 	 * @param sharedEntityIdentifier
- 	 * @return
- 	 */
-	public Set<Long> getSharerIdsToSharedEntities(
-			Collection<EntityIdentifier> sharedEntityIdentifiers);
-}
+ }

@@ -48,7 +48,7 @@ public class ListProperties
 {
 	private boolean	m_showBorder;
 	private String		m_title;
-
+	
 	// The following data members are used to define the width and height of the view.
 	private int m_width;
 	private Style.Unit m_widthUnits;
@@ -64,7 +64,7 @@ public class ListProperties
 		m_showBorder = false;
 		m_title = null;
 
-		// Default the width and height to nothing
+		// Default the width and height to 100%
 		m_width = -1;
 		m_widthUnits = Style.Unit.PCT;
 		m_height = -1;
@@ -122,7 +122,7 @@ public class ListProperties
 			else
 				str += "px";
 		}
-
+		
 		// Has a height been set?
 		if ( m_height > 0 )
 		{
@@ -263,5 +263,5 @@ public class ListProperties
 	{
 		m_widthUnits = units;
 	}
-	
+
 }// end ListProperties

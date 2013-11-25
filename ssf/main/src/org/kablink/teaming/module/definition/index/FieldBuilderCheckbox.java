@@ -40,7 +40,6 @@ import org.dom4j.Element;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.search.BasicIndexUtils;
-import org.kablink.util.search.FieldFactory;
 
 public class FieldBuilderCheckbox extends AbstractFieldBuilder {
 
@@ -63,10 +62,10 @@ public class FieldBuilderCheckbox extends AbstractFieldBuilder {
         if (val == null) {
             return new Field[0];
         }
-        Field field = FieldFactory.createField(getSearchFieldName(dataElemName), val.toString(), getFieldStore(), getFieldIndex());
+        Field field = new Field(getSearchFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         if (!isFieldsOnly(args)) {
-            Field generalTextField = BasicIndexUtils.generalTextField(caption);
-        	return new Field[] {generalTextField, field};
+            Field allTextField = BasicIndexUtils.allTextField(caption);
+        	return new Field[] {allTextField, field};
         } else {
         	return new Field[] {field};
         }

@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Collections;
+import org.apache.lucene.index.Term;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
@@ -57,7 +58,6 @@ import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityDashboard;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -68,7 +68,6 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.dashboard.DashboardModule;
@@ -88,17 +87,16 @@ import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.Function;
-import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.util.DashboardHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
-
+import org.kablink.util.search.Constants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -202,16 +200,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				try {
 					in = new ClassPathResource(file).getInputStream();
 					Document doc = reader.read(in);
-					Long templateId;
-					try {
-						templateId = addTemplate(null, doc, replace).getId();
-					} catch(Exception e) {
-						if (replace) {
-							//Failed to replace the template, throw error
-							throw e;
-						}
-						templateId = null;
-					}
+					Long templateId = addTemplate(doc,true).getId();
 					if (templateId == null) result = false;
 					getCoreDao().flush();
 				} catch (Exception ex) {
@@ -272,19 +261,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				defs.add(entryDef);
 				break;
 			}
-			case Definition.EXTERNAL_USER_WORKSPACE_VIEW: {
-				List result = getCoreDao().loadObjects(TemplateBinder.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_EXTERNAL_USER_WORKSPACE_CONFIG, Integer.valueOf(type)}), zoneId);
-				if (!result.isEmpty()) return (TemplateBinder)result.get(0);
-				
-				config.setTemplateTitle("__template_external_user_workspace");
-				config.setTemplateDescription("__template_external_user_workspace_description");
-				config.setInternalId(ObjectKeys.DEFAULT_EXTERNAL_USER_WORKSPACE_CONFIG);
-				entryDef = getDefinitionModule().addDefaultDefinition(type);
-				config.setEntryDef(entryDef);
-				defs.add(entryDef);
-				break;
-			}
 		default: {
 			throw new IllegalArgumentException("Invalid type:" + type);
 			}
@@ -313,8 +289,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		}
 		return config;
 	 }
-	//add template
-	 public TemplateBinder addTemplate(Binder localBinderParent, int type, Map updates) {
+	//add top level template
+	 public TemplateBinder addTemplate(int type, Map updates) {
 	    checkAccess(TemplateOperation.manageTemplate);
 		TemplateBinder template = new TemplateBinder();
 		String name = (String)updates.get(ObjectKeys.FIELD_BINDER_NAME);
@@ -324,16 +300,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			 if (Validator.isNull(name)) {
 				 throw new IllegalArgumentException(NLT.get("general.required.name"));
 			 }
-		}
-		Long entrySourceBinderId = null;
-		if (updates.containsKey(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID)) {
-			entrySourceBinderId = (Long)updates.get(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID);
-		}
-		template.setTemplateEntrySourceBinderId(entrySourceBinderId);
-		if (localBinderParent != null) {
-			//This is a local template. Store the parent binder id
-			template.setTemplateOwningBinderId(localBinderParent.getId());
-		}
+		 }
 		template.setName(name);
 		if (!validateTemplateName(null, name)) throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
 		Definition entryDef = getDefinitionModule().addDefaultDefinition(type);
@@ -349,21 +316,15 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		doAddTemplate(template, type, updates);
 	    return template;
 	 }
-	 public TemplateBinder addTemplate(Binder localBinderParent, InputStream indoc, boolean replace) 
+	 public TemplateBinder addTemplate(InputStream indoc, boolean replace) 
 	 	throws AccessControlException, DocumentException {
 		 SAXReader xIn = new SAXReader(false);
 		 Document doc = xIn.read(indoc);
-		 return addTemplate(localBinderParent, doc, replace);
+		 return addTemplate(doc, replace);
 	 }
 		//add top level template
-	 public TemplateBinder addTemplate(Binder localBinderParent, Document doc, boolean replace) {
-		 if (localBinderParent == null) {
-			 //This is a zone wide template
-			 checkAccess(TemplateOperation.manageTemplate);
-		 } else {
-			 //This is a local template, check access to the folder
-			 getBinderModule().checkAccess(localBinderParent, BinderOperation.manageConfiguration);
-		 }
+	 public TemplateBinder addTemplate(Document doc, boolean replace) {
+		 checkAccess(TemplateOperation.manageTemplate);
 		 Element config = doc.getRootElement();
 		 //check name
 		 String name = (String)XmlUtils.getCustomAttribute(config, ObjectKeys.XTAG_BINDER_NAME);
@@ -375,9 +336,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 }
 		 String internalId = config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID);
 		 if (Validator.isNotNull(internalId)) {
-			 if (localBinderParent != null) {
-				 throw new NotSupportedException("errorcode.notsupported.cannotImportGlobalTemplate");
-			 }
 			 try {
 			 //	see if it exists
 				 Binder binder = getCoreDao().loadReservedBinder(internalId, RequestContextHolder.getRequestContext().getZoneId());
@@ -394,29 +352,14 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 } else {
 			 List<TemplateBinder> binders = getCoreDao().loadObjects(TemplateBinder.class, new FilterControls(ObjectKeys.FIELD_BINDER_NAME, name), RequestContextHolder.getRequestContext().getZoneId());
 			 if (!binders.isEmpty()) {
-				 if (localBinderParent != null) {
-					 //Make sure these templates really belong to this binder
-					 for (TemplateBinder tb : binders) {
-						 if (!localBinderParent.getId().equals(tb.getTemplateOwningBinderId())) {
-							 throw new NotSupportedException("errorcode.notsupported.cannotImportLocalTemplate", new Object[]{name});
-						 }
-					 }
-				 }
-				 if (replace) {
-					 getBinderModule().deleteBinder(binders.get(0).getId());
-				 } else {
-					 throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
-				 }
+				 if (replace) getBinderModule().deleteBinder(binders.get(0).getId());
+				 else throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
 			 }
 		 }
 		 TemplateBinder template = new TemplateBinder();
 		 //only top level needs a name
 		 template.setName(name);
 		 template.setInternalId((internalId));
-		 if (localBinderParent != null) {
-			 //Mark this template as local to the parent binder
-			 template.setTemplateOwningBinderId(localBinderParent.getId());
-		 }
 		 doTemplate(template, config);
 		 
 		 //see if any child configs need to be copied
@@ -495,7 +438,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			 getCoreDao().save(myDashboard);
 		 }
 		 //copy all file attachments
-		 getFileModule().copyFiles(source, source, destination, destination, null);
+		 getFileModule().copyFiles(source, source, destination, destination);
 		 EntryBuilder.copyAttributes(source, destination);
 		 //Set quota (if any)
 		 if (getBinderModule().isBinderDiskQuotaEnabled()) {
@@ -554,23 +497,19 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			} catch (Exception ex) {};
 		 return false;
 	 }
-	   public TemplateBinder addTemplateFromBinder(Binder localParentBinder, Long binderId) throws AccessControlException, WriteFilesException {
+	   public TemplateBinder addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException {
 		   checkAccess(TemplateOperation.manageTemplate);
 		   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 		   Binder binder = (Binder)getCoreDao().loadBinder(binderId, zoneId);
-		   TemplateBinder config = templateFromBinder(localParentBinder, null, binder);
+		   TemplateBinder config = templateFromBinder(null, binder);
 		   return config;
 		}
-		protected TemplateBinder templateFromBinder(Binder localParentBinder, TemplateBinder parent, Binder binder) {
+		protected TemplateBinder templateFromBinder(TemplateBinder parent, Binder binder) {
 			//get binder setup
 			if (binder.getDefinitionType() == null) {
 				getDefinitionModule().setDefaultBinderDefinition(binder);
 			}	
 			TemplateBinder config = new TemplateBinder(binder);
-			if (localParentBinder != null) {
-				//This is a local template, set the parentBinder id
-				config.setTemplateOwningBinderId(localParentBinder.getId());
-			}
 			if (parent == null) {
 				//need a name				   
 				String name = config.getName();
@@ -609,7 +548,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			}
 			List<Binder> children = binder.getBinders();    
 			for (Binder child: children) {
-				templateFromBinder(localParentBinder, config, child);	    	
+				templateFromBinder(config, child);	    	
 			}
 			return config;
 			
@@ -639,11 +578,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		if (updates.containsKey(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION)) {
 			config.setTemplateDescription((Description)updates.get(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION));
 		}
-		if (updates.containsKey(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID)) {
-			config.setTemplateEntrySourceBinderId((Long)updates.get(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID));
-		} else {
-			config.setTemplateEntrySourceBinderId(null);
-		}
 
 		ObjectBuilder.updateObject(config, updates);
 	}
@@ -661,7 +595,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_TEMPLATE_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTemplateTitle());
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_TEMPLATE_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, binder.getTemplateDescription());
-		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_TEMPLATE_HIDDEN, ObjectKeys.XTAG_TYPE_BOOLEAN, binder.getTemplateHidden());
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTitle());
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, binder.getDescription());
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, binder.getIconName());			
@@ -751,143 +684,85 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	}
 	public TemplateBinder getTemplate(Long id) {
 		//public
-		TemplateBinder binder = getCoreDao().loadTemplate(id, RequestContextHolder.getRequestContext().getZoneId());
-		return Utils.validateTemplateBinder(binder);
+		return getCoreDao().loadTemplate(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	public TemplateBinder getTemplateByName(String name) {
 		//public
-		TemplateBinder binder =  getCoreDao().loadTemplateByName(name, RequestContextHolder.getRequestContext().getZoneId());
-		return Utils.validateTemplateBinder(binder);
+		return getCoreDao().loadTemplateByName(name, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	public List<TemplateBinder> getTemplates() {
-		return getTemplates(Boolean.FALSE);
-	}
-	public List<TemplateBinder> getTemplates(boolean includeHiddenTemplates) {
 		//world read
-		List<TemplateBinder> binders = getCoreDao().loadTemplates(RequestContextHolder.getRequestContext().getZoneId());
-		return Utils.validateTemplateBinders(binders, includeHiddenTemplates);
-	}
-	public List<TemplateBinder> getTemplates(Binder binder) {
-		//world read
-		List<TemplateBinder> binders = getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), false);
-		return Utils.validateTemplateBinders(binders);
+		return getCoreDao().loadTemplates(RequestContextHolder.getRequestContext().getZoneId());
 	}
 	public List<TemplateBinder> getTemplates(int type) {
 		//world read
-		List<TemplateBinder> binders = getCoreDao().loadTemplates( RequestContextHolder.getRequestContext().getZoneId(), type);
-		return Utils.validateTemplateBinders(binders);
-	}
-	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors) {
-		return getTemplates(type, binder, includeAncestors, Boolean.FALSE);
-	}
-	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors, 
-			boolean includeHiddenTemplates) {
-		List<TemplateBinder> binders = getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), type, includeAncestors);
-		return Utils.validateTemplateBinders(binders, includeHiddenTemplates);
+		return getCoreDao().loadTemplates( RequestContextHolder.getRequestContext().getZoneId(), type);
 	}
 	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
 	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name) 
 			throws AccessControlException {
-		return addBinder(configId, parentBinderId, title, name, null, null);
-	}
-	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
-	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
-	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name, final Map overrideInputData, final Map options) 
-			throws AccessControlException {
 		//The first add is independent of the others.  In this case the transaction is short 
 		//and managed by processors.  
 		
-		SimpleProfiler.start("TemplateModule.addBinder.load");
 		TemplateBinder cfg = getCoreDao().loadTemplate(configId, RequestContextHolder.getRequestContext().getZoneId());
 		Binder parent = getCoreDao().loadBinder(parentBinderId, RequestContextHolder.getRequestContext().getZoneId());
-		SimpleProfiler.stop("TemplateModule.addBinder.load");
-		
 		Map ctx = new HashMap();
-		if(options != null)
-			ctx.putAll(options);
 		//force a lock so contention on the sortKey is reduced
 		ctx.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-		
-		SimpleProfiler.start("TemplateModule.addBinder.internal");
-		final Binder top = addBinderInternal(cfg, parent, title, name, overrideInputData, ctx);
-		SimpleProfiler.stop("TemplateModule.addBinder.internal");
-
+		final Binder top = addBinderInternal(cfg, parent, title, name, ctx);
 		ctx.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE); //don't bother indexing, until copyBinderAttributes done
 		if (top != null) {
 			//now that we have registered the sortKey in the parent binder, we use a longer transaction to complete 
 			//it - there shouldn't be any contention here since the binder is new and doesn't need to reference its parent
-			SimpleProfiler.start("TemplateModule.addBinder.trans");
 			getTransactionTemplate().execute(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
-			        //need to reload in case addFolder/workspace used retry loop where session cache is flushed by exception
-					SimpleProfiler.start("TemplateModule.addBinder.part2");
-			        TemplateBinder cfg = getCoreDao().loadTemplate(configId, RequestContextHolder.getRequestContext().getZoneId());
-					addBinderPart2(cfg, top);
-					SimpleProfiler.stop("TemplateModule.addBinder.part2");
-					return null;
-				}
-			});
-			SimpleProfiler.stop("TemplateModule.addBinder.trans");
+		        	public Object doInTransaction(TransactionStatus status) {
+		        //need to reload in case addFolder/workspace used retry loop where session cache is flushed by exception
+		        TemplateBinder cfg = getCoreDao().loadTemplate(configId, RequestContextHolder.getRequestContext().getZoneId());
+	 			addBinderFinish(cfg, top);
+	 			//after children are added, resolve relative selections
+	 			List<Binder>binders = new ArrayList();
+	 			binders.add(top);
+	 			while (!binders.isEmpty()) {
+	 				Binder b = binders.remove(0);
+	 				binders.addAll(b.getBinders());
+	 				try {
+	 					EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
+	 					if (dashboard != null) {
+	 						DashboardHelper.resolveRelativeBinders(b.getBinders(), dashboard);
+	 					}
+	 				} catch (Exception ex) {
+	 					//at this point just log errors  index has already been updated
+	 					//	if throw errors, rollback will take effect and must manualy remove from index
+	 					logger.error("Error adding dashboard " + ex.getLocalizedMessage());
+	 				}
+	 			}
+	 			return null;
+		     }});
 		}
-		
-		SimpleProfiler.start("TemplateModule.addBinder.indexapply");
 		IndexSynchronizationManager.applyChanges(); //get them committed, binders are
-		SimpleProfiler.stop("TemplateModule.addBinder.indexapply");
-
 		return top;
 
 	}
-	
-	private void addBinderPart2(TemplateBinder cfg, Binder top) {
-		addBinderFinish(cfg, top);
-		//after children are added, resolve relative selections
-		List<Binder>binders = new ArrayList();
-		binders.add(top);
-		while (!binders.isEmpty()) {
-			Binder b = binders.remove(0);
-			binders.addAll(b.getBinders());
-			try {
-				EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
-				if (dashboard != null) {
-					DashboardHelper.resolveRelativeBinders(b.getBinders(), dashboard);
-				}
-			} catch (Exception ex) {
-				//at this point just log errors  index has already been updated
-				//	if throw errors, rollback will take effect and must manualy remove from index
-				logger.error("Error adding dashboard " + ex.getLocalizedMessage());
-			}
-		}
-	}
-
 	protected void addBinderFinish(TemplateBinder cfg, Binder binder) throws AccessControlException {
 		   Map props = cfg.getProperties();
 		   if (props != null) binder.setProperties(props);
 		   copyBinderAttributes(cfg, binder);
 		   //first flush updates, addBinder might do a refresh which overwrites changes
 		   getCoreDao().flush();
-		   
-		   //Now see if there is content to be added to this new binder
-		   if (cfg.getTemplateEntrySourceBinderId() != null) {
-			   folderModule.copyFolderEntries(cfg.getTemplateEntrySourceBinderId(), binder.getId());
-			   getCoreDao().flush();
-		   }
 		   List<TemplateBinder> children = cfg.getBinders();   
 		   Map ctx = new HashMap();
 		   ctx.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE); //don't bother indexing, until copyBinderAttributes done
 		   for (TemplateBinder child: children) {
-			   if (Utils.validateDefinition(child.getEntryDef(), null)) {
-				   //This binder type is allowed, so go add it (and its children)
-				   Binder childBinder = addBinderInternal(child, binder, NLT.getDef(child.getTitle()), null, null, null);	
-				   addBinderFinish(child, childBinder);
-			   }
+			   Binder childBinder = addBinderInternal(child, binder, NLT.getDef(child.getTitle()), null, null);	
+			   addBinderFinish(child, childBinder);
 		   }
 		   //finally index binder
 		   loadBinderProcessor(binder).indexBinder(binder, false, false, Collections.EMPTY_LIST);
 
 	}
 
-	protected Binder addBinderInternal(TemplateBinder cfg, Binder parentBinder, String title, String name, Map overrideInputData, Map ctx) throws AccessControlException {
+	protected Binder addBinderInternal(TemplateBinder cfg, Binder parentBinder, String title, String name, Map ctx) throws AccessControlException {
 	   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 	   Binder binder;
 	   Definition def = cfg.getDefaultViewDef();
@@ -913,8 +788,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   }
 	   entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.toString(mirrored));
 	   entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
-	   entryData.put(ObjectKeys.FIELD_BINDER_INHERITFUNCTIONS, Boolean.toString(cfg.isFunctionMembershipInherited()));
-	   entryData.put(ObjectKeys.FIELD_BINDER_INHERITDEFINITIONS, Boolean.toString(cfg.isDefinitionsInherited()));
 	   entryData.put(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS, Boolean.toString(cfg.isTeamMembershipInherited()));
 	   //if not null, use icon from template.  Otherwise try icon from definition when binder is created.
 	   if (Validator.isNotNull(cfg.getIconName())) entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, cfg.getIconName());
@@ -926,22 +799,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   if (!cfg.isFunctionMembershipInherited()) {
 			entryData.put(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS, getAdminModule().getWorkAreaFunctionMemberships(cfg));
 	   }	    	
-	   // Override the template-supplied static settings with dynamically-supplied runtime settings.
-	   if(overrideInputData != null)
-		   entryData.putAll(overrideInputData);
 	   //get binder created
 	   try {
 			binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx).getId(), zoneId);
-			//See if this binder is in the personal workspace tree
-			boolean personal = Utils.isWorkareaInProfilesTree((WorkArea)binder);
-			if (personal) {
-				//Make sure the owner of a new folder starts out as the owner its parent folder
-				//We want folders in a user's workspace to be manageable by the workspace owner
-				//The owner can explicitly change the ownership later, then the new owner propagates as new folders are added
-				if (parentBinder instanceof Folder) {
-					binder.setOwner(parentBinder.getOwner());
-				}
-			}
 	   } catch (WriteFilesException wf) {
 		   //don't fail, but log it
   			logger.error("Error creating binder from template: ", wf);
@@ -983,7 +843,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		while (!binders.isEmpty()) {
 			Binder b = binders.remove(0);
 			binders.addAll(b.getBinders());
-			//See if this binder uses any local definitions
+			//See if this binder usesany local definitions
 			List<Definition> definitions = binder.getViewDefinitions();
 			definitions.addAll(binder.getEntryDefinitions());
 			definitions.addAll(binder.getWorkflowDefinitions());
@@ -997,48 +857,4 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		}
    		return true;
    	}
-   	
-	@Override
-	public List<Binder> _addNetFolderBindersInSync(final Long templateId,
-			final Long parentBinderId, final List<String> titleList, final List<String> nameList,
-			final List<Map> overrideInputDataList, final List<Map> optionsList)
-			throws AccessControlException, WriteFilesException {
-		
-		final ArrayList<Binder> result = new ArrayList<Binder>(titleList.size());
-		
-		//The first add is independent of the others.  In this case the transaction is short 
-		//and managed by processors.  
-		
-		TemplateBinder cfg = getCoreDao().loadTemplate(templateId, RequestContextHolder.getRequestContext().getZoneId());
-		Binder parent = getCoreDao().loadBinder(parentBinderId, RequestContextHolder.getRequestContext().getZoneId());
-		
-		Map ctx;
-		Binder top;
-		for(int i = 0; i < titleList.size(); i++) {
-			ctx = optionsList.get(i);
-			if(ctx == null)
-				ctx = new HashMap();
-			//force a lock so contention on the sortKey is reduced
-			ctx.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-			top = addBinderInternal(cfg, parent, titleList.get(i), nameList.get(i), overrideInputDataList.get(i), ctx);
-			result.add(top); // top may be null
-		}
-		
-		//now that we have registered the sortKey in the parent binder, we use a longer transaction to complete 
-		//it - there shouldn't be any contention here since the binder is new and doesn't need to reference its parent
-		getTransactionTemplate().execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-		        //need to reload in case addFolder/workspace used retry loop where session cache is flushed by exception
-		        TemplateBinder cfg = getCoreDao().loadTemplate(templateId, RequestContextHolder.getRequestContext().getZoneId());
-				for(Binder top : result) {
-					if(top != null)
-						addBinderPart2(cfg, top);
-				}
-				return null;
-			}
-		});
-		
-		return result;
-	}
-	
 }

@@ -44,7 +44,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.dom4j.Element;
-import org.kablink.teaming.context.request.NoContextUserException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
@@ -81,7 +80,7 @@ public class XSSCheck implements StringCheck {
 	private static final String PATTERN_STR4 = "(?i)(?:style[\\s]*=[\\s]*\"[^\">]*\"|style[\\s]*=[\\s]*'[^'>]*'|style[\\s]*=[^<>\\s\"']*)";
 	private static final String PATTERN_STR5 = "(?i)((?:^url\\W|\\Wurl\\W|^expression\\W|\\Wexpression\\W))";
 	private static final String PATTERN_STR5a = "(?i)(/\\*[^*]*\\*/)";
-
+	
 	//Pattern_str6 is used to find onxxx statements (e.g., onClick, onload, onerror)
 	//It is important to realize that these can be preceeded by either a space or a "/"
 	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s/]+)(on[^>\\s!#%*+,\\./?@_-]*[\\s]*=[\\s]*(?:\"[^\">]*\"|'[^'>]*'|[^>\\s]*))([^>]*>)";
@@ -190,17 +189,11 @@ public class XSSCheck implements StringCheck {
 		
 		if (!checkOnly && (mode.equals(MODE_TRUSTED_DISALLOW) || mode.equals(MODE_TRUSTED_STRIP))) {
 			if (RequestContextHolder.getRequestContext() != null) {
-				User user = null;
-				try {
-					user = RequestContextHolder.getRequestContext().getUser();
-				}
-				catch(NoContextUserException doNotPropogate) {}
-				if(user != null) {
-					if(getTrustedUserNames(user.getZoneId()).contains(user.getName()))
-						return input; // match found on user list
-					if(!Collections.disjoint(user.computeApplicationLevelGroupNames(), getTrustedGroupNames(user.getZoneId())))
-						return input; // match found on group list
-				}
+				User user = RequestContextHolder.getRequestContext().getUser();
+				if(getTrustedUserNames(user.getZoneId()).contains(user.getName()))
+					return input; // match found on user list
+				if(!Collections.disjoint(user.computeGroupNames(), getTrustedGroupNames(user.getZoneId())))
+					return input; // match found on group list
 			}
 		}
 		

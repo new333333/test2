@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.module.mail;
 
 import java.io.UnsupportedEncodingException;
@@ -52,31 +53,27 @@ import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.util.Calendars;
 
 import org.apache.commons.logging.Log;
-
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.ical.IcalModule;
-import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.TextToHtml;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
-
 import org.springframework.mail.javamail.MimeMessageHelper;
 
+
+
 /**
- * ?
- * 
  * @author ?
  */
 @SuppressWarnings("unchecked")
@@ -316,7 +313,6 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	 * 
 	 * @param mimeMessage
 	 */
-	@Override
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {
 		// Make sure nothing saved yet.
 		notify = new Notify(messageType, locale, timezone, startDate);
@@ -348,11 +344,6 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		// Set any X-* fields required for GW integration.
 		if (MiscUtil.hasString(entryPermalinkUrl)) mimeMessage.addHeader(MailModule.HEADER_X_VIBE_ONPREM,     entryPermalinkUrl);
 		if (MiscUtil.hasString(rootPermalinkUrl )) mimeMessage.addHeader(MailModule.HEADER_X_ROOTVIBE_ONPREM, rootPermalinkUrl );
-		mimeMessage.addHeader(
-			MailModule.HEADER_X_NOVELL_PRODUCT,
-			(Utils.checkIfFilr()                        ?
-				MailModule.HEADER_X_NOVELL_PRODUCT_FILR :
-				MailModule.HEADER_X_NOVELL_PRODUCT_VIBE));
 
 		// Do we have an Entry for this mimeMessage?
 		if (null != entry) {
@@ -399,51 +390,17 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 			}
 			if ((null != msgEntries) && (!(msgEntries.isEmpty()))) {
 				int count = 0;
-				Iterator itMsgEntries = msgEntries.iterator();
-				while (itMsgEntries.hasNext()) {
-					Entry nextEntry = (Entry) itMsgEntries.next();
+				for (Iterator i = msgEntries.iterator(); i.hasNext(); count += 1) {
 					if (0 < count) {
 						ptBuf.append("\r\n");
 					}
-					count++;
-					String[] txtMsgArgs = new String[3];
-					String txtMsgString;
-					if (nextEntry.getCreation().getDate().before(nextEntry.getModification().getDate())) {
-						txtMsgArgs[0] = nextEntry.getCreation().getPrincipal().getTitle();
-						txtMsgString = "email.textMessageFormatModified";
-					} else {
-						txtMsgArgs[0] = nextEntry.getModification().getPrincipal().getTitle();
-						txtMsgString = "email.textMessageFormatAdded";
-					}
-					txtMsgArgs[1] = nextEntry.getTitle();
-					String path = "";
-					Binder parent = nextEntry.getParentBinder();
-					while (parent != null && parent instanceof Folder) {
-						if (!path.equals("")) path = "/" + path;
-						path = parent.getTitle() + path;
-						parent = parent.getParentBinder();
-					}
-					if (parent != null) {
-						//Add in the first workspace above the folder
-						path = parent.getTitle() + "/" + path;
-					}
-					txtMsgArgs[2] = path;
-					ptBuf.append(NLT.get(txtMsgString, txtMsgArgs));
+					ptBuf.append(PermaLinkUtil.getPermalink(((Entry) i.next())));
 				}
 			}
 			
 			String ptStr = ptBuf.toString();
-			//Get the body text and turn it into html
-			TextToHtml textToHtml = new TextToHtml();
-			textToHtml.setBreakOnLines(true);
-			textToHtml.setStripHtml(false);
-			textToHtml.parseText(ptStr);
-			String hStr = EmailUtil.validateHTMLForEmail((textToHtml.toString()));
-			String subject = mimeMessage.getSubject();
-			if ((subject.length() + ptStr.length()) >= 156) {
-				//This message is longer than the 160 characters allowed in a text message, truncate it.
-				ptStr = ptStr.substring(0, 155-subject.length()) + "...";
-			}
+			String hStr = EmailUtil.validateHTMLForEmail(
+				"<a href=\"" + ptStr + "\">" + ptStr + "</a>");
 			setText(ptStr, hStr, helper);
 			
 		} else {

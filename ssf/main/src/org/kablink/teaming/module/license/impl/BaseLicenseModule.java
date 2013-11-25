@@ -42,7 +42,7 @@ public class BaseLicenseModule extends AbstractLicenseModule {
 	public LicenseStats createSnapshot()
 	{
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		LicenseStats stats = new LicenseStats(zoneId, new Date(), countInternalUsers(zoneId), 0, 0, 0, false, countInternalUsers(zoneId), 0);
+		LicenseStats stats = new LicenseStats(zoneId, new Date(), countInternalUsers(zoneId), 0, countInternalUsers(zoneId), 0);
 		return stats;
 	}
 }

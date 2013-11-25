@@ -36,7 +36,7 @@ package org.kablink.teaming.domain;
  * An entity is uniquely identified by its id and a type.
  *
  */
-public class EntityIdentifier implements Comparable<EntityIdentifier>, Cloneable {
+public class EntityIdentifier implements Comparable<EntityIdentifier> {
 	protected EntityType entityType=EntityType.none;
 	protected Long entityId;
 	
@@ -49,7 +49,6 @@ public class EntityIdentifier implements Comparable<EntityIdentifier>, Cloneable
 	 *
 	 */
 	public enum EntityType {
-		// WARNING: Do NOT reuse or fix the numeric holes that exist in the sequence.
 		none (0),
 		profiles (1),
 		folder (2), 
@@ -57,9 +56,10 @@ public class EntityIdentifier implements Comparable<EntityIdentifier>, Cloneable
 		user (4), 
 		group (5), 
 		folderEntry (6),
+		dashboard (7),
 		application (8),
 		applicationGroup (9),
-		shareWith (12);
+		zone(10);
 		int dbValue;
 		EntityType(int dbValue) {
 			this.dbValue = dbValue;
@@ -85,12 +85,10 @@ public class EntityIdentifier implements Comparable<EntityIdentifier>, Cloneable
 			case 4: return EntityType.user;
 			case 5: return EntityType.group;
 			case 6: return EntityType.folderEntry;
-			case 7: throw new IllegalArgumentException("Illegal type value " + type + " for EntityType"); // return EntityType.dashboard;
+			case 7: return EntityType.dashboard;
 			case 8: return EntityType.application;
 			case 9: return EntityType.applicationGroup;
-			case 10: throw new IllegalArgumentException("Illegal type value " + type + " for EntityType"); // return EntityType.zone;
-			case 11: throw new IllegalArgumentException("Illegal type value " + type + " for EntityType"); // return EntityType.resourceDriver;
-			case 12: return EntityType.shareWith;
+			case 10: return EntityType.zone;
 			default: return EntityType.none;
 			}
 		}
@@ -168,13 +166,6 @@ public class EntityIdentifier implements Comparable<EntityIdentifier>, Cloneable
 		}
 	}
 	
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException("Clone not supported: " + e.getMessage());
-		}
-	}
+
 
 }

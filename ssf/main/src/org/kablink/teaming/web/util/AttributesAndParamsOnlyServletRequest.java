@@ -36,26 +36,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
 
 /**
  * An implementation of HttpServletRequest that only handles attributes and
@@ -84,186 +75,153 @@ public class AttributesAndParamsOnlyServletRequest implements HttpServletRequest
 		this.params = params;
 	}
 	
-	@Override
 	public String getAuthType() {
 		return null;
 
 	}
 
-	@Override
 	public Cookie[] getCookies() {
 		return null;
 	}
 
-	@Override
 	public long getDateHeader(String name) {
 		return -1;
 
 	}
 
-	@Override
 	public String getHeader(String name) {
 		return null;
 	}
 
-	@Override
 	public Enumeration getHeaders(String name) {
 		return null;
 
 	}
 
-	@Override
 	public Enumeration getHeaderNames() {
 		return null;
 	}
 
-	@Override
 	public int getIntHeader(String name) {
 		return -1;
 
 	}
 
-	@Override
 	public String getMethod() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public String getPathInfo() {
 		return null;
 	}
 
-	@Override
 	public String getPathTranslated() {
 		return null;
 
 	}
 
-	@Override
 	public String getContextPath() {
 		return contextPath;
 	}
 	
-	@Override
 	public String getQueryString() {
 		return null;
 
 	}
 
-	@Override
 	public String getRemoteUser() {
 		return null;
 	}
 
-	@Override
 	public boolean isUserInRole(String role) {
 		return false;
 	}
 
-	@Override
 	public Principal getUserPrincipal() {
 		return null;
 	}
 
-	@Override
 	public String getRequestedSessionId() {
 		return null;
 	}
 
-	@Override
 	public String getRequestURI() {
 		return null;
 	}
 
-	@Override
 	public StringBuffer getRequestURL() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public String getServletPath() {
 		return null;
 	}
 
-	@Override
 	public HttpSession getSession(boolean create) {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public HttpSession getSession() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public boolean isRequestedSessionIdValid() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public boolean isRequestedSessionIdFromCookie() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public boolean isRequestedSessionIdFromURL() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public boolean isRequestedSessionIdFromUrl() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public Object getAttribute(String name) {
 		return attrs.get(name);
 	}
 
-	@Override
 	public Enumeration getAttributeNames() {
 		return Collections.enumeration(attrs.keySet());
 	}
 
-	@Override
 	public String getCharacterEncoding() {
 		return null;
 
 	}
 
-	@Override
 	public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public int getContentLength() {
 		return -1;
 
 	}
 
-	@Override
 	public String getContentType() {
 		return null;
 
 	}
 
-	@Override
 	public ServletInputStream getInputStream() throws IOException {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public String getParameter(String name) {
 		String[] values = (String[]) params.get(name);
 		
@@ -273,100 +231,83 @@ public class AttributesAndParamsOnlyServletRequest implements HttpServletRequest
 			return null;
 	}
 
-	@Override
 	public Enumeration getParameterNames() {
 		// Note: This implementation does not precisely follow servlet specification.
 		return Collections.enumeration(params.keySet());
 	}
 
-	@Override
 	public String[] getParameterValues(String name) {
 		return (String[]) params.get(name);
 	}
 
-	@Override
 	public Map getParameterMap() {
 		// Note: This implementation does not precisely follow servlet specification.
 		return params;
 	}
 
-	@Override
 	public String getProtocol() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public String getScheme() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public String getServerName() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public int getServerPort() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public BufferedReader getReader() throws IOException {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public String getRemoteAddr() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public String getRemoteHost() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public void setAttribute(String name, Object o) {
 		attrs.put(name, o);
 	}
 
-	@Override
 	public void removeAttribute(String name) {
 		attrs.remove(name);
 	}
 
-	@Override
 	public Locale getLocale() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public Enumeration getLocales() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public boolean isSecure() {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public RequestDispatcher getRequestDispatcher(String path) {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public String getRealPath(String path) {
 		throw new UnsupportedOperationException();
 
@@ -384,74 +325,19 @@ public class AttributesAndParamsOnlyServletRequest implements HttpServletRequest
 		this.contextPath = contextPath;
 	}
 
-	@Override
 	public String getLocalAddr() {
 		return null;
 	}
 
-	@Override
 	public String getLocalName() {
 		return null;
 	}
 
-	@Override
 	public int getLocalPort() {
 		return 0;
 	}
 
-	@Override
 	public int getRemotePort() {
 		return 0;
-	}
-
-	public AsyncContext getAsyncContext() {
-		throw new UnsupportedOperationException();
-	}
-
-	public DispatcherType getDispatcherType() {
-		return DispatcherType.REQUEST;
-	}
-
-	public ServletContext getServletContext() {
-		throw new UnsupportedOperationException();
-	}
-
-	public boolean isAsyncStarted() {
-		return false;
-	}
-
-	public boolean isAsyncSupported() {
-		return false;
-	}
-
-	public AsyncContext startAsync() {
-		throw new UnsupportedOperationException();
-	}
-
-	public AsyncContext startAsync(ServletRequest arg0, ServletResponse arg1) {
-		throw new UnsupportedOperationException();
-	}
-
-	public boolean authenticate(HttpServletResponse arg0) throws IOException,
-			ServletException {
-		throw new UnsupportedOperationException();
-	}
-
-	public Part getPart(String arg0) throws IOException, IllegalStateException,
-			ServletException {
-		throw new UnsupportedOperationException();
-	}
-
-	public Collection<Part> getParts() throws IOException,
-			IllegalStateException, ServletException {
-		throw new UnsupportedOperationException();
-	}
-
-	public void login(String arg0, String arg1) throws ServletException {
-		throw new UnsupportedOperationException();
-	}
-
-	public void logout() throws ServletException {
-		throw new UnsupportedOperationException();
 	}
 }

@@ -34,7 +34,7 @@ package org.kablink.teaming.module.folder.impl;
 
 public interface AbstractFolderModuleMBean {
 
-	public void resetCounts();
+	public void clearStatistics();
 	
 	public int getAddEntryCount();
 	public int getModifyEntryCount();
@@ -42,11 +42,4 @@ public interface AbstractFolderModuleMBean {
 	
 	public int getAddReplyCount();
 	
-	public boolean isSyncStatsEnabled();
-	public void setSyncStatsEnabled(boolean syncStatsEnabled);
-	public void clearSyncStats();
-	public void dumpSyncStatsToLog();
-	public String dumpSyncStatsAsString();
-	public void dumpJitsStatsToLog();
-	public String dumpJitsStatsAsString();
 }

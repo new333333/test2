@@ -210,8 +210,7 @@ public class EditController extends SAbstractController {
 			for (int i = 0; i < forumPrefIdList.length; i++) {
 				folderIds.add(Long.valueOf(forumPrefIdList[i]));
 			}
-			//Get sub-binder list including intermediate binders that may be inaccessible
-			Collection folders = getBinderModule().getBinders(folderIds, Boolean.FALSE);
+			Collection folders = getBinderModule().getBinders(folderIds);
 		
 			model.put(WebKeys.FOLDER_LIST, folders);
 			model.put(WebKeys.BINDER_ID_LIST, Arrays.asList(forumPrefIdList));
@@ -226,8 +225,7 @@ public class EditController extends SAbstractController {
 			Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 			String mobileBinderIds = (String)userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS);
 			Set<Long> binderIds = LongIdUtil.getIdsAsLongSet(mobileBinderIds);
-			//Get sub-binder list including intermediate binders that may be inaccessible
-			Collection binders = getBinderModule().getBinders(binderIds, Boolean.FALSE);
+			Collection binders = getBinderModule().getBinders(binderIds);
 			model.put(WebKeys.FOLDER_LIST, binders);
 			model.put(WebKeys.BINDER_ID_LIST, Arrays.asList(LongIdUtil.getIdsAsString(binderIds).split(" ")));
 			return new ModelAndView(WebKeys.VIEW_MOBILE_EDIT, model);

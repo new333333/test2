@@ -33,10 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.IFrameWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 import com.google.gwt.http.client.URL;
 
 
@@ -53,12 +49,11 @@ public class IFrameConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public IFrameConfig( String configStr, String landingPageStyle )
+	public IFrameConfig( String configStr )
 	{
 		String[] results;
 		
 		m_properties = new IFrameProperties();
-		setLandingPageStyle( landingPageStyle );
 		
 		// Split the configuration data into its parts.
 		results = configStr.split( "[,;]" );
@@ -87,8 +82,6 @@ public class IFrameConfig extends ConfigItem
 							m_properties.setShowBorder( results2[1] );
 						else if ( results2[0].equalsIgnoreCase( "scrolling" ) )
 							m_properties.setScrollbarValue( results2[1] );
-						else if ( results2[0].equalsIgnoreCase( "title" ) )
-							m_properties.setTitle( URL.decodeComponent( results2[1] ) );
 					}
 					catch (Exception ex)
 					{
@@ -104,29 +97,9 @@ public class IFrameConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	@Override
 	public void addChild( ConfigItem configItem )
 	{
 		// Nothing to do.
-	}
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	@Override
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		return new IFrameWidget( this, widgetStyles );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	@Override
-	public IFrameDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new IFrameDropWidget( lpe, this );
 	}
 	
 	

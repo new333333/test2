@@ -33,16 +33,13 @@
 package org.kablink.teaming.repository.fi;
 
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.fi.FIException;
-import org.kablink.teaming.fi.connection.ResourceDriverManager.FileOperation;
 import org.kablink.teaming.repository.RepositorySession;
 import org.kablink.teaming.repository.RepositorySessionFactory;
 
+
 public interface FIRepositorySessionFactoryAdapter extends RepositorySessionFactory {
 
-	public RepositorySession openSession(String resourceDriverName, FileOperation fileOperation, DefinableEntity ... entitiesToCheckPermissionOn)
+	public RepositorySession openSession(String resourceDriverName) 
 	throws FIException, UncheckedIOException;
-	
-	public boolean supportsExternalAcl(String resourceDriverName) throws FIException, UncheckedIOException;
 }

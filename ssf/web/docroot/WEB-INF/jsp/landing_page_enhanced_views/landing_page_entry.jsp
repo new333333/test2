@@ -64,6 +64,18 @@
   </c:if>
 </c:if>
 <c:set var="mashupEntryReplies" value="${ss_mashupEntryReplies[mashupEntryId]}"/>
+<c:set var="mWidth" value="" />
+<c:set var="mHeight" value="" />
+<c:set var="mOverflow" value="" />
+<c:if test="${!empty mashup_attributes['width']}">
+  <c:set var="mWidth" >width: ${mashup_attributes['width']};</c:set>
+</c:if>
+<c:if test="${!empty mashup_attributes['height']}">
+  <c:set var="mHeight" >height: ${mashup_attributes['height']};</c:set>
+</c:if>
+<c:if test="${!empty mashup_attributes['overflow']}">
+  <c:set var="mOverflow" >overflow: ${mashup_attributes['overflow']};</c:set>
+</c:if>
 
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupEntry}">
@@ -71,10 +83,13 @@
 </c:if>
 <% } %>
 
-<div class="ss_mashup_element">
+<div class="ss_mashup_element"
+  <c:if test="${ssConfigJspStyle != 'form'}">
+    style="${mWidth} overflow: hidden;"
+  </c:if>
+>
   <div class="ss_mashup_round_top"><div></div></div>
-  <div class="ss_mashup_folder_list_open">
-    <div >
+    <div class="ss_mashup_entry_header">
 
 		<ssf:titleLink action="view_permalink" entryId="$mashupEntry.id}" 
 			binderId="${mashupEntry.parentFolder.id}" entityType="folderEntry"
@@ -91,15 +106,9 @@
 			</ssf:param>
 			<c:out value="${mashupEntry.title}"/>
 		</ssf:titleLink>
-
-      <a href="<ssf:url crawlable="true" 
-		  	    adapter="true" portletName="ss_forum"    
-		        action="view_permalink" 
-		        binderId="${mashupEntry.parentFolder.id}"
-		        entryId="${mashupEntry.id}"
-		      ><ssf:param name="entityType" value="folderEntry"/>
-		      </ssf:url>"><span class="ss_size_20px ss_bold">${mashupEntry.title}</span></a>
     </div>
+
+  <div class="ss_mashup_folder_list_open" style="${mHeight} ${mOverflow}">
 	<div class="ss_mashup_entry_content ss_smallprint">
 	  <span><ssf:showUser user="${mashupEntry.modification.principal}"/><span>
 	  <span style="padding-left:10px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"

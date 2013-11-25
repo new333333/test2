@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,44 +32,17 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="java.util.TimeZone" %>
-<%@ page import="java.util.Date" %>
-<%@ page import="org.kablink.teaming.domain.User" %>
-<%
-	User currentUser = (User) request.getAttribute( "ssUser" );
-	Date now = new Date();
-	int offsetHour = 0;
-
-	if ( currentUser != null )
-	{
-		TimeZone tz = currentUser.getTimeZone();
-		int offset = tz.getOffset( now.getTime() );
-		offsetHour = offset / (1000*60*60);
-	}
-%>
-
-<c:set var="tzOffsetHour" value="<%= offsetHour %>" />
-
 <script type="text/javascript" language="javascript">
 	// Save away information such as the binder id and the adapted url for the request we are working with.
 	// Through an overlay we will access m_requestInfo from java.
 	var m_requestInfo = {
 		advancedSearchUrl:					'<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true" windowState="maximized"><ssf:param name="action" value="advancedSearch"/><ssf:param name="tabTitle" value="SEARCH FORM"/><ssf:param name="newTab" value="0"/></ssf:url></ssf:escapeJavaScript>',
-		allExternalUsersGroupId:			'${allExternalUsersGroupId}',
-		allInternalUsersGroupId:			'${allInternalUsersGroupId}',
-		allowShowPeople:					'${allowShowPeople}',
-		baseVibeUrl:						'<ssf:escapeJavaScript><ssf:url></ssf:url></ssf:escapeJavaScript>',
-		canSeeOtherUsers:					'<ssf:escapeJavaScript>${canSeeOtherUsers}</ssf:escapeJavaScript>',
-		cloudFoldersEnabled:				'${cloudFoldersEnabled}',
 		contentCss:							'<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>',
 		currentUserWorkspaceId:				'${ssUser.workspaceId}',
-		decimalSeparator:					'${decimalSeparator}',
 		debugUI:							'${vibeUIDebug}',
-		debugLP:							'${vibeLPDebug}',
 		deleteUserUrl:						'${ss_deleteEntryAdapter}',
 		errMsg:								'<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
-		guestId:							'${guestId}',
-		hasRootDirAccess:					'${hasRootDirAccess}',
+		forceSidebarReload:					'false',
 		helpUrl:							'<ssf:escapeJavaScript>${ss_helpUrl}</ssf:escapeJavaScript>',
 		imagesPath:							'<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 		isBinderAdmin:						'${ss_isBinderAdmin}',
@@ -77,56 +50,31 @@
 		isFormLoginAllowed:					'${isFormLoginAllowed}',
 		isModifyAllowed:					'${ss_modifyEntryAllowed}',
 		isNovellTeaming:					'${isNovellTeaming}',
-		isLicenseFilr:						'${isLicenseFilr}',
-		isLicenseFilrAndVibe:				'${isLicenseFilrAndVibe}',
-		isLicenseVibe:						'${isLicenseVibe}',
 		isQuotasDiskQuotaExceeded:			'${ss_diskQuotaExceeded}',
 		isQuotasEnabled:					'${ss_quotasEnabled}',
-		isSiteAdmin:						'${isSiteAdmin}',
-		isGuestUser:						'${isGuestUser}',
-		isExternalUser:						'${isExternalUser}',
 		isTinyMCECapable:					'${isTinyMCECapable}',
 		isUserLoggedIn:						'${isUserLoggedIn}',
 		jsPath:								'<ssf:escapeJavaScript><html:rootPath/>js/</ssf:escapeJavaScript>',
 		language:							'${ssUser.locale.language}',
 		locale:								'${ssUser.locale}',
 		timeZone:							'${ssUser.timeZone.ID}',
-		timeZoneIdAbrev:					'<fmt:formatDate value="<%= now %>" pattern="z" timeZone="${ssUser.timeZone.ID}" />',
-		timeZoneOffsetHour:					${tzOffsetHour},
-		loginCanCancel:						'<ssf:escapeJavaScript>${login_can_cancel}</ssf:escapeJavaScript>',
-		loginInvitationUrl:					'<ssf:escapeJavaScript>${ss_login_invitation_url}</ssf:escapeJavaScript>',
 		loginError:							'<ssf:escapeJavaScript>${ss_loginError}</ssf:escapeJavaScript>',
-		loginExternalUserId:				'<ssf:escapeJavaScript>${ss_login_external_user_id}</ssf:escapeJavaScript>',
-		loginExternalUserName:				'<ssf:escapeJavaScript>${ss_login_external_user_name}</ssf:escapeJavaScript>',
-		loginOpenIdProviderName:			'<ssf:escapeJavaScript>${ss_login_open_id_provider_name}</ssf:escapeJavaScript>',
-		loginOpenIdProviderUrl:				'<ssf:escapeJavaScript>${ss_login_open_id_provider_url}</ssf:escapeJavaScript>',
 		loginPostUrl:						'<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
 		loginRefererUrl:					'${loginRefererUrl}',
-		loginStatus:						'<ssf:escapeJavaScript>${ss_loginStatus}</ssf:escapeJavaScript>',
 		modifyUrl:							'${ss_modifyEntryAdapter}',
-		namespace:                          '${ss_namespace}',
 		productName:						'${productName}',
 		promptForLogin:						'${promptForLogin}',
-		quotasDiskMessage:					'<ssf:escapeJavaScript>${ss_quotaMessage}</ssf:escapeJavaScript>',
+		quotasDiskMessage:					'${ss_quotaMessage}',
 		quotasDiskSpacedUsed:				'${ssDiskSpaceUsed}',
 		quotasUserMaximum:					'${ssDiskQuota}',
 		recentPlaceSearchUrl:				'<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="operation" value="viewPage"/></ssf:url></ssf:escapeJavaScript>',
 		requestInfoSource:					'${gwtPage}',
-		refreshSidebarTree:					'false',
-		rerootSidebarTree:					'false',
 		savedSearchUrl:						'<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="newTab" value="1"/><ssf:param name="operation" value="ss_savedQuery"/></ssf:url></ssf:escapeJavaScript>',
 		sessionCaptive:						'${sessionCaptive}',
-		showCollectionOnLogin:				'${showCollection}',
-		showPublicCollection:				'${showPublicCollection}',
-		showWhatsNewOnLogin:				'${showWhatsNew}',
-		specificWhatsNew:					'${specificWhatsNew}',
-		specificWhatsNewId:					'${specificWhatsNewId}',
+		showWhatsNewOnLogin:				'${showWhatsNew}',		
 		simpleSearchUrl:					'<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="newTab" value="1"/><ssf:param name="quickSearch" value="true"/><ssf:param name="operation" value="ss_searchResults"/></ssf:url></ssf:escapeJavaScript>',
-		ssfPath:							'<ssf:escapeJavaScript><html:ssfPath/></ssf:escapeJavaScript>',
 		teamingFeedUrl:						'<ssf:escapeJavaScript><ssf:url adapter="true" portletName="ss_forum" action="__ajax_mobile" operation="view_teaming_live" actionUrl="false" /></ssf:escapeJavaScript>',
-		tinyMCELang:						'${tinyMCELang}',
 		topWSId:							'${topWSId}',
-		userAvatarUrl:						'',	// Initialized in GwtMainPage.loadInitialData().
 		userDescription:					'',
 		userId:								'${ssUser.id}',
 		userLoginId:						'${ssUser.name}',

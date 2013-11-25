@@ -1,31 +1,31 @@
-﻿Novell Vibe 3.2
+﻿Novell Vibe 3.3
 
 1.0  はじめに
 
-     Novell Vibe管理者向けの全体的なシステム要件およびソフトウェアの詳細なインストール手順については、『"Vibe
-     3.2インストールガイド』に記載されています。" Vibeサイトのセットアップおよび継続するサイト管理および保守の手順については、『"Vibe
-     3.2管理ガイド"』に記載されています。
+     Novell Vibe管理者向けの全体的なシステム要件およびソフトウェアの詳細なインストール手順は、『"Vibe
+     3.3インストールガイド』に記載されています。" Vibeサイトのセットアップおよび継続するサイト管理および保守の手順は、『"Vibe
+     3.3管理ガイド"』に記載されています。
 
-     Vibeサイトの設定が終了したら、Vibeユーザは『"Vibe 3.2ユーザガイド"』および『"Vibe
-     3.2上級ユーザガイド"』に記載されている指示を参照できます(『"Vibe 3.2ユーザガイド"』が利用できない場合、『"Vibe
-     3.2クイックスタート"』が各種言語で提供されています)。
+     Vibeサイトの設定が終了したら、Vibeユーザは『"Vibe 3.3ユーザガイド"』および『"Vibe
+     3.3上級ユーザガイド"』に記載されている指示を参照できます(『"Vibe 3.3ユーザガイド"』は一部の言語版しかありませんが、『"Vibe
+     3.3クイックスタート"』は各種言語で提供されています)。
 
      Vibeサイトにログインすると、Vibeのオンラインヘルプを表示できます。
 
 
 2.0  既知の問題
 
-     このリリースの既知の問題の最新リストについては、Novell Vibe 3.2マニュアルWebサイトから入手できる
-      (http://www.novell.com/documentation/vibe32)Novell Vibe
-     3.2製品Readme全体を参照してください。
+     このリリースの既知の問題の最新リストについては、Novell Vibe 3.3マニュアルWebサイトから入手できる
+      (http://www.novell.com/documentation/vibe33)Novell Vibe
+     3.3製品Readme全体を参照してください。
 
 
 3.0  マニュアル
 
-     すべてのNovell Vibe 3.2マニュアルは、Novell Vibe 3.2マニュアルWebサイト
-     (http://www.novell.com/documentation/vibe32)から入手できます。
+     すべてのNovell Vibe 3.3マニュアルは、Novell Vibe 3.3マニュアルWebサイト
+     (http://www.novell.com/documentation/vibe33)から入手できます。
 
-     -  Vibe 3.2製品Readme全体
+     -  Vibe 3.3製品Readme全体
 
      -  "インストールガイド"
 
@@ -35,9 +35,13 @@
 
      -  "上級ユーザガイド"
 
-     -  "クイックスタート"
-
      -  "開発者ガイド"
+
+     -  "Vibe Quick Start"
+
+     -  "Vibe Desktop Quick Start"
+
+     -  "Vibe Add-In Quick Start"
 
      Novell Vibe製品マニュアルに加えて、その他のリソースからもVibeに関する情報が得られます。
 
@@ -53,12 +57,7 @@
      Vibeに関する詳細については、Kablinkオープンコラボレーションプロジェクト (http://www.kablink.org)を参照してください。
 
 
-4.0  マニュアルの表記規則
-
-     このドキュメントでは、「より大きい」記号（>）を使用して手順内の操作と相互参照パス内の項目の順序を示します｡
-
-
-5.0  保証と著作権
+4.0  保証と著作権
 
      米国Novell,
      Inc.およびノベル株式会社は、この文書の内容または使用について、いかなる保証、表明または約束も行っていません。また文書の商品性、および特定の目的への適
@@ -79,7 +78,7 @@
      (http://www.novell.com/info/exports/)のWebページをご参照ください。弊社は、お客様が必要な輸出承認を取得しなかった
      ことに対し如何なる責任も負わないものとします。
 
-     Copyright © 2008-2011 Novell, Inc. All rights reserved.
+     Copyright © 2008-2012 Novell, Inc. All rights reserved.
      本ドキュメントの一部または全体を無断で複写転載することは、その形態を問わず禁じます。
 
      Novellの商標については、商標とサービスマークの一覧

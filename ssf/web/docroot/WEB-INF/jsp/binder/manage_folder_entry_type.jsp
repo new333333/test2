@@ -80,7 +80,7 @@ function confirmChangeType() {
 	onSubmit="return confirmChangeType();"
 >
 
-<div class="marginbottom3"><span class="ss_bold"><ssf:nlt tag="binder.changeEntryType" /></span>&nbsp;&nbsp;<span class="ss_largeprint"><ssf:nlt tag="${ssEntry.title}" checkIfTag="true"/></span></div>
+<div class="marginbottom3"><span class="ss_bold"><ssf:nlt tag="binder.changeEntryType" /></span>&nbsp;&nbsp;<span class="ss_largeprint"><ssf:nlt tag="${ssEntry.title}" /></span></div>
 
 
 

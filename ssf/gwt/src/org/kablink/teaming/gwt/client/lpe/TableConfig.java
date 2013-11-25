@@ -35,10 +35,6 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.widgets.TableWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 import com.google.gwt.http.client.URL;
 
 /**
@@ -55,7 +51,7 @@ public class TableConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public TableConfig( String configStr, String landingPageStyle )
+	public TableConfig( String configStr )
 	{
 		int i;
 		int numCols;
@@ -66,7 +62,6 @@ public class TableConfig extends ConfigItem
 		
 		m_properties = new TableProperties();
 		m_configItems = new ArrayList<ConfigItem>();
-		setLandingPageStyle( landingPageStyle );
 
 		// Split the string "tableStart,showBorder=n,rows=n,cols=n,colWidths=xxxx" into its parts.
 		propsStr = configStr.split( "[,;]" );
@@ -212,26 +207,6 @@ public class TableConfig extends ConfigItem
 	{
 		m_configItems.add( configItem );
 	}// end addChild()
-	
-	
-	/**
-	 * Create a widget that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		TableWidget tableWidget;
-		
-		tableWidget = new TableWidget( this, widgetStyles );
-		return tableWidget;
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public TableDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new TableDropWidget( lpe, this );
-	}
 	
 	
 	/**

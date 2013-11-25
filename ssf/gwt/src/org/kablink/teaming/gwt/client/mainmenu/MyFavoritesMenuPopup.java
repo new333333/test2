@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.AddFavoriteCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFavoritesCmd;
@@ -45,14 +45,17 @@ import org.kablink.teaming.gwt.client.rpc.shared.RemoveFavoriteCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Command;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+
 
 /**
  * Class used for the My Favorites menu item popup.  
@@ -63,6 +66,8 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "myFavorites_";
 	
 	private BinderInfo m_currentBinder;	// The currently selected binder.
+	private int m_menuLeft;				// Left coordinate of where the menu is to be placed.
+	private int m_menuTop;				// Top  coordinate of where the menu is to be placed.
 
 	/*
 	 * Defines the management operations supported on the favorites.
@@ -74,35 +79,36 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/*
-	 * Inner class that handles selecting on an individual favorite.
+	 * Inner class that handles clicks on an individual favorite.
 	 */
-	private class FavoriteCommand implements Command {
-		private FavoriteInfo m_favorite;	// The favorite selected.
+	private class FavoriteClickHandler implements ClickHandler {
+		private FavoriteInfo m_favorite;	// The favorite clicked on.
 
 		/**
-		 * Constructor method.
+		 * Class constructor.
 		 * 
 		 * @param favorite
 		 */
-		FavoriteCommand(FavoriteInfo favorite) {
-			// Initialize the super class...
-			super();
-			
-			// ...and store the parameter.
+		FavoriteClickHandler(FavoriteInfo favorite) {
+			// Simply store the parameter.
 			m_favorite = favorite;
 		}
 
 		/**
-		 * Called when the user selects a favorite.
+		 * Called when the user clicks on a favorite.
 		 * 
-		 * Implements the Command.execute() method.
+		 * @param event
 		 */
-		@Override
-		public void execute() {
-			// Fire a selection changed event.
-			GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(m_favorite.getValue());
-			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-				@Override
+		public void onClick(ClickEvent event) {
+			GetBinderPermalinkCmd cmd;
+			
+			// Hide the menu...
+			hide();
+
+			// ...and fire a selection changed event.
+			cmd = new GetBinderPermalinkCmd( m_favorite.getValue() );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+			{
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
@@ -110,8 +116,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 						m_favorite.getValue());
 				}
 				
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
+				public void onSuccess( VibeRpcResponse response ) {
 					String binderPermalink;
 					StringRpcResponseData responseData;
 
@@ -121,61 +126,71 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 					// Fire the selection changed event
 					// asynchronously so that we can release the AJAX
 					// request ASAP.
-					EventHelper.fireChangeContextEventAsync(
-						m_favorite.getValue(),
-						binderPermalink,
-						Instigator.FAVORITE_SELECT);
+					fireChangeContextAsync(
+						new OnSelectBinderInfo(
+							m_favorite.getValue(),
+							binderPermalink,
+							false,
+							Instigator.FAVORITE_SELECT));
 				}
 			});
+		}
+
+		/*
+		 * Asynchronously fires a change context event.
+		 */
+		private void fireChangeContextAsync(final OnSelectBinderInfo osbi) {
+			ScheduledCommand changeSelection = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					fireChangeContextNow(osbi);
+				}
+			};
+			Scheduler.get().scheduleDeferred(changeSelection);
+		}
+		
+		/*
+		 * Synchronously fires a change context event.
+		 */
+		private void fireChangeContextNow(OnSelectBinderInfo osbi) {
+			GwtTeaming.fireEvent(new ChangeContextEvent(osbi));
 		}
 	}
 	
 	/*
-	 * Inner class that handles selects a favorites management command.
+	 * Inner class that handles clicks on favorites commands.
 	 */
-	private class ManageCommand implements Command {
+	private class ManageClickHandler implements ClickHandler {
 		private FavoriteOperation m_operation;		// The which favorite management operation to perform.
 		private List<FavoriteInfo> m_favoritesList;	// ADD/REMOVE:  Not used.  EDIT:  The user's current favorites list.
 		private String m_id;						// ADD:  ID of binder to add.  REMOVE:  ID of favorite to remove.  EDIT:  Not used.
 		
 		/**
-		 * Constructor method.
+		 * Class constructors.
 		 * 
 		 * @param operation
 		 * @param id
 		 */
-		ManageCommand(FavoriteOperation operation, String id) {
-			// Initial the super class...
-			super();
-			
-			// ...and store the parameters.
+		ManageClickHandler(FavoriteOperation operation, String id) {
 			m_operation = operation;
 			m_id = id;
 		}
-
-		/**
-		 * Constructor method.
-		 * 
-		 * @param operation
-		 * @param fList
-		 */
-		ManageCommand(FavoriteOperation operation, List<FavoriteInfo> fList) {
-			// Initialize the super class...
-			super();
-			
-			// ...and store the parameters.
-			m_operation     = operation;
+		
+		ManageClickHandler(FavoriteOperation operation, List<FavoriteInfo> fList) {
+			m_operation = operation;
 			m_favoritesList = fList;
 		}
 		
 		/**
-		 * Called when the user selects a favorites management
+		 * Called when the user clicks on a favorites management
 		 * command.
 		 * 
-		 * Implements the Command.execute() method.
+		 * @param event
 		 */
-		@Override
-		public void execute() {
+		public void onClick(ClickEvent event) {
+			// Hide the menu.
+			hide();
+			
 			// What operation are we performing?
 			switch (m_operation) {
 			case ADD:
@@ -184,14 +199,12 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 				// Adding the current binder to the favorites!
 				cmd = new AddFavoriteCmd( m_id );
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_AddFavorite(),
 							m_id);
 					}
-					@Override
 					public void onSuccess(VibeRpcResponse response)  {}
 				});
 				break;
@@ -202,14 +215,12 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 				// Removing the current binder from the favorites!
 				rfCmd = new RemoveFavoriteCmd( m_id );
 				GwtClientHelper.executeCommand( rfCmd, new AsyncCallback<VibeRpcResponse>() {
-					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_RemoveFavorite(),
 							m_id);
 					}
-					@Override
 					public void onSuccess(VibeRpcResponse response)  {}
 				});
 				break;
@@ -219,8 +230,8 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 				EditFavoritesDlg editDlg = new EditFavoritesDlg(
 					false,	// false -> Don't auto hide.
 					true,	// true  -> Modal .
-					getRelativeX(),
-					getRelativeY(),
+					m_menuLeft,
+					m_menuTop,
 					m_favoritesList);
 				editDlg.addStyleName("favoritesDlg");
 				editDlg.show();
@@ -230,26 +241,11 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Constructor method.
-	 * 
-	 * @param binderProvider
+	 * Class constructor.
 	 */
-	public MyFavoritesMenuPopup(ContextBinderProvider binderProvider) {
+	public MyFavoritesMenuPopup() {
 		// Initialize the super class.
-		super(binderProvider);
-	}
-
-	/**
-	 * Called when the menu popup closes.
-	 * 
-	 * Overrides the MenuBarPopupBase.onDetach() method.
-	 */
-	@Override
-	public void onDetach() {
-		// Remove the menu's content so that it rereads its data each
-		// each time it's shown.
-		super.onDetach();
-		clearItems();
+		super(GwtTeaming.getMessages().mainMenuBarMyFavorites());
 	}
 	
 	/**
@@ -292,59 +288,23 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		return true;
 	}
 	
-	/**
-	 * Completes construction of the menu and shows it.
-	 * 
-	 * Implements the MenuBarPopupBase.populateMenu() abstract method.
-	 */
-	@Override
-	public void populateMenu() {
-		// If we haven't populated the menu yet...
-		if (!(hasContent())) {
-			// ...populate it now.
-			GetFavoritesCmd cmd = new GetFavoritesCmd();
-			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable t) {
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						m_messages.rpcFailure_GetFavorites());
-				}
-				
-				@Override
-				public void onSuccess(VibeRpcResponse response)  {
-					List<FavoriteInfo> fList;
-					GetFavoritesRpcResponseData responseData;
-					
-					responseData = (GetFavoritesRpcResponseData) response.getResponseData();
-					fList = responseData.getFavorites();
-					
-					// Populate the 'My Favorites' popup menu
-					// asynchronously so that we can release the AJAX
-					// request ASAP.
-					populateMyFavoritesMenuAsync(fList);
-				}
-			});
-		}
-	}
-	
 	/*
-	 * Asynchronously populates the 'My Favorites' popup menu.
+	 * Asynchronously shows the 'My Favorites' popup menu.
 	 */
-	private void populateMyFavoritesMenuAsync(final List<FavoriteInfo> fList)  {
-		ScheduledCommand populateMenu = new ScheduledCommand() {
+	private void showMyFavoritesMenuAsync(final List<FavoriteInfo> fList)  {
+		ScheduledCommand showMenu = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				populateMyFavoritesMenuNow(fList);
+				showMyFavoritesMenuNow(fList);
 			}
 		};
-		Scheduler.get().scheduleDeferred(populateMenu);
+		Scheduler.get().scheduleDeferred(showMenu);
 	}
 	
 	/*
-	 * Synchronously populates the 'My Favorites' popup menu.
+	 * Synchronously shows the 'My Favorites' popup menu.
 	 */
-	private void populateMyFavoritesMenuNow(List<FavoriteInfo> fList) {
+	private void showMyFavoritesMenuNow(List<FavoriteInfo> fList) {
 		// Scan the favorites...
 		boolean currentIsFavorite = false;
 		int fCount = 0;
@@ -355,8 +315,8 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			FavoriteInfo favorite = fIT.next();
 			String mtId = (IDBASE + favorite.getId());
 			
-			fA = new MenuPopupAnchor(mtId, favorite.getName(), favorite.getHover(), new FavoriteCommand(favorite));
-			addContentMenuItem(fA);
+			fA = new MenuPopupAnchor(mtId, favorite.getName(), favorite.getHover(), new FavoriteClickHandler(favorite));
+			addContentWidget(fA);
 			fCount += 1;
 			
 			if (m_currentBinder.getBinderId().equals(favorite.getValue())) {
@@ -370,27 +330,78 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			// ...put something in the menu that tells the user
 			// ...that.
 			MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuFavoritesNoFavorites());
-			addContentMenuItem(content);
+			addContentWidget(content);
 		}
 
 		// Do we need to add any favorite commands?
 		if ((null != m_currentBinder) || (0 < fCount)) {
 			// Yes!  Add a spacer between the favorites and
 			// the commands... 
-			addSpacerMenuItem();
+			FlowPanel spacerPanel = new FlowPanel();
+			spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
+			addContentWidget(spacerPanel);
 		
 			// ...and add the favorite command items.
 			MenuPopupAnchor mtA;
 			if (null != m_currentBinder) {
 				if (currentIsFavorite)
-					 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageCommand(FavoriteOperation.REMOVE, currentFavoriteId));
-				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageCommand(FavoriteOperation.ADD,    m_currentBinder.getBinderId()));
-				addContentMenuItem(mtA);
+					 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageClickHandler(FavoriteOperation.REMOVE, currentFavoriteId));
+				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    m_currentBinder.getBinderId()));
+				addContentWidget(mtA);
 			}
 			if (0 < fCount) {
-				mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageCommand(FavoriteOperation.EDIT, fList));
-				addContentMenuItem(mtA);
+				mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageClickHandler(FavoriteOperation.EDIT, fList));
+				addContentWidget(mtA);
 			}
 		}
+				
+		// Finally, show the menu popup.
+		show();
+	}
+	
+	/**
+	 * Completes construction of the menu and shows it.
+	 * 
+	 * Implements the MenuBarPopupBase.showPopup() abstract method.
+	 * 
+	 * @param left
+	 * @param top
+	 */
+	@Override
+	public void showPopup(int left, int top) {
+		GetFavoritesCmd cmd;
+		
+		// Position the popup and if we've already constructed its
+		// content...
+		m_menuLeft = left;
+		m_menuTop  = top;
+		setPopupPosition(m_menuLeft, m_menuTop);
+		if (hasContent()) {
+			// ...simply show it and bail.
+			show();
+			return;
+		}
+
+		// Otherwise, read the users favorites.
+		cmd = new GetFavoritesCmd();
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetFavorites());
+			}
+			
+			public void onSuccess(VibeRpcResponse response)  {
+				List<FavoriteInfo> fList;
+				GetFavoritesRpcResponseData responseData;
+				
+				responseData = (GetFavoritesRpcResponseData) response.getResponseData();
+				fList = responseData.getFavorites();
+				
+				// Show the 'My Favorites' popup menu asynchronously
+				// so that we can release the AJAX request ASAP.
+				showMyFavoritesMenuAsync(fList);
+			}
+		});
 	}
 }

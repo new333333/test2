@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,7 +36,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.TaskId;
 
 
 /**
@@ -46,7 +46,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
  * @author drfoster@novell.com
  */
 public class SaveTaskStatusCmd extends VibeRpcCmd {
-	private List<EntityId> m_taskIds;
+	private List<TaskId> m_taskIds;
 	private String m_status;
 	
 	/**
@@ -64,7 +64,7 @@ public class SaveTaskStatusCmd extends VibeRpcCmd {
 	 * 
 	 * @param taskIds
 	 */
-	public SaveTaskStatusCmd(List<EntityId> taskIds, String status) {
+	public SaveTaskStatusCmd(List<TaskId> taskIds, String status) {
 		this();		
 		m_taskIds = taskIds;
 		m_status  = status;
@@ -74,15 +74,17 @@ public class SaveTaskStatusCmd extends VibeRpcCmd {
 	 * Class constructor.
 	 * 
 	 * @param binderId
-	 * @param entityId
+	 * @param entryId
 	 */
-	public SaveTaskStatusCmd(Long binderId, Long entityId, String status) {
+	public SaveTaskStatusCmd(Long binderId, Long entryId, String status) {
 		this();
 		
 		m_status  = status;
-		m_taskIds = new ArrayList<EntityId>();
-		EntityId taskId = new EntityId(binderId, entityId, EntityId.FOLDER_ENTRY);
-		m_taskIds.add(taskId);
+		m_taskIds = new ArrayList<TaskId>();
+		TaskId taskId = new TaskId();
+		taskId.setBinderId( binderId );
+		taskId.setEntryId(  entryId  );
+		m_taskIds.add(      taskId   );
 	}
 	
 	/**
@@ -90,8 +92,8 @@ public class SaveTaskStatusCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<EntityId> getTaskIds() {return m_taskIds;}	
-	public String         getStatus()  {return m_status; }	
+	public List<TaskId> getTaskIds() {return m_taskIds;}	
+	public String       getStatus()  {return m_status; }	
 	
 	/**
 	 * Returns the command's enumeration value.

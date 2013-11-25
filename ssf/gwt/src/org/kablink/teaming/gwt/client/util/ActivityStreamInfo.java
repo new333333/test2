@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.util;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+
 
 /**
  * Class used to communicate information about an activity stream
@@ -72,29 +73,17 @@ public class ActivityStreamInfo
 		// *** Please, consider any changes made CAREFULLY!!!
 		// ***
 		// *** WARNING *** WARNING *** WARNING *** WARNING ***
-		UNKNOWN(               0),
-		CURRENT_BINDER(        1),
-		FOLLOWED_PEOPLE(       2),
-		FOLLOWED_PERSON(       3),
-		FOLLOWED_PLACES(       4),
-		FOLLOWED_PLACE(        5),
-		MY_FAVORITES(          6),
-		MY_FAVORITE(           7),
-		MY_TEAMS(              8),
-		MY_TEAM(               9),
-		SITE_WIDE(            10),
-		SPECIFIC_BINDER(      11),
-		SPECIFIC_FOLDER(      12),
-		MY_FILES(             13),
-		MY_FILE(              14),
-		NET_FOLDERS(          15),
-		NET_FOLDER(           16),
-		SHARED_BY_ME(         17),
-		SHARED_BY_ME_FOLDER(  18),
-		SHARED_WITH_ME(       19),
-		SHARED_WITH_ME_FOLDER(20),
-		SHARED_PUBLIC(        21),
-		SHARED_PUBLIC_FOLDER( 22);
+		UNKNOWN(        0),
+		CURRENT_BINDER( 1),
+		FOLLOWED_PEOPLE(2),
+		FOLLOWED_PERSON(3),
+		FOLLOWED_PLACES(4),
+		FOLLOWED_PLACE( 5),
+		MY_FAVORITES(   6),
+		MY_FAVORITE(    7),
+		MY_TEAMS(       8),
+		MY_TEAM(        9),
+		SITE_WIDE(     10);
 
 		private int m_asValue;
 		
@@ -135,37 +124,25 @@ public class ActivityStreamInfo
 			ActivityStream reply;
 			switch (asValue) {
 			default:
-			case  0:  reply = UNKNOWN;               break;
-			case  1:  reply = CURRENT_BINDER;        break;
-			case  2:  reply = FOLLOWED_PEOPLE;       break;
-			case  3:  reply = FOLLOWED_PERSON;       break;
-			case  4:  reply = FOLLOWED_PLACES;       break;
-			case  5:  reply = FOLLOWED_PLACE;        break;
-			case  6:  reply = MY_FAVORITES;          break;
-			case  7:  reply = MY_FAVORITE;           break;
-			case  8:  reply = MY_TEAMS;              break;
-			case  9:  reply = MY_TEAM;               break;
-			case 10:  reply = SITE_WIDE;             break;
-			case 11:  reply = SPECIFIC_BINDER;       break;
-			case 12:  reply = SPECIFIC_FOLDER;       break;
-			case 13:  reply = MY_FILES;              break;
-			case 14:  reply = MY_FILE;               break;
-			case 15:  reply = NET_FOLDERS;           break;
-			case 16:  reply = NET_FOLDER;            break;
-			case 17:  reply = SHARED_BY_ME;          break;
-			case 18:  reply = SHARED_BY_ME_FOLDER;   break;
-			case 19:  reply = SHARED_WITH_ME;        break;
-			case 20:  reply = SHARED_WITH_ME_FOLDER; break;
-			case 21:  reply = SHARED_PUBLIC;         break;
-			case 22:  reply = SHARED_PUBLIC_FOLDER;  break;
+			case  0:  reply = UNKNOWN;         break;
+			case  1:  reply = CURRENT_BINDER;  break;
+			case  2:  reply = FOLLOWED_PEOPLE; break;
+			case  3:  reply = FOLLOWED_PERSON; break;
+			case  4:  reply = FOLLOWED_PLACES; break;
+			case  5:  reply = FOLLOWED_PLACE;  break;
+			case  6:  reply = MY_FAVORITES;    break;
+			case  7:  reply = MY_FAVORITE;     break;
+			case  8:  reply = MY_TEAMS;        break;
+			case  9:  reply = MY_TEAM;         break;
+			case 10:  reply = SITE_WIDE;       break;
 			}
 			return reply;
 		}
 	}
 
-	private ActivityStream	m_as;
-	private String			m_title = "";
-	private String[]		m_binderIds;
+	private ActivityStream m_as;
+	private String m_title = "";
+	private String[] m_binderIds;
 	
 	/**
 	 * Constructor method.
@@ -308,65 +285,33 @@ public class ActivityStreamInfo
 		}
 
 		// If the ActivityStream enumeration values don't match...
-		ActivityStream as1 =      getActivityStream();
-		ActivityStream as2 = asi2.getActivityStream();
-		if (!(as1.equals(as2))) {
+		if (getActivityStream() != asi2.getActivityStream()) {
 			// ...they don't match.
-			switch (as1) {
-			default:
-				return false;
-				
-			case CURRENT_BINDER:
-			case SPECIFIC_BINDER:
-			case SPECIFIC_FOLDER:
-				switch (as2) {
-				default:
-					return false;
-					
-				case CURRENT_BINDER:
-				case SPECIFIC_BINDER:
-				case SPECIFIC_FOLDER:
-					break;
-				}
-				break;
-			}
+			return false;
 		}
 
-		// Do we need to check binder IDs for this activity stream?
-		boolean checkBinderIds;
-		switch (as1) {
-		case MY_FILES:
-		case NET_FOLDERS:
-		case SHARED_BY_ME:
-		case SHARED_WITH_ME:
-		case SHARED_PUBLIC:  checkBinderIds = false; break;
-		default:             checkBinderIds = true;  break;
+		// If they don't contain the same number of binder IDs...
+		String[] bIds1 =      getBinderIds(); int c1 = ((null == bIds1) ? (-1) : bIds1.length);
+		String[] bIds2 = asi2.getBinderIds(); int c2 = ((null == bIds2) ? (-1) : bIds2.length);
+		if (c1 != c2) {
+			// ...they don't match.
+			return false;
 		}
-		if (checkBinderIds) {
-			// Yes!  If they don't contain the same number of binder
-			// IDs...
-			String[] bIds1 =      getBinderIds(); int c1 = ((null == bIds1) ? (-1) : bIds1.length);
-			String[] bIds2 = asi2.getBinderIds(); int c2 = ((null == bIds2) ? (-1) : bIds2.length);
-			if (c1 != c2) {
-				// ...they don't match.
+
+		// If both lists were null or empty...
+		if (0 >= c1) {
+			// ...they match.
+			return true;
+		}
+
+		// Scan the binder IDs...
+		for (int i = 0; i < c1; i += 1) {
+			// ...if any don't match...
+			String id1 = bIds1[i]; if (null == id1) id1 = "";
+			String id2 = bIds2[i]; if (null == id2) id2 = "";
+			if (!(id1.equals(id2))) {
+				// ...they're not equal.
 				return false;
-			}
-	
-			// If both lists were null or empty...
-			if (0 >= c1) {
-				// ...they match.
-				return true;
-			}
-	
-			// Scan the binder IDs...
-			for (int i = 0; i < c1; i += 1) {
-				// ...if any don't match...
-				String id1 = bIds1[i]; if (null == id1) id1 = "";
-				String id2 = bIds2[i]; if (null == id2) id2 = "";
-				if (!(id1.equals(id2))) {
-					// ...they're not equal.
-					return false;
-				}
 			}
 		}
 

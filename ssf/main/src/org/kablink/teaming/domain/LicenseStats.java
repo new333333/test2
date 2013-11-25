@@ -46,11 +46,8 @@ import java.util.Date;
 public class LicenseStats extends ZonedObject {
 	protected String id;
     protected Date snapshotDate;
-	protected long internalUserCount;		//Local internal users 
-	protected long externalUserCount;		//Ldap users
-	protected Long openIdUserCount;			//OpenId users
-	protected Long otherExtUserCount;		//Self-registered external local users
-	protected Boolean guestAccessEnabled;	//Guest access enabled
+	protected long internalUserCount;
+	protected long externalUserCount;
 	protected Long activeUserCount;
 	protected long checksum;
 
@@ -67,17 +64,12 @@ public class LicenseStats extends ZonedObject {
 	 * @param externalUserCount
 	 * @param checksum
 	 */
-	public LicenseStats(Long zoneId, Date snapshotDate, long internalUserCount, long externalUserCount, 
-			long openIdUserCount, long otherExtUserCount, boolean guestAccessEnabled, long activeUserCount, 
-			long checksum) {
+	public LicenseStats(Long zoneId, Date snapshotDate, long internalUserCount, long externalUserCount, long activeUserCount, long checksum) {
 		super();
 		setZoneId(zoneId);
 		setSnapshotDate(snapshotDate);
 		setInternalUserCount(internalUserCount);
 		setExternalUserCount(externalUserCount);
-		setOpenIdUserCount(openIdUserCount);
-		setOtherExtUserCount(otherExtUserCount);
-		setGuestAccessEnabled(guestAccessEnabled);
 		setActiveUserCount(activeUserCount);
 		setChecksum(checksum);
 	}
@@ -160,34 +152,6 @@ public class LicenseStats extends ZonedObject {
 	 */
 	public void setActiveUserCount(Long activeUserCount) {
 		this.activeUserCount = activeUserCount;
-	}
-
-	
-	public long getOpenIdUserCount() {
-		if (openIdUserCount == null) return 0;
-		return openIdUserCount;
-	}
-
-	public void setOpenIdUserCount(Long openIdUserCount) {
-		this.openIdUserCount = openIdUserCount;
-	}
-
-	public long getOtherExtUserCount() {
-		if (otherExtUserCount == null) return 0;
-		return otherExtUserCount;
-	}
-
-	public void setOtherExtUserCount(Long otherExtUserCount) {
-		this.otherExtUserCount = otherExtUserCount;
-	}
-
-	public boolean getGuestAccessEnabled() {
-		if (guestAccessEnabled == null) return false;
-		return guestAccessEnabled;
-	}
-
-	public void setGuestAccessEnabled(Boolean guestAccessEnabled) {
-		this.guestAccessEnabled = guestAccessEnabled;
 	}
 
 	/**

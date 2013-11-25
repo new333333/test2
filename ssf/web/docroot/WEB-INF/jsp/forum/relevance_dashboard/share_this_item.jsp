@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,38 +36,18 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
-<jsp:useBean id="multipleEntityIds" type="java.lang.String" scope="request" />
-<%
-	boolean hasMultiEntityIds = ((null != multipleEntityIds) && (0 < multipleEntityIds.length()));
-	boolean multiEntity = false;
-	if (hasMultiEntityIds) {
-		multiEntity = (0 < multipleEntityIds.indexOf(','));
-	}
-%>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_style ss_portal diag_modal">
 	<h2>
 		<c:if test="${ssBinder.entityType == 'workspace'}"> 
 			<ssf:nlt tag="relevance.shareThisWorkspace"/>
 		</c:if>
-		<c:if test="${ssBinder.entityType == 'folder' && !empty ssEntry}">
-			<% if (multiEntity) { %> 
-				<ssf:nlt tag="relevance.shareTheseItems"/>
-			<% } else if (hasMultiEntityIds) { %>
-				<ssf:nlt tag="relevance.shareThisItem"/>
-			<% } else { %>
-				<ssf:nlt tag="relevance.shareThisEntry"/>
-			<% } %>
+		<c:if test="${ssBinder.entityType == 'folder' && !empty ssEntry}"> 
+			<ssf:nlt tag="relevance.shareThisEntry"/>
 		</c:if>
 		<c:if test="${ssBinder.entityType == 'folder' && empty ssEntry}">
 			<c:if test="${ssDefinitionFamily != 'calendar'}">
-				<% if (multiEntity) { %> 
-					<ssf:nlt tag="relevance.shareTheseItems"/>
-				<% } else if (hasMultiEntityIds) { %>
-					<ssf:nlt tag="relevance.shareThisItem"/>
-				<% } else { %>
-					<ssf:nlt tag="relevance.shareThisFolder"/>
-				<% } %>
+				<ssf:nlt tag="relevance.shareThisFolder"/>
 			</c:if>
 			<c:if test="${ssDefinitionFamily == 'calendar'}">
 				<ssf:nlt tag="relevance.shareThisCalendar"/>
@@ -108,8 +88,6 @@
 		
 		<div class="ss_labelAbove margintop3"><ssf:nlt tag="relevance.shareThisWithComment"/></div>
 		<div><%@ include file="/WEB-INF/jsp/binder/sendMail_htmlTextarea.jsp" %> </div>
-		
-		<input type="hidden" name="multipleEntityIds" value="${multipleEntityIds}" />
 	
 		<div class="teamingDlgBoxFooter" style="border-top: 0px;">
 			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />

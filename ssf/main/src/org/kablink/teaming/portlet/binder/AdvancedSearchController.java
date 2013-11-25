@@ -52,7 +52,6 @@ import javax.portlet.WindowState;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.SearchWildCardException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -62,7 +61,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
-import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
@@ -98,7 +96,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		User user = RequestContextHolder.getRequestContext().getUser();
 		//ajax requests
 		if (op.equals(WebKeys.OPERATION_FIND_ENTRY_ATTRIBUTES_WIDGET)) {
 			// TODO: move to TypeToFind...
@@ -136,37 +133,14 @@ public class AdvancedSearchController extends AbstractBinderController {
         Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);
 		
-		//Pass the context info to the jsp
-		String searchContext = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT, "");
-		String searchContextBinderId = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_BINDER_ID, "");
-		model.put(WebKeys.SEARCH_CONTEXT, searchContext);
-		model.put(WebKeys.SEARCH_CONTEXT_COLLECTION, PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_COLLECTION, ""));
-		model.put(WebKeys.SEARCH_CONTEXT_BINDER_ID, searchContextBinderId);
-		model.put(WebKeys.SEARCH_CONTEXT_ENTRY_ID, PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_ENTRY_ID, ""));
-		if (searchContextBinderId != null && !searchContextBinderId.equals("")) {
-			try {
-				Binder searchContextBinder = getBinderModule().getBinder(Long.valueOf(searchContextBinderId));
-				model.put(WebKeys.SEARCH_CONTEXT_BINDER, searchContextBinder);
-			} catch(Exception e) {}
-		}
-		
 		/** Vertical mode has been removed
 		if (ObjectKeys.USER_DISPLAY_STYLE_VERTICAL.equals(RequestContextHolder.getRequestContext().getUser().getDisplayStyle())) {
 			model.put(WebKeys.FOLDER_ACTION_VERTICAL_OVERRIDE, "yes");
 		}
 		*/
 
-        if (op.equals(WebKeys.SEARCH_RESULTS)) {
-    	    Map options = new HashMap();
-    	    //Regular searches should not show hidden users
-    	    if (!user.isSuper()) {
-    		   options.put(ObjectKeys.SEARCH_FILTER_AND, SearchUtils.buildExcludeFilter(org.kablink.util.search.Constants.HIDDEN_FROM_SEARCH_FIELD, "true"));
-    	    }
-    	    try {
-    		   BinderHelper.prepareSearchResultData(this, request, tabs, model, options );
-	        } catch(SearchWildCardException e) {
-	    		model.put(WebKeys.SEARCH_ERROR, e.getMessage());
-	    	}
+       if (op.equals(WebKeys.SEARCH_RESULTS)) {
+        	BinderHelper.prepareSearchResultData(this, request, tabs, model, null );
         	addPropertiesForFolderView(model);
         	buildToolbars(model, request);
 
@@ -205,11 +179,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 
         	return prepBeans(request, new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model));
         } else {
-        	try {
-        		model.putAll(BinderHelper.prepareSearchFormData(this, request));
-        	} catch(SearchWildCardException e) {
-        		model.put(WebKeys.SEARCH_ERROR, e.getMessage());
-        	}
+        	model.putAll(BinderHelper.prepareSearchFormData(this, request));
         	if (binderId != null) {
         		Map options = new HashMap();
         		options.put("search_subfolders", Boolean.TRUE);
@@ -237,11 +207,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 	public void addPropertiesForFolderView(Map model) {
     	User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-		if (userProperties != null) {
-			model.put(WebKeys.USER_PROPERTIES, userProperties);
-		} else {
-			model.put(WebKeys.USER_PROPERTIES, new HashMap());
-		}
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		if (!model.containsKey(WebKeys.SEEN_MAP)) 
 			model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(user.getId()));
     	

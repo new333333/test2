@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,7 +34,6 @@ package org.kablink.teaming.module.shared;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,42 +44,31 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
-import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.ExtendedMultipartFile;
-import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.DatedMultipartFile;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings({"unchecked", "unused"})
+
 public class FolderUtils {
+
 	private static final Map<String,Object> ITEM_NAMES;
-	
-	private static final String LIBRARY_FOLDER_DEFAULT_TEMPLATE_NAME = "_folder_library";
 	
 	static {
 		ITEM_NAMES = new HashMap<String,Object>();
@@ -107,34 +95,14 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
-			InputStream content, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored)
-					throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
-		return createLibraryEntry(folder, fileName, content, null, null, modDate, expectedMd5, synchToSourceIfMirrored, null, null, null, null);
-	}
-	
-	/**
-	 * Create a library entry.
-	 * 
-	 * @param folder
-	 * @param fileName
-	 * @param content
-	 * @param modDate
-	 * @param synchToSourceIfMirrored applicable to mirrored folder only; 
-	 * this value is ignored for non-mirrored folder
-	 * @return
-	 * @throws ConfigurationException
-	 * @throws AccessControlException
-	 * @throws WriteFilesException
-	 */
-	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
-			InputStream content, Long contentLength, Long creatorId, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored, Boolean skipParentModtimeUpdate, Boolean skipFileContentIndexing, Boolean skipDbLog, Boolean skipNotifyStatus)
+			InputStream content, Date modDate, boolean synchToSourceIfMirrored) 
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if(folder.isLibrary()) {
 			if(folder.isMirrored()) {
-				return createMirroredEntry(folder, fileName, content, contentLength, creatorId, modDate, expectedMd5, synchToSourceIfMirrored, skipParentModtimeUpdate, skipFileContentIndexing, skipDbLog, skipNotifyStatus);
+				return createMirroredEntry(folder, fileName, content, modDate, synchToSourceIfMirrored);
 			}
 			else {
-				return createNonMirroredEntry(folder, fileName, content, contentLength, modDate, expectedMd5, skipParentModtimeUpdate);
+				return createNonMirroredEntry(folder, fileName, content, modDate);
 			}
 		}
 		else {
@@ -155,15 +123,15 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static void modifyLibraryEntry(FolderEntry entry, String fileName,
-			InputStream content, Long contentLength, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored, Boolean skipFileContentIndexing, Boolean skipNotifyStatus)
+			InputStream content, Date modDate, boolean synchToSourceIfMirrored)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		if(folder.isLibrary()) {
 			if(folder.isMirrored()) {
-				modifyMirroredEntry(entry, fileName, content, contentLength, modDate, expectedMd5, synchToSourceIfMirrored, skipFileContentIndexing, skipNotifyStatus);
+				modifyMirroredEntry(entry, fileName, content, modDate, synchToSourceIfMirrored);
 			}
 			else {
-				modifyNonMirroredEntry(entry, fileName, content, contentLength, modDate, expectedMd5);
+				modifyNonMirroredEntry(entry, fileName, content, modDate);
 			}
 		}
 		else {
@@ -173,10 +141,6 @@ public class FolderUtils {
 
 	/**
 	 * Create a mirrored folder.
-	 * 
-	 * This method expects the parent binder to be a mirrored folder as well. Otherwise, this throws an error.
-	 * Also, by definition, a mirrored folder is supposed to be a library folder, and therefore, it is
-	 * implicit that the newly created folder is a library folder.
 	 * 
 	 * @param parentBinder
 	 * @param folderName
@@ -189,41 +153,25 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static Binder createMirroredFolder(Binder parentBinder, String folderName, 
-			String resourceDriverName, String resourcePath, Long ownerId, Long creatorId, Date modDate, boolean synchToSource, Boolean skipParentModtimeUpdate, Boolean skipDbLog)
+			String resourceDriverName, String resourcePath, boolean synchToSource)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
-		if(EntityType.folder != parentBinder.getEntityType() || !parentBinder.isMirrored())
-			throw new IllegalArgumentException("The parent binder '" + parentBinder.getId() + "' is not a mirrored folder");
-				
+		Definition def = getFolderDefinition(parentBinder);
+		if(def == null)
+			throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
+		
 		Map<String,Object> data = new HashMap<String,Object>(); // Input data
+		data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName); 
+		data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
+		data.put(ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE.toString());
 		if(resourceDriverName != null)
 			data.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, resourceDriverName);
 		if(resourcePath != null)
 			data.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, resourcePath);
 		data.put(ObjectKeys.PI_SYNCH_TO_SOURCE, Boolean.toString(synchToSource));
-		
-		Map options = new HashMap();
-		if(modDate != null) {
-			Calendar modCal = Calendar.getInstance();
-			modCal.setTime(modDate);
-			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modCal);
-		}		
-		if(ownerId != null)
-			options.put(ObjectKeys.INPUT_OPTION_OWNER_ID, ownerId);
-		if(creatorId != null) {
-			options.put(ObjectKeys.INPUT_OPTION_CREATION_ID, creatorId);
-			// For newly created folder, it doesn't make sense if the modifier were different from the creator 
-			// (more precisely speaking, there has not been any modification yet).
-			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_ID, creatorId);
-		}
-		if(skipParentModtimeUpdate != null)
-			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
-		
-		if(skipDbLog != null)
-			options.put(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG, skipDbLog);
-		
-		TemplateBinder template = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MIRRORED_FILE);
-		
-		return getTemplateModule().addBinder(template.getId(), parentBinder.getId(), folderName, "", data, options);
+		Map params = new HashMap();
+		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
+					new MapInputData(data), null, params);
 	}
 	
 	/**
@@ -239,103 +187,39 @@ public class FolderUtils {
 	 */
 	public static Binder createLibraryFolder(Binder parentBinder, String folderName)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
-		Binder binder;
 		if((EntityType.folder == parentBinder.getEntityType()) && parentBinder.isMirrored()) {
-			binder = createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, null, null, null, true, null, null);
-		}
-		else { 
-			binder = createNonMirroredLibraryFolder(parentBinder, folderName);
-		}
-		
-		
-		if(parentBinder.getEntityType() == EntityType.folder) {
-			getBinderModule().setDefinitionsInherited(binder.getId(), true, false);
-		}
-		return binder;
-	}
-	
-	/**
-	 * Creates a non-mirrored library folder.
-	 * 
-	 *  The parent binder could be any binder, as long as it is not a mirrored folder.
-	 * 
-	 * @param parentBinder
-	 * @param folderName
-	 * @return
-	 * @throws ConfigurationException
-	 * @throws AccessControlException
-	 * @throws WriteFilesException
-	 * @throws WriteEntryDataException
-	 */
-	private static Binder createNonMirroredLibraryFolder(Binder parentBinder, String folderName)
-	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
-		if(parentBinder.isMirrored())
-			throw new IllegalArgumentException("Parent binder '" + parentBinder.getId() + "' is a mirrored one");
-		
-		Definition def = null;
-		
-		if(EntityType.folder == parentBinder.getEntityType()) {
-			if(parentBinder.isLibrary()) {
-				// The parent binder is a library folder such as file folder or photo album.
-				// In this case, we want the child folder to be of the same type as the parent.
-				def = parentBinder.getEntryDef();		
-				if(def == null)
-					throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
-			}
-			else {
-				// The parent binder is not a library folder. We can't inherit the type of the parent
-				// binder in this case. We will create a file folder with default configuration.
-			}
-		}
-		else { // workspace
-			// The parent binder is a workspace. We can't inherit the type of the parent binder
-			// in this case. We will create a file folder with default configuration.
-		}
-		
-		if(def != null) {
-			Map data = new HashMap(); // Input data
-			// Title field, not name, is used as the name of the folder. Weird...
-			data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName);
-			//data.put("description", "This folder was created through WebDAV");
-			data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
-			Map params = new HashMap();
-			params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-            if (Utils.isWorkareaInProfilesTree(parentBinder) && parentBinder.getOwner()!=null) {
-			    params.put(ObjectKeys.INPUT_OPTION_OWNER_ID, parentBinder.getOwner().getId());
-            }
-
-			Binder binder = getBinderModule().addBinder(parentBinder.getId(), def.getId(),
-						new MapInputData(data), null, params);
-
-			// Inherit configuration.
-			inheritAll(binder.getId());
-
-			return binder;
+			return createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, true);
 		}
 		else {
-			String templateName = SPropsUtil.getString("library.folder.default.template.name", LIBRARY_FOLDER_DEFAULT_TEMPLATE_NAME);
-			
-			TemplateBinder template = getTemplateModule().getTemplateByName(templateName);
-			
-			Binder binder = getTemplateModule().addBinder(template.getId(), parentBinder.getId(), folderName, "");
-			
-			return binder;
+			return createNonMirroredFolder(parentBinder, folderName);
 		}
 	}
 	
-	public static void deleteMirroredFolder(Folder folder, boolean deleteMirroredSource, Boolean skipParentModtimeUpdate)
-	throws AccessControlException {
-		Map options = new HashMap();
-		if(skipParentModtimeUpdate != null)
-			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
-		getBinderModule().deleteBinder(folder.getId(), deleteMirroredSource, options);
+	private static Binder createNonMirroredFolder(Binder parentBinder, String folderName)
+	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
+		Definition def = getFolderDefinition(parentBinder);
+		if(def == null)
+			throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
+		
+		Map data = new HashMap(); // Input data
+		// Title field, not name, is used as the name of the folder. Weird...
+		data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName); 
+		//data.put("description", "This folder was created through WebDAV");
+		data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
+		Map params = new HashMap();
+		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+
+		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
+					new MapInputData(data), null, params);
 	}
 	
-	public static void deleteMirroredEntry(Folder parentFolder, FolderEntry entry, boolean deleteMirroredSource, Boolean skipParentModtimeUpdate) {
-		Map options = new HashMap();
-		if(skipParentModtimeUpdate != null)
-			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
-		getFolderModule().deleteEntry(parentFolder.getId(), entry.getId(), deleteMirroredSource, options);
+	public static void deleteMirroredFolder(Folder folder, boolean deleteMirroredSource)
+	throws AccessControlException {
+		getBinderModule().deleteBinder(folder.getId(), deleteMirroredSource, null);
+	}
+	
+	public static void deleteMirroredEntry(Folder parentFolder, FolderEntry entry, boolean deleteMirroredSource) {
+		getFolderModule().deleteEntry(parentFolder.getId(), entry.getId(), deleteMirroredSource, null);
 	}
 	
 	public static void deleteMirroredEntry(Long folderId, Long entryId, boolean deleteMirroredSource) {
@@ -357,7 +241,7 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	private static FolderEntry createNonMirroredEntry(Folder folder, String fileName, InputStream content, Long contentLength, Date modDate, String expectedMd5, Boolean skipParentModtimeUpdate)
+	private static FolderEntry createNonMirroredEntry(Folder folder, String fileName, InputStream content, Date modDate)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
@@ -367,26 +251,22 @@ public class FolderUtils {
 		
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
-		if(modDate != null || expectedMd5 != null)
-			mf = new ExtendedMultipartFile(fileName, content, contentLength, modDate, expectedMd5);
+		if(modDate != null)
+			mf = new DatedMultipartFile(fileName, content, modDate);
 		else
-			mf = new SimpleMultipartFile(fileName, content, contentLength); 
+			mf = new SimpleMultipartFile(fileName, content); 
 		
 		Map fileItems = new HashMap(); // Map of element names to file items	
 		fileItems.put(elementName, mf); // single file item
 		
 		Map data = new HashMap(); // Input data
 		data.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
-		
-		Map options = new HashMap();
-		if(skipParentModtimeUpdate != null)
-			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
 				
-		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, options);
+		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, null);
 	}
 	
 	private static FolderEntry createMirroredEntry(Folder folder, String fileName, 
-			InputStream content, Long contentLength, Long creatorId, Date modDate, String expectedMd5, boolean synchToSource, Boolean skipParentModtimeUpdate, Boolean skipFileContentIndexing, Boolean skipDbLog, Boolean skipNotifyStatus)
+			InputStream content, Date modDate, boolean synchToSource)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
@@ -396,31 +276,10 @@ public class FolderUtils {
 		
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
-		Map options = new HashMap();
-		if(modDate != null || creatorId != null || expectedMd5!=null) {
-			ExtendedMultipartFile dmf = new ExtendedMultipartFile(fileName, content, contentLength);
-			if(modDate != null) {
-				dmf.setModDate(modDate);
-			}
-			if(creatorId != null) {
-				dmf.setCreatorId(creatorId);
-				// For newly created file, it doesn't make sense if the modifier were different from the creator.
-				dmf.setModifierId(creatorId);
-				options.put(ObjectKeys.INPUT_OPTION_CREATION_ID, creatorId);
-				// For newly created entry, it doesn't make sense if the modifier were different from the creator 
-				// (more precisely speaking, there has not been any modification yet).
-				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_ID, creatorId);
-			}
-            dmf.setExpectedMd5(expectedMd5);
-			mf = dmf;
-		}
-		else {
-			mf = new SimpleMultipartFile(fileName, content, contentLength); 
-		}
-		if(skipParentModtimeUpdate != null)
-			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
-		if(skipFileContentIndexing != null)
-			options.put(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX, skipFileContentIndexing);
+		if(modDate != null)
+			mf = new DatedMultipartFile(fileName, content, modDate);
+		else
+			mf = new SimpleMultipartFile(fileName, content); 
 		
 		Map fileItems = new HashMap(); // Map of element names to file items	
 		fileItems.put(elementNameAndRepository[0], mf); // single file item
@@ -431,13 +290,7 @@ public class FolderUtils {
 		if(elementNameAndRepository[1] != null)
 			data.put(elementNameAndRepository[1], ObjectKeys.FI_ADAPTER);
 		
-		if(skipDbLog != null)
-			options.put(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG, skipDbLog);
-		
-		if(skipNotifyStatus != null)
-			options.put(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS, skipNotifyStatus);
-		
-		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, options);
+		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, null);
 	}
 
 	/**
@@ -453,7 +306,7 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	private static void modifyNonMirroredEntry(FolderEntry entry, String fileName, 
-			InputStream content, Long contentLength, Date modDate, String expectedMd5)
+			InputStream content, Date modDate) 
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		
@@ -465,10 +318,10 @@ public class FolderUtils {
 		
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
-		if(modDate != null || expectedMd5!=null)
-			mf = new ExtendedMultipartFile(fileName, content, contentLength, modDate, expectedMd5);
+		if(modDate != null)
+			mf = new DatedMultipartFile(fileName, content, modDate);
 		else
-			mf = new SimpleMultipartFile(fileName, content, contentLength); 
+			mf = new SimpleMultipartFile(fileName, content); 
 		
 		Map fileItems = new HashMap(); // Map of names to file items	
 		fileItems.put(elementName, mf); // single file item
@@ -480,7 +333,7 @@ public class FolderUtils {
 	}
 	
 	private static void modifyMirroredEntry(FolderEntry entry, String fileName, 
-			InputStream content, Long contentLength, Date modDate, String expectedMd5, boolean synchToSource, Boolean skipFileContentIndexing, Boolean skipNotifyStatus)
+			InputStream content, Date modDate, boolean synchToSource) 
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		
@@ -492,10 +345,10 @@ public class FolderUtils {
 
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
-		if(modDate != null || expectedMd5 != null)
-			mf = new ExtendedMultipartFile(fileName, content, contentLength, modDate, expectedMd5);
+		if(modDate != null)
+			mf = new DatedMultipartFile(fileName, content, modDate);
 		else
-			mf = new SimpleMultipartFile(fileName, content, contentLength); 
+			mf = new SimpleMultipartFile(fileName, content); 
 		
 		Map fileItems = new HashMap(); // Map of names to file items	
 		fileItems.put(elementNameAndRepository[0], mf); // single file item
@@ -505,18 +358,11 @@ public class FolderUtils {
 		if(elementNameAndRepository[1] != null)
 			data.put(elementNameAndRepository[1], ObjectKeys.FI_ADAPTER);
 	
-		Map options = new HashMap();
-		if(skipFileContentIndexing != null)
-			options.put(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX, skipFileContentIndexing);
-
-		if(skipNotifyStatus != null)
-			options.put(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS, skipNotifyStatus);
-
 		getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
-				new MapInputData(data), fileItems, null, null, options);
+				new MapInputData(data), fileItems, null, null, null);
 	}
 
-	public static String getDefinitionElementNameForNonMirroredFile(Definition definition) 
+	private static String getDefinitionElementNameForNonMirroredFile(Definition definition) 
 	throws ConfigurationException {
 		Element item = getDefinitionItemForNonMirroredFile(definition.getDefinition());
 		if(item != null) {
@@ -564,7 +410,7 @@ public class FolderUtils {
 		return item; // This may be null
 	}
 
-	public static String[] getDefinitionElementNameForMirroredFile(Definition definition) 
+	private static String[] getDefinitionElementNameForMirroredFile(Definition definition) 
 	throws ConfigurationException {
 		SimpleProfiler.start("FolderUtils.getDefinitionElementNameForMirroredFile");
 		Document defDoc = definition.getDefinition();
@@ -633,7 +479,7 @@ public class FolderUtils {
 		return value;
 	}
 	
-	public static Definition getFolderEntryDefinition(Folder folder) {
+	private static Definition getFolderEntryDefinition(Folder folder) {
 		Definition def = folder.getDefaultEntryDef();
 		if(def == null) {
 			def = folder.getDefaultFileEntryDef();
@@ -654,7 +500,6 @@ public class FolderUtils {
 		return null;
 	}
 	
-	/*
 	private static Definition getFolderDefinition(Binder parentBinder) {
 		if(parentBinder instanceof Folder) {
 			// If the parent binder in which to create a new library folder
@@ -668,7 +513,6 @@ public class FolderUtils {
 			return getZoneWideDefaultFolderDefinition();
 		}
 	}
-	*/
 	
 	private static Definition getZoneWideDefaultFolderDefinition() {
 		List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_ENTRY);
@@ -682,19 +526,13 @@ public class FolderUtils {
 	}
 	
 	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
-        // By default, entry is simply moved into trash rather than permanently deleted.
-        boolean predelete = SPropsUtil.getBoolean("folderutils.deleteentry.predelete", true);
-        deleteFileInFolderEntry(entry, fa, predelete);
-    }
-
-	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa, boolean predelete) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
 		Binder parentBinder = entry.getParentBinder();
 		if(parentBinder.isMirrored() && fa.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
 			// The file being deleted is a mirrored file.
 			// In this case, we delete the entire entry regardless of what else the
 			// entry might contain, since we don't want to leave an entry that no 
 			// longer mirrors any source file 
-			FolderUtils.deleteMirroredEntry((Folder)parentBinder, entry, true, null);
+			FolderUtils.deleteMirroredEntry((Folder)parentBinder, entry, true);
 		}
 		else {
 			if(entry.getFileAttachments().size() > 1) {
@@ -710,17 +548,10 @@ public class FolderUtils {
 				// This file being deleted is the only file associated with the entry.
 				// Delete the entire entry, instead of leaving an empty/dangling entry with no file.
 				// This will honor the Bug #554284.
-				if(predelete)
-					getFolderModule().preDeleteEntry(parentBinder.getId(), entry.getId(), RequestContextHolder.getRequestContext().getUserId());
-				else
-					getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);					
+				getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);					
 			}
 		}
 
-	}
-	
-	public static void inheritAll(Long folderId) {
-        BinderUtils.inheritAll(folderId);
 	}
 
 	private static FolderModule getFolderModule() {
@@ -734,8 +565,5 @@ public class FolderUtils {
 	}
 	private static BinderModule getBinderModule() {
 		return (BinderModule) SpringContextUtil.getBean("binderModule");
-	}
-	private static TemplateModule getTemplateModule() {
-		return (TemplateModule) SpringContextUtil.getBean("templateModule");
 	}
 }

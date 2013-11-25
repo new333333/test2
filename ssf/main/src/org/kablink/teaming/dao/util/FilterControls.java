@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,18 +30,16 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.dao.util;
 
+package org.kablink.teaming.dao.util;
 import java.util.List;
 import java.util.ArrayList;
-
 /**
- * Keep controls for a simple equality query.
- * 
  * @author Janet McCann
+ * Keep controls for a simple equality query.
  */
-@SuppressWarnings("unchecked")
 public class FilterControls implements Cloneable {
+
 	private List<Object> filterValues = new ArrayList();
 	private List<Criterion> criteria = new ArrayList<Criterion>();
 	private OrderBy orderBy;
@@ -77,32 +75,6 @@ public class FilterControls implements Cloneable {
 		Criterion crit = Restrictions.eq(name, value); 
 		add(crit, pos);
 	}
-	public void addNotEQ(String name, Object value) {
-		Criterion crit = Restrictions.notEq(name, value); 
-		add(crit);
-	}
-	public void addNotEQ(String name, Object value, int pos) {
-		Criterion crit = Restrictions.notEq(name, value); 
-		add(crit, pos);
-	}
-
-	/**
-	 * 
-	 * @param name
-	 */
-	public void addIsNull( String name )
-	{
-		Criterion crit;
-		
-		crit = Restrictions.isNull( name );
-		add( crit );
-	}
-	
-	public void addNotNull(String name) {
-		Criterion crit = Restrictions.notNull(name);
-		add(crit);
-	}
-	
 	public void appendFilter(String alias, StringBuffer filter) {
 	 	int count = criteria.size();
 	 	if (count > 0) {

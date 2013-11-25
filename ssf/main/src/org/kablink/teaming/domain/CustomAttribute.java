@@ -541,89 +541,6 @@ public class CustomAttribute extends ZonedObject {
  	    }
 	    return null;
 	}
-	public Object getRawValue(int descriptionFormat) {
-	    switch(getValueType()) {
-    		case STRING:
-            case DESCRIPTION:
-    		    if (!Validator.isNull(stringValue))
-    		        return stringValue;
-    		    else if (description != null)
-                    if (descriptionFormat==Description.FORMAT_NONE) {
-                        return description.getStrippedText();
-                    } else if (descriptionFormat==Description.FORMAT_HTML) {
-                        return description.getHtmlText();
-                    } else {
-                        return description.getText();
-                    }
-    		    return null;
-       		case COMMASEPARATEDSTRING:
-       			CommaSeparatedValue v1 = new CommaSeparatedValue();
-    		    if (!Validator.isNull(stringValue))
-    		        v1.setValue(stringValue);
-    		    else if (description != null)
-    		        v1.setValue(description.getText());
-    		    return v1.getValueSet();
-       		case PACKEDSTRING:
-       			PackedValue v2 = new PackedValue();
-    		    if (!Validator.isNull(stringValue))
-    		        v2.setValue(stringValue);
-    		    return v2.getValueSet();
-    		case BOOLEAN:
-    			return booleanValue;
-    		case LONG:
-    		    return longValue;
-    		case DATE:
-    		    return dateValue;
-    		case SERIALIZED:
-    		    return serializedValue.getValue();
-    		case XML:
-    	    	try {
-    	    		return xmlValue.getText();
-                } catch (Exception ex) {
-           			throw new IllegalArgumentException(ex.getLocalizedMessage());
-    	    	}
-    	    case ORDEREDSET:
-    	    	Set v = new LinkedHashSet();
-    	    	if (iValues == null) {//probably not in order if bulk loaded, but not a problem for indexing
-    	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
-    	    			v.add(((CustomAttributeListElement)iter.next()).getRawValue(descriptionFormat));
-    	    		}
-    	    	} else {
-    	    		for (Iterator iter=iValues.iterator(); iter.hasNext();) {
-    	    			v.add(((CustomAttributeListElement)iter.next()).getRawValue(descriptionFormat));
-    	    		}
-    	    	}
-    	    	return v;
-    	    case SET:
-    	    	Set s = new TreeSet();  // order naturally
-    	    	if (iValues == null) {
-    	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
-    	    			s.add(((CustomAttributeListElement)iter.next()).getRawValue(descriptionFormat));
-    	    		}
-    	    	} else {
-    	    		for (Iterator iter=iValues.iterator(); iter.hasNext();) {
-    	    			s.add(((CustomAttributeListElement)iter.next()).getRawValue(descriptionFormat));
-    	    		}
-    	    	}
-    	    	return s;
-       		case EVENT:
-    		    return stringValue;
-       		case SURVEY:
-	       		if (!Validator.isNull(stringValue))
-	 		        return stringValue;
-	 		    else if (description != null)
-	 		        return description.getText();
-	 		    return null;
-    		case ATTACHMENT:
-    			return stringValue;
-        	case ENCRYPTEDSTRING:
-				EncryptedValue ev = new EncryptedValue();
-				ev.setEncryptedValue(stringValue);
-				return ev.getValue();
-
- 	    }
-	    return null;
-	}
 	/**
 	 * Return the value as a set.
 	 * @return
@@ -732,7 +649,4 @@ public class CustomAttribute extends ZonedObject {
     	addChangeLog(parent);
     }
 
-    public boolean multivalued() {
-        return getValueType()==ORDEREDSET || getValueType()==SET;
-    }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,11 +34,13 @@ package org.kablink.teaming.gwt.client.util;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+
 /**
  * Enumeration used to communicate the type of a folder between the
- * client and the server as part of a GWT RPC command.
+ * client and the server as part of a GWT RPC request.
  * 
  * @author drfoster@novell.com
+ *
  */
 public enum FolderType implements IsSerializable {
 	BLOG,
@@ -56,15 +58,5 @@ public enum FolderType implements IsSerializable {
 	WIKI,
 	
 	OTHER,
-	NOT_A_FOLDER;
-	
-	/**
-	 * Returns true if this FolderType value represents a folder and
-	 * false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isFolder() {
-		return (!(this.equals(NOT_A_FOLDER)));
-	}
+	NOT_A_FOLDER,
 }

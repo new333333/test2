@@ -1,125 +1,132 @@
-//>>built
-define("dojox/xmpp/bosh",["dijit","dojo","dojox","dojo/require!dojo/io/script,dojo/io/iframe,dojox/xml/parser"],function(_1,_2,_3){
-_2.provide("dojox.xmpp.bosh");
-_2.require("dojo.io.script");
-_2.require("dojo.io.iframe");
-_2.require("dojox.xml.parser");
-_3.xmpp.bosh={transportIframes:[],initialize:function(_4){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.xmpp.bosh"]){
+dojo._hasResource["dojox.xmpp.bosh"]=true;
+dojo.provide("dojox.xmpp.bosh");
+dojo.require("dojo.io.script");
+dojo.require("dojo.io.iframe");
+dojo.require("dojox.xml.parser");
+dojox.xmpp.bosh={transportIframes:[],initialize:function(_1){
 this.transportIframes=[];
-var _5=_3._scopeName+".xmpp.bosh";
-var c=_2.connect(_2.getObject(_5),"_iframeOnload",this,function(_6){
-if(_6==0){
-_4.load();
-_2.disconnect(c);
+var _2=dojox._scopeName+".xmpp.bosh";
+var c=dojo.connect(dojo.getObject(_2),"_iframeOnload",this,function(_3){
+if(_3==0){
+_1.load();
+dojo.disconnect(c);
 }
 });
-for(var i=0;i<_4.iframes;i++){
-var _7="xmpp-transport-"+i;
-var _8=_2.byId("xmpp-transport-"+i);
-if(_8){
-if(window[_7]){
-window[_7]=null;
+for(var i=0;i<_1.iframes;i++){
+var _4="xmpp-transport-"+i;
+var _5=dojo.byId("xmpp-transport-"+i);
+if(_5){
+if(window[_4]){
+window[_4]=null;
 }
-if(window.frames[_7]){
-window.frames[_7]=null;
+if(window.frames[_4]){
+window.frames[_4]=null;
 }
-_2.destroy(_8);
+dojo.destroy(_5);
 }
-_8=_2.io.iframe.create("xmpp-transport-"+i,_5+"._iframeOnload("+i+");");
-this.transportIframes.push(_8);
+_5=dojo.io.iframe.create("xmpp-transport-"+i,_2+"._iframeOnload("+i+");");
+this.transportIframes.push(_5);
 }
-},_iframeOnload:function(_9){
-var _a=_2.io.iframe.doc(_2.byId("xmpp-transport-"+_9));
-_a.write("<script>var isLoaded=true; var rid=0; var transmiting=false; function _BOSH_(msg) { transmiting=false; parent.dojox.xmpp.bosh.handle(msg, rid); } </script>");
+},_iframeOnload:function(_6){
+var _7=dojo.io.iframe.doc(dojo.byId("xmpp-transport-"+_6));
+_7.write("<script>var isLoaded=true; var rid=0; var transmiting=false; function _BOSH_(msg) { transmiting=false; parent.dojox.xmpp.bosh.handle(msg, rid); } </script>");
 },findOpenIframe:function(){
 for(var i=0;i<this.transportIframes.length;i++){
-var _b=this.transportIframes[i];
-var _c=_b.contentWindow;
-if(_c.isLoaded&&!_c.transmiting){
-return _b;
+var _8=this.transportIframes[i];
+var _9=_8.contentWindow;
+if(_9.isLoaded&&!_9.transmiting){
+return _8;
 }
 }
 return false;
-},handle:function(_d,_e){
-var _f=this["rid"+_e];
-var _10=_3.xml.parser.parse(_d,"text/xml");
-if(_10){
-_f.ioArgs.xmppMessage=_10;
+},handle:function(_a,_b){
+var _c=this["rid"+_b];
+var _d=dojox.xml.parser.parse(_a,"text/xml");
+if(_d){
+_c.ioArgs.xmppMessage=_d;
 }else{
-_f.errback(new Error("Recieved bad document from server: "+_d));
+_c.errback(new Error("Recieved bad document from server: "+_a));
 }
-},get:function(_11){
-var _12=this.findOpenIframe();
-var _13=_2.io.iframe.doc(_12);
-_11.frameDoc=_13;
-var dfd=this._makeScriptDeferred(_11);
-var _14=dfd.ioArgs;
-_12.contentWindow.rid=_14.rid;
-_12.contentWindow.transmiting=true;
-_2._ioAddQueryToUrl(_14);
-_2._ioNotifyStart(dfd);
-_2.io.script.attach(_14.id,_14.url,_13);
-_2._ioWatch(dfd,this._validCheck,this._ioCheck,this._resHandle);
+},get:function(_e){
+var _f=this.findOpenIframe();
+var _10=dojo.io.iframe.doc(_f);
+_e.frameDoc=_10;
+var dfd=this._makeScriptDeferred(_e);
+var _11=dfd.ioArgs;
+_f.contentWindow.rid=_11.rid;
+_f.contentWindow.transmiting=true;
+dojo._ioAddQueryToUrl(_11);
+dojo._ioNotifyStart(dfd);
+dojo.io.script.attach(_11.id,_11.url,_10);
+dojo._ioWatch(dfd,this._validCheck,this._ioCheck,this._resHandle);
 return dfd;
-},remove:function(id,_15){
-_2.destroy(_2.byId(id,_15));
+},remove:function(id,_12){
+dojo.destroy(dojo.byId(id,_12));
 if(this[id]){
 delete this[id];
 }
-},_makeScriptDeferred:function(_16){
-var dfd=_2._ioSetArgs(_16,this._deferredCancel,this._deferredOk,this._deferredError);
-var _17=dfd.ioArgs;
-_17.id="rid"+_16.rid;
-_17.rid=_16.rid;
-_17.canDelete=true;
-_17.frameDoc=_16.frameDoc;
-this[_17.id]=dfd;
+},_makeScriptDeferred:function(_13){
+var dfd=dojo._ioSetArgs(_13,this._deferredCancel,this._deferredOk,this._deferredError);
+var _14=dfd.ioArgs;
+_14.id="rid"+_13.rid;
+_14.rid=_13.rid;
+_14.canDelete=true;
+_14.frameDoc=_13.frameDoc;
+this[_14.id]=dfd;
 return dfd;
 },_deferredCancel:function(dfd){
 dfd.canceled=true;
 if(dfd.ioArgs.canDelete){
-_3.xmpp.bosh._addDeadScript(dfd.ioArgs);
+dojox.xmpp.bosh._addDeadScript(dfd.ioArgs);
 }
 },_deferredOk:function(dfd){
-var _18=dfd.ioArgs;
-if(_18.canDelete){
-_3.xmpp.bosh._addDeadScript(_18);
+var _15=dfd.ioArgs;
+if(_15.canDelete){
+dojox.xmpp.bosh._addDeadScript(_15);
 }
-return _18.xmppMessage||_18;
-},_deferredError:function(_19,dfd){
+return _15.xmppMessage||_15;
+},_deferredError:function(_16,dfd){
 if(dfd.ioArgs.canDelete){
-if(_19.dojoType=="timeout"){
-_3.xmpp.bosh.remove(dfd.ioArgs.id,dfd.ioArgs.frameDoc);
+if(_16.dojoType=="timeout"){
+dojox.xmpp.bosh.remove(dfd.ioArgs.id,dfd.ioArgs.frameDoc);
 }else{
-_3.xmpp.bosh._addDeadScript(dfd.ioArgs);
+dojox.xmpp.bosh._addDeadScript(dfd.ioArgs);
 }
 }
-return _19;
-},_deadScripts:[],_addDeadScript:function(_1a){
-_3.xmpp.bosh._deadScripts.push({id:_1a.id,frameDoc:_1a.frameDoc});
-_1a.frameDoc=null;
+return _16;
+},_deadScripts:[],_addDeadScript:function(_17){
+dojox.xmpp.bosh._deadScripts.push({id:_17.id,frameDoc:_17.frameDoc});
+_17.frameDoc=null;
 },_validCheck:function(dfd){
-var _1b=_3.xmpp.bosh;
-var _1c=_1b._deadScripts;
-if(_1c&&_1c.length>0){
-for(var i=0;i<_1c.length;i++){
-_1b.remove(_1c[i].id,_1c[i].frameDoc);
-_1c[i].frameDoc=null;
+var _18=dojox.xmpp.bosh;
+var _19=_18._deadScripts;
+if(_19&&_19.length>0){
+for(var i=0;i<_19.length;i++){
+_18.remove(_19[i].id,_19[i].frameDoc);
+_19[i].frameDoc=null;
 }
-_3.xmpp.bosh._deadScripts=[];
+dojox.xmpp.bosh._deadScripts=[];
 }
 return true;
 },_ioCheck:function(dfd){
-var _1d=dfd.ioArgs;
-if(_1d.xmppMessage){
+var _1a=dfd.ioArgs;
+if(_1a.xmppMessage){
 return true;
 }
 return false;
 },_resHandle:function(dfd){
-if(_3.xmpp.bosh._ioCheck(dfd)){
+if(dojox.xmpp.bosh._ioCheck(dfd)){
 dfd.callback(dfd);
 }else{
 dfd.errback(new Error("inconceivable dojox.xmpp.bosh._resHandle error"));
 }
 }};
-});
+}

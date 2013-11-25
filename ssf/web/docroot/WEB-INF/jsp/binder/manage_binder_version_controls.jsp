@@ -33,7 +33,6 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
-<%@ page import="org.kablink.teaming.util.Utils" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="tag" value="folder.manageFolderVersionControls"/>
 <jsp:useBean id="tag" type="String" />
@@ -41,7 +40,6 @@
 <jsp:useBean id="binder" type="org.kablink.teaming.domain.Binder" />
 <c:set var="ss_windowTitle" value='<%= NLT.get(tag) %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="isFilr" value="<%= Utils.checkIfFilr() %>"/>
 
 <body class="ss_style_body tundra">
 
@@ -135,16 +133,13 @@ function ss_confirmEncryptAll() {
 
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
-<c:if test="${!isFilr}">
 	    <input type="checkbox" name="enableBinderVersions" 
 		  <c:if test="${ss_binder_versions_enabled}">checked=checked</c:if>
-		  <c:if test="${isFilr || ss_binder_versions_inherited}">disabled=disabled</c:if>
+		  <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
 		/>
-</c:if>
 		<span class="ss_bold"><ssf:nlt tag="binder.versions.enableVersionsForFolder" /></span>
 	  </legend>
       
-<c:if test="${!isFilr}">
        <div style="padding:10px 10px 0px 10px;">
 	   	<div><ssf:nlt tag="binder.versions.versionsToKeep1"/></div>
 	   	<div class="marginbottom2"><ssf:nlt tag="binder.versions.versionsToKeep2"/></div>
@@ -170,18 +165,10 @@ function ss_confirmEncryptAll() {
 		</c:if>
        </span>
        </div>
-</c:if>
-<c:if test="${isFilr}">
-       <div style="padding:10px 10px 0px 10px;">
-          <div style="padding:0px 0px 6px 0px;">
-            <span class="ss_bold"><ssf:nlt tag="binder.file.versionNotSupportedInFilr"/></span>
-          </div>
-      </div>
-</c:if>      
+      
     </fieldset>
     <br/>
 
-<c:if test="${!isFilr}">
     <c:if test="${ssBinder.entityType == 'folder'}">
      <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
@@ -218,7 +205,6 @@ function ss_confirmEncryptAll() {
 	 </fieldset>
      <br/>
     </c:if>
-</c:if>
 
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">

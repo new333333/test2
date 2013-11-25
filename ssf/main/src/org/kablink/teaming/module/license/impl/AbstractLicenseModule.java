@@ -46,7 +46,6 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.Restrictions;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.jobs.LicenseMonitor;
 import org.kablink.teaming.jobs.ZoneSchedule;
@@ -54,14 +53,10 @@ import org.kablink.teaming.license.LicenseException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.report.ReportModule;
-import org.kablink.teaming.module.rss.RssModule;
-import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -79,8 +74,7 @@ implements LicenseModule, ZoneSchedule {
  			   logger.error("Cannot instantiate LicenseMonitor custom class", e);
     		}
     	}
-    	String className = SPropsUtil.getString("job.license.monitor.class", "org.kablink.teaming.jobs.DefaultLicenseMonitor");
-    	return (LicenseMonitor)ReflectHelper.getInstance(className);
+    	return (LicenseMonitor)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultLicenseMonitor.class);
 	}
 	//called on zone startup
     public void startScheduledJobs(Workspace zone) {
@@ -100,15 +94,6 @@ implements LicenseModule, ZoneSchedule {
  	   	LicenseMonitor job =getProcessor(zone);
    		job.remove(zone.getId());
 	}
-	
-	private ZoneModule zoneModule;
-	/**
-	 * @return the zoneModule
-	 */
-	public ZoneModule getZoneModule() {
-		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
-	}
-
 	private ReportModule reportModule;
 	/**
 	 * @return the reportModule
@@ -134,11 +119,6 @@ implements LicenseModule, ZoneSchedule {
 		return getCoreDao().getLoginCount(cal.getTime());
 	}
 	
-	/**
-	 * Count the number of internal local users. This excludes all users that have been sync'ed from an ldap source.
-	 * @param zoneId
-	 * @return
-	 */
 	protected long countInternalUsers(Long zoneId)
 	{
 		FilterControls	filterControls;
@@ -149,9 +129,9 @@ implements LicenseModule, ZoneSchedule {
 		filterControls.add(Restrictions.eq("type", "user"));
 		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
 		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
-		filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.TRUE));
-		filterControls.add(Restrictions.eq("identityInfo.fromLocal", Boolean.TRUE));
-		return getCoreDao().countObjects(Principal.class, filterControls, zoneId, null);
+		StringBuffer buf = new StringBuffer(" and x.name = x.foreignName");
+		
+		return getCoreDao().countObjects(Principal.class, filterControls, zoneId, buf);
 	}
 	
 	
@@ -168,62 +148,10 @@ implements LicenseModule, ZoneSchedule {
 	 	filterControls.add( Restrictions.eq( "type", "user" ) );
 	 	filterControls.add( Restrictions.eq( "disabled", Boolean.FALSE ) );
 	 	filterControls.add( Restrictions.eq( "deleted", Boolean.FALSE ) );
-		filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.TRUE));
-		filterControls.add(Restrictions.eq("identityInfo.fromLdap", Boolean.TRUE));
+	 	StringBuffer buf = new StringBuffer(" and x.name <> x.foreignName");
 
-	 	return getCoreDao().countObjects( Principal.class, filterControls, zoneId, null );
+	 	return getCoreDao().countObjects( Principal.class, filterControls, zoneId, buf );
 	}// end countUsersSyncdFromLdapSource()
-	
-	protected long countExternalUsers(Long zoneId)
-	{
-		FilterControls	filterControls;
-		
-		// Find all users that are not disabled and not deleted and who have a password.
-		// If a user has been sync'd from an ldap source they won't have a password.
-		filterControls = new FilterControls();
-		filterControls.add(Restrictions.eq("type", "user"));
-		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
-		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
-	 	filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.FALSE));
-		
-		return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
-	}
-	
-	protected long countOpenIdUsers(Long zoneId)
-	{
-		FilterControls	filterControls;
-		
-		// Find all users that are not disabled and not deleted and who have a password.
-		// If a user has been sync'd from an ldap source they won't have a password.
-		filterControls = new FilterControls();
-		filterControls.add(Restrictions.eq("type", "user"));
-		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
-		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
-	 	filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.FALSE));
-	 	filterControls.add(Restrictions.eq("identityInfo.fromOpenid", Boolean.TRUE));
-		
-		return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
-	}
-	
-	protected long countOtherExtUsers(Long zoneId)
-	{
-		FilterControls	filterControls;
-		
-		// Find all users that are not disabled and not deleted and who have a password.
-		// If a user has been sync'd from an ldap source they won't have a password.
-		filterControls = new FilterControls();
-		filterControls.add(Restrictions.eq("type", "user"));
-		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
-		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
-	 	filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.FALSE));
-	 	filterControls.add(Restrictions.eq("identityInfo.fromOpenid", Boolean.FALSE));
-		
-		return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
-	}
-	
-	protected boolean isGuestAccessEnabled(long zoneId) {
-		return getZoneModule().getZoneConfig(zoneId).getAuthenticationConfig().isAllowAnonymousAccess();
-	}
 	
 
 	public void recordCurrentUsage()

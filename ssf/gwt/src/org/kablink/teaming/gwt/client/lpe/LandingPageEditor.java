@@ -40,18 +40,12 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFileUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
-import org.kablink.teaming.gwt.client.widgets.PreviewLandingPageDlg;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.event.EditLandingPagePropertiesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.PreviewLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 
 import com.google.gwt.core.client.GWT;
@@ -71,7 +65,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -92,8 +85,7 @@ public class LandingPageEditor extends Composite
 				HasMouseUpHandlers,
 				EditSuccessfulHandler, EditCanceledHandler,
 				Event.NativePreviewHandler,
-				EditLandingPagePropertiesEvent.Handler,
-				PreviewLandingPageEvent.Handler
+				EditLandingPagePropertiesEvent.Handler
 {
 	private Palette		m_palette;
 	private Canvas		m_canvas;
@@ -114,7 +106,6 @@ public class LandingPageEditor extends Composite
 	private AbstractTinyMCEConfiguration m_tinyMCEConfig = null;
 	private LandingPageProperties m_landingPageProperties;
 	private LandingPagePropertiesDlgBox m_lpPropertiesDlg = null;
-	private PreviewLandingPageDlg m_previewDlg = null;
 	
 	private static TextArea m_textBox = null;//!!!
 	public static RequestInfo m_requestInfo = jsGetRequestInfo();
@@ -129,7 +120,7 @@ public class LandingPageEditor extends Composite
 		// The following defines the TeamingEvents that are handled by
 		// this class.  See EventHelper.registerEventHandlers() for how
 		// this array is used.
-		TeamingEvents[] registeredEvents = new TeamingEvents[] { TeamingEvents.EDIT_LANDING_PAGE_PROPERTIES, TeamingEvents.PREVIEW_LANDING_PAGE };
+		TeamingEvents[] registeredEvents = new TeamingEvents[] { TeamingEvents.EDIT_LANDING_PAGE_PROPERTIES };
 		ConfigData		configData;
 		HorizontalPanel	hPanel;
 		VerticalPanel 	vPanel;
@@ -149,7 +140,7 @@ public class LandingPageEditor extends Composite
 		
 		// Get the configuration data that defines this landing page.
 		m_lpeConfig = getLandingPageConfig();
-		configData = new ConfigData( m_lpeConfig.getConfigStr(), m_lpeConfig.getBinderId() );
+		configData = new ConfigData( m_lpeConfig.getConfigStr() );
 		
 		// Parse the configuration data.
 		configData.parse();
@@ -161,7 +152,7 @@ public class LandingPageEditor extends Composite
 		m_enteredDropZones = new Stack<DropZone>();
 		
 		// Get the landing page properties.
-		m_landingPageProperties = configData.initLandingPageProperties( m_lpeConfig.getMashupPropertiesXML() );
+		m_landingPageProperties = new LandingPageProperties( m_lpeConfig.getMashupPropertiesXML() );
 		
 		// Create a vertical panel for the hint and the horizontal panel to live in.
 		vPanel = new VerticalPanel();
@@ -196,7 +187,7 @@ public class LandingPageEditor extends Composite
 				DropWidget dropWidget;
 				
 				// Create the appropriate widget based on the given ConfigItem.
-				dropWidget = configItem.createDropWidget( this );
+				dropWidget = DropWidget.createDropWidget( this, configItem );
 				
 				if ( dropWidget != null )
 					m_canvas.addWidgetToDropZone( dropWidget );
@@ -269,7 +260,6 @@ public class LandingPageEditor extends Composite
 		{
 			Element element;
 			InputElement ckboxElement;
-			String xmlStr;
 			
 			// Add the "hide menu" setting to the landing page properties.
 			try
@@ -284,10 +274,7 @@ public class LandingPageEditor extends Composite
 				
 			}
 			
-			xmlStr = m_landingPageProperties.getPropertiesAsXMLString();
-			if ( xmlStr == null )
-				xmlStr = "";
-			m_propertiesHiddenInput.setValue( xmlStr );
+			m_propertiesHiddenInput.setValue( m_landingPageProperties.getPropertiesAsXMLString() );
 		}
 	}
 	
@@ -541,15 +528,6 @@ public class LandingPageEditor extends Composite
 	}
 	
 	/**
-	 * Return the language the tinyMCE editor should use
-	 */
-	public String getTinyMCELanguage()
-	{
-		return m_lpeConfig.getTinyMCELanguage();
-	}
-	
-	
-	/**
 	 * 
 	 */
 	public void handleMouseMove( int clientX, int clientY )
@@ -706,106 +684,6 @@ public class LandingPageEditor extends Composite
 	}
 
 	/**
-	 * Create a preview window so the user can see what the landing page will look
-	 * like without having to save the landing page.
-	 */
-	private void invokePreview( String bgImgUrl )
-	{
-		int x;
-		int y;
-		String configStr;
-		ConfigData configData;
-
-		configStr = createConfigString();
-		configData = new ConfigData( configStr, m_lpeConfig.getBinderId() );
-		configData.initLandingPageProperties( m_landingPageProperties );
-		configData.setBackgroundImgUrl( bgImgUrl );
-		configData.setPreviewMode( true );
-		
-		if ( m_previewDlg == null )
-		{
-			x = getCanvasLeft();
-			y = getCanvasTop();
-		
-			m_previewDlg = new PreviewLandingPageDlg( null, null, true, true, x, y );
-		}
-		
-		m_previewDlg.init( configData );
-		m_previewDlg.show();
-		
-	}
-	
-	/**
-	 * Create a preview window so the user can see what the landing page will look
-	 * like without having to save the landing page.
-	 */
-	private void invokePreview()
-	{
-		final String bgImgName;
-		
-		// Are the landing page properties inherited?
-		if ( m_landingPageProperties.getInheritProperties() == false )
-		{
-			// No
-			// Does the landing page have a background image?
-			bgImgName = m_landingPageProperties.getBackgroundImageName();
-			if ( bgImgName != null && bgImgName.length() > 0 )
-			{
-				GetFileUrlCmd gfuCmd;
-				
-				// Yes, issue an rpc request to get the url of the background image.
-				gfuCmd = new GetFileUrlCmd( m_lpeConfig.getBinderId(), bgImgName );
-				GwtClientHelper.executeCommand( gfuCmd, new AsyncCallback<VibeRpcResponse>()
-				{
-					/**
-					 * 
-					 */
-					public void onFailure( Throwable caught )
-					{
-						GwtClientHelper.handleGwtRPCFailure(
-								caught,
-								GwtTeaming.getMessages().rpcFailure_GetFileUrl(),
-								bgImgName );
-					}
-	
-					/**
-					 * 
-					 */
-					public void onSuccess( final VibeRpcResponse result )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							public void execute()
-							{
-								String url;
-								StringRpcResponseData responseData;
-	
-								responseData = ((StringRpcResponseData) result.getResponseData());
-								url = responseData.getStringValue();
-								
-								invokePreview( url );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				} );
-			}
-			else
-			{
-				// No, invoke the preview dialog
-				invokePreview( null );
-			}
-		}
-		else
-		{
-			// Yes, invoke the preview dialog
-			invokePreview( null );
-		}
-	}
-
-	/**
 	 * Return a boolean indicating whether or not the user is current dragging an item from
 	 * the palette or an existing item.
 	 */
@@ -904,16 +782,6 @@ public class LandingPageEditor extends Composite
 	public void onEditLPProperties( EditLandingPagePropertiesEvent event )
 	{
 		invokeEditLandingPagePropertiesDlg();
-	}
-	
-	/**
-	 * Handles the PreviewLandingPageEvent received by this class.
-	 * 
-	 * Implements the PreviewLandingPageEvent.Handler.onPreviewLandingPage() method.
-	 */
-	public void onPreviewLandingPage( PreviewLandingPageEvent event )
-	{
-		invokePreview();
 	}
 	
 	/**

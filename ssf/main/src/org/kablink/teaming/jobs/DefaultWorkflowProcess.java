@@ -82,14 +82,14 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
     	try {
     		entry = folderModule.getEntry(null, entryId);
     		if (entry.isDeleted()) {
-    			deleteJob(context);
+    			removeJob(context);
     			return;
     		}
        	} catch (NoObjectByTheIdException no) {
-    		deleteJob(context);
+    		removeJob(context);
     		return;
       	} catch (AccessControlException acc) {
-    		deleteJobOnError(context, acc);
+    		removeJobOnError(context, acc);
     		return;
     	}
 
@@ -97,7 +97,7 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
        	WorkflowState state = entry.getWorkflowState(stateId);
        	//workflow done, remove job
        	if (state == null) {
-       		deleteJob(context);
+       		removeJob(context);
        		return;
        	}
        	//remove from cache in case execution takes long
@@ -112,7 +112,7 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
 		       			//reload incase execute took a long time
 		       			FolderEntry entry = folderModule.getEntry(null, entryId);
 		       			WorkflowState state = entry.getWorkflowState(stateId);
-		       			deleteJob(context);
+		       			removeJob(context);
 		       			if (state != null && job instanceof WorkflowCallout) {
 		       				//	could be a naming issue for variables if multiple remote apps run simultaneously for the same entry
 		       				WorkflowModule wf = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
@@ -143,10 +143,10 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
 			throw new ConfigurationException("Invalid Workflow Action class name '" + actionName + "'",
 					e);
        	} catch (InternalException e) {
-   			deleteJob(context);			
+   			removeJob(context);			
       		throw new ConfigurationException("Cannot instantiate Workflowprocess of type '" 	+ actionName + "'");
  		} catch (NoObjectByTheIdException no) {
-   			deleteJob(context);			
+   			removeJob(context);			
 		}
     }
 	public void remove(WorkflowSupport entry, WorkflowState wfState) {
@@ -171,7 +171,7 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
 			//old jobs could be registered that were not rolledback
 			//If I integrate the transaction into quartz I get deadlocks
 			//so this will have to do.
-			unscheduleJob(clazz, groupName);
+			removeJob(clazz, groupName);
 		} catch (Exception noexist) {};
 		JobDataMap data = new JobDataMap();
 		data.put(ZONEID,wfState.getZoneId());

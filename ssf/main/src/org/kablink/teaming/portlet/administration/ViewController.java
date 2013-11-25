@@ -339,7 +339,7 @@ public class ViewController extends  SAbstractController {
 				element.addAttribute("id", String.valueOf(nextId++));
 				elements.put(element.attributeValue("title"), element);		
 				
-				if (getAdminModule().retrieveIndexNodesHA() != null) {
+				if (getAdminModule().retrieveIndexNodes() != null) {
 					element.addAttribute("displayOnly", "true");
 					// index
 					Element indexElem = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
@@ -400,23 +400,6 @@ public class ViewController extends  SAbstractController {
 				element.addAttribute("id", String.valueOf(nextId++));
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS);
-				url.setWindowState(WindowState.MAXIMIZED);
-				url.setPortletMode(PortletMode.VIEW);
-				element.addAttribute("url", url.toString());
-				elements.put(element.attributeValue("title"), element);
-			}
-		} catch(AccessControlException e) {}
-	
-		//Manage resource drivers
-		try {
-			if (getAdminModule().testAccess(AdminOperation.manageFunction) &&
-					LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder")) {
-				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-				element.addAttribute("title", NLT.get("administration.manage.resourceDrivers"));
-				element.addAttribute("image", "bullet");
-				element.addAttribute("id", String.valueOf(nextId++));
-				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_RESOURCE_DRIVERS);
 				url.setWindowState(WindowState.MAXIMIZED);
 				url.setPortletMode(PortletMode.VIEW);
 				element.addAttribute("url", url.toString());

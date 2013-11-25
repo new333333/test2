@@ -36,16 +36,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.kablink.teaming.module.binder.impl.EntryDataErrors;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
-import org.kablink.teaming.util.InvokeException;
-import org.kablink.util.VibeRuntimeException;
-import org.kablink.util.api.ApiErrorCode;
-import org.kablink.util.api.ApiErrorCodeSupport;
-
-import java.util.List;
 
 /**
  * @author jong
@@ -54,26 +47,6 @@ import java.util.List;
 @Provider
 public class WriteEntryDataMapper implements ExceptionMapper<WriteEntryDataException> {
 	public Response toResponse(WriteEntryDataException ex) {
-        Throwable root = ex;
-        EntryDataErrors errors = ex.getErrors();
-        if (errors!=null) {
-            List<EntryDataErrors.Problem> problems = errors.getProblems();
-            if (problems!=null && problems.size()==1) {
-                EntryDataErrors.Problem problem = problems.get(0);
-                root = problem.getException();
-                Throwable cause = root;
-                while (cause.getCause()!=null) {
-                    cause = cause.getCause();
-                    if (cause instanceof ApiErrorCodeSupport || cause.getCause()==null) {
-                        root = cause;
-                    }
-                }
-            }
-        }
-        ApiErrorCode errorCode = ApiErrorCode.SERVER_ERROR;
-        if (root instanceof ApiErrorCodeSupport) {
-            errorCode = ((ApiErrorCodeSupport)root).getApiErrorCode();
-        }
-        return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(errorCode.name(), root.getMessage())).build();
+		return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(ex.getApiErrorCode().name(), ex.getMessage())).build();
 	}
 }

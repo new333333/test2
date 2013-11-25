@@ -84,36 +84,11 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 			getAdminModule().disableSimpleProfiler();
 			reportSuccess(response);
 		}
-		else if(WebKeys.MRS_OPERATION_CLEAR.equals(op)) {
-			getAdminModule().clearSimpleProfiler();
-			reportSuccess(response);
-		}
 		else if(WebKeys.MRS_OPERATION_SEARCH.equals(op)) {
 			doSearch(response,
 					PortletRequestUtils.getStringParameter(request, "query", ""),
 					PortletRequestUtils.getIntParameter(request, "offset", 0),
 					PortletRequestUtils.getIntParameter(request, "max", 25));
-		}
-		else if(WebKeys.MRS_OPERATION_DUMP_FILE_SYNC_STATS.equals(op)) {
-			String data = getAdminModule().dumpFileSyncStatsAsString();
-			reportData(response, data);
-		}
-		else if(WebKeys.MRS_OPERATION_DUMP_FILE_SYNC_STATS_TO_LOG.equals(op)) {
-			getAdminModule().dumpFileSyncStatsToLog();
-			reportSuccess(response);
-		}
-		else if(WebKeys.MRS_OPERATION_ENABLE_FILE_SYNC_STATS.equals(op)) {
-			getAdminModule().enableFileSyncStats();
-			reportSuccess(response);
-		}
-		else if(WebKeys.MRS_OPERATION_DISABLE_FILE_SYNC_STATS.equals(op)) {
-			getAdminModule().disableFileSyncStats();
-			reportSuccess(response);
-		}
-		else if(WebKeys.MRS_OPERATION_STOP_FILE_SYNC.equals(op)) {
-			long id = PortletRequestUtils.getLongParameter(request, "id", 0);
-			getFolderModule().requestNetFolderFullSyncStop(id);
-			reportSuccess(response);
 		}
 		else if(op.equals("")) {
 			reportNoop(response);
@@ -150,7 +125,7 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 		long startTime = System.nanoTime();
 		BinderModule bm = (BinderModule) SpringContextUtil.getBean("binderModule");
 		Document queryDoc = getDocument(query);
-		Map entries = bm.executeSearchQuery(queryDoc, org.kablink.util.search.Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+		Map entries = bm.executeSearchQuery(queryDoc, offset, maxResults);
 		double duration = elapsedTimeInMs(startTime);
 
 		Integer total = (Integer) entries.get(ObjectKeys.SEARCH_COUNT_TOTAL);

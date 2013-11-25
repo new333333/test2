@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,13 +46,9 @@ function ss_hideFolderDropTarget${ssBinderId}${ss_namespace}(strErrorMessage) {
 	}
 	if (self.parent) {
 		if (ss_isGwtUIActive) {
-			window.top.ss_filesDropped("${ssBinderId}");
-			window.top.m_requestInfo.refreshSidebarTree = true;
-			window.top.ss_setContentLocation(window.top.ss_getUrlFromContentHistory(0))
+			window.top.m_requestInfo.forceSidebarReload = true;
 		}
-		else {
-			self.parent.location.reload(true);
-		}
+		self.parent.location.reload(true);
 		self.parent.focus();
 	}
 }
@@ -173,7 +169,6 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			    <PARAM NAME = "reloadFunctionName" value="ss_hideFolderDropTarget${ssBinderId}${ss_namespace}"/>
 			    <PARAM NAME = "savePreviousVersions" value="yes"/>
 			    <PARAM NAME = "fileReceiverURL" value="${ssFolderAttachmentFileReceiverURL}" />
-			    <PARAM NAME = "fileCheckExistsURL" value="${ssFolderAttachmentFileCheckExistsURL}" />
 			    <PARAM NAME = "deactivationUrl" value=""/>
 			    <PARAM NAME = "displayUrl" value="0"/>
 				<c:if test="${ssBinderIsLibrary == 'false'}">
@@ -198,10 +193,6 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			    <PARAM NAME = "fileUploadMaxSize" value="${ss_binder_file_max_file_size}" />
 			    <PARAM NAME = "fileUploadSizeExceeded" value="<ssf:escapeQuotes><ssf:nlt tag="file.maxSizeExceeded" /></ssf:escapeQuotes>" />
 			    <PARAM NAME = "appletFileName" value="<ssf:appletFileName />" />
-			    <PARAM NAME = "strYes" value="<ssf:escapeQuotes><ssf:nlt tag="button.Yes" /></ssf:escapeQuotes>" />
-			    <PARAM NAME = "strNo" value="<ssf:escapeQuotes><ssf:nlt tag="button.No" /></ssf:escapeQuotes>" />
-			    <PARAM NAME = "strFilesExist" value="<ssf:escapeQuotes><ssf:nlt tag="applet.filesExist" /></ssf:escapeQuotes>" />
-			    <PARAM NAME = "strFilesExistConfirm" value="<ssf:escapeQuotes><ssf:nlt tag="applet.filesExistConfirm" /></ssf:escapeQuotes>" />
 			<c:if test="<%= !isIE %>">
 			</applet>
 			</c:if>

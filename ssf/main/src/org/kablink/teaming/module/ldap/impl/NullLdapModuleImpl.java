@@ -36,90 +36,56 @@ import java.util.HashSet;
 
 import javax.naming.NamingException;
 
-import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
-import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 
 
 public class NullLdapModuleImpl extends CommonDependencyInjection implements LdapModule {
-	@Override
 	public boolean testAccess(LdapOperation operation) {
 		return false;
 	}
 
-	@Override
 	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
 	{
 		return new HashSet<Long>();
 	}
 	
-	@Override
 	public LdapSchedule getLdapSchedule() {
 		return null;
 	}
 
-	@Override
-	public boolean hasPasswordExpired( String userName, String ldapConfigId )
-	{
-		return false;
-	}
-	
-	@Override
 	public boolean isGuidConfigured()
 	{
 		return false;
 	}
 	
-	/**
-	 * 
-	 */
-	@Override
-	public HomeDirInfo getHomeDirInfo( String teamingUserName, String ldapUserName, boolean logErrors ) throws NamingException
-	{
-		return null;
-	}
-
-    @Override
-	public String readLdapGuidFromDirectory( String userName, Long zoneId )
+    public String readLdapGuidFromDirectory( String userName, Long zoneId )
     {
     	return null;
     }
     
-	@Override
 	public void setLdapSchedule(LdapSchedule schedule) {
 	}
 
-	@Override
-	public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncMode mode, LdapSyncResults syncResults ) throws LdapSyncException {
+	public void syncAll( boolean syncUsersAndGroups, boolean syncGuids, LdapSyncResults syncResults ) throws LdapSyncException {
 	}
 
 	/**
 	 * 
 	 */
-	@Override
 	public void syncUser( String teamingUserName, String ldapUserName ) throws NoUserByTheNameException, NamingException
 	{
 	}
 
-	@Override
 	public void syncUser(Long userId) throws NoUserByTheNameException, NamingException {
 	}
-
 	
-	@Override
 	public Integer testGroupMembershipCriteria( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
 	{
-		return null;
-	}
-
-	@Override
-	public String readLdapGuidFromDirectory(String userName, Long zoneId,
-			LdapConnectionConfig config) {
 		return null;
 	}
 }

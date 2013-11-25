@@ -43,14 +43,24 @@
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
+<c:set var="mWidth" value="" />
+<c:set var="mHeight" value="" />
+<c:set var="mOverflow" value="" />
+<c:if test="${!empty mashup_attributes['width']}">
+  <c:set var="mWidth" >width: ${mashup_attributes['width']};</c:set>
+</c:if>
+<c:if test="${!empty mashup_attributes['height']}">
+  <c:set var="mHeight" >height: ${mashup_attributes['height']};</c:set>
+</c:if>
+<c:if test="${!empty mashup_attributes['overflow']}">
+  <c:set var="mOverflow" >overflow: ${mashup_attributes['overflow']};</c:set>
+</c:if>
+
 <% if (ss_mashupListDepth > 0) { %>
 <li>
 <% } %>
 
 <c:if test="${ssConfigJspStyle != 'form'}">
-<div class="ss_mashup_element">
- <div class="ss_mashup_round_top"><div></div></div>
- <div class="ss_mashup_graphic_content">
   <c:if test="${!empty mashup_attributes['graphic']}">
     <c:set var="graphicFileTitle" value="${mashup_attributes['title']}"/>
     <c:if test="${!empty graphicFileTitle}">
@@ -60,8 +70,9 @@
     	graphicFileTitle = org.kablink.util.Http.encodeURL(graphicFileTitle);
       %>
     </c:if>
+    <div>
     <img 
-    	style="<c:if test="${!empty mWidth}"> width: ${mWidth}; </c:if> <c:if test="${!empty mHeight}"> height: ${mHeight}; </c:if>
+    	style="${mWidth} ${mHeight}
     	<c:if test="${mashup_attributes['showBorder'] == '1'}"> border: 2px solid #ccc !important; </c:if> " 
     	src="<ssf:url 
 		    webPath="viewFile"
@@ -71,10 +82,8 @@
 	    	<ssf:param name="fileTitle" value="${graphicFileTitle}"/>
 	    	</ssf:url>" alt="${mashup_attributes['title']}"
 	>
+	</div>
   </c:if>
- </div>
- <div class="ss_mashup_round_bottom"><div></div></div>
-</div>
 </c:if>
 
 <c:if test="${ssConfigJspStyle == 'form'}">

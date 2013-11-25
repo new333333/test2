@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -49,20 +49,17 @@ import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskDuration;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
-import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.EventButton;
 import org.kablink.teaming.gwt.client.widgets.TimePicker;
 import org.kablink.teaming.gwt.client.widgets.ValueSpinner;
 import org.kablink.teaming.gwt.client.widgets.TZDateBox;
 
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -199,171 +196,6 @@ public class TaskDueDateDlg extends DlgBox
 	}
 
 	/*
-	 * Validates the dialog's contents and if everything is valid,
-	 * applies a TaskEvent with the edited due date and closes the
-	 * dialog.
-	 * 
-	 * If anything is invalid, the user is told about the problem and
-	 * the dialog is left open.
-	 */
-	private void applyNewTaskDueDate() {
-		TZDateBox  startDate = m_dateBoxMap.get(   IDSTART); boolean hasStartDate = hasDateBoxDate(startDate); 
-		TimePicker startTime = m_timePickerMap.get(IDSTART); boolean hasStartTime = startTime.hasTime();
-		
-		TZDateBox  endDate   = m_dateBoxMap.get(   IDEND  ); boolean hasEndDate   = hasDateBoxDate(endDate  );
-		TimePicker endTime   = m_timePickerMap.get(IDEND  ); boolean hasEndTime   = endTime.hasTime();
-		
-		boolean hasDurationDays = m_durationDays.hasValue();
-		
-		// Is the all day checkbox checked? 
-		boolean allDayChecked = m_allDayCB.getValue();
-		if (allDayChecked) {
-			// Yes!  Do we have both a start and end date?
-			if (    (!hasStartDate) && (!hasEndDate)) GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_NoStartNoEnd());
-			else if (!hasStartDate)                   GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_NoStart()     );
-			else if                    (!hasEndDate)  GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_NoEnd()       );
-			else {
-				// Yes!  Construct an appropriate TaskEvent to and
-				// apply it.
-				TaskEvent event = new TaskEvent(true);	// true -> Initialize with null dates.
-				event.setAllDayEvent( true                                               );				
-				event.setActualStart( new TaskDate(getAllDayDateOnSave(startDate, true )));	// true  -> Start date.
-				event.setActualEnd(   new TaskDate(getAllDayDateOnSave(  endDate, false)));	// false -> End   date.
-				applyNewTaskDueDateImpl(event);
-			}
-		}
-		
-		else {
-			// No, the all day checkbox was not checked!  Has anything
-			// been specified?
-			if ((!hasStartDate) && (!hasStartTime) &&
-				(!hasEndDate)   && (!hasEndTime)   &&
-				(!hasDurationDays)) {
-				// No!  Bugzilla 682430:
-				//    If the start, end and duration are all blank,
-				//    supply a default duration days of 1.
-				// Is that what the user wants to do?
-				
-				
-				// Is the user sure they want to delete the selected user
-				// workspaces?
-				ConfirmDlg.createAsync(new ConfirmDlgClient() {
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(ConfirmDlg cDlg) {
-						ConfirmDlg.initAndShow(
-							cDlg,
-							new ConfirmCallback() {
-								@Override
-								public void dialogReady() {
-									// Ignored.  We don't really care when the
-									// dialog is ready.
-								}
-
-								@Override
-								public void accepted() {
-									// Yes!  Construct an appropriate
-									// TaskEvent and apply it.
-									TaskEvent event = new TaskEvent(true);
-									event.setDuration(new TaskDuration(1));
-									applyNewTaskDueDateImpl(event);
-								}
-
-								@Override
-								public void rejected() {
-									// No, they're not sure!
-								}
-							},
-							m_messages.taskDueDateDlgConfirm_DefaultTo1Day());
-					}
-				});
-			}
-			
-			else {
-				// Yes, something has been specified!
-				//    As per the Task Improvements for Evergreen
-				//    design document, the following items must be
-				//    supplied:
-				//    1) A 'Start' date; or
-				//    2) Both a 'Start' and an End' date; or
-				//    3) A 'Start' date and a 'Duration' (in days); or
-				//    4) A 'Duration' (in days.)
-				// Is it valid?
-				TaskEvent event    = null;
-				boolean   hasStart = (hasStartDate && true);	// hasStartTime);	// Commented out and leave it to the defaults...
-				boolean   hasEnd   = (hasEndDate   && true);	// hasEndTime);		// ...as per Bugzilla 712328 and 714419.
-				if (hasStart && (!hasEnd) && (!hasDurationDays)) {
-					// Condition 1 has been met.
-					event = new TaskEvent(true);
-					event.setActualStart(getTDFromDT(new Date(startDate.getValue()), startTime.getDateTime()));
-				}
-				
-				else {
-					if (hasStart && hasEnd && (!hasDurationDays)) {
-						// Condition 2 has been met.
-						event = new TaskEvent(true);
-						event.setActualStart(getTDFromDT(new Date(startDate.getValue()), startTime.getDateTime()));
-						event.setActualEnd(  getTDFromDT(new Date(endDate.getValue()),   endTime.getDateTime()));
-					}
-					
-					else {
-						if (hasStart && (!hasEnd) && hasDurationDays) {
-							// Condition 3 has been met.
-							event = new TaskEvent(true);
-							event.setActualStart(getTDFromDT(new Date(startDate.getValue()), startTime.getDateTime()));
-							event.setDuration(new TaskDuration((int) m_durationDays.getSpinner().getValue()));
-						}
-						
-						else {
-							if ((!hasStart) && (!hasEnd) && hasDurationDays) {
-								// Condition 4 has been met.
-								event = new TaskEvent(true);
-								event.setDuration(new TaskDuration((int) m_durationDays.getSpinner().getValue()));
-							}
-							
-							else {
-								// One of the conditions has not been met.
-								GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_DurationInvalidCombination());
-							}
-						}
-					}
-				}
-				
-				// Apply any event we may have built.
-				applyNewTaskDueDateImpl(event);
-			}
-		}
-	}
-	
-	/*
-	 * If we were given an event to apply, apply it and close the
-	 * dialog.  Otherwise, do nothing.
-	 */
-	private void applyNewTaskDueDateImpl(final TaskEvent event) {
-		// Do we have an event to apply?
-		if (null != event) {
-			// Yes!  Asynchronously put the due date into affect...
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					// Put the new due date information into affect.
-					m_taskTable.applyTaskDueDate(
-						event,
-						m_selectedTask.getTaskId().getEntityId());
-				}
-			});
-			
-			// ...and close the dialog.
-			hide();
-		}
-	}
-
-	/*
 	 * Returns a TaskDate object based on a date and time.
 	 * 
 	 * If the time is null, midnight is used.
@@ -447,12 +279,30 @@ public class TaskDueDateDlg extends DlgBox
 	 */
 	@Override
 	public boolean editSuccessful(Object callbackData) {
-		// Apply the change...
-		applyNewTaskDueDate();
+		// Are the contents of the dialog valid?
+		final TaskEvent reply = getNewTaskDueDate();
+		if (null == reply) {
+			// No!  getNewTaskDueDate() will have told the user about
+			// any problem.  Simply return false to keep the dialog
+			// open.
+			return false;
+		}
 		
-		// ...and return false.  The apply will close the dialog if we
-		// ...were successful.
-		return false;
+		// Asynchronously put the due date into affect...
+		Scheduler.ScheduledCommand taskDueDateChanger;
+		taskDueDateChanger = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				// Put the new due date information into affect.
+				m_taskTable.applyTaskDueDate(
+					reply,
+					m_selectedTask.getTaskId().getEntryId());
+			}
+		};
+		Scheduler.get().scheduleDeferred(taskDueDateChanger);
+		
+		// ...and return true to close the dialog.
+		return true;
 	}
 
 	
@@ -492,6 +342,122 @@ public class TaskDueDateDlg extends DlgBox
 	public FocusWidget getFocusWidget() {
 		// There is no specific focus widget for this dialog.
 		return null;
+	}
+
+	/*
+	 * Validates the dialog's contents and if everything is valid,
+	 * constructs a TaskEvent with the edited due date.
+	 * 
+	 * If anything is invalid, the user is told about the problem and
+	 * null is returned.
+	 */
+	private TaskEvent getNewTaskDueDate() {
+		String      alertMessage = null;
+		TaskEvent   reply        = null;
+		
+		TZDateBox  startDate = m_dateBoxMap.get(   IDSTART); boolean hasStartDate = hasDateBoxDate(startDate); 
+		TimePicker startTime = m_timePickerMap.get(IDSTART); boolean hasStartTime = startTime.hasTime();
+		
+		TZDateBox  endDate   = m_dateBoxMap.get(   IDEND  ); boolean hasEndDate   = hasDateBoxDate(endDate  );
+		TimePicker endTime   = m_timePickerMap.get(IDEND  ); boolean hasEndTime   = endTime.hasTime();
+		
+		boolean hasDurationDays = m_durationDays.hasValue();
+		
+		// Is the all day checkbox checked? 
+		boolean allDayChecked = m_allDayCB.getValue();
+		if (allDayChecked) {
+			// Yes!  Do we have both a start and end date?
+			if (    (!hasStartDate) && (!hasEndDate)) alertMessage = m_messages.taskDueDateDlgError_NoStartNoEnd();
+			else if (!hasStartDate)                   alertMessage = m_messages.taskDueDateDlgError_NoStart();
+			else if                    (!hasEndDate)  alertMessage = m_messages.taskDueDateDlgError_NoEnd();
+			else {
+				// Yes!  Construct an appropriate TaskEvent to return.
+				reply = new TaskEvent(true);	// true -> Initialize with null dates.
+				reply.setAllDayEvent( true                                               );				
+				reply.setActualStart( new TaskDate(getAllDayDateOnSave(startDate, true )));	// true  -> Start date.
+				reply.setActualEnd(   new TaskDate(getAllDayDateOnSave(  endDate, false)));	// false -> End   date.
+			}
+		}
+		
+		else {
+			// No, the all day checkbox was not checked!  Has anything
+			// been specified?
+			if ((!hasStartDate) && (!hasStartTime) &&
+				(!hasEndDate)   && (!hasEndTime)   &&
+				(!hasDurationDays)) {
+				// No!  Bugzilla 682430:
+				//    If the start, end and duration are all blank,
+				//    supply a default duration days of 1.
+				// Is that what the user wants to do?
+				if (Window.confirm(m_messages.taskDueDateDlgConfirm_DefaultTo1Day())) {
+					// Yes!  Construct an appropriate TaskEvent to
+					// return.
+					reply = new TaskEvent(true);
+					reply.setDuration(new TaskDuration(1));
+				}
+			}
+			
+			else {
+				// Yes, something has been specified!
+				//    As per the Task Improvements for Evergreen
+				//    design document, the following items must be
+				//    supplied:
+				//    1) A 'Start' date; or
+				//    2) Both a 'Start' and an End' date; or
+				//    3) A 'Start' date and a 'Duration' (in days); or
+				//    4) A 'Duration' (in days.)
+				// Is it valid?
+				boolean hasStart = (hasStartDate && true);	// hasStartTime);	// Commented out and leave it to the defaults...
+				boolean hasEnd   = (hasEndDate   && true);	// hasEndTime);		// ...as per Bugzilla 712328 and 714419.
+				if (hasStart && (!hasEnd) && (!hasDurationDays)) {
+					// Condition 1 has been met.
+					reply = new TaskEvent(true);
+					reply.setActualStart(getTDFromDT(new Date(startDate.getValue()), startTime.getDateTime()));
+				}
+				
+				else {
+					if (hasStart && hasEnd && (!hasDurationDays)) {
+						// Condition 2 has been met.
+						reply = new TaskEvent(true);
+						reply.setActualStart(getTDFromDT(new Date(startDate.getValue()), startTime.getDateTime()));
+						reply.setActualEnd(  getTDFromDT(new Date(endDate.getValue()),   endTime.getDateTime()));
+					}
+					
+					else {
+						if (hasStart && (!hasEnd) && hasDurationDays) {
+							// Condition 3 has been met.
+							reply = new TaskEvent(true);
+							reply.setActualStart(getTDFromDT(new Date(startDate.getValue()), startTime.getDateTime()));
+							reply.setDuration(new TaskDuration((int) m_durationDays.getSpinner().getValue()));
+						}
+						
+						else {
+							if ((!hasStart) && (!hasEnd) && hasDurationDays) {
+								// Condition 4 has been met.
+								reply = new TaskEvent(true);
+								reply.setDuration(new TaskDuration((int) m_durationDays.getSpinner().getValue()));
+							}
+							
+							else {
+								// One of the conditions has not been met.
+								alertMessage = m_messages.taskDueDateDlgError_DurationInvalidCombination();
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// If we have a message to display...
+		if (null != alertMessage) {
+			// ...display it.
+			Window.alert(alertMessage);
+		}
+		
+		// If we get here, reply refers to the validated TaskEvent
+		// object to return or is null (if there was an error.)  Return
+		// it.
+		return reply;
 	}
 
 	/*
@@ -551,7 +517,7 @@ public class TaskDueDateDlg extends DlgBox
 	 * initialize the date picker when entering the dialog.
 	 */
 	private Date getPickerDateOnEntry(TaskDate taskDate) {
-		boolean hasDate = (null != taskDate) && (null != taskDate.getDate());
+		boolean hasDate = (null != taskDate);
 		Date    reply   = (hasDate ? new Date(taskDate.getDate().getTime()) : null);
 		if (hasDate && isAllDayEvent()) {
 			Long t = reply.getTime();
@@ -671,7 +637,7 @@ public class TaskDueDateDlg extends DlgBox
 		m_dateBoxMap.put(baseId, dateBox);
 
 		// ...create the associated picker button...
-		EventButton datePickerButton = new EventButton(
+		TaskButton datePickerButton = new TaskButton(
 			m_images.calMenu(),
 			null,	// null -> No disabled image.
 			m_images.calMenuOver(),
@@ -760,6 +726,7 @@ public class TaskDueDateDlg extends DlgBox
 		// ...use it to set the date box...
 		String baseId = (isStart ? IDSTART : IDEND);
 		TZDateBox db = m_dateBoxMap.get(baseId);
+		db.setTZOffset(0);
 		db.setValue((null == pickerDate) ? (-1) : pickerDate.getTime());
 
 		// ...and time picker.

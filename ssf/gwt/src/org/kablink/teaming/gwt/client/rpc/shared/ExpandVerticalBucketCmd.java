@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,69 +30,46 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 
+
 /**
- * This class holds all of the information necessary to execute the
- * 'expand vertical bucket' command.
+ * This class holds all of the information necessary to execute the "expand vertical bucket" command.
  * 
- * @author drfoster@novell.com
+ * @author jwootton
+ *
  */
-public class ExpandVerticalBucketCmd extends VibeRpcCmd {
-	private boolean		m_findBrowser;	//
-	private BucketInfo	m_bucketInfo;	//
+public class ExpandVerticalBucketCmd extends VibeRpcCmd
+{
+	private BucketInfo m_bucketInfo;
 	
 	/**
-	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public ExpandVerticalBucketCmd() {
-		// Initialize the super class.
+	public ExpandVerticalBucketCmd()
+	{
 		super();
 	}
 	
 	/**
-	 * Constructor method.
 	 * 
-	 * @param buckedInfo
-	 * @param findBrowser
 	 */
-	public ExpandVerticalBucketCmd(BucketInfo bucketInfo, boolean findBrowser) {
-		// Initialize this object...
+	public ExpandVerticalBucketCmd( BucketInfo bucketInfo )
+	{
 		this();
-		
-		// ..and store the parameters.
-		setBucketInfo( bucketInfo );
-		setFindBrowser(findBrowser);
+		m_bucketInfo = bucketInfo;
 	}
 	
 	/**
-	 * Constructor method.
 	 * 
-	 * @param buckedInfo
 	 */
-	public ExpandVerticalBucketCmd(BucketInfo bucketInfo) {
-		this(bucketInfo, false);
+	public BucketInfo getBucketInfo()
+	{
+		return m_bucketInfo;
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public boolean    isFindBrowser() {return m_findBrowser;}
-	public BucketInfo getBucketInfo() {return m_bucketInfo; }
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param findBrowser
-	 */
-	public void setFindBrowser(boolean    findBrowser) {m_findBrowser = findBrowser;}
-	public void setBucketInfo( BucketInfo bucketInfo)  {m_bucketInfo  = bucketInfo; }
 	
 	/**
 	 * Returns the command's enumeration value.

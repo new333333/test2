@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,7 +33,6 @@
 package org.kablink.teaming.domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,19 +44,15 @@ import java.util.HashSet;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
-import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 
 /**
  * This object represents a container.
@@ -69,66 +64,10 @@ import org.kablink.util.search.Constants;
  * need auto-import = false so names don't collide with jbpm
  *
  */
-@SuppressWarnings("unchecked")
 public abstract class Binder extends DefinableEntity implements WorkArea, InstanceLevelProcessorSupport  {
-	/**
-	 * Different values for the sync schedule option 
-	 */
-	public enum SyncScheduleOption
-	{
-		/**
-		 * The sync schedule defined on the net folder server this net folder points to should be
-		 * used to perform scheduled syncs on this net folder.
-		 * 
-		 */
-		useNetFolderServerSchedule( (short)1 ),
-		
-		/**
-		 * The sync schedule defined on the net folder should be used to perform schedule syncs on
-		 * this net folder.
-		 */
-		useNetFolderSchedule( (short)2 );
-		
-		short value;
-		
-		/**
-		 * 
-		 */
-		SyncScheduleOption( short value )
-		{
-			this.value = value;
-		}
-		
-		/**
-		 * 
-		 */
-		public short getValue()
-		{
-			return value;
-		}
-		
-		/**
-		 * 
-		 */
-		public static SyncScheduleOption valueOf( short value )
-		{
-			switch(value)
-			{
-			case 1:
-				return SyncScheduleOption.useNetFolderServerSchedule;
-				
-			case 2:
-				return SyncScheduleOption.useNetFolderSchedule;
-				
-			default:
-				throw new IllegalArgumentException( "Invalid db value " + value + " for enum SyncScheduleOption" );
-			}
-		}
-	}
-
 	protected String name="";
     protected Principal owner; //initialized by hibernate access=field  
-	protected Map properties;
+    protected Map properties;
     protected NotificationDef notificationDef;
     protected PostingDef posting;
     protected String pathName;
@@ -163,19 +102,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean versionAgingEnabled;
     protected Long maxFileSize;	//MB (stored as the maximum number of mega-bytes)
     protected Boolean fileEncryptionEnabled;
-    protected Boolean extFunctionMembershipInherited = Boolean.TRUE;
-    protected Boolean homeDir = Boolean.FALSE;
-    protected Boolean myFilesDir = Boolean.FALSE;
-    protected Boolean allowDesktopAppToSyncData = Boolean.TRUE;
-    protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
-    protected Boolean indexContent = Boolean.TRUE;
-    protected Boolean jitsEnabled; // Applicable only to mirrored folders
-    protected Long jitsMaxAge; // in milliseconds
-    protected Long jitsAclMaxAge; // in milliseconds
-    protected Boolean fullSyncDirOnly; // Applicable only to mirrored folders
-    protected Short syncScheduleOption;	// SyncScheduleOption
-
-    
     public Binder() {
     }
     /**
@@ -206,21 +132,12 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 brandingExt = source.brandingExt;
 		 //don't copy postingDef, notificationDef, internalId, binders, or pathName
 		 entryDef = source.entryDef;
-		 allowDesktopAppToSyncData = source.allowDesktopAppToSyncData;
-		 allowMobileAppsToSyncData = source.allowMobileAppsToSyncData;
-		 indexContent = source.indexContent;
-		 jitsEnabled = source.jitsEnabled;
-		 jitsMaxAge = source.jitsMaxAge;
-		 jitsAclMaxAge = source.jitsAclMaxAge;
-		 fullSyncDirOnly = source.fullSyncDirOnly;
-		 syncScheduleOption = source.syncScheduleOption;
      }
     /**
      * Return the zone id
      * @hibernate.property not-null="true"
      */
-    @Override
-	public Long getZoneId() {
+    public Long getZoneId() {
     	return this.zoneId;
     }
     public void setZoneId(Long zoneId) {
@@ -455,8 +372,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      * Used in access management.
      * @hibernate.many-to-one
      */
- 	@Override
-	public Principal getOwner() {
+ 	public Principal getOwner() {
 		if (owner != null) return owner;
 	   	HistoryStamp creation = getCreation();
     	if ((creation != null) && creation.getPrincipal() != null) {
@@ -465,7 +381,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	return null;
 		
 	}
-	@Override
 	public void setOwner(Principal owner) {
 		this.owner = owner;
 	}
@@ -500,7 +415,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
  	   if (value instanceof Document) throw new IllegalArgumentException("XML docs not supported");
  	   if (value == null) removeProperty(name);
  	   if (properties == null) properties = new HashMap();
- 	   if (value != null) properties.put(name, value);
+ 	   properties.put(name, value);
     }
     /**
      * Return a property value.
@@ -517,8 +432,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     /**
      * Return the pathName
      */
-    @Override
-	public String toString() {
+    public String toString() {
     	return getPathName(); 
     }
 
@@ -566,12 +480,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     		}
        	}
        	return result;
-    }
-    public void copyInheritedDefinitions() {
-        if (isDefinitionsInherited()) {
-            setDefinitions(getDefinitions());
-            setDefinitionsInherited(false);
-        }
     }
     /**
      * Return configured definitions.
@@ -666,8 +574,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      	return getDefaultViewDef();
      }
      
-     @Override
-	public String getEntryDefId() {
+     public String getEntryDefId() {
     	 Definition def = getEntryDef();
     	 if(def != null)
     		 return def.getId();
@@ -675,13 +582,11 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     		 return null;
      }
 
-     @Override
-	public void setEntryDef(Definition entryDef) {
+     public void setEntryDef(Definition entryDef) {
     	 this.entryDef = entryDef;
      }
      
-     @Override
-	public String getCreatedWithDefinitionId() {
+     public String getCreatedWithDefinitionId() {
       	// returns the original definition with which this entity was created. 
       	if(entryDef != null)
       		return entryDef.getId();
@@ -731,8 +636,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      * @return
      */
     public abstract List<Definition> getViewDefinitions();
-
-    protected abstract Binder newInstance();
     /**
      * Return a list of definitions for workflows
      * @return
@@ -778,18 +681,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 			return null;
 	}
 	
-	public DriverType getResourceDriverType() {
-		// Just a convenience method
-		if(getResourceDriverName() != null)
-			return ResourceDriverManagerUtil.getResourceDriverType(getResourceDriverName());
-		else
-			return null;
-	}
-	
-	public boolean noAclDredgedWithEntries() {
-		return (ResourceDriverConfig.DriverType.famt == this.getResourceDriverType());
-	}
-	
 	public boolean isMirroredAndReadOnly() {
 		return isMirrored() && getResourceDriver() != null && getResourceDriver().isReadonly();
 	}
@@ -826,167 +717,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	this.brandingExt = brandingExt; 
     }// end setBrandingExt()
     
-    
-    /**
-     * Return whether the desktop app can sync data from this binder
-     * @return
-     */
-    public boolean getAllowDesktopAppToSyncData()
-    {
-    	if ( allowDesktopAppToSyncData == null )
-    		return true;
-    	else
-    		return allowDesktopAppToSyncData.booleanValue();
-    }
-    
-    public void setAllowDesktopAppToSyncData( boolean allow )
-    {
-   		allowDesktopAppToSyncData = new Boolean( allow );
-    }
-    
-    /**
-     * Return whether mobile apps can sync data from this binder
-     * @return
-     */
-    public boolean getAllowMobileAppsToSyncData()
-    {
-    	if ( allowMobileAppsToSyncData == null )
-    		return true;
-    	else
-    		return allowMobileAppsToSyncData.booleanValue();
-    }
-    
-    public void setAllowMobileAppsToSyncData( boolean allow )
-    {
-   		allowMobileAppsToSyncData = new Boolean( allow );
-    }
-    
-    /**
-     * Return whether the contents of this binder should be indexed.
-     * @return
-     */
-    public boolean getIndexContent()
-    {
-    	if ( indexContent == null )
-    		return true;
-    	else
-    		return indexContent .booleanValue();
-    }
-    
-    public void setIndexContent( boolean index )
-    {
-   		indexContent = new Boolean( index );
-    }
-    
-    public boolean isJitsEnabled() {
-    	if(jitsEnabled == null)
-    		return SPropsUtil.getBoolean("nf.jits.enabled", true);
-    	else
-    		return jitsEnabled.booleanValue();
-    }
-    public void setJitsEnabled(boolean jitsEnabled) {
-    	this.jitsEnabled = jitsEnabled;
-    }
-    
-	public long getJitsMaxAge() {
-		if(jitsMaxAge == null)
-			return SPropsUtil.getLong("nf.jits.max.age", 30000L);
-		else 
-			return jitsMaxAge.longValue();
-	}
-	public void setJitsMaxAge(long jitsMaxAge) {
-		this.jitsMaxAge = Long.valueOf(jitsMaxAge);
-	}
-    
-	public long getJitsAclMaxAge() {
-		if(jitsAclMaxAge == null)
-			return SPropsUtil.getLong("nf.jits.acl.max.age", 60000L);
-		else 
-			return jitsAclMaxAge.longValue();
-	}
-	public void setJitsAclMaxAge(long jitsAclMaxAge) {
-		this.jitsAclMaxAge = Long.valueOf(jitsAclMaxAge);
-	}
-    
-	/**
-	 * 
-	 */
-	public Boolean getFullSyncDirOnly()
-	{
-		return fullSyncDirOnly;
-	}
-	
-	public boolean isFullSyncDirOnly() {
-		if(fullSyncDirOnly == null)
-			return SPropsUtil.getBoolean("nf.full.sync.dir.only", false);
-		else
-			return fullSyncDirOnly.booleanValue();
-	}
-	public void setFullSyncDirOnly( Boolean fullSyncDirOnly ) {
-		this.fullSyncDirOnly = fullSyncDirOnly;
-	}
-	
-    /**
-     * Get the xml document that holds the landing page properties such as the background color,
-     * background image, etc. 
-     */
-    public Document getLandingPageProperties()
-    {
-		CustomAttribute customAttr;
-		Document doc;
-
-		doc = null;
-		customAttr = getCustomAttribute( "mashup" + DefinitionModule.MASHUP_PROPERTIES );
-		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.XML )
-		{
-			doc = (Document) customAttr.getValue();
-		}
-		
-		return doc;
-    }
-
-    /**
-     * 
-     */
-	public Binder getLandingPagePropertiesSourceBinder()
-	{
-		Document doc;
-		
-		doc = getLandingPageProperties();
-		if ( doc != null )
-    		return this;
-        
-    	if ( parentBinder == null )
-    		return this;
-        
-    	return parentBinder.getLandingPagePropertiesSourceBinder();
-	}
-    
-
-    /**
-     * Return the sync schedule option.  Currently there are 2 possible values:
-     * "Use sync schedule from net folder server" and "Use sync schedule from net folder"
-     * @return
-     */
-    public SyncScheduleOption getSyncScheduleOption()
-    {
-    	if ( syncScheduleOption == null )
-    		return null;
-    	
-    	return SyncScheduleOption.valueOf( syncScheduleOption.shortValue() );
-    }
-
-    /**
-     * 
-     */
-    public void setSyncScheduleOption( SyncScheduleOption option )
-    {
-    	if ( option == null )
-    		syncScheduleOption = null;
-    	else
-    		syncScheduleOption = new Short( option.getValue() );
-    }
-    
     /**
      * @hibernate.property
      * @return
@@ -1000,93 +730,41 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	this.postingEnabled = postingEnabled;
     }
     
-    public boolean isHomeDir() {
-    	if(homeDir == null)
-    		return false;
-    	else
-    		return homeDir.booleanValue();
-    }
-    public void setHomeDir(boolean homeDir) {
-    	this.homeDir = homeDir;
-    }
-    
-    public boolean isMyFilesDir() {
-    	if(myFilesDir == null)
-    		return false;
-    	else
-    		return myFilesDir.booleanValue();
-    }
-    public void setMyFilesDir(boolean myFilesDir) {
-    	this.myFilesDir = myFilesDir;
-    }
-    
+
     //*****************WorkArea interface stuff***********/
-    @Override
-	public Long getWorkAreaId() {
+    public Long getWorkAreaId() {
         return getId();
     }
-    @Override
-	public String getWorkAreaType() {
+    public String getWorkAreaType() {
         return getEntityType().name();
     }
-    @Override
-	public WorkArea getParentWorkArea() {
+    public WorkArea getParentWorkArea() {
         return this.getParentBinder();
     }
-    @Override
-	public Set getChildWorkAreas() {
+    public Set getChildWorkAreas() {
     	return new HashSet(getBinders());
     }
-    @Override
-	public boolean isAclExternallyControlled() {
-    	if (this.getResourceDriver() instanceof AclResourceDriver) {
-    		return Boolean.TRUE;
-    	} else {
-    		return Boolean.FALSE;
-    	}
-    }
-    @Override
-	public List<WorkAreaOperation> getExternallyControlledRights() {
-    	if (this.getResourceDriver() instanceof AclResourceDriver) {
-    		return ((AclResourceDriver)this.getResourceDriver()).getExternallyControlledlRights();
-    	} else {
-    		return Collections.EMPTY_LIST; // return empty immutable list
-    	}
-    }
-    @Override
-	public String getRegisteredRoleType() {
-    	if (this.getResourceDriver() instanceof AclResourceDriver) {
-    		return ((AclResourceDriver)this.getResourceDriver()).getRegisteredRoleTypeName();
-    	}
-    	return "";
-    }
-
 	/**
 	 * @hibernate.property not-null="true"
 	 * @return
 	 */
-    @Override
-	public boolean isFunctionMembershipInherited() {
+    public boolean isFunctionMembershipInherited() {
     	if (isRoot()) return false;
         return functionMembershipInherited;
     }
-    @Override
-	public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
+    public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
         this.functionMembershipInherited = functionMembershipInherited;
     }
-     @Override
-	public boolean isFunctionMembershipInheritanceSupported() {
+     public boolean isFunctionMembershipInheritanceSupported() {
     	if (isRoot()) return false;
     	return true;
     }
-     @Override
-	public Long getOwnerId() {
+     public Long getOwnerId() {
     	Principal owner = getOwner();
     	if (owner == null)	return null;
     	return owner.getId();
     }
-     @Override
-	public boolean isTeamMembershipInherited() {
+     public boolean isTeamMembershipInherited() {
     	return teamMembershipInherited;   	
     }
     public void setTeamMembershipInherited(boolean teamMembershipInherited) {
@@ -1096,34 +774,17 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      * Return the team member ids
      * @return
      */
-    @Override
-	public Set<Long> getTeamMemberIds() {
+    public Set<Long> getTeamMemberIds() {
     	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberIds();
     	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
     	return LongIdUtil.getIdsAsLongSet(members);
     	
     }
-     @Override
-	public void setTeamMemberIds(Set<Long> memberIds) {
+     public void setTeamMemberIds(Set<Long> memberIds) {
     	//setting inherited flag handled separate
     	if ((memberIds == null) || memberIds.isEmpty()) removeProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
     	else setProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS, LongIdUtil.getIdsAsString(memberIds));
      }
-     
-     @Override
-	public boolean isExtFunctionMembershipInherited() {
-     	 if (isRoot()) return false;
-    	 if(extFunctionMembershipInherited == null)
-    		 return true;
-    	 else
-    		 return extFunctionMembershipInherited.booleanValue();
-     }
-     
-     @Override
-	public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
-    	 this.extFunctionMembershipInherited = Boolean.valueOf(extFunctionMembershipInherited);
-     }
-     
      /*****************End WorkArea interface stuff***********/
     
      /**
@@ -1138,13 +799,11 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      	
      }
     /*****************InstanceLevelProcessorSupport interface stuff***********/
-    @Override
-	public String getProcessorClassName(String processorKey) {
+    public String getProcessorClassName(String processorKey) {
         return (String) getProperty(processorKey);
     }
     
-    @Override
-	public void setProcessorClassName(String processorKey, String processorClassName) {
+    public void setProcessorClassName(String processorKey, String processorClassName) {
         setProperty(processorKey, processorClassName);
     }
     /*****************End InstanceLevelProcessorSupport interface stuff***********/	
@@ -1206,20 +865,4 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
 	/*****************End File Related Stuff***********/
 
-    public Binder asLimitedBinder(boolean setParent) {
-        Binder limited = newInstance();
-        limited.entryDef = this.entryDef;
-        limited.id = this.id;
-        if (setParent) {
-            parentBinder = this.getParentBinder();
-            if (parentBinder!=null) {
-                limited.parentBinder = this.getParentBinder().asLimitedBinder(false);
-            }
-        }
-        limited.pathName = this.pathName;
-        limited.library = this.library;
-        limited.mirrored = this.mirrored;
-        limited.title = this.title;
-        return limited;
-    }
 }

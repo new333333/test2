@@ -58,7 +58,7 @@ public class DefaultWorkflowTimeout extends SimpleTriggerJob implements Workflow
 	}
 
 	public void remove(Long zoneId) {
-		unscheduleJob(zoneId.toString(), WORKFLOW_TIMER_GROUP);		
+		removeJob(zoneId.toString(), WORKFLOW_TIMER_GROUP);		
 	}
     public void schedule(Long zoneId, int seconds) {
 		schedule(new SimpleJobDescription(zoneId, zoneId.toString(), WORKFLOW_TIMER_GROUP, WORKFLOW_TIMER_DESCRIPTION, seconds));

@@ -32,14 +32,13 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration;
 import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -50,6 +49,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class HtmlDropWidget extends DropWidget
 {
+	private Timer m_timer = null;
 	private HtmlProperties	m_properties = null;
 	private FlowPanel m_htmlPanel;
 	
@@ -222,26 +222,9 @@ public class HtmlDropWidget extends DropWidget
 		}
 
 		// Replace any markup that may be in the html.
-		m_properties.replaceMarkup( m_lpe.getBinderId(), new GetterCallback<String>()
-		{
-			/**
-			 * 
-			 */
-			public void returnValue( String value )
-			{
-				Scheduler.ScheduledCommand cmd;
-
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					public void execute()
-					{
-						// Update this widget with the folder information
-						updateWidget();
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		} );
+		m_properties.replaceMarkup( m_lpe.getBinderId() );
+		
+		updateWidget();
 	}
 	
 	/**
@@ -249,6 +232,31 @@ public class HtmlDropWidget extends DropWidget
 	 */
 	private void updateWidget()
 	{
+		// Are we waiting for the ajax call to do markup replacement?
+		if ( m_properties.isRpcInProgress() )
+		{
+			// Yes
+			// Have we already created a timer?
+			if ( m_timer == null )
+			{
+				// No, create one.
+				m_timer = new Timer()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void run()
+					{
+						updateWidget();
+					}
+				};
+			}
+			
+			m_timer.schedule( 250 );
+			return;
+		}
+
 		// Update this widget with the given html.
 		if ( m_htmlPanel != null )
 			m_htmlPanel.getElement().setInnerHTML( m_properties.getHtml() );

@@ -13,15 +13,13 @@
         <property name="required" value=""/> 
       </properties> 
     </item>  
-    <item name="description" caption="__description" type="data" id="3" dataType="description" category="commonEntryData" display="form"> 
-      <properties>
-        <property name="caption" value="__description"/>
-        <property name="name" value="description"/>
-        <property name="height" value=""/>
-        <property name="toolbarType" value="mirrored_file"/>
-        <property name="required" value="false"/>
-        <property name="fieldModificationAllowed" value="false"/>
-      </properties>
+    <item name="description" caption="__description" type="data" id="3"> 
+      <properties> 
+        <property name="caption" value="__description"/>  
+        <property name="name" value="description"/>  
+        <property name="height" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
     </item>  
     <item name="folderRemoteApp" caption="__remoteApp" type="data" category="folderData" display="form" id="10"> 
       <properties> 
@@ -72,15 +70,15 @@
     <item name="folderList" caption="__folder_listing" id="9"> 
       <properties/> 
     </item>  
-    <properties> 
-      <property name="type" value="file"/> 
-    </properties> 
+    <properties>
+      <property name="type" value="file"/>
+    </properties>
   </item>  
   <properties> 
     <property name="caption" value="__definition_default_folder_mirrored_file"/>  
     <property name="name" value="_mirroredFileFolder"/>  
     <property name="family" value="file"/>  
-    <property name="icon" value="/icons/folder_mirrored.png"/> 
+    <property name="icon" value="/icons/folder_blue_file_library.gif"/> 
   </properties>  
   <export-mappings/>
 </definition>

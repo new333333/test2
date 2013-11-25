@@ -32,31 +32,12 @@
  */
 package org.kablink.teaming;
 
-import org.kablink.util.VibeRuntimeException;
-import org.kablink.util.api.ApiErrorCode;
-
 /**
  * @author Jong Kim
  *
  */
-public class SingletonViolationException extends VibeRuntimeException {
+public class SingletonViolationException extends RuntimeException {
     public SingletonViolationException(Class clazz) {
         super("Could not instantiate " + clazz.getName() + " more than once");
     }
-
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 500; // Internal Server Error
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
-	 */
-	@Override
-	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.SERVER_CONFIG_ERROR;
-	}
 }

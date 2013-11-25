@@ -86,7 +86,7 @@ public class TeamingFeedCache {
     		String adminUserName = SZoneConfig.getAdminUserName(zoneName);
     		User admin = bs.getProfileModule().getUser(adminUserName);
     		//Run this as "admin" because this cache is used by everyone
-    		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, maxSearchHits, admin.getId(), false, true);
+    		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, maxSearchHits, admin.getId(), false, true);
         	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
         	if (items != null) {
     	    	Iterator it = items.iterator();

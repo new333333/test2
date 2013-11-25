@@ -40,16 +40,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileVersionByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.VersionAttachment;
@@ -61,15 +58,10 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.AccessControlManager;
-import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.util.ExtendedMultipartFile;
+import org.kablink.teaming.util.DatedMultipartFile;
 import org.kablink.teaming.util.NoContentMultipartFile;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -138,25 +130,23 @@ public class FileUtils {
     	}
 	}
     
-	public static void modifyFolderEntryWithFile(FolderEntry entry, String dataName, String filename, InputStream is, Date modDate, String expectedMd5)
+	public static void modifyFolderEntryWithFile(FolderEntry entry, String dataName, String filename, InputStream is, Date modDate) 
 			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException 
 			 {
 		if (Validator.isNull(dataName) && entry.getParentFolder().isLibrary()) {
 			// The file is being created within a library folder and the client hasn't specified a data item name explicitly.
 			// This will attach the file to the most appropriate definition element (data item) of the entry type (which is by default "upload").
-			FolderUtils.modifyLibraryEntry(entry, filename, is, null, modDate, expectedMd5, true, null, null);
+			FolderUtils.modifyLibraryEntry(entry, filename, is, modDate, true);
 		}
 		else {
 			if (Validator.isNull(dataName) || "ss_attachFile".equals(dataName)) 
 				dataName="ss_attachFile1";
 			Map options = null;
 			MultipartFile mf;
-			if(modDate != null || expectedMd5 != null) {
-                if (modDate != null) {
-				    options = new HashMap();
-				    options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
-                }
-                mf = new ExtendedMultipartFile(filename, is, modDate, expectedMd5);
+			if(modDate != null) {
+				options = new HashMap();
+				options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
+				mf = new DatedMultipartFile(filename, is, modDate);
 			}
 			else {
 				mf = new SimpleMultipartFile(filename, is); 					
@@ -184,23 +174,20 @@ public class FileUtils {
 	}
 
 	public static void modifyPrincipalWithFile(Principal principal, String dataName,
-			String filename, InputStream is, Date modDate, String expectedMd5)
+			String filename, InputStream is, Date modDate)
 			throws AccessControlException, ReservedByAnotherUserException,
 			WriteFilesException, WriteEntryDataException {
 		if (Validator.isNull(dataName))
 			dataName = "ss_attachFile1";
 		Map options = null;
 		MultipartFile mf;
-        if(modDate != null || expectedMd5 != null) {
-             if (modDate != null) {
-                options = new HashMap();
-                options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
-             }
-             mf = new ExtendedMultipartFile(filename, is, modDate, expectedMd5);
-        }
-        else {
-            mf = new SimpleMultipartFile(filename, is);
-        }
+		if (modDate != null) {
+			options = new HashMap();
+			options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
+			mf = new DatedMultipartFile(filename, is, modDate);
+		} else {
+			mf = new SimpleMultipartFile(filename, is);
+		}
 		Map fileItems = new HashMap();
 		fileItems.put(dataName, mf);
 		getProfileModule().modifyEntry(principal.getId(), new EmptyInputData(), fileItems, null, null, options);
@@ -302,39 +289,6 @@ public class FileUtils {
 		return result;
 	}
 	
-	public static boolean shouldAccessFileSystemWithExternalAclInUserMode(DefinableEntity entity, WorkAreaOperation workAreaOperation) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		
-		if(ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) {
-			// The file operation is being requested by admin. We treat admin like Linux root
-			// acccount and grant all accesses to all files.
-			return false; // proxy mode
-		}
-		else if(ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
-			// The file operation is being requested by file sync agent, which ALWAYS accesses
-			// file system in proxy mode regardless of sharing. 
-			return false; // proxy mode
-		}
-		else if(ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(user.getInternalId())) {
-			// The file operation is being requested by background job such as re-indexing
-			// triggered by ACL changes. We need to allow it to access file system in 
-			// proxy mode, which doesn't introduce security risk because even background
-			// jobs are subject to normal ACL checking.
-			return false; // proxy mode
-		}
-		else {
-			boolean shareGrantedAccess = false;
-			
-			if(entity instanceof WorkArea)
-				shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, (WorkArea) entity, workAreaOperation);
-						
-			if(shareGrantedAccess)
-				return false; // proxy mode
-			else
-				return true; // user mode
-		}
-	}
-
 	private static FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}
@@ -353,20 +307,5 @@ public class FileUtils {
 
 	private static FileModule getFileModule() {
 		return (FileModule) SpringContextUtil.getBean("fileModule");
-	}
-	
-	private static AccessControlManager getAccessControlManager() {
-		return (AccessControlManager) SpringContextUtil.getBean("accessControlManager");
-	}
-	
-	//Routine to get the contentType for a file being downloaded to a browser
-	public static String validateDownloadContentType(String contentType) {
-		//Protect against XSS attacks if this is an HTML file
-		if (contentType.toLowerCase().contains("text/html")) {
-			if (SPropsUtil.getBoolean("xss.forceDownloadedHtmlFilesToBeSavedToDisk", true)) {
-				contentType = "application/octet-stream";
-			}
-		}
-		return contentType;
 	}
 }

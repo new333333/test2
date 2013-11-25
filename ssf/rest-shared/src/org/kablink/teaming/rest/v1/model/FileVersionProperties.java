@@ -34,19 +34,27 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="file_version")
-public class FileVersionProperties extends BaseFileProperties {
+@XmlRootElement(name="fileVersion")
+public class FileVersionProperties extends FileCommonProperties {
 
-	public FileVersionProperties() {
+	private Boolean promoteCurrent; // processing instruction - used for update only
+	
+	private FileVersionProperties() {
 		super();
 	}
+	
+	public FileVersionProperties(String id, HistoryStamp creation, HistoryStamp modification, 
+			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
+			String note, Integer status, String webUrl) {
+		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status, webUrl);
+	}
 
-    protected FileVersionProperties(FileVersionProperties orig) {
-        super(orig);
-    }
+	public Boolean getPromoteCurrent() {
+		return promoteCurrent;
+	}
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new FileVersionProperties(this);
-    }
+	public void setPromoteCurrent(Boolean promoteCurrent) {
+		this.promoteCurrent = promoteCurrent;
+	}
+
 }

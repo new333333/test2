@@ -162,11 +162,4 @@ public interface ZoneModule {
    	 * @throws AccessControlException
    	 */
    	public void checkAccess() throws AccessControlException;
-   	
-   	/**
-   	 * WARNING: Used only by system. Not to be used by application.
-   	 * 
-   	 * Performs necessary initialization. Should be invoked every time system is restarted.
-   	 */
-   	public void initZones();
 }

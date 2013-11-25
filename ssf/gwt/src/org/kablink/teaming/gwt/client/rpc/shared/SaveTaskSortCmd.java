@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -41,7 +40,11 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
  * 
  * @author drfoster@novell.com
  */
-public class SaveTaskSortCmd extends SaveFolderSortCmd {
+public class SaveTaskSortCmd extends VibeRpcCmd {
+	private boolean m_sortAscending;
+	private Long m_binderId;
+	private String m_sortKey;
+	
 	/**
 	 * Class constructor.
 	 * 
@@ -49,26 +52,36 @@ public class SaveTaskSortCmd extends SaveFolderSortCmd {
 	 * constructor.
 	 */
 	public SaveTaskSortCmd() {
-		// Initialize the super class.
 		super();		
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param binderInfo
+	 * @param binderId
 	 * @param sortKey
 	 * @param sortAscending
 	 */
-	public SaveTaskSortCmd(BinderInfo binderInfo, String sortKey, boolean sortAscending) {
-		// Initialize the super class.
-		super(binderInfo, sortKey, sortAscending);		
+	public SaveTaskSortCmd(Long binderId, String sortKey, boolean sortAscending) {
+		this();		
+		m_binderId      = binderId;
+		m_sortKey       = sortKey;
+		m_sortAscending = sortAscending;
 	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean getSortAscending() {return m_sortAscending;}	
+	public Long    getBinderId()      {return m_binderId;     }	
+	public String  getSortKey()       {return m_sortKey;      }	
 	
 	/**
 	 * Returns the command's enumeration value.
 	 * 
-	 * Overrides SaveFolderSortCmd.getCmdType()
+	 * Implements VibeRpcCmd.getCmdType()
 	 * 
 	 * @return
 	 */

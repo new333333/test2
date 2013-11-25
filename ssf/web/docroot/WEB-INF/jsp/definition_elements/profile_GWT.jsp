@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -62,25 +62,6 @@
 <c:set var="gwtPage" value="profile" scope="request"/>	
 <%@ include file="/WEB-INF/jsp/common/GwtRequestInfo.jsp" %>
 	
-<% if (GwtUIHelper.isGwtUIActive(request)) { %>
-	<script type="text/javascript">
-		/*
-		 * onload event handler.
-		 *
-		 * Calls into the GWT code to notify it that a new context has
-		 * been loaded into the content frame.
-		 */
-		function notifyGwtUI_ProfileLoaded() {
-			if ((typeof window.top.ss_gwtRelayoutPage != "undefined") &&
-					((window.name == "gwtContentIframe") || (window.name == "ss_showentryframe"))) {
-				window.top.ss_gwtRelayoutPage();
-			}
-		}
-
-		ss_createOnLoadObj("notifyGwtUI_ProfileLoaded", notifyGwtUI_ProfileLoaded);
-	</script>
-<% } %>
-
 <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
 <div id="gwtProfileDiv">
 	<div id="profilePhoto" style="display:none;">

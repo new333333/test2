@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -86,13 +86,13 @@ function ss_showDeleteButtons() {
     		delBtn.parentNode.className = "ss_toolbarDeleteBtn";
     	}
     }
-    var purgeBtn = document.getElementById('ss_toolbarPurgeBtn');
-    if (purgeBtn != null) {
+    var moreBtn = document.getElementById('ss_toolbarMoreBtn');
+    if (moreBtn != null) {
     	if (deleteList == "") {
         	//There are no entries selected, gray out the buttons
-    		purgeBtn.parentNode.className = "ss_toolbarDeleteBtnDisabled";
+    		moreBtn.parentNode.className = "ss_toolbarDeleteBtnDisabled";
     	} else {
-    		purgeBtn.parentNode.className = "ss_toolbarDeleteBtn";
+    		moreBtn.parentNode.className = "ss_toolbarDeleteBtn";
     	}
     }
 }
@@ -102,6 +102,7 @@ function ss_showDeleteButtons() {
  */
 var ss_deleteEntryConfirmText = "<ssf:escapeQuotes><ssf:nlt tag='file.command.deleteEntries.confirm'/></ssf:escapeQuotes>";
 var ss_deleteEntryPurgeConfirmText = "<ssf:escapeQuotes><ssf:nlt tag='file.command.deleteEntriesPurge.confirm'/></ssf:escapeQuotes>";
+var ss_deleteEntryPurgeNoneSelectedText = "<ssf:escapeQuotes><ssf:nlt tag='file.command.noEntriesSelected'/></ssf:escapeQuotes>";
 function ss_deleteSelectedEntries(operation) {
 	var inputTags = document.getElementsByTagName("input");
 	var deleteList = "";
@@ -134,6 +135,39 @@ function ss_deleteSelectedEntries(operation) {
     		formObj.action = url;
     		formObj.submit();
     	}
+    } else {
+    	alert(ss_deleteEntryPurgeNoneSelectedText)
+    }
+}
+
+function ss_copyMoveSelectedEntries(operation) {
+	var inputTags = document.getElementsByTagName("input");
+	var deleteList = "";
+    for (i = 0; i < inputTags.length; i++) {
+    	var inputTag = inputTags.item(i);
+        if (inputTag.name.indexOf("delete_selectOneCB_") == 0) {
+        	var entryId = inputTag.name.substring(19, inputTag.name.length);
+        	if (inputTag.checked) {
+        		if (deleteList != "") deleteList = deleteList + ",";
+        		deleteList = deleteList + entryId;
+        	}
+        }
+	}
+    if (deleteList != "") {
+		//Submit the request to copy or move the selected entries
+		var formObj = document.forms['delete_entries_form'];
+		formObj.delete_entries_list.value = deleteList;
+		formObj.delete_operation.value = operation;
+		var url = '<ssf:url     
+		    adapter="true" 
+		    portletName="ss_forum" 
+		    binderId="${ssBinder.id}" 
+		    action="view_folder_listing" 
+		    actionUrl="true" />';
+		formObj.action = url;
+		formObj.submit();
+    } else {
+    	alert(ss_deleteEntryPurgeNoneSelectedText)
     }
 }
 </script>
@@ -205,7 +239,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  	  height="<%= ssFolderTableHeight %>" folderId="${ssBinder.id}" tableStyle="${slidingTableTableStyle}">
 	<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
 
-  	<c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
+  	<c:if test="${ss_showDeleteCheckboxes && 
+  	        (ss_accessControlMap[ssBinder.id]['deleteEntries'] ||
+  	        ss_accessControlMap[ssBinder.id]['copyEntries'] ||
+  	        ss_accessControlMap[ssBinder.id]['moveEntries'])}">
 		<!-- Delete Entries Header Column:  Select All -->
 		<ssf:slidingTableColumn  style="${slidingTableColStyle}" width="4%">
 			<div class="ss_title_menu" id="delete_selectAllCB_DIV">
@@ -299,16 +336,12 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	    <c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
 			<span class="ss_col_sorted">${ss_colHeaderText}</span>
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" 
-			style="height:8px !important; width:10px !important; line-height:8px !important;" 
-			src="<html:imagesPath/>pics/menudown.gif"/>
+			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false' }">
 			<span class="ss_col_sorted">${ss_colHeaderText}</span>
 			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" 
-			style="height:8px !important; width:10px !important; line-height:8px !important;" 
-			src="<html:imagesPath/>pics/menuup.gif"/>
+			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
 
     </a>
@@ -716,7 +749,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <ssf:slidingTableRow style="${slidingTableRowStyle}" 
   oddStyle="${slidingTableRowOddStyle}" evenStyle="${slidingTableRowEvenStyle}" id="${folderLineId}" >
 
-   	<c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
+   	<c:if test="${ss_showDeleteCheckboxes && 
+   			(ss_accessControlMap[ssBinder.id]['deleteEntries'] ||
+   			ss_accessControlMap[ssBinder.id]['copyEntries'] ||
+   			ss_accessControlMap[ssBinder.id]['moveEntries'])}">
 		<!-- Delete entry  -->
 		<ssf:slidingTableColumn  style="${slidingTableColStyle} ss_sliding_table_checkbox">
 			<div class="ss_title_menu">
@@ -779,10 +815,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   title="<ssf:nlt tag="sunburst.click"/>"
   onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return false;"
 >
-  	<img height="12" width="12" src="<html:rootPath/>images/pics/discussion/sunburst.png" 
-  	align="absmiddle" border="0" 
-  	style="height:12px !important; width:12px !important; line-height:12px !important;" 
-  	<ssf:alt tag="sunburst.click"/> />
+  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
+  	align="absmiddle" border="0" <ssf:alt tag="sunburst.click"/> />
   </a>
     
 	</c:if>
@@ -928,9 +962,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   
 <c:if test="${columnName == 'state' && !empty ssFolderColumns['state']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
-    <c:if test="${empty entry1._workflowStateCaption}">
-    <span id="ss_workflowState${ssBinder.id}_${entry1._docId}" <%= seenStyle %>></span>
-    </c:if>
     <c:if test="${!empty entry1._workflowStateCaption}">
     <a href="<ssf:url     
     adapter="<%= useAdaptor %>" 
@@ -946,7 +977,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <c:if test="${slidingTableStyle == 'fixed_view_style_removed'}">
     onClick="ss_loadEntryInPlace(this,'<c:out value="${entry1._docId}"/>', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no');return false;" 
 </c:if>
-    ><span id="ss_workflowState${ssBinder.id}_${entry1._docId}" <%= seenStyle %>><ssf:nlt tag="${entry1._workflowStateCaption}" checkIfTag="true"/></span></a>
+    ><span <%= seenStyle %>><ssf:nlt tag="${entry1._workflowStateCaption}" checkIfTag="true"/></span></a>
     </c:if>
   </ssf:slidingTableColumn>
  </c:if>
@@ -962,19 +993,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		<ssf:alt tag="entry.reservedBy"/><ssf:title tag="entry.reservedBy"/>
 	  />
 	</c:if>
-    <%
-		Date displayDate = (Date) entry1.get("_lastActivity");
-    %>
-    <c:if test="${hasFile2 && oneFile2 && !empty entry1._fileTime && !empty entry1._family && entry1._family == 'file'}">
-      <%
-      	String fileTime = (String) entry1.get("_fileTime");
-        if (null != fileTime) {
-        	displayDate = new Date(Long.parseLong(fileTime));
-        }
-      %>
-    </c:if>
     <span class="ss_nowrap" <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-     value="<%= displayDate %>" type="both" 
+     value="${entry1._lastActivity}" type="both" 
 	 timeStyle="short" dateStyle="short" /></span>
   </ssf:slidingTableColumn>
  </c:if>
@@ -1237,18 +1257,21 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 </c:forEach>
 </ssf:slidingTable>
 </div>
-<c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
+<c:if test="${ss_showDeleteCheckboxes && (ss_accessControlMap[ssBinder.id]['deleteEntries'] || 
+	ss_accessControlMap[ssBinder.id]['copyEntries'] || 
+	ss_accessControlMap[ssBinder.id]['moveEntries'])}">
  <div>
   <form method="post" name="delete_entries_form" >
-  <input type="hidden" name="deleteEntriesBtn"
-    value="deleteEntriesBtn" />
+  <input type="hidden" name="deleteEntriesMenuBtn"
+    value="deleteEntriesMenuBtn" />
   <input type="hidden" name="delete_entries_list"/>
   <input type="hidden" name="delete_operation"/>
+  <input type="hidden" name="destination_folder_id"/>
   </form>
  </div>
 </c:if>
 
-<c:if test="${ssBinder.mirrored && empty ssBinder.resourceDriverName && !ssBinder.templateBinder}">
+<c:if test="${ssBinder.mirrored && empty ssBinder.resourceDriverName}">
 	<div class="ss_style ss_portlet" style="padding:10px;"><span class="ss_errorLabel"><ssf:nlt tag="binder.mirrored.incomplete"/></span></div>
 </c:if>
 <c:if test="${empty ssFolderEntries && !(ssBinder.mirrored && empty ssBinder.resourceDriverName)}">

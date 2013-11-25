@@ -25,9 +25,9 @@ package org.kablink.util;
 import EDU.oswego.cs.dl.util.concurrent.SyncMap;
 import EDU.oswego.cs.dl.util.concurrent.WriterPreferenceReadWriteLock;
 
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
-import gnu.trove.list.linked.TLinkedList;
+import gnu.trove.THashMap;
+import gnu.trove.THashSet;
+import gnu.trove.TLinkedList;
 
 import java.util.HashMap;
 import java.util.HashSet;

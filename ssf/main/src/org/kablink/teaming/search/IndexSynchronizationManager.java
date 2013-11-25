@@ -100,8 +100,8 @@ public class IndexSynchronizationManager {
      * @param uid
      */
     public static void deleteDocument(String uid) {
-    	if(logger.isDebugEnabled())
-    		logger.debug("deleteDocument(" + uid + ")");
+    	if(logger.isTraceEnabled())
+    		logger.trace("deleteDocument(" + uid + ")");
     	
     	deleteDocuments(new Term(Constants.UID_FIELD, uid));
     }
@@ -166,16 +166,8 @@ public class IndexSynchronizationManager {
         // we would be working with fresh new thread local object. 
         // However, because containers tend to re-use threads (thread pooling),
         // we must ensure that the thread context is clear when we start a
-        // new session for index synchronization.
-    	// 
-    	// 03/21/2013 Update: It turns out this is more harmful than useful.
-    	// After many years of production, we never had a use case where we
-    	// had to roll back or abandon index update requests in a particular
-    	// thread context. As such, just blindly flushing everything would
-    	// not have negative affect. Besides, clearing context here causes
-    	// serious problem (e.g bug #807665), so we would rather NOT clear
-    	// the context here.
-        //clear();
+        // new session for index synchronization. 
+        clear();
     }
     
     public static void applyChanges(int threshold) {
@@ -185,7 +177,7 @@ public class IndexSynchronizationManager {
     	if (getRequests().size() >= threshold) applyChanges();
     }
 
-    public static int applyChanges() {
+    public static void applyChanges() {
     	if(logger.isTraceEnabled())
     		logger.trace("applyChanges()");
     	
@@ -194,14 +186,11 @@ public class IndexSynchronizationManager {
 		        LuceneWriteSession luceneSession = getInstance().getLuceneSessionFactory().openWriteSession((String[]) nodeNamesTL.get());
 		        
 		        try {
-		            return doCommit(luceneSession);
+		            doCommit(luceneSession);
 		        }
 		        finally {
 		            luceneSession.close();
 		        }
-            }
-            else {
-            	return 0;
             }
         }
         finally {
@@ -239,14 +228,13 @@ public class IndexSynchronizationManager {
     	}
      }
     
-    private static int doCommit(LuceneWriteSession luceneSession) {   	        
+    private static void doCommit(LuceneWriteSession luceneSession) {   	        
         ArrayList objs = getRequests().getList();
         if(objs.size() > 0) {
         	luceneSession.addDeleteDocuments(objs);
         }        
 		if(logger.isDebugEnabled())
 			logger.debug("Update to index: add [" + getRequests().getAddsCount() + "], delete [" + getRequests().getDeletesCount() + "] docs");
-		return objs.size();
     }
     
     private static void clear() {

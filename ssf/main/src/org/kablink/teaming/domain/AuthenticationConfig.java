@@ -31,15 +31,11 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.domain;
-
-import org.kablink.teaming.util.SPropsUtil;
-
 //Used to encapsalate authentication information.  A component of zoneConfig
 public class AuthenticationConfig  {
 
 	private boolean allowLocalLogin = true;
-	private boolean allowAnonymousAccess = false;
-	private boolean anonymousReadOnly = false;
+	private boolean allowAnonymousAccess = true;
 	private boolean allowSelfRegistration = false;
 	private Long lastUpdate;
 	
@@ -53,13 +49,6 @@ public class AuthenticationConfig  {
 	}
 	public void setAllowAnonymousAccess(boolean allowAnonymousAccess) {
 		this.allowAnonymousAccess = allowAnonymousAccess;
-	}
-	public boolean isAnonymousReadOnly() {
-		return anonymousReadOnly;
-	}
-	public void setAnonymousReadOnly(Boolean anonymousReadOnly) {
-		if (anonymousReadOnly == null) anonymousReadOnly = false;
-		this.anonymousReadOnly = anonymousReadOnly;
 	}
 	public boolean isAllowLocalLogin() {
 		return allowLocalLogin;
@@ -83,5 +72,4 @@ public class AuthenticationConfig  {
 	{
 		setLastUpdate(System.currentTimeMillis());
 	}
-	
 }

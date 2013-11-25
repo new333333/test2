@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,12 +50,7 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.util.search.Constants;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings("unchecked")
+
 public class SearchFilter {
 	private static String [] sample = new String[0];
 	
@@ -259,159 +254,45 @@ public class SearchFilter {
 		this.joinAnd = joinAsAnd;
 	}
 	
-	private void addFieldFilter(String field, String type, String searchTerm, boolean wildcardOnly, String valueType) {
-		checkCurrent();
-
-		boolean hasValueType = ((null != valueType) && (0 < valueType.length()));
-		boolean hasWildcard  = searchTerm.contains("*");
-		if ((!hasWildcard) || (!wildcardOnly)) {
-			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
-			filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
-			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
-			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
-			filterTermValueEle.setText(searchTerm.replaceFirst("\\*", "").trim());
-			if (hasValueType) {
-				filterTermValueEle.addAttribute(SearchFilterKeys.FilterElementValueType, valueType);
-			}
-		}
-		
-		if (hasWildcard) {
-			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
-			filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
-			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
-			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
-			filterTermValueEle.setText(searchTerm.trim());
-			if (hasValueType) {
-				filterTermValueEle.addAttribute(SearchFilterKeys.FilterElementValueType, valueType);
-			}
-		}
-		
-	}
-	
-	private void addFieldFilter(String field, String type, String searchTerm, String valueType) {
-		// Always use the initial form of the method.
-		addFieldFilter(field, type, searchTerm, false, valueType);
-	}
-	
 	private void addFieldFilter(String field, String type, String searchTerm) {
-		// Always use the initial form of the method.
-		addFieldFilter(field, type, searchTerm, false, null);
-	}
-
-	/**
-	 * Add a filter for the "internal" field
-	 */
-	public void addInternalFilter( boolean internalOnly )
-	{
-		addFieldFilter(
-					Constants.IDENTITY_INTERNAL_FIELD,
-					SearchFilterKeys.FilterTypeEntryDefinition,
-					String.valueOf( internalOnly ),
-					SearchFilterKeys.FilterValueTypeBoolean );
-	}
-	
-	/**
-	 * Add a filter for the "ldap container" field
-	 */
-	public void addAndLdapContainerFilter( boolean ldapContainer )
-	{
-		newCurrentFilterTermsBlock();
-		currentFilterTerms.addAttribute( SearchFilterKeys.FilterAnd, "true" );
+		checkCurrent();
 		
-		addLdapContainerFilter( ldapContainer );
-	}
-	
-	/**
-	 * Add a filter for the "ldap container" field
-	 */
-	public void addLdapContainerFilter( boolean ldapContainer )
-	{
-		addFieldFilter(
-					Constants.IS_LDAP_CONTAINER_FIELD,
-					SearchFilterKeys.FilterTypeEntryDefinition,
-					String.valueOf( ldapContainer ),
-					SearchFilterKeys.FilterValueTypeBoolean );
-	}
-	
-	/**
-	 * Add a filter for the "internal" field
-	 */
-	public void addAndInternalFilter( boolean internalOnly )
-	{
-		newCurrentFilterTermsBlock();
-		currentFilterTerms.addAttribute( SearchFilterKeys.FilterAnd, "true" );
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
+		Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
+		filterTermValueEle.setText(searchTerm.replaceFirst("\\*", "").trim());
 		
-		addInternalFilter( internalOnly );
+		if (searchTerm.contains("*")) {
+			filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
+			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
+			filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
+			filterTermValueEle.setText(searchTerm.trim());
+		}
+		
 	}
-	
-	public void addTitleFilter(String searchTerm, boolean wildcardOnly) {
-		addFieldFilter(Constants.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm.toLowerCase(), wildcardOnly, null);
-	}
-	
 	public void addTitleFilter(String searchTerm) {
-		// Always use the initial form of the method.
-		addTitleFilter(searchTerm, false);
-	}
-	
-	public void addLoginNameFilter(String searchTerm, boolean wildcardOnly) {
-		addFieldFilter(Constants.LOGINNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm, wildcardOnly, null);
+		addFieldFilter(Constants.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm.toLowerCase());
 	}
 	
 	public void addLoginNameFilter(String searchTerm) {
-		// Always use the initial form of the method.
-		addLoginNameFilter(searchTerm, false);
+		addFieldFilter(Constants.LOGINNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
-	public void addEmailFilter(String searchTerm, boolean wildcardOnly) {
-		addFieldFilter(Constants.EMAIL_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm, wildcardOnly, null);
-	}
-	
-	public void addEmailFilter(String searchTerm) {
-		// Always use the initial form of the method.
-		addEmailFilter(searchTerm, false);
-	}
-
-	public void addEmailDomainFilter(String searchTerm, boolean wildcardOnly) {
-		addFieldFilter(Constants.EMAIL_DOMAIN_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm, wildcardOnly, null);
-	}
-	
-	public void addEmailDomainFilter(String searchTerm) {
-		// Always use the initial form of the method.
-		addEmailDomainFilter(searchTerm, false);
-	}
-
 	public void addGroupNameFilter(String searchTerm) {
 		addFieldFilter(Constants.GROUPNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
-	public void addAndPersonFlagFilter(boolean person) {
+	public void addAndPersonFlagFilter(String searchTerm) {
 		newCurrentFilterTermsBlock();
 		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
 		
-		addPersonFlagFilter(person);
+		addPersonFlagFilter(searchTerm);
 	}
 	
-	public void addPersonFlagFilter(boolean person) {
-		addFieldFilter(
-			Constants.PERSONFLAG_FIELD,
-			SearchFilterKeys.FilterTypeEntryDefinition,
-			String.valueOf(person),
-			SearchFilterKeys.FilterValueTypeBoolean);
-	}
-	
-	public void addAndDisabledUserFilter(boolean disabled) {
-		newCurrentFilterTermsBlock();
-		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
-
-		addDisabledUserFilter(disabled);
-	}
-	
-	public void addDisabledUserFilter(boolean disabled) {
-		addFieldFilter(
-			Constants.DISABLED_USER_FIELD,
-			SearchFilterKeys.FilterTypeEntryDefinition,
-			String.valueOf(disabled),
-			SearchFilterKeys.FilterValueTypeBoolean);
+	public void addPersonFlagFilter(String searchTerm) {
+		addFieldFilter(Constants.PERSONFLAG_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
 	public void addAssignmentFilter(String searchTerm) {
@@ -548,20 +429,13 @@ public class SearchFilter {
 	}
 	
 	public void addDocumentType(String documentType) {
+		checkCurrent();
+ 
 		if (documentType == null || documentType.equals("")) {
 			return;
 		}
-		addDocumentTypes(new String[] { documentType });
-	}
-	
-	public void addDocumentTypes(String[] documentTypes) {
-		checkCurrent();
- 
-		if (documentTypes == null || documentTypes.length == 0) {
-			return;
-		}
 		
-		addNestedTerms(SearchFilterKeys.FilterTypeDocTypes, SearchFilterKeys.FilterDocType, Arrays.asList(documentTypes));
+		addNestedTerms(SearchFilterKeys.FilterTypeDocTypes, SearchFilterKeys.FilterDocType, Arrays.asList(new String[] { documentType }));
 	}
 	
 	public void addEntryTypes(String[] entryTypes) {
@@ -675,14 +549,10 @@ public class SearchFilter {
 		}
 	}
 	
-	public void addFolderFilter(String searchText) {
-		addPlacesFilter(searchText, folderTypes);
-	}
-		
 	public void addWorkspaceFilter(String searchText) {
 		addPlacesFilter(searchText, workspaceTypes);
 	}
-
+		
 	public void addTeamFilter() {
 		addTeamFilter("");
 	}
@@ -734,17 +604,6 @@ public class SearchFilter {
 		Element filterTerms = parent.addElement(SearchFilterKeys.FilterTerms);
 		filterTerms.addAttribute(SearchFilterKeys.FilterAnd, Boolean.toString(joinAnd));
 		return filterTerms;
-	}
-	
-	protected Element newNestedFilterTermsBlock() {
-		return newNestedFilterTermsBlock(this.joinAnd);
-	}
-	
-	public Element newNestedFilterTermsBlock(boolean joinAnd) {
-		checkCurrent();
-		
-		this.currentFilterTerms = newFilterTermsBlock(this.currentFilterTerms, joinAnd);
-		return this.currentFilterTerms;
 	}
 	
 	protected void checkCurrent() {
@@ -918,15 +777,6 @@ public class SearchFilter {
 		if (endDate != null && !endDate.equals("")) { filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, endDate);}		
 	}
 	
-	public void addLastActivityDateRange(String startDate, String endDate) {
-		checkCurrent();
-		addLastActivityDateRange(currentFilterTerms, startDate, endDate);
-	}
-	
-	private void addLastActivityDateRange(Element parent, String startDate, String endDate) {
-		addDateRange(parent, Constants.LASTACTIVITY_FIELD, startDate, endDate);
-	}
-
 	public void addCreationDateRange(String startDate, String endDate) {
 		checkCurrent();
 		addCreationDateRange(currentFilterTerms, startDate, endDate);
@@ -1191,7 +1041,7 @@ public class SearchFilter {
 	}
 
 	/**
-	 * It's a current place in query call time.
+	 * It's a currentplace in query call time.
 	 * 
 	 */
 	public void addRelativePlace(boolean searchSubfolders) {
@@ -1229,11 +1079,4 @@ public class SearchFilter {
 					!filter.getRootElement().hasContent());
 	}
 
-	public Element getCurrentFilterTerms() {
-		return this.currentFilterTerms;
-	}
-	
-	public void setCurrentFilterTerms(Element currentFilterTerms) {
-		this.currentFilterTerms = currentFilterTerms;
-	}
 }

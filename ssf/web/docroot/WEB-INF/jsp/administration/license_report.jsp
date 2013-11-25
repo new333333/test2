@@ -176,7 +176,7 @@
 				
 				
 						<div class="roundcornerSM margintop2" style="border: 1px solid #cccccc; padding: 5px;">
-							<span class="ss_bold"><%= org.kablink.teaming.util.ReleaseInfo.getName() + " " + org.kablink.teaming.util.ReleaseInfo.getVersion() %>&nbsp;&nbsp;
+							<span class="ss_bold"><%= org.kablink.teaming.util.ReleaseInfo.getName() + " " + org.kablink.teaming.util.ReleaseInfo.getVersion() %>
 								<ssf:nlt tag="administration.report.title.license"/>:&nbsp;&nbsp;
 								<fmt:formatDate value="${ssCurrentDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="medium"/>
 							</span><br/>
@@ -222,26 +222,6 @@
 										<td>${ssLicenseExternalUsers}</td>
 									</c:if>
 								</tr>
-								<tr>
-									  <c:if test="${!empty ssLicenseOptionsList}">
-										<td><ssf:nlt tag="license.options"/></td>
-										<td>
-											<c:forEach var="option" items="${ssLicenseOptionsList}">
-									 	 		<span style="padding-left:20px;">${option}</span>
-										 		<br/>
-									  		</c:forEach>
-									  	</td>
-									  </c:if>
-									  <c:if test="${!empty ssLicenseExternalAccessList}">
-										<td><ssf:nlt tag="license.externalaccess"/></td>
-										<td>
-											<c:forEach var="prop" items="${ssLicenseExternalAccessList}">
-									 	 		<span style="padding-left:20px;">${prop}</span>
-										 		<br/>
-									  		</c:forEach>
-									  	</td>
-									  </c:if>
-								</tr>
 							</table>
 							<br/>
 							<br/>
@@ -266,7 +246,6 @@
 									<th><ssf:nlt tag="license.table.date"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.localUsers"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.syncdUsers"/>&nbsp;</th>
-									<th>&nbsp;<ssf:nlt tag="license.table.openIdUsers"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.activeUsers"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.check"/>&nbsp;</th>
 								</tr>
@@ -275,7 +254,6 @@
 										<td><fmt:formatDate value="${datum.snapshotDate}" timeZone="${ssUser.timeZone.ID}" type="date" dateStyle="medium"/></td>
 										<td align="center">${datum.internalUserCount}</td>
 										<td align="center">${datum.externalUserCount}</td>
-										<td align="center">${datum.openIdUserCount}</td>
 										<td align="center">${datum.activeUserCount}</td>
 										<td align="center">${datum.checksum}</td>
 									</tr>

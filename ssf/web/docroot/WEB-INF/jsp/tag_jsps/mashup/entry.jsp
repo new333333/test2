@@ -50,17 +50,17 @@
     <c:set var="mashupEntry" value="${ss_mashupEntries[zoneEntryId]}"/>
   </c:if>
 </c:if>
-<c:set var="mWidth" value="100%" />
-<c:set var="mHeight" value="100%" />
-<c:set var="mOverflow" value="hidden" />
+<c:set var="mWidth" value="" />
+<c:set var="mHeight" value="" />
+<c:set var="mOverflow" value="" />
 <c:if test="${!empty mashup_attributes['width']}">
-  <c:set var="mWidth" value="${mashup_attributes['width']}" />
+  <c:set var="mWidth" >width: ${mashup_attributes['width']};</c:set>
 </c:if>
 <c:if test="${!empty mashup_attributes['height']}">
-  <c:set var="mHeight" value="${mashup_attributes['height']}" />
+  <c:set var="mHeight" >height: ${mashup_attributes['height']};</c:set>
 </c:if>
 <c:if test="${!empty mashup_attributes['overflow']}">
-  <c:set var="mOverflow" value="${mashup_attributes['overflow']}" />
+  <c:set var="mOverflow" >overflow: ${mashup_attributes['overflow']};</c:set>
 </c:if>
 
 <% if (ss_mashupListDepth > 0) { %>
@@ -81,7 +81,7 @@
 <c:if test="${!empty mashupEntry}">
   <div class="ss_mashup_element"
     <c:if test="${ssConfigJspStyle != 'form'}">
-      style="width: ${mWidth}; overflow: hidden;"
+      style="${mWidth} overflow: hidden;"
     </c:if>
   >
   <div class="ss_mashup_round_top"><div></div></div>
@@ -115,7 +115,7 @@
 	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form'}">
-  	  <div class="ss_mashup_folder_list_open" style="height: ${mHeight}; overflow: ${mOverflow};">
+  	  <div class="ss_mashup_folder_list_open" style="${mHeight} ${mOverflow}">
 	    <div class="ss_mashup_entry_content">
 		  <c:set var="textFormat" value=""/>
 		  <c:if test="${!empty mashupEntry.description.format}">

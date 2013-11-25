@@ -67,8 +67,6 @@ public class GwtBrandingDataExt
 	private String m_backgroundImgUrl = null;
 	private boolean m_stretchBgImg = false;
 	private String m_brandingType = BRANDING_TYPE_ADVANCED;
-	private String m_loginDlgImgName = null;
-	private String m_loginDlgImgUrl = null;
 
 	// m_brandingRule indicates how site and binder branding are to be displayed
 	private BrandingRule m_brandingRule = BrandingRule.BRANDING_RULE_UNDEFINED;
@@ -129,7 +127,6 @@ public class GwtBrandingDataExt
 		StringBuffer xml;
 		String fontColor;
 		String brandingImgName;
-		String loginDlgImgName;
 		String bgColor;
 		String bgImgName;
 		String type;
@@ -174,17 +171,6 @@ public class GwtBrandingDataExt
     	// Add the brandingRule attribute.
     	xml.append( " brandingRule=\"" );
     	xml.append( m_brandingRule.toString() );
-    	xml.append( "\"" );
-    	
-    	// Add the loginDlgImgName attribute.
-    	xml.append( " loginDlgImgName=\"" );
-    	loginDlgImgName = getLoginDlgImgName();
-    	if ( loginDlgImgName != null && loginDlgImgName.length() > 0 )
-    	{
-    		// Replace '&' with "&amp;"
-    		loginDlgImgName = loginDlgImgName.replaceAll( "&", "&amp;" );
-    		xml.append( loginDlgImgName );
-    	}
     	xml.append( "\"" );
     	
     	// Close the <brandingData tag.
@@ -271,21 +257,6 @@ public class GwtBrandingDataExt
 		return m_brandingType;
 	}// end getBrandingType();
 	
-	/**
-	 * 
-	 */
-	public String getLoginDlgImgName()
-	{
-		return m_loginDlgImgName;
-	}
-	
-	/**
-	 * Return the url for the image used by the login dialog
-	 */
-	public String getLoginDlgImgUrl()
-	{
-		return m_loginDlgImgUrl;
-	}
 	
 	/**
 	 * Return whether or not we have any branding data.
@@ -392,23 +363,7 @@ public class GwtBrandingDataExt
 		m_fontColor = color;
 	}// end setFontColor()
 
-	/**
-	 * 
-	 */
-	public void setLoginDlgImgName( String imgName )
-	{
-		m_loginDlgImgName = imgName;
-	}
 
-
-	/**
-	 * 
-	 */
-	public void setLoginDlgImgUrl( String imgUrl )
-	{
-		m_loginDlgImgUrl = imgUrl;
-	}
-	
 	/**
 	 * Wrap the given text with <![CDATA[ ]]>
 	 */

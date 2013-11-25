@@ -190,8 +190,10 @@ public class AddFolderController extends SAbstractController {
 				Binder newBinder = null;
 				if (newBinderId != null) newBinder = getBinderModule().getBinder(newBinderId);
 				
-				//Note, by default team membership is inherited. 
-				//This is initialized as such during the creation of the folder
+				if (newBinder != null) {
+					//Inherit team members
+					getBinderModule().setTeamMembershipInherited(newBinderId, true);
+				}
 			}
 			if (newBinderId != null) {
 				if (isShortForm) {
@@ -214,7 +216,6 @@ public class AddFolderController extends SAbstractController {
 			RenderResponse response) throws Exception {
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String templateName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TEMPLATE_NAME, "");				
@@ -249,21 +250,18 @@ public class AddFolderController extends SAbstractController {
 
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 			List result = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
-			result.addAll(getTemplateModule().getTemplates(Definition.FOLDER_VIEW, binder, true));
 			if (result.isEmpty()) {
 				result.add(getTemplateModule().addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
 			List result = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
-			result.addAll(getTemplateModule().getTemplates(Definition.FOLDER_VIEW, binder, true));
 			if (result.isEmpty()) {
 				result.add(getTemplateModule().addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
 			List result = getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW);
-			result.addAll(getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW, binder, true));
 			if (result.isEmpty()) {
 				result.add(getTemplateModule().addDefaultTemplate(Definition.WORKSPACE_VIEW));	
 			}
@@ -277,7 +275,6 @@ public class AddFolderController extends SAbstractController {
 			model.put(WebKeys.FOLDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_TEAM_WORKSPACE)) {
 			List result = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
-			result.addAll(getTemplateModule().getTemplates(Definition.FOLDER_VIEW, binder, true));
 			if (result.isEmpty()) {
 				result.add(getTemplateModule().addDefaultTemplate(Definition.FOLDER_VIEW));
 			}

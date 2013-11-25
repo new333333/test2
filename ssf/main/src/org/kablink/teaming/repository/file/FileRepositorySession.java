@@ -123,7 +123,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 	
 	public String createVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in, long size, Long lastModTime) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
 		try {
@@ -133,9 +133,6 @@ public class FileRepositorySession implements RepositorySession {
 
     		copyData(in, tempFile);
     
-    		if(lastModTime != null)
-    			tempFile.setLastModified(lastModTime);
-    		
         	return createVersionFileFromTemporaryFile(binder, entry, relativeFilePath, tempFile);
 		}
 		catch(IOException e) {
@@ -144,7 +141,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 
 	public void createUnversioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in, long size, Long lastModTime) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
 		try {
@@ -164,9 +161,6 @@ public class FileRepositorySession implements RepositorySession {
 					logger.warn(e); // Log and eat up.
 				}
 			}
-			
-			if(lastModTime != null)
-				unversionedFile.setLastModified(lastModTime);
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
@@ -174,7 +168,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 
 	public void update(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in, long size, Long lastModTime) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
@@ -184,25 +178,19 @@ public class FileRepositorySession implements RepositorySession {
 				
 				if(!workingFile.exists())
 					throw new RepositoryServiceException("Cannot update file " + 
-							relativeFilePath + " for entry " + entry.getEntityTypedId() + 
+							relativeFilePath + " for entry " + entry.getTypedId() + 
 							": It must be checked out first"); 
 	
 				copyData(in, workingFile);
-				
-				if(lastModTime != null)
-					workingFile.setLastModified(lastModTime);
 			}
 			else if(fileInfo == UNVERSIONED_FILE) {
 				File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
 				
 				copyData(in, unversionedFile);
-				
-				if(lastModTime != null)
-					unversionedFile.setLastModified(lastModTime);
 			}
 			else {
 				throw new RepositoryServiceException("Cannot update file " + relativeFilePath + 
-						" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
+						" for entry " + entry.getTypedId() + ": It does not exist"); 
 			}
 		}
 		catch (IOException e) {
@@ -269,18 +257,6 @@ public class FileRepositorySession implements RepositorySession {
 			logger.error("Error deleting file [" + unversionedFile.getAbsolutePath() + "]");
 			throw new UncheckedIOException(e);
 		}			
-		
-		File parentDir = new File(getEntityDirPath(binder, entry));
-		String[] children = parentDir.list();
-		if(children == null || children.length == 0) {
-			// The parent directory is empty. Let's purge that as well for cleanup.
-			try {
-				FileHelper.delete(parentDir);
-			}
-			catch(IOException e) {
-				logger.warn("Error deleting empty parent directory [" + parentDir.getAbsolutePath() + "]");			
-			}			
-		}
 	}
 
 
@@ -302,7 +278,7 @@ public class FileRepositorySession implements RepositorySession {
 		
 		if(fileInfo == VERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It is versioned"); 
+					" for entry " + entry.getTypedId() + ": It is versioned"); 
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
@@ -311,7 +287,7 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
 		}
 	}
 
@@ -321,7 +297,7 @@ public class FileRepositorySession implements RepositorySession {
 		
 		if(fileInfo == VERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It is versioned"); 
+					" for entry " + entry.getTypedId() + ": It is versioned"); 
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
@@ -334,7 +310,7 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
 		}
 	}
 	
@@ -354,11 +330,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 
+					" for entry " + entry.getTypedId() + ": It is not versioned"); 
 		}
 		else {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
 		}
 	}
 
@@ -382,11 +358,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 
+					" for entry " + entry.getTypedId() + ": It is not versioned"); 
 		}
 		else {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
 		}
 	}
 
@@ -439,11 +415,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot checkout file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 			
+					" for entry " + entry.getTypedId() + ": It is not versioned"); 			
 		}
 		else {
 			throw new RepositoryServiceException("Cannot checkout file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
 		}
 	}
 
@@ -465,11 +441,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot uncheckout file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 			
+					" for entry " + entry.getTypedId() + ": It is not versioned"); 			
 		}
 		else {
 			throw new RepositoryServiceException("Cannot uncheckout file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
 		}
 	}
 
@@ -489,11 +465,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot checkin file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 			
+					" for entry " + entry.getTypedId() + ": It is not versioned"); 			
 		}
 		else {
 			throw new RepositoryServiceException("Cannot checkin file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
 		}		
 	}
 
@@ -521,7 +497,7 @@ public class FileRepositorySession implements RepositorySession {
 		
 		if(fileInfo == VERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It is versioned"); 			
+					" for entry " + entry.getTypedId() + ": It is versioned"); 			
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
@@ -530,7 +506,7 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else {
 			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
 		}
 	}
 	
@@ -545,11 +521,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 			
+					" for entry " + entry.getTypedId() + ": It is not versioned"); 			
 		}
 		else {
 			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
-					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
 		}
 	}
 	
@@ -631,11 +607,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot delete a version from the file " + 
-					relativeFilePath + " for entry " + entity.getEntityTypedId() + ": It is not versioned"); 
+					relativeFilePath + " for entry " + entity.getTypedId() + ": It is not versioned"); 
 		}
 		else {
 			throw new RepositoryServiceException("Cannot delete a version from the file " + 
-					relativeFilePath + " for entry " + entity.getEntityTypedId() + ": It does not exist"); 
+					relativeFilePath + " for entry " + entity.getTypedId() + ": It does not exist"); 
 		}	
 	}
 

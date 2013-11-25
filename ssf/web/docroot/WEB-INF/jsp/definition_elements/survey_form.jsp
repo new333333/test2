@@ -47,10 +47,11 @@
 <c:set var="surveyModel" value="${ssDefinitionEntry.customAttributes[property_name].value.surveyModel}"/>
 
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_survey.js"></script>
-
 <script type="text/javascript">
-var ss_survey_cannotMoveAfterVoting = '<ssf:escapeJavaScript><ssf:nlt tag="survey.cannotMoveAfterVoting.warning" /></ssf:escapeJavaScript>';
+var ss_survey_cannotMoveAfterVoting = '<ssf:escapeJavaScript><ssf:nlt tag="survey.cannotMoveAfterVoting.warning" 
+		text="Cannot move or delete questions after people have voted."/></ssf:escapeJavaScript>';
 </script>
+
 
 <div class="ss_entryContent ${ss_fieldModifyStyle}">
 	<div class="ss_labelAbove ss_normal margintop2" style="font-size: 18px; border-bottom: 1px solid #b8b8b8;"><c:out value="${property_caption}"/></div>
@@ -99,22 +100,15 @@ var ss_survey_cannotMoveAfterVoting = '<ssf:escapeJavaScript><ssf:nlt tag="surve
 	</div>
 
 	<div class="margintop3 marginleft1 ss_padleft5">
-		<input type="checkbox" name="allowChange" id="${ss_namespace}_${property_name}_allowChange"/> 
-		<label for="${ss_namespace}_${property_name}_allowChange"><ssf:nlt tag="survey.modify.label"/></label>
-	</div>
-
-	<div class="margintop3 marginleft1 ss_padleft5">
-		<input type="checkbox" name="allowMultipleGuestVotes" 
-		  id="${ss_namespace}_${property_name}_allowMultipleGuestVotes"/> 
-		<label for="${ss_namespace}_${property_name}_allowMultipleGuestVotes"><ssf:nlt tag="survey.multipleGuestVotes.label"/></label>
+		<input type="checkbox" name="allowChange" id="${ss_namespace}_${property_name}_allowChange"/> <label for="${ss_namespace}_${property_name}_allowChange"><ssf:nlt tag="survey.modify.label"/>
 	</div>
 
 	
 	<script type="text/javascript">
 		var ss_survey_${ss_namespace}_${property_name} = new ssSurvey("survey_${ss_namespace}_${property_name}", 
-				"ss_surveyForm_questions_${ss_namespace}_${property_name}", 
-				"${ss_namespace}_${property_name}",
-				"${surveyModel.alreadyVoted}");
+			"ss_surveyForm_questions_${ss_namespace}_${property_name}", 
+			"${ss_namespace}_${property_name}",
+			"${surveyModel.alreadyVoted}");
 		// labels
 		ss_survey_${ss_namespace}_${property_name}.locale.moreAnswers = "<ssf:nlt tag='survey.answer.more'/>";
 		ss_survey_${ss_namespace}_${property_name}.locale.questionHeader = "<ssf:nlt tag='survey.question.header'/>";

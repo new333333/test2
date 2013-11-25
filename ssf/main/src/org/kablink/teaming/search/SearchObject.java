@@ -37,29 +37,28 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
-import org.apache.lucene.analysis.cn.ChineseAnalyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.util.Version;
+import org.kablink.teaming.lucene.ChineseAnalyzer;
 import org.kablink.teaming.lucene.analyzer.NullAnalyzer;
+import org.kablink.teaming.lucene.analyzer.SsfQueryAnalyzer;
 import org.kablink.teaming.lucene.analyzer.VibeQueryAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.search.Constants;
-import org.kablink.util.search.QueryParserFactory;
 
 
 public class SearchObject {
 
 	private static final int DEFAULT_MAX_BOOLEAN_CLAUSES = 10000;
 	
-	private static boolean inited = false;
-	private static String[] termQueryOnlyFields = null;
-	 
+	
 	protected Log logger = LogFactory.getLog(getClass());
 	private SortField[] sortBy = null;
 	
@@ -68,10 +67,6 @@ public class SearchObject {
 	private String language = LanguageTaster.DEFAULT;
 	
 	private Query luceneQuery; // new
-	
-	private String aclQueryStr;
-	
-	private String netFolderRootAclQueryStr;
 	
 	// QueryParser is not thread-safe, let try thread local variable, it should be fine
 	private static ThreadLocal<QueryParser> queryParser = new ThreadLocal<QueryParser>();
@@ -98,10 +93,10 @@ public class SearchObject {
 				pfAnalyzer.addAnalyzer(Constants.TITLE_FIELD, analyzer);
 				analyzer = pfAnalyzer;
 			}	
-			QueryParser qp =  QueryParserFactory.createQueryParser(analyzer, getTermQueryOnlyFields());
+			QueryParser qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, analyzer);
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 			queryParser.set(qp);
-			qp =  QueryParserFactory.createQueryParser(new WhitespaceAnalyzer());
+			qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, new WhitespaceAnalyzer());
 			queryParserWSA.set(qp);
 		}
 	}
@@ -163,24 +158,7 @@ public class SearchObject {
 	public Query getLuceneQuery() {
 		return luceneQuery;
 	}
-		
 	
-	public String getAclQueryStr() {
-		return aclQueryStr;
-	}
-
-	public void setAclQueryStr(String aclQueryStr) {
-		this.aclQueryStr = aclQueryStr;
-	}
-
-	public String getNetFolderRootAclQueryStr() {
-		return netFolderRootAclQueryStr;
-	}
-
-	public void setNetFolderRootAclQueryStr(String netFolderRootAclQueryStr) {
-		this.netFolderRootAclQueryStr = netFolderRootAclQueryStr;
-	}
-
 	private QueryParser getParserWSA() {
 		return (QueryParser) queryParserWSA.get();
 	}
@@ -192,7 +170,7 @@ public class SearchObject {
 		else if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
 			if (queryParserCJK.get() == null) {
 				logger.debug("QueryParser instantiating new CJK QP");
-				QueryParser qp =  QueryParserFactory.createQueryParser(getCJKAnalyzer(), getTermQueryOnlyFields());
+				QueryParser qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, getCJKAnalyzer());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserCJK.set(qp);
 				return qp;
@@ -202,7 +180,7 @@ public class SearchObject {
 		} else if (lang.equalsIgnoreCase(LanguageTaster.ARABIC)) {
 			if (queryParserARABIC.get() == null) {
 				logger.debug("QueryParser instantiating new ARABIC QP");
-				Analyzer analyzer = null;
+				Analyzer analyzer = VibeQueryAnalyzer.getInstance();
 				String aName = SPropsUtil.getString("lucene.arabic.analyzer", "");
 				if (!aName.equalsIgnoreCase("")) {
 					//load the arabic analyzer here
@@ -213,9 +191,7 @@ public class SearchObject {
 						logger.error("Could not initialize arabic analyzer class: " + e.toString());
 					}
 				}
-				if(analyzer == null)
-					analyzer = VibeQueryAnalyzer.getInstance();
-				QueryParser qp =  QueryParserFactory.createQueryParser(analyzer, getTermQueryOnlyFields());
+				QueryParser qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, analyzer);
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserARABIC.set(qp);
 				return qp;
@@ -225,7 +201,7 @@ public class SearchObject {
 		} else {
 			if (queryParserHEBREW.get() == null) {
 				logger.debug("QueryParser instantiating new HEBREW QP");
-				Analyzer analyzer = null;
+				Analyzer analyzer = VibeQueryAnalyzer.getInstance();
 				String aName = SPropsUtil.getString("lucene.hebrew.analyzer", "");
 				if (!aName.equalsIgnoreCase("")) {
 					//load the hebrew analyzer here
@@ -236,10 +212,7 @@ public class SearchObject {
 						logger.error("Could not initialize hebrew analyzer class: " + e.toString());
 					}
 				}
-				// If could not get hebrew analyzer, get the default one.
-				if(analyzer == null)
-					analyzer = VibeQueryAnalyzer.getInstance();
-				QueryParser qp =  QueryParserFactory.createQueryParser(analyzer, getTermQueryOnlyFields());
+				QueryParser qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, analyzer);
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserHEBREW.set(qp);
 				return qp;
@@ -264,18 +237,10 @@ public class SearchObject {
 	
 	private Analyzer getCJKAnalyzer() {
 		PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new NullAnalyzer());
-		retAnalyzer.addAnalyzer(Constants.GENERAL_TEXT_FIELD, new ChineseAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
 		retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
 		retAnalyzer.addAnalyzer(Constants.DESC_TEXT_FIELD, new ChineseAnalyzer());
 		return retAnalyzer;
-	}
-	
-	private String[] getTermQueryOnlyFields() {
-		if(!inited) {
-			termQueryOnlyFields = SPropsUtil.getStringArray("lucene.termqueryonly.fields", ",");
-			inited = true;
-		}
-		return termQueryOnlyFields; 
 	}
 }
 

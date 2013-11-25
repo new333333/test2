@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,119 +30,65 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.SerializationException;
 
 /**
- * Used to communicate exceptions from the server to the client via GWT
- * RPC calls.
- * 
- * @author jwootton@novell.com
+ * This can be used for all GWT Teaming exceptions.
+ * @author jwootton
+ *
  */
 public class GwtTeamingException extends SerializationException
 	implements IsSerializable
 {
-	private boolean m_wrapped;	// true -> Wraps a non-GwtTeamingException.  false -> A GwtTeamingException created from scratch. 
-
-	/*
-	 * This enumeration defines all the possible types of exceptions
-	 * that GwtTeamingException knows about.
+	/**
+	 * This class defines all the possible types of exceptions that GwtTeamingException knows about.
+	 * @author jwootton
+	 *
 	 */
 	public enum ExceptionType implements IsSerializable
 	{
 		ACCESS_CONTROL_EXCEPTION,
-		APPLICATION_EXISTS_EXCEPTION,
-		APPLICATION_GROUP_EXISTS_EXCEPTION,
-		CHANGE_PASSWORD_EXCEPTION,
 		EXTENSION_DEFINITION_IN_USE,
 		FAVORITES_LIMIT_EXCEEDED,
 		GROUP_ALREADY_EXISTS,
 		LDAP_GUID_NOT_CONFIGURED,
-		NET_FOLDER_ALREADY_EXISTS,
-		NET_FOLDER_ROOT_ALREADY_EXISTS,
 		NO_BINDER_BY_THE_ID_EXCEPTION,
 		NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION,
-		NO_RPC_HANDLER,
-		USER_ALREADY_EXISTS,
 		USER_NOT_LOGGED_IN,
-		FOLDER_EXPECTED,
-		INVALID_AUTO_UPDATE_URL,
-		UNKNOWN,
+		UNKNOWN;
 	}// end ExceptionType
 	
 
 	private static final long serialVersionUID = -5972316795230937529L;
 	private ExceptionType m_type = ExceptionType.UNKNOWN;
-	private String m_additionalDetails;
-
-	/**
-	 * Constructor method.
-	 * 
-	 * @param type
-	 * @param additionalDetails
-	 */
-	public GwtTeamingException( ExceptionType type, String additionalDetails ){
-		// Initialize the super class...
-		super();
-		
-		// ...and store the parameters.
-		setWrapped(           false             );
-		setExceptionType(     type              );
-		setAdditionalDetails( additionalDetails );
-	}// end GwtTeamingException()
 	
 	/**
-	 * Constructor method.
 	 * 
-	 * Zero parameter constructor as per GWT serialization
-	 * requirements.
 	 */
 	public GwtTeamingException()
 	{
-		// Always use the initial form of the constructor.
-		this( ExceptionType.UNKNOWN, "" );
+		m_type = ExceptionType.UNKNOWN;
 	}// end GwtTeamingException()
 	
 	/**
-	 * Constructor method. 
-	 * 
-	 * @param type
+	 * Return the type of exception we are dealing with.
 	 */
-	public GwtTeamingException( ExceptionType type )
+	public ExceptionType getExceptionType()
 	{
-		// Always use the initial form of the constructor.
-		this( type, "" );
-	}// end GwtTeamingException()
-	
-	/**
-	 * Constructor method. 
-	 * 
-	 * @param additionalDetails
-	 */
-	public GwtTeamingException( String additionalDetails )
-	{
-		// Always use the initial form of the constructor.
-		this( ExceptionType.UNKNOWN, additionalDetails );
-	}// end GwtTeamingException()
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public boolean       isWrapped()            {return m_wrapped;          }
-	public ExceptionType getExceptionType()     {return m_type;             }
-	public String        getAdditionalDetails() {return m_additionalDetails;}
+		return m_type;
+	}// end getExceptionType()
 
 	
 	/**
-	 * Set'er methods.
-	 * 
-	 * @param
+	 * Set the type of exception we are dealing with.
 	 */
-	public void setWrapped(           boolean       wrapped)            {m_wrapped           = wrapped;          }
-	public void setExceptionType(     ExceptionType type )              {m_type              = type;             }
-	public void setAdditionalDetails( String        additionalDetails ) {m_additionalDetails = additionalDetails;}
+	public void setExceptionType( ExceptionType type)
+	{
+		m_type = type;
+	}// end setExceptionType()
+	
 }// end GwtTeamingException

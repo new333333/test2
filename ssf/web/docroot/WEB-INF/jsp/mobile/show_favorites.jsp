@@ -59,7 +59,7 @@
 		 <c:if test="${f_eletype == 'favorite'}">
 		  <div class="folder-item">
               <img class="margin5r" src="<html:rootPath/>images/mobile/Favorite_star_16.png" align="absmiddle" />
-			<c:if test="${f_type == 'binder' && (f_action == 'view_folder_listing' || f_action == 'view_profile_listing')}">
+			<c:if test="${f_type == 'binder' && f_action == 'view_folder_listing'}">
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${f_value}" 
 							action="__ajax_mobile" actionUrl="false" 
 							operation="mobile_show_folder" />"><span>${f_name}</span></a>

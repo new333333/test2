@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -107,8 +107,6 @@ td.ss_cellvalign {
 	 padding: 3px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
 	}
@@ -208,14 +206,9 @@ td.rightend
 	padding: 0 15px 15px 15px!important;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 	}
-.ss_form_element {
-	padding-top: 10px;
-}
 .tab_form .ss_form_wrap {
 	border-top-width: 0px;
 	border-right-width: 0px;
@@ -420,7 +413,7 @@ fieldset a:hover {
   	color: #333;
 	}	
 .ss_list-style-image_miniblog {
-	list-style-image: url(<html:imagesPath/>pics/blog/chatballoon.png)!important;
+	list-style-image: url(/ssf/i/icwg/pics/blog/chatballoon.png)!important;
 	padding-top: 10px;
   	color: #555;
 	}

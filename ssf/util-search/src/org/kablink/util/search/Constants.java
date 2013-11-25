@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,50 +32,8 @@
  */
 package org.kablink.util.search;
 
-/**
- * ?
- * 
- * @author ?
- */
 public class Constants {
-	/**
-	 * The query may match any type of items (binders, entries, and attachments), and the system 
-	 * should apply normal ACL checking as long as ACL clauses are supplied. 
-	 * For example, a free-form text search.
-	 * This is the default mode.
-	 */
-	public static final int SEARCH_MODE_NORMAL = 1;
-	
-	/**
-	 * The query is constructed such that the result set will only contain those items always having 
-	 * their ACL information directly indexed with them. This includes binders and principals (users
-	 * and groups). The query should not match folder entries/replies or file attachments associated 
-	 * with them. For example, a search query used for constructing a binder tree. Another example
-	 * is a search query used for fetching a list of all users in the system. Unlike folder entries,
-	 * principal objects have their ACL information indexed with them.
-	 * This provides the system with an opportunity to optimize the search request.
-	 */
-	public static final int SEARCH_MODE_SELF_CONTAINED_ONLY = 2;
-		
-	/**
-	 * The query may match any type of items (binders, entries, and attachments), but it contains
-	 * clauses that restrict the search space only to a set of binders and the items in them.
-	 * In addition, the caller further guarantees that any items in the search result not having 
-	 * their ACL information indexed with them (specifically, folder entries without entry-level
-	 * ACLs and any file attachments associated with these entries) need not be filtered against the
-	 * calling user's access rights because the user already has access to their parent folders. 
-	 * This condition must be met recursively at all levels not just at the top-most level.
-	 * For example, a search query used for folder listing display, where a search is conducted to
-	 * fetch child entries and optionally immediately nested child folders within a single folder.
-	 * In this case, all entries in the search result have the same parent folder, and therefore,
-	 * it is sufficient that the caller only needs to manually check the ACL on that single folder
-	 * prior to executing a search request.   
-	 * This provides the system with an opportunity to optimize the search request.
-	 * 
-	 */
-	public static final int SEARCH_MODE_PREAPPROVED_PARENTS = 3;
-	
-	
+
 	public static final String FIELD_NAME_ATTRIBUTE = "fieldname";
 	public static final String EXACT_PHRASE_ATTRIBUTE = "exactphrase";
 	public static final String INCLUSIVE_ATTRIBUTE = "inclusive";
@@ -113,21 +71,14 @@ public class Constants {
 	public static final String PRE_DELETED_FROM_FIELD = "_preDeletedFrom";
 	public static final String ATTACHMENT_TYPE_FIELD = "_attType";
 	public static final String THIS_CLASS_FIELD = "_class";
+	public static final String ALL_TEXT_FIELD = "_allText";
 	public static final String TEMP_FILE_CONTENTS_FIELD = "_fileContents";
 	public static final String ENTRY_ACL_FIELD = "_entryAcl";
 	public static final String FOLDER_ACL_FIELD = "_folderAcl";
-	public static final String ROOT_FOLDER_ACL_FIELD = "_rootAcl";
-	public static final String ROOT_FOLDER_ALL = "all";
-	public static final String SHARED = "_shared";
-	public static final String SHARE_CREATOR = "_shareCreator";
-	public static final String SHARED_IS_SHARED = "true";
-	public static final String SHARED_IDS = "_sharedIds";
-	public static final String SHARED_TEAM_IDS = "_sharedTeamIds";
 	public static final String ENTRY_CONDITION_ACL_FIELD = "_entryConditionAcl";
 	public static final String FOLDER_CONDITION_ACL_FIELD = "_folderConditionAcl";
 	public static final String CONDITION_ACL_PREFIX = "c";
 	public static final String ENTITY_TYPE_FOLDER = "folder";
-	public static final String ENTITY_TYPE_WORKSPACE = "workspace";
 	public static final String ENTITY_TYPE_FOLDER_ENTRY = "folderEntry";
 	public static final String BINDER_OWNER_ACL_FIELD = "_bOwnerAcl";
 	public static final String ENTRY_OWNER_ACL_FIELD = "_eOwnerAcl";
@@ -158,7 +109,6 @@ public class Constants {
 	public static final String ENTRY_TYPE_APPLICATION = "application";
 	public static final String ENTRY_TYPE_APPLICATION_GROUP = "applicationGroup";
 	public static final String ENTITY_PATH = "_entityPath";
-	public static final String SORT_ENTITY_PATH = "_sortEntityPath";
 	public static final String ENTITY_FIELD = "_entityType";
 	public static final String DOCID_FIELD = "_docId";
 	public static final String ENTRY_ANCESTRY = "_entryAncestry";
@@ -184,8 +134,6 @@ public class Constants {
 	public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
 	public static final String CREATED_WITH_DEFINITION_FIELD = "_createdWithDef";
 	public static final String ENTRY_DEFINITIONS_FIELD = "_entryDefs";
-	public static final String PRINCIPAL_FIELD = "_principal";
-	public static final String SORT_ORDER_FIELD = "order";
 	public static final String TITLE_FIELD = "title"; // all definable entities
 	public static final String SORT_TITLE_FIELD = "_sortTitle"; // all definable entities
 	public static final String BINDER_SORT_TITLE_FIELD = "_bsortTitle"; // binders only
@@ -196,9 +144,6 @@ public class Constants {
 	public static final String DESC_FIELD = "_desc"; // Lucene stored field for description element
 	public static final String DESC_TEXT_FIELD = "description"; // Lucene indexed field for description element
 	public static final String DESC_FORMAT_FIELD = "_desc_format";
-	public static final String RESPONSIBLE_FIELD = "responsible"; // milestones
-	public static final String TASKS_FIELD = "tasks"; // milestones
-	public static final String STATUS_FIELD = "status"; // milestones
 	public static final String EVENT_FIELD = "_event";
 	public static final String EVENT_FIELD_START_DATE = "StartDate";
 	public static final String EVENT_FIELD_START_END = "start_end";
@@ -236,15 +181,8 @@ public class Constants {
 	public static final String FILE_EXT_FIELD = "_fileExt";
 	public static final String FILE_TYPE_FIELD = "_fileType";
 	public static final String FILE_ID_FIELD = "_fileID";
-	public static final String PRIMARY_FILE_ID_FIELD = "_primaryFileID";
-	public static final String FILE_ONLY_ID_FIELD = "_fileOnlyID";
 	public static final String FILE_CREATOR_ID_FIELD = "_fileCreatorId";
 	public static final String FILE_SIZE_FIELD = "_fileSize";
-	public static final String FILE_SIZE_IN_BYTES_FIELD = "_fileSizeInBytes";
-	public static final String FILE_MD5_FIELD = "_fileMd5";
-	public static final String FILE_VERSION_FIELD = "_fileVersion";
-	public static final String FILE_MAJOR_VERSION_FIELD = "_fileMajorVersion";
-	public static final String FILE_MINOR_VERSION_FIELD = "_fileMinorVersion";
 	public static final String FILE_TIME_FIELD = "_fileTime";
 	public static final String FILENAME_AND_ID_FIELD = "_fileNameId";
 	public static final String FILE_SIZE_AND_ID_FIELD = "_fileSizeId";
@@ -265,7 +203,6 @@ public class Constants {
 	public static final String SORTNUMBER_FIELD = "_sortNum";
 	public static final String TOP_FOLDERID_FIELD = "_topFolderId";
 	public static final String RESERVEDBYID_FIELD = "_reservedById";
-	public static final String DUE_DATE_FIELD = "due_date";
 	public static final String LASTACTIVITY_FIELD = "_lastActivity";
 	public static final String LASTACTIVITY_DAY_FIELD = "_lastActivityDay";
 	public static final String LASTACTIVITY_YEAR_MONTH_FIELD = "_lastActivityYearMonth";
@@ -276,42 +213,17 @@ public class Constants {
 	public static final String APPLICATION_NAME_FIELD = "_applicationName";
 	public static final String APPLICATION_GROUPNAME_FIELD = "_applicationGroupName";
 	public static final String EMAIL_FIELD = "emailAddress";
-	public static final String EMAIL_DOMAIN_FIELD = "emailAddress_Domain";
-	public static final String DISABLED_USER_FIELD = "disabledUser";
 	public static final String RESERVEDID_FIELD = "_reservedId";
 	public static final String WORKSPACE_ID_FIELD = "_workspaceId";
-	public static final String AVATAR_ID_FIELD = "_avatarId";
 	public static final String UNIQUE_PREFIX = "X_Z_YY_Z";
 	public static final String PERSONFLAG_FIELD = "_isPerson";
 	public static final String IS_LIBRARY_FIELD = "_isLibrary";
 	public static final String IS_MIRRORED_FIELD = "_isMirrored";
-	public static final String IS_TOP_FOLDER_FIELD = "_isTopFolder";
-	public static final String HAS_RESOURCE_DRIVER_FIELD = "_hasResourceDriver";
-	public static final String ICON_NAME_FIELD = "_iconName";
 	public static final String TASK_COMPLETED_DATE_FIELD = "_taskCompleted";
 	public static final String IS_GROUP_DYNAMIC_FIELD = "_isGroupDynamic";
-	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This field is used to represent ACL relationship with the parent
-	public static final String FOLDER_ID_FIELD = "_folderId"; // This numeric field contains folder ID. Used only for folders.
-	public static final String GENERAL_TEXT_FIELD = "_generalText"; // This field contains textual representation of all field values except for title and description fields.
-	public static final String IDENTITY_INTERNAL_FIELD = "_iInternal";
-	public static final String IS_HOME_DIR_FIELD = "_isHomeDir";
-	public static final String IS_CLOUD_FOLDER_FIELD = "_isCloud";
-	public static final String IS_MYFILES_DIR_FIELD = "_isMyFilesDir";
-    public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName"; // Applicable to all mirrored folders and files (legacy + net + cloud)
-    public static final String CLOUD_FOLDER_ROOT_FIELD = "_cloudFolderRoot";
-    public static final String ALLOW_MOBILE_SYNC_FIELD = "_allowMobileSync";
-    public static final String ALLOW_DESKTOP_SYNC_FIELD = "_allowDesktopSync";
-    public static final String IS_LDAP_CONTAINER_FIELD = "_isLdapContainer";
-    public static final String IS_GROUP_FROM_LDAP_FIELD = "_isGroupFromLdap";
-    public static final String CONTENT_INDEXED_FIELD = "_contentIndexed";
-    public static final String HIDDEN_FROM_SEARCH_FIELD = "_hiddenSearch";
-    public static final String HIDDEN_FROM_FIND_USER_FIELD = "_hiddenFindUser";
-    public static final String RESOURCE_PATH_FIELD = "_resourcePath"; // Only for net folder (famt) files and folders
 
-	/**
-	 * Constructor method.
-	 */
 	public Constants() {
 		super();
 	}
+
 }

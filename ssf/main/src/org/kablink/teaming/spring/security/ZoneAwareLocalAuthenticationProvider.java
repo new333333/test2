@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.spring.security;
 
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.providers.AuthenticationProvider;
 
 public interface ZoneAwareLocalAuthenticationProvider extends AuthenticationProvider {
 	public void setZoneName(String zoneName) throws InstantiationException, IllegalAccessException, ClassNotFoundException;

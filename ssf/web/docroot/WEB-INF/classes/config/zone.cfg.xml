@@ -17,7 +17,7 @@
 		<property name="subscription.minutes">5</property>
 	</mailConfiguration>	
 	<folderConfiguration>
-		<property name="delete.timeout.minutes">10</property>
+		<property name="delete.timeout.hours">2</property>
 	</folderConfiguration>
 	<ldapConfiguration>	
 		<property name="java.naming.provider.url">ldap://localhost:389</property>
@@ -61,10 +61,6 @@
 		<defaultGroupsOnAcctCreation>
 			Example format.
 			<group name="registered_user" />
-		</defaultGroupsOnAcctCreation>
-		<defaultGroupsOnExtAcctCreation>
-			Example format.
-			<group name="external_users" />
 		</defaultGroupsOnAcctCreation>
 		<xssConfiguration>
 			<trustedUsers>

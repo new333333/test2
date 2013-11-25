@@ -188,14 +188,4 @@ public interface RuntimeStatisticsMBean {
 	 * Dump information about borrowed data source connections as string.
 	 */
 	public String dumpDSConnectionDebugInfoAsString();
-	
-	/*
-	 * Returns whether Net Folder Server trace is enabled or not.
-	 */
-	public boolean isNfsTraceEnabled();
-
-	/*
-	 * Dump a snapshot of open stream handles which is collected as part of NFS trace.
-	 */
-	public String dumpNfsTraceOpenStreamHandles();
 }

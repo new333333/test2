@@ -40,7 +40,9 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -51,7 +53,7 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author jwootton
  *
  */
-public class SizeCtrl extends VibeWidget
+public class SizeCtrl extends Composite
 	implements KeyPressHandler
 {
 	private TextBox m_widthCtrl = null;
@@ -66,9 +68,9 @@ public class SizeCtrl extends VibeWidget
 	 */
 	public SizeCtrl()
 	{
-		VibeFlowPanel mainPanel;
+		FlowPanel mainPanel;
 		
-		mainPanel = new VibeFlowPanel();
+		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "sizeCtrlMainPanel" );
 		
 		FlexTable sizeTable;
@@ -104,7 +106,7 @@ public class SizeCtrl extends VibeWidget
 			m_heightCtrl.addKeyPressHandler( this );
 			m_heightCtrl.setVisibleLength( 3 );
 			sizeTable.setWidget( 1, 1, m_heightCtrl );
-
+			
 			// Height can only be specified in pixels.  Add "px" after the text box.
 			m_heightPxLabel = new InlineLabel( GwtTeaming.getMessages().pxLabel() );
 			sizeTable.setWidget( 1, 2, m_heightPxLabel );
@@ -306,7 +308,6 @@ public class SizeCtrl extends VibeWidget
 	 * This method gets called when the user types in the "width" or "height" text box.
 	 * We only allow the user to enter numbers.
 	 */
-	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;

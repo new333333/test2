@@ -44,7 +44,6 @@ import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
-import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -54,7 +53,6 @@ import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NotifyStatus;
-import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SimpleName;
@@ -99,8 +97,6 @@ public interface CoreDao {
 	public void lock(Object obj);
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
-	public Object loadLocked(Class className, String id);
-	public Object loadLocked(Class className, Long id);
 	public List<Tag> loadAllTagsByEntity(EntityIdentifier entityId);
 	public Map<EntityIdentifier, List<Tag>> loadAllTagsByEntity(Collection<EntityIdentifier> entityIds);
 	/**
@@ -114,9 +110,7 @@ public interface CoreDao {
     public Binder loadBinder(Long binderId, Long zoneId);
 	public List<Tag> loadCommunityTagsByEntity(EntityIdentifier entityId);
     public List<TemplateBinder> loadTemplates(Long zoneId);
-    public List<TemplateBinder> loadTemplates(Binder binder, Long zoneId, boolean includeAncestors);
     public List<TemplateBinder> loadTemplates(Long zoneId, int type);
-    public List<TemplateBinder> loadTemplates(Binder binder, Long zoneId, int type, boolean includeAncestors);
 	public Dashboard loadDashboard(String id, Long zoneId);
 	public Definition loadDefinition(String defId, Long zoneId);   
 	public Definition loadDefinitionByName(Binder binder, String name, Long zoneId);
@@ -153,14 +147,11 @@ public interface CoreDao {
 	public Binder loadReservedBinder(String reservedId, Long zoneId);
 	public Definition loadReservedDefinition(String reservedId, Long zoneId);
 	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId);
-	public boolean subscriptionExistsOnEntity(final EntityIdentifier entityId);
 	public Tag loadTag(String id, Long zoneId);
 	public TemplateBinder loadTemplate(Long templateId, Long zoneId);
 	public TemplateBinder loadTemplateByName(String name, Long zoneId);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public List<LdapConnectionConfig> loadLdapConnectionConfigs(Long zoneId);
-	public LdapConnectionConfig loadLdapConnectionConfig(String configId, Long zoneId);
-    public int getMaxLdapConnectionConfigPosition(final Long zoneId);
 	public ZoneConfig loadZoneConfig(Long zoneId);
 	public Object merge(Object obj); 
     public void move(Binder binder);
@@ -174,7 +165,6 @@ public interface CoreDao {
 	public Object saveNewSessionWithoutUpdate(Object obj);
 	public Object updateNewSessionWithoutUpdate(Object obj);
 	public void update(Object obj);
-	public void updateWithoutUsingHibernateTemplate(Object obj);
 	public double averageColumn(Class clazz, String column, FilterControls filter, Long zoneId);
 	public long sumColumn(Class clazz, String column, FilterControls filter, Long zoneId);
 
@@ -219,7 +209,7 @@ public interface CoreDao {
      * @return
      */
     public IndexNode findIndexNode(String nodeName, String indexName);
-	
+    
     /**
      * Purge all index nodes matching the specified index name. 
      * Used when deleting a zone.
@@ -259,21 +249,4 @@ public interface CoreDao {
 
 	public List<Binder> loadBindersByPathName(final String pathName, final Long zoneId);
 
-    public Binder loadBinderByParentAndName(final Long parentBinderId, final String title, final Long zoneId);
-
-	public OpenIDProvider loadOpenIDProvider(Long zoneId, String openIDProviderId);
-	
-	public List<OpenIDProvider> findOpenIDProviders(Long zoneId);
-	
-	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate);
-	public int purgeAuditTrail(Long zoneId, Date purgeBeforeDate);
-	
-	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate);
-	public int purgeChangeLogs(Long zoneId, Date purgeBeforeDate);
-
-	public boolean contains(Object obj);
-	
-	public void purgeShares(Binder binder, boolean includeEntryShares);
-	
-	public Long peekFullSyncTask();
 }

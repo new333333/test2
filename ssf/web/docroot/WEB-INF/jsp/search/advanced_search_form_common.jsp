@@ -71,23 +71,9 @@
 					<div class="n-buttonright"><ssf:showHelp guideName="user" pageId="informed_search" sectionId="informed_search_advanced" /></div>
 				</c:if>
 				<div class="ss_clear"></div>
-
-				  <c:if test="${!empty ss_searchError}">
-				    <div style="padding:20px;">
-				      <span class="ss_errorLabel ss_bold ss_largeprint">${ss_searchError}</span>
-				    </div>
-				  </c:if>
-
 				<table>
 					<tr>
-						<th class="ss_nowrap ss_size_15px ss_bold" style="vertical-align: middle;">
-						  <c:if test="${filterDefinition }">
-						    <ssf:nlt tag="filter.searchText"/>
-						  </c:if>
-						  <c:if test="${!filterDefinition }">
-						    <ssf:nlt tag="searchForm.advanced.Title"/>
-						  </c:if>
-						</th>
+						<th class="ss_nowrap ss_size_15px ss_bold" style="vertical-align: middle;"><ssf:nlt tag="searchForm.advanced.Title"/></th>
 						<td class="ss_nowrap" colspan="2" width="100%">
 						  <input type="text" name="searchText" 
 						    id="searchText_adv" 
@@ -97,106 +83,6 @@
 						    </c:if>/>
 						</td>
 					</tr>
-					
-					<c:if test="${!filterDefinition }">
-					<tr>
-						<td></td>
-						<td colspan="2">
-						  <input type="hidden" name="context" value="${ss_searchContext}" />
-						  <table cellspacing="0" cellpadding="0" style="padding-bottom:16px;" width="100%">
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="all" 
-								<c:if test="${ss_searchScope == 'all'}"> checked="checked" </c:if>
-								style="width:20px;">
-							  </td>
-							  <td nowrap>
-								<ssf:nlt tag="search.scope.all"/>
-							  </td>
-							</tr>
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="myFiles"
-								  <c:if test="${ss_searchScope == 'myFiles'}"> checked="checked" </c:if>
-								  style="width:20px;">
-							  </td>
-							  <td nowrap>
-								<ssf:nlt tag="search.scope.myFiles"/>
-							  </td>
-							</tr>
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="netFolders" 
-								<c:if test="${ss_searchScope == 'netFolders'}"> checked="checked" </c:if>
-								style="width:20px;">
-							  </td>
-							  <td>
-								<ssf:nlt tag="search.scope.netFolders"/>
-							  </td>
-							</tr>
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="sharedWithMe" 
-								<c:if test="${ss_searchScope == 'sharedWithMe'}"> checked="checked" </c:if>
-								style="width:20px;">
-							  </td>
-							  <td>
-								<ssf:nlt tag="search.scope.sharedWithMe"/>
-							  </td>
-							</tr>
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="sharedByMe" 
-								<c:if test="${ss_searchScope == 'sharedByMe'}"> checked="checked" </c:if>
-								style="width:20px;">
-							  </td>
-							  <td>
-								<ssf:nlt tag="search.scope.sharedByMe"/>
-							  </td>
-							</tr>
-						    <c:if test="${ss_searchContext == 'binder' || scope == 'current'}">
-						     <tr>
-						      <td width="20" valign="top">
-								<input type="radio" name="scope" value="current" id="search_scope_current"
-								  <c:if test="${ss_searchScope == 'current'}"> checked="checked" </c:if>
-								  style="width:20px;"
-								>
-								<input type="hidden" name="contextBinderId" id="contextBinderId" value="${ss_searchContextBinderId}" />
-							  </td>
-							  <td>
-							    <c:if test="${!empty ss_searchContextBinder}">
-									<ssf:nlt tag="search.scope.current"/>&nbsp;
-									<a href="<ssf:url action="view_folder_listing" 
-										binderId="${ss_searchContextBinderId}" />"
-										title="${ss_searchContextBinder.pathName}"
-										onClick="ss_openUrlInWorkarea(this.href, '${ss_searchContextBinderId}', 'view_folder_listing');return false;"
-									>
-									  <span>${ss_searchContextBinder.title}</span>
-									</a>
-								</c:if>
-							  </td>
-							 </tr>
-							 <tr>
-						      <td width="20" valign="top">&nbsp;</td>
-							  <td align="left" nowrap>
-							    <c:if test="${ss_searchIncludeNestedBinders}">
-							      <input type="checkbox" 
-							        name="includeNestedBinders" 
-							        checked />
-							    </c:if>
-							    <c:if test="${!ss_searchIncludeNestedBinders}">
-							      <input type="checkbox" name="includeNestedBinders" /> 
-							    </c:if>
-							    <span>&nbsp;<ssf:nlt tag="search.scope.includeSubBinders"/></span>
-							  </td>
-							 </tr>
-							</c:if>
-						  </table>
-						</td>
-					</tr>
-					</c:if>
-
-					<c:if test="${!filterDefinition}">
 					<tr>
 						<td class="ss_nowrap" style="vertical-align: top; padding-top: 5px; text-align: right;" >
 							<c:if test="${!filterDefinition}"><ssf:nlt tag="searchForm.searchFolders"/>:</c:if>
@@ -228,6 +114,7 @@
 											/> <label for="search_selectedFolders"><ssf:nlt tag="searchForm.searchSelectedFolders"/></label>
 									</div>
 								
+									<div id="ss_foldersTree_${ssNamespace}" style="padding-left: 24px; padding-top: 6px; ">
 								<input type="hidden" name="search_dashboardFolders" id="search_dashboardFolders" value="${ssBinder.id}"/>
 								</c:if>
 								
@@ -260,20 +147,17 @@
 									</c:otherwise>
 								</c:choose>
 	
-								<div 
-									<c:if test="${activateDashboardFolder}">
-										id="ss_foldersTree_${ssNamespace}" style="padding-left: 24px; padding-top: 6px; "
-									</c:if>
-								>
-								    <ssf:tree 
+								<ssf:tree 
 									  treeName="t_searchForm_wsTree"
 									  treeDocument="${ssDomTree}"  
 									  rootOpen="false" 
 									  multiSelect="${folderIds}" 
 									  multiSelectPrefix="searchFolders"
-									  showIdRoutine="t_advSearchForm_wsTree_showId"/>
+									 showIdRoutine="t_advSearchForm_wsTree_showId"/>
 								
-								</div>
+								<c:if test="${activateDashboardFolder}">
+									</div>
+								</c:if>
 	
 								<div class="ss_additionals">
 								 	<input type="checkbox" name="search_subfolders" id="search_subfolders" value="true" style="width: 19px; margin: 0; padding: 0; " 
@@ -297,7 +181,7 @@
 						    <div class="ss_bold"><ssf:nlt tag="searchForm.advanced.presentationOptions"/></div>
 							<table class="margintop1">
 								<tr>
-									<td nowrap>
+									<td>
 										<label for="data_resultsCount">
 											<ssf:nlt tag="searchForm.advanced.options.limitResults"/>:
 										</label>
@@ -313,7 +197,7 @@
 										</select>
 									</td>
 								</tr>	
-									<td nowrap>
+									<td>
 										<label for="data_summaryWordCount">
 											<ssf:nlt tag="searchForm.advanced.options.limitWords"/>: 
 										</label>
@@ -329,7 +213,7 @@
 									</td>
 								</tr>
 								<tr>
-									<td nowrap>
+									<td>
 										<label for="data_sortBy">
 											<ssf:nlt tag="searchForm.advanced.options.sortBy"/> 
 										</label>
@@ -338,13 +222,13 @@
 										<select class="ss_compactSelectBox" name="data_sortBy" id="data_sortBy">
 											<option value="sortByRelevance" <c:if test="${sortBy == 'sortByRelevance'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.relevance"></ssf:nlt></option>
 											<option value="sortByDate" <c:if test="${sortBy == 'sortByDate'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.date"></ssf:nlt></option>
-											<ssf:ifNotFilr><option value="sortByRating" <c:if test="${sortBy == 'sortByRating'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.rating"></ssf:nlt></option></ssf:ifNotFilr>
+											<option value="sortByRating" <c:if test="${sortBy == 'sortByRating'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.rating"></ssf:nlt></option>
 											<option value="sortByReplyCount" <c:if test="${sortBy == 'sortByReplyCount'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.replyCount"></ssf:nlt></option>
 										</select>
 									</td>
 								</tr>
 								<tr>
-									<td nowrap>
+									<td>
 										<label for="data_sortBy_secondary">
 											<ssf:nlt tag="searchForm.advanced.options.sortBySecondary"/> 
 										</label>
@@ -353,7 +237,7 @@
 										<select class="ss_compactSelectBox" name="data_sortBy_secondary" id="data_sortBy_secondary">
 											<option value="sortByRelevance" <c:if test="${sortBySecondary == 'sortByRelevance'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.relevance"></ssf:nlt></option>
 											<option value="sortByDate" <c:if test="${sortBySecondary == 'sortByDate'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.date"></ssf:nlt></option>
-											<ssf:ifNotFilr><option value="sortByRating" <c:if test="${sortBySecondary == 'sortByRating'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.rating"></ssf:nlt></option></ssf:ifNotFilr>
+											<option value="sortByRating" <c:if test="${sortBySecondary == 'sortByRating'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.rating"></ssf:nlt></option>
 											<option value="sortByReplyCount" <c:if test="${sortBySecondary == 'sortByReplyCount'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.replyCount"></ssf:nlt></option>
 										</select>
 									</td>
@@ -361,7 +245,6 @@
 							</table>		
 						</td>
 					</tr>
-					</c:if>
 					
 					<c:if test="${!filterDefinition}">
 						<tr>
@@ -394,7 +277,6 @@
 					</div>
 				  </td>
 			    </tr>
-			  <ssf:ifNotFilr>
 			    <tr>
 			      <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Tag"/></div></td>
 			      <td class="ss_fixed_TD">
@@ -406,8 +288,6 @@
 					</div>	
 			      </td>
 			    </tr>
-			  </ssf:ifNotFilr>
-			  <ssf:ifNotFilr>
 			    <tr>
 			      <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></div></td>
 			      <td class="ss_fixed_TD">
@@ -419,8 +299,6 @@
 					</div>			      
 			      </td>
 			    </tr>
-			  </ssf:ifNotFilr>
-			  <ssf:ifNotFilr>
 				<tr>
 				  <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Entry"/></div></td>
 				  <td class="ss_fixed_TD">
@@ -430,12 +308,8 @@
 							<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_tinyButton" title="<ssf:nlt tag="searchForm.filterButton.addField"/>"><ssf:nlt tag="searchForm.filterButton.add"/></a>				
 						</div>
 					</div>				  
-					<c:if test="${filterDefinition }">
-					    <input type="hidden" id="search_scope_current_filter" name="search_scope_current_filter" value="current" />
-					</c:if>
 				  </td>
 				</tr>
-			  </ssf:ifNotFilr>
 				<tr>
 				  <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.LastActivity"/></div></td>
 				  <td class="ss_fixed_TD">
@@ -518,7 +392,7 @@
 			</c:if>
 		</div>
 		
-		<c:if test="${!empty ss_filterMap.additionalFilters && !filterDefinition}">
+		<c:if test="${! empty ss_filterMap.additionalFilters}">
 		<div id="ss_searchForm_filterSummary" style="visibility:visible; display: block;">
 			<!-- Summary of user filters -->
 			<%@ include file="/WEB-INF/jsp/search/filterSummary.jsp" %>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,68 +30,44 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+
 /**
- * This class holds all of the information necessary to execute the
- * 'get vertical tree' command.
+ * This class holds all of the information necessary to execute the "get vertical tree" command.
  * 
- * @author drfoster@novell.com
+ * @author jwootton
+ *
  */
-public class GetVerticalTreeCmd extends VibeRpcCmd {
-	private boolean	m_findBrowser;	//
-	private String	m_binderId;		//
+public class GetVerticalTreeCmd extends VibeRpcCmd
+{
+	private String m_binderId;
 	
 	/**
-	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public GetVerticalTreeCmd() {
-		// Initialize the super class.
+	public GetVerticalTreeCmd()
+	{
 		super();
 	}
 	
 	/**
-	 * Constructor method.
 	 * 
-	 * @param binderId
-	 * @param findBrowser
 	 */
-	public GetVerticalTreeCmd(String binderId, boolean findBrowser) {
-		// Initialize this object...
+	public GetVerticalTreeCmd( String binderId )
+	{
 		this();
-		
-		// ..and store the parameters.
-		setBinderId(   binderId   );
-		setFindBrowser(findBrowser);
+		m_binderId = binderId;
 	}
 	
 	/**
-	 * Constructor method.
 	 * 
-	 * @param binderId
 	 */
-	public GetVerticalTreeCmd(String binderId) {
-		// Initialize this object.
-		this(binderId, false);	// false -> Not used as part of the find browser.
+	public String getBinderId()
+	{
+		return m_binderId;
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public boolean isFindBrowser() {return m_findBrowser;}
-	public String  getBinderId()   {return m_binderId;   }
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setFindBrowser(boolean findBrowser) {m_findBrowser = findBrowser;}
-	public void setBinderId(   String  binderId)    {m_binderId    = binderId;   }
 	
 	/**
 	 * Returns the command's enumeration value.

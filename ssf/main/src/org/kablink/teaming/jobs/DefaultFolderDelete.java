@@ -56,7 +56,7 @@ public class DefaultFolderDelete extends SimpleTriggerJob implements FolderDelet
     }
 
 	public void remove(Long zoneId) {
-		unscheduleJob(zoneId.toString(), FOLDER_DELETE_GROUP);
+		removeJob(zoneId.toString(), FOLDER_DELETE_GROUP);
 	}
     public void schedule(Long zoneId, final int seconds) {
 		schedule(new SimpleJobDescription(zoneId, zoneId.toString(), FOLDER_DELETE_GROUP, FOLDER_DELETE_DESCRIPTION, seconds));

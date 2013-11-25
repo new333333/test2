@@ -304,8 +304,8 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		
 		@SuppressWarnings("unchecked")
 		public void data(InputStream data) throws TooMuchDataException, IOException, RejectException {
-			Session session = Session.getDefaultInstance(new Properties());
 			SessionUtil.sessionStartup();
+			Session session = Session.getDefaultInstance(new Properties());
 			try {
 				MimeMessage msgs[] = new MimeMessage[1];
 				msgs[0] = new MimeMessage(session, data);

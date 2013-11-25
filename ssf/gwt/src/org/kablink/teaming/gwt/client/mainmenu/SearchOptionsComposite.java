@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,12 +50,14 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
@@ -80,7 +81,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.event.shared.HandlerRegistration;
+
 
 /**
  * Class used for the content of the additional search options.  
@@ -92,13 +93,11 @@ public class SearchOptionsComposite extends Composite
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
-	private boolean							m_isIE;						//
-	private FindCtrl						m_finderControl;			//
-	private FlowPanel						m_mainPanel;				//
-	private GwtTeamingMainMenuImageBundle	m_images;					//
-	private GwtTeamingMessages				m_messages;					//
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private PopupPanel						m_searchOptionsPopup;		//
+	private FindCtrl m_finderControl;
+	private FlowPanel m_mainPanel;
+	private GwtTeamingMainMenuImageBundle m_images;
+	private GwtTeamingMessages m_messages;
+	private PopupPanel m_searchOptionsPopup;
 
 	// The following are used as the ID's on the radio buttons.
 	private final static String RB_PERSON = "personRadio";
@@ -123,7 +122,6 @@ public class SearchOptionsComposite extends Composite
 		FinderRB(String id, String label, final GwtSearchCriteria.SearchType searchType, boolean checked) {
 			super("finders", label);
 			addClickHandler(new ClickHandler() {
-				@Override
 				public void onClick(ClickEvent event) {
 					m_finderControl.hideSearchResults();
 					m_finderControl.setInitialSearchString("");
@@ -146,7 +144,6 @@ public class SearchOptionsComposite extends Composite
 	 * list box.
 	 */
 	private class SavedSearchSelected implements ChangeHandler {
-		@Override
 		public void onChange(ChangeEvent event) {
 			// Is other than the select a search item selected?
 			ListBox ssiList = ((ListBox) event.getSource());
@@ -163,27 +160,6 @@ public class SearchOptionsComposite extends Composite
 	}
 	
 	/*
-	 * Inner class used to wrap a FlowPanel so that on IE, it gets an
-	 * inline-block display style.  Without this, the layout doesn't
-	 * work correctly in the composite.
-	 */
-	private class SOFlowPanel extends FlowPanel {
-		/**
-		 * Constructor method.
-		 */
-		public SOFlowPanel() {
-			// Initialize the super class...
-			super();
-
-			// ...and if we're running on IE...
-			if (m_isIE) {
-				// ...give this an inline-block display style.
-				addStyleName("displayInlineBlock");
-			}
-		}
-	}
-	
-	/*
 	 * Class constructor.
 	 * 
 	 * Note that the class constructor is private to facilitate code
@@ -191,24 +167,26 @@ public class SearchOptionsComposite extends Composite
 	 * through its createAsync().
 	 */
 	private SearchOptionsComposite(PopupPanel searchOptionsPopup) {
-		// Initialize the super class...
-		super();
-		
-		// ...store the parameter...
+		// Store the parameter...
 		m_searchOptionsPopup = searchOptionsPopup;
 
-		// ...initialize the other data members...
-		m_isIE     = GwtClientHelper.jsIsIE();
-		m_images   = GwtTeaming.getMainMenuImageBundle();
+		// ...register the events to be handled by this class...
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
+		
+		// ...and initialize everything else.
+		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
 
-		// ...create the composite's content...
+		// Create the composite's content.
 		m_mainPanel = new FlowPanel();
 		m_mainPanel.addStyleName("searchOptionsDlg_Content");
 		addHeader();
 		addContent();
 		
-		// ...and initialize the Composite itself.
+		// All composites must call initWidget() in their constructors.
 		initWidget(m_mainPanel);
 	}
 
@@ -226,7 +204,6 @@ public class SearchOptionsComposite extends Composite
 		asAnchor.getElement().appendChild(asLabel.getElement());
 		asAnchor.setTitle(m_messages.mainMenuSearchOptionsAdvancedSearch());
 		asAnchor.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				// Hide the search options popup and run the advanced
 				// search dialog.
@@ -236,7 +213,7 @@ public class SearchOptionsComposite extends Composite
 		});
 
 		// ..and tie everything together.
-		FlowPanel asPanel = new SOFlowPanel();
+		FlowPanel asPanel = new FlowPanel();
 		asPanel.addStyleName("searchOptionsDlg_AdvancedSearchPanel margintop3");
 		asPanel.add(asAnchor);
 		m_mainPanel.add(asPanel);
@@ -258,7 +235,7 @@ public class SearchOptionsComposite extends Composite
 	 */
 	private void addFinders() {
 		// Create a panel to hold the finder radio buttons...
-		FlowPanel rbPanel = new SOFlowPanel();
+		FlowPanel rbPanel = new FlowPanel();
 		rbPanel.addStyleName("searchOptionsDlg_FindersRadioPanel");
 
 		// create the radio buttons themselves...
@@ -309,7 +286,6 @@ public class SearchOptionsComposite extends Composite
 		Anchor closePBAnchor = new Anchor();
 		closePBAnchor.addStyleName("searchOptionsDlg_CloseA");
 		closePBAnchor.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				m_searchOptionsPopup.hide();
 			}
@@ -321,7 +297,7 @@ public class SearchOptionsComposite extends Composite
 		m_mainPanel.add(closePBPanel);
 		
 		// ...and add the header text. 
-		FlowPanel headerPanel = new SOFlowPanel();
+		FlowPanel headerPanel = new FlowPanel();
 		headerPanel.addStyleName("searchOptionsDlg_Header");
 		headerPanel.add(new InlineLabel(m_messages.mainMenuSearchOptionsHeader()));
 		m_mainPanel.add(headerPanel);
@@ -332,7 +308,7 @@ public class SearchOptionsComposite extends Composite
 	 */
 	private void addSavedSearches() {
 		// Create a label for the save search widgets...
-		FlowPanel ssLabelPanel = new SOFlowPanel();
+		FlowPanel ssLabelPanel = new FlowPanel();
 		ssLabelPanel.addStyleName("searchOptionsDlg_SavedSearchesLabelPanel margintop3");
 		InlineLabel ssLabel = new InlineLabel(m_messages.mainMenuSearchOptionsSavedSearches());
 		ssLabel.addStyleName("searchOptionsDlg_SavedSearchesLabel");
@@ -340,7 +316,7 @@ public class SearchOptionsComposite extends Composite
 		m_mainPanel.add(ssLabelPanel);
 
 		// ...create the saved searches list box...
-		FlowPanel ssListPanel = new SOFlowPanel();
+		FlowPanel ssListPanel = new FlowPanel();
 		ssListPanel.addStyleName("searchOptionsDlg_SavedSearchesSelectPanel margintop1");
 		ListBox ssList = new ListBox();
 		ssListPanel.add(ssList);
@@ -354,9 +330,10 @@ public class SearchOptionsComposite extends Composite
 	 * Loads a binder into the context pane.
 	 */
 	private void loadBinder(final String binderId) {
-		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(binderId);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
+		GetBinderPermalinkCmd cmd;
+		
+		cmd = new GetBinderPermalinkCmd( binderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -364,16 +341,16 @@ public class SearchOptionsComposite extends Composite
 					binderId);
 			}
 			
-			@Override
 			public void onSuccess(final VibeRpcResponse response ) {
 				String binderPermalink;
 				StringRpcResponseData responseData;
 				
 				responseData = (StringRpcResponseData) response.getResponseData();
 				binderPermalink = responseData.getStringValue();
-
-				EventHelper.fireChangeContextEventAsync(binderId, binderPermalink, Instigator.SEARCH_SELECT);
-			}
+				
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderId, binderPermalink, false, Instigator.SEARCH_SELECT);
+				GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+			}// end onSuccess()
 		});
 	}
 
@@ -458,15 +435,12 @@ public class SearchOptionsComposite extends Composite
 		
 		// Does the user have any saved searches defined?
 		cmd = new GetSavedSearchesCmd();
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetSavedSearches());
 			}
-			
-			@Override
 			public void onSuccess(VibeRpcResponse response)  {
 				List<SavedSearchInfo> ssiList;
 				GetSavedSearchesRpcResponseData responseData;
@@ -504,7 +478,6 @@ public class SearchOptionsComposite extends Composite
 	 */
 	private void setFocusOnSearch() {
 		ScheduledCommand cmd = new ScheduledCommand() {
-			@Override
 			public void execute() {
     			m_finderControl.getFocusWidget().setFocus(true);
 			}
@@ -552,70 +525,11 @@ public class SearchOptionsComposite extends Composite
 					
 					@Override
 					public void onFailure(Throwable reason) {
-						Window.alert(GwtTeaming.getMessages().codeSplitFailure_SearchOptionsComposite());
+						Window.alert( GwtTeaming.getMessages().codeSplitFailure_SearchOptionsComposite() );
 						socClient.onUnavailable();
 					}
 				});
 			}
 		});
-	}
-	
-	/**
-	 * Called when the SearchOptionsComposite is attached.
-	 * 
-	 * Overrides the Widget.onAttach() method.
-	 */
-	@Override
-	public void onAttach() {
-		// Let the widget attach and then register our event handlers.
-		super.onAttach();
-		registerEvents();
-	}
-	
-	/**
-	 * Called when the SearchOptionsComposite is detached.
-	 * 
-	 * Overrides the Widget.onDetach() method.
-	 */
-	@Override
-	public void onDetach() {
-		// Let the widget detach and then unregister our event
-		// handlers.
-		super.onDetach();
-		unregisterEvents();
-	}
-
-	/*
-	 * Registers any global event handlers that need to be registered.
-	 */
-	private void registerEvents() {
-		// If we having allocated a list to track events we've
-		// registered yet...
-		if (null == m_registeredEventHandlers) {
-			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		}
-
-		// If the list of registered events is empty...
-		if (m_registeredEventHandlers.isEmpty()) {
-			// ...register the events.
-			EventHelper.registerEventHandlers(
-				GwtTeaming.getEventBus(),
-				m_registeredEvents,
-				this,
-				m_registeredEventHandlers);
-		}
-	}
-
-	/*
-	 * Unregisters any global event handlers that may be registered.
-	 */
-	private void unregisterEvents() {
-		// If we have a non-empty list of registered events...
-		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
-			// ...unregister them.  (Note that this will also empty the
-			// ...list.)
-			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-		}
 	}
 }

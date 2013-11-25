@@ -8,7 +8,7 @@
 	<authorUrl>www.kablink.org</authorUrl>
 	<version>1.0.0</version>
 	<description>This Plugin is made of a Video folder and a video entry for flash videos.</description>
-	<usage><H1>Using the Video Extension plugin.</H1>
-		Create a Video Folder or configure a folder to allow Video Entries. Then add a Video Entry to the folder.
+	<usage><H1>Using the Twitter plugin.</H1>
+		The Video extension has been configure for ...
 	</usage>
 </extension>

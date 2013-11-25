@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -100,16 +100,10 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
-import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
-/**
- * ?
- * 
- * @author ?
- */
 @SuppressWarnings("unchecked")
 public class WorkspaceTreeHelper {
 	protected static final Log logger = LogFactory.getLog(Workspace.class);
@@ -227,7 +221,7 @@ public class WorkspaceTreeHelper {
 				}
 				// Redirect to viewing the profile entry
 				PortletURL reloadUrl = response.createRenderURL();
-				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, bs.getProfileModule().getProfileBinderId().toString());
+				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, bs.getProfileModule().getProfileBinder().getId().toString());
 				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 				reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 				reloadUrl.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);
@@ -257,7 +251,7 @@ public class WorkspaceTreeHelper {
 		
 		Map formData = request.getParameterMap();
 		try {
-			if (binder == null) binder = bs.getBinderModule().getBinder(binderId, true);
+			if (binder == null) binder = bs.getBinderModule().getBinder(binderId);
 			bs.getReportModule().addAuditTrail(AuditType.view, binder);
 			BinderHelper.getBinderAccessibleUrl(bs, binder, entryId, request, response, model);
 
@@ -280,8 +274,7 @@ public class WorkspaceTreeHelper {
 			//See if this is a user workspace
 			boolean showProfile = false;
 			if ((binder.getDefinitionType() != null) && 
-					((binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) ||
-						(binder.getDefinitionType().intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
+					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				Principal owner = binder.getCreation().getPrincipal(); //creator is user
 				
 				boolean isBinderAdmin = false;
@@ -327,8 +320,8 @@ public class WorkspaceTreeHelper {
 						model.put(WebKeys.USER_WORKSPACE, true);
 
 						//Get the dashboard initial tab if one was passed in
-						String type    = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
-						String profile = (Utils.checkIfFilr() ? "1" : PortletRequestUtils.getStringParameter(request,WebKeys.URL_PROFILE, ""));
+						String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
+						String profile = PortletRequestUtils.getStringParameter(request,WebKeys.URL_PROFILE, "");
 						
 						//if we don't find a Url Type look to see if there is a profile value						
 						if(type.equals("")) {
@@ -401,8 +394,7 @@ public class WorkspaceTreeHelper {
 			//Set up more standard beans
 			//See if this is a user workspace
 			if ((binder.getDefinitionType() != null) && 
-					((binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) ||
-						(binder.getDefinitionType().intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
+					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				if (!showProfile && model.containsKey("ssRDCurrentTab")) {
 					if ( ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW.equalsIgnoreCase( (String)model.get("ssRDCurrentTab") ) ) {
 						//This user workspace is showing the accessories tab, so set up those beans
@@ -470,9 +462,7 @@ public class WorkspaceTreeHelper {
 					// No
 					// Are we dealing with a user workspace?
 					binderDefType = binder.getDefinitionType();
-					if ( binderDefType != null && 
-							(binderDefType.intValue() == Definition.USER_WORKSPACE_VIEW ||
-							 binderDefType.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))
+					if ( binderDefType != null && binderDefType.intValue() == Definition.USER_WORKSPACE_VIEW )
 					{
 						Long workspaceId;
 						
@@ -597,7 +587,7 @@ public class WorkspaceTreeHelper {
 		if (showTrash) {
 			TrashHelper.buildTrashViewToolbar(model);
 			Map options = TrashHelper.buildTrashBeans(bs, req, response, wsId, model);
-			Map trashEntries = TrashHelper.getTrashEntities(bs, model, ws, options);
+			Map trashEntries = TrashHelper.getTrashEntries(bs, model, ws, options);
 			model.putAll(ListFolderHelper.getSearchAndPagingModels(trashEntries, options, showTrash));
 			if (trashEntries != null) {
 				List trashEntriesList = (List) trashEntries.get(ObjectKeys.SEARCH_ENTRIES);
@@ -669,7 +659,7 @@ public class WorkspaceTreeHelper {
 		Criteria crit = SearchUtils.newEntriesDescendants(binderIds);
 		crit.add(org.kablink.util.search.Restrictions.between(
 				MODIFICATION_DATE_FIELD, startDate, now));
-		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
     	List<Map> entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
 		//Get the count of unseen entries
@@ -722,8 +712,7 @@ public class WorkspaceTreeHelper {
 			}
 		}
 		if (!binderIdList.isEmpty()) {
-			//Get sub-binder list including intermediate binders that may be inaccessible
-			SortedSet<Binder> subBinders = bs.getBinderModule().getBinders(binderIdList, Boolean.FALSE);
+			SortedSet<Binder> subBinders = bs.getBinderModule().getBinders(binderIdList);
 			model.put(WebKeys.BINDER_SUB_BINDERS, subBinders);
 		}
 
@@ -781,6 +770,7 @@ public class WorkspaceTreeHelper {
 		buildWorkspaceToolbar(bs, req, response, model, ws, ws.getId().toString());
 	}
 	
+	@SuppressWarnings("unused")
 	protected static void buildWorkspaceToolbar(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, Workspace workspace, 
 			String forumId) {
@@ -865,16 +855,6 @@ public class WorkspaceTreeHelper {
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			toolbar.addToolbarMenuItem("1_administration", "configuration", NLT.get("administration.definition_builder_designers"), url, qualifiers);
 		}
-		if (bs.getBinderModule().testAccess(workspace, BinderOperation.manageConfiguration)) {
-			adminMenuCreated=true;
-			qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_TEMPLATES);
-			url.setParameter(WebKeys.URL_BINDER_PARENT_ID, forumId);
-			toolbar.addToolbarMenuItem("1_administration", "configuration", NLT.get("administration.template_builder_local"), url, qualifiers);
-		}
-		
 		//Delete
 		if (!workspace.isReserved()) {
 			if (bs.getBinderModule().testAccess(workspace, BinderOperation.deleteBinder)) {
@@ -893,8 +873,7 @@ public class WorkspaceTreeHelper {
 		
 		//Move
 		if (!workspace.isReserved() && (workspace.getDefinitionType() == null || 
-				(workspace.getDefinitionType().intValue() != Definition.USER_WORKSPACE_VIEW) &&
-				 workspace.getDefinitionType().intValue() != Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
+				workspace.getDefinitionType().intValue() != Definition.USER_WORKSPACE_VIEW)) {
 			if (bs.getBinderModule().testAccess(workspace, BinderOperation.moveBinder)) {
 				adminMenuCreated=true;
 				qualifiers = new HashMap();
@@ -991,8 +970,7 @@ public class WorkspaceTreeHelper {
 		
 		//If this is a user workspace, add the "Manage this profile" menu
 		if ((workspace.getDefinitionType() != null) && 
-				((workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) ||
-				 (workspace.getDefinitionType().intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
+				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 			Principal owner = workspace.getCreation().getPrincipal(); //creator is user
 		
 			boolean showModifyProfileMenu = false;
@@ -1003,16 +981,12 @@ public class WorkspaceTreeHelper {
 				showModifyProfileMenu = true;
 			}
 		
-			if ((owner.isActive() || 
-					(((owner instanceof User) && 
-							((User)owner).getIdentityInfo().isInternal() && ((User)owner).getIdentityInfo().isFromLocal()) 
-							&& owner.isDisabled())) && 
+			if ((owner.isActive() || (owner.isLocal() && owner.isDisabled())) && 
 					bs.getProfileModule().testAccess(owner, ProfileOperation.deleteEntry)) {
 				//Don't let a user delete his or her own account
 				if (!owner.getId().equals(user.getId())) {
 					showDeleteProfileMenu = true;
-					if ((owner instanceof User) && 
-							((User)owner).getIdentityInfo().isInternal() && ((User)owner).getIdentityInfo().isFromLocal()) { 
+					if (owner.isLocal()) {
 						//showDisableProfileMenu = true;
 					}
 				}
@@ -1250,6 +1224,18 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.TOOLBAR_MOBILE_UI_URL, url.toString());
 		}
 
+		//Color themes (removed for now)
+		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
+					NLT.get("ui.availableThemeIds") + "', '" +
+					NLT.get("ui.availableThemeNames") + "', '" +
+					NLT.get("sidebar.themeChange") + "'); return false;");
+			//footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+			model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
+			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
+		}
+
 		//Set up the whatsNewToolbar links
 		//What's new
         //What's new is not available to the guest user
@@ -1298,7 +1284,7 @@ public class WorkspaceTreeHelper {
 		model.put(WebKeys.GWT_UI_TOOLBAR,  gwtUIToolbar.getToolbar());
 	}
 	
-	public static String[] collectContributorIds(Workspace workspace) {
+	private static String[] collectContributorIds(Workspace workspace) {
 		Set principals = new HashSet();
 		principals.add(workspace.getCreation().getPrincipal().getId().toString());
 		principals.add(workspace.getOwner().getId().toString());
@@ -1318,26 +1304,34 @@ public class WorkspaceTreeHelper {
 		return WebKeys.VIEW_WORKSPACE;
 	}
 	
+	
 	protected static void getShowModifyProfileAdapter(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, Workspace workspace){
+		
 		@SuppressWarnings("unused")
 		User user = RequestContextHolder.getRequestContext().getUser();
+
+		
+
+		
+		
 	}
 
     /**
-     * Helper class to return folder unseen counts as an objects
-     * 
+     * Helper classs to return folder unseen counts as an objects
      * @author Janet McCann
+     *
      */
      public static class Counter {
     	private long count=0;
-    	public Counter() {	
+    	protected Counter() {	
     	}
-    	public void increment() {
+    	protected void increment() {
     		++count;
     	}
     	public Long getCount() {
     		return count;
     	}    	
     }
+    
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -57,20 +57,6 @@ public class TaskListItemHelper {
 	 */
 	private TaskListItemHelper() {
 		// Inhibits this class from being instantiated.
-	}
-
-	/*
-	 * Adds a Long to a List<Long> if it's not already there.
-	 */
-	private static void addLToLLIfUnique(List<Long> lList, Long l) {
-		// Do we have both a List<Long> and a Long to work with? 
-		if ((null != lList) && (null != l)) {
-			// Yes!  If the List<Long> doesn't contain the Long...
-			if (!(lList.contains(l))) {
-				// ...add it.
-				lList.add(l);
-			}
-		}
 	}
 
 	/**
@@ -188,7 +174,7 @@ public class TaskListItemHelper {
 		for (TaskListItem taskScan:  tb.getTasks()) {
 			// ...adding a new TaskLink to the linkage...
 			TaskLink newTaskLink = new TaskLink();
-			newTaskLink.setEntryId(taskScan.getTask().getTaskId().getEntityId());
+			newTaskLink.setEntryId(taskScan.getTask().getTaskId().getEntryId());
 			reply.appendTask(newTaskLink);
 
 			// ...and updating its subtasks.
@@ -205,7 +191,7 @@ public class TaskListItemHelper {
 		for (TaskListItem taskScan:  task.getSubtasks()) {
 			// ...adding a new TaskLink to the subtask linkage...
 			TaskLink newTaskLink = new TaskLink();
-			newTaskLink.setEntryId(taskScan.getTask().getTaskId().getEntityId());
+			newTaskLink.setEntryId(taskScan.getTask().getTaskId().getEntryId());
 			taskLink.appendSubtask(newTaskLink);
 			
 			// ...and updating its subtasks.
@@ -385,23 +371,6 @@ public class TaskListItemHelper {
 			}
 		}
 	}
-
-	/**
-	 * Returns a List<Long> of the contributor IDs from a
-	 * List<TaskListItem>.
-	 * 
-	 * @return
-	 */
-	public static List<Long> findContributorIds(List<TaskListItem> tasks) {
-		List<Long> reply = new ArrayList<Long>();
-		if (null != tasks) {
-			for (TaskListItem task:  tasks) {
-				addLToLLIfUnique(reply, task.getTask().getCreatorId() );
-				addLToLLIfUnique(reply, task.getTask().getModifierId());
-			}
-		}
-		return reply;
-	}
 	
 	/**
 	 * Searches a task's subtasks for the given ID.
@@ -412,7 +381,7 @@ public class TaskListItemHelper {
 	 */
 	public static TaskListItem findSubtask(TaskListItem task, Long entryId) {
 		for (TaskListItem taskScan:  task.getSubtasks()) {
-			if (entryId.equals(taskScan.getTask().getTaskId().getEntityId())) {
+			if (entryId.equals(taskScan.getTask().getTaskId().getEntryId())) {
 				return taskScan;
 			}
 			
@@ -436,7 +405,7 @@ public class TaskListItemHelper {
 	 */
 	public static List<TaskListItem> findSubtaskList(TaskListItem task, Long entryId) {
 		for (TaskListItem taskScan:  task.getSubtasks()) {
-			if (entryId.equals(taskScan.getTask().getTaskId().getEntityId())) {
+			if (entryId.equals(taskScan.getTask().getTaskId().getEntryId())) {
 				return task.getSubtasks();
 			}
 			
@@ -461,7 +430,7 @@ public class TaskListItemHelper {
 		// Scan the TaskListItem's in this TaskListItemHelper.
 		for (TaskListItem taskScan:  taskList) {
 			// Is this the TaskListItem in question?
-			if (taskScan.getTask().getTaskId().getEntityId().equals(entryId)) {
+			if (taskScan.getTask().getTaskId().getEntryId().equals(entryId)) {
 				// Yes!  Return it.
 				return taskScan;
 			}
@@ -498,7 +467,7 @@ public class TaskListItemHelper {
 		// Scan the TaskListItem's in this TaskListItemHelper.
 		for (TaskListItem taskScan:  tb.getTasks()) {
 			// Is this the TaskListItem in question?
-			if (taskScan.getTask().getTaskId().getEntityId().equals(entryId)) {
+			if (taskScan.getTask().getTaskId().getEntryId().equals(entryId)) {
 				// Yes!  Return it.
 				return tb.getTasks();
 			}
@@ -518,7 +487,7 @@ public class TaskListItemHelper {
 	
 	public static List<TaskListItem> findTaskList(TaskBundle tb, TaskListItem task) {
 		// Always use the initial form of the method.
-		return findTaskList(tb, task.getTask().getTaskId().getEntityId());
+		return findTaskList(tb, task.getTask().getTaskId().getEntryId());
 	}
 
 	/**
@@ -669,17 +638,17 @@ public class TaskListItemHelper {
 	 * 
 	 * @return
 	 */
-	public static List<EntityId> getTaskIdsFromList(List<TaskListItem> tliList, boolean includeSubtasks) {
-		List<EntityId> reply = new ArrayList<EntityId>();		
+	public static List<TaskId> getTaskIdsFromList(List<TaskListItem> tliList, boolean includeSubtasks) {
+		List<TaskId> reply = new ArrayList<TaskId>();		
 		getTaskIdsFromListImpl(tliList, reply, includeSubtasks);		
 		return reply;
 	}
 	
-	public static List<EntityId> getTaskIdsFromList(List<TaskListItem> tliList) {
+	public static List<TaskId> getTaskIdsFromList(List<TaskListItem> tliList) {
 		return getTaskIdsFromList(tliList, true);
 	}
 	
-	private static void getTaskIdsFromListImpl(List<TaskListItem> tliList, List<EntityId> taskIds, boolean includeSubtasks) {
+	private static void getTaskIdsFromListImpl(List<TaskListItem> tliList, List<TaskId> taskIds, boolean includeSubtasks) {
 		for (TaskListItem task:  tliList) {
 			taskIds.add(task.getTask().getTaskId());
 			if (includeSubtasks) {
@@ -688,28 +657,6 @@ public class TaskListItemHelper {
 		}
 	}
 
-	/**
-	 * Returns true if the given TaskListItem corresponds to a parent
-	 * task with no start date, no end date and a duration.  It returns
-	 * false otherwise.
-	 * 
-	 * @param tli
-	 * 
-	 * @return
-	 */
-	public static boolean isParentWithDurationError(TaskListItem tli) {
-		// Is this a parent task?
-		List<TaskListItem> subTasks = ((null ==tli) ? null : tli.getSubtasks());
-		if ((null == subTasks) || (0 == subTasks.size())) {
-			// No!  Then it can't have a duration error.
-			return false;
-		}
-
-		// If a parent task only has a duration, that's the error that
-		// we're looking for.
-		return tli.getTask().getEvent().hasDurationOnly();
-	}
-	
 	/**
 	 * Move one TaskListItem above another.
 	 * 

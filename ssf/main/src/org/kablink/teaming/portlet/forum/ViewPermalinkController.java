@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -81,13 +81,12 @@ import org.kablink.util.Http;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
+
 /**
- * ?
- * 
  * @author Peter Hurley
+ *
  */
 public class ViewPermalinkController  extends SAbstractController {
-	@Override
 	public void handleActionRequestAfterValidation(final ActionRequest request, final ActionResponse response) throws Exception {
 		User user = null;
 		String sUrl = null;
@@ -103,7 +102,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			isMobile = (BrowserSniffer.is_mobile(httpReq, userAgents) && 
 					!BrowserSniffer.is_tablet(httpReq, tabletUserAgents, testForAndroid));
 		}
-		if (WebUrlUtil.isMobileFullUI(httpReq) || Utils.checkIfFilr()) isMobile = false;
+		if (WebUrlUtil.isMobileFullUI(httpReq)) isMobile = false;
 		
 		try {
 			if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
@@ -115,7 +114,6 @@ public class ViewPermalinkController  extends SAbstractController {
 					return;
 				}
 				adaptedPortletUrl = (AdaptedPortletURL)RunasTemplate.runas(new RunasCallback() {
-					@Override
 					public Object doAs() {
 						return processRequest(request, response);
 					}
@@ -243,7 +241,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
 		if (httpReq != null) {
 			isMobile = (BrowserSniffer.is_mobile(httpReq, userAgents) && !BrowserSniffer.is_tablet(httpReq, tabletUserAgents, testForAndroid));
-			if (WebUrlUtil.isMobileFullUI(httpReq) || Utils.checkIfFilr()) isMobile = false;
+			if (WebUrlUtil.isMobileFullUI(httpReq)) isMobile = false;
 		}
 		//binderId is not longer required on all entries
 		String zoneUUID= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
@@ -254,8 +252,6 @@ public class ViewPermalinkController  extends SAbstractController {
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 		String captive = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, null);
 		String showTrash = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_TRASH, "");
-		String invokeShare = PortletRequestUtils.getStringParameter(request, WebKeys.URL_INVOKE_SHARE, "");
-		String invokeSubscribe = PortletRequestUtils.getStringParameter(request, WebKeys.URL_INVOKE_SUBSCRIBE, "");
 		Boolean loginUrl = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_LOGIN_URL, false);
 		EntityType entityType = EntityType.none;
 		DefinableEntity entity = null;
@@ -451,8 +447,7 @@ public class ViewPermalinkController  extends SAbstractController {
 					User user = AccessUtils.getZoneSuperUser(zoneId);
 
 	 				entity = (DefinableEntity)RunasTemplate.runas(new RunasCallback () {
-	 					@Override
-						public Object doAs() {
+	 					public Object doAs() {
 	 						return getProfileModule().getProfileBinder();
 	 					}
 	 				}, user);
@@ -478,11 +473,11 @@ public class ViewPermalinkController  extends SAbstractController {
 					if (isMobile) {
 						url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
 						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_USER);
-			 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinderId().toString());
+			 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinder().getId().toString());
 			 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 					} else {
 			 			url.setParameter(WebKeys.URL_ACTION, "view_profile_entry");
-			 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinderId().toString());
+			 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinder().getId().toString());
 			 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			 			url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, "full");
 					}
@@ -516,9 +511,9 @@ public class ViewPermalinkController  extends SAbstractController {
 		else if("false".equals(captive))
 			url.setParameter(WebKeys.URL_CAPTIVE, "false");
 		
-		if (MiscUtil.hasString(showTrash))       url.setParameter(WebKeys.URL_SHOW_TRASH,       showTrash      );
-		if (MiscUtil.hasString(invokeShare))     url.setParameter(WebKeys.URL_INVOKE_SHARE,     invokeShare    );
-		if (MiscUtil.hasString(invokeSubscribe)) url.setParameter(WebKeys.URL_INVOKE_SUBSCRIBE, invokeSubscribe);
+		if (MiscUtil.hasString(showTrash)) {
+			url.setParameter(WebKeys.URL_SHOW_TRASH, showTrash);
+		}
 				
     	return url;
 	}
@@ -567,7 +562,6 @@ public class ViewPermalinkController  extends SAbstractController {
 		return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(request), WebKeys.ACTION_READ_FILE, entity, fileName);
 	}
 
-	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map<String,Object> model = new HashMap<String,Object>();

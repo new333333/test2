@@ -50,14 +50,10 @@ public class GwtUpgradeInfo
 	implements IsSerializable, VibeRpcResponseData
 {
 	private String m_releaseInfo;
-	private String m_filrApplianceReleaseInfo;
-	private String m_nameAndVersion;
-	private String m_build;
 	private ArrayList<UpgradeTask> m_upgradeTasks = null;
-	private ArrayList<GwtFilrAdminTask> m_filrAdminTasks = null;
 	private boolean m_upgradeTasksExist = false;
 	private boolean m_isAdmin = false;
-	private boolean m_licenseExpired = false;
+	
 	
 	/**
 	 * 
@@ -66,25 +62,6 @@ public class GwtUpgradeInfo
 	{
 	}// end GwtUpgradeInfo()
 	
-
-	/**
-	 * Add a Filr admin task.
-	 */
-	public void addFilrAdminTask( GwtFilrAdminTask task )
-	{
-		if ( m_filrAdminTasks == null )
-			m_filrAdminTasks = new ArrayList<GwtFilrAdminTask>();
-		
-		m_filrAdminTasks.add( task );
-	}
-	
-	/**
-	 * Add a "license expired" task.
-	 */
-	public void addLicenseExpiredTask()
-	{
-		m_licenseExpired = true;
-	}
 	
 	/**
 	 * Add an upgrade task to the list of upgrade tasks.
@@ -107,17 +84,7 @@ public class GwtUpgradeInfo
 		m_upgradeTasks.add( upgradeTask );
 	}// end addUpgradeTask()
 	
-
-	/**
-	 * Return true if there are Filr admin tasks that need to be completed.
-	 */
-	public boolean doFilrAdminTasksExist()
-	{
-		if ( m_filrAdminTasks != null && m_filrAdminTasks.size() > 0 )
-			return true;
-		
-		return false;
-	}
+	
 	/**
 	 * Return true if there are upgrade tasks to be performed.
 	 */
@@ -130,50 +97,11 @@ public class GwtUpgradeInfo
 	/**
 	 * 
 	 */
-	public String getBuild()
-	{
-		return m_build;
-	}
-	
-	/**
-	 * 
-	 */
 	public boolean getIsAdmin()
 	{
 		return m_isAdmin;
 	}// end getIsAdmin()
 	
-	/**
-	 * Return all of the Filr admin tasks that need to be done
-	 */
-	public ArrayList<GwtFilrAdminTask> getFilrAdminTasks()
-	{
-		return m_filrAdminTasks;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getFilrApplianceReleaseInfo()
-	{
-		return m_filrApplianceReleaseInfo;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getIsLicenseExpired()
-	{
-		return m_licenseExpired;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getNameAndVersion()
-	{
-		return m_nameAndVersion;
-	}
 	
 	/**
 	 * 
@@ -201,29 +129,6 @@ public class GwtUpgradeInfo
 		m_isAdmin = isAdmin;
 	}// end setIsAdmin()
 	
-	/**
-	 * 
-	 */
-	public void setBuild( String build )
-	{
-		m_build = build;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setFilrApplianceReleaseInfo( String releaseInfo )
-	{
-		m_filrApplianceReleaseInfo = releaseInfo;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setNameAndVersion( String nameAndVersion )
-	{
-		m_nameAndVersion = nameAndVersion;
-	}
 	
 	/**
 	 * 
@@ -252,5 +157,5 @@ public class GwtUpgradeInfo
 		UPGRADE_SEARCH_INDEX,
 		UPGRADE_TEMPLATES;
 	}// end UpgradeTask
-	
+
 }// end GwtUpgradeInfo

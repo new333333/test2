@@ -9,8 +9,8 @@
 .soria .dijitToolbar .dijitComboButton .dijitButtonContents,
 .soria .dijitToolbar .dijitComboButton .dijitDownArrowButton {
 	background: none;
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 	border: none;
 	font-size: 12px;
 }
@@ -26,23 +26,23 @@
 .soria .dijitToolbar .dijitToggleButtonChecked {
 	background-color:#d8e5f8;
 	border:1px solid #316ac5;
-	padding: 0;
+	padding: 0px;
 }
 .soria .dijitToolbar .dijitButtonCheckedHover,
 .soria .dijitToolbar .dijitToggleButtonCheckedHover
  {
 	background-color:#9abbea;
 	border:1px solid #316ac5;
-	padding: 0;
+	padding: 0px;
 }
 .soria .dijitToolbar .dijitButtonHover,
 .soria .dijitToolbar .dijitToggleButtonHover,
 .soria .dijitToolbar .dijitDropDownButtonHover,
-.soria .dijitToolbar .dijitComboButton .dijitButtonContentsHover,
-.soria .dijitToolbar .dijitComboButton .dijitDownArrowButtonHover {
+.soria .dijitToolbar .dijitComboButtonHover .dijitButtonContents,
+.soria .dijitToolbar .dijitComboButtonDownArrowHover .dijitDownArrowButton {
 	
 	border: 1px solid #316ac5;
-	padding: 0;
+	padding: 0px;
 	background-color:#9abbea;
 }
 .soria .dijitToolbar label {
@@ -52,5 +52,5 @@
 .dj_ie .soria .dijitToolbar .dijitComboButton .dijitDownArrowButtonFocused {
 	
 	border: 1px #777 dotted !important;
-	padding: 0;
+	padding: 0px;
 }

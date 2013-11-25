@@ -42,38 +42,27 @@
 
 </ul>
 #else
-#set( $quotaExceeded = $ssVisitor.isAttachmentsOverQuota(${ssVisitor.Entity.FileAttachments}) )
 <table cellpadding="0" cellspacing="0" border="0">
 <tbody>
 #foreach ($selection in $ssVisitor.Entity.FileAttachments)
 	<tr>
-		#if ($ssVisitor.NotifyDef.isAttachmentsIncluded() && !$quotaExceeded && !$ssVisitor.isAttachmentOverQuota(${selection}))
-			<td valign="top" style="font-size:10px;font-weight:bold;padding-left:0px;white-space:nowrap;">
+		#if ($ssVisitor.NotifyDef.isAttachmentsIncluded())
+			<td style="font-size:10px;font-weight:bold;padding-left:0px;white-space:nowrap;">
 				${selection.fileItem.name}
 			</td>
 		#else
-			<td valign="top" style="font-size:10px;font-weight:bold;padding-left:0px;white-space:nowrap;">
+			<td style="font-size:10px;font-weight:bold;padding-left:0px;white-space:nowrap;">
 				<a style="text-decoration: none;" href="$ssVisitor.getFileLink(${selection})">${selection.fileItem.name}</a>
-				#if ($ssVisitor.NotifyDef.isAttachmentsIncluded() && !$quotaExceeded && $ssVisitor.isAttachmentOverQuota(${selection}))
-				  <div style="#ss_fineprint() #ss_light()">
-				  	(${ssVisitor.getNLT("email.attachmentTooBig")})
-				  </div>
-				#end
 			</td>
 		#end
-		<td valign="top" style="font-size:10px;white-space:nowrap;padding-left:10px;color:#666666">
+		<td style="font-size:10px;white-space:nowrap;padding-left:10px;color:#666666">
 			$ssVisitor.NotifyDef.DateFormat.format($selection.Modification.Date)</td>
-		<td valign="top" style="font-size:10px;white-space:nowrap;padding-left:10px;color:#666666">${selection.FileItem.LengthKB}KB</td>
-		<td valign="top" style="font-size:10px;white-space:nowrap;padding-left:10px;color:#666666">$esc.html($ssVisitor.getUserTitle(${selection.Modification.Principal}))</td>
+		<td style="font-size:10px;white-space:nowrap;padding-left:10px;color:#666666">${selection.FileItem.LengthKB}KB</td>
+		<td style="font-size:10px;white-space:nowrap;padding-left:10px;color:#666666">$esc.html($ssVisitor.getUserTitle(${selection.Modification.Principal}))</td>
 	</tr>
 #end
 </tbody>
 </table>
-#if ($ssVisitor.NotifyDef.isAttachmentsIncluded() && $quotaExceeded)
-  <div style="#ss_fineprint() #ss_light()">
-  	(${ssVisitor.getNLT("email.attachmentsTooBig")})
-  </div>
-#end
 #end
 </div>
 #else

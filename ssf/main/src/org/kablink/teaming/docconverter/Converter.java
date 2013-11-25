@@ -44,7 +44,6 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.repository.RepositoryServiceException;
@@ -66,8 +65,8 @@ public abstract class Converter<T>
 	
 	private static final String TEXT_FILE_SUFFIX = ".txt";
 	
-	public Converter(String subDir) {
-		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"), subDir);
+	public Converter() {
+		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
 		maxTextLength = SPropsUtil.getLong("doc.max.text.extraction.size.threshold", 1048576);
 		
 		String to = SPropsUtil.getString("conversion.timeout.ms");
@@ -96,9 +95,6 @@ public abstract class Converter<T>
 		throws Exception;
 
 	public abstract void deleteConvertedFile(Binder binder, DefinableEntity entry, FileAttachment fa)
-	throws UncheckedIOException, RepositoryServiceException;
-	
-	public abstract void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa)
 	throws UncheckedIOException, RepositoryServiceException;
 	
 	protected void deleteConvertedFile(Binder binder, DefinableEntity entry, FileAttachment fa, String subdir, String suffix)
@@ -171,22 +167,14 @@ public abstract class Converter<T>
 	}
 
 	private void shortenConvertedFile(String convertedFilePath, long maxLength) {
-		RandomAccessFile raf = null;
 		try {
 
-			raf = new RandomAccessFile(convertedFilePath, "rw");
+			RandomAccessFile raf = new RandomAccessFile(convertedFilePath, "rw");
 			raf.setLength(maxLength); // truncate file
 			raf.close();
-			raf = null;
 		}
 		catch (java.io.IOException ex) {
 			//truncation didn't work, don't do anything
-		} finally {
-			if (raf != null) {
-				try {
-					raf.close();
-				} catch(Exception e) {}
-			}
 		}
 	}
 	
@@ -245,7 +233,7 @@ public abstract class Converter<T>
 		}
 	}
 
-	protected void end(long begin, String fileName) {
+	private void end(long begin, String fileName) {
 		if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
 			logger.debug(diff + " ms, converting " + fileName);

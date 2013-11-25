@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,7 +70,6 @@ import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.AverageRating;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -94,12 +94,13 @@ import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.jobs.DefaultFolderNotification;
+import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
 import org.kablink.teaming.jobs.FolderDelete;
 import org.kablink.teaming.jobs.FolderNotification;
+import org.kablink.teaming.jobs.MirroredFolderSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.lucene.Hits;
@@ -114,10 +115,9 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FileLockInfo;
 import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
-import org.kablink.teaming.module.report.ReportModule;
-import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
@@ -126,9 +126,6 @@ import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
-import org.kablink.teaming.runas.RunasCallback;
-import org.kablink.teaming.runas.RunasTemplate;
-import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
@@ -136,9 +133,7 @@ import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -153,11 +148,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * ?
- * 
+ *
  * @author Jong Kim
  */
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings("unchecked")
 public abstract class AbstractFolderModule extends CommonDependencyInjection 
 		implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	protected String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
@@ -166,10 +160,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     protected FileModule fileModule;
     protected BinderModule binderModule;
     
-    protected AtomicInteger aeCount = new AtomicInteger();
-    protected AtomicInteger meCount = new AtomicInteger();
-    protected AtomicInteger deCount = new AtomicInteger();
-    protected AtomicInteger arCount = new AtomicInteger();
+    AtomicInteger aeCount = new AtomicInteger();
+    AtomicInteger meCount = new AtomicInteger();
+    AtomicInteger deCount = new AtomicInteger();
+    AtomicInteger arCount = new AtomicInteger();
 
 
 	protected DefinitionModule getDefinitionModule() {
@@ -204,15 +198,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		return (AdminModule) SpringContextUtil.getBean("adminModule");
 	}
 	
-	protected RssModule getRssModule() {
-		// Can't use IoC due to circular dependency
-		return (RssModule) SpringContextUtil.getBean("rssModule");
-	}
-	
-	protected ReportModule getReportModule() {
-		return (ReportModule) SpringContextUtil.getBean("reportModule");
-	}
-	
 	private TransactionTemplate transactionTemplate;
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
@@ -221,14 +206,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		this.transactionTemplate = transactionTemplate;
 	}
 
-	private RunAsyncManager runAsyncManager;
-	protected RunAsyncManager getRunAsyncManager() {
-		return runAsyncManager;
-	}
-	public void setRunAsyncManager(RunAsyncManager runAsyncManager) {
-		this.runAsyncManager = runAsyncManager;
-	}
-	
  	protected FolderDelete getDeleteProcessor(Workspace zone) {
  	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
  	   if (Validator.isNotNull(jobClass)) {
@@ -238,16 +215,13 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			   logger.error("Cannot instantiate FolderDelete custom class", ex);
 		   }
    		}
- 	   String className = SPropsUtil.getString("job.folder.delete.class", "org.kablink.teaming.jobs.DefaultFolderDelete");
- 	   return (FolderDelete)ReflectHelper.getInstance(className);
+   		return (FolderDelete)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultFolderDelete.class);
   	}
 
-	@Override
 	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId) {
   		return getNotificationScheduleObject().getScheduleInfo(zoneId, folderId);
 	}
 	
-	@Override
 	public void setNotificationSchedule(ScheduleInfo config, Long folderId) {
     	checkAccess(getFolder(folderId),FolderOperation.manageEmail);
         //data is stored with job
@@ -259,26 +233,23 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     }    
 
 	//called on zone delete
-	@Override
 	public void stopScheduledJobs(Workspace zone) {
 		FolderDelete job = getDeleteProcessor(zone);
 		job.remove(zone.getId());
 	}
  	//called on zone startup
-     @Override
-	public void startScheduledJobs(Workspace zone) {
+     public void startScheduledJobs(Workspace zone) {
     	if (zone.isDeleted()) return;
     	//make sure a delete job is scheduled for the zone
 		FolderDelete job = getDeleteProcessor(zone);
-		String minutesString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_MINUTES + "']");
-    	int minutes = 10;
+		String hrsString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_HOURS + "']");
+    	int hours = 2;
     	try {
-    		minutes = Integer.parseInt(minutesString);
+    		hours = Integer.parseInt(hrsString);
     	} catch (Exception ex) {};
-    	job.schedule(zone.getId(), minutes*60);
+    	job.schedule(zone.getId(), hours*60*60);
    }
 
-	@Override
 	public boolean testAccess(Folder folder, FolderOperation operation) {
 		try {
 			checkAccess(folder, operation);
@@ -289,25 +260,15 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			return false;
 		}
 	}
-	@Override
 	public void checkAccess(Folder folder, FolderOperation operation) throws AccessControlException {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		if (user.isShared()) {
-			//See if the user is only allowed "read only" rights
-			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-			if (zoneConfig.getAuthenticationConfig().isAnonymousReadOnly()) {
-				//This is the guest account and it is read only. Only allow checks for read rights
-				throw new AccessControlException(operation.toString(), new Object[] {});
-			}
-		}
 		switch (operation) {
 			case addEntry: 
+			case synchronize:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
 				break;
-			case scheduleSynchronization:
 			case manageEmail:
+			case scheduleSynchronization:
 			case changeEntryTimestamps:
-			case fullSynchronize:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.BINDER_ADMINISTRATION);
 				break;				
 			case entryOwnerSetAcl:
@@ -329,11 +290,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 				}
 				break;
 			default:
-				throw new AccessControlException(operation.toString(), new Object[] {});
+				throw new NotSupportedException(operation.toString(), "checkAccess");
 				
 		}
 	}
-	@Override
 	public boolean testAccess(FolderEntry entry, FolderOperation operation) {
 		try {
 			checkAccess(entry, operation);
@@ -351,23 +311,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			return false;
 		}
 	}
-	@Override
 	public void checkAccess(FolderEntry entry, FolderOperation operation) throws AccessControlException {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		if (user.isShared()) {
-			//See if the user is only allowed "read only" rights
-			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-			if (zoneConfig.getAuthenticationConfig().isAnonymousReadOnly()) {
-				//This is the guest account and it is read only. Only allow checks for read rights
-				switch (operation) {
-					case readEntry:
-						//Allow this right to be checked. All other rights will fail
-						break;
-					default:
-						throw new AccessControlException(operation.toString(), new Object[] {});
-				}
-			}
-		}
 		switch (operation) {
 			case readEntry:
 			case copyEntry:
@@ -377,33 +321,17 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			case addEntryWorkflow:
 			case deleteEntryWorkflow:
 			case reserveEntry:
+			case moveEntry:
 			case changeEntryType:
 				AccessUtils.operationCheck(entry, WorkAreaOperation.MODIFY_ENTRIES);   
 				break;
-			case moveEntry:
-	    		if(entry.isAclExternallyControlled()) { // Net Folder entries
-					getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.DELETE_ENTRIES);
-	    		}
-	    		else { // Regular Vibe entries
-					AccessUtils.operationCheck(entry, WorkAreaOperation.MODIFY_ENTRIES);   	    			
-	    		}
-	    		break;
 			case modifyEntryFields:
 				AccessUtils.modifyFieldCheck(entry);   
-				break;
-			case renameEntry:
-				AccessUtils.operationCheck(entry, WorkAreaOperation.RENAME_ENTRIES);   
 				break;
 			case restoreEntry:
 			case preDeleteEntry:
 			case deleteEntry:
-	    		if(entry.isAclExternallyControlled()) { // Net Folder entries
-	    			// Do the checking in a way that is consistent with the file system semantic.
-					getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.DELETE_ENTRIES);
-	    		}
-	    		else { // Regular Vibe entries
-	    			AccessUtils.operationCheck(entry, WorkAreaOperation.DELETE_ENTRIES);
-	    		}
+				AccessUtils.operationCheck(entry, WorkAreaOperation.DELETE_ENTRIES);   		
 				break;
 			case overrideReserveEntry:
 				AccessUtils.overrideReserveEntryCheck(entry);
@@ -446,46 +374,17 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 				}
 				break;
 			}
-			case allowSharing:
-			{
-				AccessUtils.operationCheck(entry, WorkAreaOperation.ALLOW_SHARING_INTERNAL);   
-				break;
-			}
-			case allowSharingExternal:
-			{
-				AccessUtils.operationCheck(entry, WorkAreaOperation.ALLOW_SHARING_EXTERNAL);   
-				break;
-			}
-			case allowSharingPublic:
-			{
-				AccessUtils.operationCheck(entry, WorkAreaOperation.ALLOW_SHARING_PUBLIC);   
-				break;
-			}
-			case allowSharingForward:
-			{
-				AccessUtils.operationCheck(entry, WorkAreaOperation.ALLOW_SHARING_FORWARD);   
-				break;
-			}
-			case allowAccessNetFolder:
-			{
-				AccessUtils.operationCheck(entry, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);   
-				break;
-			}
-			case changeACL:
-			{
-				AccessUtils.operationCheck(entry, WorkAreaOperation.CHANGE_ACCESS_CONTROL);   
-				break;
-			}
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
 					
 		}
 
 	}
-    
-	protected Folder loadFolder(Long folderId) throws NoFolderByTheIdException {
+	
+	
+	protected Folder loadFolder(Long folderId)  {
         Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneId());
-		if (folder.isDeleted()) throw new NoFolderByTheIdException(folderId);
+		if (folder.isDeleted()) throw new NoBinderByTheIdException(folderId);
 		return folder;
 
 	}
@@ -505,7 +404,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		if (entry.isPreDeleted() || entry.getParentFolder().isPreDeleted()) throw new NoFolderEntryByTheIdException(entryId);
 		return entry;		
 	}          
-	    
+	          	    
 	protected FolderCoreProcessor loadProcessor(Folder folder) {
         // This is nothing but a dispatcher to an appropriate processor. 
         // Shared logic, if exists, must be put into the corresponding method in 
@@ -515,18 +414,17 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		return (FolderCoreProcessor)getProcessorManager().getProcessor(folder, folder.getProcessorKey(FolderCoreProcessor.PROCESSOR_KEY));	
 	}
 
-	@Override
 	public Folder getFolder(Long folderId)
 		throws NoFolderByTheIdException, AccessControlException {
 		Folder folder = loadFolder(folderId);
 	
 		// Check if the user has "read" access to the folder.
 		try {
-			getBinderModule().checkAccess(folder, BinderOperation.readEntries);
+			getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
 		} catch(AccessControlException ace) {
 			//Can't read it, so try seeing if the folder title is readable
 			try {
-				getBinderModule().checkAccess(folder, BinderOperation.viewBinderTitle);
+				getAccessControlManager().checkOperation(folder, WorkAreaOperation.VIEW_BINDER_TITLE);
 			} catch(AccessControlException ace2) {
 				throw ace;
 			}
@@ -534,12 +432,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		return folder;        
 	}
 	
-    @Override
-	public Folder getFolderWithoutAccessCheck(Long folderId) throws NoFolderByTheIdException {
+    public Folder getFolderWithoutAccessCheck(Long folderId) throws NoFolderByTheIdException {
     	return loadFolder(folderId);
     }
 
-	@Override
 	public SortedSet<Folder> getFolders(Collection<Long> folderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
@@ -557,8 +453,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	}
  
     //no transaction by default
-    @Override
-	public FolderEntry addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    public FolderEntry addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Map options) throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	long begin = System.nanoTime();
     	aeCount.incrementAndGet();
@@ -578,14 +473,12 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         } else {
         	def = folder.getDefaultEntryDef();
         }
-                
-        FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         
+        FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         end(begin, "addEntry");
         return entry;
     }
     //no transaction    
-	@Override
 	public FolderEntry addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems, Map options) 
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
@@ -614,7 +507,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         return reply;
     }
     //no transaction    
-	@Override
 	public void addVote(Long folderId, Long entryId, InputDataAccessor inputData, Map options) throws AccessControlException {
 	   	meCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);   	
@@ -640,19 +532,12 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
  
 
     //no transaction    
-    @Override
-	public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
     throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException {
     	long begin = System.nanoTime();
     	meCount.incrementAndGet();
         FolderEntry entry = loadEntryStrict(folderId, entryId);   	
-        if (inputData.exists("title") &&
-        		!inputData.getSingleValue("title").equals(entry.getTitle())) { 
-        	// This is a request to rename the entry. We must also check that the user has the right to rename it
-        	checkAccess(entry, FolderOperation.renameEntry);
-        }
-        //Must have modify rights, too
 		try {
 			checkAccess(entry, FolderOperation.modifyEntry);
 		} catch (AccessControlException e) {
@@ -681,8 +566,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     }   
     
     //no transaction
-    @Override
-	public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content, Map options)
+    public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content, Map options)
 	throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException {
     	MultipartFile mf = new SimpleMultipartFile(fileName, content);
     	Map<String, MultipartFile> fileItems = new HashMap<String, MultipartFile>();
@@ -693,22 +577,19 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     }
 
 
-    @Override
-	public Map getEntries(Long folderId, Map searchOptions) {
+    public Map getEntries(Long folderId, Map searchOptions) {
         Folder folder = loadFolder(folderId);
         //search query does access checks
         return loadProcessor(folder).getBinderEntries(folder, entryTypes, searchOptions);
 
     }
     
-    @Override
-	public void getEntryPrincipals(List entries) {
+    public void getEntryPrincipals(List entries) {
 	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao(), Constants.CREATORID_FIELD);
     }
     
     
-    @Override
-	public Map getFullEntries(Long folderId, Map searchOptions) {
+    public Map getFullEntries(Long folderId, Map searchOptions) {
     	//search query does access checks
         Map result =  getEntries(folderId, searchOptions);
         //now load the full database object
@@ -778,8 +659,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         return result;
     }
 
-    @Override
-	public Map<Folder, Long> getUnseenCounts(Collection<Long> folderIds) {
+    public Map<Folder, Long> getUnseenCounts(Collection<Long> folderIds) {
     	//search engine will do acl checks
         User user = RequestContextHolder.getRequestContext().getUser();
         SeenMap seenMap = getProfileDao().loadSeenMap(user.getId());
@@ -841,15 +721,14 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     		.add(between(Constants.LASTACTIVITY_DAY_FIELD,EntityIndexUtils.formatDayString(startDate), EntityIndexUtils.formatDayString(now)));
     	Hits results = null;
     	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(true, false);
+    	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(crit.toQuery());
     	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
     	//RemoteInStreamSession instreamSession = getInstreamSessionFactory().openSession();
         
         try {
-        	results = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-        			so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, so.getLuceneQuery(),so.getSortBy(),0,0);
+        	results = luceneSession.search(so.getLuceneQuery(),so.getSortBy(),0,0);
         	//results = instreamSession.search(so.getQueryString(),so.getSortBy(),0,0);
         } catch (Exception e) {
         	logger.warn("Exception throw while searching in getRecentEntries: " + e.toString());
@@ -860,8 +739,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         return results;
     }
            
-    @Override
-	public Folder locateEntry(Long entryId) {
+    public Folder locateEntry(Long entryId) {
         FolderEntry entry = (FolderEntry)getCoreDao().load(FolderEntry.class, entryId);
         if (entry == null) return null;
         try {
@@ -872,19 +750,16 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         return entry.getParentFolder();
     }
     // get entry and check access
-    @Override
-	public FolderEntry getEntry(Long folderId, Long entryId) {
+    public FolderEntry getEntry(Long folderId, Long entryId) {
         FolderEntry entry = loadEntry(folderId, entryId);
         AccessUtils.readCheck(entry);
         return entry;
     }
-    @Override
-	public FolderEntry getEntryWithoutAccessCheck(Long folderId, Long entryId) {
+    public FolderEntry getEntryWithoutAccessCheck(Long folderId, Long entryId) {
         FolderEntry entry = loadEntry(folderId, entryId);
         return entry;
     }
-    @Override
-	public FolderEntry getEntry(Long folderId, String entryNumber) {
+    public FolderEntry getEntry(Long folderId, String entryNumber) {
     	Folder folder = getFolder(folderId);
     	String sortKey = HKey.getSortKeyFromEntryNumber(folder.getEntryRootKey(), entryNumber);
     	FolderEntry entry = getFolderDao().loadFolderEntry(sortKey, folder.getZoneId());
@@ -892,20 +767,17 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         return entry;
     }
 
-    @Override
-	public Map getEntryTree(Long folderId, Long entryId) {
+    public Map getEntryTree(Long folderId, Long entryId) {
     	return getEntryTree(folderId, entryId, false);
     }
-    @Override
-	public Map getEntryTree(Long folderId, Long entryId, boolean includePreDeleted) {
+    public Map getEntryTree(Long folderId, Long entryId, boolean includePreDeleted) {
     	//does read check
         FolderEntry entry = getEntry(folderId, entryId);   	
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
         return processor.getEntryTree(folder, entry, includePreDeleted);
     }
-    @Override
-	public SortedSet<FolderEntry>getEntries(Collection<Long>ids) {
+    public SortedSet<FolderEntry>getEntries(Collection<Long>ids) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new EntryComparator(user.getLocale(), EntryComparator.SortByField.pathName);
        	TreeSet<FolderEntry> sEntries = new TreeSet<FolderEntry>(c);
@@ -920,22 +792,16 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     }
 
     //inside write transaction    
-    @Override
-	public void restoreEntry(Long parentFolderId, Long entryId, Object renameData) throws WriteEntryDataException, WriteFilesException {
+    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData) throws WriteEntryDataException, WriteFilesException {
     	restoreEntry(parentFolderId, entryId, renameData, true);
     }
-    @Override
-	public void restoreEntry(Long parentFolderId, Long entryId, Object renameData, boolean reindex) throws WriteEntryDataException, WriteFilesException {
+    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData, boolean reindex) throws WriteEntryDataException, WriteFilesException {
     	restoreEntry(parentFolderId, entryId, renameData, true, null, reindex);
     }
     //inside write transaction    
-	@Override
 	public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options) throws WriteEntryDataException, WriteFilesException {
     	restoreEntry(folderId, entryId, renameData,deleteMirroredSource, options, true);
     }
-	
-	// in write transaction
-	@Override
 	public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
     	deCount.incrementAndGet();
     	
@@ -985,30 +851,21 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         	if (reindex) {
 		        // ...re-index the entry.
         		processor.indexEntry(entry);
-        		getRssModule().updateRssFeed(entry); 
         	}
-        	
-        	processor.updateParentModTime(folder, options);
         }
     }
     
     //inside write transaction    
-    @Override
-	public void preDeleteEntry(Long parentFolderId, Long entryId, Long userId) {
+    public void preDeleteEntry(Long parentFolderId, Long entryId, Long userId) {
     	preDeleteEntry(parentFolderId, entryId, userId, true);
     }
-    @Override
-	public void preDeleteEntry(Long parentFolderId, Long entryId, Long userId, boolean reindex) {
+    public void preDeleteEntry(Long parentFolderId, Long entryId, Long userId, boolean reindex) {
     	preDeleteEntry(parentFolderId, entryId, userId, true, null, reindex);
     }
     //inside write transaction    
-	@Override
 	public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options) {
     	preDeleteEntry(folderId, entryId, userId, deleteMirroredSource, options, true);
     }
-	
-	// in write transaction
-	@Override
 	public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);
@@ -1042,18 +899,13 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         	if (reindex) {
         		processor.indexEntry(entry);
         	}
-        	getRssModule().updateRssFeed(entry);
-        	
-        	processor.updateParentModTime(folder, options);
         }
     }
     
     //inside write transaction    
-    @Override
-	public void updateModificationStamp(Long parentFolderId, Long entryId) {
+    public void updateModificationStamp(Long parentFolderId, Long entryId) {
     	updateModificationStamp(parentFolderId, entryId, true);
     }
-	@Override
 	public void updateModificationStamp(Long folderId, Long entryId, boolean reindex) {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);
@@ -1072,13 +924,11 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     }
     
     //no transaction        
-    @Override
-	public void deleteEntry(Long parentFolderId, Long entryId) {
+    public void deleteEntry(Long parentFolderId, Long entryId) {
     	deleteEntry(parentFolderId, entryId, true, null);
     }
     //no transaction    
-    @Override
-	public void deleteEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options) {
+    public void deleteEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options) {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.deleteEntry);
@@ -1087,8 +937,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         processor.deleteEntry(folder, entry, deleteMirroredSource, options);
     }
     //inside write transaction    
-    @Override
-	public FolderEntry moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
+    public void moveEntry(Long folderId, Long entryId, Long destinationId, Map options) {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.moveEntry);
         Folder folder = entry.getParentFolder();
@@ -1112,21 +961,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			throw new BinderQuotaException(entry.getTitle());
 		}
 
-        FolderEntry newEntry;
-        if ((folder.isMirrored() || destination.isMirrored())) {
-			//To move to and from mirrored folders, copy the entry to the destination folder then delete the original entry
-			newEntry = (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
-			processor.deleteEntry(folder, entry, true, options);
-		} else {
-			processor.moveEntry(folder, entry, destination, toFileNames, options);
-            newEntry = entry;
-		}
-        
-        processor.updateParentModTime(folder, options);
-        if(destination != folder)
-        	processor.updateParentModTime(destination, options);
-
-        return newEntry;
+        processor.moveEntry(folder, entry, destination, options);
     }
     
 	private void checkFileUploadSizeLimit(Binder binder, Long fileSize, String fileName) 
@@ -1163,45 +998,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		}
 	}
 
-	// no transaction
-	@Override
-	public void copyFolderEntries(Long sourceId, Long destinationId) throws NotSupportedException {
-        Folder source =  loadFolder(sourceId);
-        Folder destination =  loadFolder(destinationId);
-		//See if there is enough quota to do this
-		if (loadProcessor(source).checkMoveBinderQuota(source, destination)) {
-    		//We must guard against invalid copy attempts (such as complex entries copied to mirrored folder)
-			//This type of request could have invalid entries, so check each one
-			Map getEntriesOptions = new HashMap();
-			//Specify if this request is to copy children binders, too.
-      		Map folderEntries = getEntries(source.getId(), getEntriesOptions);
-	      	List<Map> searchEntries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-
-			for (Map se : searchEntries) {
-				String entryIdStr = (String)se.get(Constants.DOCID_FIELD);
-				if (entryIdStr != null && !entryIdStr.equals("")) {
-    				Long entryId = Long.valueOf(entryIdStr);
-    				Entry entry = getEntry(null, entryId);
-					try {
-			    		if (!source.isAclExternallyControlled() && destination.isAclExternallyControlled()) {
-			    			//Make sure this copy is compatible
-			    			BinderHelper.copyEntryCheckMirrored(source, entry, destination);
-			    		}
-		    			copyEntry(source.getId(), entryId, destination.getId(), null, null);
-					} catch(Exception e) {
-						//This entry cannot be copied, so don't copy this binder
-						throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destination.isAclExternallyControlled() ? "net" : "mirrored"));
-					}
-				}
-    		}
-		} else {
-			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
-		}
-	}
-
     //inside write transaction    
-    @Override
-	public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
+    public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, Map options) {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.copyEntry);
         Folder folder = entry.getParentFolder();
@@ -1226,15 +1024,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			throw new BinderQuotaException(entry.getTitle());
 		}
 
-		FolderEntry entryCopy = (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
-		
-		processor.updateParentModTime(destination, options);
-		
-		return entryCopy;
+		return (FolderEntry) processor.copyEntry(folder, entry, destination, options);
     }
     //inside write transaction    
-    @Override
-	public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
+    public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
     	//getEntry does read check
 		FolderEntry entry = getEntry(folderId, entryId);
 		//only subscribe at top level
@@ -1259,15 +1052,13 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		}
   	
     }
-    @Override
-	public Subscription getSubscription(FolderEntry entry) {
+    public Subscription getSubscription(FolderEntry entry) {
     	//have entry so assume read access
 		User user = RequestContextHolder.getRequestContext().getUser();
 		if (!entry.isTop()) entry = entry.getTopEntry();
 		return getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
     }
 
-	@Override
 	public Collection<Tag> getTags(FolderEntry entry) {
 		//have Entry - so assume read access
 		//bulk load tags
@@ -1275,19 +1066,16 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	}
 	
     //inside write transaction    
-	@Override
-	public Tag [] setTag(Long binderId, Long entryId, String newTag, boolean community) {
+	public void setTag(Long binderId, Long entryId, String newTag, boolean community) {
 		//read access checked by getEntry
 		FolderEntry entry = getEntry(binderId, entryId);
 		if (community) checkAccess(entry, FolderOperation.manageTag);
-		if (Validator.isNull(newTag)) return null;
+		if (Validator.isNull(newTag)) return;
 		Collection<String> newTags = TagUtil.buildTags(newTag);		
-		if (newTags.size() == 0) return null;
+		if (newTags.size() == 0) return;
 		User user = RequestContextHolder.getRequestContext().getUser();
 		EntityIdentifier uei = user.getEntityIdentifier();
 		EntityIdentifier eei = entry.getEntityIdentifier();
-        Tag [] tags = new Tag[newTags.size()];
-        int i=0;
 		for (String tagName:newTags) {
 			Tag tag = new Tag();
 			//community tags belong to the binder - don't care who created it
@@ -1296,14 +1084,11 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		    tag.setPublic(community);
 		   	tag.setName(tagName);
 			getCoreDao().save(tag);
-            tags[i++] = tag;
 	   	}
  	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
-        return tags;
 	}
 	
     //inside write transaction    
-	@Override
 	public void deleteTag(Long binderId, Long entryId, String tagId) {
 	   	FolderEntry entry = loadEntry(binderId, entryId);
   		Tag tag = null;
@@ -1320,7 +1105,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	}
 	
     //inside write transaction    
-	@Override
 	public void setEntryDef(Long folderId, Long entryId, String entryDef) {
 		FolderEntry entry = getEntry(folderId, entryId);
 		entry.setEntryDef(definitionModule.getDefinition(entryDef));
@@ -1328,7 +1112,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	
 	//Change entry def type
     //inside write transaction    
-	@Override
 	public void changeEntryType(Long entryId, String newDefId) {
 		FolderEntry entry = loadEntry(null, entryId);
 		if (entry == null) return;
@@ -1338,20 +1121,17 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		List<Long> entryIds = new ArrayList<Long>();
 		entryIds.add(entryId);
 		getFolderDao().setFolderEntryType(folder, entryIds, newDefId);
-		entry.setEntryDefId(newDefId);
 		loadProcessor(entry.getParentFolder()).indexEntry(entry);
 	}
 
 
     //inside write transaction    	
-	@Override
 	public void setUserRating(Long folderId, Long entryId, long value) {
 		//getEntry does read check
 		FolderEntry entry = getEntry(folderId, entryId);
 		setRating(entry, value);
 	}
     //inside write transaction    
-	@Override
 	public void setUserRating(Long folderId, long value) {
 		//getFolder does read check
 		Folder folder = getFolder(folderId);
@@ -1382,7 +1162,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
  			
 	}
     //inside write transaction    
-	@Override
 	public void setUserVisit(FolderEntry entry) {
 		//assume already have access
 		EntityIdentifier id = entry.getEntityIdentifier();
@@ -1415,8 +1194,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	
 
     //inside write transaction    
-    @Override
-	public HistoryStamp reserveEntry(Long folderId, Long entryId)
+    public void reserveEntry(Long folderId, Long entryId)
 	throws AccessControlException, ReservedByAnotherUserException,
 	FilesLockedByOtherUsersException {
     	// Because I don't expect customers to override or extend this 
@@ -1438,7 +1216,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     		// by another user. 
     		
     		// Make sure that the file lock states are current before examining them.
-    		getFileModule().bringLocksUptodate(folder, entry);
+    		getFileModule().RefreshLocks(folder, entry);
     		
     		// Now that lock states are up-to-date, we can examine them.
     		
@@ -1456,7 +1234,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     			// or there are no effective locks at all.
     			// Proceed and reserve the entry.
     			entry.setReservation(user);
-                reservation = entry.getReservation();
     	 	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
     		} else { // One or more lock is held by someone else.
     			// Build error information.
@@ -1480,12 +1257,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     			throw new ReservedByAnotherUserException(entry);
     		}
     	}
-        return reservation;
     }
     
     //inside write transaction    
-   @Override
-public void unreserveEntry(Long folderId, Long entryId)
+   public void unreserveEntry(Long folderId, Long entryId)
 	throws AccessControlException, ReservedByAnotherUserException {
 	   FolderEntry entry = loadEntry(folderId, entryId);   	
  
@@ -1522,8 +1297,7 @@ public void unreserveEntry(Long folderId, Long entryId)
 	   }
    }
    //this is for webdav - where the file names are unqiue within a library folder
-   @Override
-public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String title)
+   public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String title)
 	throws AccessControlException {
        	try {
     		Long id = getCoreDao().findFileNameEntryId(fileFolder, title);
@@ -1534,8 +1308,7 @@ public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String tit
     	}
     }
     //this is for wiki links where normalize title is used
-    @Override
-	public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title, String zoneUUID)
+    public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title, String zoneUUID)
 	throws AccessControlException {
    		Set views = new HashSet();
    		Folder folder = null;
@@ -1554,25 +1327,22 @@ public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String tit
    		}
    		return views;
     }
-    @Override
-	public SortedSet<String> getSubfoldersTitles(Folder folder, boolean checkAccess) {
+    public SortedSet<String> getSubfoldersTitles(Folder folder) {
     	//already have access to folder
     	TreeSet<String> titles = new TreeSet<String>();
    		
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
     		if (f.isDeleted() || f.isPreDeleted()) continue;
-    		if(!checkAccess || (getBinderModule().testAccess(f, BinderOperation.readEntries) ||
-    				getBinderModule().testAccess(f, BinderOperation.viewBinderTitle))) {
+    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES) ||
+    				getAccessControlManager().testOperation(f, WorkAreaOperation.VIEW_BINDER_TITLE))
     			titles.add(f.getTitle());
-    		}
     	}
     	
     	return titles;    	
     }
     
-    @Override
-	public SortedSet<Folder> getSubfolders(Folder folder) {
+    public SortedSet<Folder> getSubfolders(Folder folder) {
     	//already have access to folder
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
@@ -1581,17 +1351,15 @@ public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String tit
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
     		if (f.isDeleted() || f.isPreDeleted()) continue;
-    		if (getBinderModule().testAccess(f, BinderOperation.readEntries) ||
-    				getBinderModule().testAccess(f, BinderOperation.viewBinderTitle)) {
+    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES) || 
+    				getAccessControlManager().testOperation(f, WorkAreaOperation.VIEW_BINDER_TITLE))
     			subFolders.add(f);
-    		}
     	}
     	
     	return subFolders;    	
     }
     
-    @Override
-	public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
+    public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
 		try {
 			checkTransitionOutStateAllowed(entry, stateId);
 			return true;
@@ -1604,8 +1372,7 @@ public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String tit
 		AccessUtils.checkTransitionOut(entry.getParentBinder(), entry, ws.getDefinition(), ws);   		
     }
 	
-    @Override
-	public boolean testTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
+    public boolean testTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
 		try {
 			checkTransitionInStateAllowed(entry, stateId, toState);
 			return true;
@@ -1618,8 +1385,7 @@ public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String tit
 		AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), toState);   		
     }
 
-    @Override
-	public void addEntryWorkflow(Long folderId, Long entryId, String definitionId, Map options) {
+    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId, Map options) {
     	//start a workflow on an entry
     	FolderEntry entry = loadEntry(folderId, entryId);
     	checkAccess(entry, FolderOperation.addEntryWorkflow);
@@ -1630,8 +1396,7 @@ public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String tit
         FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
         processor.addEntryWorkflow(entry.getParentBinder(), entry, def, options);
     }
-    @Override
-	public void deleteEntryWorkflow(Long folderId, Long entryId, String definitionId) 
+    public void deleteEntryWorkflow(Long folderId, Long entryId, String definitionId) 
 		throws AccessControlException {
        	//start a workflow on an entry
     	FolderEntry entry = loadEntry(folderId, entryId);
@@ -1641,8 +1406,7 @@ public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String tit
         processor.deleteEntryWorkflow(entry.getParentBinder(), entry, def);
 
     }
-    @Override
-	public boolean checkIfManualTransitionAllowed(Long folderId, Long entryId, Long workflowTokenId, String toState) throws AccessControlException {
+    public boolean checkIfManualTransitionAllowed(Long folderId, Long entryId, Long workflowTokenId, String toState) throws AccessControlException {
         boolean result = false;
         FolderEntry entry = loadEntry(folderId, entryId);
 		Set states = entry.getWorkflowStates();
@@ -1656,8 +1420,7 @@ public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String tit
 		}
 		return result;
      }
-   @Override
-public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
+   public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
        FolderEntry entry = loadEntry(folderId, entryId);   	
        Folder folder = entry.getParentFolder();
        FolderCoreProcessor processor=loadProcessor(folder);
@@ -1669,7 +1432,6 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
     	   processor.modifyWorkflowState(folder, entry, stateId, toState);
        }
     }
-	@Override
 	public Map<String, String> getManualTransitions(FolderEntry entry, Long stateId) {
 		WorkflowState ws = entry.getWorkflowState(stateId);
 		Map<String,Map> result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
@@ -1704,8 +1466,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 		
     }		
 
-	@Override
-	public Map<String, Map> getWorkflowQuestions(FolderEntry entry, Long stateId) {
+	public Map getWorkflowQuestions(FolderEntry entry, Long stateId) {
 		WorkflowState ws = entry.getWorkflowState(stateId);
     	Map<String, Map> qMap = WorkflowUtils.getQuestions(ws.getDefinition(), ws);
     	//Check if the user is allowed to respond
@@ -1729,8 +1490,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
     	return qMap;
     }		
 
-    @Override
-	public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) {
+    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
@@ -1740,14 +1500,12 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
     
    //called by scheduler to complete folder deletions
     //no transaction
-    @Override
-	public synchronized void cleanupFolders() {
+    public synchronized void cleanupFolders() {
 		FilterControls fc = new FilterControls();
 		fc.add("deleted", Boolean.TRUE);
 		ObjectControls objs = new ObjectControls(Folder.class, new String[] {"id"});
 		List<Object> folders = getCoreDao().loadObjects(objs, fc, RequestContextHolder.getRequestContext().getZoneId());
-		if(traceEnabled)
-			logger.trace("checking for deleted folders");
+		logger.debug("checking for deleted folders");
 		int success = 0;
 		int fail = 0;
 		for (Object obj: folders) {
@@ -1761,8 +1519,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 				Folder f = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext()
 						.getZoneId());
 				FolderCoreProcessor processor = loadProcessor(f);
-				// (Bug 815697) Don't add change log for entry deletion when it is caused by deletion of parent folder
-				processor.deleteBinder(f, true, null, true);
+				processor.deleteBinder(f, true, null);
 				getCoreDao().evict(f);
 				success++;
 			} catch (Exception ex) {
@@ -1770,20 +1527,14 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 				logger.error(ex);
 			}
 		}
-		if(debugEnabled && folders != null && folders.size() > 0)
-			logger.debug("Folders cleaned up: success=" + success + ", fail=" + fail);
+		if(folders != null && folders.size() > 0)
+			logger.info("Folders cleaned up: success=" + success + ", fail=" + fail);
 	}
 
 
-    @Override
-	public IndexErrors indexEntry(FolderEntry entry, boolean includeReplies) {
-    	return indexEntry(entry, includeReplies, false);
-    }
-    
-	@Override
-	public IndexErrors indexEntry(FolderEntry entry, boolean includeReplies, boolean skipFileContentIndexing) {
+    public IndexErrors indexEntry(FolderEntry entry, boolean includeReplies) {
     	FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
-    	IndexErrors errors = processor.indexEntry(entry, skipFileContentIndexing);
+    	IndexErrors errors = processor.indexEntry(entry);
 		if (includeReplies) {
 			List<FolderEntry> replies = new ArrayList();
 			replies.addAll(entry.getReplies());
@@ -1796,14 +1547,13 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 			}
 		}
 		return errors;
-	}
-    
-    @Override
-	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
+    }
+    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
 		FolderCoreProcessor processor = loadProcessor((Folder)binder);
 		return processor.buildIndexDocumentFromEntry(binder, entry, tags);
     }    
 
+    
     /**
      * Helper classs to return folder unseen counts as an objects
      * @author Janet McCann
@@ -1821,30 +1571,24 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
     	}    	
     }
     
-    @Override
-	public void resetCounts() {
+	public void clearStatistics() {
 		aeCount.set(0);
 		meCount.set(0);
 		deCount.set(0);
 		arCount.set(0);
 	}
-    @Override
 	public int getAddEntryCount() {
 		return aeCount.get();
 	}
-    @Override
 	public int getDeleteEntryCount() {
 		return deCount.get();
 	}
-    @Override
 	public int getModifyEntryCount() {
 		return meCount.get();
 	}
-    @Override
 	public int getAddReplyCount() {
 		return arCount.get();
 	}
-	@Override
 	public Long getZoneEntryId(Long entryId, String zoneUUID) {
 		if (Validator.isNull(zoneUUID)) return entryId;
 		List<Long> ids = getCoreDao().findZoneEntityIds(entryId, zoneUUID, EntityType.folderEntry.name());
@@ -1855,42 +1599,5 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 		}
 		return ids.get(0);
 	}
-
-    public Date getLastFullSyncCompletionTime(Long folderId) {
-        Folder topMostMirroredFolder = getTopMostMirroredFolder(getFolder(folderId));
-        if (topMostMirroredFolder!=null) {
-        	return getLastFullSyncCompletionTime(topMostMirroredFolder);
-        }
-        return null;
-    }
-
-    protected Date getLastFullSyncCompletionTime(Folder topMostMirroredFolder) {
-        BinderState binderState = (BinderState) getCoreDao().load(BinderState.class, topMostMirroredFolder.getId());
-        if (binderState!=null) {
-            return binderState.getLastFullSyncCompletionTime();
-        }
-        return null;
-    }
-    
-    protected Date getUpdatedToDate(Folder topMostMirroredFolder) {
-        BinderState binderState = (BinderState) getCoreDao().load(BinderState.class, topMostMirroredFolder.getId());
-        if (binderState!=null) {
-            return binderState.getUpdatedToDate();
-        }
-        return null;
-    }
-    
-    protected Folder getTopMostMirroredFolder(Folder folder) {
-        Folder top = folder;
-        Binder parent;
-        while(true) {
-            parent = top.getParentBinder();
-            if(parent == null) break;
-            if(!parent.isMirrored()) break;
-            if(!parent.getResourceDriverName().equals(top.getResourceDriverName())) break;
-            top = (Folder) parent;
-        }
-        return top;
-    }
 
 }

@@ -240,7 +240,6 @@ public class ListWidgetDlgBox extends DlgBox
 		return m_sizeCtrl.getWidthUnits();
 	}
 	
-
 	/**
 	 * Initialize the controls in the dialog with the values from the properties
 	 */
@@ -255,6 +254,7 @@ public class ListWidgetDlgBox extends DlgBox
 
 		// Initialize the size control.
 		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
-
+		
 	}// end init()
+	
 }// end ListWidgetDlgBox

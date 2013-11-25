@@ -4,6 +4,7 @@
 
 
 /* Collaboration Branding colors - darkest is gray1 */
+
 .gray1 { color: #1f1f1f !important;}
 .gray2 { color: #353838 !important;}
 .gray3 { color: #505354 !important;}
@@ -14,77 +15,28 @@
 .gray8 { color: #e0e0e0 !important;}
 .gray9 { color: #ededed !important;}
 
-.displayBlock       { display: block;          }
-.displayInline      { display: inline;         }
-.displayInlineBlock { display: inline-block;   }
-.displayNone        { display: none;           }
-.displayNone2       { display: none !important;}
-
-.padding3   {padding:        3px;           }
-.padding3b  {padding:        3px !important;}
-.padding5   {padding:        5px;           }
-.padding5b  {padding:        5px !important;}
-.padding5R  {padding-right:  5px;           }
-.padding15R {padding-right: 15px;           }
-.padding2L  {padding-left:   2px;           }
-
-.vibe-fullScroll       {overflow:   auto;}
-.vibe-horizontalScroll {overflow-x: auto; overflow-y: hidden;}
-.vibe-verticalScroll   {overflow-y: auto; overflow-x: hidden;}
-
-.white { color: white !important; }
-
-.whitespace-normal
-{
-	white-space: normal !important;
-}
+.displayBlock       { display: block;        }
+.displayInline      { display: inline;       }
+.displayInlineBlock { display: inline-block; }
 	
-
-.blend2-a {
-		background-image: -webkit-linear-gradient(top, #ebf5f5, #abced1) !important; 
-		background-image:    -moz-linear-gradient(top, #ebf5f5, #abced1) !important; 
-		background-image:     -ms-linear-gradient(top, #ebf5f5, #abced1) !important; 
-		background-image:      -o-linear-gradient(top, #ebf5f5, #abced1) !important; 
-		background-image:         linear-gradient(top, #ebf5f5, #abced1) !important; /* standard, but currently unimplemented */
-}
-.blend2-b
-{
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
-}
-.blend2-c {
-		background-image: -webkit-linear-gradient(top, #abced1, #59828f) !important; 
-		background-image:    -moz-linear-gradient(top, #abced1, #59828f) !important; 
-		background-image:     -ms-linear-gradient(top, #abced1, #59828f) !important; 
-		background-image:      -o-linear-gradient(top, #abced1, #59828f) !important; 
-		background-image:         linear-gradient(top, #abced1, #59828f) !important; /* standard, but currently unimplemented */
-}
-
 /* Styles used with the activity stream control */
 .activityStreamCtrl
 {
-	top: 8px !important;
 	background: #fff;
-	border-radius: 5px;
-	overflow: hidden;
+	position: absolute;
+	left: 246px;
+	top: 8px;
+	z-index: 100;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-}
-
-.activityStreamActionsTable
-{
-	position: absolute;
-	right: 0px;
-	top: 0px;
-	z-index: 300;
 }
 
 .activityStreamActionsPanel
 {
 	cursor: pointer;
+	position: absolute;
+	right: 5px;
+	top: 5px;
 }
 
 .activityStreamActionsPanel:hover
@@ -92,7 +44,6 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -126,7 +77,7 @@
 .activityStreamSearchingPanel
 {
 	font-size: 14px;
-	background-color: #fafad5;
+	background-color: #EBECA5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
@@ -135,14 +86,13 @@
 	top: 25px;
 	z-index: 100;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
 .activityStreamNoEntriesFoundPanel
 {
 	font-size: 14px;
-	background-color: #fafad5;
+	background-color: #EBECA5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
@@ -151,21 +101,18 @@
 	top: 150px;
 	z-index: 100;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
 .activityStreamCtrlFooter
 {
-	background-color: #ededed;
-	border-top: 1px solid #e0e0e0;
+	background-color: #EFEEEC;
+	border-top: 1px solid #BABDB6;
 	padding: 3px;
 	vertical-align: middle;
 	width: 100%;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 }
@@ -235,13 +182,12 @@
 }
  
 
-.activityStreamHover, .shareThisDlg_NameHover, .groupMembershipNameHover, .selectPrincipalsWidget_NameHover
+.activityStreamHover, .shareThisDlgNameHover, .groupMembershipNameHover
 {
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .activityStreamHover span {
@@ -257,7 +203,7 @@
 
 .activityStreamTopEntryMainPanel
 {
-	border-top: 0px solid #e0e0e0;
+	border-top: 0px solid #d2d5d1;
 	padding-right: 5px;
 	padding-bottom: 8px;
 	padding-left: 0px;
@@ -267,10 +213,10 @@
 
 .activityStreamCommentMainPanel
 {
-	border-top: 1px solid #e0e0e0;
-	margin-left: 50px;
+	border-top: 1px solid #d2d5d1;
+	margin-left: 55px;
 	margin-top: 10px;
-	padding-right: 0px;
+	padding-right: 10px;
 	padding-left: 0px;
 	position: relative;
 }
@@ -278,106 +224,35 @@
 .activityStreamEntryAuthor
 {
 	color: #353838;
-	display: inline-block;
+	display: inline;
 	font-size: 11px;
 	font-weight: bold;
 	padding-right: 6px;
 	padding-left: 1px;
 	vertical-align: top;
-	white-space: nowrap;
 }
 .activityStreamEntryAuthor:hover
 {
 	color: #135c8f;
 }
-
+	
 .activityStreamEntryDate
 {
 	font-size: 10px;
 	color: #666666;
-	display: inline-block;
-	padding-right: 70px;
-	vertical-align: top;
+	display: inline;
+	padding-right: 10px;
 	white-space: nowrap;
-}
-
-.vibe-feView-commentsPanel .activityStreamEntryDate
-{
-	font-size: 10px;
-	color: #666666;
-	display: block;
-	padding-right: 70px;
 	vertical-align: top;
 }
 
-.activityStreamTopEntryFullDesc
+.activityStreamEntryDesc
 {
-	color: #353838;
-	font-size: 13px;
+	color: #333333;
+	font-size: 12px;
 	margin-top: 4px;
 	margin-left: 1px;
 	position: relative;
-}
-
-.activityStreamTopEntryPartialDesc
-{
-	color: #353838;
-	font-size: 13px;
-
-	/* reduce size for Filr only */
-	height: .2em;
-/*	height: 4em; -- vibe height */
-	margin-top: 4px;
-	margin-left: 1px;
-	overflow: hidden;
-	position: relative;
-}
-
-.activityStreamComment_CommentsPanel
-{
-}
-
-.activityStreamCommentFullDesc
-{
-	color: #353838;
-	font-size: 13px;
-	line-height: 17px;
-	margin-top: 4px;
-	margin-left: 1px;
-	margin-right: 20px;
-	padding-bottom: 12px;
-	position: relative;
-}
-
-.activityStreamCommentPartialDesc
-{
-	color: #353838;
-	font-size: 13px;
-	line-height: 17px;
-	height: 30px;
-	margin-top: 4px;
-	margin-bottom: 10px;
-	margin-left: 1px;
-	margin-right: 20px;
-	overflow: hidden;
-	position: relative;
-}
-
-.activityStreamShowHideDescLabel
-{
-	color: #135C8F !important;
-	font-size: 10px;
-	white-space: nowrap;
-}
-
-.activityStreamShowHideDescLabel:hover
-{
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	cursor: pointer;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
 }
 
 .activityStreamCommentAvatarImg
@@ -385,9 +260,7 @@
 	left: 0;
 	position: absolute;
 	top: 1px;
-	width: 40px;
-	height: 40px;
-	border-radius: 2px;
+	width: 25px;
 }
 
 .activityStreamTopEntryAvatarImg
@@ -396,16 +269,6 @@
 	position: absolute;
 	top: 1px;
 	width: 40px;
-	height: 40px;
-	border-radius: 2px;
-}
-
-.activityStreamTopEntryFileImg
-{
-	left: 2px;
-	position: absolute;
-	top: 1px;
-	border-radius: 2px;
 }
 
 .activityStreamCommentHeader
@@ -413,30 +276,48 @@
 	border-top: 0px solid #d2d5d1;
 	font-size: 13px;
 	line-height: 15px;
-	margin-left: 48px;
+	margin-left: 35px;
 	padding-right: 25px;
 }
 
 .activityStreamTopEntryHeader
 {
-	background: #f6f6f6;
-	border-top: 1px solid #ededed;
-	padding-right: 95px;
-	padding-left: 50px;
+	background: #ededed;
+	border-top: 1px solid #d2d5d1;
+	padding-right: 65px;
+	padding-left: 55px;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
+}
+
+.activityStreamTopEntryDesc
+{
+	color: #333333;
+	font-size: 12px;
+	height: 4em;
+	margin-top: 4px;
+	margin-left: 1px;
+	overflow: hidden;
+	position: relative;
+}
+
+.activityStreamCommentDesc
+{
+	color: #333333;
+	font-size: 12px;
+	height: 2em;
+	margin-top: 4px;
+	margin-left: 1px;
+	overflow: hidden;
+	position: relative;
 }
 
 .activityStreamCommentContentPanel
 {
 	font-size: 12px;
-	margin-left: 48px;
-	padding-top: 5px;
-	position: relative;
+	margin-left: 35px;
 	white-space: normal;
 }
 
@@ -444,8 +325,7 @@
 {
 	font-size: 13px;
 	margin-top: 5px;
-	margin-left: 50px;
-	position: relative;
+	margin-left: 55px;
 	white-space: normal;
 }
 
@@ -465,7 +345,6 @@
 
 .activityStreamTopEntryTitle
 {
-	text-decoration: none;
 	color: #135c8f;
 	font-size: 14px;
 	line-height: 15px;
@@ -491,18 +370,12 @@
 	vertical-align: top;
 }
 
-.activityStreamNumCommentsPanel
+.activityStreamNumCommentsLabel
 {
-    background: url(images/comments_25.png) no-repeat scroll center center transparent;
-    color: #135c8f;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: bold;
-    padding-top: 2px;
-    padding-bottom: 5px;
-    padding-left: 8px;
-    padding-right: 8px;
-    text-align: center;
+	font-size: 10px;
+	white-space: nowrap;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 .activityStreamReply
@@ -517,38 +390,12 @@
 	width: 450px;
 }
 
-.vibe-feView-commentsPanel .activityStreamReply
-{
-	background-color: #F6F6F6;
-	border: 1px solid #C4C4C4;
-	left: 50px;
-	margin-bottom: 10px;
-	margin-top: .5em;
-	padding: 5px;
-	position: relative;
-	width: 225px;
-}
-
-.activityStreamReply_RelativePos
-{
-	position: relative;
-}
-
-.activityStreamReplyAddACommentPanel
-{
-	color: #CCCCCC;
-	font-size: 0.9em;
-	left: 20px;
-	position: absolute;
-	top: 4px;
-}
-
-.activityStreamReplyTitlePanel, .shareThisDlg_TitlePanel
+.activityStreamReplyTitlePanel, .shareThisTitlePanel
 {
 	padding-bottom: 5px;
 }
 
-.activityStreamReplyTitleTextBox, .shareThisDlg_TitleTextBox
+.activityStreamReplyTitleTextBox, .shareThisTitleTextBox
 {
 	background-color: transparent;
 	border: 0 none;
@@ -559,7 +406,7 @@
 	width: 440px;
 }
 
-.activityStreamReplyTextArea
+.activityStreamReplyTextArea, .shareThisTextArea
 {
 	background-color: transparent;
 	border: 0 none;
@@ -572,33 +419,12 @@
 	width: 440px;
 }
 
-.vibe-feView-commentsPanel .activityStreamReplyTextArea
-{
-	background-color: transparent;
-	border: 0 none;
-	color: #353838;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 14px;
-	height: 100px;
-	padding: 5px;
-	resize: none;
-	width: 225px;
-}
-
 .activityStreamReplyFooter
 {
 	margin-bottom: 5px;
 	margin-top: .5em;
 	text-align: right;
 	width: 450px;
-}
-
-.vibe-feView-commentsPanel .activityStreamReplyFooter
-{
-	margin-bottom: 5px;
-	margin-top: .5em;
-	text-align: right;
-	width: 225px;
 }
 
 .activityStreamReplyBtn
@@ -611,309 +437,41 @@
 	padding: 2px 10px;
 }
 
-.activityStreamExpandDescImg, .activityStreamCollapseDescImg
+.shareThisRecipientTablePanel
 {
-	cursor: pointer;
-	left: -20px;
-	position: absolute;
+	width: 315px;
 }
 
-
-
-/* Styles used in the Share dialog */
-
-.shareThisDlg_NotesLabel, .shareThisDlg_ShareWithTeamsLabel
+.shareThisRecipientTablePanelHeight, .shareThisMyTeamsPanelHeight
 {
-	font-size: 12px;
-	padding-top: 8px;
-}
-
-.shareThisDlg_NoNote
-{
-	color: #949494 !important;
-	font-style: italic;
-}
-
-.shareThisDlg_EditSharePanel
-{
-	background-color: #EDEDED;
-	height: 360px;
-	margin-left: 6px;
-	width: 400px;
-}
-
-.shareThisDlg_ExpiresLabel, .shareThisDlg_DefaultExpiresLabel
-{
-	color: #135c8f;
-	padding-left: 4px;
-}
-
-.shareThisDlg_HeaderPanel
-{
-	position: relative;
-	margin-bottom: 15px;
-}
-
-.shareThisDlg_HeaderPanel img
-{
-	position: absolute;
-	top: 0px;
-	left: 1px;
-}
-
-.shareThisDlg_HeaderNamePanel
-{
-	margin-left: 55px;
-	width: 550px;
-}
-
-.shareThisDlg_HeaderNameLabel
-{
-	font-size: 1.2em;
-	line-height: 1.4em;
-	color: #1f1f1f;
-}
-
-.shareThisDlg_HeaderPathLabel
-{
-	color: #505354;
-	font-size: 13px;
-	line-height: 16px;
-	overflow: hidden;
-}
-
-.shareThisDlg_NoteLabel
-{
-	color: #135c8f;
-	padding-left: 4px;
-}
-
-.shareThisDlg_NotifyLabel
-{
-	padding-right: 4px;
-}
-
-.shareThisDlg_RecipientNameLabel
-{
-}
-
-.shareThisDlg_RecipientTypeImage
-{
-}
-
-.shareThisDlg_RecipientTypeImagePanel
-{
-}
-
-.shareThisDlg_RecipientTable_highlightRow
-{
-	background: none repeat scroll 0 0 #CCE9EE;
-}
-
-.shareThisDlg_RecipientTablePanel
-{
-}
-
-.shareThisDlg_RecipientTablePanelHeight
-{
-	height: 200px;
+	height: 100px;
 	overflow: auto;
 }
 
-.shareThisDlg_RecipientTable
+.shareThisRecipientTable
 {
-	width: 550px;
-	table-layout: fixed;
+	width: 100%;
 }
 
-.shareThisDlg_RecipientTable_Cell
-{
-	overflow: hidden;
-}
-
-.shareThisDlg_RemoveRecipientPanel
-{
-	margin-left: 4px;
-}
-
-.shareThisDlg_RightsLabel, .shareThisDlg_PublicRecipientTypeImage
-{
-	color: #135c8f;
-	padding-left: 4px;
-}
-
-.shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover, .shareThisDlg_NoteLabel:hover, .shareThisDlg_PublicRecipientTypeImage:hover
-{
-	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-}
-
-.shareThisDlg_RightsRB
-{
-	padding-right: 8px;
-}
-
-.shareThisDlg_ShareExpired
-{
-	color: #ED1C24 !important;
-}
-
-.shareThisDlg_shareLabel
-{
-	padding-top: 5px;
-	white-space: nowrap;
-	text-align: right;
-}
-
-.shareThisDlg_shareWithTeamsLink
-{
-	color: #135c8f;
-	margin-left: 30px;
-}
-
-.shareThisDlg_ShareWithTeamsPanel
-{
-	padding-top: 10px;
-}
-
-.shareThisDlg_TextArea
-{
-	background-color: transparent;
-	border: 0 none;
-	color: #353838;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 14px;
-	height: 45px;
-	padding: 5px;
-	resize: none;
-	width: 95%;
-}
-
-.shareThisDlg_TextAreaBorder
+.shareThisTextAreaBorder
 {
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
 }
 
-
-.shareWithTeamsDlg_InstructionsLabel
-{
-	color: #4D6D8B;
-	font-size: 0.8em;
-	margin-bottom: 6px;
-}
-
-.shareWithTeamsDlg_MyTeamsPanel
-{
-	height: 150px;
-	overflow: auto;
-}
-
-.shareThisDlg_MakePublicDiv
-{
-	margin-left: 5px;
-	margin-bottom: 15px;
-	z-index: 100;
-}		
-
-.shareWithPublicDlg_instructionsLabel
-{
-	font-size: .9em;
-	line-height: 1.5em;
-	margin-top: 12px;
-}
-
-.shareThisDlg_ListOfSharesPanel
-{
-	overflow-x: hidden;
-	overflow-y: auto;
-}
-
-.shareItem_InfoPanel
-{
-	cursor: pointer;
-}
-
-.shareItem_mainPanel
-{
-	margin-left: 4px;
-}
-
-.shareItem_RecipientAvatar
-{
-	height: 40px;
-	width: 40px;
-}
-
-.shareItem_RecipientName
-{
-	color: #135C8F;
-	font-weight: bold;
-}
-
-.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_PublicUrl, .shareItem_SharedByName
-{
-	color: #666666;
-	font-size: 11px;
-	letter-spacing: .25px;
-}
-.shareItem_Note
-{
-	color: #353838;
-	font-size: 12px;
-	line-height: 18px;
-}
-
-.shareItem_PublicUrl:hover
-{
-	cursor: pointer;
-}
-
-/* End of styles used with the Share dialog */
-
-
-/**
- * Styles used with the Edit Share dialog
- */
-.editShareDlg_expirationPanel
-{
-	margin-top: 8px;
-}
-
-
-.groupMembershipGroupNameLabel
+.shareThisCommentsLabel, .shareThisShareWithTeamsLabel, .groupMembershipGroupNameLabel
 {
 	font-size: 12px;
 	font-weight: bold;
 	padding-top: 8px;
 }
 
-.modifyStaticMembershipDlg_externalAllowedCb
+.shareThisShareWithTeamsPanel
 {
-	margin-bottom: 18px;
+	padding-top: 10px;
 }
 
-
-
-
-/**
- * Styles used with the share expiration dialog
- */
-
-.shareExpirationDlg_expiresOnImg:hover
-{
-	cursor: pointer;
-}
-
-/* End */
- 
- 
- 
 .unreadEntry
 {
 	font-weight: bold;
@@ -934,13 +492,12 @@
 .groupMembershipPopup
 {
 	font-size: 14px;
-	background-color: #fafad5;
+	background-color: #EBECA5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
 	padding: 5px 10px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	z-index: 1100;
 }
@@ -979,10 +536,10 @@
 	margin-left: 40px;
 }
 
-.verticalAlignTop     {vertical-align: top;}
-.verticalAlignTop2    {vertical-align: top !important;}
-.verticalAlignMiddle  {vertical-align: middle;}
-.verticalAlignMiddle2 {vertical-align: middle !important;}
+.verticalAlignTop
+{
+	vertical-align: top;
+}
 
 /* The following two styles are used to prevent an entry's description from starting */
 /* on a new line in the activity stream control. */
@@ -1009,43 +566,30 @@ a, a:visited, a:hover {
 /* Style used for the AdminActionControl. */
 .adminActionControl
 {
-	display: inline-block;
-	font-size: 13px;
-	margin: 0px;
-	padding: 3px;
-	padding-left: 2px;
+	margin: 5px;
+	padding: 2px;
 	white-space: nowrap;
 }
 
 .adminActionControlMouseOver
 {
-	color: #135c8f;
+	background: #E6F2F7;
+	color: #3E6978;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
-
-/*	background: #E6F2F7; */
-
-	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
-	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
 }
 
 /* Style used for the AdminActionsTreeControl found in Teaming's administration page. */
 .adminActionsTreeControl
 {
 	left: 8px;
-	background-color: transparent;
+	background-color: #EAEBE8;
 	padding: 0 0 8px;
 	position: absolute;
 	overflow: auto;
 	top: 8px;
 	width: 300px;
 	z-index: 100;
-	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
@@ -1053,20 +597,23 @@ a, a:visited, a:hover {
 /* Style used for the header in the AdminActionsTreeControl */
 .adminActionsTreeControlHeader
 {
+	background: #85BCC3 url(images/header_blend_grey_bg.png) repeat-x scroll center bottom;
+	background-position:bottom;
 	color: #fff;
-	background-color: transparent;
+	font-size: 0.85em;
+	font-weight: bold;
+	letter-spacing: 0.02em;
 	width: 100%;
-	padding: 4px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
 }
 
 /* Style used for the header in the AdminActionsTreeControl */
 .adminActionsTreeControlHeader2
 {
-	font-size: 18px;
-	font-weight: normal;
-	text-shadow: 0 2px 8px #949494;
-	margin-right: 5px;
-	margin-bottom: 5px;
+	margin: 5px;
 }
 
 /* Style used for the table that holds all the administration categories. */
@@ -1077,7 +624,6 @@ a, a:visited, a:hover {
 /* Style used with the category name. */
 .adminCategoryName
 {
-	font-size: 15px;
 	font-weight: bold;
 }
 
@@ -1087,55 +633,14 @@ a, a:visited, a:hover {
 	position: absolute;
 	top: 8px;
 	background-color:#fff;
-	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-	}
+}
 
 /* Style used for the iframe in the content control that holds the administration content. */
 .adminContentControl iframe.gwt-Frame
 {
 	border-width: 0px;
-}
-
-.adminControl_CloseLabel
-{
-    border-radius: 15px 15px 15px 15px;
-    color: #353838 !important;
-    background: transparent;
-	border: 1px solid transparent;
-    font-size: 12px;
-	font-weight: normal;
-	margin-right: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-.adminControl_CloseLabel:hover
-{
-    color: #135c8f !important;
-	cursor: pointer;
-	border: 1px solid #81b2bd;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
 }
 
 body, table td, select
@@ -1169,42 +674,21 @@ body, table td, select
 .mediumtext { color: black; font-size: 0.85em;  line-height: 1.1em; }
 .largetext  { color: black; font-style: normal; line-height: 1.1em; font-weight: normal; font-size: 1em; }
 
-/* Various margin styles */
-.margintop1      {margin-top:    0.3em;}
-.margintop1a     {margin-top:    0.3em !important;}
-.margintop2      {margin-top:    0.5em;}
-.margintop3      {margin-top:    1em;}
-.margintop4      {margin-top:    1.5em;}
-.margintop5      {margin-top:    2em;}
-.margintop3px    {margin-top:    3px;}
-.margintop3pxb   {margin-top:    3px !important;}
-.marginTop5px	 {margin-top: 	 5px;}
-.marginTop10px	 {margin-top: 10px;}
-
-.marginleft1     {margin-left:   1em;}
-.marginleft2     {margin-left:   2em;}
-.marginleft2px   {margin-left:   2px;}
-.marginleft3     {margin-left:   3em !important;}
-.marginleft4     {margin-left:   4em;}
-.marginleft5px   {margin-left:   5px;}
-.marginleft8px   {margin-left:   8px;}
-.marginLeftPoint25em	{margin-left: .25em;}
-
-.marginbottom1   		{margin-bottom: 0.3em;}
-.marginbottom2   		{margin-bottom: 0.5em;}
-.marginbottom3   		{margin-bottom: 1em;}
-.marginbottom4px   		{margin-bottom: 4px;}
-.marginBottom15em		{margin-bottom: .15em;}
-.marginBottomPoint25em	{margin-bottom: .25em;}
-
-.marginright2px  		{margin-right:  2px;}
-.marginright3px  		{margin-right:  3px;}
-.marginright5px  		{margin-right: 5px;}
-.marginright10px 		{margin-right:  10px;}
-.margin-right-5			{margin-right: 5px;}
-.margin-right-22		{margin-right: 22px;}
-.marginRightPoint25em	{margin-right: .25em;}
-
+.margintop1    { margin-top: 0.3em }
+.margintop1a   { margin-top: 0.3em !important; }
+.margintop2    { margin-top: 0.5em }
+.margintop3    { margin-top: 1em   }
+.marginleft1   { margin-left: 1em }
+.marginleft2   { margin-left: 2em }
+.marginleft2px { margin-left: 2px }
+.marginleft3   { margin-left: 3em }
+.marginleft4   { margin-left: 4em }
+.marginleft5px { margin-left: 5px }
+.marginbottom1 { margin-bottom: 0.3em }
+.marginbottom2 { margin-bottom: 0.5em }
+.marginbottom3 { margin-bottom: 1em }
+.marginright2px { margin-right: 2px }
+.marginright10px { margin-right: 10px; }
 
 /* Style used for the panel that holds the content in the "color picker" dialog. */
 .colorPickerContentPanel
@@ -1267,43 +751,21 @@ body, table td, select
 }
 
 /* */
-.cursorDefault  {cursor: default;}
-.cursorDefault2 {cursor: default !important;}
-.cursorPointer  {cursor: pointer;}
-.cursorPointer2 {cursor: pointer !important;}
-.cursorMove     {cursor: move;}
-
-/* Styles used with instructions in a dialog box. */
-.dlgBox_closePanel
+.cursorDefault
 {
-	color: #FFFFFF;
-	font-size: 0.8em;
-	position: absolute;
-	right: -8px;
-	top: -8px;
-	z-index: 1001;
+	cursor: default;
 }
-
-.dlgBox_closePanel:hover
+.cursorPointer
 {
 	cursor: pointer;
 }
 
-.dlgBox_statusPanel
+.cursorMove
 {
-	left: 10px;
-	position: absolute;
-	top: 12px;
-	z-index: 1901;
+	cursor: move;
 }
 
-.dlgBox_statusMsg
-{
-	color: #505354;
-	font-style: italic;
-}
-
-
+/* Styles used with instructions in a dialog box. */
 .dlgInstructions
 {
 	font-family: Arial,sans-serif;
@@ -1323,8 +785,8 @@ body, table td, select
 	cursor: pointer;
 	padding: 2px;
 	position: absolute;
-	right: 20px;
-	top: 4px;
+	right: 8px;
+	top: 9px;
 }
 
 /* Styles used for the error panel in a dialog. */
@@ -1338,28 +800,7 @@ body, table td, select
 	padding: 5px 10px;
 	margin: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
-}
-
-.dlgErrorPanelWrapper
-{
-	position: relative;
-}
-
-.dlgBox_closeErrorPanel
-{
-	color: #FFFFFF;
-	font-size: 0.8em;
-	position: absolute;
-	right: 0px;
-	top: 0px;
-	z-index: 1001;
-}
-
-.dlgBox_closeErrorPanel:hover
-{
-	cursor: pointer;
 }
 
 .dlgErrorLabel
@@ -1379,57 +820,17 @@ body, table td, select
 /* Style used for the "Advanced" link in the "edit branding" dialog. */
 .editBrandingAdvancedLink, .editorOverridesLink1, .selfRegLink1
 {
+	padding: 2px 8px;
 }
 
 /* Style used for the Browse link in the "edit branding" dialog. */
-.editBrandingBrowseLink, .editBrandingAdvancedLink, .addAttachmentLink, .colorPickerLink
+.editBrandingBrowseLink, .addAttachmentLink, .colorPickerLink
 {
-	cursor: pointer;
-	border: 1px solid #B8B8B8;
-	font-weight: normal !important;
-	font-size: 12px;
-	margin-left: 3px;
-	padding: 2px 5px  !important;
-	text-decoration:none;	
-	white-space: nowrap;
-	text-align: center !important;
-	width: 20px;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
-}
-	
-.editBrandingBrowseLink:hover, .editBrandingAdvancedLink:hover, .addAttachmentLink:hover, .colorPickerLink:hover, #forgottenPwdSpan:hover
-{
-	color: #135c8f !important;
-	border: 1px solid #81b2bd;
-	padding: 2px 5px  !important;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(linear, left bottom, left top, color-stop(0.47, #A8D4DD), color-stop(0.53, #D5EDF1), color-stop(1, #C8E4E9));
-	border-radius: 5px !important;
-	-moz-border-radius: 5px !important;
-	-webkit-border-radius: 5px !important;
-}
-
-.editBrandingDlg_LoginDialogHint
-{
-	color: #4D6D8B;
-	font-size: 1em;
-	margin-bottom: 0.5em;
-}
-
-.editBrandingDlg_LoginDialogCaptionPanel
-{
-	font-size: 13px;
+	height: 20px;
+	overflow: hidden;
+	padding: 0;
+	text-align: center;
+	width: 28px;
 }
 
 /* Style used for links in the "edit branding" dialog. */
@@ -1457,12 +858,6 @@ body, table td, select
 	padding-right: 4px;
 	white-space: nowrap;
 	width: 41px;
-}
-
-.lpePreviewImg
-{
-	cursor: pointer;
-	margin-right: 5px;
 }
 
 .lpeEditImg
@@ -1504,7 +899,6 @@ body, table td, select
 	top: 25px;
 	z-index: 100;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -1514,24 +908,15 @@ body, table td, select
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
-	left: 0px;
-	margin-left: 2px;
-	position: absolute;
-	right: 0px;
-	z-index: 2000;
-}
-
-.findSearchResultsPanel
-{
 	position: relative;
-	z-index: 10;		/* Fixes a bug in IE where the search results don't fully display on top. */
+	margin-left: 5px;
 }
 
 /* Styles for the "search results" in a "find" control. */
 .findSearchResultsContent
 {
 	background-color: white;
-	height: 250px;
+	height: 220px;
 	overflow: auto;
 	width: 200px;	/* Even though this isn't the real width, we need to specify it or IE won't honor the overflow: auto. */
 }
@@ -1558,27 +943,15 @@ body, table td, select
 /* Style used for an item in a search result list. */
 .findSearchResultItemWidget
 {
-	border-bottom: 1px solid #BABDB6;
 	margin-bottom: .25em;
 	margin-left: .5em;
 	margin-right: .5em;
-	padding-bottom: 6px;
 	white-space: nowrap;
-}
-.findSearchResultItemWidget a
-{
-	color: #1f1f1f !important;
 }
 .findSearchResultItemWidget span.gwt-InlineLabel
 {
 	color: #505354;
 }
-
-.findSearchResultItemWidget_HighlightOn
-{
-	background: none repeat scroll 0 0 #CCE9EE;
-}
-
 .findCtrlScopePanel
 {
 }
@@ -1605,8 +978,8 @@ body, table td, select
 
 .gwtFindCtrl .gwt-TextBox
 {
-	margin-top: 2px;
-	margin-left: 1px;
+	margin-top: 5px;
+	margin-left: 5px;
 }
 
 
@@ -1621,150 +994,47 @@ body, table td, select
 	color: red;
 }
 
-.loginDlg_useOpenIdPanel
+/* Styles used by the WorkspaceTreeControl. */
+.workspaceTreeBinderAnchor
 {
-	color: #505354;
-	margin: 10px 10px 20px 10px;
+	color: #414648; /* dark grey */
+	text-decoration: none;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: .9em;
+}
+.workspaceTreeBinderAnchor:hover 
+{
+	color: #135c8f; /* anchor blue */
 }
 
-.loginDlg_downloadingFileMsgPanel {padding: 10px; white-space: normal; width: 350px;}
-.loginDlg_downloadingFileMsg1     {}
-.loginDlg_downloadingFileMsg2     {padding-top:10px;}
-
-.loginDlg_openIdProviderImg:hover
+.workspaceTreeBinderExpanderImg
 {
 	cursor: pointer;
-}
-
-.loginDlg_openIdProvidersPanel
-{
-	margin-left: 10px;
-	margin-top: 8px;
-}
-
-.loginDlgBox_Glass
-{
-	background-color: #E0E0E0;
-	filter: alpha(opacity=100);
-	opacity: 1;
-	overflow: hidden;
-	z-index: 1000;
-}
-
-
-/* Styles used in the Sign In dialog for User ID and Password labels */
-
-#userIdLabel, #pwdLabel
-{
-	color: #505354;
-}
-
-.loginDlg_OrText
-{
-	margin-bottom: 8px;
-	margin-top: 12px;
-	text-align: center;	
-}
-
-.loginDlg_pleaseSelectProviderLabel
-{
-	margin-bottom: 10px;
-	margin-left: 6px;
 	margin-top: 4px;
+	margin-left: 2px;
 }
-
-.loginDlg_ExtUserPwdResetPanel
+.workspaceTreeBinderImg
 {
-	margin-top: 8px;
+	padding-right: 2px;
 }
-
-.loginDlg_ExtUserPwdResetPanel
+.workspaceTreeBinderSelected
 {
-	margin-top: 8px;
-	margin-left: 8px;
+	color: #5691a6;
+	padding-left: 2px;
 }
-
-
-.loginDlg_extUserSelfRegHint, .loginDlg_ExtUserPwdResetHint
-{
-	font-size: small;
-	margin-bottom: .75em;
-	width: 370px;
-}
-
-.loginDlg_selfRegPanel
-{
-	margin-top: 8px;
-}
-
-.loginDlg_RegistrationRequiredPanel
-{
-	margin-top: 8px;
-	margin-left: 8px;
-}
-
-.loginDlg_confirmationPanel
-{
-	padding-top: 12px;
-	padding-left: 12px;
-	padding-bottom: 12px;
-	width: 350px;
-}
-
-.loginDlg_confirmationImg
-{
-	padding-right: 10px;
-}
-
-.loginDlg_confirmationHint
-{
-	font-size: medium !important;
-	white-space: normal;
-}
-
-
-
-
-
-/* Styles used by the WorkspaceTreeControl. */
-.workspaceTreeBinderAnchor            {color: #353838; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: 13px; padding: 3px 0;}
-.workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px; color: #000;}
-
-.workspaceTreeBinderAnchor:hover            {color: #135c8f;}
-.workspaceTreeBinderAnchor_collection:hover {color: #135c8f;}
-
-.workspaceTreeBinderExpanderImg            {cursor: pointer; margin-top: 8px; margin-left: 0px;}
-.workspaceTreeBinderExpanderImg_collection {}
-
-.workspaceTreeBinderImg            {padding-right: 2px;}
-.workspaceTreeBinderImg_collection {}
-
-.workspaceTreeBinderSelected            {color: #135c8f; padding-left: 2px;}
-.workspaceTreeBinderSelected_collection {font-size: 14px;}
-
-/* Must match the definition of GwtConstants.WORKSPACE_TREE_WIDTH. */
-.workspaceTreeWidth {width: 250px !important;}
-
-.workspaceTreeControlBorderTop {border-top: 1px solid transparent !important; padding-top: 4px !important;}
-
 .workspaceTreeControl
 {
-	position: relative;
-	background-color: transparent;
+	background-color: #EAEBE8;
 	padding: 0 0 8px;
-	overflow: auto;
-	border-radius: 5px;
+	width: 230px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+	overflow: auto;
 }
-
-.workspaceTreeControl_blankContent {display: block; margin: 10px; color: #666666; font-size: 1.1em;}
-
-.workspaceTreeControlBody            {padding-top: 10px;}
-.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid #cccccc;}
-
-.workspaceTreeControlTreeHeader {color: #666; font-size: .8em; margin-top: 0em; padding-top: 6px; padding-bottom: 3px; padding-right: 0px; padding-left: 20px; border-bottom: 0px; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap;}
-
+.workspaceTreeControlBody
+{
+	padding-top: 5px;
+}
 .workspaceTreeControlHeader .workspaceTreeBinderSelected
 {
 	color: #fff;
@@ -1775,21 +1045,29 @@ body, table td, select
 }
 .workspaceTreeControlHeader_as
 {
-	background: transparent;
+	background: #949494 url(images/blends/gray_blend3_75.png) repeat-x scroll center bottom;
 	cursor: default;
 	height: 64px;
 }
 .workspaceTreeControlHeader_as td div
 {
-	font-size: 20px;
+	font-size: 18px;
 	font-weight: normal;
-	text-shadow: 0 2px 8px #949494;
+	padding-left: 8px;
+	margin-top: 5px;
 }
 .workspaceTreeControlHeader_base
 {
+	background-position:bottom;
 	color: #fff;
-	font-weight: normal;
+	font-size: 0.85em;
+	font-weight: bold;
+	letter-spacing: 0.02em;
 	padding: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
 }
 .workspaceTreeControlHeader_closeA
 {
@@ -1797,38 +1075,48 @@ body, table td, select
 }
 .workspaceTreeControlHeader_closeButton
 {
-	background: transparent;
-	border: 1px solid transparent;
-	color: #505354;
-	display: inline-block;
-	font-size: 12px !important;
-	margin-top: 5px;
-	padding: 2px 8px !important;
-	text-shadow: 0 0 0 transparent !important;
-	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
+	background: url(images/slice_blend_teal_27.png) repeat-x scroll 0 0 #81B2Bd;
+	border: 1px solid #60919C;
+	color: #FFFFFF;
+	display: inline-block;
+	font-size: 12px !important;
+	margin: 5px;
+	padding: 2px 12px !important;
 }
-
+.workspaceTreeControlHeader_closeButton:hover
+{
+	border: 1px solid #D9EAF0;
+}
 .workspaceTreeControlHeader_nav
 {
 	background: #85BCC3 url(images/header_blend_grey_bg.png) repeat-x scroll center bottom;
 	cursor: pointer;
 }
-.workspaceTreeControlRow            {padding: 2px; margin-bottom: 5px;}
-.workspaceTreeControlRow_collection {margin-left: -10px;}
-
-.workspaceTreeControlRow_configureImg   {padding-top: 1px; cursor: pointer;}
-.workspaceTreeControlRow_configurePanel {display: block; position: absolute;}
-
-.workspaceTreeControlRow:hover            a {color: #135c8f;}
-.workspaceTreeControlRow_collection:hover a {} 
-
-.workspaceTreeControlRowHover            {color: #5691a6; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
-.workspaceTreeControlRowHover_collection {border-radius: 3px; }
-
-.workspaceTreeControlRowSelected            {-moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; background: #ededed; font-weight: bold;}
-.workspaceTreeControlRowSelected_collection {border-radius: 3px; background: #cce9ee !important;}
+.workspaceTreeControlRow
+{
+	padding: 2px;
+	margin-bottom: 1px;
+}
+.workspaceTreeControlRow:hover a
+{
+	color: #135c8f;
+}
+.workspaceTreeControlRowHover
+{
+	color: #5691a6;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+.workspaceTreeControlRowSelected
+{
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	background: #fff;
+	font-weight: bold;
+}
 
 
 /* */
@@ -2198,7 +1486,6 @@ body, table td, select
 .lpeTable
 {
 	border: 0px;
-	border-collapse: collapse !important;
 }
 
 /* Styles used for a drop zone found in a table. */
@@ -2244,23 +1531,21 @@ body, table td, select
 }
 
 /* Style used for the panel that holds the content control. */
-.mainContentControl, .vibe-viewBase
+.mainContentControl
 {
-	position: relative;
-	top: 8px !important;
+	left: 246px;
+	position: absolute;
+	top: 8px;
 	background-color:#fff;
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	-webkit-border-radius: 6px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
-.mainContentControl iframe.gwt-Frame
-{
+.mainContentControl iframe.gwt-Frame {
 	border-width: 0px;
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	-webkit-border-radius: 6px;
-}
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	}
 
 /* Style used for the content panel in Teaming's main page. */
 .mainContentPanel
@@ -2271,8 +1556,9 @@ body, table td, select
 /* Style used for the WorkspaceTree control found in Teaming's main page. */
 .mainWorkspaceTreeControl
 {
-	left: 8px !important;
-	top:  8px !important;
+	left: 8px;
+	position: absolute;
+	top: 8px;
 	z-index: 100;
 }
 
@@ -2286,28 +1572,19 @@ body, table td, select
 }
 .mainBreadCrumb_Browser
 {
-	background: url(images/trans50_black.png) repeat transparent !important;
+	background: url(images/trans70_black.png) repeat;
 	border: 0px;
-	padding: 0px !important;
-	margin-top: 5px;
+	padding: 0px;
 	right: 20px;
 	z-index: 351;
 }
 .breadCrumb_Browser
 {
-}
-.breadCrumb_BrowserBinder
-{
-}
-.breadCrumb_BrowserPopup
-{
 	background-color: #f6f6f6;
-	margin: 0 6px 6px;
+	margin: 0 5px 5px;
 	border-top: 1px solid #808384;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
 }
@@ -2322,13 +1599,6 @@ body, table td, select
 {
 	color: #FFFFFF;
 	font-size: .85em;
-}
-.breadCrumb_ContentBinder
-{
-	margin-top: -8px;
-}
-.breadCrumb_ContentPopup
-{
 	margin: 0px 20px;
 }
 .breadCrumb_ContentNode
@@ -2340,61 +1610,244 @@ body, table td, select
 	margin-top: 2px;
 	margin-right: 2px;
 }
-.breadCrumb_ContentNode_ExpanderImgSmall
-{
-	height: 10px;
-	width: 10px;
-	padding-top: 3px;
-}
-.breadCrumb_ContentNode_Filr
-{
-	color: #135c8f  !important;
-	cursor: default !important;
-}
 .breadCrumb_ContentNode_Anchor
 {
-	margin-top: 3px;
+	margin-top: 2px;
 	margin-right: 15px;
 }
-.breadCrumb_ContentNode_AnchorBC
+
+/* Styles used by the MainMenuControl. */
+.mainMenuButton
 {
-	font-size: .85em;
+	display: inline-block;
+	height: 20px;
+	margin-left: 3px;
+	overflow: hidden;
+	padding: 0px;
+	text-align: center;
+	top: 2px;
+	width: 28px;
+	z-index: 310;
 }
-.breadCrumb_ContentNode_AnchorTail
+.mainMenuButton_Group
 {
-	font-size: 1.3em !important;
-	margin-top: 2px !important;
-	margin-left: 0px !important;
-	margin-right: 5px !important;
+	display: inline;
+	font-size: 0.85em;
+	font-weight: bold;
+	letter-spacing: 0.05em;
+	padding-left: 6px;
+	padding-right: 1em;
+}
+.mainMenuButton_WidgetAnchor
+{
+	cursor: pointer;
+}
+.mainMenuButton_WidgetImage
+{
+	margin-top: 2px;
+}
+.mainMenuContent
+{
+	display: inline;
+	margin: 0px;
+	padding: 0px;
+}
+.mainMenuControl
+{
+	background: transparent url(images/main_menu_bg.png) repeat-x scroll 0 0;
+	height: 20px;
+	left: 0;
+	padding: 2px 0 4px;
+	position: relative;
+	top: 0;
+	white-space: nowrap;
+	width: 100%;
+	z-index: 300;
+}
+.mainMenuBar_BoxA
+{
+	cursor: pointer;
+	text-decoration: none;
+}
+.mainMenuBar_BoxDropDownImg
+{
 	vertical-align: middle;
 }
-
-.breadCrumb_ContentTail_configureImg {cursor: pointer; margin-left: 5px;}
-.breadCrumb_ContentTail_Img          {margin-right: 3px; vertical-align: middle;}
-.breadCrumb_ContentTail_Panel        {display: block; padding-top: 5px; white-space: nowrap;}
-.breadCrumb_ContentTail_Up           {margin-right: 3px; vertical-align: middle;}
-
-.breadCrumb_TrashLabel
+.mainMenuBar_BoxDropDownImgNonIE
 {
-	color: #135C8F;
-	font-size: large;
-	margin-top: 0px;
-	margin-right: 8px;
+	margin-left: 5px;
 }
+.mainMenuBar_BoxHover
+{
+	color: #135c8f !important; /* black */
+	background: url(images/teal_slice.png) repeat-x;
+	background-position: center;
+}
+.mainMenuBar_BoxImg
+{
+	vertical-align: middle;
+}
+.mainMenuBar_BoxImgNonIE
+{
+	margin-right: 2px;
+}
+.mainMenuBar_BoxPanel
+{
+	border-left: 1px solid white;
+	color: #414648; /* dark grey */
+	font-size: 0.73em;
+	font-weight: normal;
+	padding: 3px 6px;
+	vertical-align: top;
+	white-space: nowrap;
+}
+.mainMenuBar_BoxPanelOpen
+{
+	background: #81b2bd url(images/slice_blend_teal_27.png) repeat-x;
+	border-left: 1px solid white;
+	color: #fff;
+	font-size: 0.73em;
+	font-weight: normal;
+	padding: 3px 8px;
+	vertical-align: top;
+	white-space: nowrap;
+}
+.mainMenuBar_BoxPanelIE
+{
+	display: inline;
+}
+.mainMenuBar_BoxPanelNonIE
+{
+	display: inline-block;
+}
+.mainMenuBar_BoxText
+{
+	vertical-align: middle;
+}
+.mainMenuPopup_Glass
+{
+	background-color: #000;
+	filter: alpha(opacity=0);
+	opacity: 0.0;
+	z-index: 350;
+}
+.mainMenuPopup
+{
+	background-color: #3a3e40;
+	text-align: left;
+	top: 0px; 
+	/* width: 200px; */
+}
+.mainMenuPopup_Bottom
+{
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+	padding-top: 5px;
+}
+.mainMenuPopup_Core
+{
+	border: 0px;
+	padding: 0px;
+	z-index: 351;
+}
+.mainMenuPopup_Item
+{ 
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	padding: 0.4em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.mainMenuPopup_ItemA
+{
+}
+.mainMenuPopup_ItemHover
+{
+	background: none repeat scroll 0 0 #505354;
+	color: #81B2BD !important;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+.mainMenuPopup_ItemSpacer, .popupMenuItemSeparator 
+{
+	border-top: 1px solid #353838;
+	border-bottom: 1px solid #505354;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+.mainMenuPopup_ItemPanel
+{
+}
+.mainMenuPopup_ItemText
+{
+	color: #fff;
+	cursor: pointer;
+	display: inline;
+	font-size: 1em;
+	margin: 0px;
+	padding: 2px 5px;
+}
+.mainMenuSearch_ButtonAnchor
+{
+	cursor: pointer;
+	margin: 2px;
+	vertical-align: top;
+}
+.mainMenuSearch_ButtonImage
+{
+	margin: 2px;
+	vertical-align: top;
+}
+.mainMenuSearch_Input
+{
+	font-size: 10px;
+	padding: 3px 0 0 3px;
+	vertical-align: middle;
+	width: 140px;
+	background-color: transparent;
+	border: 0px;
+}
+.mainMenuSearch_Panel
+{
+	padding: 0 0 0 5px;
+	border-left: none;
+	display: block;
+	position: absolute;
+	right: 45px;
+	top: 2px;
+	height: 18px;
+	white-space: nowrap;
+	
+	background-color: #fafafa;
+	border: 1px solid #c4c4c4;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
 
-/* Styles for the search options. */
-.searchOptions
+	
+}
+.mainMenuSearchOptions
 {
 	padding: 5px 10px 15px;
 	overflow: auto;
 }
-.searchOptions_Browser
+.mainMenuSearchOptions_Browser
 {
-	background: url(images/trans50_black.png) repeat tranparent !important;
+	background: url(images/trans70_black.png) repeat;
 	border: 0px;
-	padding: 0px !important;
+	padding: 0px;
 	z-index: 351;
 }
+.mainMenuSearchOptions_Button
+{
+	padding: 1px;
+	border-left: none;
+	display: block;
+	position: absolute;
+	right: 10px;
+	top: 1px;
+	white-space: nowrap;
+}
+
+/* Styles for the search options dialog. */
 .searchOptionsDlg_AdvancedSearchA
 {
 	cursor: pointer;
@@ -2428,15 +1881,12 @@ body, table td, select
 	color: #333 !important;
 	font-size: .85em;
 	background-color: #f6f6f6;
-	margin: 0 6px 6px;
+	margin: 0 5px 5px;
 	border-top: 1px solid #808384;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
-	-webkit-border-bottom-right-radius: 3px;
-	overflow: visible;	
+	-webkit-border-bottom-right-radius: 3px;	
 }
 .searchOptionsDlg_FindersRadio
 {
@@ -2473,71 +1923,137 @@ body, table td, select
 }
 
 /* Styles for the favorites dialog. */
-	.favoritesDlg          {z-index: 351;}
-	.favoritesDlg_Checkbox {margin-left: 5px;}
-	.favoritesDlg_Grid     {margin-top: 8px;}
-	.favoritesDlg_Label    {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
-	.favoritesDlg_MenuBar  {}
-	.favoritesDlg_MenuItem {}
-/* End:  Styles for the favorites dialog. */
+.favoritesDlg
+{
+	z-index: 351;
+}
+.favoritesDlg_Checkbox
+{
+	margin-left: 5px;
+}
+.favoritesDlg_Grid
+{
+	margin-top: 8px;
+}
+.favoritesDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.favoritesDlg_MenuBar
+{
+}
+.favoritesDlg_MenuItem
+{
+}
 
 /* Styles for the folder options dialog. */
-	.folderOptionsDlg                   {z-index: 351;}
-	.folderOptionsDlg_Grid              {margin-top: 8px;}
-	.folderOptionsDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
-	.folderOptionsDlg_MenuItem          {}
-	.folderOptionsDlg_Radio             {margin-left: 5px;}
-	.folderOptionsDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
-	.folderOptionsDlg_SectionHeaderCell {}
-	.folderOptionsDlg_SectionHeaderRow  {}
-/* End:  Styles for the folder options dialog. */
-
-/* Styles for the folder column configuration dialog. */
-	.folderColumnsDlg                   {z-index: 351;}
-	.folderColumnsDlg_Grid              {margin: 8px 8px 4px 8px; background-color: #F6F6F6; border-bottom: 0px solid #F6F6F6; border: 1px solid #D2D5D1;}
-	.folderColumnsDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
-	.folderColumnsDlg_MenuBar           {margin-left: 8px; margin-bottom: 3px; border: 0px; background: transparent;}
-	.folderColumnsDlg_MenuImg           {}
-	.folderColumnsDlg_MenuItem          {white-space: nowrap; color #1f1f1f !important; background-color: transparent !important; padding: 0px !important;}
-	.folderColumnsDlg_MenuItem_Order    {padding-right: 5px !important;}
-	.folderColumnsDlg_MoveEnabled       {cursor: pointer;}
-	.folderColumnsDlg_OptionsGrid       {margin: 10px 0px;}
-	.folderColumnsDlg_Radio             {margin-left: 5px;}
-	.folderColumnsDlg_RowCell           {padding: 3px 8px; border-bottom: 1px solid #D2D5D1; white-space: nowrap;}
-	.folderColumnsDlg_RowCellCB         {text-align: center;}
-	.folderColumnsDlg_Row-even          {background: white;}
-	.folderColumnsDlg_Row-odd           {background: #F3F7FB;}
-	.folderColumnsDlg_ScrollLimit       {height: 215px;}
-	.folderColumnsDlg_ScrollPanel       {overflow-y: auto !important; overflow-x: hidden !important; padding: 0px; padding-right: 28px; margin: 0px;}
-	.folderColumnsDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
-	.folderColumnsDlg_SectionHeaderCell {}
-	.folderColumnsDlg_SectionHeaderRow  {
-		background: transparent url("images/blends/gray_blend8_28.png") repeat-x scroll center;
-		color: #505354;
-		font-size: 0.8em;
-		height: 24px;
-		padding: 0.2em;
-		text-align: left;
-		text-indent: 0.5em;
-		white-space: nowrap;
-	}
-/* End:  Styles for the folder column configuration dialog. */
+.folderOptionsDlg
+{
+	z-index: 351;
+}
+.folderOptionsDlg_Radio
+{
+	margin-left: 5px;
+}
+.folderOptionsDlg_Grid
+{
+	margin-top: 8px;
+}
+.folderOptionsDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.folderOptionsDlg_MenuItem
+{
+}
+.folderOptionsDlg_SectionHeader
+{
+	font-size: 1em;
+	font-weight: bold;
+	padding-top: 8px;
+	padding-bottom: 5px;
+}
+.folderOptionsDlg_SectionHeaderCell
+{
+}
+.folderOptionsDlg_SectionHeaderRow
+{
+}
 
 /* Styles for the manage saved searches dialog. */
-	.manageSavedSearchesDlg                   {z-index: 351;}
-	.manageSavedSearchesDlg_DeleteAnchor      {cursor: pointer;}
-	.manageSavedSearchesDlg_DeleteImg         {margin-top: 2px; margin-left: 5px;}
-	.manageSavedSearchesDlg_Grid              {margin-top: 8px;}
-	.manageSavedSearchesDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
-	.manageSavedSearchesDlg_Save              {margin-top: 2px; margin-left: 5px; margin-right: 5px;}
-	.manageSavedSearchesDlg_SaveButton        {cursor: pointer; margin-left: 2px;}
-	.manageSavedSearchesDlg_SaveInput         {}
-	.manageSavedSearchesDlg_SearchAnchor      {color: #0000fc; cursor: pointer; font-size: 1em; padding-right: 3px; text-decoration: none;}
-	.manageSavedSearchesDlg_SearchAnchorPanel {padding-top: 1px; width: 90%;}
-	.manageSavedSearchesDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
-	.manageSavedSearchesDlg_SectionHeaderCell {}
-	.manageSavedSearchesDlg_SectionHeaderRow  {}
-/* End:  Styles for the manage saved searches dialog. */
+.manageSavedSearchesDlg
+{
+	z-index: 351;
+}
+.manageSavedSearchesDlg_DeleteAnchor
+{
+	cursor: pointer;
+}
+.manageSavedSearchesDlg_DeleteImg
+{
+	margin-top: 2px;
+	margin-left: 5px;
+}
+.manageSavedSearchesDlg_Grid
+{
+	margin-top: 8px;
+}
+.manageSavedSearchesDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.manageSavedSearchesDlg_Save
+{
+	margin-top: 2px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.manageSavedSearchesDlg_SaveButton
+{
+	cursor: pointer;
+	margin-left: 2px;
+}
+.manageSavedSearchesDlg_SaveInput
+{
+}
+.manageSavedSearchesDlg_SearchAnchor
+{
+	color: #0000fc;
+	cursor: pointer;
+	font-size: 1em;
+	padding-right: 3px;
+	text-decoration: none;
+}
+.manageSavedSearchesDlg_SearchAnchorPanel
+{
+	padding-top: 1px;
+	width: 90%;
+}
+.manageSavedSearchesDlg_SectionHeader
+{
+	font-size: 1em;
+	font-weight: bold;
+	padding-top: 8px;
+	padding-bottom: 5px;
+}
+.manageSavedSearchesDlg_SectionHeaderCell
+{
+}
+.manageSavedSearchesDlg_SectionHeaderRow
+{
+}
 
 /* Styles for the tag this dialog. */
 .tagThisDlg
@@ -2636,7 +2152,6 @@ body, table td, select
 	background: url(images/teal_slice.png) repeat-x center;
 	background-position:center;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 
@@ -2707,7 +2222,8 @@ body, table td, select
 /* Style for the main Teaming page. */
 .mainTeamingPage
 {
-	background-color: #cccccc;
+	background-color: #b8b8b8;
+	background-repeat: repeat;
 	font-family: Arial,Helvetica,sans-serif;
 	font-style: normal;
 	font-size: medium;
@@ -2720,6 +2236,53 @@ body, table td, select
 	width: 100%;
 }
 
+/* Style used to create a bottom margin of .10em */
+.marginBottom15em
+{
+	margin-bottom: .15em;
+}
+
+/* Style used to create a bottom margin of .25em */
+.marginBottomPoint25em
+{
+	margin-bottom: .25em;
+}
+
+/* Style used to create a left margin of .25em */
+.marginLeftPoint25em
+{
+	margin-left: .25em;
+}
+
+/* Style used to create a right margin of .25em */
+.marginRightPoint25em
+{
+	margin-right: .25em;
+}
+
+/* Style used to create a right margin of 5 px. */
+.margin-right-5
+{
+	margin-right: 5px;
+}
+
+/* Style used to create a right margin of 22 px. */
+.margin-right-22
+{
+	margin-right: 22px;
+}
+
+/* Style used to create a top margin of 5 px. */
+.marginTop5px
+{
+	margin-top: 5px;
+}
+
+/* Style used to create a top margin of 10 px. */
+.marginTop10px
+{
+	margin-top: 10px;
+}
 
 /* Style used with the mast head */
 .mastHead
@@ -2743,99 +2306,13 @@ body, table td, select
 	z-index: 21;
 }
 
-.mastheadFilrActionsPanel
-{
-	bottom: 0px;
-	left: 180px;
-	position: absolute;
-}
-
-.mastheadFilr_PeopleImg, .mastheadFilr_WhatsNewImg, .mastheadFilr_BrowseFilrImg
-{
-	color: #FFFFFF;
-	font-size: 12px;
-	margin: 2px 4px 4px;
-	text-align: center;
-}
-	
-.mastheadFilr_PeopleImgPanel, .mastheadFilr_WhatsNewImgPanel, .mastheadFilr_BrowseFilrImgPanel
-{
-	border: 1px solid transparent;
-	color: #FFFFFF;
-	font-size: 12px;
-	margin-left: 5px;
-	margin-right: 5px;
-	padding: 0px;
-	text-align: center;
-}
-
-.mastheadFilr_PeopleImgPanel:hover, .mastheadFilr_WhatsNewImgPanel:hover, .mastheadFilr_BrowseFilrImgPanel:hover
-{
-	background-image: url(images/trans20_91daf2.png);
-	background-repeat: repeat;
-	border: 1px solid #3c4143;
-	cursor: pointer;
-	
-}
-
-.mastheadFilr_PeoplePanel
-{
-	position: absolute;
-	left: 10px;
-	bottom: 0px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius: 5px;	
-	-webkit-border-top-right-radius: 5px;	
-	z-index: 400;
-}
-
-.mastheadFilr_WhatsNewPanel
-{
-	position: absolute;
-	left: 60px;
-	bottom: 0px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius: 5px;	
-	-webkit-border-top-right-radius: 5px;	
-	z-index: 400;
-}
-
-.mastheadFilr_BrowseFilrPanel
-{
-	position: absolute;
-	left: 110px;
-	bottom: 0px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius: 5px;	
-	-webkit-border-top-right-radius: 5px;	
-	z-index: 400;
-}
-
-
-.mastheadFilrSearchComposite
-{
-	bottom: 30px;
-	position: absolute;
-	right: -42px;
-	z-index: 1000;
-}
-
 /* Style used with the panel that holds the global actions in the masthead. */
 .mastheadGlobalActionsPanel
 {
 	color: #FFFFFF;
-	right: 5px;
+	right: 0px;
 	position: absolute;
-	top: 10px;
+	top: 15px;
 	white-space: nowrap;
 	z-index: 20;
 }
@@ -2916,12 +2393,11 @@ body, table td, select
 .brandingLink
 {
 	cursor: pointer;
-	font-size: 1em;
+	font-size: 0.75em;
 	letter-spacing: 0.03em;
 	padding: 2px 8px;
 	text-decoration: none;
     -moz-border-radius: 5px;
-    border-radius: 5px;
     -webkit-border-radius: 5px;
 }
 
@@ -2932,34 +2408,10 @@ body, table td, select
 	color: #135C8F;
 }
 
-.brandingDefaultImg
-{
-	left: 6px;
-	position: absolute;
-	top: 6px;
-	z-index: 0;
-}
-
-.guestLabel
-{
-	font-size: 1em;
-	letter-spacing: 0.03em;
-	padding: 2px 8px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-}
-
 /* Style used to add padding-top: 2px; */
 .paddingTop2px
 {
 	padding-top: 2px;
-}
-
-/* Style used to add padding-top: 3px; */
-.paddingTop3px
-{
-	padding-top: 3px;
 }
 
 /* Style used to add padding-top: 5px; */
@@ -2991,15 +2443,6 @@ body, table td, select
 	padding-left: 1em;
 }
 
-.paddingRight3px
-{
-	padding-right: 3px;
-}
-.paddingRight8px
-{
-	padding-right: 8px;
-}
-
 /* Use this style if you want to set text-decoration: none */
 .noTextDecoration
 {
@@ -3007,123 +2450,41 @@ body, table td, select
 }
 
 /* Styles for buttons */
-.teamingSmallButton
-{
-	font-size: 8px;
-}
-
 .teamingButton
 {
 	margin-left: 0.5em;
 }
 
-.teamingDlgBoxFooter .gwt-Button {
-	color:#fff;
- 	font-size: 12px;
-    font-family: Arial, sans-serif !important;
-	background: #949494 none repeat scroll 0 0;
-	margin-right:3px;
-	padding: 2px 10px;
-	text-decoration:none;
-  	cursor: pointer;
-  	white-space: nowrap;
-	border: 1px solid transparent;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
-    text-align: center !important;
-}
-
-.teamingDlgBoxFooter .gwt-Button:hover, 
-.workspaceTreeControlHeader_closeButton:hover
-{
-	color: #135c8f !important;
-    white-space: nowrap !important;
-    text-decoration: none !important;
-	font-size: 12px important;
-	border: 1px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
-}
-
 .gwt-Button {
-	color: #1f1f1f;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background: linear-gradient(top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
-	border: 1px solid #b8b8b8;
-	font-weight: normal !important;
-	font-size: 12px;
-	padding: 2px 10px  !important;
-	margin: 0;
-	margin-right: 3px;
-	text-decoration:none;	
-	cursor: pointer !important;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+  margin: 0;
+  border: 0px;
+  padding: 2px 10px;
+  margin-right: 3px;
+  text-decoration: none;
+  font-size: 11px;
+  cursor: pointer;
+  background: #949494;
 }
-.gwt-Button:hover {
-	border: 1px solid #81b2bd;
-	font-size: 12px important;
-	}
 .gwt-Button:active {
   border: 0px inset #ccc;
+}
+.gwt-Button:hover {
+  border-color: #9cf #69e #69e #7af;
 }
 .gwt-Button[disabled] {
   cursor: default;
   color: #888;
-  border: 1px outset #ccc !important;
 }
 .gwt-Button[disabled]:hover {
-  border: 1px outset #ccc !important;
+  border: 1px outset #ccc;
 }
 
-.gwt-RadioButton {white-space: nowrap;}
 .gwt-RadioButton label {
-	font-size: 13px;
-	padding-top: 4px;
-	padding-left: 2px;
-	padding-right: 8px;
-	display: inline-block;
+	font-size: 12px;
 }
 
 .gwt-CheckBox label {
-	font-size: 13px !important;
-	padding-top: 4px;
-	padding-left: 2px;
-	padding-right: 8px;
-	display: inline-block;
-	}
-
-.gwt-TextBox, .gwt-PasswordTextBox, .gwt-DateBox, .gwt-FileUpload, .gwt-TextArea {
-	border: 1px solid #949494;
-	border-radius: 3px;
-	font-size: 13px;
-	padding: 5px;
-	background-color: #fff;
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-}
-
-#loginFormId input {
-	font-size: 15px;
+	font-size: 12px !important;
 	}
 
 /* Styles for dialog boxes */
@@ -3132,34 +2493,23 @@ body, table td, select
 	font-family: Arial,Helvetica,sans-serif;
 	background: url(images/trans30_black.png) repeat;
 	padding: 6px;
-	border-radius: 6px;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
-}
-
-.teamingDlgBox_NoClip, .teamingPopupPanel_NoClip
-{
-	clip: rect( -10000px, 10000px, 10000px, 0px) !important; 
+	z-index: 1001;
 }
 
 .teamingDlgBox_Glass
 {
 	background-color: #000;
-	filter: alpha(opacity=40);
-	opacity: 0.4;
+	filter: alpha(opacity=50);
+	opacity: 0.5;
 	overflow: hidden;
-}
-
-.teamingDlgBox_GlassClear
-{
-	background-color: transparent;
-	overflow: hidden;
+	z-index: 1000;
 }
 
 .teamingDlgBox .popupContent
 {
-	background-color: #fafafa;
-	border-radius: 5px;
+	background-color: #f6f6f6;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
@@ -3170,77 +2520,33 @@ body, table td, select
 	margin: 10px;
 }
 
-.teamingDlgBoxBody
-{
-	position: relative;
-	z-index: 1950;
-}
-
 /* Styles for the footer of a dialog box. */
 .teamingDlgBoxFooter
 {
-	background-color: #f6f6f6;
-	box-shadow: 0px 2px 3px #e0e0e0 inset;
-	border-top: 1px solid #cccccc;
-	margin-top: 10px;
-	padding: 10px;
-	position: relative;
+	background-color: #EAEBE8;
+	border-top: 1px solid #BABDB6;
+	margin-top: 0.5em;
+	padding: 0.5em;
 	text-align: right;
 	vertical-align: middle;
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
-	z-index: 1900;
 }
 
 /* Styles for the header in a dialog box. */
 .teamingDlgBoxHeader
 {
-	position: relative;
 	color: #fff;
 	font-size: 14px;
 	font-weight: bold;
+	background: transparent url(images/dialog_header_tile.png) repeat-x;
 	padding: 5px;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
-	white-space: nowrap;
-	vertical-align: middle;
-	
-	background-color: #81b2bd;
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
-}
-
-.teamingDlgBoxHeaderBG_NonIE
-{
-	background-color: #81b2bd;
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
-}
-.teamingDlgBoxHeaderBG_IE
-{
-	background: url(images/dialog_header_tile3.png) repeat;
-}
-
-.teamingDlgBoxHeader-captionImagePanel {display: inline;}
-.teamingDlgBoxHeader-captionLabel      {display: inline !important;}
-
-.teamingDlgBoxHeader:hover
-{
-	cursor: move;
 }
 
 /* Used by GwtClientHelper.setGridColSpan() to hide a cell in a Grid. */
@@ -3262,28 +2568,23 @@ body, table td, select
 .roundcorner
 {
 	-moz-border-radius: 10px;
-	border-radius: 10px;
 	-webkit-border-radius: 10px;
 }
 .roundcornerSM
 {
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .roundcornerSM-bottom
 {
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 }
 .roundcornerLG
 {
 	-moz-border-radius: 40px;
-	border-radius: 40px;
 	-webkit-border-radius: 40px;
 }
 
@@ -3292,7 +2593,6 @@ body, table td, select
 .btn-bg1
 {
 	-moz-border-radius:15px;
-	border-radius:15px;
 	-webkit-border-radius: 15px;
 	background:url("images/putty_blend2.png") repeat-x scroll center bottom #FFFFFF;
 	border:1px solid #c4c4c4;
@@ -3362,16 +2662,13 @@ a.ss_new_thread {
 	background:none repeat scroll 0 0 #FFFFFF;
 	-moz-border-radius-topleft:5px;
 	-moz-border-radius-topright:5px;
-	border-top-left-radius:5px;
-	border-top-right-radius:5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
-
 .qViewTitleText {
 	color:#FFFFFF;
-	font-size:1.4em;
-	letter-spacing:0.02em;
+	font-size:1.1em;
+	letter-spacing:0.05em;
 	overflow:auto;
 	width:auto;
 	font-weight: normal;
@@ -3386,7 +2683,7 @@ a.ss_new_thread {
 .qViewMain {
 }
 .qViewLeft {
-	margin: -20px 10px 10px;
+	margin: -15px 10px 10px;
 	width: 100px;
 }
 .qViewRight {
@@ -3396,27 +2693,21 @@ a.ss_new_thread {
 	position: relative;
 	margin-bottom: 10px;
 }
-.qViewPhoto_none {
-	background-color: transparent;
-	background-image: url(images/UserPhoto.png);
-	background-repeat: no-repeat;
-	background-position: center;
+.qViewActions {
 }
 .qViewPhoto img {
-	width: 85px;
-	margin-left: 7px;
-	border-radius: 3px;
+	width: 100px;
+}
+.qViewPhoto_No {
+	margin-left:25px;
+	margin-top:25px;
+	margin-bottom:10px;
 }
 .qViewPhotoHeight_No {
-	width: 85px;
-	height: 85px;
-	margin-left: 7px;
-	border-radius: 3px;
+	height:50px;
 }
 .qViewPhotoDisabled {
 	margin-bottom: 20px;
-}
-.qViewActions {
 }
 .qViewStatus {
 	padding-bottom: 10px;
@@ -3431,19 +2722,13 @@ a.ss_new_thread {
 .qViewFooter {
 }
 .qViewClose {
-	display: inline-block;
 	position:absolute;
-	right:-15px;
-	top:-15px;
-}
-.qViewClose img {
-	background-image:url(images/close_w_border.png) !important;
-	width: 27px !important;
-	height: 27px !important;
-	cursor: pointer;
+	right:4px;
+	top:4px;
 }
 .qViewInfoTable {
 	margin-bottom: 35px;
+	margin-left: 5px;
 }
 .qView-a {
 	color: #353838 !important;
@@ -3457,34 +2742,23 @@ a.ss_new_thread {
 	color: #135c8f;
 }
 .qView-action  {
+	-moz-border-radius:15px;
+	-webkit-border-radius: 15px;
+	background:url("images/putty_blend2.png") repeat-x scroll center bottom #FFFFFF;
+	border:1px solid #c4c4c4;
+	font-size:11px;
 	margin-top:5px;
 	padding:2px 5px;
 	text-align:center;
 	position: relative;
-	
-	border: 1px solid #B8B8B8;
-	font-weight: normal !important;
-	font-size: 12px;
-	padding: 2px 5px  !important;
-	text-decoration:none;	
-	cursor: pointer !important;
-	white-space: nowrap;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;	
 }
 .qView-action2 {
 	color: #135c8f;
 	background: url("images/teal_slice.png") repeat-x center;
-	border:1px solid #81b2bd;
+	border:1px solid #91daf2;
 }
 .qView-action-following  {
 	-moz-border-radius:15px;
-	border-radius:15px;
 	-webkit-border-radius: 15px;
 	background:url("images/putty_blend4.png") repeat-x scroll center bottom #FFFFFF;
 	border:1px solid #b8b8b8;
@@ -3496,7 +2770,7 @@ a.ss_new_thread {
 }
 .qView-action-following:hover {
 	background: url("images/teal_slice.png") repeat-x center;
-	border:1px solid #81b2bd;
+	border:1px solid #91daf2;
 	color:#135c8f;
 }
 .qView-action-img {
@@ -3527,10 +2801,6 @@ top:100px;
 .gwtUI_nowrap
 {
 	white-space: nowrap;	
-}
-.gwtUI_wrapnormal
-{
-	white-space: normal;	
 }
 .gwtUI_vmiddle
 {
@@ -3564,10 +2834,46 @@ top:100px;
 /* Next and Previous Page buttons */
 
 #viewNextPageOfResults, #viewPreviousPageOfResults, .viewNextDisabledImg, .viewPreviousDisabledImg {
-	vertical-align: top;
-	margin-left: 5px;
-	margin-right: 5px;
+	vertical-align: middle;
 	}
+
+.popupMenu
+{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background-color: #3A3E40;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 400;
+}
+
+.popupMenuTopPanel, .popupMenuBottomPanel
+{
+	padding-top: 5px;
+}
+
+.popupMenuItem
+{
+	color: #FFFFFF;
+	cursor: pointer;
+	line-height: 1.1em; 
+	padding: 0.4em 0.75em 0.5em; 
+	white-space: nowrap;
+}
+
+.popupMenuItem_Hover
+{
+	background: none repeat scroll 0 0 #505354;
+	color: #81B2BD !important;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.popupMenuItemImg
+{
+	margin-right: 5px;
+}
 
 /* Styles for the task disposition dialog. */
 .taskDispositionDlg
@@ -3636,8 +2942,23 @@ top:100px;
 	padding: 0px 5px 1px 5px;
 	border: 1px solid #CCC;
 	-moz-border-radius: 15px;
-	border-radius: 15px;
 	-webkit-border-radius: 15px;
+}
+.gwtTaskFilter_input
+{
+	font-size: 11px !important;
+	width: 130px;
+	border: none !important;
+	background-color: transparent !important;
+	padding: 1px 0 !important;
+}
+.gwtTaskFilter_inputBlur
+{
+	color: graytext !important;
+}
+.gwtTaskFilter_inputFocus
+{
+	color: #353838 !important;
 }
 .gwtTaskFilter_toolbar
 {
@@ -3661,13 +2982,17 @@ top:100px;
 }
 .gwtTaskTools
 {
-	background-color:#ededed;
+	background-color:#cccccc;
 	display: block;
 	padding:  3px 3px 3px 12px;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 1.25em;
 	position: relative; 
 	white-space: nowrap;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
 }
 .gwtTaskTools_ButtonDIV
 {
@@ -3697,16 +3022,11 @@ top:100px;
 {
 	background: #cce9ee;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 .gwtTaskTools_Span
 {
 	padding-right: 10px;
-}
-.gwtTaskTools_Order
-{
-	font-size: 0.7em;
 }
 .gwtTaskTools_ViewMenuAnchor
 {
@@ -3721,8 +3041,41 @@ top:100px;
 .gwtTaskTools_ViewMenuSpan
 {
 	color: #333333;
-	font-size: 0.6em;
+	font-size: 0.75em;
 	padding: 5px;
+}
+.gwtTaskToolsButton_WidgetAnchor
+{
+	background: none !important;
+}
+a.gwtTaskToolsButton_WidgetAnchor:hover
+{
+	background: none !important;
+}
+.gwtTaskToolsButton_WidgetImage
+{
+	margin-left: 3px;
+	vertical-align: text-top;
+}
+.gwtTaskToolsButton_WidgetText
+{
+	background:            none repeat scroll 0 0 #949494 !important;
+	color:                 #FFFFFF                        !important;
+	font-size:             .7em;
+	padding:               2px 12px;
+	text-decoration:       none;
+	-moz-border-radius:    15px;
+	-webkit-border-radius: 15px;
+}
+.gwtTaskToolsButton_WidgetTextDisabled
+{
+	background:            none repeat scroll 0 0 #B8B8B8 !important;
+	color:                 #EDEDED                        !important;
+}
+.gwtTaskToolsButton_WidgetTextHover
+{
+	background:  #81B2BD url(images/slice_blend_teal_27.png) repeat-x !important;
+	color:       #FFFFFF                                              !important;
 }
 
 .gwtTasks
@@ -3731,17 +3084,11 @@ top:100px;
 }
 .gwtTaskListing
 {
+	width: 100%;
 	font-size: 1.35em; 
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 	border: 1px solid #cccccc;
-}
-.gwtTaskListing_IE
-{
-		width: 99%;
-}
-.gwtTaskListing_NonIE
-{
-		width: 100%;
 }
 .gwtTaskList_assigneesList tr td
 {
@@ -3753,7 +3100,6 @@ top:100px;
 .gwtTaskList_assignee
 {
 	display: inline;
-	font-size: 1.25em;
 	font-weight: bold;
 	padding-left: 2px !important;
 }
@@ -3772,36 +3118,21 @@ top:100px;
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .gwtTaskList_calculatedDate
 {
 	font-style: italic;
 }
-.gwtTaskList_parentDurationError
-{
-	border: 1px solid red !important;
-}
 .gwtTaskList_loading
 {
 	margin-top: 5px;
 	margin-left: 5px;
 	white-space: nowrap;
-	display: inline;
-	padding-top: 5px;
-	padding-bottom: 5px;
-	position: relative;
-	top: 5px;
+	display: inline-block;
 }
-.gwtTaskList_loadingImg
-{
-	vertical-align: middle;
+.gwtTaskList_newTaskMenu_Link {
 }
-
-.gwtTaskList_newTaskMenu_Link    {padding-right: 8px;}
-.gwtTaskList_newTaskMenu_LinkImg {}
-
 .gwtTaskList_popupGlass
 {
 	background-color: #000;
@@ -3812,7 +3143,7 @@ top:100px;
 .gwtTaskList_processActive
 {
 	font-size: 14px;
-	background-color: #fafad5;
+	background-color: #EBECA5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
@@ -3821,7 +3152,6 @@ top:100px;
 	top: 50px;
 	z-index: 100;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .gwtTaskList_showGroupList
@@ -3842,8 +3172,6 @@ top:100px;
 .gwtTaskList_sortImage
 {
 	vertical-align: middle;
-	padding-top: 4px;
-	padding-right: 3px;
 }
 
 /* Note that the following styles were copied from the prototype's hf_teaming.css stylesheet. */
@@ -3853,8 +3181,6 @@ top:100px;
 	border-bottom: 0px solid #f6f6f6;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 }
@@ -3895,7 +3221,6 @@ top:100px;
 	padding: 0px 5px 1px 5px;
 	border: 1px solid #ccc;
 	-moz-border-radius: 15px;
-	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 .dialog .gwtTaskList_objlist-filter
@@ -3907,7 +3232,6 @@ top:100px;
 	padding: 0px 5px 1px 5px;
 	border: 1px solid #ccc;
 	-moz-border-radius: 15px;
-	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }	
 .gwtTaskList_objlist2 tr.entry-menu td
@@ -3940,7 +3264,7 @@ top:100px;
 .gwtTaskList_objlist2b tr.columnhead td   /* Apply to the column headings row following the menu <tr class="columnhead"> */
 { 
 	color: #666; 
-	font-size: 0.6em; 
+	font-size: 0.75em; 
 	padding-top: 0.2em; 
 	padding-bottom: 0.2em;
 	padding-left: 0;
@@ -3965,7 +3289,7 @@ a.sort-column:hover
 .gwtTaskList_objlist2b tr.regrow td/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
 { 
 	background-color: #fff;
-	font-size:.6em;
+	font-size:.75em;
 	padding: 2px 6px 2px 0px;
 	border-bottom: 1px solid #d2d5d1;
 	white-space: nowrap;
@@ -4046,17 +3370,6 @@ a.gwtTaskList_task-icon:hover
 {
 	background: none !important;
 }
-.gwtTaskList_task-locationAnchor, .gwtTaskList_task-locationAnchor:visited
-{
-	color: #135c8f !important;
-}
-.gwtTaskList_task-locationAnchor:hover
-{
-	background: #cce9ee;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	-webkit-border-radius: 3px;
-}
 .gwtTaskList_task-nameAnchor, .gwtTaskList_task-nameAnchor:visited
 {
 	color: #135c8f !important;
@@ -4065,7 +3378,6 @@ a.gwtTaskList_task-icon:hover
 {
 	background: #cce9ee;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 .gwtTaskList_task-nameCell
@@ -4103,7 +3415,6 @@ a.gwtTaskList_task-icon:hover
 {
 	background: #cce9ee;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 /* End:  GWT Task Folder Listing styles. */
@@ -4161,12 +3472,11 @@ a.gwtTaskList_task-icon:hover
 	padding: 6px;
 	background: url(images/trans30_black.png) repeat;
 	-moz-border-radius: 4px;
-	border-radius: 4px;
 	-webkit-border-radius: 4px;
 	}
 .dateBoxPopup
 {
-	z-index:  1005;
+	z-index:  1002;
 }
 
 td.datePickerMonth {
@@ -4182,87 +3492,6 @@ td.datePickerMonth {
 	padding: 0 5px;
 	color: #1f1f1f;
 	}
-	
-.vibe-aboutBox {z-index: 1001;}
-
-/* Start:  Add new folder dialog styles. */
-	.vibe-addNewFolderDlg_Grid       {}
-	.vibe-addNewFolderDlg_Label      {}
-	.vibe-addNewFolderDlg_NameInput  {width: 250px;}
-	.vibe-addNewFolderDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-addNewFolderDlg_Panel      {padding: 10px;}
-	.vibe-addNewFolderDlg_TypeLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-addNewFolderDlg_TypeSelect {width: 250px;}
-/* End:  Add new folder dialog styles. */
-
-/* Start:  Calendar settings dialog styles. */
-	.vibe-calendarSettingsDlg-grid  {}
-	.vibe-calendarSettingsDlg-label {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-calendarSettingsDlg-list  {margin-right: 3px;}
-	.vibe-calendarSettingsDlg-panel {padding: 10px;}
-/* End:  Calendar settings dialog styles. */
-
-/* Start:  Cliboard dialog styles. */
-	.vibe-cbDlg_Anchor          {color: #135c8f; text-decoration: none;}
-	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-cbDlg_Checkbox        {margin-left: 5px;}
-	.vibe-cbDlg_ClearAll        {margin-left: 10px;}
-	.vibe-cbDlg_Grid            {margin: 20px 10px 10px 20px;}
-	.vibe-cbDlg_Label           {}
-	.vibe-cbDlg_MenuBar         {}
-	.vibe-cbDlg_MenuItem        {}
-	.vibe-cbDlg_ReadingPanel    {}
-	.vibe-cbDlg_ReadingLabel    {vertical-align: top; margin-left: 5px;}
-	.vibe-cbDlg_SelectAll       {}
-	.vibe-cbDlg_SelectPanel     {margin-left: 30px; margin-top: 10px; white-space: nowrap;}
-	.vibe-cbDlg_ScrollPanel     {}
-	.vibe-cbDlg_ScrollPanelLimt {height: 150px;}
-/* End:  Cliboard dialog styles. */
-
-/* Start:  Email notification dialog styles. */
-	.vibe-emailNotifDlg_BannerLabel       {width: 400px; padding-right: 15px;}
-	.vibe-emailNotifDlg_Content           {margin: 20px 10px 10px 20px;}
-	.vibe-emailNotifDlg_DescImg           {padding-right: 5px;}
-	.vibe-emailNotifDlg_DescNamePanel     {padding-top: 2px;}
-	.vibe-emailNotifDlg_DescNamePath      {font-size: 11px; color: gray;}
-	.vibe-emailNotifDlg_DescNameTitle     {font-size: 14px; font-weight: bold; color: black;}
-	.vibe-emailNotifDlg_DescPanel         {padding-top: 8px; padding-bottom: 8px;}
-	.vibe-emailNotifDlg_EMACBox           {}
-	.vibe-emailNotifDlg_EMAList           {}
-	.vibe-emailNotifDlg_EMAPanel          {}
-	.vibe-emailNotifDlg_EMARootPanel      {display: block; white-space: nowrap; margin-top: 3px;}
-	.vibe-emailNotifDlg_EMASectionPanel   {background-color: #fff; border: 1px solid #b8b8b8; padding: 5px 5px 5px 0;}
-	.vibe-emailNotifDlg_ExpanderImg       {}
-	.vibe-emailNotifDlg_FooterCheck       {}
-	.vibe-emailNotifDlg_FooterHelp        {margin-left: 10px;}
-	.vibe-emailNotifDlg_FooterHelp:hover  {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-emailNotifDlg_FooterLabel       {}
-	.vibe-emailNotifDlg_FooterPanel       {display: block; white-space: nowrap; margin-top: 15px; margin-bottom: 10px;}
-	.vibe-emailNotifDlg_LastWidget        {margin-bottom: 10px;}
-	.vibe-emailNotifDlg_MsgTypeHelp       {margin-left: 10px;}
-	.vibe-emailNotifDlg_MsgTypeHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-emailNotifDlg_MsgTypeLabel      {}
-	.vibe-emailNotifDlg_MsgTypePanel      {display: block; white-space: nowrap;}
-	.vibe-emailNotifDlg_ReadingPanel      {}
-	.vibe-emailNotifDlg_ReadingLabel      {vertical-align: top; margin-left: 5px;}
-	.vibe-emailNotifDlg_SectionLabel      {}
-/* End:  Email notification dialog styles. */
-
-/* Start:  Import iCal dialogs styles. */
-	.vibe-importIcalDlg_Content {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
-	.vibe-importIcalDlg_Hint    {margin: 8px 0px 8px 0px; font-size: 11px !important; color: #cccccc;}
-	.vibe-importIcalDlg_Input   {width: 250px;}
-	.vibe-importIcalDlg_Label   {}
-	.vibe-importIcalDlg_Panel   {}
-/* End:  Import iCal dialogs styles. */
-
-/* Start:  Rename entity dialog styles. */
-	.vibe-renameEntityDlg_Label     {}
-	.vibe-renameEntityDlg_NameInput {width: 250px;}
-	.vibe-renameEntityDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-renameEntityDlg_NamePanel {}
-	.vibe-renameEntityDlg_Panel     {padding: 10px;}
-/* End:  Rename entity dialog styles. */
 
 /* The following styles are used with an object list table. */
 .oltHeader
@@ -4306,257 +3535,65 @@ td.datePickerMonth {
 {
 	border-bottom: 1px solid #BBBBB9;
 }
+
 /* End of styles used with an object list table */
-
-
-.vibeGlassPanel
-{
-	background-color: #000;
-	bottom: 0;
-	filter: alpha(opacity=50);
-	left: 0;
-	opacity: 0.5;
-	overflow: hidden;
-	position: absolute;
-	right: 0;
-	top: 0;
-	z-index: 1000;
-}
-
-.spinnerPopup
-{
-	border-width: 0px;
-	width:300px;
-	background-color: transparent;
-	text-align: center;
-	padding:10px; z-index: 1999;
-}
-
-/* Start:  Task statistics graph styles. */
-	.taskGraphs-stats            {white-space: nowrap;}
-	.taskGraphs-statsBarSegment  {color: white; font-size: 0.75em; font-weight: bold;}
-	.taskGraphs-statsLegendBar   {white-space: nowrap; display: block;}
-	.taskGraphs-statsLegendBox   {margin-top: 2px; margin-right: 2px; width: 12px; height: 12px; float: left;}
-	.taskGraphs-statsLegendLabel {color: #333333; font-size: 0.9em;}
-	.taskGraphs-statsPriority0   {background-color:#EF5612;}
-	.taskGraphs-statsPriority1   {background-color:#EC9112;}
-	.taskGraphs-statsPriority2   {background-color:#617F9F;}
-	.taskGraphs-statsPriority3   {background-color:#995DB2;}
-	.taskGraphs-statsPriority4   {background-color:#70AE55;}
-	.taskGraphs-statsPriority5   {background-color:#72AF58;}
-	.taskGraphs-statsPriority6   {background-color:#617F9F;}
-	.taskGraphs-statsPriority7   {background-color:#547AA5;}
-	.taskGraphs-statsStatus0     {background-color:#EC9112;}
-	.taskGraphs-statsStatus1     {background-color:#617F9F;}
-	.taskGraphs-statsStatus2     {background-color:#70AE55;}
-	.taskGraphs-statsStatus3     {background-color:#995DB2;}
-/* End:  Task statistics graph styles. */
-
-/* Start:  Milesone statistics graph styles. */
-.milestoneGraphs-stats
-{
-	white-space: nowrap;
-}
-
-.milestoneGraphs-statsBarSegment
-{
-	color: white;
-	font-size: 0.75em;
-	font-weight: bold;
-}
-
-.milestoneGraphs-statsLegendBar
-{
-	white-space: nowrap;
-	display: block;
-}
-
-.milestoneGraphs-statsLegendBox
-{
-	margin-top: 2px;
-	margin-right: 2px;
-	width: 12px;
-	height: 12px;
-	float: left;
-}
-
-.milestoneGraphs-statsLegendLabel
-{
-	color: #333333;
-	font-size: 0.9em;
-}
-
-.milestoneGraphs-statsStatusCompleted
-{
-	background-color:#70AE55;
-}
-
-.milestoneGraphs-statsStatusOpen
-{
-	background-color:#EC9112;
-}
-
-.milestoneGraphs-statsStatusReopened
-{
-	background-color:#617F9F;
-}
-	
-/* End:  Milestone statistics graph styles. */
-
-/* Start:  Progress dialog styles. */
-	.vibe-progressDlg_ProgressBar     {margin-bottom: 5px;}
-	.vibe-progressDlg_ProgressLabel   {margin-left: 3px;}
-	.vibe-progressDlg_ProgressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold; padding-top: 10px;}
-	.vibe-progressDlg_ProgressSpinner {}
-	.vibe-progressDlg_RootPanel       {padding: 6px;}
-/* End:  Progress entries dialog styles. */
-
-/* Start:  Progress bar styles. */
-	.gwt-ProgressBar-shell {
-		border: 1px solid #3e6978;
-		background-color: #81b2bd;
-		height: 14pt;
-		width: 98%;
-		border-radius: 15px;
-		padding: 1px;
-	}
-	.gwt-ProgressBar-shell .gwt-ProgressBar-bar {
-		background: #09f; /* old browsers */
-		background: -moz-linear-gradient(bottom,  #1e5799 0%, #207cca 50%, #7db9e8 100%); /* FF3.6+ */
-		background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#1e5799), color-stop(50%,#207cca), color-stop(100%,#7db9e8)); /* Chrome,Safari4+ */
-		background: -webkit-linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* Chrome10+,Safari5.1+ */
-		background: -o-linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* Opera 11.10+ */
-		background: -ms-linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* IE10+ */
-		background: linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* W3C */
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=0 ); /* IE6-9 */
-		border-radius: 15px;
-	}
-	.gwt-ProgressBar-shell .gwt-ProgressBar-text {
-		padding: 0px;
-		margin: 0px;
-		color: white;
-	}
-/* End:  Progress bar styles. */
-
-/* Start:  Multi-error alert dialog styles. */
-	.vibe-multiErrorAlertDlg-baseError     {font-size: 1.1em;}
-	.vibe-multiErrorAlertDlg-baseErrorCell {padding-bottom: 10px;}
-	.vibe-multiErrorAlertDlg-eachError     {font-size: 1.1em; font-weight: bold;}
-	.vibe-multiErrorAlertDlg-grid          {}
-	.vibe-multiErrorAlertDlg-rootPanel     {padding: 8px;}
-	.vibe-multiErrorAlertDlg-spacer        {}
-	.vibe-multiErrorAlertDlg-warnImg       {padding-bottom:  10px;}
-/* End:  Multi-error alert dialog styles. */
-
-/* Start:  Conformation dialog styles. */
-	.vibe-confirmDlg-confirmationAdditional        {font-size: 1.1em; font-weight: bold;}
-	.vibe-confirmDlg-confirmationTxt               {font-size: 1.2em; width: 450px;}
-	.vibe-confirmDlg-confirmationTxtWithAdditional {padding-bottom: 10px;}
-	.vibe-confirmDlg-rootPanel                     {padding: 8px;}
-/* End:  Conformation dialog styles. */
-
-/* Start:  Who Has Access dialog styles. */
-	.vibe-whoHasAccessDlg-content            {margin: 10px 10px 10px 13px;}
-	.vibe-whoHasAccessDlg-group              {}
-	.vibe-whoHasAccessDlg-group:hover        {cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}	
-	.vibe-whoHasAccessDlg-headerImg          {height: 25px; width: 25p; padding-right: 5px;}
-	.vibe-whoHasAccessDlg-headerLabel        {white-space: nowrap; font-weight: bold;}
-	.vibe-whoHasAccessDlg-headerPanel        {display: inline; white-space: nowrap; padding-bottom: 13px; vertical-align: middle;}
-	.vibe-whoHasAccessDlg-label              {}
-	.vibe-whoHasAccessDlg-readingPanel       {}
-	.vibe-whoHasAccessDlg-readingLabel       {vertical-align: top; margin-left: 5px;}
-	.vibe-whoHasAccessDlg-scrollPanelWithImg {white-space: nowrap; display: inline;}
-	.vibe-whoHasAccessDlg-scrollPanel        {overflow-y: auto !important; overflow-x: hidden !important; padding: 3px;}
-	.vibe-whoHasAccessDlg-scrollPanelCell    {border-style: solid solid solid; border-width: 1px; border-color: #e0e0e0; vertical-align: top; width: 225px;}
-	.vibe-whoHasAccessDlg-scrollPanelGroups  {} 
-	.vibe-whoHasAccessDlg-scrollPanelHeader  {white-space: nowrap; font-weight: normal;} 
-	.vibe-whoHasAccessDlg-scrollPanelImg     {height: 25px; width: 25px; padding-right: 5px; padding-bottom: 1px; border-radius: 2px;}
-	.vibe-whoHasAccessDlg-scrollPanelLimit   {background-color: #fff; height: 150px;}
-	.vibe-whoHasAccessDlg-scrollPanelUsers   {} 
-/* End:  Who Has Access dialog styles. */
-
-
 
 
 /* The following styles are used with the group management dialogs. */
 
-.groupManagementBtn, .manageNetFolderRootsDlg_Btn, .manageNetFoldersDlg_Btn, .shareDlg_Btn, .editLdapConfigDlg_Btn
+.groupManagementBtn
 {
+    border-radius: 15px 15px 15px 15px;
+    color: #666666 !important;
 	cursor: pointer;
-    text-decoration: none;    
-   	display: inline-block;
-	color: #1F1F1F;
-	font-size: 12px;
-	margin-right: 5px;
-	padding: 2px 10px;
-	text-align: center;
-	border: 1px solid #b8b8b8;
-    border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
-	background: -moz-linear-gradient(top,  #ffffff, #E0E0E0); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(100%,#ffffff), color-stop(0%,#E0E0E0)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  #ffffff, #E0E0E0); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  #ffffff 47%, #E0E0E0); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #ffffff 47%, #E0E0E0); /* IE10+ */
-	background: linear-gradient(top,  #ffffff, #E0E0E0); /* W3C */
-
-    
+    font-size: 11px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-decoration: none;
 }
 
-.groupManagementDropDown         {}
-.groupManagementDropDownText     {font-size: 12px; vertical-align: middle;}
-.groupManagementDropDownImg      {vertical-align: middle;}
-.groupManagementDropDownImgNonIE {margin-left: 1px;}
-
-.groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover
+.groupManagementBtn:hover
 {
-	color: #135c8f;
-	border: 1px solid #81b2bd;
-	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
-	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
-
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
-.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel, .shareDlg_MenuPanel, .editLdapConfigDlg_MenuPanel, .editLdapServerConfigDlg_MenuPanel, .ldapSyncResultsDlg_MenuPanel
+.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel
 {
-    background-color: #ededed;
+    background-color: #CCCCCC;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     display: block;
     font-family: Arial,Helvetica,sans-serif;
     font-size: 1.25em;
-    padding: 3px 3px 3px 5px;
+    padding: 3px 3px 3px 12px;
     position: relative;
     white-space: nowrap;
 }
 
-.groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel, .ldapSource_ServerUrlPanel, .ldapSearch_BaseDnPanel
+.groupTitlePanel
 {
-	font-size: 14px;
 	vertical-align: middle;
 }
 
-.groupTitle, .netFolderRoot_Name, .netFolder_Name, .ldapSource_ServerUrl, .ldapSearch_BaseDn
+.groupTitle
 {
 	color: #135C8F;
 	cursor: pointer;
 	padding-right: 10px;
 }
 
-.groupStatus, .ldapSyncStatus, .netFolderStatus
+.groupStatus
 {
-	color: #949494;
+	color: red;
 	font-family: Arial,sans-serif;
 	font-size: 10px;
 	font-style: italic;
 }
 
-.testLdapQueryInProgress, .testConnection_InProgress
+.testLdapQueryInProgress
 {
 	color: red;
 	font-style: italic;
@@ -4567,53 +3604,6 @@ td.datePickerMonth {
 	text-align: left;
 	padding: 15px 10px;
 	background: white;
-}
-
-.manageGroups_QuickFilterPanel
-{
-	background-color: #fff;
-	border: 1px solid #b8b8b8;
-	border-left: none;
-	border-radius: 15px;
-	height: 19px;
-	margin-top: 1px;
-	padding: 0 0 0 5px;
-	position: absolute;
-	right: 10px;
-	top: 2px;
-	vertical-align: top;
-	white-space: nowrap;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;	
-}
-
-.manageNetFoldersDlg_QuickFilterPanel
-{
-	background-color: #fff;
-	border: 1px solid #b8b8b8;
-	border-left: none;
-	border-radius: 15px;
-	height: 19px;
-	margin-right: 4px;
-	margin-top: 1px;
-	padding: 0 0 0 5px;
-	vertical-align: top;
-	white-space: nowrap;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;	
-}
-
-.manageNetFoldersDlg_MainFilterPanel
-{
-	position: absolute;
-	right: 10px;
-	top: 2px;
-}
-
-.manageNetFoldersDlg_ListOfNetFoldersPanel
-{
-	overflow-x: hidden;
-	overflow-y: auto;
 }
 
 /* End of styles used with the group management dialogs */
@@ -4631,20 +3621,14 @@ td.datePickerMonth {
 	border-color: none;
 	border-style: none;
 	border-width: 3px 2px 2px;
-	overflow: visible !important;
-	padding: 10px;
+	overflow: hidden;
+	padding: 6px;
 	background-color: #EDEDED;
 	border-radius: 0px 3px 3px 3px;
 	-moz-border-radius: 0px 3px 3px 3px;
-	border-radius: 0px 3px 3px 3px;
 }
  
-.vibe-tabPanel .gwt-TabBar
-{
-	border-bottom: 1px solid #c4c4c4;
-}
-
-.vibe-tabPanel .gwt-TabBarItem-wrapper
+.vibt-tabPanel .gwt-TabBarItem-wrapper
 {
 	padding-bottom: 3px;
 }
@@ -4655,12 +3639,10 @@ td.datePickerMonth {
 	color: white;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	border-radius: 3px;
 	font-weight: normal;
 	padding: 3px 10px;
 	margin-right: 6px;
 	margin-left: 0px;
-	margin-bottom: 4px;
 }
  
 .vibe-tabPanel .gwt-TabBar .gwt-TabBarItem:hover
@@ -4674,19 +3656,13 @@ td.datePickerMonth {
 	background: none repeat scroll 0 0 #EDEDED;
 	background: -webkit-gradient(linear, 0% 100%, 0% 0, from(#EDEDED), to(#f6f6f6) );
 	background: -moz-linear-gradient(center top, #FAFAFA, #EDEDED) repeat scroll 0 0 transparent;
-	background: linear-gradient(center top, #FAFAFA, #EDEDED) repeat scroll 0 0 transparent;
 	cursor: default;
-	padding: 6px 10px;
+	padding: 3px 10px;
 	color: black;
 	font-weight: bold;
 	border-radius: 3px 3px 0px 0px;
 	-moz-border-radius: 3px 3px 0px 0px;
-	-webkit-border-radius: 0px 3px 3px 3px;
 	border-bottom: 3px solid #EDEDED;
-	border-top: 1px solid #c4c4c4;
-	border-left: 1px solid #c4c4c4;
-	border-right: 1px solid #c4c4c4;
-	margin-bottom: -2px;
 }
  
 .vibe-tabPanel .gwt-TabBarItem-wrapper-selected
@@ -4695,1334 +3671,3 @@ td.datePickerMonth {
 }
 
 /* End of styles used with TabPanels */
-
-/* ...Start:  Event button styles. */
-	.vibe-eventButton-widgetAnchor       {background: none !important;}
-   a.vibe-eventButton-widgetAnchor:hover {background: none !important;}
-	.vibe-eventButton-widgetImage        {margin-left: 3px; vertical-align: middle;}
-	.vibe-eventButton-widgetText         {background: none repeat scroll 0 0 #949494 !important; color: #FFFFFF !important; font-size: .7em; padding: 2px 12px; text-decoration: none; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
-	.vibe-eventButton-widgetTextDisabled {background: none repeat scroll 0 0 #B8B8B8 !important; color: #EDEDED !important;}
-	.vibe-eventButton-widgetTextHover    {background: #81B2BD url(images/slice_blend_teal_27.png) repeat-x !important; color: #FFFFFF !important;}
-/* ...End:  Event button styles. */
-
-/*
- * Styles used with the blog folder view
- */
-
-.blogFolderViewRightPanel
-{
-	background-color: #EBF5F5;
-	margin-top: 8px;
-	padding: 10px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-}
-
-/* End */
- 
-
-
-/*
- * Styles used with the blog archive control
- */
-
-.blogArchiveCtrlMainPanel
-{
-}
-
-.blogArchiveCtrlFolderLabel
-{
-	color: #135C8F;
-	margin-left: 12px;
-}
-
-.blogArchiveCtrlMonthLabel
-{
-	color: #135C8F;
-}
-
-.blogArchiveCtrlMonthLabel:hover, .blogArchiveCtrlFolderLabel:hover
-{
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	cursor: pointer;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 12px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-}
-
-.blogArchiveCtrlSelected
-{
-	background: none repeat scroll 0 0 #FFFFFF;
-    border-radius: 3px 3px 3px 3px;
-    font-weight: bold;
-}
-
-.blogArchiveCtrlTitle
-{
-	color: #666666;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 13px !important;
-	font-weight: bold;
-	padding-bottom: 12px;
-}
-
-.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #fafad5; width: auto; -moz-border-radius: 6px; border-radius: 6px; -webkit-border-radius: 6px;}
-.vibe-hoverHintLabel {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
-
-/* End */
-
-
-/**
- * Styles used with the blog global tags control
- */
- 
- .blogGlobalTagsCtrlTitle
- {
-	color: #666666;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 13px !important;
-	font-weight: bold;
-	padding-bottom: 12px;
- }
- 
- .blogGlobalTagsCtrlTagLabel
- {
-	color: #135C8F;
- }
- 
- .blogGlobalTagsCtrlTagLabel:hover
- {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	cursor: pointer;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 12px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-}
- 
-.blogGlobalTagsCtrlSelected
-{
-	background: none repeat scroll 0 0 #FFFFFF;
-    border-radius: 3px 3px 3px 3px;
-    font-weight: bold;
-}
-
-/* End */
- 
-/**
- * Styles used with the blog page control
- */
- 
- .blogPageCtrl_mainPanel
- {
- }
- 
- .blogPageCtrl_newPageLink
- {
-	color: #135C8F;
- }
- 
- .blogPageCtrl_newPageLink:hover
- {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	cursor: pointer;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 12px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
- }
- 
- .blogPageCtrl_selectPageLabel
- {
-	color: #666666;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 13px !important;
-	font-weight: bold;
- }
- 
- 
- 
-/**
- * Styles used with the FilrActionsCtrl
- */
-.FilrActionsCtrl_mainPanel
-{
-	left: 200px;
-}
-
-.FilrAction_Img
-{
-	margin: 3px 12px;
-	width: 48px;
-	height: 48px;
-}
-
-.FilrAction_MainPanel
-{
-    border: 1px solid transparent;
-    color: #FFFFFF;
-    display: inline-block;
-    font-size: 12px;
-    margin-right: 5px;
-    padding: 3px;
-    text-align: center;
-}
-
-.FilrAction_MainPanel:hover
-{
-	background: url(images/trans20_91daf2.png) repeat;
-    border: 1px solid #3C4143;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius: 5px;	
-	-webkit-border-top-right-radius: 5px;	
-    cursor: pointer;
-}
-
-.FilrAction_Selected
-{
-	background: url(images/trans30_black.png) repeat;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius: 5px;	
-	-webkit-border-top-right-radius: 5px;	
-	box-shadow:	0 1px 1px #000 inset;
-}
-
-.FilrAction_Selected .FilrAction_Text
-{
-	color: #ffffff;
-}
-
-.FilrAction_Text
-{
-	padding-left: 5px;
-	padding-right: 5px;
-}
-
-/**
- * Styles used with the "Comments" widget
- */
-
-.commentsWidget_commentsPanel
-{
-	background-color: #FFFFFF;
-	padding: 10px;
-}
-
-.commentsWidget_commentStylesOverride
-{
-	margin-left: 10px !important;
-}
-
-
-/**
- * Styles used in the "share send-to" widget
- */
-.shareSendToWidget_mainLabel
-{
-	color: #135c8f;
-	display: inline-block;
-	padding-left: 5px;
-}
-
-.shareSendToWidget_mainLabel:hover
-{
-	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-}
-
-/**
- * Styles used in the "Modify Net Folder Root" dialog
- */
-
-.modifyNetFolderRootDlg_SelectPrivelegedUsersHint, .modifyNetFolderDlg_SelectPrincipalsHint, .editLdapServerConfigDlg_ServerUrlHint
-{
-	color: #4D6D8B;
-	font-size: 1em;
-	margin-bottom: 0.5em;
-}
-
-.modifyNetFolderRootDlg_PrivilegedPrincipalsTable
-{
-	width: 550px;
-	table-layout: fixed;
-}
-
-/**
- * Styles used in the "modify net folder" dialog
- */
-
-.modifyNetFolderDlg_SyncScheduleCaptionPanel, .modifyNetFolderServerDlg_SyncScheduleCaptionPanel
-{
-}
-
-.modifyNetFolderServerDlg_ScheduleWidget
-{
-}
-
-.modifyNetFolderDlg_ScheduleWidget
-{
-	margin-left: 30px;
-	margin-top: 4px;
-}
-
-.modifyNetFolderServerDlg_ServerPathHint
-{
-	color: #4D6D8B;
-	font-size: 1em;
-	margin-bottom: 0.5em;
-}
-
-.modifyNetFolderServerDlg_BrowseProxyDN
-{
-	margin-bottom: 3px;
-	margin-left: 3px;
-}
-
-
-.modifyNetFolderServerDlg_ProxyNameHint
-{
-	color: #4D6D8B;
-	font-size: 1em;
-	margin-bottom: 0.5em;
-	width: 80%;
-}
-
-
-
-/**
- * Styles used in the SelectPrincipalsWidget
- */
-.selectPrincipalsWidget_PrincipalNameLabel
-{
-}
-
-.selectPrincipalsWidget_RemovePrincipalPanel
-{
-	margin-left: 4px;
-}
-
-.selectPrincipalsWidget_PrincipalsTablePanelHeight
-{
-	height: 200px;
-	overflow: auto;
-}
-
-.selectPrincipalsWidget_PrincipalsTablePanel
-{
-	width: 570px;
-}
-
-.selectPrincipals_PrincipalsTable_Cell
-{
-	overflow: hidden;
-}
-
-.selectPrincipals_PrincipalsTable_highlightRow
-{
-	background: none repeat scroll 0 0 #CCE9EE;
-}
-
-
-
-/**
- * Styles used in the Schedule Widget
- */
- 
-.scheduleWidget_TimePicker
-{
-	margin-left: 5px;
-}
-
-.scheduleWidget_OnSelectedDaysPanel
-{
-	padding-left: 20px;
-}
-
-.scheduleWidget_DayPanel
-{
-	margin-right: 4px;
-	text-align: center; 
-}
-
-
-/**
- * Styles used in the Edit Note Wiget
- */
-.editNoteWidget
-{
-	background-color: #F6F6F6;
-	border: 1px solid #C4C4C4;
-	left: 50px;
-	margin-bottom: 10px;
-	margin-top: .5em;
-	padding: 5px;
-	position: relative;
-	width: 450px;
-}
-
-.editNoteWidget_TextArea
-{
-	background-color: transparent;
-	border: 0 none;
-	color: #353838;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 14px;
-	height: 45px;
-	padding: 5px;
-	resize: none;
-	width: 95%;
-}
-
-.editNoteWidget_Footer
-{
-	margin-bottom: 5px;
-	margin-top: .5em;
-	text-align: right;
-	width: 450px;
-}
-
-.editNoteWidget_Btn
-{
-	background: #949494 none repeat scroll 0 0;
-	color: #FFFFFF;
-	cursor: pointer;
-	font-size: 12px;
-	margin-right: 3px;
-	padding: 2px 10px;
-}
-
-
-/**
- * Styles used in the Edit Share Note dialog
- */
-.editShareNoteDlg_table
-{
-}
-
-.editShareNoteDlg_TextArea
-{
-	background-color: #fff;
-	color: #353838;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 14px;
-	height: 45px;
-	padding: 5px;
-	resize: none;
-	width: 350px;
-}
-
-.editShareNoteDlg_TextAreaBorder
-{
-}
-
-.editShareNoteDlg_MainPanel
-{
-}
-
-/**
- * Styles used in the Edit Share Rights dialog
- */
-.editShareRightsDlg_CanShareCkbox
-{
-	margin-top: 8px;
-}
-
-.editShareRightsDlg_MainPanel
-{
-}
-
-.editShareRightsDlg_RbPanel
-{
-	margin-left: 10px;
-}
-
-
-/**
- * Styles used in the "User Actions" popup in the mast head
- */
-.userActionsPopup
-{
-	z-index: 5000;
-}
-
-.userActionsPopup_OutermostPanel
-{
-	background: url(images/trans30_black.png) repeat scroll 0 0 transparent;
-	border-radius: 6px 6px 6px 6px;
-	border-top: medium none;
-	padding: 7px;
-	z-index: 1100;
-}
-
-.userActionsPopup_ActionsPanel
-{
-}
-
-.userActionsPopup_ActionsPanel_ContentPanel
-{
-	margin-bottom: 25px;
-}
-
-.userActionsPopup_ActionImg
-{
-	margin-right: 5px;
-	vertical-align: middle;
-}
-
-.userActionsPopup_ActionLabel
-{
-	color: #135C8F;
-}
-
-.userActionsPopup_ActionLabel:hover
-{
-	background: -moz-linear-gradient(center bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
-	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
-	border-radius: 2px 2px 2px 2px;
-	color: #135c8f;
-}
-
-.userActionsPopup_ActionPanel
-{
-	color: #505354;
-	font-size: 14px;
-	margin-bottom: 5px;
-	margin-left: 18px;
-	margin-right: 18px;
-	white-space: nowrap;
-}
-
-.userActionsPopup_ActionsPanel:hover
-{
-	cursor: pointer;
-}
-
-.userActionsPopup_AllContentPanel
-{
-	background-color: #FFFFFF;
-	border-radius: 3px 3px 3px 3px;
-	overflow: hidden;
-	padding: 5px;
-	position: relative;
-}
-
-.userActionsPopup_AvatarImg
-{
-	border-radius: 3px 3px 3px 3px;
-	height: 50px;
-	width: 50px;
-}
-
-.userActionsPopup_FooterPanel
-{
-	background-color: #FAFAFA;
-	box-shadow: 0 2px 2px #CCCCCC inset;
-	margin: -10px;
-	padding: 15px 15px 20px;
-	text-align: center;
-}
-
-.userActionsPopup_HeaderTable
-{
-	margin-bottom: 0.5em;
-}
-
-.userActionsPopup_NamePanel
-{
-	color: #353838 !important;
-	font-size: 1.4em;
-	white-space: nowrap;
-}
-
-.userActionsPopup_NamePanel .statsTable
-{
-	margin: .5em .5em .5em 0;
-}
-
-.userActionsPopup_NamePanel .statsTable .gwt-label
-{
-	white-space: nowrap;
-}
-
-.userActionsPopup_SignOutLabel
-{
-	display: inline-block;
-	border: 1px solid #b8b8b8;
-	border-radius: 15px 15px 15px 15px;
-	color: #1F1F1F;
-	font-size: 14px;
-	margin-right: 5px;
-	padding: 2px 10px;
-	text-align: center;
-	white-space: nowrap;
-	background: -moz-linear-gradient(top,  #ffffff, #E0E0E0); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(110%,#E0E0E0)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  #ffffff, #E0E0E0); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  #ffffff 0%, #E0E0E0 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #ffffff 0%, #E0E0E0 100%); /* IE10+ */
-	background: linear-gradient(top,  #ffffff 0%, #E0E0E0 100%); /* W3C */
-}
-
-.userActionsPopup_SignOutLabel:hover
-{
-	border: 1px solid #81B2BD;
-	color: #135C8F;
-	cursor: pointer;
-	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
-	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
-}
-
-.userActionsPopup_TopImgPanel
-{
-	position: absolute;
-	right: 40px;
-	top: -13px;
-	z-index: 1000;
-}
-
-/* Start:  Desktop application download control styles. */
-	.vibe-desktopAppCtrl-closeImg            {}
-	.vibe-desktopAppCtrl-closePanel          {display: block; position: absolute; top: 1px; right: 6px; cursor: pointer;}
-	.vibe-desktopAppCtrl-control             {display: block; position: relative; background-color: #EBECA5; border-color: #BABDB6; border-style: solid; border-width: 1px; font-size: 12px; margin: 5px 10px; padding: 5px 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-desktopAppCtrl-dontShowLabel       {color: #135C8F;}
-	.vibe-desktopAppCtrl-dontShowLabel:hover {background: url(images/blends/teal_slice.png) repeat-x; background-position: center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-desktopAppCtrl-dontShowPanel       {display: block; position: absolute; top: 10px; right: 40px; text-decoration: none; cursor: pointer;}
-	.vibe-desktopAppCtrl-hintLabel           {}
-	.vibe-desktopAppCtrl-hintPanel           {display: block; margin: 0px; margin-top: 3px !important; padding: 0px; padding-top: 5px !important;}
-/* End:  Desktop application download control styles. */
-
-/* Start:  Manage users dialog styles. */
-	.vibe-manageUsersDlg           {}
-	.vibe-manageUsersDlg-rootPanel {background-color: white;}
-/* End:  Manage users dialog styles. */
-
-/* Start:  Import profiles dialog styles. */
-	.vibe-importProfilesDlg-content    {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
-	.vibe-importProfilesDlg-hint       {color: #135c8f; text-decoration: none; margin: 8px 0px 8px 0px; font-size: 11px !important; cursor: pointer; margin: 3px 10px; font-size: 1em !important;}
-	.vibe-importProfilesDlg-hint:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-importProfilesDlg-input      {width: 250px;}
-	.vibe-importProfilesDlg-panel      {}
-/* End:  Import profiles dialog styles. */
-
-/* Start:  User properties dialog styles. */
-	.vibe-userPropertiesDlg-aboutMe          {color: #353838; width: 330px;}
-	.vibe-userPropertiesDlg-attrCaption      {color: #949494; padding-right: 3px; display: inline-block; padding-top: 2px;; padding-bottom: 3px;}
-	.vibe-userPropertiesDlg-attrImage        {}	
-	.vibe-userPropertiesDlg-attrValue        {color: #353838; font-size: 14px; display: inline-block; padding-top: 2px;; padding-bottom: 3px;}
-	.vibe-userPropertiesDlg-avatar           {border-width: 1px; border-style: solid; border-color: #ccc; width: 75px; height: 75px; margin-right: 5px; margin-bottom: 10px; margin-left: 35px;}
-	.vibe-userPropertiesDlg-buttonLook       {
-		border: 1px solid #B8B8B8;
-		font-weight: normal !important;
-		font-size: 12px;
-		padding: 2px 6px  !important;
-		margin-right: 15px;
-		margin-bottom: 3px;
-		text-decoration:none;	
-		white-space: nowrap;
-		text-align: center !important;
-		min-width: 150px;
-		border-radius: 15px;
-		-moz-border-radius: 15px;
-		-webkit-border-radius: 15px;
-		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background-color: ffffff;
-	}
-	.vibe-userPropertiesDlg-buttonAct        {cursor: pointer;}
-	.vibe-userPropertiesDlg-buttonNoAct      {
-		color: #b8b8b8;
-		display: inline-block;
-		min-width: 125px !important;
-	}
-	.vibe-userPropertiesDlg-delete           {}
-	.vibe-userPropertiesDlg-grid             {border-spacing: 0; padding: 10px;}
-
-	.vibe-userPropertiesDlg-nfHoverHint      {z-index: 1004;}
-	.vibe-userPropertiesDlg-rootPanel        {}
-	.vibe-userPropertiesDlg-title            {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important; display: inline-block; padding-left: 35px; padding-top: 5px;}
-	.vibe-userPropertiesDlg-nfRow td         {vertical-align: top;}
-	.vibe-userPropertiesDlg-nfRowScroll      {overflow-y: auto !important; overflow-x: hidden !important;}
-	.vibe-userPropertiesDlg-nfRowScroll td   {border-top: 0px !important;}
-	.vibe-userPropertiesDlg-nfRowScrollLimit {height: 125px;}
-	.vibe-userPropertiesDlg-sectionRow td    {border-top: 1px solid #cccccc; padding-top: 5px;}
-/* End:  User properties dialog styles. */
-
-/* Start:  User share rights dialog styles. */
-	.vibe-userShareRightsDlg-header           {white-space: normal; color: #666;}
-	.vibe-userShareRightsDlg-headerCell       {vertical-align: top;}
-	.vibe-userShareRightsDlg-headerCell2      {padding-top: 10px;}
-	.vibe-userShareRightsDlg-headerCellCenter {text-align: center;}
-	.vibe-userShareRightsDlg-headerCellLeft   {text-align: left;}
-	.vibe-userShareRightsDlg-headerCellSpacer {border-bottom-color: #cccccc; border-bottom-style: solid; border-bottom-width: 1px; padding-top: 10px;}
-	.vibe-userShareRightsDlg-noZoneSettings   {margin-top: 10px; font-weight: bold;}
-	.vibe-userShareRightsDlg-panel            {text-align: left; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
-	.vibe-userShareRightsDlg-progressBar      {margin-bottom: 5px; margin-top: 10px;}
-	.vibe-userShareRightsDlg-progressLabel    {margin-left: 3px;}
-	.vibe-userShareRightsDlg-progressPanel    {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
-	.vibe-userShareRightsDlg-progressSpinner  {}
-	.vibe-userShareRightsDlg-radio            {}
-	.vibe-userShareRightsDlg-radioCell        {text-align: center;}
-	.vibe-userShareRightsDlg-row              {color: #666; font-weight: bold;}
-	.vibe-userShareRightsDlg-rowCell          {}
-	.vibe-userShareRightsDlg-rowCellForward   {width: 150px;}
-	.vibe-userShareRightsDlg-table            {}
-/* End:  User share rights dialog styles. */
-
-
-/* Start: Net Folder Rights widget styles */
-.netFolderRightsWidget_RightsLabel
-{
-	color: #5691A6;
-	padding-left: 4px;
-}
-
-.netFolderRightsWidget_RightsLabel:hover
-{
-	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-}
-/* End: */
-
-/**
- * Styles used in the Edit Net Folder Rights dialog
- */
-
-.editNetFolderRightsDlg_MainPanel		{}
-.editNetFolderRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}	
-.editNetFolderRightsDlg_Instructions
-{
-	color: #353838; 
-	font-size: 14px; 
-	padding-bottom: 10px;
-	margin-left: 4px;
-	
-}
-/* End */
-
-/**
- * Styles used by the administration console home page.
- */
-
-.AdminConsoleHomePage_mainPanel
-{
-	background-color: #f6f6f6;
-	border-radius: 5px;
-	overflow: auto;
-	position: absolute;
-	overflow: hidden;
-}
-
-.AdminConsoleInfoWidget_mainPanel
-{
-	position: relative;
-	background-color: #FAFAFA;
-	border: 1px solid #e0e0e0;
-	border-radius: 10px;
-	font-size: 1.15em;
-	margin: 50px;
-	padding: 20px;
-}
-
-.AdminConsoleInfoWidget_header
-{
-	color: #5691A6;
-	font-size: 1.5em;
-	padding-left: 90px;
-}
-
-.AdminConsoleInfoWidget_headImage
-{
-	position: absolute;
-	padding: 15px 20px;
-	left: 0px;
-	top: 0px;
-}
-
-.AdminConsoleInfoWidget_subhead
-{
-	font-size: 13px;
-	color: #949494;
-	padding-left: 90px;
-	padding-top: 4px;
-}
-
-.AdminConsoleInfoWidget_buildInfo, .AdminConsoleInfoWidget_releaseInfo
-{
-	color: #505354;
-}
-
-.AdminConsoleInfoWidget_filrApplianceInfo
-{
-	color: #135C8F !important;
-}
-
-.AdminConsoleInfoWidget_info
-{
-	color: #505354;
-	font-size: 16px;
-	line-height: 20px;
-	margin-top: 15px;
-}	
-
-.AdminConsoleInfoWidget_adminGuideLink
-{
-	color: #135C8F;
-	text-decoration: none;
-	display: inline-block;
-	padding-left: 6px
-}
-
-.AdminConsoleInfoWidget_adminGuideLink:hover, .AdminConsoleInfoWidget_filrApplianceInfo:hover
-{
-	cursor: pointer;
-}
-
-.AdminConsoleInfoWidget_tasksToDo
-{
-	color: #1f1f1f !important;
-	margin-top: 15px;
-	padding: 5px;
-	width: 100%;
-	padding: 0px 5px 10px;
-	background-color: #fafad5;
-	border: 1px solid #e0e0e0;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-}
-
-.AdminConsoleInfoWidget_tasksToDo_td, .fontSize16px
-{
-	font-size: 16px !important;
-}
-		
-/* End */
-
-
-/**
- * Styles used in the "Edit Zone Share" dialogs
- */
-
-.editZoneShareRightsDlg_Instructions 	{color: 353838; font-size: 14px; padding-bottom: 10px;}
-.editZoneShareRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}
-
-.editZoneShareRightsTab_Content              {padding: 5px;}
-.editZoneShareRightsTab_SelectPrincipalsHint {display: inline-block; color: #505354; font-size: 14px; margin-bottom: 15px;}
-
-.editZoneShareListsTab_CleanupPanel      {display: block; padding-top: 10px;}
-.editZoneShareListsTab_CleanupCB label   {font-size: 14px !important; padding-top: 5px; padding-left: 2px; display: inline-block;} 
-.editZoneShareListsTab_Content           {padding: 5px; display: block;}
-.editZoneShareListsTab_DomainPanel       {display: block; padding-top: 10px;}
-.editZoneShareListsTab_EmailAddressPanel {display: block; padding-top: 10px;}
-.editZoneShareListsTab_Header            {font-size: 14px; color: #505354;}
-.editZoneShareListsTab_HeaderPanel       {display: block; width: 400px; white-space: normal;}
-.editZoneShareListsTab_List              {width: 250px;}
-.editZoneShareListsTab_ListButton        {min-width: 60px;}
-.editZoneShareListsTab_ListButtons       {margin-left: 5px;}
-.editZoneShareListsTab_ListHeader        {}
-.editZoneShareListsTab_ListPanel         {padding-top: 3px;}
-.editZoneShareListsTab_ModeHeader        {}
-.editZoneShareListsTab_ModePanel         {display: block; padding-top: 10px;}
-.editZoneShareListsTab_ModeRadio         {margin-left: 10px;}
-.editZoneShareListsTab_ModeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
-.editZoneShareListsTab_SectionHeader     {font-size: 1.1em; font-weight: bold;}
-
-.zoneShareRightsSelectPrincipalsWidget_PrincipalsTablePanelHeight
-{
-	height: 400px;
-	overflow: auto;
-}
-
-.zoneShareRightsWidget_RightsLabel
-{
-	color: #135c8f;
-	padding-left: 4px;
-}
-
-.zoneShareRightsWidget_RightsLabel:hover
-{
-	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-}
-
-/* End */
-
-
-/**
- * Styles used in the Edit User Zone Share Rights dialog
- */
-.editUserZoneShareRightsDlg_MainPanel
-{
-}
-
-.editUserZoneShareRightsDlg_RightsCkbox
-{
-}
-
-.editUserZoneShareRightsDlg_Instructions
-{
-	margin-bottom: 6px;
-	margin-left: 4px;
-}
-/* End */
-
-
-
-/**
- * Style used in the Change Password dialog
- */
-.changePasswordDlg_Hint
-{
-	color: #4D6D8B;
-	font-size: 1em;
-	margin-bottom: 0.5em;
-	width: 400px;
-}
-
-.changePasswordDlg_Label
-{
-	font-size: .8em;
-	margin-top: 0.7em;
-}
-/* End */
-
-
-/* Start:  Styles used by the find control browser. */
-	.vibe-findBrowser-node                {}
-	.vibe-findBrowser-nodeImg             {padding-right: 2px; height: 16px; width: 16px;}
-	.vibe-findBrowser-nodePanel           {}
-	.vibe-findBrowser-nodePanelActive     {}
-	.vibe-findBrowser-nodePanelInert      {cursor: default !important;}
-	.vibe-findBrowser-nodeTxt             {font-size:  13px;}
-	.vibe-findBrowser-nodeTxtInert        {}
-	.vibe-findBrowser-nodeTxtActive       {}
-	.vibe-findBrowser-nodeTxtActive:hover {
-		background: url(images/blends/teal_slice.png) repeat-x;
-		background-position:center;
-		cursor: pointer;
-		border-radius: 5px;
-		-moz-border-radius: 5px;
-		-webkit-border-radius: 5px;
-	}
-	.vibe-findBrowser-nodeTxtStart {
-		font-size: 14px !important;
-		font-weight: bold;
-		background: url(images/blends/gray_blend6_28.png) repeat-x;
-		background-position:center;
-		border-radius: 5px;
-		-moz-border-radius: 5px;
-		-webkit-border-radius: 5px;
-	}
-	.vibe-findBrowser-popup       {z-index: 1002; padding: 2px !important;}
-	.vibe-findBrowser-scrollPanel {width: 600px; height: 350px; overflow: auto;}
-	.vibe-findBrowser-tree        {
-		background-color: #f6f6f6;
-		margin: 0px;
-		padding-right: 5px;
-		min-height: 348px;
-		border-top: 1px solid #808384;
-		-moz-border-radius-bottomleft: 3px;
-		-moz-border-radius-bottomright: 3px;
-		border-bottom-left-radius: 3px;
-		border-bottom-right-radius: 3px;
-		-webkit-border-bottom-left-radius: 3px;
-		-webkit-border-bottom-right-radius: 3px;
-	}
-/* End:  Styles used by the find control browser. */
-
-
-/**
- * Styles used in the "Forgotten Password" dialog
- */
-
-.forgottenPwdDlg_Hint
-{
-	color: #4D6D8B;
-	font-size: 1em;
-	margin-bottom: 1em;
-	width: 375px;
-}
-
-.forgottenPwdDlg_Instructions
-{
-	color: 353838;
-	font-size: 14px;
-	padding-bottom: 10px;
-	width: 450px;
-}
-
-/* End */
-
-
-/**
- * Styles used to position the "Powered by Novell Filr" image
- */
-.poweredByImg
-{
-	position: absolute;
-	right: 28px;
-	top: 35px;
-}
-
-/* End */
-
-
-
-/**
- * Styles used to in the Admin Info dialog
- */
-
-.adminInfoDlg_mainPanel
-{
-	height: 400px;
-	overflow: auto;
-}
-
-/**
- * Styles used in the Manage Net Folders dialog
- */
-.netFolder_syncStatusImg:hover
-{
-	cursor: pointer;
-}
-
-/**
- * Styles used in the Net Folder Synchronization Statistics dialog
- */
- .netFolderSyncStatisticsDlg_StatisticsHeading
- {
- 	font-weight: bold;
- }
- 
- .netFolderSyncStatisticsDlg_MiscStatisticsLabel, .netFolderSyncStatisticsDlg_FileStatisticsLabel, .netFolderSyncStatisticsDlg_FolderStatisticsLabel
- {
- 	margin-left: 16px;
- }
- 
- .netFolderSyncStatisticsDlg_StatisticsValue
- {
- 	margin-right: 12px;
- }
- 
-/* End */
-
-
-/**
- * Styles used in ConfigureFileSyncAppDlg.java
- */
-.filrSyncAppDlg_Radio
-{
-}
-
-/**
- * Styles used in the Edit Ldap Server Config dialog
- */
-.editLdapServerConfigDlg_Hint, .editLdapSearchDlg_Hint
-{
-	color: #4D6D8B;
-	font-size: .9em;
-}
-
-.editLdapServerConfigDlg_BrowseDN
-{
-	margin-bottom: 3px;
-	margin-left: 3px;
-}
-
-/* End */
-
-/**
- * Styles used in the Ldap Sync Results dialog
- */
-.ldapSyncResultsDlg_MainFilterPanel
-{
-}
-
-.ldapSyncResultsDlg_QuickFilterPanel
-{
-	background-color: #fff;
-	border: 1px solid #b8b8b8;
-	border-left: none;
-	border-radius: 15px;
-	height: 19px;
-	margin-right: 4px;
-	margin-top: 1px;
-	padding: 0 0 0 5px;
-	vertical-align: top;
-	white-space: nowrap;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;	
-}
-
-.ldapSyncResultsDlg_FilterPopup
-{
-	font-size: 14px;
-	background-color: #fafad5;
-	border-color: #BABDB6;
-	border-style: solid solid solid;
-	border-width: 1px;
-	padding: 5px 10px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-	z-index: 1100;
-}
-
-.ldapSyncResultsDlg_closeFilterPopupImg
-{
-	cursor: pointer;
-	position: absolute;
-	right: 10px;
-	top: 5px;
-}
-
-.ldapSyncResultsDlg_PreviewHint
-{
-	color: #4D6D8B;
-	font-size: .9em;
-	width: 500px;
-}
-
-/* End */
- 
-/* Start:  Alert dialog styles. */
-	.vibe-alertDlg_Grid      {max-width: 500px;}
-	.vibe-alertDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: normal;}
-	.vibe-alertDlg_Panel     {padding: 10px;}
-/* End:  Alert dialog styles. */
-
-/* Start:  Prompt dialog styles. */
-	.vibe-promptDlg_Grid       {}
-	.vibe-promptDlg_NameInput  {width: 250px;}
-	.vibe-promptDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-promptDlg_Panel      {padding: 10px;}
-/* End:  Prompt dialog styles. */
-
-/* Start:  Copy Public Link dialog styles. */
-	.vibe-copyPublicLinkDlg-contentPanel         {margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-createButton         {}
-	.vibe-copyPublicLinkDlg-headerPanel          {position: relative; margin-bottom: 15px;}
-	.vibe-copyPublicLinkDlg-headerPanel img      {position: absolute; top: 0px; left: 1px;}
-	.vibe-copyPublicLinkDlg-headerNamePanel      {margin-left: 55px; width: 550px;}
-	.vibe-copyPublicLinkDlg-headerNameLabel      {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
-	.vibe-copyPublicLinkDlg-headerPathLabel      {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
-	.vibe-copyPublicLinkDlg-hintPanel            {display: block; width: 600px; white-space: normal; margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-hintStart            {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
-	.vibe-copyPublicLinkDlg-hintTail             {display: inline; font-weight: normal; font-size: .9em;}
-	.vibe-copyPublicLinkDlg-linksHeaderPanel     {position: relative; margin-bottom: 5px; margin-left: 8px; margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-linksHeaderPanel img {position: absolute; top: 2px; left: 0px;}
-	.vibe-copyPublicLinkDlg-linksHeaderNamePanel {margin-left: 30px; width: 540px;}
-	.vibe-copyPublicLinkDlg-linksHeaderNameLabel {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
-	.vibe-copyPublicLinkDlg-linksHeaderPathLabel {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
-	.vibe-copyPublicLinkDlg-linksLabel           {display: block; position: relative; margin-left: 10px;}
-	.vibe-copyPublicLinkDlg-linksLabel2          {margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-linksInput           {width: 95%; background-color: #fafafa; color: #505354; overflow: hidden; padding: 0px !important; border: 1px solid lightgray; margin-left: 10px;}
-	.vibe-copyPublicLinkDlg-linksPanel           {color: #505354; font-size: 12px;}
-	.vibe-copyPublicLinkDlg-mainPanel            {margin: 10px 10px 10px 13px;}
-	.vibe-copyPublicLinkDlg-readingImage         {display: inline; padding-right: 5px;}
-	.vibe-copyPublicLinkDlg-readingLabel         {display: inline; font-size: 1.1em; color: #505354;}
-	.vibe-copyPublicLinkDlg-readingPanel         {display: block;}
-	.vibe-copyPublicLinkDlg-scrollPanel          {overflow: auto !important; border: 1px solid #C4C4C4;}
-	.vibe-copyPublicLinkDlg-scrollLimit          {height: 175px;}
-/* End:  Copy Public Link dialog styles. */
-
-
-/* Start:  Email Public Link dialog styles. */
-	.vibe-emailPublicLinkDlg-content {margin: 10px 13px;}
-	
-.emailPublicLinkDlg_HeaderPanel
-{
-	position: relative;
-	margin-bottom: 15px;
-}
-
-.emailPublicLinkDlg_HeaderPanel img
-{
-	position: absolute;
-	top: 0px;
-	left: 1px;
-}
-
-.emailPublicLinkDlg_HeaderNamePanel
-{
-	margin-left: 55px;
-	width: 550px;
-}
-
-.emailPublicLinkDlg_HeaderNameLabel
-{
-	font-size: 1.2em;
-	line-height: 1.4em;
-	color: #1f1f1f;
-}
-
-.emailPublicLinkDlg_HeaderPathLabel
-{
-	color: #505354;
-	font-size: 13px;
-	line-height: 16px;
-	overflow: hidden;
-}
-
-.emailPublicLinkDlg_expirationPanel
-{
-	margin-top: 10px;
-}
-
-.emailPublicLinkDlg_Hint
-{
-	color: #4D6D8B;
-	font-size: 13px;
-}
-
-.emailPublicLinkDlg_FloatingHint
-{
-	color: #949494;
-	font-size: 13px;
-	position: absolute;
-	left: 0;
-	top: 0;
-	z-index: 1000;
-}
-
-.emailPublicLinkDlg_MessageBox
-{
-	padding: 10px !important;
-	font-size: 15px;
-	font-family: Arial, Helvetica, sans-serif;
-	line-height: 18px;
-}
-
-/* End:  Email Public Link dialog styles. */
-
-
-/* Start: Share Expiration widget styles. */
-.shareExpirationWidget_expirationPanel
-{
-}
-
-.shareExpirationWidget_expiresOnImg:hover
-{
-	cursor: pointer;
-}
-
-/* End: Share Expiration widget styles. */
-
-/* Start:  LDAP browser dialog styles. */
-	.gwNameCell                  {font-size: 13px;}
-	.gwNameCell-empty            {font-size: 13px; font-style: italic;}
-	.gwNameCell-root             {font-size: 14px; border: 0 none !important;}
-	.gwNameCellImg               {padding-right: 3px;}
-	.gwNameCellImg-empty         {padding-right: 3px; width: 16px; height: 16px;}
-	.gwNameCellImg-root          {padding-right: 3px;}
-	.ldapBrowser-browsePanel     {}
-	.ldapBrowser-mainPanel       {margin: 10px 10px 10px 13px;}
-	.ldapBrowser-scroller        {overflow: auto; height: 250px; width: 600px;}
-	.ldapBrowser-treesPanel      {white-space: nowrap; padding-bottom: 5px;}
-	.ldapBrowser-treeSelect      {}
-	.ldapBrowser-treeSelectLabel {font-size: 13px; color: #000000;}
-/* End:  LDAP browser dialog styles. */
-
-/* Start: Name Completion Settings dialog */
-
-.nameCompletionSettingsDlg_Hint
-{
-	color: #4D6D8B;
-	font-size: .9em;
-	margin-bottom: 6px;
-}
-
-/* End: Name Completion Settings dialog */
-
-/* Start:  Styles used in the "Edit Share" widget. */
-	.configMobileAppsDlg_AndroidPanel {padding-top: 5px; padding-left: 20px;}  
-	.configMobileAppsDlg_IosPanel     {padding-top: 5px; padding-left: 20px;}  
-	.configMobileAppsDlg_List         {width: 250px;}
-	.configMobileAppsDlg_ListButton   {min-width: 60px;}
-	.configMobileAppsDlg_ListButtons  {margin-left: 5px;}
-	.configMobileAppsDlg_ListHeader   {font-size: 13px;}
-	.configMobileAppsDlg_ListPanel    {padding-top: 5px;}
-	.configMobileAppsDlg_OpenInLabel  {font-size: 16px;}
-	.configMobileAppsDlg_OpenInSelect {font-size: 13px;}
-/* End:  Styles used in the "Configure Mobile Applications" dialog. */
-
-
-/* Start:  Styles used in the "Configure Mobile Applications" dialog. */
-
-.editShareWidget_contentPanel
-{
-	background-color: white;
-    padding: 6px 10px;
-}
-
-.editShareWidget_footerPanel
-{
-	background-color: white;
-	text-align: left;
-	padding-bottom: 10px;
-	padding-left: 6px;
-}
-
-.editShareWidget_headerPanel
-{
-	color: #fff;
-	font-size: 14px;
-	font-weight: bold;
-	padding: 5px;
-	white-space: nowrap;
-	vertical-align: middle;
-	
-	background-color: #81b2bd;
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
-}
-
-.editShareWidget_mainPanel
-{
-    border-color: #BABDB6;
-    border-radius: 5px;
-    border-style: solid;
-    border-width: 1px;
-}
-
-/* End:  Styles used in the "Edit Share" widget. */
-
-/* End Of File */

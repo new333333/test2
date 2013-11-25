@@ -80,7 +80,7 @@ public class TableProperties
 			setShowBorder( tableProps.getShowBorderValue() );
 			
 			setNumRows( tableProps.getNumRowsInt() );
-			
+
 			numCols = tableProps.getNumColumnsInt();
 			setNumColumns( numCols );
 			
@@ -222,7 +222,6 @@ public class TableProperties
 	{
 		return m_numRows;
 	}
-	
 	
 	/**
 	 * Return the value of the "show border" property

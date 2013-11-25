@@ -52,7 +52,6 @@ import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Membership;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
@@ -147,7 +146,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		Binder top = createZone(zoneName);
 		long count = cdi.countObjects(Group.class, null, top.getZoneId());
 		
-		Group newGroup = new Group(new IdentityInfo());
+		Group newGroup = new Group();
 		newGroup.setName("brandNewGroup");
 		newGroup.setForeignName("brandNewGroup");
 		newGroup.setZoneId(top.getZoneId());
@@ -326,7 +325,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	}
 
 	private User createBaseUser(Workspace top, String name) {
-		User user = new User(new IdentityInfo());
+		User user = new User();
 		user.setZoneId(top.getZoneId());
 		user.setName(name);
 		user.setForeignName(name);
@@ -376,7 +375,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		pdi.loadUserProperties(user3.getId());
 		pdi.loadSeenMap(user3.getId());
 		
-		Group group1 = new Group(new IdentityInfo());
+		Group group1 = new Group();
 		group1.setName("group1");
 		group1.setForeignName("group1");
 		group1.setZoneId(top.getZoneId());
@@ -384,7 +383,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		cdi.save(group1);
 		entries.add(group1);
 		
-		Group group2 = new Group(new IdentityInfo());
+		Group group2 = new Group();
 		group2.setName("group2");
 		group2.setForeignName("group2");
 		group2.setZoneId(top.getZoneId());
@@ -392,7 +391,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		cdi.save(group2);
 		entries.add(group2);
 		
-		Group group3 = new Group(new IdentityInfo());
+		Group group3 = new Group();
 		group3.setName("group3");
 		group3.setForeignName("group3");
 		group3.setZoneId(top.getZoneId());

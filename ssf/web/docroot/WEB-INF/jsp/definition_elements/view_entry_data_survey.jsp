@@ -79,7 +79,7 @@
 <jsp:useBean id="ssEntry" type="org.kablink.teaming.domain.FolderEntry" scope="request"/>
 
 <c:set var="alreadyVotedByGuest" value="false" />
-<c:if test="${ssUser.shared && !surveyModel.allowMultipleGuestVotes}">
+<c:if test="${ssUser.shared}">
 	<%
 	String cookieName = "Vote-" + ssBinder.getId() + "-" + ssEntry.getId();
 	String cookieValue = null;
@@ -99,6 +99,7 @@
 	</c:if>
 </c:if>
 
+
 <form class="ss_surveyForm" id="ssSurveyForm_${property_name}${ss_surveyFormCounter}" method="post"
   action="<ssf:url adapter="true" portletName="ss_forum"    
 	actionUrl="true"
@@ -109,9 +110,7 @@
 	<input type="hidden" name="attributeName" value="${property_name}" />
 	<c:set var="hasAnyQuestion" value="${fn:length(surveyModel.questions) > 0}" />
 
-	<c:set var="showSurveyForm" value="${!overdue && 
-			((ssUser.shared && surveyModel.allowMultipleGuestVotes) || !surveyModel.alreadyVotedCurrentUser) && 
-			!alreadyVotedByGuest && hasRightsToVote && !(operationViewResults || operationViewDetails)}" />
+	<c:set var="showSurveyForm" value="${!overdue && !surveyModel.alreadyVotedCurrentUser &&!alreadyVotedByGuest && hasRightsToVote && !(operationViewResults || operationViewDetails)}" />
 	<c:set var="showSurveyModifyForm" value="${operationChangeVote && !overdue && surveyModel.alreadyVotedCurrentUser && !alreadyVotedByGuest && surveyModel.allowedToChangeVote && hasRightsToVote}" />	
 						
 	<c:set var="showResults" value="${((!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator)) ||
@@ -158,13 +157,10 @@
 					</c:if>
 					<c:out value="${question.question}" escapeXml="false"/>
 
-				<ul>
-				<c:forEach var="answer" items="${question.answers}" varStatus="status">
+				<ol>
+				<c:forEach var="answer" items="${question.answers}">
 					<c:if test="${question.type != 'input' || !empty answer.text}">
-						<li style="vertical-align:top;list-style-type:none;">
-						  <table cellspacing="0" cellpadding="0">
-						  <tr><td valign="top">${status.count}.&nbsp;&nbsp;</td>
-						  <td valign="top">
+						<li style="vertical-align:top;">
 							<div style="display:inline-block;">
 								<c:if test="${question.type == 'multiple' || question.type == 'single'}">
 									<ssf:drawChart count="${answer.votesCount}" total="${question.totalResponses}"/>
@@ -188,13 +184,10 @@
 									</ul>
 								</div>								
 							</c:if>
-							</td>
-							</tr>
-							</table>
 						</li>
 					</c:if>
 				</c:forEach>
-				</ul>
+				</ol>
 				<c:if test="${question.type == 'multiple'}">
 					<p class="ss_legend"><ssf:nlt tag="survey.vote.multiple.legend"/></p>
 				</c:if>
@@ -261,42 +254,28 @@
 					<c:out value="${question.question}" escapeXml="false"/>
 				
 				<c:if test="${question.type == 'multiple'}">
-					<ul>
-					<c:forEach var="answer" items="${question.answers}" varStatus="status">
-						<li style="list-style-type:none;">
-						  <table cellspacing="0" cellpadding="0">
-						    <tr>
-						      <td valign="top">${status.count}.&nbsp;&nbsp;</td>
-						      <td valign="top">
-							    <input type="checkbox" style="width: 19px;" name="answer_${question.index}" id="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}" value="${answer.index}" 
+					<ol>
+					<c:forEach var="answer" items="${question.answers}">
+						<li>
+							<input type="checkbox" style="width: 19px;" name="answer_${question.index}" id="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}" value="${answer.index}" 
 									<c:if test="${showSurveyModifyForm && answer.alreadyVotedCurrentUser}">checked="true"</c:if>
-								    />
-							    <label for="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
-							  </td>
-							</tr>
-						  </table>
+								/>
+							<label for="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
 						</li>
 					</c:forEach>
-					</ul>
+					</ol>
 				</c:if>
 				<c:if test="${question.type == 'single'}">
-					<ul>
-					<c:forEach var="answer" items="${question.answers}" varStatus="status">
-						<li style="list-style-type:none;">
-						  <table cellspacing="0" cellpadding="0">
-						    <tr>
-						      <td valign="top">${status.count}.&nbsp;&nbsp;</td>
-						      <td valign="top">
-							    <input type="radio" style="width: 19px;" name="answer_${question.index}" value="${answer.index}" id="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}"
+					<ol>
+					<c:forEach var="answer" items="${question.answers}">
+						<li>
+							<input type="radio" style="width: 19px;" name="answer_${question.index}" value="${answer.index}" id="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}"
 									<c:if test="${showSurveyModifyForm && answer.alreadyVotedCurrentUser}">checked="true"</c:if>
-								    />
-							    <label for="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
-							  </td>
-							</tr>
-						  </table>
+								/>
+							<label for="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
 						</li>
 					</c:forEach>
-					</ul>
+					</ol>
 				</c:if>
 				<c:if test="${question.type == 'input'}">
 					<c:if test="${showSurveyModifyForm}">

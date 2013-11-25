@@ -33,88 +33,118 @@
 package org.kablink.teaming.search.local;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.LuceneProvider;
-import org.kablink.teaming.search.AbstractLuceneReadSession;
 import org.kablink.teaming.search.LuceneReadSession;
+import org.kablink.teaming.util.SimpleProfiler;
 
 /**
  * This implementation provides access to local Lucene index.
  * 
  */
-public class LocalLuceneReadSession extends AbstractLuceneReadSession implements LuceneReadSession {
+public class LocalLuceneReadSession implements LuceneReadSession {
 
-	private static Log logger = LogFactory.getLog(LocalLuceneReadSession.class);
-	
 	private LuceneProvider luceneProvider;
 
 	public LocalLuceneReadSession(LuceneProvider luceneProvider) {
-		super(logger);
 		this.luceneProvider = luceneProvider;
 	}
 
-	@Override
-	protected Hits invokeSearch(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size) {
-		return luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+	public org.kablink.teaming.lucene.Hits search(Query query) {
+		return this.search(query, 0, -1);
 	}
-	
-	@Override
-	protected ArrayList invokeGetTags(String aclQueryStr, String tag, String type)
+
+	public org.kablink.teaming.lucene.Hits search(Query query, int offset,
+			int size) {
+		SimpleProfiler.start("LocalLuceneReadSession.search(Query,int,int)");
+		try {
+			return luceneProvider.search(query, offset, size);
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,int,int)");
+		}
+	}
+
+	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort) {
+		return this.search(query, sort, 0, -1);
+	}
+
+	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort,
+			int offset, int size) {
+		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
+		try {
+			return luceneProvider.search(query, sort, offset, size);
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,Sort,int,int)");
+		}
+	}
+
+	public ArrayList getTags(Query query, String tag, String type)
 	throws LuceneException {
-		return luceneProvider.getTags(aclQueryStr, tag, type, 
-			RequestContextHolder.getRequestContext().getUserId().toString(), 
-			RequestContextHolder.getRequestContext().getUser().isSuper());
+		SimpleProfiler.start("LocalLuceneReadSession.getTags()");
+		try {
+			return luceneProvider.getTags(query, tag, type, 
+				RequestContextHolder.getRequestContext().getUserId().toString(), 
+				RequestContextHolder.getRequestContext().getUser().isSuper());
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.getTags()");
+		}
 	}
 	
-	@Override
-	protected ArrayList invokeGetTagsWithFrequency(String aclQueryStr, String tag, String type)
+	/**
+	 * Get all the unique tags that this user can see, based on the wordroot passed in.
+	 * 
+	 * @param query can be null for superuser
+	 * @param tag
+	 * @param type 
+	 * @return
+	 * @throws LuceneException
+	 */
+	public ArrayList getTagsWithFrequency(Query query, String tag, String type)
 			throws LuceneException {
-		return luceneProvider.getTagsWithFrequency(aclQueryStr, tag, type, 
-			RequestContextHolder.getRequestContext().getUserId().toString(), 
-			RequestContextHolder.getRequestContext().getUser().isSuper());
+		SimpleProfiler.start("LocalLuceneReadSession.getTagsWithFrequency()");
+		try {
+			return luceneProvider.getTagsWithFrequency(query, tag, type, 
+				RequestContextHolder.getRequestContext().getUserId().toString(), 
+				RequestContextHolder.getRequestContext().getUser().isSuper());
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.getTagsWithFrequency()");
+		}
 	}
-		
+	
+	/**
+	 * Get all the sort titles that this user can see, and return a skip list
+	 * 
+	 * @param query can be null for superuser
+	 * @param start
+	 * @param end
+	 * @return
+	 * @throws LuceneException
+	 */
+	
 	// This returns an arraylist of arraylists.  Each child arraylist has 2 strings, (RangeStart, RangeEnd)
 	// i.e. results[0] = {a, c}
 	//      results[1] = {d, g}
 	
-	@Override
-	protected ArrayList invokeGetSortedTitles(Query query, String sortTitleFieldName, String start, String end, int skipsize)
+	public ArrayList getSortedTitles(Query query, String sortTitleFieldName, String start, String end, int skipsize)
 			throws LuceneException {
-		return luceneProvider.getSortedTitlesAsList(query, sortTitleFieldName, start, end, skipsize);
+		SimpleProfiler.start("LocalLuceneReadSession.getSortedTitles()");
+		try {
+			return luceneProvider.getSortedTitlesAsList(query, sortTitleFieldName, start, end, skipsize);
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.getSortedTitles()");	
+		}
 	}	
 
-	@Override
 	public void close() {
 		// luceneProvider is stateless, and there is no resource to release here.
-	}
-
-	@Override
-	protected Hits invokeSearchNonNetFolderOneLevelWithInferredAccess(Long contextUserId,
-			String aclQueryStr, int mode, Query query, Sort sort, int offset,
-			int size, Long parentBinderId, String parentBinderPath)
-			throws LuceneException {
-		return luceneProvider.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinderId, parentBinderPath);
-	}
-
-	@Override
-	protected boolean invokeTestInferredAccessToBinder(Long contextUserId,
-			String aclQueryStr, String binderPath) throws LuceneException {
-		return luceneProvider.testInferredAccessToNonNetFolder(contextUserId, aclQueryStr, binderPath);
-	}
-
-	@Override
-	protected Hits invokeSearchNetFolderOneLevel(Long contextUserId, String aclQueryStr,
-			List<String> titles, Query query, Sort sort, int offset, int size)
-			throws LuceneException {
-			return luceneProvider.searchNetFolderOneLevel(contextUserId, aclQueryStr, titles, query, sort, offset, size);
 	}
 }

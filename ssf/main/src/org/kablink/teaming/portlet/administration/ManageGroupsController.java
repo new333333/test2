@@ -54,10 +54,6 @@ public class ManageGroupsController extends ManageGroupPrincipalsController {
 		return "allUsers";
 	}
 	
-	protected String allExtIndividualsGroupName() {
-		return "allExtUsers";
-	}
-	
 	protected Map getGroupPrincipals(Long binderId, Map options) {
 		return getProfileModule().getGroups(options);
 	}

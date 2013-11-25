@@ -83,10 +83,8 @@ public abstract class ZipDownloadController extends  SAbstractController {
 				if (Validator.isNotNull(defId)) {
 					try {
 						NamedDocument doc = getDocumentForId(defId);
-						if (doc != null) {
-							zipOut.putNextEntry(new ZipEntry(Validator.replacePathCharacters(doc.name) + ".xml"));
-							XmlFileUtil.writeFile(doc.doc, zipOut);
-						}
+						zipOut.putNextEntry(new ZipEntry(Validator.replacePathCharacters(doc.name) + ".xml"));
+						XmlFileUtil.writeFile(doc.doc, zipOut);
 					} catch (Exception ex) {
 					}
 				}

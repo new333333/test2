@@ -105,7 +105,7 @@ public class DefaultFileVersionAgingDelete extends SSCronTriggerJob
 	public void enable(boolean enable, Long zoneId) {
 		//get rid of old functionality when
 		if (enable == false) {
-			unscheduleJob(zoneId.toString(), FILE_VERSION_AGING_GROUP);
+			removeJob(zoneId.toString(), FILE_VERSION_AGING_GROUP);
 		} else {
 			enable(enable, new CronJobDescription(zoneId, zoneId.toString(), 
 				FILE_VERSION_AGING_GROUP, FILE_VERSION_AGING_DESCRIPTION));

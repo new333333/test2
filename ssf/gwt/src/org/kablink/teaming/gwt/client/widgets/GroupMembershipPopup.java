@@ -132,7 +132,6 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 		 * This gets called when the user clicks on the group member's name.  This will only
 		 * be called if the group member is a group.
 		 */
-		@Override
 		public void onClick( ClickEvent event )
 		{
 			// Create a popup that will display the membership of this group.
@@ -152,7 +151,6 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 		/**
 		 * Remove the mouse-over style from the name. 
 		 */
-		@Override
 		public void onMouseOut( MouseOutEvent event )
 		{
 			m_nameLabel.removeStyleName( "groupMembershipNameHover" );
@@ -162,7 +160,6 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 		/**
 		 * Add the mouse-over style to the name.
 		 */
-		@Override
 		public void onMouseOver( MouseOverEvent event )
 		{
 			m_nameLabel.addStyleName( "groupMembershipNameHover" );
@@ -216,14 +213,12 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 				// Add a click handler to the close image.
 				clickHandler = new ClickHandler()
 				{
-					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
-							@Override
 							public void execute()
 							{
 								hide();
@@ -254,7 +249,7 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 			// Add the column headers.
 			{
 				m_membersTable.setText( 0, 0, GwtTeaming.getMessages().shareName() );
-				m_membersTable.setText( 0, 1, GwtTeaming.getMessages().shareRecipientType() );
+				m_membersTable.setText( 0, 1, GwtTeaming.getMessages().shareType() );
 				m_membersTable.setHTML( 0, 2, "&nbsp;" );
 				
 				rowFormatter = m_membersTable.getRowFormatter();
@@ -289,7 +284,6 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 			
 			cmd = new Scheduler.ScheduledCommand()
 			{
-				@Override
 				public void execute()
 				{
 					getGroupMembership();
@@ -342,9 +336,9 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 
 		// Add the member type in the second column.
 		if ( member instanceof GwtUser )
-			type = GwtTeaming.getMessages().shareRecipientTypeUser();
+			type = GwtTeaming.getMessages().shareTypeUser();
 		else if ( member instanceof GwtGroup )
-			type = GwtTeaming.getMessages().shareRecipientTypeGroup();
+			type = GwtTeaming.getMessages().shareTypeGroup();
 		else
 			type = GwtTeaming.getMessages().unknownGroupMemberType();
 		m_membersTable.setText( row, 1, type );
@@ -409,7 +403,6 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 		
 		cmd = new Scheduler.ScheduledCommand()
 		{
-			@Override
 			public void execute()
 			{
 				int height;
@@ -524,7 +517,6 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
-							@Override
 							public void execute()
 							{
 								// No
@@ -539,8 +531,8 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 			}; 
 		}
 		
-		// Issue an ajax request to see if this group is the "all users" or the "all external users" group.  If it is
-		// If it isn't, we will make another ajax request to get the group membership.
+		// Issue an ajax request to see if this group is the "all users" group.  If it is
+		// not the "all users" group we will make another ajax request to get the group membership.
 		IsAllUsersGroupCmd cmd = new IsAllUsersGroupCmd( m_groupId );
 		GwtClientHelper.executeCommand( cmd, m_isAllUsersGroupCallback );		
 	}

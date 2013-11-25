@@ -66,15 +66,11 @@
 		 ><ssf:nlt tag="folder.column.Title"/>
 	    	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
 				<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-				value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" 
-				style="height:8px !important; width:10px !important; line-height:8px !important;"
-				src="<html:imagesPath/>pics/menudown.gif"/>
+				value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 			</c:if>
 			<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
 				<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-				value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" 
-				style="height:8px !important; width:10px !important; line-height:8px !important;"
-				src="<html:imagesPath/>pics/menuup.gif"/>
+				value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 			</c:if>
 	    </a>
     </ssf:slidingTableColumn>
@@ -215,7 +211,6 @@
 	  		title="<ssf:nlt tag="sunburst.click"/>"
 	  		onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return false;"
 		><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
-		  style="height:12px !important; width:12px !important; line-height:12px !important;"
 	  	  align="absmiddle" border="0" <ssf:alt tag="sunburst.click"/> />
 	    </a>
 	  </c:if>
@@ -240,9 +235,7 @@
         ><ssf:textFormat formatAction="limitedCharacters" 
     		textMaxChars="folder.title.charCount"><c:out value="${entry1.title}"/></ssf:textFormat>
         <c:if test="${entry1._docId == ss_wikiHomepageEntryId}">
-          <img border="0" align="absmiddle" 
-            style="height:16px !important; width:16px !important; line-height:16px !important;" 
-            src="<html:rootPath/>images/pics/wiki/home16.png" 
+          <img border="0" align="absmiddle" width="14" height="14" src="<html:rootPath/>images/pics/wiki/home16.png" 
             alt="<ssf:nlt tag="wiki.homePage"/>" style="padding-bottom:4px;">
         </c:if>
       </span></a>

@@ -58,7 +58,7 @@ public class DefaultIndexOptimization extends SSCronTriggerJob implements IndexO
 			// Invoke index optimization one index at a time, as opposed to invoking them
 			// in parallel. This sequentialization helps minimize potential impact on user 
 			// activities that might exist at the time of executing this operation.
-			List<IndexNode> currentNodes = getAdminModule().retrieveIndexNodesHA();
+			List<IndexNode> currentNodes = getAdminModule().retrieveIndexNodes();
 			for(String nodeName:nodeNames) {
 				IndexNode currentNode = findNode(currentNodes, nodeName);
 				if(currentNode != null) {

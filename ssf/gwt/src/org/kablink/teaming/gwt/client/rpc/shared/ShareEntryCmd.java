@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,7 +33,7 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
+import java.util.List;
 
 
 /**
@@ -43,7 +43,10 @@ import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
  * @author drfoster@novell.com
  */
 public class ShareEntryCmd extends VibeRpcCmd {
-	private GwtSharingInfo m_sharingData;
+	private List<String> m_principalIds;
+	private List<String> m_teamIds;
+	private String m_comment;
+	private String m_entryId;
 	
 	/**
 	 * Class constructor.
@@ -58,15 +61,18 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param entityIds
+	 * @param entryId
 	 * @param comment
 	 * @param principalIds
 	 * @param teamIds
 	 */
-	public ShareEntryCmd( GwtSharingInfo sharingData ) {
+	public ShareEntryCmd(String entryId, String comment, List<String> principalIds, List<String> teamIds) {
 		this();
 		
-		m_sharingData = sharingData;
+		m_comment      = comment;
+		m_entryId      = entryId;
+		m_principalIds = principalIds;
+		m_teamIds      = teamIds;
 	}
 	
 	/**
@@ -74,7 +80,10 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public GwtSharingInfo getSharingInfo() { return m_sharingData; }
+	public List<String> getPrincipalIds() {return m_principalIds;}	
+	public List<String> getTeamIds()      {return m_teamIds;     }	
+	public String       getComment()      {return m_comment;     }	
+	public String       getEntryId()      {return m_entryId;     }	
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -87,4 +96,11 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	public int getCmdType() {
 		return VibeRpcCmdType.SHARE_ENTRY.ordinal();
 	}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param comment
+	 */
+	public void setComment(String comment) {m_comment = comment;}
 }

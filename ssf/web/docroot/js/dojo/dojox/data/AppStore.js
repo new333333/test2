@@ -1,36 +1,47 @@
-//>>built
-define("dojox/data/AppStore",["dojo","dojox","dojo/data/util/simpleFetch","dojo/data/util/filter","dojox/atom/io/Connection"],function(_1,_2){
-_1.experimental("dojox.data.AppStore");
-var _3=_1.declare("dojox.data.AppStore",null,{url:"",urlPreventCache:false,xmethod:false,_atomIO:null,_feed:null,_requests:null,_processing:null,_updates:null,_adds:null,_deletes:null,constructor:function(_4){
-if(_4&&_4.url){
-this.url=_4.url;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.data.AppStore"]){
+dojo._hasResource["dojox.data.AppStore"]=true;
+dojo.provide("dojox.data.AppStore");
+dojo.require("dojox.atom.io.Connection");
+dojo.require("dojo.data.util.simpleFetch");
+dojo.require("dojo.data.util.filter");
+dojo.experimental("dojox.data.AppStore");
+dojo.declare("dojox.data.AppStore",null,{url:"",urlPreventCache:false,xmethod:false,_atomIO:null,_feed:null,_requests:null,_processing:null,_updates:null,_adds:null,_deletes:null,constructor:function(_1){
+if(_1&&_1.url){
+this.url=_1.url;
 }
-if(_4&&_4.urlPreventCache){
-this.urlPreventCache=_4.urlPreventCache;
+if(_1&&_1.urlPreventCache){
+this.urlPreventCache=_1.urlPreventCache;
 }
 if(!this.url){
 throw new Error("A URL is required to instantiate an APP Store object");
 }
-},_setFeed:function(_5,_6){
-this._feed=_5;
+},_setFeed:function(_2,_3){
+this._feed=_2;
 var i;
 for(i=0;i<this._feed.entries.length;i++){
 this._feed.entries[i].store=this;
 }
 if(this._requests){
 for(i=0;i<this._requests.length;i++){
-var _7=this._requests[i];
-if(_7.request&&_7.fh&&_7.eh){
-this._finishFetchItems(_7.request,_7.fh,_7.eh);
+var _4=this._requests[i];
+if(_4.request&&_4.fh&&_4.eh){
+this._finishFetchItems(_4.request,_4.fh,_4.eh);
 }else{
-if(_7.clear){
+if(_4.clear){
 this._feed=null;
 }else{
-if(_7.add){
-this._feed.addEntry(_7.add);
+if(_4.add){
+this._feed.addEntry(_4.add);
 }else{
-if(_7.remove){
-this._feed.removeEntry(_7.remove);
+if(_4.remove){
+this._feed.removeEntry(_4.remove);
 }
 }
 }
@@ -39,207 +50,207 @@ this._feed.removeEntry(_7.remove);
 }
 this._requests=null;
 },_getAllItems:function(){
-var _8=[];
+var _5=[];
 for(var i=0;i<this._feed.entries.length;i++){
-_8.push(this._feed.entries[i]);
+_5.push(this._feed.entries[i]);
 }
-return _8;
-},_assertIsItem:function(_9){
-if(!this.isItem(_9)){
+return _5;
+},_assertIsItem:function(_6){
+if(!this.isItem(_6)){
 throw new Error("This error message is provided when a function is called in the following form: "+"getAttribute(argument, attributeName).  The argument variable represents the member "+"or owner of the object. The error is created when an item that does not belong "+"to this store is specified as an argument.");
 }
-},_assertIsAttribute:function(_a){
-if(typeof _a!=="string"){
+},_assertIsAttribute:function(_7){
+if(typeof _7!=="string"){
 throw new Error("The attribute argument must be a string. The error is created "+"when a different type of variable is specified such as an array or object.");
 }
-for(var _b in _2.atom.io.model._actions){
-if(_b==_a){
+for(var _8 in dojox.atom.io.model._actions){
+if(_8==_7){
 return true;
 }
 }
 return false;
-},_addUpdate:function(_c){
+},_addUpdate:function(_9){
 if(!this._updates){
-this._updates=[_c];
+this._updates=[_9];
 }else{
-this._updates.push(_c);
+this._updates.push(_9);
 }
-},getValue:function(_d,_e,_f){
-var _10=this.getValues(_d,_e);
-return (_10.length>0)?_10[0]:_f;
-},getValues:function(_11,_12){
-this._assertIsItem(_11);
-var _13=this._assertIsAttribute(_12);
-if(_13){
-if((_12==="author"||_12==="contributor"||_12==="link")&&_11[_12+"s"]){
-return _11[_12+"s"];
+},getValue:function(_a,_b,_c){
+var _d=this.getValues(_a,_b);
+return (_d.length>0)?_d[0]:_c;
+},getValues:function(_e,_f){
+this._assertIsItem(_e);
+var _10=this._assertIsAttribute(_f);
+if(_10){
+if((_f==="author"||_f==="contributor"||_f==="link")&&_e[_f+"s"]){
+return _e[_f+"s"];
 }
-if(_12==="category"&&_11.categories){
-return _11.categories;
+if(_f==="category"&&_e.categories){
+return _e.categories;
 }
-if(_11[_12]){
-_11=_11[_12];
-if(_11.nodeType=="Content"){
-return [_11.value];
+if(_e[_f]){
+_e=_e[_f];
+if(_e.declaredClass=="dojox.atom.io.model.Content"){
+return [_e.value];
 }
-return [_11];
+return [_e];
 }
 }
 return [];
-},getAttributes:function(_14){
-this._assertIsItem(_14);
-var _15=[];
-for(var key in _2.atom.io.model._actions){
-if(this.hasAttribute(_14,key)){
-_15.push(key);
+},getAttributes:function(_11){
+this._assertIsItem(_11);
+var _12=[];
+for(var key in dojox.atom.io.model._actions){
+if(this.hasAttribute(_11,key)){
+_12.push(key);
 }
 }
-return _15;
-},hasAttribute:function(_16,_17){
-return this.getValues(_16,_17).length>0;
-},containsValue:function(_18,_19,_1a){
-var _1b=undefined;
-if(typeof _1a==="string"){
-_1b=_1.data.util.filter.patternToRegExp(_1a,false);
+return _12;
+},hasAttribute:function(_13,_14){
+return this.getValues(_13,_14).length>0;
+},containsValue:function(_15,_16,_17){
+var _18=undefined;
+if(typeof _17==="string"){
+_18=dojo.data.util.filter.patternToRegExp(_17,false);
 }
-return this._containsValue(_18,_19,_1a,_1b);
-},_containsValue:function(_1c,_1d,_1e,_1f,_20){
-var _21=this.getValues(_1c,_1d);
-for(var i=0;i<_21.length;++i){
-var _22=_21[i];
-if(typeof _22==="string"&&_1f){
-if(_20){
-_22=_22.replace(new RegExp(/^\s+/),"");
-_22=_22.replace(new RegExp(/\s+$/),"");
+return this._containsValue(_15,_16,_17,_18);
+},_containsValue:function(_19,_1a,_1b,_1c,_1d){
+var _1e=this.getValues(_19,_1a);
+for(var i=0;i<_1e.length;++i){
+var _1f=_1e[i];
+if(typeof _1f==="string"&&_1c){
+if(_1d){
+_1f=_1f.replace(new RegExp(/^\s+/),"");
+_1f=_1f.replace(new RegExp(/\s+$/),"");
 }
-_22=_22.replace(/\r|\n|\r\n/g,"");
-return (_22.match(_1f)!==null);
+_1f=_1f.replace(/\r|\n|\r\n/g,"");
+return (_1f.match(_1c)!==null);
 }else{
-if(_1e===_22){
+if(_1b===_1f){
 return true;
 }
 }
 }
 return false;
-},isItem:function(_23){
-return _23&&_23.store&&_23.store===this;
-},isItemLoaded:function(_24){
-return this.isItem(_24);
-},loadItem:function(_25){
-this._assertIsItem(_25.item);
-},_fetchItems:function(_26,_27,_28){
+},isItem:function(_20){
+return _20&&_20.store&&_20.store===this;
+},isItemLoaded:function(_21){
+return this.isItem(_21);
+},loadItem:function(_22){
+this._assertIsItem(_22.item);
+},_fetchItems:function(_23,_24,_25){
 if(this._feed){
-this._finishFetchItems(_26,_27,_28);
+this._finishFetchItems(_23,_24,_25);
 }else{
-var _29=false;
+var _26=false;
 if(!this._requests){
 this._requests=[];
-_29=true;
+_26=true;
 }
-this._requests.push({request:_26,fh:_27,eh:_28});
-if(_29){
-this._atomIO=new _2.atom.io.Connection(false,this.urlPreventCache);
+this._requests.push({request:_23,fh:_24,eh:_25});
+if(_26){
+this._atomIO=new dojox.atom.io.Connection(false,this.urlPreventCache);
 this._atomIO.getFeed(this.url,this._setFeed,null,this);
 }
 }
-},_finishFetchItems:function(_2a,_2b,_2c){
-var _2d=null;
-var _2e=this._getAllItems();
-if(_2a.query){
-var _2f=_2a.queryOptions?_2a.queryOptions.ignoreCase:false;
-_2d=[];
-var _30={};
+},_finishFetchItems:function(_27,_28,_29){
+var _2a=null;
+var _2b=this._getAllItems();
+if(_27.query){
+var _2c=_27.queryOptions?_27.queryOptions.ignoreCase:false;
+_2a=[];
+var _2d={};
 var key;
-var _31;
-for(key in _2a.query){
-_31=_2a.query[key]+"";
-if(typeof _31==="string"){
-_30[key]=_1.data.util.filter.patternToRegExp(_31,_2f);
+var _2e;
+for(key in _27.query){
+_2e=_27.query[key]+"";
+if(typeof _2e==="string"){
+_2d[key]=dojo.data.util.filter.patternToRegExp(_2e,_2c);
 }
 }
-for(var i=0;i<_2e.length;++i){
-var _32=true;
-var _33=_2e[i];
-for(key in _2a.query){
-_31=_2a.query[key]+"";
-if(!this._containsValue(_33,key,_31,_30[key],_2a.trim)){
-_32=false;
+for(var i=0;i<_2b.length;++i){
+var _2f=true;
+var _30=_2b[i];
+for(key in _27.query){
+_2e=_27.query[key]+"";
+if(!this._containsValue(_30,key,_2e,_2d[key],_27.trim)){
+_2f=false;
 }
 }
-if(_32){
-_2d.push(_33);
+if(_2f){
+_2a.push(_30);
 }
 }
 }else{
-if(_2e.length>0){
-_2d=_2e.slice(0,_2e.length);
+if(_2b.length>0){
+_2a=_2b.slice(0,_2b.length);
 }
 }
 try{
-_2b(_2d,_2a);
+_28(_2a,_27);
 }
 catch(e){
-_2c(e,_2a);
+_29(e,_27);
 }
 },getFeatures:function(){
 return {"dojo.data.api.Read":true,"dojo.data.api.Write":true,"dojo.data.api.Identity":true};
-},close:function(_34){
+},close:function(_31){
 this._feed=null;
-},getLabel:function(_35){
-if(this.isItem(_35)){
-return this.getValue(_35,"title","No Title");
+},getLabel:function(_32){
+if(this.isItem(_32)){
+return this.getValue(_32,"title","No Title");
 }
 return undefined;
-},getLabelAttributes:function(_36){
+},getLabelAttributes:function(_33){
 return ["title"];
-},getIdentity:function(_37){
-this._assertIsItem(_37);
-return this.getValue(_37,"id");
-},getIdentityAttributes:function(_38){
+},getIdentity:function(_34){
+this._assertIsItem(_34);
+return this.getValue(_34,"id");
+},getIdentityAttributes:function(_35){
 return ["id"];
-},fetchItemByIdentity:function(_39){
-this._fetchItems({query:{id:_39.identity},onItem:_39.onItem,scope:_39.scope},function(_3a,_3b){
-var _3c=_3b.scope;
-if(!_3c){
-_3c=_1.global;
+},fetchItemByIdentity:function(_36){
+this._fetchItems({query:{id:_36.identity},onItem:_36.onItem,scope:_36.scope},function(_37,_38){
+var _39=_38.scope;
+if(!_39){
+_39=dojo.global;
 }
-if(_3a.length<1){
-_3b.onItem.call(_3c,null);
+if(_37.length<1){
+_38.onItem.call(_39,null);
 }else{
-_3b.onItem.call(_3c,_3a[0]);
+_38.onItem.call(_39,_37[0]);
 }
-},_39.onError);
-},newItem:function(_3d){
-var _3e=new _2.atom.io.model.Entry();
-var _3f=null;
-var _40=null;
+},_36.onError);
+},newItem:function(_3a){
+var _3b=new dojox.atom.io.model.Entry();
+var _3c=null;
+var _3d=null;
 var i;
-for(var key in _3d){
+for(var key in _3a){
 if(this._assertIsAttribute(key)){
-_3f=_3d[key];
+_3c=_3a[key];
 switch(key){
 case "link":
-for(i in _3f){
-_40=_3f[i];
-_3e.addLink(_40.href,_40.rel,_40.hrefLang,_40.title,_40.type);
+for(i in _3c){
+_3d=_3c[i];
+_3b.addLink(_3d.href,_3d.rel,_3d.hrefLang,_3d.title,_3d.type);
 }
 break;
 case "author":
-for(i in _3f){
-_40=_3f[i];
-_3e.addAuthor(_40.name,_40.email,_40.uri);
+for(i in _3c){
+_3d=_3c[i];
+_3b.addAuthor(_3d.name,_3d.email,_3d.uri);
 }
 break;
 case "contributor":
-for(i in _3f){
-_40=_3f[i];
-_3e.addContributor(_40.name,_40.email,_40.uri);
+for(i in _3c){
+_3d=_3c[i];
+_3b.addContributor(_3d.name,_3d.email,_3d.uri);
 }
 break;
 case "category":
-for(i in _3f){
-_40=_3f[i];
-_3e.addCategory(_40.scheme,_40.term,_40.label);
+for(i in _3c){
+_3d=_3c[i];
+_3b.addCategory(_3d.scheme,_3d.term,_3d.label);
 }
 break;
 case "icon":
@@ -247,264 +258,264 @@ case "id":
 case "logo":
 case "xmlBase":
 case "rights":
-_3e[key]=_3f;
+_3b[key]=_3c;
 break;
 case "updated":
 case "published":
 case "issued":
 case "modified":
-_3e[key]=_2.atom.io.model.util.createDate(_3f);
+_3b[key]=dojox.atom.io.model.util.createDate(_3c);
 break;
 case "content":
 case "summary":
 case "title":
 case "subtitle":
-_3e[key]=new _2.atom.io.model.Content(key);
-_3e[key].value=_3f;
+_3b[key]=new dojox.atom.io.model.Content(key);
+_3b[key].value=_3c;
 break;
 default:
-_3e[key]=_3f;
+_3b[key]=_3c;
 break;
 }
 }
 }
-_3e.store=this;
-_3e.isDirty=true;
+_3b.store=this;
+_3b.isDirty=true;
 if(!this._adds){
-this._adds=[_3e];
+this._adds=[_3b];
 }else{
-this._adds.push(_3e);
+this._adds.push(_3b);
 }
 if(this._feed){
-this._feed.addEntry(_3e);
+this._feed.addEntry(_3b);
 }else{
 if(this._requests){
-this._requests.push({add:_3e});
+this._requests.push({add:_3b});
 }else{
-this._requests=[{add:_3e}];
-this._atomIO=new _2.atom.io.Connection(false,this.urlPreventCache);
-this._atomIO.getFeed(this.url,_1.hitch(this,this._setFeed));
+this._requests=[{add:_3b}];
+this._atomIO=new dojox.atom.io.Connection(false,this.urlPreventCache);
+this._atomIO.getFeed(this.url,dojo.hitch(this,this._setFeed));
 }
 }
 return true;
-},deleteItem:function(_41){
-this._assertIsItem(_41);
+},deleteItem:function(_3e){
+this._assertIsItem(_3e);
 if(!this._deletes){
-this._deletes=[_41];
+this._deletes=[_3e];
 }else{
-this._deletes.push(_41);
+this._deletes.push(_3e);
 }
 if(this._feed){
-this._feed.removeEntry(_41);
+this._feed.removeEntry(_3e);
 }else{
 if(this._requests){
-this._requests.push({remove:_41});
+this._requests.push({remove:_3e});
 }else{
-this._requests=[{remove:_41}];
-this._atomIO=new _2.atom.io.Connection(false,this.urlPreventCache);
-this._atomIO.getFeed(this.url,_1.hitch(this,this._setFeed));
+this._requests=[{remove:_3e}];
+this._atomIO=new dojox.atom.io.Connection(false,this.urlPreventCache);
+this._atomIO.getFeed(this.url,dojo.hitch(this,this._setFeed));
 }
 }
-_41=null;
+_3e=null;
 return true;
-},setValue:function(_42,_43,_44){
-this._assertIsItem(_42);
-var _45={item:_42};
-if(this._assertIsAttribute(_43)){
-switch(_43){
+},setValue:function(_3f,_40,_41){
+this._assertIsItem(_3f);
+var _42={item:_3f};
+if(this._assertIsAttribute(_40)){
+switch(_40){
 case "link":
-_45.links=_42.links;
-this._addUpdate(_45);
-_42.links=null;
-_42.addLink(_44.href,_44.rel,_44.hrefLang,_44.title,_44.type);
-_42.isDirty=true;
+_42.links=_3f.links;
+this._addUpdate(_42);
+_3f.links=null;
+_3f.addLink(_41.href,_41.rel,_41.hrefLang,_41.title,_41.type);
+_3f.isDirty=true;
 return true;
 case "author":
-_45.authors=_42.authors;
-this._addUpdate(_45);
-_42.authors=null;
-_42.addAuthor(_44.name,_44.email,_44.uri);
-_42.isDirty=true;
+_42.authors=_3f.authors;
+this._addUpdate(_42);
+_3f.authors=null;
+_3f.addAuthor(_41.name,_41.email,_41.uri);
+_3f.isDirty=true;
 return true;
 case "contributor":
-_45.contributors=_42.contributors;
-this._addUpdate(_45);
-_42.contributors=null;
-_42.addContributor(_44.name,_44.email,_44.uri);
-_42.isDirty=true;
+_42.contributors=_3f.contributors;
+this._addUpdate(_42);
+_3f.contributors=null;
+_3f.addContributor(_41.name,_41.email,_41.uri);
+_3f.isDirty=true;
 return true;
 case "category":
-_45.categories=_42.categories;
-this._addUpdate(_45);
-_42.categories=null;
-_42.addCategory(_44.scheme,_44.term,_44.label);
-_42.isDirty=true;
+_42.categories=_3f.categories;
+this._addUpdate(_42);
+_3f.categories=null;
+_3f.addCategory(_41.scheme,_41.term,_41.label);
+_3f.isDirty=true;
 return true;
 case "icon":
 case "id":
 case "logo":
 case "xmlBase":
 case "rights":
-_45[_43]=_42[_43];
-this._addUpdate(_45);
-_42[_43]=_44;
-_42.isDirty=true;
+_42[_40]=_3f[_40];
+this._addUpdate(_42);
+_3f[_40]=_41;
+_3f.isDirty=true;
 return true;
 case "updated":
 case "published":
 case "issued":
 case "modified":
-_45[_43]=_42[_43];
-this._addUpdate(_45);
-_42[_43]=_2.atom.io.model.util.createDate(_44);
-_42.isDirty=true;
+_42[_40]=_3f[_40];
+this._addUpdate(_42);
+_3f[_40]=dojox.atom.io.model.util.createDate(_41);
+_3f.isDirty=true;
 return true;
 case "content":
 case "summary":
 case "title":
 case "subtitle":
-_45[_43]=_42[_43];
-this._addUpdate(_45);
-_42[_43]=new _2.atom.io.model.Content(_43);
-_42[_43].value=_44;
-_42.isDirty=true;
+_42[_40]=_3f[_40];
+this._addUpdate(_42);
+_3f[_40]=new dojox.atom.io.model.Content(_40);
+_3f[_40].value=_41;
+_3f.isDirty=true;
 return true;
 default:
-_45[_43]=_42[_43];
-this._addUpdate(_45);
-_42[_43]=_44;
-_42.isDirty=true;
+_42[_40]=_3f[_40];
+this._addUpdate(_42);
+_3f[_40]=_41;
+_3f.isDirty=true;
 return true;
 }
 }
 return false;
-},setValues:function(_46,_47,_48){
-if(_48.length===0){
-return this.unsetAttribute(_46,_47);
+},setValues:function(_43,_44,_45){
+if(_45.length===0){
+return this.unsetAttribute(_43,_44);
 }
-this._assertIsItem(_46);
-var _49={item:_46};
-var _4a;
+this._assertIsItem(_43);
+var _46={item:_43};
+var _47;
 var i;
-if(this._assertIsAttribute(_47)){
-switch(_47){
+if(this._assertIsAttribute(_44)){
+switch(_44){
 case "link":
-_49.links=_46.links;
-_46.links=null;
-for(i in _48){
-_4a=_48[i];
-_46.addLink(_4a.href,_4a.rel,_4a.hrefLang,_4a.title,_4a.type);
+_46.links=_43.links;
+_43.links=null;
+for(i in _45){
+_47=_45[i];
+_43.addLink(_47.href,_47.rel,_47.hrefLang,_47.title,_47.type);
 }
-_46.isDirty=true;
+_43.isDirty=true;
 return true;
 case "author":
-_49.authors=_46.authors;
-_46.authors=null;
-for(i in _48){
-_4a=_48[i];
-_46.addAuthor(_4a.name,_4a.email,_4a.uri);
+_46.authors=_43.authors;
+_43.authors=null;
+for(i in _45){
+_47=_45[i];
+_43.addAuthor(_47.name,_47.email,_47.uri);
 }
-_46.isDirty=true;
+_43.isDirty=true;
 return true;
 case "contributor":
-_49.contributors=_46.contributors;
-_46.contributors=null;
-for(i in _48){
-_4a=_48[i];
-_46.addContributor(_4a.name,_4a.email,_4a.uri);
+_46.contributors=_43.contributors;
+_43.contributors=null;
+for(i in _45){
+_47=_45[i];
+_43.addContributor(_47.name,_47.email,_47.uri);
 }
-_46.isDirty=true;
+_43.isDirty=true;
 return true;
 case "categories":
-_49.categories=_46.categories;
-_46.categories=null;
-for(i in _48){
-_4a=_48[i];
-_46.addCategory(_4a.scheme,_4a.term,_4a.label);
+_46.categories=_43.categories;
+_43.categories=null;
+for(i in _45){
+_47=_45[i];
+_43.addCategory(_47.scheme,_47.term,_47.label);
 }
-_46.isDirty=true;
+_43.isDirty=true;
 return true;
 case "icon":
 case "id":
 case "logo":
 case "xmlBase":
 case "rights":
-_49[_47]=_46[_47];
-_46[_47]=_48[0];
-_46.isDirty=true;
+_46[_44]=_43[_44];
+_43[_44]=_45[0];
+_43.isDirty=true;
 return true;
 case "updated":
 case "published":
 case "issued":
 case "modified":
-_49[_47]=_46[_47];
-_46[_47]=_2.atom.io.model.util.createDate(_48[0]);
-_46.isDirty=true;
+_46[_44]=_43[_44];
+_43[_44]=dojox.atom.io.model.util.createDate(_45[0]);
+_43.isDirty=true;
 return true;
 case "content":
 case "summary":
 case "title":
 case "subtitle":
-_49[_47]=_46[_47];
-_46[_47]=new _2.atom.io.model.Content(_47);
-_46[_47].values[0]=_48[0];
-_46.isDirty=true;
+_46[_44]=_43[_44];
+_43[_44]=new dojox.atom.io.model.Content(_44);
+_43[_44].values[0]=_45[0];
+_43.isDirty=true;
 return true;
 default:
-_49[_47]=_46[_47];
-_46[_47]=_48[0];
-_46.isDirty=true;
+_46[_44]=_43[_44];
+_43[_44]=_45[0];
+_43.isDirty=true;
 return true;
 }
 }
-this._addUpdate(_49);
+this._addUpdate(_46);
 return false;
-},unsetAttribute:function(_4b,_4c){
-this._assertIsItem(_4b);
-if(this._assertIsAttribute(_4c)){
-if(_4b[_4c]!==null){
-var _4d={item:_4b};
-switch(_4c){
+},unsetAttribute:function(_48,_49){
+this._assertIsItem(_48);
+if(this._assertIsAttribute(_49)){
+if(_48[_49]!==null){
+var _4a={item:_48};
+switch(_49){
 case "author":
 case "contributor":
 case "link":
-_4d[_4c+"s"]=_4b[_4c+"s"];
+_4a[_49+"s"]=_48[_49+"s"];
 break;
 case "category":
-_4d.categories=_4b.categories;
+_4a.categories=_48.categories;
 break;
 default:
-_4d[_4c]=_4b[_4c];
+_4a[_49]=_48[_49];
 break;
 }
-_4b.isDirty=true;
-_4b[_4c]=null;
-this._addUpdate(_4d);
+_48.isDirty=true;
+_48[_49]=null;
+this._addUpdate(_4a);
 return true;
 }
 }
 return false;
-},save:function(_4e){
+},save:function(_4b){
 var i;
 for(i in this._adds){
 this._atomIO.addEntry(this._adds[i],null,function(){
-},_4e.onError,false,_4e.scope);
+},_4b.onError,false,_4b.scope);
 }
 this._adds=null;
 for(i in this._updates){
 this._atomIO.updateEntry(this._updates[i].item,function(){
-},_4e.onError,false,this.xmethod,_4e.scope);
+},_4b.onError,false,this.xmethod,_4b.scope);
 }
 this._updates=null;
 for(i in this._deletes){
 this._atomIO.removeEntry(this._deletes[i],function(){
-},_4e.onError,this.xmethod,_4e.scope);
+},_4b.onError,this.xmethod,_4b.scope);
 }
 this._deletes=null;
-this._atomIO.getFeed(this.url,_1.hitch(this,this._setFeed));
-if(_4e.onComplete){
-var _4f=_4e.scope||_1.global;
-_4e.onComplete.call(_4f);
+this._atomIO.getFeed(this.url,dojo.hitch(this,this._setFeed));
+if(_4b.onComplete){
+var _4c=_4b.scope||dojo.global;
+_4b.onComplete.call(_4c);
 }
 },revert:function(){
 var i;
@@ -512,13 +523,13 @@ for(i in this._adds){
 this._feed.removeEntry(this._adds[i]);
 }
 this._adds=null;
-var _50,_51,key;
+var _4d,_4e,key;
 for(i in this._updates){
-_50=this._updates[i];
-_51=_50.item;
-for(key in _50){
+_4d=this._updates[i];
+_4e=_4d.item;
+for(key in _4d){
 if(key!=="item"){
-_51[key]=_50[key];
+_4e[key]=_4d[key];
 }
 }
 }
@@ -528,13 +539,12 @@ this._feed.addEntry(this._deletes[i]);
 }
 this._deletes=null;
 return true;
-},isDirty:function(_52){
-if(_52){
-this._assertIsItem(_52);
-return _52.isDirty?true:false;
+},isDirty:function(_4f){
+if(_4f){
+this._assertIsItem(_4f);
+return _4f.isDirty?true:false;
 }
 return (this._adds!==null||this._updates!==null);
 }});
-_1.extend(_3,_1.data.util.simpleFetch);
-return _3;
-});
+dojo.extend(dojox.data.AppStore,dojo.data.util.simpleFetch);
+}

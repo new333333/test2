@@ -47,15 +47,13 @@ import java.io.IOException;
 /**
  * User: david
  * Date: 6/14/12
- * Time: 8:30 AM
+ * Time: 8:11 AM
  */
 public class OpenSessionInViewFilter implements Filter {
-    private static Log logger = LogFactory.getLog(OpenSessionInViewFilter.class);
-
-    public OpenSessionInViewFilter() {
-    }
+	private static Log logger = LogFactory.getLog(OpenSessionInViewFilter.class);
 
     public void init(FilterConfig filterConfig) throws ServletException {
+
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -72,17 +70,18 @@ public class OpenSessionInViewFilter implements Filter {
     }
 
     private void setupHibernateSession(ServletRequest request) {
-        // NOTE: This could be problematic if a single request from client ever results in a chained
-        // invocation of more than one methods on resource(s). If such case is a possibility, we need
-        // to create session conditionally (i.e., only when SessionUtil.sessionActive() returns false)
-        // so that the thread of execution can share a single Hibernate session.
-        if (SessionUtil.sessionActive())
-            logger.warn("We've got an active Hibernate session for " + request.toString());
-        else
-            SessionUtil.sessionStartup();
-    }
+   		// NOTE: This could be problematic if a single request from client ever results in a chained
+   		// invocation of more than one methods on resource(s). If such case is a possibility, we need
+   		// to create session conditionally (i.e., only when SessionUtil.sessionActive() returns false)
+   		// so that the thread of execution can share a single Hibernate session.
+   		if(SessionUtil.sessionActive())
+   			logger.warn("We've got an active Hibernate session for " + request.toString());
+   		else
+   			SessionUtil.sessionStartup();
+   	}
 
-    private void teardownHibernateSession(ServletRequest request) {
-        SessionUtil.sessionStop();
-    }
+   	private void teardownHibernateSession(ServletRequest request) {
+   		SessionUtil.sessionStop();
+   	}
+
 }

@@ -59,7 +59,6 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 	<a href="javascript: ;"
 		onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '', '');return false;"><img
 		border="0" align="absmiddle"
-		style="height:14px !important; width:14px !important; line-height:14px !important;" 
 		src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
 		alt="<c:out value="${presenceAltText}"/>" /></a>
 </c:if>
@@ -124,7 +123,6 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 		class="ss_presence_dude"
 		onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><img
 		border="0" align="absmiddle"
-		style="height:14px !important; width:14px !important; line-height:14px !important;" 
 		src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
 		alt="<c:out value="${presenceAltText}"/>" /></a>
 	<c:if test="${ss_presence_show_title}">
@@ -146,7 +144,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 				    ><ssf:userTitle user="${ss_presence_user}" /></span></a>
 				</c:if>
 				<c:if test="${empty ss_presence_user.workspaceId}">
-					<c:if test="${!empty ss_presence_user.parentBinder.id && ss_canAccessProfilesBinder}">
+					<c:if test="${!empty ss_presence_user.parentBinder.id}">
 						<a
 							<c:if test="${!empty ss_presence_target}">target="${ss_presence_target}"</c:if>
 							href="<ssf:url     
@@ -160,7 +158,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 							class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
 							user="${ss_presence_user}" /></span> </a>
 					</c:if>
-					<c:if test="${empty ss_presence_user.parentBinder.id || !ss_canAccessProfilesBinder}">
+					<c:if test="${empty ss_presence_user.parentBinder.id}">
 						<span id="${ss_presence_user.id}"
 							class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
 							user="${ss_presence_user}" /></span>

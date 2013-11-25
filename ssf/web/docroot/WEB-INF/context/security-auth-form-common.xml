@@ -6,43 +6,47 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
-    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
 	    
 
     <!-- ============================== Form-based authentication ============================ -->
     
-    <bean id="authenticationProcessingFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+    <bean id="authenticationProcessingFilter" class="org.kablink.teaming.spring.security.AuthenticationProcessingFilter">
+    	<security:custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
 		<property name="authenticationManager" ref="_authenticationManager"/>
+		<property name="authenticationFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>
+		<property name="defaultTargetUrl" value="/a/"/>
 		<property name="filterProcessesUrl" value="/s/portalLogin"/>
-		<property name="authenticationSuccessHandler" ref="authenticationSuccessHandler" />
-		<property name="authenticationFailureHandler" ref="authenticationFailureHandler" />
-		<property name="sessionAuthenticationStrategy" ref="sessionAuthenticationStrategy" />
-		<property name="authenticationDetailsSource" ref="authenticationDetailsSource" />
-    </bean>
-
-	<bean id="sessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">
-	    <property name="alwaysCreateSession"><value>true</value></property>
-	    <property name="migrateSessionAttributes"><value>false</value></property>
-	    <property name="retainedAttributes">
-	        <list>
-	            <!-- This attribute is used to retain/pass redirect target URL information across multiple sessions,
-	                 which is needed for authentication protocol such as OpenID. -->
-	            <value>filr-redirect-after-successful-login</value>
-	        </list>
-	    </property>
-	</bean>
-    
-    <bean id="authenticationSuccessHandler" class="org.kablink.teaming.spring.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" >
-		<property name="defaultTargetUrl" value="/a/"/>    
-		<property name="targetUrlParameter" value="spring-security-redirect"/>
-    </bean>
-    
-    <bean id="authenticationFailureHandler" class="org.kablink.teaming.spring.security.SimpleUrlAuthenticationFailureHandler">
-		<property name="defaultFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>
+		<property name="invalidateSessionOnSuccessfulAuthentication" value="true"/>
+		<property name="migrateInvalidatedSessionAttributes" value="false"/>
+		<property name="targetUrlResolver" ref="targetUrlResolver" />
     </bean>
   	
-    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+  	<bean id="targetUrlResolver" class="org.kablink.teaming.spring.security.TargetUrlResolverImpl">
+  	</bean>
+  	
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
     	<property name="loginFormUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>    	
     </bean>
 	
+    <security:http session-fixation-protection="newSession" entry-point-ref="authenticationProcessingFilterEntryPoint">
+        <security:intercept-url pattern="/ws/**" filters="none" />
+        <security:intercept-url pattern="/rss/**" filters="none" />
+        <security:intercept-url pattern="/atom/**" filters="none" />
+        <security:intercept-url pattern="/ical/**" filters="none" />
+        <security:intercept-url pattern="/static/**" filters="none" />
+        <security:intercept-url pattern="/ext/**" filters="none" />
+        <security:intercept-url pattern="/help/**" filters="none" />
+        <security:intercept-url pattern="/help_doc/**" filters="none" />
+        <security:intercept-url pattern="/validate/**" filters="none" />
+        <security:intercept-url pattern="/redirect/**" filters="none" />
+        <security:intercept-url pattern="/bitbucket/**" filters="none" />
+        <security:intercept-url pattern="/html/**" filters="none" />
+        
+        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
+
+        <security:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
+
+    </security:http>
+    
 </beans>

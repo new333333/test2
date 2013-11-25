@@ -36,13 +36,16 @@ package org.kablink.teaming.security.authentication;
 import java.util.Map;
 
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
 public interface AuthenticationManager {
 
-	public User authenticate(AuthenticationServiceProvider authenticationServiceProvider, String zoneName, String username, String password,
-			boolean createUser, boolean updateUser, boolean passwordAutoSynch, boolean ignorePassword, 
+	public User authenticate(String zoneName, String username, String password,
+			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException;
+
+	public User authenticate(String zoneName, String username, String password,
+			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
+	throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException;
 
 	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, 
 			String authenticatorName) throws DigestDoesNotMatchException, 

@@ -35,13 +35,11 @@ package org.kablink.teaming.portlet.administration;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Map;
 
 import javax.portlet.RenderRequest;
 
 import org.dom4j.Document;
-import org.dom4j.Element;
 import org.dom4j.Node;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -173,61 +171,6 @@ public class LicenseReportController extends AbstractReportController {
 					// This should never happen.
 					tmpDate = new Date();
 				}
-				
-				Object obj = doc.selectObject("//Options/*");
-
-				if (obj != null) {
-					if(obj instanceof List) {
-						List options = null;
-						options = (List) obj;
-
-						if(options != null) {
-							StringBuilder optionsList = new StringBuilder();
-
-							for(int i = 0; i < options.size(); i++) {
-								Element ele = (Element) options.get(i);
-								optionsList.append(ele.attribute("title").getValue() + ",");
-							}
-							model.put(WebKeys.LICENSE_OPTIONS_LIST, optionsList.toString());
-						}
-					}
-					if(obj instanceof Element) {
-						Element singleOption = null;
-						singleOption = (Element) obj;
-
-						if(singleOption != null) {
-							model.put(WebKeys.LICENSE_OPTIONS_LIST, singleOption.attribute("title").getValue());
-						}
-					}
-				}
-
-				obj = doc.selectObject("//ExternalAccess/*");
-
-				if(obj != null) {
-					if(obj instanceof List) {
-						List extAccess = null;
-						extAccess = (List) obj;
-
-						if(extAccess != null) {
-							StringBuilder extAccessList = new StringBuilder();
-
-							for(int i = 0; i < extAccess.size(); i++) {
-								Element ele = (Element) extAccess.get(i);
-								extAccessList.append(ele.asXML().replace("<", "").replace("/>", "") + ",");
-							}
-							model.put(WebKeys.LICENSE_EXTERNAL_ACCESS_LIST, extAccessList.toString());
-						}
-					}
-					if(obj instanceof Element) {
-						Element singleExtAccess = null;
-						singleExtAccess = (Element) obj;
-
-						if(singleExtAccess != null) {
-							model.put(WebKeys.LICENSE_EXTERNAL_ACCESS_LIST, singleExtAccess.asXML().replace("<", "").replace("/>", ""));
-						}
-					}
-				}
-
 				model.put(WebKeys.LICENSE_EFFECTIVE_END,  tmpDate );
 
 				model.put(WebKeys.LICENSE_CONTACT, getValue(doc, "//AuditPolicy/ReportContact"));

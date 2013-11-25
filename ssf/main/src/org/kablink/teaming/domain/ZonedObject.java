@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.domain;
 
-public abstract class ZonedObject {
+public class ZonedObject {
 	protected Long zoneId;
     public Long getZoneId() {
     	return zoneId;

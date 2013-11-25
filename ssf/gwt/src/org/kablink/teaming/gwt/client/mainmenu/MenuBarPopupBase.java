@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,62 +40,80 @@ import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.event.logical.shared.AttachEvent.Handler;
-import com.google.gwt.event.logical.shared.AttachEvent;
-import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
 
 /**
  * Abstract base class used for a menu item popups.  
  * 
  * @author drfoster@novell.com
  */
-public abstract class MenuBarPopupBase {
-	private   ContextBinderProvider			m_binderProvider;	// Provides the current binder context, as required.
-	protected GwtTeamingMainMenuImageBundle	m_images;			// Vibe's image  resource.
-	protected GwtTeamingMessages			m_messages;			// Vibe's string resources.
-	protected GwtRpcServiceAsync			m_rpcService;		// Vibe's RPC service.
-	private   MenuBarBox					m_menuBox;			// The box wrapping the menu item that invokes this popup.
-	private   VibeMenuBar					m_menuBar;			// The menu bar containing this popup's menu items.
+public abstract class MenuBarPopupBase extends TeamingPopupPanel {
+	private   boolean						m_spacerNeeded;		// false -> The last widget added was a spacer.  true -> It was something else.
+	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
+	protected GwtTeamingMessages			m_messages;			// The menu's messages.
+	protected GwtRpcServiceAsync			m_rpcService;		//
+	private   MenuBarBox					m_menuBarBox;		// The menu bar box associated with a popup when opened.
+	private   VerticalPanel					m_contentPanel;		// A VerticalPanel that will hold the popup's contents.
 	
 	/**
-	 * Constructor method.
+	 * Class constructor.
 	 * 
-	 * @param binderProvider
+	 * @param title
 	 */
-	public MenuBarPopupBase(ContextBinderProvider binderProvider) {
-		// Initialize the super class...
-		super();
-		
-		// ...store the parameters...
-		m_binderProvider = binderProvider;
+	public MenuBarPopupBase(String title) {
+		// Construct the super class...
+		super(true);
+		setGlassEnabled(true);
+		setGlassStyleName("mainMenuPopup_Glass");
 
-		// ...and initialize everything else.
+		// Add a close handler to the popup so that it can restore the
+		// menu bar box's styles when the popup menu is closed.
+		addCloseHandler(new CloseHandler<PopupPanel>(){
+			public void onClose(CloseEvent<PopupPanel> event) {
+				removeAutoHidePartner(m_menuBarBox.getElement());
+				m_menuBarBox.popupMenuClosed();
+				m_menuBarBox = null;
+			}});
+
+		// ...store the parameters...
 		m_images     = GwtTeaming.getMainMenuImageBundle();
 		m_messages   = GwtTeaming.getMessages();
 		m_rpcService = GwtTeaming.getRpcService();
 		
-		// Create a menu bar to hold the popup menu items...
-		m_menuBar = new VibeMenuBar(true, "vibe-mainMenuPopup");
-		m_menuBar.addAttachHandler(new Handler() {
-			@Override
-			public void onAttachOrDetach(AttachEvent event) {
-				if (event.isAttached())
-					 onAttach();
-				else onDetach();
-			}
-		});
+		// ...and initialize everything else.
+		addStyleName("mainMenuPopup_Core roundcornerSM-bottom");
+		GwtClientHelper.rollDownPopup(this);
+
+		// ...create the popup's innards...
+		DockPanel dp = new DockPanel();
+		dp.addStyleName("mainMenuPopup roundcornerSM-bottom smalltext");
+		dp.add(createPopupContentPanel(),   DockPanel.CENTER);
+		dp.add(createPopupBottom(m_images), DockPanel.SOUTH);
+
+		// ...and add it to the popup.
+		setWidget(dp);
 	}
 
 	/**
-	 * Adds a VibeMenuItem to the menu.
+	 * Adds a Widget to the content VerticalPanel.
 	 * 
-	 * @param mi
+	 * @param contentWidget
 	 */
-	final public void addContentMenuItem(VibeMenuItem mi) {
-		// Simply add the item to the menu.
-		m_menuBar.addItem(mi);
+	final public void addContentWidget(Widget contentWidget) {
+		// Simply add the widget to the content panel.
+		m_contentPanel.add(contentWidget);
+		m_spacerNeeded = true;
 	}
 
 	/**
@@ -106,20 +124,19 @@ public abstract class MenuBarPopupBase {
 	 * @param addEntryView
 	 */
 	final public void addContextMenuItem(String idBase, ToolbarItem tbi, boolean hideEntryView) {
-		// If we have a ToolbarItem...
-		if (null != tbi) {
-			// ...and if we can generate a menu item from it... 
-			ContextMenuItem cmi = new ContextMenuItem(this, idBase, tbi, hideEntryView);
-			if (null != cmi) {
-				// ...add it to the popup.
-				addContentMenuItem(cmi);
-			}
+		// If we have a widget for the menu item... 
+		ContextMenuItem cmi = new ContextMenuItem(this, idBase, tbi, hideEntryView);
+		Widget cmiWidget = cmi.getWidget();
+		if (null != cmiWidget) {
+			// ...add it to the popup.
+			addContentWidget(cmiWidget);
 		}
 	}
 	
 	final public void addContextMenuItem(String idBase, ToolbarItem tbi) {
-		// Always use the initial form of the method.
-		addContextMenuItem(idBase, tbi, false);	// false -> Don't hide an entry view.
+		// Always use the initial form of the method, defaulting to not
+		// hiding an entry view.
+		addContextMenuItem(idBase, tbi, false);
 	}
 
 	/**
@@ -156,134 +173,78 @@ public abstract class MenuBarPopupBase {
 	}
 	
 	/**
-	 * Adds a spacer to the menu.
+	 * Adds a spacer line to the menu.
 	 */
 	final public void addSpacerMenuItem() {
-		m_menuBar.addSeparator();
+		FlowPanel spacerPanel = new FlowPanel();
+		spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
+		if (GwtClientHelper.jsIsIE()) {
+			Image spacerContent = new Image(m_images.spacer1px());
+			spacerPanel.add(spacerContent);
+		}
+		addContentWidget(spacerPanel);
+		m_spacerNeeded = false;
 	}
-
-	/**
-	 * Clears the contents of the menu.
+	
+	/*
+	 * Creates the bottom of the popup.
 	 */
-	final public void clearItems() {
-		m_menuBar.clearItems();
+	private FlowPanel createPopupBottom(GwtTeamingMainMenuImageBundle images) {
+		FlowPanel bottomPanel = new FlowPanel();
+		bottomPanel.addStyleName("mainMenuPopup_Bottom");
+		Image bottomImg = new Image(images.spacer1px());
+		bottomImg.setHeight("4px");
+		bottomImg.setWidth("4px");
+		bottomPanel.add(bottomImg);
+		return bottomPanel;
 	}
-
-	/**
-	 * Returns a count of the MenuItem's in this popup.
-	 * 
-	 * @return
+	
+	/*
+	 * Creates the main content panel for the popup.
 	 */
-	final public int getItemCount() {
-		return m_menuBar.getItemCount();
-	}
-
-	/**
-	 * Returns the index of a MenuItem in the menu.
-	 * 
-	 * @param mi
-	 * 
-	 * @return
-	 */
-	final public int getItemIndex(MenuItem mi) {
-		return m_menuBar.getItemIndex(mi);
+	private VerticalPanel createPopupContentPanel() {
+		m_contentPanel = new VerticalPanel();
+		return m_contentPanel;
 	}
 	
 	/**
-	 * Returns the menu associated with this MenuBarPopupBase.
-	 * 
-	 * @return
-	 */
-	final public VibeMenuBar getMenuBar() {
-		return m_menuBar;
-	}
-
-	/**
-	 * Returns the X position to use to position something relative to
-	 * the bottom of this menu.
-	 * 
-	 * @return
-	 */
-	final public int getRelativeX() {
-		return ((null == m_menuBox) ? 0 : m_menuBox.getBoxLeft());
-	}
-	
-	/**
-	 * Returns the Y position to use to position something relative to
-	 * the bottom of this menu.
-	 * 
-	 * @return
-	 */
-	final public int getRelativeY() {
-		return ((null == m_menuBox) ? 0 : m_menuBox.getBoxBottom());
-	}
-	
-	/**
-	 * Returns true if the menu has content and false otherwise.
+	 * Returns true if the menu bar has content and false otherwise.
 	 * 
 	 * @return
 	 */
 	final public boolean hasContent() {
-		return m_menuBar.hasContent();
+		return (0 < m_contentPanel.getWidgetCount());
 	}
 
 	/**
-	 * Returns false if the last item added was a spacer and true
+	 * Called to close the menu.
+	 */
+	final public void hideMenu() {
+		// Simply hide the popup.
+		hide();
+	}
+	
+	/**
+	 * Returns false if the last widget added was a spacer and true
 	 * otherwise.
 	 * 
 	 * @return
 	 */
 	final public boolean isSpacerNeeded() {
-		return m_menuBar.isSpacerNeeded();
+		return m_spacerNeeded;
 	}
-
-	/**
-	 * Called when the popup is shown. 
-	 * 
-	 * Classes that extend this class may override this to do something
-	 * they require.
-	 */
-	public void onAttach() {
-		setCurrentBinder(m_binderProvider.getContextBinder());
-		populateMenu();
-	}
-	
-	/**
-	 * Called when the menu popup is closed.
-	 * 
-	 * Classes that extend this class may override this to do something
-	 * they require.
-	 */
-	public void onDetach() {
-		// Noting to do generically.
-	}
-	
-	/**
-	 * Classes that extend do what needs to be done to populate their
-	 * menu.
-	 */
-	public abstract void populateMenu();
 	
 	/**
 	 * Passes a BinderInfo describing the currently selected binder to
-	 * classes that extend this.
+	 * classes that extend MenuBarPopupBase.
 	 * 
 	 * @param binderInfo
 	 */
 	public abstract void setCurrentBinder(BinderInfo binderInfo);
 
 	/**
-	 * Stores the MenuBarBox associated with this menu.
-	 * 
-	 * @param menuBox
-	 */
-	final public void setMenuBox(MenuBarBox menuBox) {
-		m_menuBox = menuBox;
-	}
-	
-	/**
 	 * Passes information about the context based toolbar requirements
-	 * via a List<ToolbarItem> to classes that extend this.
+	 * via a List<ToolbarItem> to classes that extend MenuBarPopupBase.
 	 * 
 	 * Not used for non-context based menus (My Teams, Favorites, ...)
 	 * 
@@ -299,4 +260,44 @@ public abstract class MenuBarPopupBase {
 	 * @return
 	 */
 	public abstract boolean shouldShowMenu();
+
+	/**
+	 * Shows the popup menu.
+	 * 
+	 * Overrides PopupPanel.show().
+	 */
+	@Override
+	public void show() {
+		// Tell the super class to show the menu...
+		super.show();
+		
+		// ...tell the menu's box that its got an open popup menu
+		// ...associated with it...
+		addAutoHidePartner(m_menuBarBox.getElement());
+		m_menuBarBox.popupMenuOpened();
+		
+		// ...and add vertical scrolling to the main frame for the
+		// ...duration of the popup.
+		GwtClientHelper.scrollUIForPopup(this);
+	}
+	
+	/**
+	 * Called to show the menu associated with the given menu bar box.
+	 * 
+	 * @param menuBarBox
+	 */
+	final public void showMenu(MenuBarBox menuBarBox) {
+		// Tell the menu to show its popup.
+		m_menuBarBox = menuBarBox;
+		showPopup(menuBarBox.getBoxLeft(), menuBarBox.getBoxBottom());
+	}
+	
+	/**
+	 * Classes that extend do what needs to be done to show their
+	 * MenuBarPopupBase.
+	 * 
+	 * @param left
+	 * @param top
+	 */
+	public abstract void showPopup(int left, int top);
 }

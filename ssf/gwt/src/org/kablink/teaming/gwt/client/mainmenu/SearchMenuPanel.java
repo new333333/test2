@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,26 +32,21 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.SearchSimpleEvent;
-import org.kablink.teaming.gwt.client.util.EventWrapper;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TextBox;
+
 
 /**
  * Class used for the search widgets on the main menu bar.  
@@ -59,11 +54,9 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author drfoster@novell.com
  */
 public class SearchMenuPanel extends FlowPanel {
-	private boolean							m_searchEmpty = true;	//
-	private GwtTeamingMainMenuImageBundle	m_images;				//
-	private GwtTeamingMessages				m_messages;				//
-	private String							m_emptyTxt;				//
-	private TextBox							m_searchInput;			//
+	private GwtTeamingMainMenuImageBundle m_images;
+	private GwtTeamingMessages m_messages;
+	private TextBox m_searchInput;
 
 	/**
 	 * Class constructor.
@@ -72,28 +65,47 @@ public class SearchMenuPanel extends FlowPanel {
 		// Initialize the super class...
 		super();
 		
-		// ...initialize everything else...
-		m_images   = GwtTeaming.getMainMenuImageBundle();
+		// ...and initialize everything else.
+		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
-		m_emptyTxt = m_messages.mainMenuSearchEmpty();
-		addStyleName("vibe-mainMenuBar_BoxPanel vibe-mainMenuSearch_Panel");
+		addStyleName("mainMenuBar_BoxPanel mainMenuSearch_Panel");
 
-		// ...and a add the search and button widgets.
-		addSearchImage();
+		// Finally, add the search and button widgets.
 		addSearchWidget();
+		addSearchButton();
 	}
 
 	/*
-	 * Adds the search image to the search panel.
+	 * Adds the search button to the search panel.
 	 */
-	private void addSearchImage() {
+	private void addSearchButton() {
+		final SearchMenuPanel searchMenu = this;
+		
 		// Create the Image for the button...
-		Image searchImg = new Image(m_images.searchGlass());
-		searchImg.setTitle(m_messages.mainMenuSearchImageAlt());
-		searchImg.addStyleName("vibe-mainMenuSearch_Image");
-
+		Image img = new Image(m_images.searchGlass());
+		img.setTitle(m_messages.mainMenuSearchButtonAlt());
+		img.addStyleName("mainMenuSearch_ButtonImage");
+		
+		// ...create the Anchor for it...
+		Anchor searchAnchor = new Anchor();
+		searchAnchor.getElement().appendChild(img.getElement());
+		searchAnchor.addStyleName("mainMenuSearch_ButtonAnchor");
+		searchAnchor.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				// Turn off any over indicator on the menu bar item and
+				// perform the search.
+				searchMenu.getElement().removeClassName("subhead-control-bg2");
+				doSearch();
+			}
+		});
+		
+		// ...add mouse over handling...
+		MenuHoverByWidget hover = new MenuHoverByWidget(searchMenu, "subhead-control-bg2");
+		searchAnchor.addMouseOverHandler(hover);
+		searchAnchor.addMouseOutHandler( hover);
+		
 		// ...and add the Anchor to the panel.
-		add(searchImg);
+		add(searchAnchor);
 	}
 	
 	/*
@@ -102,51 +114,19 @@ public class SearchMenuPanel extends FlowPanel {
 	private void addSearchWidget() {
 		// Create the TextBox for the search...
 		m_searchInput = new TextBox();
-		m_searchInput.setValue(m_emptyTxt);
-		m_searchInput.addStyleName("vibe-mainMenuSearch_Input");
-		setBlurStyles();
+		m_searchInput.addStyleName("mainMenuSearch_Input");
 		
 		// ...add a handler to intercept key presses...
-		List<EventHandler> inputHandlers = new ArrayList<EventHandler>();
-		inputHandlers.add(new KeyPressHandler() {
-			@Override
+		m_searchInput.addKeyPressHandler(new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
 				// Is this the enter key being pressed?
 				int key = event.getNativeEvent().getKeyCode();
-				if (KeyCodes.KEY_ENTER == key) {
+				if ( KeyCodes.KEY_ENTER == key ) {
 					// Yes!  Perform the search.
 					doSearch();
 				}
 			}
 		});
-		inputHandlers.add(new BlurHandler() {
-			@Override
-			public void onBlur(BlurEvent event) {
-				// Set the appropriate styles on the input...
-				setBlurStyles();
-
-				// ...and if the search input is empty...
-				m_searchEmpty = (0 == getSearchValue().length());
-				if (m_searchEmpty) {
-					// ...display an empty message in it.
-					m_searchInput.setValue(m_emptyTxt);
-				}
-			}
-		});
-		inputHandlers.add(new FocusHandler() {
-			@Override
-			public void onFocus(FocusEvent event) {
-				// Set the appropriate styles on the input...
-				setFocusStyles();
-				
-				// ...and if the search input is empty...
-				if (m_searchEmpty) {
-					// ...remove any empty message from it.
-					m_searchInput.setValue("");
-				}
-			}
-		});
-		EventWrapper.addHandlers(m_searchInput, inputHandlers);
 		
 		// ...and add the Anchor to the panel.
 		add(m_searchInput);
@@ -156,47 +136,8 @@ public class SearchMenuPanel extends FlowPanel {
 	 * Performs a search on the search widget's contents.
 	 */
 	private void doSearch() {
-		String searchFor = getSearchValue();
+		String searchFor = m_searchInput.getValue();
 		m_searchInput.setValue("");
-		m_searchInput.setFocus(false);
-		m_searchEmpty = true;
-		m_searchInput.setValue(m_emptyTxt);
-		setBlurStyles();
 		GwtTeaming.fireEvent(new SearchSimpleEvent(searchFor));
 	}
-	
-	/*
-	 * Returns a non-null, non-space padded search value from the
-	 * input widget.
-	 */
-	private String getSearchValue() {
-		String reply = m_searchInput.getValue();
-		if (null == reply)           reply = "";
-		else if (0 < reply.length()) reply = reply.trim();
-		return reply;
-	}
-
-	/*
-	 * Sets the appropriate styles on the input widget for when
-	 * it loses focus.
-	 */
-	private void setBlurStyles() {
-		if (m_searchEmpty) {
-			m_searchInput.removeStyleName("vibe-mainMenuSearch_InputFocus");
-			m_searchInput.addStyleName(   "vibe-mainMenuSearch_InputBlur" );
-		}
-		
-		else {
-			setFocusStyles();
-		}
-	}
-	
-	/*
-	 * Sets the appropriate styles on the input widget for when
-	 * it gets focus.
-	 */
-	private void setFocusStyles() {
-		m_searchInput.removeStyleName("vibe-mainMenuSearch_InputBlur" );
-		m_searchInput.addStyleName(   "vibe-mainMenuSearch_InputFocus");
-	}		
 }

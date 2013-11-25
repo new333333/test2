@@ -48,9 +48,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
-import org.kablink.teaming.gwt.client.widgets.SizeCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
+import org.kablink.teaming.gwt.client.widgets.SizeCtrl;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
@@ -745,7 +745,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		return m_sizeCtrl.getHeightUnits();
 	}
 	
-
 	/**
 	 * Return the text found in the jsp name edit control.
 	 */
@@ -823,7 +822,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		return m_sizeCtrl.getWidthUnits();
 	}
 	
-
 	/**
 	 * 
 	 */

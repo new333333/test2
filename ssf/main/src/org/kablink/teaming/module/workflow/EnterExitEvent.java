@@ -90,6 +90,7 @@ import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.definition.notify.Notify.NotifyType;
 import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
 import org.kablink.teaming.module.definition.notify.NotifyVisitor;
+import org.kablink.teaming.module.mail.EmailFormatter;
 import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -103,7 +104,6 @@ import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TextToHtml;
@@ -196,11 +196,8 @@ public class EnterExitEvent extends AbstractActionHandler {
 		   					moveEntry(item, executionContext, entry, ws);
 		   				}
 		   			} else if ("copyEntry".equals(name)) {
-		   				String startWorkflow = DefinitionUtils.getPropertyValue(item, "startWorkflow");
 		   				Boolean copyNotAllowed = (Boolean)executionContext.getContextInstance().getTransientVariable(WorkflowModule.DISALLOW_COPY);
-		   				if ((startWorkflow != null && startWorkflow.equals(ObjectKeys.WORKFLOW_START_WORKFLOW_NO_START)) || 
-		   						copyNotAllowed == null || !copyNotAllowed) {
-		   					//It is OK to do the copy. If the workflow isn't being started, no copy loop will occur
+		   				if (copyNotAllowed == null || !copyNotAllowed) {
 		   					copyEntry(item, executionContext, entry, ws);
 		   				}
 		   			} else if ("startParallelThread".equals(name)) {
@@ -246,10 +243,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 								logger.error("Cannot instantiate WorkflowProcess custom class", e);
 							}
 						}
-						if (schedJob == null) {
-							String className = SPropsUtil.getString("job.workflow.process.class", "org.kablink.teaming.jobs.DefaultWorkflowProcess");
-							schedJob = (WorkflowProcess)ReflectHelper.getInstance(className);
-						}
+						if (schedJob == null) schedJob = (WorkflowProcess)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultWorkflowProcess.class);
 						String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
 						int seconds = 300;
 						try {
@@ -293,10 +287,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 							logger.error("Cannot instantiate WorkflowProcess custom class", e);
 						}
 					}
-					if (schedJob == null) {
-						String className = SPropsUtil.getString("job.workflow.process.class", "org.kablink.teaming.jobs.DefaultWorkflowProcess");
-						schedJob = (WorkflowProcess)ReflectHelper.getInstance(className);
-					}
+					if (schedJob == null) schedJob = (WorkflowProcess)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultWorkflowProcess.class);
 					String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
 					int seconds = 300;
 					try {
@@ -332,7 +323,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		Binder parent = entry.getParentBinder();
 		Binder destination  = getDestination(item, entry);
 		EntryProcessor processor = (EntryProcessor)((ProcessorManager)SpringContextUtil.getBean("modelProcessorManager")).getProcessor(parent, parent.getProcessorKey(EntryProcessor.PROCESSOR_KEY));
-		processor.moveEntry(parent, entry, destination, null, null);
+		processor.moveEntry(parent, entry, destination, null);
 	}
 	protected void copyEntry(Element item, ExecutionContext executionContext, WorkflowSupport wfEntry, WorkflowState currentWs) {
 		Entry entry = (Entry)wfEntry;
@@ -346,7 +337,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		Map options = new HashMap();
 		options.put(ObjectKeys.WORKFLOW_START_WORKFLOW, startWorkflow);
 		EntryProcessor processor = (EntryProcessor)((ProcessorManager)SpringContextUtil.getBean("modelProcessorManager")).getProcessor(parent, parent.getProcessorKey(EntryProcessor.PROCESSOR_KEY));
-		processor.copyEntry(parent, entry, destination, null, options);
+		processor.copyEntry(parent, entry, destination, options);
 
 	}
 	protected Binder getDestination(Element item, Entry entry) {
@@ -682,7 +673,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		}
 		s = MarkupUtil.markupStringReplacement(null, null, null, null, entry, s, WebKeys.MARKUP_VIEW_TEXT);
 		details.put(MailModule.SUBJECT, s);
-		String permaLink = PermaLinkUtil.getPermalinkForEmail(entry);
+		String permaLink = PermaLinkUtil.getPermalink(entry);
 		String msgHtml = "";
 		if (entry.getDescription() != null) msgHtml = MarkupUtil.markupStringReplacement(null, null, null, null, entry, entry.getDescription().getText(), WebKeys.MARKUP_VIEW);
 		StringBuffer tMsg = new StringBuffer();

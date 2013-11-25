@@ -44,12 +44,6 @@ public class Application extends ApplicationPrincipal implements IndividualPrinc
     private Integer maxIdleTime; // in seconds, access="field"
     private Boolean sameAddrPolicy; // access="field"
     
-    public Application() {
-    	// The identity info is not applicable to application. However, because the database
-    	// requires non-null value in these, we have to set it to some default values. 
-    	setIdentityInfo(new IdentityInfo());
-    }
-    
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.application;
 	}

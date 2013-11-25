@@ -61,8 +61,14 @@
 	</script>
 </c:if>
 
+<c:if test="${ss_mashupColStarted == 'true'}">
+<c:set var="ss_mashupColStarted" value="false" scope="request"/>
 </td>
+</c:if>
+<c:if test="${ss_mashupRowStarted == 'true'}">
 </tr>
+</c:if>
+<c:set var="ss_mashupRowStarted" value="false" scope="request"/>
 </table>
 <c:if test="${ssConfigJspStyle == 'form'}">
   <div style="padding-bottom:10px;">

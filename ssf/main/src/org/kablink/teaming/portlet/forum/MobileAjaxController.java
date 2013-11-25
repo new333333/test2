@@ -73,7 +73,6 @@ import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.OneDayView;
@@ -86,7 +85,6 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
@@ -145,8 +143,8 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.ui.AbstractProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
@@ -297,19 +295,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 		} else {
-			//There is no operation specified. See if this should go to the default home page
-			Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-			HomePageConfig homePageConfig = getZoneModule().getZoneConfig(zoneId).getHomePageConfig();
-			Long binderId = homePageConfig.getDefaultHomePageId();
-			if (WebHelper.isGuestLoggedIn(request) && homePageConfig != null) {
-				binderId = homePageConfig.getDefaultGuestHomePageId();
-				if (binderId == null) binderId = homePageConfig.getDefaultHomePageId();
-			}
-			if (binderId != null) {
-				return ajaxMobileShowWorkspace(this, request, response, binderId, null);
-			} else {
-				return ajaxMobileFrontPage(this, request, response);
-			}
+			return ajaxMobileFrontPage(this, request, response);
 		}
 	} 
 
@@ -555,8 +541,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				Binder binder = getBinderModule().getBinder(binderId);
 				if (type.equals("delete") && 
 						binder.getEntityType().equals(EntityType.workspace) && 
-						(binder.getDefinitionType().equals(Definition.USER_WORKSPACE_VIEW) ||
-						 binder.getDefinitionType().equals(Definition.EXTERNAL_USER_WORKSPACE_VIEW))) 
+						binder.getDefinitionType().equals(Definition.USER_WORKSPACE_VIEW)) 
 					//Also stop tracking the user if this is a user workspace
 					BinderHelper.trackThisBinder(bs, binder.getOwnerId(), "deletePerson");
 			}
@@ -568,10 +553,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
-    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	if(ex != null) {
     		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
-    		session.removeAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	}
 		String refererUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_REFERER_URL);
 		if (Validator.isNotNull(refererUrl)) {
@@ -615,10 +600,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response, String portletName, String operation) throws Exception {
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 		Map model = new HashMap();
-    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	if(ex != null) {
     		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
-    		session.removeAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	}
 		model.put("ss_teamingLiveStatus", "reload");
         session.setAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE, new Date());
@@ -770,7 +755,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 	    Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);		
-		String searchText = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TEXT_FIELD, "");
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		model.put(WebKeys.SEARCH_TEXT, searchText);
 	    if (formData.containsKey("searchBtn") || formData.containsKey("quickSearch")) {
 	    	SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
@@ -779,7 +764,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			options.put(ObjectKeys.SEARCH_OFFSET, new Integer(pageStart));
 			options.put(ObjectKeys.SEARCH_USER_MAX_HITS, new Integer(pageSize));
 			if (scope.equals("local")) options.put(ObjectKeys.SEARCH_ANCESTRY, binderId.toString());;
-			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, Constants.SEARCH_MODE_NORMAL, options);
+			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
 			
 			//Set the title of the tab
 			DateFormat fmt = DateFormat.getTimeInstance(DateFormat.SHORT, user.getLocale());
@@ -804,7 +789,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			options.put(ObjectKeys.SEARCH_USER_MAX_HITS, new Integer(pageSize));
 
 			options.put(Tabs.TITLE, queryName);
-			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, Constants.SEARCH_MODE_NORMAL, options);
+			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
 			
 			Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
 			
@@ -849,7 +834,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxMobileShowFolder(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
-		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
 		//Setup the actions menu list
 		List actions = new ArrayList();
@@ -877,16 +861,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
 		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
-
-		//If this is a calendar, look for a new event type setting
-		String eventType = PortletRequestUtils.getStringParameter(request, "eventType", "");
-		if (!"".equals(eventType)) {
-			EventsViewHelper.setCalendarDisplayEventType(this, user.getId(), binderId, eventType);
-		}
-		eventType = EventsViewHelper.getCalendarDisplayEventType(bs, user.getId(), binderId);
-		model.put(WebKeys.CALENDAR_EVENT_TYPE, eventType);
-
 		Map options = new HashMap();		
+		Map folderEntries = null;
 		
 		if (binder== null) {
 			return ajaxMobileFrontPage(this, request, response);
@@ -923,25 +899,21 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(pageSize));
       	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
 
-      	List entryList = new ArrayList();
       	if (family.equals(Constants.FAMILY_FIELD_CALENDAR)) {
-      		entryList = ListFolderHelper.findCalendarEvents(bs, request, response, binder, model);
-      		model.put(WebKeys.FOLDER_ENTRIES, entryList);
+      		folderEntries = ListFolderHelper.findCalendarEvents(bs, request, response, binder, model);
       	} else {
-      		Map folderEntries = getFolderModule().getEntries(binderId, options);
-	      	model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			if (folderEntries != null) {
-				entryList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-			}
-			model.put(WebKeys.FOLDER_ENTRIES, entryList);
+      		folderEntries = getFolderModule().getEntries(binderId, options);
       	}
-  		Integer entryCount = entryList.size();
       	
+      	model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+		if (folderEntries != null) {
+			model.put(WebKeys.FOLDER_ENTRIES, (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
+		}
 		
       	if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber - 1);
-      	if (entryCount == pageSize && entryCount > ((pageNumber.intValue() + 1) * pageSize)) {
+      	if (((List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES)).size() == pageSize && 
+      			((Integer)folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue() > ((pageNumber.intValue() + 1) * pageSize)) 
       		nextPage = String.valueOf(pageNumber + 1);
-      	}
 		model.put(WebKeys.PAGE_NUMBER, pageNumber.toString());
 		model.put(WebKeys.NEXT_PAGE, nextPage);
 		model.put(WebKeys.PREV_PAGE, prevPage);
@@ -987,7 +959,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.BINDERS_PARENT_ID_FIELD, folderIds));
 		crit.addOrder(Order.asc(Constants.SORT_TITLE_FIELD));
-		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
@@ -996,8 +968,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       		Map entryMap = (Map) iter.next();
       		binderIdList.add(new Long((String)entryMap.get("_docId")));
       	}
-      	//Get the sub-folder list including itermediate folders that may be inaccessible
-      	SortedSet binderList = bs.getBinderModule().getBinders(binderIdList, Boolean.FALSE);
+      	SortedSet binderList = bs.getBinderModule().getBinders(binderIdList);
         for (Iterator iter=binderList.iterator(); iter.hasNext();) {
      		Binder b = (Binder)iter.next();
       		if (b.isDeleted()) continue;
@@ -1010,7 +981,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 
 		Map<String, Map> cacheEntryDef = new HashMap();
-    	List items = entryList;
+    	List items = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
     	if (items != null) {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
@@ -1155,17 +1126,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxMobileShowWorkspace(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		return ajaxMobileShowWorkspace(bs, request, response, binderId, entryId);
-	}
-	private ModelAndView ajaxMobileShowWorkspace(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response, Long binderId, Long entryId) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 		if (entryId != null && getProfileModule().getProfileBinderId().equals(binderId)) {
 			//This is a request to show a user. Check if there is a workspace for this user
 			Principal u = getProfileModule().getEntry(entryId);
@@ -1247,8 +1214,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//See if this is a user workspace
 		if (binder != null && binder.getDefinitionType() != null && 
-				(Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType() ||
-				 Definition.EXTERNAL_USER_WORKSPACE_VIEW == binder.getDefinitionType())) {
+				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType()) {
 			Set wsUsers = new HashSet();
 			Long userId = binder.getCreation().getPrincipal().getId();
 			if (userId != null) wsUsers.add(userId);
@@ -1299,8 +1265,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	      		Map entryMap = (Map) iter.next();
 	      		binderIdList.add(new Long((String)entryMap.get("_docId")));
 	      	}
-	      	//Get sub-binder list including intermediate binders that may be inaccessible
-	      	SortedSet binderList = getBinderModule().getBinders(binderIdList, Boolean.FALSE);
+	      	SortedSet binderList = getBinderModule().getBinders(binderIdList);
 	        for (Iterator iter=binderList.iterator(); iter.hasNext();) {
 	     		Binder b = (Binder)iter.next();
 	      		if (b.isDeleted()) continue;
@@ -1931,7 +1896,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		} else if (type.equals("group")) {
 			entries = getProfileModule().getGroups(options);
 		} else if (type.equals("team")) {
-			entries = getBinderModule().executeSearchQuery(searchTermFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options);
+			entries = getBinderModule().executeSearchQuery(searchTermFilter.getFilter(), options);
 		}
 		model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
 		model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
@@ -2078,7 +2043,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 					entries = getProfileModule().getUsers(options);
 					model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
 				} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) {
-					entries = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options);
+					entries = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
 					model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
 					view = "mobile/find_places";
 				}

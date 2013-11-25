@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -119,7 +119,6 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		//listen for mouse clicks to determine if need to clear the statusText
 		clear.addClickHandler(new ClickHandler() {
 
-			@Override
 			public void onClick(ClickEvent event) {
 
 				//update the status to the given user
@@ -166,7 +165,6 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		//Add Mouse click listener to share button
 		shareButton.addClickHandler(new ClickHandler(){
 
-			@Override
 			public void onClick(ClickEvent event) {
 				if(!input.getText().equals("") && !input.getText().equals(GwtTeaming.getMessages().statusMessage())){
 						
@@ -179,7 +177,6 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		
 		//add a key listener
 		input.addKeyUpHandler( new KeyUpHandler() {
-			@Override
 			public void onKeyUp(KeyUpEvent event) {
 				
 				textAmount.setVisible(true);
@@ -232,7 +229,6 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		
 		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
 
-			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -242,7 +238,6 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				savingUserStatusInProgress = false;
 			}
 
-			@Override
 			public void onSuccess( VibeRpcResponse response ) {				
 				//Get the text from the input widget and set the status text field
 				statusText.setText(status);
@@ -267,7 +262,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				SaveUserStatusRpcResponseData responseData = ((SaveUserStatusRpcResponseData) response.getResponseData());
 				if (responseData.isNewMiniBlogFolder()) {
 					// Yes!  Force the sidebar to refresh.
-					GwtClientHelper.jsFireVibeEventOnMainEventBus(TeamingEvents.REFRESH_SIDEBAR_TREE);
+					GwtClientHelper.jsFireVibeEventOnMainEventBus(TeamingEvents.SIDEBAR_RELOAD);
 				}
 				
 				savingUserStatusInProgress = false;
@@ -299,7 +294,6 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		
 		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
 
-			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -307,7 +301,6 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 					getBinderId());
 			}
 
-			@Override
 			public void onSuccess( VibeRpcResponse response ) {
 				UserStatus result = null;
 				
@@ -349,7 +342,6 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	/**
 	 * Using this onPreviewNativeEvent to check if the mouse click is in the input widget 
 	 */
-	@Override
 	public void onPreviewNativeEvent(NativePreviewEvent previewEvent) {
 
 

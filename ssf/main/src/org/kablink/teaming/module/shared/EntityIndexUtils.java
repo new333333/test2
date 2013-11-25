@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.module.shared;
+	package org.kablink.teaming.module.shared;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -49,7 +49,6 @@ import java.util.Collection;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.NumericField;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.ObjectKeys;
@@ -61,7 +60,6 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
@@ -70,8 +68,6 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ResourceDriverConfig;
-import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
@@ -79,26 +75,20 @@ import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.fi.connection.ResourceDriver;
-import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
-import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.CloudFolderHelper;
-import org.kablink.teaming.web.util.DefinitionHelper;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-import org.kablink.util.search.FieldFactory;
+
+import com.liferay.portal.tools.Entity;
+
 
 import static org.kablink.util.search.Constants.*;
 
@@ -107,7 +97,6 @@ import static org.kablink.util.search.Constants.*;
  *
  * @author Jong Kim
  */
-@SuppressWarnings("unchecked")
 public class EntityIndexUtils {
 
     // Defines field values
@@ -120,26 +109,16 @@ public class EntityIndexUtils {
     		title = title.trim();
             
             if(title.length() > 0) {
-            	// For the built-in title field, avoid indexing the same text twice. So don't add it in the catch-all field.
-            	// Bug 740533 - Store original title rather than trimmed one in the title field
-            	Field titleField = FieldFactory.createFullTextFieldIndexed(Constants.TITLE_FIELD, entry.getTitle(), true);
-            	// This field is used only for sorting, so needs not be stored.
-    	        Field sortTitleField = FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SORT_TITLE_FIELD, title.toLowerCase());
-    	        Field title1Field = FieldFactory.createFieldStoredNotAnalyzed(Constants.TITLE1_FIELD, title.substring(0, 1));
-    	        // Create another field instance with the same name as the primary title field, and put the lower-cased
-    	        // version of the title value as a single term, so as to allow accurate wild care matches using * or ?
-    	        // An alternate approach would be to use SORT_TITLE_FIELD field since it already has the single token
-    	        // value indexed. However, that would require changing the default search code to include that additional
-    	        // field by default, which makes things more complicated. Besides, this literal string match on title
-    	        // is useful primarily for file entries where the title happens to represent the file name in the entry.
-    	        // For all other entry types, this isn't useful, so the extra field isn't generic enough to be included
-    	        // in all queries by default.
-    	        Field lowercasedSingleTermTitleField = FieldFactory.createField(Constants.TITLE_FIELD, title.toLowerCase(), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS, false);
-    	        		
+            	if (!fieldsOnly) {
+            		Field allTextField = BasicIndexUtils.allTextField(title);
+            		doc.add(allTextField);
+            	}
+            	Field titleField = new Field(Constants.TITLE_FIELD, title, Field.Store.YES, Field.Index.ANALYZED);
+    	        Field sortTitleField = new Field(Constants.SORT_TITLE_FIELD, title.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+    	        Field title1Field = new Field(Constants.TITLE1_FIELD, title.substring(0, 1), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	        doc.add(titleField);
     	        doc.add(sortTitleField);
                 doc.add(title1Field);
-                doc.add(lowercasedSingleTermTitleField);
                 if (entry instanceof Binder) {
                 	Binder binder = (Binder)entry;
                 	//Special case: user workspaces and top workspace don't show parent folder 
@@ -148,9 +127,9 @@ public class EntityIndexUtils {
                 		extendedTitle = title + " (" + entry.getParentBinder().getTitle() + ")";
                 	} 
                 	
-        	        Field extendedTitleField = FieldFactory.createFullTextFieldIndexed(Constants.EXTENDED_TITLE_FIELD, extendedTitle, true);
+        	        Field extendedTitleField = new Field(Constants.EXTENDED_TITLE_FIELD, extendedTitle, Field.Store.YES, Field.Index.ANALYZED);
         	        doc.add(extendedTitleField);
-        	        Field binderSortTitleField = FieldFactory.createFieldStoredNotAnalyzed(Constants.BINDER_SORT_TITLE_FIELD, title.toLowerCase());
+        	        Field binderSortTitleField = new Field(Constants.BINDER_SORT_TITLE_FIELD, title.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	        doc.add(binderSortTitleField);
                 }
             }
@@ -166,10 +145,14 @@ public class EntityIndexUtils {
 			title = title.trim();
 			if (title.length() > 0) {
 				normTitle = title;
-				Field bucketTitleField = FieldFactory.createFieldStoredNotAnalyzed(Constants.NORM_TITLE, normTitle.toLowerCase());
+				Field bucketTitleField = new Field(
+						Constants.NORM_TITLE, normTitle.toLowerCase(),
+						Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 				doc.add(bucketTitleField);
 				// now add it without lowercasing
-				bucketTitleField = FieldFactory.createFieldStoredNotAnalyzed(Constants.NORM_TITLE_FIELD, normTitle);
+				bucketTitleField = new Field(
+						Constants.NORM_TITLE_FIELD, normTitle,
+						Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 				doc.add(bucketTitleField);
 			}
 		}
@@ -183,7 +166,7 @@ public class EntityIndexUtils {
     			//rateField.setDoubleValue(entry.getAverageRating().getAverage());
     			// With rating, there is always only one digit to the left of the decimal point.
     			// So we don't need to pad the number.
-    			Field rateField = FieldFactory.createFieldStoredNotAnalyzed(RATING_FIELD, entry.getAverageRating().getAverage().toString());
+    			Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        	doc.add(rateField);
     		}
         } catch (Exception ex) {};
@@ -239,7 +222,7 @@ public class EntityIndexUtils {
       	}
       	
       	// Add the preDeleted flag itself.
-    	Field field = FieldFactory.createFieldNotStoredNotAnalyzed(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE));
+    	Field field = new Field(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
     	doc.add(field);
     	
     	// Is entry preDeleted?
@@ -247,24 +230,24 @@ public class EntityIndexUtils {
     		// Yes!  If we know who it was deleted by by...
         	if (null != preDeletedBy) {
         		// ...add both their ID and title to the index.
-        		field = FieldFactory.createFieldStoredNotAnalyzed(Constants.PRE_DELETED_BY_ID_FIELD, String.valueOf(preDeletedBy.getId().intValue()));
+        		field = new Field(Constants.PRE_DELETED_BY_ID_FIELD, String.valueOf(preDeletedBy.getId().intValue()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         		doc.add(field);
         		
-            	field = FieldFactory.createFieldStoredNotAnalyzed(Constants.PRE_DELETED_BY_TITLE_FIELD, preDeletedBy.getTitle());
+            	field = new Field(Constants.PRE_DELETED_BY_TITLE_FIELD, preDeletedBy.getTitle(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             	doc.add(field);
         	}
         	
         	// If we know when the item was deleted...
         	if (null != preDeletedWhen) {
         		// ...add it to the index
-        		field = FieldFactory.createFieldStoredNotAnalyzed(Constants.PRE_DELETED_WHEN_FIELD, String.valueOf(preDeletedWhen));
+        		field = new Field(Constants.PRE_DELETED_WHEN_FIELD, String.valueOf(preDeletedWhen), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         		doc.add(field);
         	}
         	
         	// If we know where the item was deleted from... 
         	if (null != preDeletedFrom) {
         		// ...add it to the index
-        		field = FieldFactory.createFieldStoredNotAnalyzed(Constants.PRE_DELETED_FROM_FIELD, preDeletedFrom);
+        		field = new Field(Constants.PRE_DELETED_FROM_FIELD, preDeletedFrom, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         		doc.add(field);
         	}
     	}
@@ -286,104 +269,78 @@ public class EntityIndexUtils {
     }
     
     public static void addEntityType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-      	Field eField = FieldFactory.createFieldStoredNotAnalyzed(ENTITY_FIELD, entry.getEntityType().name());
+      	Field eField = new Field(ENTITY_FIELD, entry.getEntityType().name(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
        	doc.add(eField);
     }
     public static void addDefinitionType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	Integer definitionType = entry.getDefinitionType();
     	if (definitionType == null) definitionType = 0;
-      	Field eField = FieldFactory.createFieldStoredNotAnalyzed(DEFINITION_TYPE_FIELD, definitionType.toString());
+      	Field eField = new Field(DEFINITION_TYPE_FIELD, definitionType.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
        	doc.add(eField);
     }
     public static void addEntryType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         // Add the entry type (entry or reply)
     	if (entry instanceof FolderEntry) {
 	        if (((FolderEntry)entry).isTop()) {
-	        	Field entryTypeField = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY);
+	        	Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        	doc.add(entryTypeField);
 	        } else {
-	        	Field entryTypeField = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_REPLY);
+	        	Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_REPLY, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        	doc.add(entryTypeField);
 	        	
 	        	FolderEntry folderEntry = (FolderEntry)entry;
-	        	Field entryParentEntryId = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_PARENT_ID_FIELD, folderEntry.getParentEntry().getId().toString());
+	        	Field entryParentEntryId = new Field(Constants.ENTRY_PARENT_ID_FIELD, folderEntry.getParentEntry().getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        	doc.add(entryParentEntryId);
-	        	Field entryTopEntryId = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_TOP_ENTRY_ID_FIELD, folderEntry.getTopEntry().getId().toString());
+	        	Field entryTopEntryId = new Field(Constants.ENTRY_TOP_ENTRY_ID_FIELD, folderEntry.getTopEntry().getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        	doc.add(entryTopEntryId);
 	        	String topEntryTitle = folderEntry.getTopEntry().getTitle().toString();
 	        	if (topEntryTitle.trim().equals("")) topEntryTitle = EntityIndexUtils.DEFAULT_NOTITLE_TITLE;
-	        	Field entryTopEntryTitle = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_TOP_ENTRY_TITLE_FIELD, topEntryTitle);
+	        	Field entryTopEntryTitle = new Field(Constants.ENTRY_TOP_ENTRY_TITLE_FIELD, topEntryTitle, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        	doc.add(entryTopEntryTitle);
 	        }
     	} else if (entry instanceof User) {
-        	Field entryTypeField = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER);
+        	Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	doc.add(entryTypeField);
     	} else if (entry instanceof Group) {
-    		Field entryTypeField = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP);
+    		Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     		doc.add(entryTypeField);
     	} else if (entry instanceof Application) {
-        	Field entryTypeField = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_APPLICATION);
+        	Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_APPLICATION, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	doc.add(entryTypeField);
     	} else if (entry instanceof ApplicationGroup) {
-    		Field entryTypeField = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_APPLICATION_GROUP);
+    		Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_APPLICATION_GROUP, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     		doc.add(entryTypeField);
     	} 
    }
-    
-    public static void addEntryPath(Document doc, Entry entry) {
-    	Binder parent = entry.getParentBinder();
-    	if(parent == null) return;
-    	if(!parent.isLibrary()) return;
-    	Set<FileAttachment> fAtts = entry.getFileAttachments();
-    	if(fAtts.size() != 1) return;
-    	String fileName = fAtts.iterator().next().getFileItem().getName();
-		Field sortPath = FieldFactory.createFieldNotStoredNotAnalyzed(SORT_ENTITY_PATH, parent.getPathName().toLowerCase() + "/" + fileName.toLowerCase());
-		doc.add(sortPath);
-    }
-
-    public static void addHiddenSearchField(Document doc, DefinableEntity entry, boolean hidden) {
-    	if (hidden) {
-	      	Field eField = FieldFactory.createFieldStoredNotAnalyzed(HIDDEN_FROM_SEARCH_FIELD, "true");
-	       	doc.add(eField);
-    	}
-    }
-
-    public static void addHiddenFindUserField(Document doc, DefinableEntity entry, boolean hidden) {
-    	if (hidden) {
-	      	Field eField = FieldFactory.createFieldStoredNotAnalyzed(HIDDEN_FROM_FIND_USER_FIELD, "true");
-	       	doc.add(eField);
-    	}
-    }
-
     public static void addCreation(Document doc, HistoryStamp stamp, boolean fieldsOnly) {
     	if (stamp == null) return;
     	Date creationDate = stamp.getDate();
     	Principal principal = stamp.getPrincipal();
     	if (creationDate != null) {		
-    		Field creationDateField = FieldFactory.createFieldStoredNotAnalyzed(CREATION_DATE_FIELD, DateTools.dateToString(creationDate,DateTools.Resolution.SECOND));
+    		Field creationDateField = new Field(CREATION_DATE_FIELD, DateTools.dateToString(creationDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     		doc.add(creationDateField);
     		//index the YYYYMMDD string
     		String dayString = formatDayString(creationDate);
-    		Field creationDayField = FieldFactory.createFieldStoredNotAnalyzed(CREATION_DAY_FIELD, dayString);
+    		Field creationDayField = new Field(CREATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     		doc.add(creationDayField);
     		// index the YYYYMM string
     		String yearMonthString = dayString.substring(0,6);
-    		Field creationYearMonthField = FieldFactory.createFieldStoredNotAnalyzed(CREATION_YEAR_MONTH_FIELD, yearMonthString);
+    		Field creationYearMonthField = new Field(CREATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     		doc.add(creationYearMonthField);
     		// index the YYYY string
     		String yearString = dayString.substring(0,4);
-    		Field creationYearField = FieldFactory.createFieldStoredNotAnalyzed(CREATION_YEAR_FIELD, yearString);
+    		Field creationYearField = new Field(CREATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     		doc.add(creationYearField);
     	}
     	//Add the id of the creator (no, not that one...)
     	if (principal != null) {
-            Field creationIdField = FieldFactory.createFieldStoredNotAnalyzed(CREATORID_FIELD, principal.getId().toString());
+            Field creationIdField = new Field(CREATORID_FIELD, principal.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(creationIdField);
-            Field creationNameField = FieldFactory.createFieldStoredNotAnalyzed(CREATOR_NAME_FIELD, principal.getName().toString());
+            Field creationNameField = new Field(CREATOR_NAME_FIELD, principal.getName().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(creationNameField);
-            Field creationTitleField = FieldFactory.createFullTextFieldIndexed(CREATOR_TITLE_FIELD, principal.getTitle().toString(), true);
+            Field creationTitleField = new Field(CREATOR_TITLE_FIELD, principal.getTitle().toString(), Field.Store.YES, Field.Index.ANALYZED);
             doc.add(creationTitleField);
-            Field creationSortTitleField = FieldFactory.createFieldStoredNotAnalyzed(SORT_CREATOR_TITLE_FIELD, principal.getTitle().toString().toLowerCase());
+            Field creationSortTitleField = new Field(SORT_CREATOR_TITLE_FIELD, principal.getTitle().toString().toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(creationSortTitleField);
         }
     }
@@ -394,28 +351,28 @@ public class EntityIndexUtils {
      	if (modDate != null) {
      	
      		// Add modification-date field
-     		Field modificationDateField = FieldFactory.createFieldStoredNotAnalyzed(MODIFICATION_DATE_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND));
+     		Field modificationDateField = new Field(MODIFICATION_DATE_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
      		doc.add(modificationDateField);        
      		// index the YYYYMMDD string
      		String dayString = formatDayString(modDate);
-     		Field modificationDayField = FieldFactory.createFieldStoredNotAnalyzed(MODIFICATION_DAY_FIELD, dayString);
+     		Field modificationDayField = new Field(MODIFICATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
      		doc.add(modificationDayField);
      		// index the YYYYMM string
      		String yearMonthString = dayString.substring(0,6);
-     		Field modificationYearMonthField = FieldFactory.createFieldStoredNotAnalyzed(MODIFICATION_YEAR_MONTH_FIELD, yearMonthString);
+     		Field modificationYearMonthField = new Field(MODIFICATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
      		doc.add(modificationYearMonthField);
      		// index the YYYY string
      		String yearString = dayString.substring(0,4);
-     		Field modificationYearField = FieldFactory.createFieldStoredNotAnalyzed(MODIFICATION_YEAR_FIELD, yearString);
+     		Field modificationYearField = new Field(MODIFICATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
      		doc.add(modificationYearField);
      	}
        	//Add the id of the modifier 
         if (principal != null) {
-        	Field modificationIdField = FieldFactory.createFieldStoredNotAnalyzed(MODIFICATIONID_FIELD, principal.getId().toString());
+        	Field modificationIdField = new Field(MODIFICATIONID_FIELD, principal.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(modificationIdField);
-            Field modificationNameField = FieldFactory.createFieldStoredNotAnalyzed(MODIFICATION_NAME_FIELD, principal.getName().toString());
+            Field modificationNameField = new Field(MODIFICATION_NAME_FIELD, principal.getName().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(modificationNameField);
-            Field modificationTitleField = FieldFactory.createFullTextFieldIndexed(MODIFICATION_TITLE_FIELD, principal.getTitle().toString(), true);
+            Field modificationTitleField = new Field(MODIFICATION_TITLE_FIELD, principal.getTitle().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(modificationTitleField);
         }   
    } 
@@ -425,7 +382,7 @@ public class EntityIndexUtils {
 			HistoryStamp historyStamp = ((FolderEntry)entry).getReservation();
 			if (historyStamp != null) {
 				Principal lockedByUser = historyStamp.getPrincipal();
-	        	Field reservedField = FieldFactory.createFieldStoredNotAnalyzed(RESERVEDBY_ID_FIELD, lockedByUser.getId().toString());
+	        	Field reservedField = new Field(RESERVEDBY_ID_FIELD, lockedByUser.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	            doc.add(reservedField);
 			}
     	}
@@ -433,11 +390,11 @@ public class EntityIndexUtils {
      
     public static void addOwner(Document doc, Principal owner, boolean fieldsOnly) {
         if (owner != null) {
-        	Field ownerIdField = FieldFactory.createFieldStoredNotAnalyzed(OWNERID_FIELD, owner.getId().toString());
+        	Field ownerIdField = new Field(OWNERID_FIELD, owner.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(ownerIdField);
-            Field ownerNameField = FieldFactory.createFieldStoredNotAnalyzed(OWNER_NAME_FIELD, owner.getName().toString());
+            Field ownerNameField = new Field(OWNER_NAME_FIELD, owner.getName().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(ownerNameField);
-            Field ownerTitleField = FieldFactory.createFieldStoredNotAnalyzed(OWNER_TITLE_FIELD, owner.getTitle().toString());
+            Field ownerTitleField = new Field(OWNER_TITLE_FIELD, owner.getTitle().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(ownerTitleField);
         }   
    } 
@@ -446,26 +403,27 @@ public class EntityIndexUtils {
     	// Add the workflow fields
     	if (entry instanceof WorkflowSupport) {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
-			Set workflowStates = wEntry.getWorkflowStates();
+    		Set workflowStates = wEntry.getWorkflowStates();
     		if (workflowStates != null) {
     			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
     				WorkflowState ws = (WorkflowState)iter.next();
-    				Field workflowStateField = FieldFactory.createFieldStoredNotAnalyzed(WORKFLOW_STATE_FIELD, 
-   						ws.getState());
+    				Field workflowStateField = new Field(WORKFLOW_STATE_FIELD, 
+   						ws.getState(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     				String workflowCaption = WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState());
-    				Field workflowStateCaptionField = FieldFactory.createFieldStoredNotAnalyzed(WORKFLOW_STATE_CAPTION_FIELD, 
-    						workflowCaption);
+    				Field workflowStateCaptionField = new Field(WORKFLOW_STATE_CAPTION_FIELD, 
+    						workflowCaption, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     				//Index the workflow state
     				doc.add(workflowStateField);
     				doc.add(workflowStateCaptionField);
     				
-    				//Add the caption to the generalText field
-    				Field generalTextField = BasicIndexUtils.generalTextField(workflowCaption);
-            		doc.add(generalTextField);
+    				//Add the caption to the allText field
+    				Field allTextField = BasicIndexUtils.allTextField(workflowCaption);
+            		doc.add(allTextField);
    				
     				Definition def = ws.getDefinition();
     				if (def != null) {
-    					Field workflowProcessField = FieldFactory.createFieldNotStoredNotAnalyzed(WORKFLOW_PROCESS_FIELD, def.getId());
+    					Field workflowProcessField = new Field(WORKFLOW_PROCESS_FIELD, 
+    							def.getId(), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
     					//	Index the workflow title (which is always the id of the workflow definition)
     					doc.add(workflowProcessField);
     				}
@@ -483,6 +441,7 @@ public class EntityIndexUtils {
 	 * @param doc
 	 * @param entry
 	 */
+    @SuppressWarnings("unchecked")
 	public static void addEvents(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	int count = 0;
 		Map customAttrs = entry.getCustomAttributes();
@@ -491,34 +450,31 @@ public class EntityIndexUtils {
 		// look through the custom attributes of this entry for any of type EVENT, DATE, or DATE_TIME
 
 		Set entryEventsDates = new HashSet();
-		org.dom4j.Document defDoc = entry.getEntryDefDoc();
 		while (attIt.hasNext()) {
 			CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
 			if (att.getValueType() == CustomAttribute.EVENT) {
-				//See if this attribute is still in the definition
-				Element attrEle = DefinitionHelper.findAttribute(att.getName(), defDoc);
-				if (attrEle != null) {
-					// set the event name to event + count
-					Event event = (Event)att.getValue();
-					List recurencesDates = event.getAllRecurrenceDates();
-					List allEventDays = Event.getEventDaysFromRecurrencesDates(recurencesDates);
-					entryEventsDates.addAll(allEventDays);
-									
-					if (att.getValue() != null) {
-						doc.add(FieldFactory.createFieldStoredNotAnalyzed(EVENT_FIELD + count, att.getName()));
-						doc.add(FieldFactory.createFieldStoredNotAnalyzed(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_ID, event.getId()));
-						doc.add(getEntryEventDaysField(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_DATES, new HashSet(allEventDays)));
-						count++;
-					}
-					doc.add(getRecurrenceDatesField(event, recurencesDates));
+				// set the event name to event + count
+				Event event = (Event)att.getValue();
+				List recurencesDates = event.getAllRecurrenceDates();
+				List allEventDays = Event.getEventDaysFromRecurrencesDates(recurencesDates);
+				entryEventsDates.addAll(allEventDays);
+								
+				if (att.getValue() != null) {
+					doc.add(new Field(EVENT_FIELD + count, att.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+					doc.add(new Field(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_ID, event.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+					doc.add(getEntryEventDaysField(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_DATES, new HashSet(allEventDays)));
+					count++;
 				}
+				doc.add(getRecurrenceDatesField(event, recurencesDates));
 			} else if (att.getValueType() == CustomAttribute.DATE) {
 				Date dateValue = ((Date)att.getValue());
 				if (att.getName().equals(TaskHelper.TASK_COMPLETED_DATE_ATTRIBUTE)) {
 					doc.add(
-							FieldFactory.createFieldStoredNotAnalyzed(
+						new Field(
 							TASK_COMPLETED_DATE_FIELD,
-							DateTools.dateToString(dateValue, DateTools.Resolution.SECOND)));
+							DateTools.dateToString(dateValue, DateTools.Resolution.SECOND),
+							Field.Store.YES,
+							Field.Index.NOT_ANALYZED_NO_NORMS));
 				}
 				else {
 					Calendar dateAttr = new GregorianCalendar();
@@ -531,7 +487,7 @@ public class EntityIndexUtils {
 		doc.add(getEntryEventDaysField(EVENT_DATES_FIELD, entryEventsDates));
 		
 		// Add event count field
-    	Field eventCountField = FieldFactory.createFieldStoredNotAnalyzed(EVENT_COUNT_FIELD, Integer.toString(count));
+    	Field eventCountField = new Field(EVENT_COUNT_FIELD, Integer.toString(count), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	doc.add(eventCountField);
     }
     
@@ -550,7 +506,7 @@ public class EntityIndexUtils {
 		if (sb.length() > 0)
 			sb.deleteCharAt(sb.length() - 1);
 		
-		return FieldFactory.createField(fieldName, sb.toString(), Field.Store.YES, Field.Index.ANALYZED_NO_NORMS);
+		return new Field(fieldName, sb.toString(), Field.Store.YES, Field.Index.ANALYZED_NO_NORMS);
 	}
 	
 	private static Field getRecurrenceDatesField(Event event, List recurencesDates) {
@@ -566,19 +522,19 @@ public class EntityIndexUtils {
 		if (sb.length() > 0)
 			sb.deleteCharAt(sb.length() - 1);
 
-		return FieldFactory.createFieldStoredNotAnalyzed(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_RECURRENCE_DATES_FIELD, sb.toString());
+		return new Field(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_RECURRENCE_DATES_FIELD, sb.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	}
         
     public static void addCommandDefinition(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         if (entry.getEntryDefId() != null) {
-        	Field cdefField = FieldFactory.createFieldStoredNotAnalyzed(COMMAND_DEFINITION_FIELD, entry.getEntryDefId());
+        	Field cdefField = new Field(COMMAND_DEFINITION_FIELD, entry.getEntryDefId(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(cdefField);
         }
     }
         
     public static void addCreatedWithDefinition(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         if (entry.getCreatedWithDefinitionId() != null) {
-        	Field field = FieldFactory.createFieldStoredNotAnalyzed(CREATED_WITH_DEFINITION_FIELD, entry.getCreatedWithDefinitionId());
+        	Field field = new Field(CREATED_WITH_DEFINITION_FIELD, entry.getCreatedWithDefinitionId(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(field);
         }
     }
@@ -592,7 +548,7 @@ public class EntityIndexUtils {
 				Definition def = (Definition) folderEntryDefinitions.get(i);
 				entryDefs += " " + def.getId();
 			}    		
-        	Field cdefField = FieldFactory.createFieldNotStoredNotAnalyzed(ENTRY_DEFINITIONS_FIELD, entryDefs);
+        	Field cdefField = new Field(ENTRY_DEFINITIONS_FIELD, entryDefs, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(cdefField);
     	}
     }
@@ -602,7 +558,7 @@ public class EntityIndexUtils {
         	org.dom4j.Document def = entry.getEntryDefDoc();
         	String family = DefinitionUtils.getFamily(def);
         	if (Validator.isNotNull(family)) {
-      			Field eField = FieldFactory.createFieldStoredNotAnalyzed(FAMILY_FIELD, family);
+      			Field eField = new Field(FAMILY_FIELD, family, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	       	doc.add(eField);	
         	}
         }
@@ -611,24 +567,20 @@ public class EntityIndexUtils {
 
      public static void addDocId(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docIdField = FieldFactory.createFieldStoredNotAnalyzed(DOCID_FIELD, entry.getId().toString());
+        Field docIdField = new Field(DOCID_FIELD, entry.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         doc.add(docIdField);
-       	
-       	if(entry instanceof Folder) { // Folder gets another field containing its ID value, but this time as a numeric field.
-       		doc.add(new NumericField(FOLDER_ID_FIELD).setLongValue(entry.getId().longValue()));
-       	}
     }
 
     public static void addParentBinder(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	Field binderIdField;
     	if (entry instanceof Binder) {
     		if (entry.getParentBinder() == null) return;
-       		binderIdField = FieldFactory.createFieldStoredNotAnalyzed(BINDERS_PARENT_ID_FIELD, entry.getParentBinder().getId().toString());
+       		binderIdField = new Field(BINDERS_PARENT_ID_FIELD, entry.getParentBinder().getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
        	    		
     	} else if (entry != null) {
-    		binderIdField = FieldFactory.createFieldStoredNotAnalyzed(BINDER_ID_FIELD, entry.getParentBinder().getId().toString());
+    		binderIdField = new Field(BINDER_ID_FIELD, entry.getParentBinder().getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	} else {
-    		binderIdField = FieldFactory.createFieldStoredNotAnalyzed(BINDER_ID_FIELD, "");
+    		binderIdField = new Field(BINDER_ID_FIELD, "", Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	}
        	doc.add(binderIdField);
     }   
@@ -647,8 +599,8 @@ public class EntityIndexUtils {
     }
     public static void addTeamMembership(Document doc, Set<Long> ids, boolean fieldsOnly) {
     	if ((ids == null) || ids.isEmpty()) return;
-		doc.add(FieldFactory.createField(TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsString(ids), Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
-		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(IS_TEAM_FIELD, "true"));
+		doc.add(new Field(TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsString(ids), Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
+		doc.add(new Field(IS_TEAM_FIELD, "true", Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
    	
     }
     // Get ids for folder read access.  Replace owner indicator with search owner search flag. Replace team indicator with team owner search flag
@@ -669,26 +621,22 @@ public class EntityIndexUtils {
     		//Add in the groups of the owner of the binder
     		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
          	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-         	Set<Long> userGroupIds = profileDao.getApplicationLevelGroupMembership(binder.getOwner().getId(), zoneId);
+         	Set<Long> userGroupIds = profileDao.getAllGroupMembership(binder.getOwner().getId(), zoneId);
     		teamList.addAll(userGroupIds);
     	}
     	String ids = LongIdUtil.getIdsAsString(teamList);
     	if (teamList.contains(allUsersId)) {
     		boolean personal = Utils.isWorkareaInProfilesTree(binder);
-	    	if (!personal) {
-	    		ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL + " " + Constants.READ_ACL_ALL;
-	    	} else {
-	    		ids = ids.trim() + " " + Constants.READ_ACL_ALL;
-	    	}
+	    	if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
     	}
     	return ids;
     }
-    private static String getEntryAclString(Binder binder, Entry entry) {
+    public static String getEntryAclString(Binder binder, Entry entry) {
      	if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
     		//This is a reply to a folder entry. Get the acl of the top entry
     		entry = ((FolderEntry)entry).getTopEntry();
     	}
-    	if (entry.hasEntryAcl() || entry.hasEntryExternalAcl()) {
+    	if (entry.hasEntryAcl()) {
 			Set<String> entryIds = AccessUtils.getReadAccessIds(entry);
 	   		String ids = LongIdUtil.getIdsAsString(entryIds);
 	        return ids.trim();
@@ -706,184 +654,27 @@ public class EntityIndexUtils {
     	}
     }
     
-    //Routine to add the sharing ids into the index doc
-    //Returns true if sharing ids were added, false if not
-    private static void addSharingIds(Document doc, DefinableEntity entity) {
-    	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
-     	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-    	String entryAclField, teamAclField;
-    	if (entity instanceof FolderEntry) {
-    		entryAclField = Constants.ENTRY_ACL_FIELD;
-    		teamAclField = Constants.TEAM_ACL_FIELD;
-         	entityIdentifiers.add(entity.getEntityIdentifier());
-    	} else if(entity instanceof Binder) {
-    		entryAclField = Constants.FOLDER_ACL_FIELD;
-    		teamAclField = Constants.TEAM_ACL_FIELD;
-    		WorkArea workArea = (Binder) entity;
-        	entityIdentifiers.add(entity.getEntityIdentifier());
-        	if (workArea.isAclExternallyControlled()) {
-            	while (workArea.isExtFunctionMembershipInherited()) {
-            		workArea = workArea.getParentWorkArea();
-            		if(workArea instanceof DefinableEntity) {
-            			entityIdentifiers.add(((DefinableEntity)workArea).getEntityIdentifier());
-            		}
-            	}
-        	} else {
-            	while (workArea.isFunctionMembershipInherited()) {
-            		workArea = workArea.getParentWorkArea();
-            		if(workArea instanceof DefinableEntity) {
-            			entityIdentifiers.add(((DefinableEntity)workArea).getEntityIdentifier());
-            		}
-            	}
-        	}
-    	}
-    	else {
-    		return; // sharing not supported
-    	}
-    	List<Long> sharingIds = new ArrayList<Long>();
-    	List<Long> sharingTeamIds = new ArrayList<Long>();
-    	@SuppressWarnings("unused")
-		Long allUsersId = Utils.getAllUsersGroupId();
-    	@SuppressWarnings("unused")
-		boolean personal = Utils.isWorkareaInProfilesTree((WorkArea)entity);
-     	Map<RecipientType, Set<Long>> idMap = profileDao.getRecipientIdsWithGrantedRightToSharedEntities(
-     			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
-     	for (Long id : idMap.get(RecipientType.user)) {
-     		Field f = FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, id.toString());
-     		if (!doc.getFields().contains(f)) {
-     			doc.add(f); 
-     			sharingIds.add(id);
-     		}
-     	}
-     	for (Long id : idMap.get(RecipientType.group)) {
- 			Field f = FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, id.toString());
- 			if (!doc.getFields().contains(f)) {
- 				doc.add(f); 
- 				sharingIds.add(id);
- 			}
-     	}
-     	for (Long id : idMap.get(RecipientType.team)) {
-     		Field f = FieldFactory.createFieldNotStoredNotAnalyzed(teamAclField, id.toString());
-     		if (!doc.getFields().contains(f)) {
-     			doc.add(f); 
-     			sharingTeamIds.add(id);
-     		}
-     	}
-     	if (!sharingIds.isEmpty() || !sharingTeamIds.isEmpty()) {
-     		//Indicate that this entity has been shared 
-     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARED, Constants.SHARED_IS_SHARED));
-	     	for (Long id : sharingIds) {
-	     		//Indicate that this entity has been shared 
-	     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARED_IDS, String.valueOf(id)));
-	     	}
-	     	for (Long id : sharingTeamIds) {
-	     		//Indicate that this entity has been shared 
-	     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARED_TEAM_IDS, String.valueOf(id)));
-	     	}
-     	}
-     	//Add in the original sharer id
-     	entityIdentifiers = new HashSet<EntityIdentifier>();
-     	entityIdentifiers.add(entity.getEntityIdentifier());
-     	Set<Long> sharerIds = profileDao.getSharerIdsToSharedEntities(entityIdentifiers);
-     	for (Long id : sharerIds) {
-     		//Indicate that this entity has been shared by someone
-     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARE_CREATOR, String.valueOf(id)));
-     	}
-    }
-    
-    //Routine to add the sharing ids into the index doc
-    private static void addSharingIds(org.dom4j.Element parent, DefinableEntity entity) {
-    	String entryAclField, teamAclField;
-    	if (entity instanceof FolderEntry) {
-    		entryAclField = Constants.ENTRY_ACL_FIELD;
-    		teamAclField = Constants.TEAM_ACL_FIELD;
-    	} else {
-    		entryAclField = Constants.FOLDER_ACL_FIELD;
-    		teamAclField = Constants.TEAM_ACL_FIELD;
-    	}
-    	Long allUsersId = Utils.getAllUsersGroupId();
-    	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
-    	entityIdentifiers.add(entity.getEntityIdentifier());
-     	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-     	Map<RecipientType, Set<Long>> idMap = profileDao.getRecipientIdsWithGrantedRightToSharedEntities(
-     			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
-     	org.dom4j.Element aclEle = (org.dom4j.Element) parent.selectSingleNode(entryAclField);
-     	if (!idMap.get(RecipientType.user).isEmpty() || !idMap.get(RecipientType.group).isEmpty()) {
-     		if (aclEle == null) {
-     			aclEle = parent.addElement(entryAclField);
-     		}
-	     	String text = aclEle.getText().trim();
-	     	for (Long id : idMap.get(RecipientType.user)) {
-	     		text += " " + id.toString(); 
-	     	}
-	     	for (Long id : idMap.get(RecipientType.group)) {
-	     		if (id.equals(allUsersId)) {
-	     			text += " " + Constants.READ_ACL_ALL; 
-	     		} else {
-	     			text += " " + id.toString(); 
-	     		}
-	     	}
-	     	aclEle.setText(text);
-     	}
-     	aclEle = (org.dom4j.Element) parent.selectSingleNode(teamAclField);
-     	if (!idMap.get(RecipientType.team).isEmpty()) {
-     		if (aclEle == null) {
-     			aclEle = parent.addElement(teamAclField);
-     		}
-	     	String text = aclEle.getText().trim();
-	     	for (Long id : idMap.get(RecipientType.team)) {
-	     		text += " " + id.toString(); 
-	     	}
-	     	aclEle.setText(text);
-     	}
-    }
-    
-    //Routines to add the net folder root acl into the index doc
-    private static void addRootAcl(Document doc, DefinableEntity entity) {
-    	Set<String> rootIds = AccessUtils.getRootIds(entity);
-    	for (String id : rootIds) {
-    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ROOT_FOLDER_ACL_FIELD, id));
-    	}
-    }
-    private static void addRootAcl(org.dom4j.Element parent, DefinableEntity entity) {
-    	Set<String> rootIds = AccessUtils.getRootIds(entity);
-      	String ids = LongIdUtil.getIdsAsString(rootIds);
-    	Element acl = parent.addElement(Constants.ROOT_FOLDER_ACL_FIELD);
-   		acl.setText(ids);
-    }
-    
     private static void addEntryAcls(Document doc, Binder binder, Entry entry) {
 		//get real entry access
     	String[] acls = StringUtil.split(getEntryAclString(binder, entry), " ");
     	for(String acl:acls)
-    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
+    		doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		//add entry owner
 		Long owner = entry.getOwnerId();
 		String ownerStr = Constants.EMPTY_ACL_FIELD;
 		if (owner != null) ownerStr = String.valueOf(owner);  
-		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_OWNER_ACL_FIELD, ownerStr));    	
+		doc.add(new Field(Constants.ENTRY_OWNER_ACL_FIELD, ownerStr, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));    	
     }
 
-    @SuppressWarnings("unused")
-	private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
+    private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
     	boolean personal = Utils.isWorkareaInProfilesTree(binder);
 		//get default entry access
-		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL));
+		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		if (!personal) {
-			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL));
+			doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		}
     }
 
-    private static void markEntryAsInheritingAcls(Document doc, Binder binder, Entry entry) {
-    	if(entry instanceof FolderEntry) {
-    		long value = binder.getId().longValue(); // parent folder id
-    		// Currently only the FAMT resource driver exposes files whose ACLs are not stored in Filr.
-    		if(binder.noAclDredgedWithEntries())
-    			value *= -1; // make it negative number
-    		doc.add(new NumericField(Constants.ENTRY_ACL_PARENT_ID_FIELD, Field.Store.YES, true).setLongValue(value));
-    	}
-    }
-    
     //Add acl fields for binder for storage in search engine
     private static void addBinderAcls(Document doc, Binder binder) {
     	addBinderAcls(doc, binder, false);
@@ -892,20 +683,16 @@ public class EntityIndexUtils {
 		//get real binder access
     	String[] acls = StringUtil.split(getFolderAclString(binder, includeTitleAcl), " ");
     	for(String acl:acls)
-    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.FOLDER_ACL_FIELD, acl));
+    		doc.add(new Field(Constants.FOLDER_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		//get team members
     	acls = StringUtil.split(getFolderTeamAclString(binder), " ");
     	for(String acl:acls)
-    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.TEAM_ACL_FIELD, acl));
+    		doc.add(new Field(Constants.TEAM_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		//add binder owner
 		Long owner = binder.getOwnerId();
 		String ownerStr = Constants.EMPTY_ACL_FIELD;
 		if (owner != null) ownerStr = owner.toString();  //TODO fix this
-		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.BINDER_OWNER_ACL_FIELD, ownerStr));    	
-		//Add sharing acls
-		addSharingIds(doc, binder);
-		//Add the net folder root ACL
-		addRootAcl(doc, binder);
+		doc.add(new Field(Constants.BINDER_OWNER_ACL_FIELD, ownerStr, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));    	
     }
     //Add acl fields for binder for storage in dom4j documents.
     //In this case replace owner with real owner in _folderAcl
@@ -924,13 +711,9 @@ public class EntityIndexUtils {
    		acl = parent.addElement(Constants.TEAM_ACL_FIELD);
    		String tms = binder.getTeamMemberString();
    		if (binder.getTeamMemberIds().contains(allUsersId)) {
-   			tms = tms + " " + Constants.READ_ACL_GLOBAL + " " + Constants.READ_ACL_ALL;
+   			tms = tms + " " + Constants.READ_ACL_GLOBAL;
    		}
    		acl.setText(tms);
-   		//Add sharing ids
-   		addSharingIds(parent, binder);
-   		//Add root acl
-   		addRootAcl(parent, binder);
     }
     
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
@@ -939,10 +722,9 @@ public class EntityIndexUtils {
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly, boolean includeTitleAcl) {
     	boolean personal = Utils.isWorkareaInProfilesTree(binder);
     	//set entryAcl to "all" and 
-		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL));
-		if (!personal) {
-			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL));
-		}
+		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+		if (!personal) 
+			doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		//add binder acls
 		addBinderAcls(doc, binder, includeTitleAcl);
     }
@@ -962,6 +744,7 @@ public class EntityIndexUtils {
    		addBinderAcls(parent, binder, includeTitleAcl);
     }
     private static String getWfEntryAccess(WorkflowSupport wEntry) {
+    	Long allUsersId = Utils.getAllUsersGroupId();
     	boolean personal = false;
     	if (wEntry instanceof FolderEntry) 
     		personal = Utils.isWorkareaInProfilesTree(((FolderEntry)wEntry).getParentBinder());
@@ -1013,7 +796,7 @@ public class EntityIndexUtils {
      	//Add groups this user is in
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
      	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-     	Set<Long> userGroupIds = profileDao.getApplicationLevelGroupMembership(entry.getId(), zoneId);
+     	Set<Long> userGroupIds = profileDao.getAllGroupMembership(entry.getId(), zoneId);
      	ids.addAll(userGroupIds);
      	StringBuffer pIds = new StringBuffer(LongIdUtil.getIdsAsString(ids));
     	//add allUsers
@@ -1028,10 +811,8 @@ public class EntityIndexUtils {
        		if (wEntry.hasAclSet()) {
        			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
 	       		for(String acl:acls) {
-	       			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
+	       			doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 	       		}
-	       		//add binder access
-	    		//addBinderAcls(doc, binder);
        		} else {
 	       		//add entry access. 
 	       		if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
@@ -1043,62 +824,44 @@ public class EntityIndexUtils {
 	       			//This must have been a reply not running a workflow, so check the top entry workflow ACL
 	       			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
 	       			for(String acl:acls) {
-	       				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
+	       				doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 	       			}
-	           		//add binder access
-	        		//addBinderAcls(doc, binder);
-	       		}
-	       		else {
-	       			Entry e = (Entry)entry;
-	       			if(e.isAclExternallyControlled()) {
-	       				// Since the "all important" read right comes from external ACL in this case, 
-	       				// it doesn't matter whether the entry is inheriting its Vibe-managed ACLs from
-	       				// the parent or not. Simply put, Vibe-managed ACLs will play no role here 
-	       				// as far as ACL indexing is concerned, because read right will never originate
-	       				// from the Vibe-managed ACLs.
-	       				if(e.hasEntryExternalAcl()) {
-	       					// This entry has its own external ACL. We need to index it. 
-			       			addEntryAcls(doc, binder, e);
-	       				}
-	       				else {
-	       					// This entry is using the folder's external ACL. If user has read access to the 
-	       					// parent folder through its external ACL, then she shall have same access to this entry. 
-			    			markEntryAsInheritingAcls(doc, binder, e);
-	       				}
-	       			}
-	       			else {
-	       				if (e.hasEntryAcl()) {
-			    			//The entry has its own ACL specified
-			       			addEntryAcls(doc, binder, e);
-			       			if(e.isIncludeFolderAcl()) {
-			       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
-				    			markEntryAsInheritingAcls(doc, binder, e);
-			       			}
-			    		} else {
-			    			// The entry has neither workflow ACL nor its own ACL.
-			    			//The entry is using the folder's ACL
-			    			markEntryAsInheritingAcls(doc, binder, e);
-			    		}
-	       			}
-	       		}
+	       		} else if (((Entry)entry).hasEntryAcl()) {
+	    			//The entry has its own ACL specified
+	       			addEntryAcls(doc, binder, (Entry)entry);
+	    		} else if (!wEntry.hasAclSet() && !((Entry)entry).hasEntryAcl()) {
+	    			//The entry is using the folder's ACL
+	    			addDefaultEntryAcls(doc, binder, (Entry)entry);
+	    		}
        		}
-       		//Finally, add in the sharing acls and root acl
-       		addSharingIds(doc, entry);
-       		addRootAcl(doc, entry);
+       		//add binder access
+    		addBinderAcls(doc, binder);
+
+    	} else if (entry instanceof FolderEntry) {
+    		//(This case may no longer be valid now that workflow is included in the Kablink build)
+       		// Add the Entry_ACL field
+       		if (!((FolderEntry)entry).isTop()) {
+       			//Make sure to use the acl of the top entry since replies use the top entry acl
+       			entry = ((FolderEntry)entry).getTopEntry();
+       		}
+    		if (((Entry)entry).hasEntryAcl()) {
+    			addEntryAcls(doc, binder, (Entry)entry);
+    		} else {
+    			addDefaultEntryAcls(doc, binder, (Entry)entry);
+    		}
+       		//add binder access
+    		addBinderAcls(doc, binder);
+
     	} else if (entry instanceof User) {
             // Add the Entry_ACL field
     		String[] acls = StringUtil.split(getUserEntryAccess((User)entry), " ");
     		for(String acl:acls)
-    			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
+    			doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
            	//add binder access
         	addBinderAcls(doc, binder);
-        	addRootAcl(doc, binder);
 
     	} else {
     		addReadAccess(doc, binder, fieldsOnly);
-       		//Finally, add in the sharing acls and root acl
-       		addSharingIds(doc, binder);
-       		addRootAcl(doc, binder);
     	}
 	}
     //This is used to store the "read" acls in a document that is not a search document
@@ -1121,11 +884,8 @@ public class EntityIndexUtils {
 	       		}
 	       		acl.setText(getWfEntryAccess(wEntry));
 	       	}
-     		//Add sharing ids
-     		addSharingIds(parent, entry);
        		//add binder access
     		addBinderAcls(parent, binder);
-    		addRootAcl(parent, binder);
 
     	} else if (entry instanceof User) {
     		// Add the Entry_ACL field
@@ -1133,11 +893,9 @@ public class EntityIndexUtils {
        		acl.setText(getUserEntryAccess((User)entry));
        		//add binder access
 			addBinderAcls(parent, binder);
-			addRootAcl(parent, binder);
 
     	} else {
      		addReadAccess(parent, binder, fieldsOnly);
-     		addRootAcl(parent, binder);
     	}
 	}
  
@@ -1151,7 +909,7 @@ public class EntityIndexUtils {
     	Map<String, List<Tag>> uniqueTags = TagUtil.splitTags(allTags);
     	List<Tag> pubTags = uniqueTags.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
     	List<Tag> privTags = uniqueTags.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
-    	Field ttfTagField = FieldFactory.createFieldNotStoredNotAnalyzed(Constants.TAG_FIELD_TTF, "");
+    	Field ttfTagField = new Field(Constants.TAG_FIELD_TTF, "", Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
     	// index all the public tags (allTags field and tag_acl field)
 		for (Tag thisTag: pubTags) {
 			tag = thisTag.getName();
@@ -1161,13 +919,13 @@ public class EntityIndexUtils {
 			// this field for the type to find searches, but keep the original fields for 
 			// display.
 			tag = tag.toLowerCase() + ":" + tag; 
-			ttfTagField = FieldFactory.createFieldNotStoredNotAnalyzed(Constants.TAG_FIELD_TTF, tag);
+			ttfTagField = new Field(Constants.TAG_FIELD_TTF, tag, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
 			doc.add(ttfTagField);
 			aclTag = BasicIndexUtils.buildAclTag(thisTag.getName(), Constants.READ_ACL_ALL);
 			aclTags += " " + aclTag;
 			lowerAclTag = BasicIndexUtils.buildAclTag(thisTag.getName().toLowerCase(), Constants.READ_ACL_ALL);
 			aclTag = lowerAclTag + ":" + aclTag;
-			ttfTagField = FieldFactory.createFieldStoredNotAnalyzed(Constants.ACL_TAG_FIELD_TTF, aclTag);
+			ttfTagField = new Field(Constants.ACL_TAG_FIELD_TTF, aclTag, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 			doc.add(ttfTagField);
 		}
 	
@@ -1179,28 +937,27 @@ public class EntityIndexUtils {
 			// type to find fields.
 			lowerAclTag = BasicIndexUtils.buildAclTag(tag.toLowerCase(), thisTag.getOwnerIdentifier().getEntityId().toString());
 			aclTag = lowerAclTag + ":" + aclTag;
-			ttfTagField = FieldFactory.createFieldStoredNotAnalyzed(Constants.ACL_TAG_FIELD_TTF, aclTag);
+			ttfTagField = new Field(Constants.ACL_TAG_FIELD_TTF, aclTag, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 			doc.add(ttfTagField);
 		}
     
-    	Field tagField = FieldFactory.createField(Constants.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.NO);
+    	Field tagField = new Field(Constants.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.NO);
     	doc.add(tagField);
     	String[] its = StringUtil.split(indexableTags, " ");
     	for(String it:its)
-    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.TAG_FIELD, it));
+    		doc.add(new Field(Constants.TAG_FIELD, it, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     	
     	if (!fieldsOnly) {
-    		tagField = BasicIndexUtils.generalTextField(indexableTags);
+    		tagField = BasicIndexUtils.allTextField(indexableTags);
     		doc.add(tagField);
     	}
     	
     	String[] acls = StringUtil.split(aclTags, " ");
     	for(String acl:acls)
-    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ACL_TAG_FIELD, acl));
+    		doc.add(new Field(Constants.ACL_TAG_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
 	
-    @SuppressWarnings("unused")
-	public static void addFileType(Document doc, File textfile, boolean fieldsOnly) {
+    public static void addFileType(Document doc, File textfile, boolean fieldsOnly) {
     	org.dom4j.Document document = null;
        	if ((textfile == null) || textfile.length() <= 0) return;
     	// open the file with an xml reader
@@ -1217,7 +974,7 @@ public class EntityIndexUtils {
 		List nodes = document.selectNodes("/searchml");
 		
       	
-		Field fileTypeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TYPE_FIELD, x.getText());
+		Field fileTypeField = new Field(FILE_TYPE_FIELD, x.getText(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
        	doc.add(fileTypeField);   	
 	
 		
@@ -1244,83 +1001,45 @@ public class EntityIndexUtils {
     }
     //Used to index info about a file with its owner
 	public static void addAttachedFileIds(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-		// Can we determine a primary file attachment for this entry?
-		FileAttachment pfa = MiscUtil.getPrimaryFileAttachment(entry);
-		if (null != pfa) {
-			// Yes!  Add it to the index.
-        	Field primaryFileIDField = FieldFactory.createFieldStoredNotAnalyzed(PRIMARY_FILE_ID_FIELD, pfa.getId());
-        	doc.add(primaryFileIDField); 
-		}
-		
 		Collection<FileAttachment> atts = entry.getFileAttachments();
         for (FileAttachment fa : atts) {
-        	Field fileIDField = FieldFactory.createFieldStoredNotAnalyzed(FILE_ID_FIELD, fa.getId());
+        	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	doc.add(fileIDField); 
-        	Field fileOwnerIdField = FieldFactory.createFieldStoredNotAnalyzed(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()));
+        	Field fileOwnerIdField = new Field(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	doc.add(fileOwnerIdField); 
-        	Field fileSizeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES));
+        	Field fileSizeField = new Field(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	doc.add(fileSizeField); 
-        	Field fileSizeInBytesField = FieldFactory.createFieldStoredNotAnalyzed(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()));
-        	doc.add(fileSizeInBytesField);
-            if (fa.getFileItem().getMd5()!=null) {
-                Field fileMd5Field = FieldFactory.createFieldStoredNotAnalyzed(FILE_MD5_FIELD, fa.getFileItem().getMd5());
-                doc.add(fileMd5Field);
-            }
-        	Field fileVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_VERSION_FIELD, String.valueOf(fa.getHighestVersionNumber()));
-        	doc.add(fileVersionField);
-        	Field fileMajorVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_MAJOR_VERSION_FIELD, String.valueOf(fa.getMajorVersion()));
-        	doc.add(fileMajorVersionField);
-        	Field fileMinorVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_MINOR_VERSION_FIELD, String.valueOf(fa.getMinorVersion()));
-        	doc.add(fileMinorVersionField);
-        	Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
+        	Field fileTimeField = new Field(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	doc.add(fileTimeField); 
-        	Field fileNameFieldStoredIndexed = FieldFactory.createFullTextFieldIndexed(FILENAME_FIELD, fa.getFileItem().getName(), true);
-        	doc.add(fileNameFieldStoredIndexed);
-        	Field fileNameFieldLowerCasedSingleTerm = FieldFactory.createFieldNotStoredNotAnalyzed(FILENAME_FIELD, fa.getFileItem().getName().trim().toLowerCase());
-        	doc.add(fileNameFieldLowerCasedSingleTerm);
+        	Field fileNameField = new Field(FILENAME_FIELD, fa.getFileItem().getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        	doc.add(fileNameField);
         	//create names that groups all the related values together for parsing in displays
-        	//doc.add(new Field(FILE_SIZE_AND_ID_FIELD, fa.getId()+fileSizeField.stringValue()));
-        	doc.add(FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileTimeField.stringValue()));
-        	doc.add(FieldFactory.createFieldStoredNotAnalyzed(FILENAME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fa.getFileItem().getName()));
+        	//doc.add(new Field(FILE_SIZE_AND_ID_FIELD, fa.getId()+fileSizeField.stringValue(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+        	doc.add(new Field(FILE_TIME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileTimeField.stringValue(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+        	doc.add(new Field(FILENAME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileNameField.stringValue(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
         }
         //While we are here, make sure the version agingEnabled flags are set properly
         FileUtils.setFileVersionAging(entry);
     }    
     //Used to index the file.  Only want info about this file, so remove extraneous stuff
     public static void addFileAttachment(Document doc, FileAttachment fa, boolean fieldsOnly) {
-    	Field fileIDField = FieldFactory.createFieldStoredNotAnalyzed(FILE_ID_FIELD, fa.getId());
+    	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	doc.add(fileIDField); 
-    	Field fileOnlyIDField = FieldFactory.createFieldNotStoredNotAnalyzed(FILE_ONLY_ID_FIELD, fa.getId());
-    	doc.add(fileOnlyIDField); 
-    	Field fileOwnerIdField = FieldFactory.createFieldStoredNotAnalyzed(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()));
+    	Field fileOwnerIdField = new Field(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	doc.add(fileOwnerIdField); 
-    	Field fileSizeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES));
+    	Field fileSizeField = new Field(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	doc.add(fileSizeField); 
-    	Field fileSizeInBytesField = FieldFactory.createFieldStoredNotAnalyzed(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()));
-    	doc.add(fileSizeInBytesField); 
-        if (fa.getFileItem().getMd5()!=null) {
-	        Field fileMd5Field = FieldFactory.createFieldStoredNotAnalyzed(FILE_MD5_FIELD, fa.getFileItem().getMd5());
-	       	doc.add(fileMd5Field);
-        }
-        Field fileVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_VERSION_FIELD, String.valueOf(fa.getHighestVersionNumber()));
-       	doc.add(fileVersionField);
-        Field fileMajorVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_MAJOR_VERSION_FIELD, String.valueOf(fa.getMajorVersion()));
-        doc.add(fileMajorVersionField);
-        Field fileMinorVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_MINOR_VERSION_FIELD, String.valueOf(fa.getMinorVersion()));
-        doc.add(fileMinorVersionField);
-        Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
-    	doc.add(fileTimeField);
-    	Field fileNameFieldStoredIndexed = FieldFactory.createFullTextFieldIndexed(FILENAME_FIELD, fa.getFileItem().getName(), true);
-    	doc.add(fileNameFieldStoredIndexed); 
-    	Field fileNameFieldLowerCasedSingleTerm = FieldFactory.createFieldNotStoredNotAnalyzed(FILENAME_FIELD, fa.getFileItem().getName().trim().toLowerCase());
-    	doc.add(fileNameFieldLowerCasedSingleTerm);    	
-      	Field fileDescField = FieldFactory.createFieldStoredNotAnalyzed(FILE_DESCRIPTION_FIELD, fa.getFileItem().getDescription().getText());
+    	Field fileTimeField = new Field(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+    	doc.add(fileTimeField); 
+      	Field fileNameField = new Field(FILENAME_FIELD, fa.getFileItem().getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+       	doc.add(fileNameField);
+      	Field fileDescField = new Field(FILE_DESCRIPTION_FIELD, fa.getFileItem().getDescription().getText(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
        	doc.add(fileDescField);
-      	Field fileStatusField = FieldFactory.createFieldStoredNotAnalyzed(FILE_STATUS_FIELD, String.valueOf(fa.getFileStatus()));
+      	Field fileStatusField = new Field(FILE_STATUS_FIELD, String.valueOf(fa.getFileStatus()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
        	doc.add(fileStatusField);
-       	Field fileExtField = FieldFactory.createFieldStoredNotAnalyzed(FILE_EXT_FIELD, getFileExtension(fa.getFileItem().getName()));
+       	Field fileExtField = new Field(FILE_EXT_FIELD, getFileExtension(fa.getFileItem().getName()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
        	doc.add(fileExtField);   	
-       	Field uniqueField = FieldFactory.createFieldStoredNotAnalyzed(FILE_UNIQUE_FIELD, Boolean.toString(fa.isCurrentlyLocked()));
+       	Field uniqueField = new Field(FILE_UNIQUE_FIELD, Boolean.toString(fa.isCurrentlyLocked()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
        	doc.add(uniqueField);     	
     }
     
@@ -1331,11 +1050,11 @@ public class EntityIndexUtils {
     	return zeros.substring(0, leadingZeros) + number;
     }
     
-    // in the _generalText field for this attachment, just add the contents of
+    // in the _allText field for this attachment, just add the contents of
     // the file attachment, it's name, and it's creator/modifier
-    public static Document addFileAttachmentGeneralText(Document doc) {
+    public static Document addFileAttachmentAllText(Document doc) {
        	String text = "";
-       	doc.removeFields(Constants.GENERAL_TEXT_FIELD);
+       	doc.removeFields(Constants.ALL_TEXT_FIELD);
        	// just in case there wasn't any text from the converted file 
        	// i.e. the file didn't really exist
        	try {
@@ -1346,8 +1065,8 @@ public class EntityIndexUtils {
        	text += " " + doc.getFieldable(Constants.FILE_DESCRIPTION_FIELD).stringValue();
        	text += " " + doc.getFieldable(Constants.MODIFICATION_NAME_FIELD).stringValue();
        	text += " " + doc.getFieldable(Constants.CREATOR_NAME_FIELD).stringValue();
-       	Field generalText = BasicIndexUtils.generalTextField(text);
-       	doc.add(generalText);
+       	Field allText = new Field(Constants.ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
+       	doc.add(allText);
        	return doc;
     }
 
@@ -1361,211 +1080,25 @@ public class EntityIndexUtils {
     	}
     	
     	while (parentBinder != null) {	
-    		Field ancestry = FieldFactory.createFieldStoredNotAnalyzed(ENTRY_ANCESTRY, parentBinder.getId().toString());
+    		Field ancestry = new Field(ENTRY_ANCESTRY, parentBinder.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     		doc.add(ancestry);
     		parentBinder = ((Binder)parentBinder).getParentBinder();
     	}
     }
 
-    public static void addBinderIconName(Document doc, Binder binder, boolean fieldsOnly) {
-		Field path = FieldFactory.createFieldStoredNotAnalyzed(ICON_NAME_FIELD, binder.getIconName());
-		doc.add(path);
-    }
-
     public static void addBinderPath(Document doc, Binder binder, boolean fieldsOnly) {
-		Field path = FieldFactory.createFieldStoredNotIndexed(ENTITY_PATH, binder.getPathName());
+		Field path = new Field(ENTITY_PATH, binder.getPathName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 		doc.add(path);
-		Field sortPath = FieldFactory.createFieldNotStoredNotAnalyzed(SORT_ENTITY_PATH, binder.getPathName().toLowerCase());
-		doc.add(sortPath);
     }
 
     public static void addBinderIsLibrary(Document doc, Binder binder, boolean fieldsOnly) {
-		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_LIBRARY_FIELD, (binder.isLibrary() ? Constants.TRUE : Constants.FALSE));
+		Field path = new Field(IS_LIBRARY_FIELD, (binder.isLibrary() ? Constants.TRUE : Constants.FALSE), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 		doc.add(path);
     }
 
     public static void addBinderIsMirrored(Document doc, Binder binder, boolean fieldsOnly) {
-		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_MIRRORED_FIELD, (binder.isMirrored() ? Constants.TRUE : Constants.FALSE));
+		Field path = new Field(IS_MIRRORED_FIELD, (binder.isMirrored() ? Constants.TRUE : Constants.FALSE), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 		doc.add(path);
     }
 
-    public static void addBinderIsHomeDir(Document doc, Binder binder, boolean fieldsOnly) {
-		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_HOME_DIR_FIELD, (binder.isHomeDir() ? Constants.TRUE : Constants.FALSE));
-		doc.add(path);
-    }
-
-    public static void addBinderIsMyFilesDir(Document doc, Binder binder, boolean fieldsOnly) {
-    	boolean isMyFilesDir = BinderHelper.isBinderMyFilesStorage(binder, false);	// false -> Don't update the My Files Storage binder markers.
-		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_MYFILES_DIR_FIELD, (isMyFilesDir ? Constants.TRUE : Constants.FALSE));
-		doc.add(path);
-    }
-
-    public static void addBinderHasResourceDriver(Document doc, Binder binder, boolean fieldsOnly) {
-    	if ((binder instanceof Folder) && binder.isMirrored()) {
-    		boolean hasResourceDriver = MiscUtil.hasString(binder.getResourceDriverName());
-    		
-    		if ( hasResourceDriver )
-    		{
-    			try
-    			{
-    				ResourceDriver driver;
-    				
-    				hasResourceDriver = false;
-    				
-    				driver = binder.getResourceDriver();
-    				if ( driver != null )
-    				{
-    					String dc = driver.getClass().getName();
-    					if ( MiscUtil.hasString( dc ) && dc.equals( "com.novell.teaming.fi.connection.file.FileResourceDriver" ))
-    					{
-    						hasResourceDriver = MiscUtil.hasString( driver.getRootPath() );
-    					}
-    					
-    					else
-    					{
-	        				ResourceDriverConfig rdConfig;
-	        				String rootPath;
-	        				String proxyName;
-	        				String proxyPwd;
-	    					
-	        				rdConfig = driver.getConfig();
-	
-	        				if ( rdConfig != null )
-	        				{
-		        				// Is everything configured?
-		        				rootPath = rdConfig.getRootPath();
-		        				if ( rootPath != null && rootPath.length() > 0 ) {
-			        				proxyName = rdConfig.getAccountName();
-			        				proxyPwd = rdConfig.getPassword();
-		        					if (proxyName != null && proxyName.length() > 0 &&
-		        					    proxyPwd != null && proxyPwd.length() > 0 )
-			        				{
-			        					// Yes
-			        					hasResourceDriver = true;
-			        				}
-		        					else if ( CloudFolderHelper.isCloudFolder( binder ) )
-		        					{
-			        					// Yes
-			        					hasResourceDriver = true;
-		        					}
-		        				}
-	        				}
-    					}
-    				}
-    			}
-    			catch ( Exception ex )
-    			{
-    				hasResourceDriver = false;
-    			}
-    		}
-    		
-    		Field path = FieldFactory.createFieldStoredNotAnalyzed(HAS_RESOURCE_DRIVER_FIELD, (hasResourceDriver ? Constants.TRUE : Constants.FALSE));
-    		doc.add(path);
-            if (hasResourceDriver) {
-                path = FieldFactory.createFieldStoredNotIndexed(ALLOW_DESKTOP_SYNC_FIELD, (binder.getAllowDesktopAppToSyncData() ? Constants.TRUE : Constants.FALSE));
-                doc.add(path);
-                path = FieldFactory.createFieldStoredNotIndexed(ALLOW_MOBILE_SYNC_FIELD, (binder.getAllowMobileAppsToSyncData() ? Constants.TRUE : Constants.FALSE));
-                doc.add(path);
-            }
-    	}
-    }
-
-    public static void addBinderIsTopFolder(Document doc, Binder binder, boolean fieldsOnly) {
-    	if (binder instanceof Folder) {
-    		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_TOP_FOLDER_FIELD, (((Folder)binder).isTop() ? Constants.TRUE : Constants.FALSE));
-    		doc.add(path);
-    	}
-    }
-    
-    /**
-     * 
-     */
-    public static void addResourceDriverName( Document doc, DefinableEntity entity, boolean fieldsOnly )
-    {
-    	if(entity instanceof Folder) {
-    		Folder folder = (Folder) entity;
-    		if(folder.isMirrored() && folder.getResourceDriverName() != null) {
-        		Field path = FieldFactory.createFieldStoredNotAnalyzed( RESOURCE_DRIVER_NAME_FIELD, folder.getResourceDriverName() );
-        		doc.add( path );    			
-    		}
-    	}
-    	else if(entity instanceof FolderEntry) {
-    		Folder parentFolder = ((FolderEntry)entity).getParentFolder();
-    		if(parentFolder.isMirrored() && parentFolder.getResourceDriverName() != null) {
-        		Field path = FieldFactory.createFieldStoredNotAnalyzed( RESOURCE_DRIVER_NAME_FIELD, parentFolder.getResourceDriverName() );
-        		doc.add( path );    			
-    		}
-    	}
-    }
-    
-    public static void addNetFolderResourcePath( Document doc, DefinableEntity entity, boolean fieldsOnly )
-    {
-    	if(entity instanceof Folder) {
-    		Folder folder = (Folder) entity;
-    		if(folder.isMirrored() && folder.getResourceDriver() != null) {
-    			ResourceDriver driver = getResourceDriverManager().getDriver(folder.getResourceDriverName());
-    			ResourceDriverConfig config = driver.getConfig();
-    			if(ResourceDriverConfig.DriverType.famt == config.getDriverType()) {
-            		Field path = FieldFactory.createFieldStoredNotIndexed(RESOURCE_PATH_FIELD, folder.getResourcePath());
-            		doc.add( path );    			
-    			}
-    		}
-    	}
-    	if(entity instanceof FolderEntry) {
-    		FolderEntry folderEntry = (FolderEntry) entity;
-    		Folder parentFolder = folderEntry.getParentFolder();
-    		if(parentFolder.isMirrored() && parentFolder.getResourceDriverName() != null) {
-    			ResourceDriver driver = getResourceDriverManager().getDriver(parentFolder.getResourceDriverName());
-    			ResourceDriverConfig config = driver.getConfig();
-    			if(ResourceDriverConfig.DriverType.famt == config.getDriverType()) {
-            		Field path = FieldFactory.createFieldStoredNotIndexed(RESOURCE_PATH_FIELD, 
-            				driver.normalizedResourcePath(parentFolder.getResourcePath(), folderEntry.getTitle()));
-            		doc.add( path );    			
-    			}
-     		}
-    	}
-    }
-    
-    /**
-     * Adds whether a binder is a Cloud Folder to the index.  If a
-     * binder is a Cloud Folder, adds the name if it Cloud Folder root
-     * to the index.
-     */
-    public static void addBinderCloudFolderInfo(Document doc, Binder binder, boolean fieldsOnly) {
-		String cfRoot = CloudFolderHelper.getCloudFolderRoot(binder);
-		boolean isCloudFolder = MiscUtil.hasString(cfRoot);
-		if (isCloudFolder) {
-			Field path = FieldFactory.createFieldStoredNotAnalyzed(RESOURCE_DRIVER_NAME_FIELD, cfRoot);
-			doc.add(path);
-		}
-		
-		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_CLOUD_FOLDER_FIELD, (isCloudFolder ? Constants.TRUE : Constants.FALSE));
-		doc.add(path);
-    }
-    
-    /**
-     * Adds a file time to the index for file folders.
-     */
-    public static void addFolderFileTime(Document doc, Folder folder, boolean fieldsOnly) {
-    	// Is the folder a file folder?
-    	org.dom4j.Document def = folder.getEntryDefDoc();
-    	String family = DefinitionUtils.getFamily(def);
-    	if (Validator.isNotNull(family) && family.equals(Definition.FAMILY_FILE)) {
-    		// Yes!  Does it have a modification timestamp?
-    		HistoryStamp stamp = folder.getModification();
-    		if (null != stamp) {
-    			// Yes!  Does that timestamp contain a date?
-    	    	Date modDate = stamp.getDate();
-    	     	if (null != modDate) {
-    	     		// Yes!  Use it to add a _fileTime field.
-    				Field path = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(modDate.getTime()));
-    				doc.add(path);
-    	     	}
-    		}
-    	}
-    }
-    
-    private static ResourceDriverManager getResourceDriverManager() {
-    	return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
-    }
 }

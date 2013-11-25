@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,108 +35,28 @@ package org.kablink.teaming.module.admin.impl;
 import java.util.List;
 
 import org.kablink.teaming.domain.IndexNode;
-import org.kablink.teaming.domain.MobileAppsConfig;
-import org.kablink.teaming.domain.MobileOpenInWhiteLists;
-import org.kablink.teaming.domain.OpenIDConfig;
-import org.kablink.teaming.domain.OpenIDProvider;
 
-/**
- * ?
- * 
- * @author ?
- */
+
 public class BaseAdminModule extends AbstractAdminModule {
-	@Override
-	public List<IndexNode> retrieveIndexNodesHA() {
+
+	public List<IndexNode> retrieveIndexNodes() {
 		return null; // No support for nodes
 	}
 	
-	@Override
-	public void updateIndexNodeHA(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords) {
+	public void updateIndexNode(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords) {
 		// Noop
 	}
 	
-	@Override
-	public void applyDeferredUpdateLogRecordsHA(IndexNode indexNode) {
+	public void applyDeferredUpdateLogRecords(IndexNode indexNode) {
 		// Noop
 	}
 
-	@Override
-	public void discardDeferredUpdateLogRecordsHA(IndexNode indexNode) {
+	public void discardDeferredUpdateLogRecords(IndexNode indexNode) {
 		// Noop	
 	}
 	
-	@Override
-	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean deployLocalApps, Boolean allowCachePwd, Integer maxFileSize ) {
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl) {
 		// Noop
-	}
-
-	@Override
-	public void addOpenIDProvider(OpenIDProvider openIDProvider) {
-		// Noop
-	}
-
-	@Override
-	public void modifyOpenIDProvider(OpenIDProvider openIDProvider) {
-		// Noop
-	}
-
-	@Override
-	public void deleteOpenIDProvider(String openIDProviderId) {
-		// Noop
-	}
-
-	@Override
-	public OpenIDProvider getOpenIDProvider(String openIDProviderId) {
-		return null;
-	}
-
-	@Override
-	public List<OpenIDProvider> getOpenIDProviders() {
-		return null;
-	}
-
-	@Override
-	public boolean isExternalUserEnabled() {
-		return false;
-	}
-
-	@Override
-	public void setExternalUserEnabled(boolean enabled) {
-		// Noop
-	}
-
-	@Override
-	public OpenIDConfig getOpenIDConfig() {
-		return null;
-	}
-
-	@Override
-	public void setOpenIDConfig(OpenIDConfig openIDConfig) {
-		// Noop
-	}
-
-	@Override
-	public MobileAppsConfig getMobileAppsConfig()
-	{
-		return null;
 	}
 	
-	@Override
-	public MobileOpenInWhiteLists getMobileOpenInWhiteLists()
-	{
-		return null;
-	}
-	
-	@Override
-	public void setMobileAppsConfig( MobileAppsConfig config )
-	{
-		// Noop
-	}
-
-	@Override
-	public void setJitsConfig( boolean enabled, long maxWait )
-	{
-		// Noop
-	}
 }

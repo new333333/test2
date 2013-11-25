@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,97 +42,31 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
-import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings("unchecked")
+
 public class Utils {
 	private static Log m_logger = LogFactory.getLog( Utils.class );
-	
-	// The following controls whether we can switch UI modes without
-	// having to install a license.  It MUST be set false in the
-	// shipping code.
-	public final static boolean ENABLE_SSF_UI_OVERRIDE	= false;
-
-	/*
-	 * Enumeration used to communicate the type of license we're running
-	 * with.
-	 */
-	@SuppressWarnings("unused")
-	private enum LicenseOverride {
-		FILR,
-		FILR_AND_VIBE,
-		VIBE,
-		IPRINT,
-		
-		NO_OVERRIDE;
-		
-		/*
-		 * Get'er methods.
-		 */
-		boolean isFilr()              {return    this.equals(FILR);         }
-		boolean isFilrAndVibe()       {return    this.equals(FILR_AND_VIBE);}
-		boolean isFilrEnabled()       {return (isFilr() || isFilrAndVibe());}
-		boolean isLicenseOverridden() {return (!(this.equals(NO_OVERRIDE)));}
-		boolean isVibe()              {return    this.equals(VIBE);         }
-		boolean isIPrint()            {return    this.equals(IPRINT);       }
-		boolean isVibeEnabled()       {return (isVibe() || isFilrAndVibe());}
-		
-		/*
-		 * Checks for the current UI mode being overridden by an
-		 * ssf*.properties setting.
-		 */
-		static LicenseOverride getLicenseOverride() {
-			// Do we allow the license to be overridden?
-			LicenseOverride reply = LicenseOverride.NO_OVERRIDE; 
-			if (ENABLE_SSF_UI_OVERRIDE) {
-				// Yes!  Check the setting.
-				String uiType = SPropsUtil.getString("UI.type", "");
-				if      (uiType.equalsIgnoreCase("Filr"))        reply = LicenseOverride.FILR;
-				else if (uiType.equalsIgnoreCase("FilrAndVibe")) reply = LicenseOverride.FILR_AND_VIBE;
-				else if (uiType.equalsIgnoreCase("Vibe"))        reply = LicenseOverride.VIBE;
-				else if (uiType.equalsIgnoreCase("iPrint"))      reply = LicenseOverride.IPRINT;
-			}
-			
-			// If we get here, reply refers to the ssf*.properties, if
-			// enabled or an indication of no override otherwise.
-			return reply;
-		}
-		
-	}
 	
 	//Return the account name of the super user (e.g., "admin")
 	public static String getAdminName() {
@@ -289,7 +223,7 @@ public class Utils {
 		}
 
 		String title = user.getTitle();
-		if(Validator.isNotNull(title) && (Validator.isNotNull(fn) || Validator.isNotNull(mn) || Validator.isNotNull(ln)))
+		if(Validator.isNotNull(title))
 		{
 			result = NLT.get("user.title", values.toArray(), title);
 			result = result.trim().replaceAll("  ", " ");
@@ -362,31 +296,6 @@ public class Utils {
 		}
 	}
 	
-	public static Long getAllExtUsersGroupId() {
-		ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
-		try {
-			Long allExtUsersGroupId = profileDao.getReservedGroupId(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, RequestContextHolder.getRequestContext().getZoneId());
-			return allExtUsersGroupId;
-		} catch(Exception e) {
-			//Can't find the All External Users group, return null
-			return null;
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	public static Long getGuestId( AllModulesInjected ami )
-	{
-		Long id;
-		User guestUser;
-		
-		guestUser = ami.getProfileModule().getGuestUser();
-		id = guestUser.getId();
-		
-		return id;
-	}
-	
 	public static void end(Log logger, long startTimeInNanoseconds, String methodName) {
 		if(logger.isDebugEnabled()) {
 			logger.debug((System.nanoTime()-startTimeInNanoseconds)/1000000.0 + " ms, " + methodName);
@@ -428,14 +337,7 @@ public class Utils {
 	//Routine to check send mail quota on attachments
 	public static boolean testSendMailAttachmentSize(FileAttachment fAtt) {
 		//Get the quota (if any)
-		User user = RequestContextHolder.getRequestContext().getUser();
-		CoreDao coreDao = (CoreDao) SpringContextUtil.getBean("coreDao");
-		ZoneConfig zoneConfig = coreDao.loadZoneConfig(user.getZoneId());
-		MailConfig mailConfig = zoneConfig.getMailConfig();
-
-		Long maxSize = mailConfig.getOutgoingAttachmentSizeLimit();
-		if (maxSize == null) return true;		//If no value has been set, then any size is OK
-		
+		Long maxSize = SPropsUtil.getLong("mail.maxAttachmentSize", -1);
 		if (maxSize < 0 || maxSize >= fAtt.getFileItem().getLength()) {
 			return true;
 		} else {
@@ -447,19 +349,11 @@ public class Utils {
 	//  The sum of the attachments must not exceed the limit
 	public static boolean testSendMailAttachmentsSize(Collection<FileAttachment> fileAttachments) {
 		//Get the quota (if any)
-		User user = RequestContextHolder.getRequestContext().getUser();
-		CoreDao coreDao = (CoreDao) SpringContextUtil.getBean("coreDao");
-		ZoneConfig zoneConfig = coreDao.loadZoneConfig(user.getZoneId());
-		MailConfig mailConfig = zoneConfig.getMailConfig();
-
+		Long maxSize = SPropsUtil.getLong("mail.maxAttachmentSumSize", -1);
 		Long sum = 0L;
 		for (FileAttachment fAtt : fileAttachments) {
 			sum += fAtt.getFileItem().getLength();
 		}
-		
-		Long maxSize = mailConfig.getOutgoingAttachmentSumLimit();
-		if (maxSize == null) return true;		//If no value has been set, then any size is OK
-
 		if (maxSize < 0 || maxSize >= sum) {
 			return true;
 		} else {
@@ -471,7 +365,6 @@ public class Utils {
 	public static int getSearchDefaultMaxHits() {
 		return SPropsUtil.getInt("search.maxNumberOfRequestedResults", ObjectKeys.SEARCH_MAX_HITS_LIMIT);
 	}
-
 
 	/**
 	 * Do a reindex on all the principals in the given list
@@ -639,328 +532,6 @@ public class Utils {
 		finally
 		{
 			SimpleProfiler.stop( "Utils.updateDiskQuotasAndFileSizeLimits() - deleteUserGroupFileSizeLimits()." );
-		}
-	}
-	
-	//Routines that support Filr
-	
-	/**
-	 * Check if this is a Filr only license
-	 * 
-	 * @return
-	 */
-	public static boolean checkIfFilr() {
-		// If we have an ssf*.properties license override...
-		LicenseOverride lo = LicenseOverride.getLicenseOverride();
-		if (lo.isLicenseOverridden()) {
-			// ...that's all we look at.
-			return lo.isFilr();
-		}
-		
-		// No ssf*.properties override!  Check the license.
-		if (ObjectKeys.LICENSE_TYPE_FILR.equals(LicenseChecker.getLicenseType())) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	/**
-	 * Check if this is a Filr and Vibe license
-	 *
-	 * @return
-	 */
-	public static boolean checkIfFilrAndVibe() {
-		// If we have an ssf*.properties license override...
-		LicenseOverride lo = LicenseOverride.getLicenseOverride();
-		if (lo.isLicenseOverridden()) {
-			// ...that's all we look at.
-			return lo.isFilrAndVibe();
-		}
-		
-		// No ssf*.properties override!  Check the license.
-		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") &&
-				LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	/**
-	 * Check if this is a Vibe license
-	 * Note: This is vibe only, It does not include Kablink. Use checkIfKablink() if you need to.
-	 * 
-	 * @return
-	 */
-	public static boolean checkIfVibe() {
-		// If we have an ssf*.properties license override...
-		LicenseOverride lo = LicenseOverride.getLicenseOverride();
-		if (lo.isLicenseOverridden()) {
-			// ...that's all we look at.
-			return lo.isVibe();
-		}
-		
-		// No ssf*.properties override!  Check the license. 
-		if (!checkIfFilrAndVibe() && ObjectKeys.LICENSE_TYPE_VIBE.equals(LicenseChecker.getLicenseType())) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	/**
-	 * Check if this is a iPrint only license
-	 * 
-	 * @return
-	 */
-	public static boolean checkIfIPrint() {
-		// If we have an ssf*.properties license override...
-		LicenseOverride lo = LicenseOverride.getLicenseOverride();
-		if (lo.isLicenseOverridden()) {
-			// ...that's all we look at.
-			return lo.isIPrint();
-		}
-		
-		// No ssf*.properties override!  Check the license.
-		if (ObjectKeys.LICENSE_TYPE_IPRINT.equals(LicenseChecker.getLicenseType())) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	/**
-	 * Check if this is a Kablink (i.e., no license)
-	 * 
-	 * @return
-	 */
-	public static boolean checkIfKablink() {
-		//See if no product licenses exist (vibe or filr)
-		if (ObjectKeys.LICENSE_TYPE_KABLINK.equals(LicenseChecker.getLicenseType())) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	/**
-	 * Check if this is Filr definition
-	 * 
-	 */
-	public static boolean checkIfFilrDefinition(Definition def) {
-		Document doc = def.getDefinition();
-		int defType = def.getType();
-		Element familyProperty = (Element) doc.getRootElement().selectSingleNode("//properties/property[@name='family']");
-		if (familyProperty != null) {
-			String family = familyProperty.attributeValue("value", "");
-			return checkIfFilrFamily(defType, family);
-		}
-		return false;
-	}
-
-	public static boolean checkIfFilrFamily(String type, String family) {
-		if (type.equals("familySelectboxFolder")) {
-			return Utils.checkIfFilrFamily(Definition.FOLDER_VIEW, family);
-		} else if (type.equals("familySelectboxWorkspace")) {
-			return Utils.checkIfFilrFamily(Definition.WORKSPACE_VIEW, family);
-		} else if (type.equals("familySelectboxEntry")) {
-			return Utils.checkIfFilrFamily(Definition.FOLDER_ENTRY, family);
-		} else if (type.equals("familySelectboxUserWorkspace")) {
-			return Utils.checkIfFilrFamily(Definition.USER_WORKSPACE_VIEW, family);
-		} else if (type.equals("familySelectboxUserProfile")) {
-			return Utils.checkIfFilrFamily(Definition.PROFILE_ENTRY_VIEW, family);
-		} else if (type.equals("familySelectboxExternalUserWorkspace")) {
-			return Utils.checkIfFilrFamily(Definition.EXTERNAL_USER_WORKSPACE_VIEW, family);
-		}
-		return false;
-	}
-
-	public static boolean checkIfFilrFamily(int defType, String family) {
-		if (defType == Definition.FOLDER_VIEW && family.equals(Definition.FAMILY_FILE)) {
-			return true;
-		} else if (defType == Definition.WORKSPACE_VIEW && family.equals(Definition.FAMILY_WORKSPACE)) {
-			return true;
-		} else if (defType == Definition.FOLDER_ENTRY) {
-			if (family.equals(Definition.FAMILY_FILE) || family.equals(Definition.FAMILY_FILE_COMMENT)) {
-				return true;
-			}
-		} else if (defType == Definition.USER_WORKSPACE_VIEW && family.equals(Definition.FAMILY_USER_WORKSPACE)) {
-			return true;
-		} else if (defType == Definition.PROFILE_ENTRY_VIEW && family.equals(Definition.FAMILY_USER_PROFILE)) {
-			return true;
-		} else if (defType == Definition.EXTERNAL_USER_WORKSPACE_VIEW && 
-				family.equals(Definition.FAMILY_EXTERNAL_USER_WORKSPACE)) {
-			return true;
-		}
-		return false;
-	}
-	
-   	//Validate a definition to see if it is allowed to be used
-	public static boolean validateDefinition(Definition def, Binder binder) {
-		if (!Utils.checkIfFilr()) return true;
-		
-		List<Definition> binderDefs = new ArrayList<Definition>();
-		if (binder != null) binderDefs = binder.getDefinitions();
-		
-		//Check if def allowed
-		if (binderDefs.contains(def) || checkIfFilrDefinition(def)) {
-			//This template is allowed
-			return true;
-		} else {
-			return false;
-		}
-	}
-		
-   	//Validate which definitions are allowed to be used
-	public static List<Definition> validateDefinitions(List<Definition> defs, Binder binder) {
-		if (!Utils.checkIfFilr()) return defs;
-		
-		List<Definition> binderDefs = new ArrayList<Definition>();
-		if (binder != null) binderDefs = binder.getDefinitions();
-		
-		//Filter out any definitions that are not allowed
-		List<Definition> filteredList = new ArrayList<Definition>();
-		for (Definition def : defs) {
-			if (binderDefs.contains(def) || checkIfFilrDefinition(def)) {
-				//This template is allowed
-				filteredList.add(def);
-			}
-		}
-		return filteredList;
-	}
-		
-   	//Validate which definitions by family type are allowed to be used
-	public static List<Definition> validateDefinitions(List<Definition> defs, Binder binder, List<String> familyTypes) {
-		if (!Utils.checkIfFilr()) return defs;
-		
-		List<Definition> binderDefs = new ArrayList<Definition>();
-		if (binder != null) binderDefs = binder.getDefinitions();
-		
-		//Filter out any definitions that are not allowed
-		List<Definition> filteredList = new ArrayList<Definition>();
-		for (Definition def : defs) {
-			if (binderDefs.contains(def)) {
-				//This template is allowed
-				filteredList.add(def);
-			} else {
-				Document doc = def.getDefinition();
-				@SuppressWarnings("unused")
-				int defType = def.getType();
-				Element familyProperty = (Element) doc.getRootElement().selectSingleNode("//properties/property[@name='family']");
-				if (familyProperty != null) {
-					String family = familyProperty.attributeValue("value", "");
-					if (familyTypes.contains(family) && checkIfFilrDefinition(def)) {
-						//This template is allowed
-						filteredList.add(def);
-					}
-				}
-			}
-		}
-		return filteredList;
-	}
-		
-   	//Validate that which templates are allowed to be used
-	public static List<TemplateBinder> validateTemplateBinders(List<TemplateBinder> binders) {
-		return validateTemplateBinders(binders, Boolean.FALSE);
-	}
-	public static List<TemplateBinder> validateTemplateBinders(List<TemplateBinder> binders, 
-			boolean includeHiddenTemplates) {
-		List<TemplateBinder> filteredList = new ArrayList<TemplateBinder>();
-		//We must first filter out any hidden templates
-		for (TemplateBinder t : binders) {
-			if (includeHiddenTemplates || !t.isTemplateHidden()) filteredList.add(t);
-		}
-		if (!Utils.checkIfFilr()) return filteredList;
-		
-		//Filter out any templates that are not allowed
-		List<TemplateBinder> finalList = new ArrayList<TemplateBinder>();
-		for (TemplateBinder binder : filteredList) {
-			if (validateTemplateBinder(binder) != null) {
-				//This template is allowed
-				finalList.add(binder);
-			}
-		}
-		return finalList;
-	}
-	
-   	//Validate that a template is allowed to be used
-	public static TemplateBinder validateTemplateBinder(TemplateBinder binder) {
-		if (binder == null) return null;
-		if (!Utils.checkIfFilr()) return binder;
-		
-		//We are using Filr, so make sure the template is allowed
-		//First, check the definitions used by the template
-		List<Definition> defs = binder.getDefinitions();
-		if (defs.isEmpty() || binder.isDefinitionsInherited()) {
-			Definition def = binder.getEntryDef();
-			if (def != null) {
-				if (!Utils.checkIfFilrDefinition(def)) return null;
-			}
-			
-		} else {
-			for (Definition def:defs) {
-				if (!Utils.checkIfFilrDefinition(def)) return null;
-			}
-		}
-
-		return binder;
-	}
-	
-	/**
-	 * Routine to translate an old icon name into a new one
-	 * (.gif --> .png).
-	 * 
-	 * @param iconName
-	 * 
-	 * @return
-	 */
-	public static String getIconNameTranslated(String iconName) {
-		// Does the icon name have an extension?
-		int i = iconName.lastIndexOf(".");
-		if (i >= 0) {
-			// Yes!  Is that extension '.gif'?
-			String root = iconName.substring(0, i);
-			String ext  = iconName.substring(i, iconName.length());
-			if (ext.equalsIgnoreCase(".gif")) {
-				// Yes!  Change it to '.png'.
-				iconName = (root + ".png");
-			}
-		}
-		return iconName;
-	}
-	
-	/**
-	 * Routine to translate an old icon name and icon size into a new
-	 * one icon name.
-	 *  
-	 * @param iconName
-	 * @param size
-	 * 
-	 * @return
-	 */
-	public static String getIconNameTranslated(String iconName, IconSize size) {
-		String name = getIconNameTranslated(iconName);
-		String sizePart;
-		switch (size) {
-		default:
-		case SMALL:
-			// Small icons use no name extension.
-			return name;
-			
-		case MEDIUM:  sizePart = "_36"; break;
-		case LARGE:   sizePart = "_48"; break;
-		}
-		
-		int i = name.lastIndexOf(".");
-		if (i >= 0) {
-			String root = name.substring(0, i);
-			String ext  = name.substring(i, name.length());
-			return (root + sizePart + ext);
-		} else if (MiscUtil.hasString(name)) {
-			return (name + sizePart);
-		} else {
-			return name;
 		}
 	}
 }

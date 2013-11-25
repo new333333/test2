@@ -43,16 +43,13 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.FileUploadItem;
-import org.kablink.util.search.Criteria;
+
 
 
 /**
@@ -103,9 +100,6 @@ public interface FileModule {
 	 */
 	public FilesErrors deleteFiles(Binder binder, DefinableEntity entity,
 			boolean deleteMirroredSource, FilesErrors errors);
-
-	public FilesErrors deleteFiles(Binder binder, DefinableEntity entity,
-			boolean deleteMirroredSource, FilesErrors errors, boolean skipDbLog);
 
 	public void deleteCachedFiles(Binder binder, DefinableEntity entry);
 	
@@ -177,21 +171,12 @@ public interface FileModule {
     	throws ReservedByAnotherUserException;
     
     public FilesErrors writeFiles(Binder binder, DefinableEntity entity, 
-    		List<FileUploadItem> fileUploadItems, FilesErrors errors, boolean skipDbLog) 
+    		List<FileUploadItem> fileUploadItems, FilesErrors errors, Boolean prune) 
     	throws ReservedByAnotherUserException;
     
     public FilesErrors writeFilesValidationOnly(Binder binder, DefinableEntity entity, 
     		List<FileUploadItem> fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException;
-
-    /**
-     * Verify check sums of files to make sure the file contents match what the uploader
-     * intended.  The REST API allows the client to include the expected MD5 check sum of
-     * the uploaded file.  This method calculates and validates the uploaded content.
-     * @param fileUploadItems
-     * @return
-     */
-    public FilesErrors verifyCheckSums(List fileUploadItems);
     
     /**
      * Run configured filter on the files in the list. Depending on how the
@@ -207,8 +192,6 @@ public interface FileModule {
      */
     public FilesErrors filterFiles(Binder binder, DefinableEntity entity, List<FileUploadItem> fileUploadItems) 
     	throws FilterException;
-    public FilesErrors filterFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
-		throws FilterException;
     
     /**
      * Locks the file so that subsequent updates can be made to the file. 
@@ -274,8 +257,7 @@ public interface FileModule {
      * @throws RepositoryServiceException Any other internal or unexpected error	
      */
     public void unlock(Binder binder, DefinableEntity entity, FileAttachment fa,
-    		String lockId) throws LockedByAnotherUserException, LockIdMismatchException,
-    		UncheckedIOException, RepositoryServiceException;
+    		String lockId) throws UncheckedIOException, RepositoryServiceException;
     
     /**
      * Forcefully unlocks the file and commits pending changes associated
@@ -325,7 +307,7 @@ public interface FileModule {
      * time this method returns all expired locks are gone and all remaining
      * locks are effective. 
      */
-    public void bringLocksUptodate(Binder binder, DefinableEntity entity) 
+    public void RefreshLocks(Binder binder, DefinableEntity entity) 
 	throws RepositoryServiceException, UncheckedIOException;
     
 	
@@ -377,7 +359,7 @@ public interface FileModule {
 	 * @throws RepositoryServiceException
 	 */
 	public void moveFiles(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
+			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
@@ -396,7 +378,7 @@ public interface FileModule {
 	 * @throws RepositoryServiceException
 	 */
 	public void copyFiles(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
+			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
@@ -475,41 +457,12 @@ public interface FileModule {
 
 	/**
 	 * Returns a map of names of the files contained in the specified binder
-	 * to its <code>FileIndexData</code> objects encapsulating more detailed information
-	 * about files obtained from the Lucene index. 
-	 * It is important for the efficiency reason that the requested data be obtainable
-	 * entirely from the Lucene index without querying the database.
-	 * 
-	 * @param binderId
-	 * @return
-	 */
-	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Long binderId);
-
-    public List<FileIndexData> getFileDataFromIndex(Criteria crit);
-
-    public FileList getFileDataFromIndex(Criteria crit, int offset, int size);
-
-    /**
-	 * Returns a map of names of the files contained in the specified binder
-	 * to its enclosing entry ids using the information in the search index.
+	 * to its enclosing entry ids.
 	 * 
 	 * @param binder
 	 * @return
 	 */
-	public Map<String,Long> getChildrenFileNamesUsingSearchIndex(Binder binder);
-
-	/**
-	 * Returns a map of names of the files contained in the specified binder
-	 * to its enclosing entry ids using the information in the database.
-	 * <p>
-	 * CAUTION: This method does NOT filter out the result based on the access right of
-	 * the user making the call, so must be used only in the runtime context of admin 
-	 * or other privileged user. 
-	 * 
-	 * @param binderId
-	 * @return
-	 */
-	public Map<String,Long> getChildrenFileNamesUsingDatabaseWithoutAccessCheck(Long binderId);
+	public Map<String,Long> getChildrenFileNames(Binder binder);
 	
 	/**
 	 * Get a file attachment from the fileId.
@@ -551,13 +504,4 @@ public interface FileModule {
 	 * 3 - file size limit violation
 	 */
 	public int checkQuotaAndFileSizeLimit(Long userId, Binder binder, long fileSize, String fileName);
-
-	/**
-	 * Special purpose method used to correct the last mod time associated with the last modification to the file.
-	 * This is an in-place replacement of the last mod time, and application should normally not use this method.
-	 *
-	 * @param fa
-	 * @param correctLastModTime
-	 */
-	public void correctLastModTime(FileAttachment fa, Date correctLastModTime);
 }	

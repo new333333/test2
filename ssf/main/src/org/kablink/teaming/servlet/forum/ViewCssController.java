@@ -64,8 +64,10 @@ public class ViewCssController extends SAbstractController {
 				ses.setAttribute("ssCssDate", cssDate);
 			}
 		}
+		String theme = ServletRequestUtils.getStringParameter(request, WebKeys.URL_CSS_THEME, "");
 		String sheet = ServletRequestUtils.getStringParameter(request, WebKeys.URL_CSS_SHEET, "");
 		Map model = new HashMap();
+		if (!theme.equals("")) model.put(WebKeys.CSS_THEME, theme);
 		response.setContentType("text/css");			
 
 		SimpleDateFormat df = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);

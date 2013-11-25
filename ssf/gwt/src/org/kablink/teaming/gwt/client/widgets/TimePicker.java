@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -86,18 +86,16 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
       getSpinner().setValue(date.getTime(), true);
     }
 
-	@Override
-	protected String formatValue(double value) {
+    protected String formatValue(long value) {
       dateInMillis = value;
       if (dateTimeFormat != null) {
-        return dateTimeFormat.format(new Date((long) dateInMillis));
+        return dateTimeFormat.format(new Date(dateInMillis));
       }
       return "";
     }
 
-	@Override
-    protected double parseValue(String value) {
-      Date parsedDate = new Date((long) dateInMillis);
+    protected long parseValue(String value) {
+      Date parsedDate = new Date(dateInMillis);
       dateTimeFormat.parse(value, 0, parsedDate);
       return parsedDate.getTime();
     }
@@ -110,14 +108,13 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
   private static final int DAY_IN_MS = 86400000;
 
   private List<TimeSpinner> timeSpinners = new ArrayList<TimeSpinner>();
-  private double dateInMillis;
+  private long dateInMillis;
   private boolean enabled = true;
 
   private SpinnerListener listener = new SpinnerListener() {
-	@Override
-    public void onSpinning(double value) {
-      ValueChangeEvent.fireIfNotEqual(TimePicker.this, new Date((long) dateInMillis),
-          new Date((long) value));
+    public void onSpinning(long value) {
+      ValueChangeEvent.fireIfNotEqual(TimePicker.this, new Date(dateInMillis),
+          new Date(value));
     };
   };
 
@@ -232,7 +229,6 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
     }
   }
 
-  @Override
   public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Date> handler) {
     return addHandler(handler, ValueChangeEvent.getType());
   }
@@ -244,7 +240,7 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
 	if (!hasTime()) {
 		return null;
 	}
-    return new Date((long) dateInMillis);
+    return new Date(dateInMillis);
   }
 
   /**
@@ -264,7 +260,7 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
 	}
 	
     // Only change the date part, leave time part untouched
-    dateInMillis = (double) ((Math.floor(date.getTime() / DAY_IN_MS) + 1) * DAY_IN_MS) + dateInMillis % DAY_IN_MS;
+    dateInMillis = (long) ((Math.floor(date.getTime() / DAY_IN_MS) + 1) * DAY_IN_MS) + dateInMillis % DAY_IN_MS;
     for (TimeSpinner spinner:  timeSpinners) {
       spinner.getSpinner().setValue(dateInMillis, false);
     }

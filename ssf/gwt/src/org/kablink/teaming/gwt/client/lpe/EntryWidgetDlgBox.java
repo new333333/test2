@@ -128,7 +128,6 @@ public class EntryWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
 		EntryProperties properties;
@@ -172,7 +171,6 @@ public class EntryWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -182,7 +180,6 @@ public class EntryWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
-						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -221,14 +218,12 @@ public class EntryWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
-					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
-							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -302,7 +297,6 @@ public class EntryWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
-	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		String entryId;
@@ -385,7 +379,6 @@ public class EntryWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -398,7 +391,6 @@ public class EntryWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolderEntry gwtFolderEntry;
@@ -423,13 +415,9 @@ public class EntryWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
-	@Override
 	public FocusWidget getFocusWidget()
 	{
-		if ( m_findCtrl != null )
-			return m_findCtrl.getFocusWidget();
-		
-		return null;
+		return m_findCtrl.getFocusWidget();
 	}// end getFocusWidget()
 	
 	
@@ -449,7 +437,6 @@ public class EntryWidgetDlgBox extends DlgBox
 		return m_sizeCtrl.getHeightUnits();
 	}
 	
-
 	/**
 	 * 
 	 */
@@ -483,7 +470,6 @@ public class EntryWidgetDlgBox extends DlgBox
 		return m_sizeCtrl.getWidthUnits();
 	}
 	
-
 	/**
 	 * 
 	 */
@@ -522,7 +508,7 @@ public class EntryWidgetDlgBox extends DlgBox
 			m_currentEntryNameLabel.addStyleName( "noEntrySelected" );
 			m_currentEntryNameLabel.removeStyleName( "bold" );
 		}
-		
+		 
 		// Initialize the size control.
 		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
 

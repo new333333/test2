@@ -33,11 +33,11 @@
 package org.kablink.teaming.jobs;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.NoFolderByTheIdException;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -55,22 +55,22 @@ public class DefaultMirroredFolderSynchronization extends SSCronTriggerJob
 			try {
 				binderId = new Long(jobDataMap.getLong("binder"));
 			} catch (Exception ex) {
-				binderId = new Long(-1L);
+				binderId = new Long(-1);
 			}
-			if(binderId.longValue() == -1L) {
-				deleteJob(context);
+			if (binderId.equals(-1)) {
+				removeJob(context);
 			} else {
-				folderModule.enqueueFullSynchronize(binderId);
+				folderModule.synchronize(binderId,null);
 			}
-		} catch (NoFolderByTheIdException nf) {
+		} catch (NoBinderByTheIdException nf) {
 			// Apparently the folder on which this scheduler is defined has been removed.
 			// This is not an error. So simply remove the job.
-			deleteJob(context);
+			removeJob(context);
 		} 
     }
 
-	public ScheduleInfo getScheduleInfo(Long folderId) {
-		return getScheduleInfo(new SyncJobDescription(RequestContextHolder.getRequestContext().getZoneId(), folderId));
+	public ScheduleInfo getScheduleInfo(Long zoneId, Long folderId) {
+		return getScheduleInfo(new SyncJobDescription(zoneId, folderId));
 	}
 	public void setScheduleInfo(ScheduleInfo info, Long folderId) {
 		info.getDetails().put(USERID,RequestContextHolder.getRequestContext().getUserId());
@@ -81,27 +81,13 @@ public class DefaultMirroredFolderSynchronization extends SSCronTriggerJob
 		setScheduleInfo(new SyncJobDescription(info.getZoneId(),folderId), info);
 	}
 
-	@Override
-	public void deleteJob(Long folderId) {
-		// Try deleting the job directly
-		if(super.deleteJob(folderId.toString(), SYNCHRONIZATION_GROUP))
-			return; // no error
-		
-		// For whatever reason, could not delete the job (probably because the job is currently executing or something)
-		ScheduleInfo si = this.getScheduleInfo(folderId);
-		// Now, here's a backup strategy - Enable the job if currently disabled. This way, the job will
-		// run, realize that the binder is gone, and self-clean itself by removing the job.
-		if (si != null && !si.isEnabled()) {
-			si.setEnabled(true);
-			this.setScheduleInfo(si, folderId);
-		}
+	public void enable(boolean enable, Long folderId) {
+		enable(enable, new SyncJobDescription(zoneId, folderId));
  	}
-	
 	public class SyncJobDescription extends CronJobDescription {
 		private Long folderId;
 		public SyncJobDescription(Long zoneId, Long folderId) {
-			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId, true, 
-					SPropsUtil.getInt("job.mirrored.folder.synchronization.priority", 4));
+			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId, false);
 			this.folderId = folderId;
 		}
 		public Long getFolderId() {

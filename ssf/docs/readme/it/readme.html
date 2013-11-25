@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
 
 <!-- saved from url=(0014)about:internet -->
 <html xml:lang="it" lang="it">
@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Language" content="it" />
 <meta name="Content-Date" content="Mon, 19 Jan 2010 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Friday, October 28, 2011" />
+<meta name="Generation-Date" content="Friday, May 18, 2012" />
 <meta name="Copyright" content="Copyright Novell, Inc. 2010" />
 
 <style type="text/css">
@@ -24,9 +24,14 @@ body {
 }
 
 /* headings */
-	h1 {font-size: 125%; font-weight: bold; color: #000000;}
-	h2,h3,h4,h5,h6 {font-size: 100%; font-weight: bold; color: #000000; margin-bottom:-6px;}
-
+	h1,h2,h3,h4,h5,h6 {font-weight: bold; color: #000000;}
+	h1 {font-size: 160%; margin-bottom:20px;}
+	h2 {font-size: 145%; margin-top:25px;}
+	h3 {font-size: 125%; margin-top:23px;}
+	h4 {font-size: 115%; margin-top:20px;}
+	h5 {font-size: 105%; margin-top:18px;}
+	h6 {font-size: 100%; margin-top:16px;}
+	
 	/* single file heading adjustments */
 	.singlefile h1 {font-size: 185%; color: #CC0000; margin-top:10px;}
 	.singlefile h2 {font-size: 140%; margin-top:35px;}
@@ -34,97 +39,93 @@ body {
 
 /* sections */
 	div.sect1 { margin-bottom: 10pt; }
-	div.sect2 { }
-	div.sect3, div.sect4, div.sect5, div.sect6 {margin-left:18px;}
+	div.sect3,div.sect4,div.sect5,div.sect6 {margin-left:18px;}
 	
 /* msgset */
-	div.msgexplan {margin: 0px 0px 7px 0px;}
-	div.msgexplan span.title {margin: 0px 7px 0px 0px; font-size: 100%; font-weight: bold; color: #000000;}
-	div.msgtext p.para {margin: 4px 0px 16px 0px; font-size: 100%; font-weight: bold; color: #b00000;}
+	div.msgtext {margin-top: 25px;}
+	div.msgexplan {margin-bottom: 7px;}
+	div.msgexplan > span.title {font-size: 100%; font-weight: bold;}
+	div.msgtext p.para {font-size: 100%; font-weight: bold; color: #b00000;}
 	
 	#tocref { display:inline; float:right; }
 
 /* links */
-	a {color:#0000cc;}
+	a {text-decoration:none; color:#0000cc;}
 	a:hover {color:#3366ff;}
 	a:visited {color:#993333;}
 	li.listitem a:hover {color:#3366ff;}
-	a.ulink a:hover {text-decoration:none; color:#3366ff;}
+	a.ulink a:hover {color:#3366ff;}
 
+	.breadcrumbs a:link, .breadcrumbs a:visited, .breadcrumbs a:active { color: gray; font-size: 100%;}
+	.breadcrumbs a:hover { color: #0000cc; font-size: 100%;}  
   .nav { vertical-align:middle; white-space:nowrap; }
 	.nav img { vertical-align:middle; border: none; padding:1px 3px 1px 3px; }
-/*	.nav img { vertical-align:middle; border: none; height:18px; width:18px; padding:1px 3px 1px 3px; } */
 	.nav a:link,
 	.nav a:visited,
-	.nav a:active { vertical-align: middle; font-weight: bold; color: gray; text-decoration: none; font-size: 100%;}
-	.nav a:hover { vertical-align: middle; font-weight: bold; color: #999999; text-decoration: none; font-size: 100%;}  
+	.nav a:active { vertical-align: middle; color: gray; font-size: 100%;}
+	.nav a:hover { vertical-align: middle; color: #0000cc; font-size: 100%;}  
 
 /* paragraphs */	
 	p.para {font-weight: normal; color: #000000;}
-/*	p.title {margin:10px 0 4px 0;} */
 	p.msgtext {font-style: italic; font-weight: normal}
 	p.trademark {font-size: 75%; font-weight: normal; font-style: italic;}
-	/*p.entry {font-size: 95%; font-weight: normal; color: #000000; margin-top: -5px;}
-	p.table {font-weight: bold;}*/
-	pre.screen {font-family: Courier New, monospace; margin: 10px 5px 10px 0px; padding: 1px 0px 3px 5px;font-size: 100%;color: #000000;}
 	p.glossterm {font-weight: bold;}
-	div.glossdef {margin:-10pt 0 0 0;}
+	div.formalpara em.title {font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0 0;}
+	div.formalpara p.title {font-style: normal; font-weight: normal; color: #000000;}
 	
+/* screen text */	
+	pre {font-family: Courier New, monospace; margin-bottom: 10px;font-size: 100%;font-weight: normal;}
+	pre.compact {font-size: 95%;}
+	pre.compact2,pre.screenshot {font-size: 88%;}
+	pre.screenshot { border-top:1px solid #000000; border-bottom:1px solid #000000; padding: 1px 0px 3px 0px;}
+	
+	div.glossdef {margin:-10pt 0 0 0;}
+
 /* admonitions */	
 	div.note,
 	div.tip,
 	div.warning,
-	div.important {margin: 12px 0px 5px 0px; padding: 0px 15px 0px 15px; border-bottom: 1px solid #999999; border-top: 1px solid #999999;}
+	div.important {padding: 0px 0px 0px 0px; border-bottom: 1px solid #999999; border-top: 1px solid #999999;}
+
+	div.note p:first-child,div.tip p:first-child,div.warning p:first-child,div.important p:first-child {margin-top: 5px;}
+	div.note p:last-child,div.tip p:last-child,div.warning p:last-child,div.important p:last-child {margin-bottom: 4px;}
+	table div.note,table div.tip, table div.warning, table div.important { border-bottom: none; border-top: none; }
 
 	div.note p em.title,
 	div.tip p em.title,
 	div.warning p em.title,
-	div.important p em.title {margin: 0px 7px 0px 0px; font-weight: bold; font-style: normal;font-size:95%;}
+	div.important p em.title {margin: 0px 7px 0px 0px; font-weight: bold; font-style: normal;}
 	div.warning em.title {color: #cc0000}
 
 /* figures and images */	
+	img { max-width: 100%; line-height: normal;}
+	img.border { border-style:solid; border-width:1px; }
 	img.inline {vertical-align: middle;}
-	img {line-height: normal;}
-	br.img {line-height: normal;}
+	
+	div.figure,div.informalfigure { margin-bottom:20px;}
 	div.figure em.figure {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:5px 5px 0 0;}
 	div.figure em.title {font-family: times, serif; font-size: 95%; font-style: italic; font-weight: normal; color: #000000;}
 	div.figure p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
 	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
-	div.informalfigure {margin:15px 0px 10px 0px;}
-	div.formalpara em.title {font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0 0;}
-	div.formalpara p.title {font-style: normal; font-weight: normal; color: #000000;}
-
 	
 /* tables */
+	table {border-collapse:collapse; margin-bottom:18px;}
 	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
-	td {font-size: 95%; font-weight: normal; color: #000000;}
 	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
-	div.formalpara table.topbot-lines {margin:0px 0 16px 0;}
-	div.informaltable table.topbot-lines {margin:10px 0 7px 0;}
 
-	table.topbot-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
-	table.topbot-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
-	table.topbot-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
-	table.topbot-lines tr.evenrow {background-color: white}
-	table.topbot-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
-	table.topbot-lines tr.oddrow {background-color: #f8f8f8}
-	table.topbot-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
-
-	table.all-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
-	table.all-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
-	table.all-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
-	table.all-lines tr.evenrow {background-color: white}
-	table.all-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
-	table.all-lines tr.oddrow {background-color: #f8f8f8}
-	table.all-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
-
-	table.no-lines tr.headerrow {background-color: white }
-	table.no-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; color: #404040; margin:1pt 0 0 0; background-color: white }
-	table.no-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white }
-	table.no-lines tr.evenrow td {background-color: white}
-	table.no-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white}
-	table.no-lines tr.oddrow td {background-color: white}
+	table tr.headerrow th {padding: 6px 4px 5px 0px;}
+	table tr td {padding: 0px 4px 0px 0px; }
+	table tr td:first-child {margin-top: 7px;}
+	table tr td:last-child {margin-bottom: 6px;}
 	
+	table tr.headerrow th p.para {font-weight: bold; margin:1px 0px 0px 0px;}
+	table.allseps, table.rowseps, table.topbot {border-spacing: 0px; border-top:1px solid #606060; border-bottom:1px solid #606060;}
+	table.allseps tr.headerrow th,table.rowseps tr.headerrow th,table.topbot tr.headerrow th {border-bottom:1px solid #606060;}
+	table.allseps tr.headerrow th {border-left:1px solid #999999; padding-left: 5px;}
+	table.allseps tr td {border-bottom:1px solid #999999; border-left:1px solid #999999; padding-left: 5px;}
+	table.allseps tr td:first-child,table.allseps tr th:first-child {border-left:0;}
+	table.rowseps tr td {border-bottom:1px solid #999999;}
+
 	table.calloutlist td {margin:0px; padding: 0px 6px 0px 0px;}
 	table.calloutlist p {margin: 5px 0px 5px 0px; padding: 0px;}
 	
@@ -135,20 +136,23 @@ body {
 	
 /* lists,procedures */
 	div.itemizedlist, div.orderedlist, div.procedure, div.substeps {margin-bottom:15px; font-weight: normal;}
-	ul.listbullet,ul.listcheck,ol {margin-left: 28px; padding-left: 0pt;}
-	ul.listcheck  {list-style-image : url("images/checkbox.gif"); list-style-type: square;}
+	ul,ol {margin-left: 28px; padding-left: 0pt;}
+	ul.listbox  {list-style-image : url("images/checkbox.png"); list-style-type: square;}
 	ul.listbullet {list-style-type: disc; list-style-image : none;}
+	ul.listcheck  {list-style-image : url("images/checkedbox.png"); list-style-type: square;}
+	ul.listdash  {list-style-image : url("images/dash.png"); list-style-type: square;}
 	ul.simplelist {margin-left: 0px; list-style-type: none; list-style-image : none;padding-left: 0pt;}
 	div.orderedlist div.orderedlist > ol {list-style-type: lower-alpha;}
 	div.orderedlist div.orderedlist div.orderedlist > ol {list-style-type: lower-roman;}
 	div.substeps div.substeps div.substeps > ol {list-style-type:lower-alpha;}
 	div.substeps div.substeps > ol {list-style-type: decimal;}
 	div.substeps > ol {list-style-type: lower-alpha;}
-	li {margin: 5px 0 4px 0;}
+	li {margin: 5px 0px 4px 0px;}
 	li.member {margin:3px 0px 0px 10px;text-indent:-10px; font-weight: normal;}
 	li.step {font-weight: bold;color: #000000;}
-	div.procedure h1.title {font-weight: bold; color: #000000; margin-top: 22px; margin-bottom: -4pt;}
-
+	div.procedure .title {font-size: 100%; font-weight: bold; color: #000000; margin-top: 16px;}
+	div.itemizedlist .title {font-size: 100%; font-weight: bold; color: #000000; margin-top: 16px;}
+	
 /* italic inlines */	
 	em {font-style: italic}
 	span.citetitle,span.guimenu,span.replaceable {font-style: italic;}
@@ -156,11 +160,12 @@ body {
 	
 /* bold inlines */	
 	em.refclass,em.glossterm,em.option {font-weight: bold}
-	span.strongemphasis {font-weight: bold;}
+	span.strong, span.bold, span.windowitem {font-weight: bold;}
 
 /* other inlines */	
+	span.emphasis  {font-style: italic}
+	span.strongemphasis,span.listif {font-weight: bold; font-style: italic}
 	em.msgtext {font-weight: bold; font-style: italic}
-	span.emphasis {font-style: italic}
 
 /* superscript and subscript */	
 	span.subscript,span.superscript {font-size: 80%;}
@@ -175,20 +180,20 @@ body {
 	
 </style>
 
-<title>Novell Vibe 3.2</title>
+<title>Novell Vibe 3.3</title>
 </head>
 <body>
 
 <div class="chapter singlefile" id="readme">
 
-<h1 class="title"> <span class="phrase">Novell</span> Vibe 3.2</h1>
+<h1 class="title">Novell Vibe 3.3</h1>
 
 <div class="sect1 singlefile" id="bbfxu6q">
 
 <h2 class="title"><span class="number">1.0</span> Guida introduttiva</h2>
 
-<p class="para">I requisiti di sistema completi e istruzioni dettagliate per l'installazione del software sono fornite per l'amministratore di <span class="phrase">Novell</span> Vibe nella <span class="citetitle">Vibe 3.2 Installation Guide</span> (in lingua inglese). La configurazione del sito di Vibe e le istruzioni sull'amministrazione e la manutenzione <span class="citetitle">Vibe 3.2 Administration Guide</span> (in lingua inglese).</p>
-<p class="para">Dopo aver configurato il sito di Vibe, gli utenti di Vibe possono ottenere istruzioni nella <span class="citetitle">Guida dell'utente di Vibe 3.2</span> e nella <span class="citetitle">Vibe 3.2 Advanced User Guide</span> (in lingua inglese).<span class="phrase"> (Viene fornito un <span class="citetitle">Riferimento rapido per Vibe 3.2</span> per le lingue in cui non è disponibile la <span class="citetitle">Guida dell'utente di Vibe 3.2</span>.)</span></p>
+<p class="para">I requisiti di sistema completi e le istruzioni dettagliate per l'installazione del software sono fornite per l'amministratore di Novell Vibe nella <span class="citetitle">Vibe 3.3 Installation Guide</span> (in lingua inglese). La configurazione del sito di Vibe e le istruzioni sull'amministrazione e la manutenzione sono disponibili nella <span class="citetitle">Vibe 3.3 Administration Guide</span> (in lingua inglese).</p>
+<p class="para">Dopo aver configurato il sito di Vibe, gli utenti di Vibe possono ottenere istruzioni nella <span class="citetitle">Guida dell'utente di Vibe 3.3</span> e nella <span class="citetitle">Vibe 3.3 Advanced User Guide</span> (in lingua inglese). Viene fornito un <span class="citetitle">Riferimento rapido per Vibe 3.3</span> per le lingue in cui non è disponibile la <span class="citetitle">Guida dell'utente di Vibe 3.3</span>.</p>
 <p class="para">Dopo aver effettuato il login al sito Web di Vibe è possibile visualizzare la Guida online di Vibe.</p>
 </div>
 
@@ -196,18 +201,18 @@ body {
 
 <h2 class="title"><span class="number">2.0</span> Problemi noti</h2>
 
-<p class="para">Per un elenco aggiornato dei problemi noti di questa versione, vedere il file Readme per il prodotto <span class="phrase">Novell</span> Vibe 3.2 completo nella <span class="phrase"><a href="http://www.novell.com/documentation/vibe32" class="ulink">pagina Web della documentazione di Novell Vibe 3.2</a></span>.</p>
+<p class="para">Per un elenco aggiornato dei problemi noti di questa versione, vedere il file Readme del prodotto Novell Vibe 3.3 completo nella <a href="http://www.novell.com/documentation/vibe33" class="ulink">pagina Web della documentazione di Novell Vibe 3.3</a>.</p>
 </div>
 
 <div class="sect1 singlefile" id="product_info">
 
 <h2 class="title"><span class="number">3.0</span> Documentazione</h2>
 
-<p class="para">Tutta la documentazione relativa a <span class="phrase">Novell</span> Vibe 3.2 è disponibile nella <span class="phrase"><a href="http://www.novell.com/documentation/vibe32" class="ulink">pagina Web della documentazione di Novell Vibe 3.2</a></span>:</p>
+<p class="para">Tutta la documentazione relativa a Novell Vibe 3.3 è disponibile nel <a href="http://www.novell.com/documentation/vibe33" class="ulink">sito Web della documentazione di Novell Vibe 3.3</a>:</p>
 <div class="itemizedlist">
 <ul class="listbullet">
 <li class="listitem">
-<p class="listitem">File Readme del prodotto Vibe 3.2 completo</p></li>
+<p class="listitem">File Readme completo del prodotto Vibe 3.3</p></li>
 <li class="listitem">
 <p class="listitem"><span class="citetitle">Installation Guide</span> (in lingua inglese)</p></li>
 <li class="listitem">
@@ -222,11 +227,19 @@ body {
 <p class="listitem"><span class="citetitle">Advanced User Guide</span> (in lingua inglese)</p></li>
 <li class="listitem">
 <p class="listitem">
-          <span class="citetitle">Riferimento rapido</span>
+          <span class="citetitle">Guida per gli sviluppatori</span>
         </p></li>
 <li class="listitem">
 <p class="listitem">
-          <span class="citetitle">Guida per gli sviluppatori</span>
+          <span class="citetitle">Riferimento rapido per Vibe</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Riferimento rapido per Vibe Desktop</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Riferimento rapido per Vibe Add-In</span>
         </p></li></ul></div>
 
 <p class="para">Oltre alla documentazione relativa al prodotto, per Novell Vibe sono disponibili risorse aggiuntive. </p>
@@ -252,21 +265,14 @@ body {
 <p class="para">Per ulteriori informazioni su Vibe, visitare il sito Web del <a href="http://www.kablink.org" class="ulink">progetto di collaborazione open source Kablink</a>.</p>
 </div>
 
-<div class="sect1 singlefile" id="doc_conventions">
-
-<h2 class="title"><span class="number">4.0</span> Convenzioni della documentazione</h2>
-
-<p class="para">Nella documentazione, il simbolo maggiore di (&gt;) viene utilizzato per separare le azioni di uno stesso passo di procedura e gli elementi in un percorso di riferimenti incrociati.</p>
-</div>
-
 <div class="sect1 singlefile" id="legal_notices">
 
-<h2 class="title"><span class="number">5.0</span> Note legali</h2>
+<h2 class="title"><span class="number">4.0</span> Note legali</h2>
 
 <p class="para">Novell, Inc. non rilascia dichiarazioni o garanzie in merito a contenuto o utilizzo di questa documentazione e in particolare declina qualsiasi garanzia espressa o implicita di commerciabilità o idoneità a scopo particolare. Novell, Inc. inoltre si riserva il diritto di aggiornare la presente pubblicazione e di modificarne il contenuto in qualsiasi momento, senza alcun obbligo di notificare tali revisioni o modifiche ad alcuna persona fisica o entità.</p>
 <p class="para">Novell, Inc. non rilascia dichiarazioni o garanzie in merito a software e in modo specifico declina qualsiasi garanzia espressa o implicita di commerciabilità o idoneità a scopo particolare. Novell, Inc. inoltre si riserva il diritto di modificare parti del software Novell in qualsiasi momento, senza alcun obbligo di notificare tali modifiche ad alcuna persona fisica o entità.</p>
 <p class="para">Qualsiasi informazione tecnica o prodotto fornito in base a questo Contratto può essere soggetto ai controlli statunitensi relativi alle esportazioni e alla normativa sui marchi di fabbrica in vigore in altri paesi. L'utente si impegna a rispettare la normativa relativa al controllo delle esportazioni e a ottenere qualsiasi licenza o autorizzazione necessaria per esportare, riesportare o importare prodotti finali. L'utente si impegna inoltre a non esportare o riesportare verso entità incluse negli elenchi di esclusione delle esportazioni statunitensi o a qualsiasi paese sottoposto a embargo o che sostiene movimenti terroristici, come specificato nella legislazione statunitense in materia di esportazioni. L'utente accetta infine di non utilizzare i prodotti a fini proibiti correlati all'uso di armi nucleari, missilistiche o biochimiche. Per ulteriori informazioni sull'esportazione del software Novell, vedere la <a href="http://www.novell.com/info/exports/" class="ulink">pagina Web dei servizi commerciali internazionali di Novell</a>. Novell non si assume alcuna responsabilità relativa al mancato ottenimento, da parte dell'utente, delle autorizzazioni necessarie all'esportazione.</p>
-<p class="para">Copyright © 2008-2011 Novell, Inc. Tutti i diritti riservati. È vietato riprodurre, fotocopiare, memorizzare su un sistema di recupero o trasmettere la presente pubblicazione o parti di essa senza l'espresso consenso scritto dell'editore.</p>
+<p class="para">Copyright © 2008-2012 Novell, Inc. Tutti i diritti riservati. È vietato riprodurre, fotocopiare, memorizzare su un sistema di recupero o trasmettere la presente pubblicazione o parti di essa senza l'espresso consenso scritto dell'editore.</p>
 <p class="para">Per informazioni sui marchi di fabbrica Novell, vedere <a href="http://www.novell.com/company/legal/trademarks/tmlist.html" class="ulink">l'elenco dei marchi di servizio e di fabbrica Novell</a>.</p>
 <p class="para">Tutti i marchi di fabbrica di terze parti appartengono ai rispettivi proprietari.</p>
 </div>

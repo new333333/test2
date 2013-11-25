@@ -78,8 +78,6 @@
     <xsd:attribute name="y" type="xsd:unsignedInt"/>
 	<xsd:attribute name="feature" type="xsd:string"/>
     <xsd:attribute name="display" type="xsd:string"/>
-    <xsd:attribute name="license" type="xsd:string"/>
-    <xsd:attribute name="notLicense" type="xsd:string"/>
   </xsd:complexType>
 
   <xsd:complexType name="propertiesType">

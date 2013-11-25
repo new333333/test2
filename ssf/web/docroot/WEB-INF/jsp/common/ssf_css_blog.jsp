@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -103,7 +103,6 @@ div.ss_blog_content {
 	background-color:#f6f6f6;
 	margin-bottom: 20px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 div.ss_blog_content2 {
@@ -128,7 +127,6 @@ div.ss_blog_sidebar {
     padding: 10px;
     background-color:${ss_style_background_color_side_panel_featured};
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .ss_blog_sidebar_subhead {
@@ -145,7 +143,7 @@ div.ss_blog_sidebar_box {
 	padding: 3px 5px 5px 0px;
 }
 a.ss_displaytag {
-	font-size: ${ss_style_font_smallprint};
+	font-size: ${ss_style_font_smallprint} !important;
 	}
 .ss_blog_sidebar table {
 	background-color: transparent;
@@ -178,11 +176,10 @@ div.ss_header_bar_timestamp {
 	margin-right: 5px;
 }
 .ss_blog_footer {
-	background-color: #ededed;
+	background-color:${ss_blog_footer_color};
 	padding: 2px 4px;
 	margin: 0px;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 .ss_blog_footer ul {

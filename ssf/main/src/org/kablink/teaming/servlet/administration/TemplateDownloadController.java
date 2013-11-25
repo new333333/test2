@@ -43,7 +43,6 @@ public class TemplateDownloadController extends  ZipDownloadController {
 	@Override
 	protected NamedDocument getDocumentForId(String defId) {
 		TemplateBinder binder = getTemplateModule().getTemplate(Long.valueOf(defId));
-		if (binder == null) return null;
 		String name = binder.getName();
 		if (Validator.isNull(name)) name = binder.getTemplateTitle();
 		return new NamedDocument(name, getTemplateModule().getTemplateAsXml(binder));

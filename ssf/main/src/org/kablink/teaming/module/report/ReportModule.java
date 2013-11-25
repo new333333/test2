@@ -41,7 +41,6 @@ import java.util.Set;
 
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.FileAttachment;
@@ -74,7 +73,6 @@ public interface ReportModule {
 	public static final String USER = "user";
 	public static final String USER_ID = "user_id";
 	public static final String USER_TITLE = "user_title";
-	public static final String USER_TYPE = "user_type";
 	public static final String LAST_LOGIN = "last_login";
 	public static final String LOGIN_DATE = "login_date";
 	public static final String LOGIN_COUNT = "login_count";
@@ -173,7 +171,7 @@ public interface ReportModule {
 	
 	public List<Map<String, Object>> generateReport(Collection ids, boolean byTeamMembers, boolean byAllUsers, Date startDate, Date endDate);
 	public List<Map<String, Object>> generateActivityReport(final Long binderId, final Long entryId);
-	public List<Map<String, Object>> generateActivityReportByUser(final Set<Long> userIds, final Set<Long> userIdsToSkip, final Date startDate, final Date endDate, final String reportType);
+	public List<Map<String, Object>> generateActivityReportByUser(final Set<Long> userIds, final Date startDate, final Date endDate, final String reportType);
 	public Map<String, Object> generateEntryAclReport(final Folder folder);
 	public List<Map<String,Object>> generateLoginReport(Date startDate, Date endDate, String optionType, String sortType, String sortType2, Set memberIds);
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
@@ -185,7 +183,7 @@ public interface ReportModule {
 	public List<Map<String, Object>> generateAccessReportByUser(final Long userId, final Date startDate, final Date endDate, final String reportType);
 	public List<Map<String, Object>> generateEmailReport(final Date startDate, final Date endDate, final String reportType);
 	public List<Map<String, Object>> generateXssReport(final List binderIds, final Date startDate, final Date endDate, final String reportType);
-	
+
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 	public List<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
 	public List<Map<String,Object>> getEntriesViewed(Long ownerId, Date startDate, Date endDate, Integer returnCount);
@@ -197,6 +195,4 @@ public interface ReportModule {
 	public List<Long> getDeletedFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
 	public List<Long> getRestoredFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
 	public List<Long> getMovedFolderEntryIds(Date startDate, Date endDate);
-	public List<ChangeLog> getDeletedBinderLogs(Set<Long> binderIds);
-	public List<ChangeLog> getDeletedEntryLogs(Set<Long> entryIds);
 }

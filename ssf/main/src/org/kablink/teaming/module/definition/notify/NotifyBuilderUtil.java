@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -49,6 +48,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.util.NLT;
@@ -59,12 +59,11 @@ import org.apache.velocity.tools.view.XMLToolboxManager;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.beans.factory.InitializingBean;
 
+
 /**
- * ?
- * 
+ *
  * @author Jong Kim
  */
-@SuppressWarnings("unchecked")
 public class NotifyBuilderUtil implements InitializingBean {
 	public static Log logger = LogFactory.getLog(NotifyBuilderUtil.class);
 	protected VelocityEngine velocityEngine;
@@ -95,8 +94,6 @@ public class NotifyBuilderUtil implements InitializingBean {
 	public void setToolboxConfig(String configFile) {
 		this.configFile = new ClassPathResource(configFile);
  	}
-	
-	@Override
 	public void afterPropertiesSet() {
 		XMLToolboxManager manager = new XMLToolboxManager();
 		try {
@@ -207,12 +204,6 @@ public class NotifyBuilderUtil implements InitializingBean {
 		ctx.put("property_name", "");
 		ctx.put("property_caption", "");
 		ctx.put("ssVisitor", visitor);
-
-		// What Locale should we read resource strings with?
-		Locale visitorLocale = null;
-		Notify notifyDef = visitor.getNotifyDef();
-		if (null != notifyDef)     visitorLocale = notifyDef.getLocale();
-		if (null == visitorLocale) visitorLocale = NLT.getDefaultLocale();
 		
 		String itemType = visitor.getItem().attributeValue("name", "");
 		//get Item from main config document
@@ -237,7 +228,7 @@ public class NotifyBuilderUtil implements InitializingBean {
 				//There might be multiple values so bulid a list
 				List propertyValues = new ArrayList();
 				for (Element selItem:selProperties) {
-					String selValue = NLT.getDef(selItem.attributeValue("value", ""), visitorLocale);
+					String selValue = NLT.getDef(selItem.attributeValue("value", ""));
 					if (Validator.isNotNull(selValue)) propertyValues.add(selValue);
 					
 				}
@@ -249,7 +240,7 @@ public class NotifyBuilderUtil implements InitializingBean {
 				if (propertyConfigType.equals("textarea")) {
 					propertyValue = selItem.getText();
 				} else {										
-					propertyValue = NLT.getDef(selItem.attributeValue("value", ""), visitorLocale);
+					propertyValue = NLT.getDef(selItem.attributeValue("value", ""));
 				}
 				//defaults don't apply here
 				//Set up any "setAttribute" values that need to be passed along. Save the old value so it can be restored
@@ -261,7 +252,7 @@ public class NotifyBuilderUtil implements InitializingBean {
 				}
 				if (Validator.isNull(propertyValue)) {
 					propertyValue = property.attributeValue("default", "");
-					if (!Validator.isNull(propertyValue)) propertyValue = NLT.getDef(propertyValue, visitorLocale);
+					if (!Validator.isNull(propertyValue)) propertyValue = NLT.getDef(propertyValue);
 				}
 				propertyValuesMap.put("property_"+propertyName, propertyValue);
 			
@@ -288,5 +279,7 @@ public class NotifyBuilderUtil implements InitializingBean {
    				NotifyBuilderUtil.logger.error("Error processing template", ex);
    			}
    		}
+
     }
+ 
 }

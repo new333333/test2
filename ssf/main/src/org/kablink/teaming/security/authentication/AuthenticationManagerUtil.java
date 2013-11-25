@@ -35,7 +35,6 @@ package org.kablink.teaming.security.authentication;
 import java.util.Map;
 
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.SPropsUtil;
@@ -44,37 +43,21 @@ import org.kablink.teaming.util.SpringContextUtil;
 
 public class AuthenticationManagerUtil {
 
-	public static User authenticate(final AuthenticationServiceProvider authenticationServiceProvider,
-			final String zoneName,
-			final String username, 
-			final String password,
-			final boolean createUser,
-			final boolean updateUser,
-			final boolean passwordAutoSynch,
-			final boolean ignorePassword, 
-			final Map updates,
+	public static User authenticate(final String zoneName,
+			final String username, final String password,
+			final boolean createUser, final boolean passwordAutoSynch,
+			final boolean ignorePassword, final Map updates,
 			final String authenticatorName)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
-		// Note on 'ignorePassword' argument - If this is true, it indicates that the actual authentication
-		// (i.e., validation of the user identity and credential) already took place successfully prior to
-		// calling this method, and therefore the password value passed here should not be used for the
-		// purpose of determining authentication outcome. 
-		// If the argument is false, however, then the password must be used for authentication purpose,
-		// and whether it matches or not determines the outcome of the overall authentication.
-		
 		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
-				return getAuthenticationManager().authenticate(
-						authenticationServiceProvider,
-						zoneName,
-						username, password, createUser, updateUser, passwordAutoSynch,
+				return getAuthenticationManager().authenticate(zoneName,
+						username, password, createUser, passwordAutoSynch,
 						ignorePassword, updates, authenticatorName);
 			}
 		}, zoneName);
 	}
 
-	// Use the above method instead
-	@Deprecated
 	public static User authenticate(final String zoneName,
 			final String username, final String password,
 			final Map updates, final String authenticatorName)
@@ -86,7 +69,7 @@ public class AuthenticationManagerUtil {
 		boolean createUser = 
 			SPropsUtil.getBoolean("portal.user.auto.create", true);
 		
-		return authenticate(AuthenticationServiceProvider.UNKNOWN, zoneName, username, password, createUser, true, passwordAutoSynch, ignorePassword, updates, authenticatorName);
+		return authenticate(zoneName, username, password, createUser, passwordAutoSynch, ignorePassword, updates, authenticatorName);
 	}
 	
 	public static User authenticate(final String zoneName,
@@ -94,7 +77,13 @@ public class AuthenticationManagerUtil {
 			final boolean passwordAutoSynch, final boolean ignorePassword,
 			final String authenticatorName) throws UserDoesNotExistException, UserAccountNotActiveException,
 			PasswordDoesNotMatchException {
-		throw new UnsupportedOperationException("This method is no longer implemented");
+		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
+			public Object doAs() {
+				return getAuthenticationManager().authenticate(zoneName,
+						username, password, passwordAutoSynch, ignorePassword,
+						authenticatorName);
+			}
+		}, zoneName);
 	}
 
 	public static User authenticate(final String zoneName, final Long userId,

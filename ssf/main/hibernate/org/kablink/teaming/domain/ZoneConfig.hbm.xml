@@ -20,31 +20,10 @@
 	<property name="fsaEnabled" access="field"/>
 	<property name="fsaSynchInterval" access="field"/>
 	<property name="fsaAutoUpdateUrl" access="field" length="255"/>
-	<property name="fsaDeployEnabled" access="field"/>
-	<property name="fsaDeployLocalApps" access="field"/>
-	<property name="fsaAllowCachePwd" access="field"/>
-	<property name="fsaMaxFileSize" access="field"/>
-	<property name="externalUserEnabled" access="field"/>
-	<property name="localeLanguage" access="field" length="16"/>
-	<property name="localeCountry" access="field" length="16"/>
-	<property name="adHocFoldersEnabled" access="field"/>
-	<property name="fileArchivingEnabled" access="field"/>
-	<property name="downloadEnabled" access="field"/>
-	<property name="webAccessEnabled" access="field"/>
-	<property name="auditTrailKeepDays" access="field"/>
-	<property name="auditTrailEnabled" access="field"/>
-	<property name="changeLogsKeepDays" access="field"/>
-	<property name="changeLogEnabled" access="field"/>
-	<property name="jitsEnabled" access="field"/>
-	<property name="jitsWaitTimeout" access="field"/>
-    <property name="shareListsBlob" length="2000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
-	<property name="allowShareWithLdapGroups" access="field"/>
     <component name="mailConfig" class="org.kablink.teaming.domain.MailConfig">
 		<property name="postingEnabled"/>
 		<property name="simpleUrlPostingEnabled"/>
    		<property name="sendMailEnabled"/>
-   		<property name="outgoingAttachmentSizeLimit"/>
-   		<property name="outgoingAttachmentSumLimit"/>
     </component>
     <component name="homePageConfig" class="org.kablink.teaming.domain.HomePageConfig">
 		<property name="defaultHomePageId"/>
@@ -57,34 +36,8 @@
      <component name="authenticationConfig" class="org.kablink.teaming.domain.AuthenticationConfig">
  		 <property name="allowLocalLogin" />
  		 <property name="allowAnonymousAccess"/>
- 		 <property name="anonymousReadOnly"/>
 	     <property name="allowSelfRegistration"/>
     	 <property name="lastUpdate"/>
-    </component>
-    <component name="openIDConfig" class="org.kablink.teaming.domain.OpenIDConfig" access="field">
- 		 <property name="selfProvisioningEnabled" column="openidSelfProvisioningEnabled" access="field"/>
- 		 <property name="authenticationEnabled" column="openidAuthenticationEnabled" access="field"/>
- 		 <property name="profileSynchronizationMode" column="openidProfileSyncMode" access="field"/>
-    </component>
-    <component name="mobileAppsConfig" class="org.kablink.teaming.domain.MobileAppsConfig">
-		<property name="mobileAppsEnabled"/>
-		<property name="mobileAppsAllowCachePwd"/>
-   		<property name="mobileAppsAllowCacheContent"/>
-   		<property name="mobileAppsAllowPlayWithOtherApps"/>
-   		<property name="mobileAppsSyncInterval"/>
-   		
-		<!-- The following are the fields for the Mobile -->
-		<!-- Application Management (MAM) settings.      -->
-   		<property name="mobileOpenIn" access="field"/>
-   		<property name="mobileCutCopyEnabled" access="field"/>
-   		<property name="mobileAndroidScreenCaptureEnabled" access="field"/>
-   		<property name="mobileDisableOnRootedOrJailBrokenDevices" access="field"/>
-   		<component name="mobileOpenInWhiteLists" class="org.kablink.teaming.domain.MobileOpenInWhiteLists">
-   			<property name="mobileOpenInWhiteLists" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
-   		</component>
-    </component>
-	<component name="nameCompletionSettings" class="org.kablink.teaming.domain.NameCompletionSettings">
-		<property name="nameCompletionSettings" length="4000"/>
     </component>
    </class>
 </hibernate-mapping>

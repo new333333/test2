@@ -106,7 +106,11 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                 --%></c:if><%--
 
                 --%><c:if test="${empty toolbarMenu.value.qualifiers.icon && empty toolbarMenu.value.qualifiers.iconclass}"><%--
-                    --%><span>${toolbarMenu.value.title}<%--
+                    --%><span <%--
+                    --%><c:if test="${!empty toolbarMenu.value.qualifiers.textId}"><%--
+                        --%> id="${toolbarMenu.value.qualifiers.textId}"<%--
+                    --%></c:if><%--
+                     --%>>${toolbarMenu.value.title}<%--
                 --%></c:if><%--
 
                 --%><c:if test="${!empty toolbarMenu.value.categories}"><%--

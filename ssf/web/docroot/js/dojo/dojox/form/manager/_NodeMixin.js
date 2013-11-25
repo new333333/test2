@@ -1,234 +1,239 @@
-//>>built
-define("dojox/form/manager/_NodeMixin",["dojo/_base/lang","dojo/_base/array","dojo/on","dojo/dom","dojo/dom-attr","dojo/query","./_Mixin","dijit/form/_FormWidget","dijit/_base/manager","dojo/_base/declare"],function(_1,_2,on,_3,_4,_5,_6,_7,_8,_9){
-var fm=_1.getObject("dojox.form.manager",true),aa=fm.actionAdapter,_a=fm._keys,ce=fm.changeEvent=function(_b){
-var _c="click";
-switch(_b.tagName.toLowerCase()){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.form.manager._NodeMixin"]){
+dojo._hasResource["dojox.form.manager._NodeMixin"]=true;
+dojo.provide("dojox.form.manager._NodeMixin");
+dojo.require("dojox.form.manager._Mixin");
+(function(){
+var fm=dojox.form.manager,aa=fm.actionAdapter,_1=fm._keys,ce=fm.changeEvent=function(_2){
+var _3="onclick";
+switch(_2.tagName.toLowerCase()){
 case "textarea":
-_c="keyup";
+_3="onkeyup";
 break;
 case "select":
-_c="change";
+_3="onchange";
 break;
 case "input":
-switch(_b.type.toLowerCase()){
+switch(_2.type.toLowerCase()){
 case "text":
 case "password":
-_c="keyup";
+_3="onkeyup";
 break;
 }
 break;
 }
-return _c;
-},_d=function(_e,_f){
-var _10=_4.get(_e,"name");
-_f=_f||this.domNode;
-if(_10&&!(_10 in this.formWidgets)){
-for(var n=_e;n&&n!==_f;n=n.parentNode){
-if(_4.get(n,"widgetId")&&_8.byNode(n).isInstanceOf(_7)){
+return _3;
+},_4=function(_5,_6){
+var _7=dojo.attr(_5,"name");
+_6=_6||this.domNode;
+if(_7&&!(_7 in this.formWidgets)){
+for(var n=_5;n&&n!==_6;n=n.parentNode){
+if(dojo.attr(n,"widgetId")&&dijit.byNode(n) instanceof dijit.form._FormWidget){
 return null;
 }
 }
-if(_e.tagName.toLowerCase()=="input"&&_e.type.toLowerCase()=="radio"){
-var a=this.formNodes[_10];
+if(_5.tagName.toLowerCase()=="input"&&_5.type.toLowerCase()=="radio"){
+var a=this.formNodes[_7];
 a=a&&a.node;
-if(a&&_1.isArray(a)){
-a.push(_e);
+if(a&&dojo.isArray(a)){
+a.push(_5);
 }else{
-this.formNodes[_10]={node:[_e],connections:[]};
+this.formNodes[_7]={node:[_5],connections:[]};
 }
 }else{
-this.formNodes[_10]={node:_e,connections:[]};
+this.formNodes[_7]={node:_5,connections:[]};
 }
 }else{
-_10=null;
+_7=null;
 }
-return _10;
-},_11=function(_12){
-var _13={};
-aa(function(_14,n){
-var o=_4.get(n,"data-dojo-observer")||_4.get(n,"observer");
+return _7;
+},_8=function(_9){
+var _a={};
+aa(function(_b,n){
+var o=dojo.attr(n,"observer");
 if(o&&typeof o=="string"){
-_2.forEach(o.split(","),function(o){
-o=_1.trim(o);
-if(o&&_1.isFunction(this[o])){
-_13[o]=1;
+dojo.forEach(o.split(","),function(o){
+o=dojo.trim(o);
+if(o&&dojo.isFunction(this[o])){
+_a[o]=1;
 }
 },this);
 }
-}).call(this,null,this.formNodes[_12].node);
-return _a(_13);
-},_15=function(_16,_17){
-var t=this.formNodes[_16],c=t.connections;
+}).call(this,null,this.formNodes[_9].node);
+return _1(_a);
+},_c=function(_d,_e){
+var t=this.formNodes[_d],c=t.connections;
 if(c.length){
-_2.forEach(c,function(_18){
-_18.remove();
-});
+dojo.forEach(c,dojo.disconnect);
 c=t.connections=[];
 }
-aa(function(_19,n){
-var _1a=ce(n);
-_2.forEach(_17,function(o){
-c.push(on(n,_1a,_1.hitch(this,function(evt){
-if(this.watching){
-this[o](this.formNodeValue(_16),_16,n,evt);
+aa(function(_f,n){
+var _10=ce(n);
+dojo.forEach(_e,function(o){
+c.push(dojo.connect(n,_10,this,function(evt){
+if(this.watch){
+this[o](this.formNodeValue(_d),_d,n,evt);
 }
-})));
+}));
 },this);
 }).call(this,null,t.node);
 };
-return _9("dojox.form.manager._NodeMixin",null,{destroy:function(){
-for(var _1b in this.formNodes){
-_2.forEach(this.formNodes[_1b].connections,function(_1c){
-_1c.remove();
-});
+dojo.declare("dojox.form.manager._NodeMixin",null,{destroy:function(){
+for(var _11 in this.formNodes){
+dojo.forEach(this.formNodes[_11].connections,dojo.disconnect);
 }
 this.formNodes={};
 this.inherited(arguments);
-},registerNode:function(_1d){
-if(typeof _1d=="string"){
-_1d=_3.byId(_1d);
+},registerNode:function(_12){
+if(typeof _12=="string"){
+_12=dojo.byId(_12);
 }
-var _1e=_d.call(this,_1d);
-if(_1e){
-_15.call(this,_1e,_11.call(this,_1e));
-}
-return this;
-},unregisterNode:function(_1f){
-if(_1f in this.formNodes){
-_2.forEach(this.formNodes[_1f].connections,function(_20){
-_20.remove();
-});
-delete this.formNodes[_1f];
+var _13=_4.call(this,_12);
+if(_13){
+_c.call(this,_13,_8.call(this,_13));
 }
 return this;
-},registerNodeDescendants:function(_21){
-if(typeof _21=="string"){
-_21=_3.byId(_21);
+},unregisterNode:function(_14){
+if(_14 in this.formNodes){
+dojo.forEach(this.formNodes[_14].connections,this.disconnect,this);
+delete this.formNodes[_14];
 }
-_5("input, select, textarea, button",_21).map(function(n){
-return _d.call(this,n,_21);
-},this).forEach(function(_22){
-if(_22){
-_15.call(this,_22,_11.call(this,_22));
+return this;
+},registerNodeDescendants:function(_15){
+if(typeof _15=="string"){
+_15=dojo.byId(_15);
+}
+dojo.query("input, select, textarea, button",_15).map(function(n){
+return _4.call(this,n,_15);
+},this).forEach(function(_16){
+if(_16){
+_c.call(this,_16,_8.call(this,_16));
 }
 },this);
 return this;
-},unregisterNodeDescendants:function(_23){
-if(typeof _23=="string"){
-_23=_3.byId(_23);
+},unregisterNodeDescendants:function(_17){
+if(typeof _17=="string"){
+_17=dojo.byId(_17);
 }
-_5("input, select, textarea, button",_23).map(function(n){
-return _4.get(_23,"name")||null;
-}).forEach(function(_24){
-if(_24){
-this.unregisterNode(_24);
+dojo.query("input, select, textarea, button",_17).map(function(n){
+return dojo.attr(_17,"name")||null;
+}).forEach(function(_18){
+if(_18){
+this.unregisterNode(_18);
 }
 },this);
 return this;
-},formNodeValue:function(_25,_26){
-var _27=arguments.length==2&&_26!==undefined,_28;
-if(typeof _25=="string"){
-_25=this.formNodes[_25];
-if(_25){
-_25=_25.node;
+},formNodeValue:function(_19,_1a){
+var _1b=arguments.length==2&&_1a!==undefined,_1c;
+if(typeof _19=="string"){
+_19=this.formNodes[_19];
+if(_19){
+_19=_19.node;
 }
 }
-if(!_25){
+if(!_19){
 return null;
 }
-if(_1.isArray(_25)){
-if(_27){
-_2.forEach(_25,function(_29){
-_29.checked="";
+if(dojo.isArray(_19)){
+if(_1b){
+dojo.forEach(_19,function(_1d){
+_1d.checked="";
 });
-_2.forEach(_25,function(_2a){
-_2a.checked=_2a.value===_26?"checked":"";
+dojo.forEach(_19,function(_1e){
+_1e.checked=_1e.value===_1a?"checked":"";
 });
 return this;
 }
-_2.some(_25,function(_2b){
-if(_2b.checked){
-_28=_2b;
+dojo.some(_19,function(_1f){
+if(_1f.checked){
+_1c=_1f;
 return true;
 }
 return false;
 });
-return _28?_28.value:"";
+return _1c?_1c.value:"";
 }
-switch(_25.tagName.toLowerCase()){
+switch(_19.tagName.toLowerCase()){
 case "select":
-if(_25.multiple){
-if(_27){
-if(_1.isArray(_26)){
-var _2c={};
-_2.forEach(_26,function(v){
-_2c[v]=1;
+if(_19.multiple){
+if(_1b){
+if(dojo.isArray(_1a)){
+var _20={};
+dojo.forEach(_1a,function(v){
+_20[v]=1;
 });
-_5("> option",_25).forEach(function(opt){
-opt.selected=opt.value in _2c;
-});
-return this;
-}
-_5("> option",_25).forEach(function(opt){
-opt.selected=opt.value===_26;
+dojo.query("> option",_19).forEach(function(opt){
+opt.selected=opt.value in _20;
 });
 return this;
 }
-_28=_5("> option",_25).filter(function(opt){
+dojo.query("> option",_19).forEach(function(opt){
+opt.selected=opt.value===_1a;
+});
+return this;
+}
+var _1c=dojo.query("> option",_19).filter(function(opt){
 return opt.selected;
 }).map(function(opt){
 return opt.value;
 });
-return _28.length==1?_28[0]:_28;
+return _1c.length==1?_1c[0]:_1c;
 }
-if(_27){
-_5("> option",_25).forEach(function(opt){
-opt.selected=opt.value===_26;
+if(_1b){
+dojo.query("> option",_19).forEach(function(opt){
+opt.selected=opt.value===_1a;
 });
 return this;
 }
-return _25.value||"";
+return _19.value||"";
 case "button":
-if(_27){
-_25.innerHTML=""+_26;
+if(_1b){
+_19.innerHTML=""+_1a;
 return this;
 }
-return _25.innerHTML;
+return _19.innerHTML;
 case "input":
-if(_25.type.toLowerCase()=="checkbox"){
-if(_27){
-_25.checked=_26?"checked":"";
+if(_19.type.toLowerCase()=="checkbox"){
+if(_1b){
+_19.checked=_1a?"checked":"";
 return this;
 }
-return Boolean(_25.checked);
+return Boolean(_19.checked);
 }
 }
-if(_27){
-_25.value=""+_26;
+if(_1b){
+_19.value=""+_1a;
 return this;
 }
-return _25.value;
-},inspectFormNodes:function(_2d,_2e,_2f){
-var _30,_31={};
-if(_2e){
-if(_1.isArray(_2e)){
-_2.forEach(_2e,function(_32){
-if(_32 in this.formNodes){
-_31[_32]=_2d.call(this,_32,this.formNodes[_32].node,_2f);
+return _19.value;
+},inspectFormNodes:function(_21,_22,_23){
+var _24,_25={};
+if(_22){
+if(dojo.isArray(_22)){
+dojo.forEach(_22,function(_26){
+if(_26 in this.formNodes){
+_25[_26]=_21.call(this,_26,this.formNodes[_26].node,_23);
 }
 },this);
 }else{
-for(_30 in _2e){
-if(_30 in this.formNodes){
-_31[_30]=_2d.call(this,_30,this.formNodes[_30].node,_2e[_30]);
+for(_24 in _22){
+if(_24 in this.formNodes){
+_25[_24]=_21.call(this,_24,this.formNodes[_24].node,_22[_24]);
 }
 }
 }
 }else{
-for(_30 in this.formNodes){
-_31[_30]=_2d.call(this,_30,this.formNodes[_30].node,_2f);
+for(_24 in this.formNodes){
+_25[_24]=_21.call(this,_24,this.formNodes[_24].node,_23);
 }
 }
-return _31;
+return _25;
 }});
-});
+})();
+}

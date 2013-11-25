@@ -36,6 +36,9 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 
+import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 
@@ -45,6 +48,12 @@ public class JAXBContextResolverWrapper implements ContextResolver<JAXBContext> 
     private ContextResolver<JAXBContext> jaxbContextResolver; // real one this is wrapping
     
     private static final String JAXB_CONTEXT_RESOLVER_CLASS_NAME_DEFAULT = "org.kablink.teaming.rest.v1.provider.DefaultJAXBContextResolver";
+    
+    private final Class[] cTypes = {
+    		FileProperties.class,
+    		FileVersionProperties.class,
+    		FileVersionPropertiesCollection.class
+    		};
     
     public JAXBContextResolverWrapper() throws Exception {
     	String className = SPropsUtil.getString("jaxb.context.resolver.class", JAXB_CONTEXT_RESOLVER_CLASS_NAME_DEFAULT);

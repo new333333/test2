@@ -186,22 +186,6 @@ public class ManageDefinitionsController extends  SAbstractController {
 					url.setParameter( WebKeys.URL_BINDER_ID, binder.getId().toString() );
 				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
 			}
-			if (getDefinitionModule().testAccess(binder, Definition.EXTERNAL_USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
-				if (hasDefinitionType(defs, Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
-					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-					fillTypeElement(element, "__external_user_workspace_view", String.valueOf(Definition.EXTERNAL_USER_WORKSPACE_VIEW));
-					fillChildElements(element, Definition.EXTERNAL_USER_WORKSPACE_VIEW, defs);
-					designers.put(element.attributeValue("title"), element);
-				}
-				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='externalUserWorkspaceViewDefinition']");
-				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
-				url.setParameter("definitionType", String.valueOf(Definition.EXTERNAL_USER_WORKSPACE_VIEW));
-				if ( binder != null )
-					url.setParameter( WebKeys.URL_BINDER_ID, binder.getId().toString() );
-				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
-			}
 			if (getDefinitionModule().testAccess(binder, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition)) {
 				if (hasDefinitionType(defs, Definition.FOLDER_ENTRY)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
@@ -412,9 +396,6 @@ public class ManageDefinitionsController extends  SAbstractController {
 			break;
 		case Definition.USER_WORKSPACE_VIEW:
 			fillTypeElement(rootElement, "__user_workspace_view", String.valueOf(Definition.USER_WORKSPACE_VIEW));
-			break;
-		case Definition.EXTERNAL_USER_WORKSPACE_VIEW:
-			fillTypeElement(rootElement, "__external_user_workspace_view", String.valueOf(Definition.EXTERNAL_USER_WORKSPACE_VIEW));
 			break;
 		case Definition.PROFILE_VIEW:
 			fillTypeElement(rootElement, "__profile_views", String.valueOf(Definition.PROFILE_VIEW));

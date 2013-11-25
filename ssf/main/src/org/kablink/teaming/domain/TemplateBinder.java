@@ -38,10 +38,6 @@ import java.util.List;
 public class TemplateBinder extends Binder {
 	protected Description tDescription;
 	protected String tTitle;
-	protected Long tOwningBinder;
-	protected Long tEntrySourceBinder;
-	protected Boolean tHidden = Boolean.FALSE;
-	
 	public TemplateBinder() {
 		super();
 	}
@@ -75,12 +71,6 @@ public class TemplateBinder extends Binder {
     public List getViewDefinitions() {
 		return getDefs(definitionType);
     }
-
-    @Override
-    protected Binder newInstance() {
-        return new TemplateBinder();
-    }
-
     /**
      * @hibernate.component prefix="tDescription_"
      */
@@ -110,48 +100,13 @@ public class TemplateBinder extends Binder {
     public void setTemplateTitle(String tTitle) {
     	this.tTitle = tTitle;
     }
-    
-	public Long getTemplateOwningBinderId() {
-		return tOwningBinder;
-	}
-	public void setTemplateOwningBinderId(Long tOwningBinder) {
-		this.tOwningBinder = tOwningBinder;
-	}
-
-	public Long getTemplateEntrySourceBinderId() {
-		return tEntrySourceBinder;
-	}
-	public void setTemplateEntrySourceBinderId(Long tEntrySourceBinder) {
-		this.tEntrySourceBinder = tEntrySourceBinder;
-	}
-
-	public boolean isTemplateHidden() {
-		if (tHidden == null) return false;
-		return tHidden;
-	}
-	public boolean getTemplateHidden() {
-		if (tHidden == null) return false;
-		return tHidden;
-	}
-	public void setTemplateHidden(Boolean tHidden) {
-		if (tHidden == null) tHidden = Boolean.FALSE;
-		this.tHidden = tHidden;
-	}
-
-	//we always can inherit
+    //we always can inherit
     public boolean isFunctionMembershipInherited() {
        return functionMembershipInherited;
     }
     //this is needed for templates, which may inherit from a yet to be determined parent
     public boolean isFunctionMembershipInheritanceSupported() {
     	return true;
-    }
-	//we always can inherit
-    public boolean isExtFunctionMembershipInherited() {
-   	 if(extFunctionMembershipInherited == null)
-		 return true;
-	 else
-		 return extFunctionMembershipInherited.booleanValue();
     }
 
 

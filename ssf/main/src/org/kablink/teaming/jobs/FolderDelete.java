@@ -36,7 +36,7 @@ public interface FolderDelete {
 	public final static String FOLDER_DELETE_GROUP="folder-delete";
 	public final static String FOLDER_DELETE_DESCRIPTION="Complete folder delete";
 	public final static String DELETE_JOB="delete.job";//property key
-	public final static String DELETE_MINUTES="delete.timeout.minutes";//property key
+	public final static String DELETE_HOURS="delete.timeout.hours";//property key
 	public void schedule(Long zoneId, int seconds);
 	public void remove(Long zoneId);
 }

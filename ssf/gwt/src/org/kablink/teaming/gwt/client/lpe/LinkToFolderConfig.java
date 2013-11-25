@@ -33,10 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.LinkToBinderWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 import com.google.gwt.http.client.URL;
 
 
@@ -100,23 +96,6 @@ public class LinkToFolderConfig extends ConfigItem
 	{
 		// Nothing to do.
 	}// end addChild()
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		return new LinkToBinderWidget( this, widgetStyles );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public LinkToFolderDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new LinkToFolderDropWidget( lpe, this );
-	}
 	
 	
 	/**

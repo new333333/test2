@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -275,7 +275,6 @@ div.ss_canvas {
 	padding: 8px;
 	background: #FFF;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
 .ss_im_status_active{
@@ -368,7 +367,6 @@ div.ss_canvas {
 	padding: 10px;
 	line-height:1.2em;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
 div.item-sub a {
@@ -402,7 +400,6 @@ div.item-sub a {
 	margin-bottom: 10px;
 	background: #FFF;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
 	/* NOTES */
@@ -616,7 +613,7 @@ div.item-sub a {
 	font-weight: 400;
 	font-family: Arial, Helvetica, sans-serif;
 	color:#5691A6 !important;
-	font-size:1.3em;
+	font-size:18px;
 	}
 .wg-comment .ss_entryContent .ss_link_7 span {
 	color:#135c8f !important;
@@ -670,7 +667,6 @@ div.item-sub a {
 .ss_tertiaryTabs, #ss_dashboard_content {
 	background-color: #eaebe8; /* Gray 8 */
 	-moz-border-radius: 5px;
-	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
 #ss_tabsC {
@@ -696,7 +692,6 @@ div.item-sub a {
 	font-size: 11px;
     white-space:nowrap !important;
 	-moz-border-radius: 3px;
-	border-radius: 3px;
 	-webkit-border-radius: 3px;
       }
 
@@ -726,10 +721,6 @@ div.item-sub a {
 	-moz-border-radius-topright: 5px;
 	-moz-border-radius-bottomleft: 0px;
 	-moz-border-radius-bottomright: 0px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 0px;

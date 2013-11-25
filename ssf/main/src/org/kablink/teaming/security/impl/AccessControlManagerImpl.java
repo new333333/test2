@@ -44,35 +44,22 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
-import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
-import org.kablink.teaming.domain.AuthenticationConfig;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.license.LicenseManager;
-import org.kablink.teaming.module.authentication.AuthenticationModule;
-import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.accesstoken.AccessToken;
-import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -83,7 +70,6 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.util.search.Constants;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -99,10 +85,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     private CoreDao coreDao;
     private ProfileDao profileDao;
     private LicenseManager licenseManager;
-    private AuthenticationModule authenticationModule;
     private Map synchAgentRights;
     private Map synchAgentTokenBoostRights;
-    private Map fileSyncAgentRights;
     
 	public void afterPropertiesSet() throws Exception {
 		synchAgentRights = new HashMap();
@@ -116,12 +100,6 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		if(strs2 != null) {
 			for(String str:strs2)
 				synchAgentTokenBoostRights.put(str, str);
-		}
-		fileSyncAgentRights = new HashMap();
-		String[] strs3 = SPropsUtil.getStringArray("file.sync.agent.rights", ",");
-		if(strs3 != null) {
-			for(String str:strs3)
-				fileSyncAgentRights.put(str, str);
 		}
 	}
 	
@@ -156,13 +134,6 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	protected LicenseManager getLicenseManager() {
 		return licenseManager;
 	}
-	public void setAuthenticationModule(AuthenticationModule authenticationModule) {
-		this.authenticationModule = authenticationModule;
-	}
-	protected AuthenticationModule getAuthenticationModule() {
-		authenticationModule = (AuthenticationModule) SpringContextUtil.getBean("authenticationModule");
-		return authenticationModule;
-	}
     public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
          if(workArea.isFunctionMembershipInherited()) {
             WorkArea parentWorkArea = workArea.getParentWorkArea();
@@ -187,61 +158,13 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	throws AccessControlException {
         return testOperation
         	(RequestContextHolder.getRequestContext().getUser(), 
-        	        workArea, workAreaOperation);
+        	        workArea, workArea, workAreaOperation);
     }
 	
 	public boolean testOperation(User user,
 			WorkArea workArea, WorkAreaOperation workAreaOperation) {
-		long begin = System.nanoTime();
+		return testOperation(user, workArea, workArea, workAreaOperation);
 		
-		boolean result = testOperationRecursive(user, workArea, workArea, workAreaOperation);
-
-		if(logger.isDebugEnabled()) {
-			double diff = (System.nanoTime() - begin)/1000000.0; // millisecond
-			logger.debug("testOperation: result=" + result + 
-					" operation=" + workAreaOperation.getName() +
-					" time=" + diff + 
-					" user=" + user.getName() +
-					" wa-type=" + workArea.getClass().getSimpleName() +
-					" wa-id=" + workArea.getWorkAreaId());
-		}
-		
-		return result;
-	}
-	
-	private boolean checkRootFolderAccess(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
-		//See if this is a net folder
-		if (workArea.isAclExternallyControlled() && !WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER.equals(workAreaOperation)) {
-			//We must also check that the user has the right to access this net folder
-			Binder topFolder = null;
-			if (workArea instanceof FolderEntry) {
-				topFolder = ((FolderEntry)workArea).getParentBinder();
-			} else if (workArea instanceof Folder) {
-				topFolder = (Folder)workArea;
-			}
-			while (topFolder != null) {
-				if (topFolder.getParentBinder() != null &&
-						!topFolder.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
-					//We have found the top folder (i.e., the net folder root)
-					break;
-				}
-				//Go up a level
-				topFolder = topFolder.getParentBinder();
-			}
-			//See if the top folder is inheriting from its parent
-			while (topFolder != null && topFolder.isFunctionMembershipInherited()) {
-				topFolder = topFolder.getParentBinder();
-			}
-			//Now check if the root folder allows access
-			if (topFolder != null) {
-				if (!testOperation(user, topFolder, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER)) {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		}
-		return true;
 	}
 	
 	private boolean applicationPlaysNoRoleInAccessControl(Application application) {
@@ -251,185 +174,119 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	private boolean userAccessGrantedViaSpecialMeans(User user, WorkAreaOperation workAreaOperation) {
 		return (user.isSuper() || 
 				isDirectSynchronizationWork(user, workAreaOperation) ||
-				isIndirectSynchronizationWork(workAreaOperation) ||
-				isFileSyncWork(user, workAreaOperation));
+				isIndirectSynchronizationWork(workAreaOperation));
 	}
 	
 	//pass the original ownerId in.  Recursive calls need the original
-	private boolean testOperationRecursive(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
-		if(isAccessCheckTemporarilyDisabled())
-			return true;
-		
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		Application application = null;
-		if(RequestContextHolder.getRequestContext() != null)
-			application = RequestContextHolder.getRequestContext().getApplication();		
-		
-		if(userAccessGrantedViaSpecialMeans(user, workAreaOperation) &&
-				applicationPlaysNoRoleInAccessControl(application)) {
-			return true;
-		}
-		if (user.isDisabled() || user.isDeleted()) {
-			//Whatever the operation, deny it if the user account is disabled or deleted
-			return false;
-		}
-		if (user.isShared()) {
-			//This is the "guest" account. Make sure guest access is enabled
-			AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
-			if (!config.isAllowAnonymousAccess()) {
-				//Guest access is not enabled, disallow access to everything
+	private boolean testOperation(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
+		long begin = System.nanoTime();
+
+		try {
+			if(isAccessCheckTemporarilyDisabled())
+				return true;
+			
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			Application application = null;
+			if(RequestContextHolder.getRequestContext() != null)
+				application = RequestContextHolder.getRequestContext().getApplication();		
+			
+			if(userAccessGrantedViaSpecialMeans(user, workAreaOperation) &&
+					applicationPlaysNoRoleInAccessControl(application)) {
+				return true;
+			}
+			if (user.isDisabled() || user.isDeleted()) {
+				//Whatever the operation, deny it if the user account is disabled or deleted
 				return false;
 			}
-			//See if the user is only allowed "read only" rights
-			if (config.isAnonymousReadOnly()) {
-				//This is the guest account and it is read only. Only allow checks for read rights
-				if (!WorkAreaOperation.READ_ENTRIES.equals(workAreaOperation) &&
-						!WorkAreaOperation.VIEW_BINDER_TITLE.equals(workAreaOperation) &&
-						!WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER.equals(workAreaOperation)) {
-					//Rights other than "read" rights are not permitted by read only guests
+			if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 
+					!workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE) && 
+					!getLicenseManager().validLicense())return false;
+			if (workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE)) {
+				if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 					return false;
 				}
 			}
-		}
-		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 
-				!workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE) && 
-				!getLicenseManager().validLicense())return false;
-		if (workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE)) {
-			if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
-				return false;
-			}
-		}
-		boolean isExternalAclControlledOperation = isExternalAclControlledOperation(workArea, workAreaOperation);
-		if ((!isExternalAclControlledOperation && 
-					(workArea.isFunctionMembershipInherited() || 
-					(workArea instanceof FolderEntry && !((FolderEntry)workArea).hasEntryAcl()))) || 
-				(isExternalAclControlledOperation && workArea.isExtFunctionMembershipInherited())) {
-			WorkArea parentWorkArea = workArea.getParentWorkArea();
-			if (workArea instanceof FolderEntry) {
-				//For folder entries, get the parent folder instead of the top entry
-				parentWorkArea = ((FolderEntry)workArea).getParentBinder();
-			}
-			if (parentWorkArea == null) {
-				throw new InternalException(
-						"Cannot inherit function membership when it has no parent");
+			if (workArea.isFunctionMembershipInherited()) {
+				WorkArea parentWorkArea = workArea.getParentWorkArea();
+				if (parentWorkArea == null)
+					throw new InternalException(
+							"Cannot inherit function membership when it has no parent");
+				else
+					// use the original workArea owner
+					return testOperation(user, workAreaStart, parentWorkArea, workAreaOperation);
 			} else {
-				// use the original workArea owner
-				if (testOperationRecursive(user, workAreaStart, parentWorkArea, workAreaOperation)) {
-					if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
-						//OK, this is accessible by this user
-						return true;
-					} else {
-						//See if this was shared. If so, we can ignore the rootFolderAccess check
-						return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+				Set membersToLookup = null;
+				if(application != null && !application.isTrusted()) {
+					membersToLookup = getProfileDao().getPrincipalIds(application);
+					// First, test against the zone-wide maximum set by the admin
+					if(!checkWorkAreaFunctionMembership(user.getZoneId(),
+									getCoreDao().loadZoneConfig(user.getZoneId()),
+									workAreaOperation,
+									membersToLookup)) {
+						return false;
 					}
-				} else {
-					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+					// First test passed. Now test against the specified work area.
+					if(!checkWorkAreaFunctionMembership(user.getZoneId(),
+									workArea, 
+									workAreaOperation, 
+									membersToLookup)) {
+						return false;
+					}
 				}
-			}
-		} else {
-			Set<Long> applicationMembersToLookup = null;
-			if(application != null && !application.isTrusted()) {
-				applicationMembersToLookup = getProfileDao().getApplicationLevelPrincipalIds(application);
-				// First, test against the zone-wide maximum set by the admin
-				if(!checkWorkAreaFunctionMembership(user.getZoneId(),
-								getCoreDao().loadZoneConfig(user.getZoneId()),
-								workAreaOperation,
-								applicationMembersToLookup)) {
-					return false;
-				}
-				// First test passed. Now test against the specified work area.
-				if(!checkWorkAreaFunctionMembership(user.getZoneId(),
-								workArea, 
-								workAreaOperation, 
-								applicationMembersToLookup)) {
-					return false;
-				}
-			}
-			Set<Long> userApplicationLevelMembersToLookup = getProfileDao().getApplicationLevelPrincipalIds(user);
-			Long allUsersId = Utils.getAllUsersGroupId();
-			Long allExtUsersId = Utils.getAllExtUsersGroupId();
-			if (allUsersId != null && !workArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE) 
-					&& userApplicationLevelMembersToLookup.contains(allUsersId) && 
-					Utils.canUserOnlySeeCommonGroupMembers(user)) {
-				if (Utils.isWorkareaInProfilesTree(workAreaStart) && !user.getId().equals(workAreaStart.getOwnerId())) {
-					//If this user does not share a group with the binder owner, remove the "All Users" group.
-					boolean remove = true;
-					if (workArea.getWorkAreaType().equals(EntityType.workspace.name()) ||
-							workArea.getWorkAreaType().equals(EntityType.folder.name())) {
-						List<Group> groups = workArea.getOwner().getMemberOf();
-						for (Group g : groups) {
-							//See if this group is not the allExtUsers group and is shared with the user
-							//Being in the allExtUsers group does not count as a "common" group
-							if (!g.getId().equals(allExtUsersId) && userApplicationLevelMembersToLookup.contains(g.getId())) {
-								remove = false;
-								break;
-							}
-						}
-						if (remove) {
-							//There wasn't a direct match of groups, go look in the exploded list
-							Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(workArea.getOwner().getId(), zoneId);
-							for (Long gId : userGroupIds) {
-								if (!gId.equals(allExtUsersId) && userApplicationLevelMembersToLookup.contains(gId)) {
+				membersToLookup = getProfileDao().getPrincipalIds(user);
+				Long allUsersId = Utils.getAllUsersGroupId();
+				if (allUsersId != null && !workArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name()) 
+						&& membersToLookup.contains(allUsersId) && 
+						Utils.canUserOnlySeeCommonGroupMembers(user)) {
+					if (Utils.isWorkareaInProfilesTree(workArea)) {
+						//If this user does not share a group with the binder owner, remove the "All Users" group.
+						boolean remove = true;
+						if (workArea.getWorkAreaType().equals(EntityType.workspace.name()) ||
+								workArea.getWorkAreaType().equals(EntityType.folder.name())) {
+							List<Group> groups = workArea.getOwner().getMemberOf();
+							List gIds = new ArrayList();
+							for (Group g : groups) {
+								gIds.add(g.getId());
+								if (membersToLookup.contains(g.getId())) {
 									remove = false;
 									break;
 								}
 							}
+							if (remove) {
+								//There wasn't a direct match of groups, go look in the exploded list
+								Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(workArea.getOwner().getId(), zoneId);
+								for (Long gId : userGroupIds) {
+									if (membersToLookup.contains(gId)) {
+										remove = false;
+										break;
+									}
+								}
+							}
 						}
-					}
-					if (remove) {
-						//The user is only allowed to see users in a common group, and the user does not share a common group.
-						//So, we remove the All Users and All Ext Users groups to force using just the real groups and users in the ACL check
-						userApplicationLevelMembersToLookup.remove(allUsersId);
-						userApplicationLevelMembersToLookup.remove(allExtUsersId);
+						if (remove) membersToLookup.remove(allUsersId);
 					}
 				}
-			}
-			//if current user is the workArea owner, add special Id to is membership
-			if (user.getId().equals(workAreaStart.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
-			Set<Long> teamMembers = null;
-			if (workAreaStart instanceof FolderEntry) {
-				teamMembers = ((FolderEntry)workAreaStart).getParentBinder().getTeamMemberIds();
-			} else {
-				teamMembers = workAreaStart.getTeamMemberIds();
-			}
-			if (teamMembers != null && !Collections.disjoint(teamMembers, userApplicationLevelMembersToLookup)) {
-				userApplicationLevelMembersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
-			}
-			// Take container groups into consideration
-			List<Long> containerGroupsToLookup = getProfileDao().getMemberOfLdapContainerGroupIds(user.getId(), zoneId);
-			Set<Long> userAllMembersToLookup = null;
-			if (containerGroupsToLookup.isEmpty()) {
-				userAllMembersToLookup = userApplicationLevelMembersToLookup;
-			} else {	
-				userAllMembersToLookup = new HashSet<Long>(userApplicationLevelMembersToLookup);
-				userAllMembersToLookup.addAll(containerGroupsToLookup);
-			}
-			// Regular ACL checking must take container groups into consideration. 
-			// However, sharing-granted ACL checking must not because sharing can never take
-			// place against a container group.
-			if (workArea.isAclExternallyControlled() && 
-					workArea instanceof FolderEntry && 
-					((FolderEntry)workArea).noAclDredged()) {
-				//See if this is an operation controlled externally
-				if (isExternalAclControlledOperation) {
-					//This entry has no ACL set up, so it has to get it from the file system 
-					if (testRightGrantedByDredgedAcl(user, (FolderEntry)workArea, workAreaOperation)) {
-						return true;
-					}
-				}
-			} else if (checkWorkAreaFunctionMembership(user.getZoneId(),
-							workArea, workAreaOperation, userAllMembersToLookup)) {
-				if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
-					//OK, this is accessible by this user
-					return true;
+				//if current user is the workArea owner, add special Id to is membership
+				if (user.getId().equals(workAreaStart.getOwnerId())) membersToLookup.add(ObjectKeys.OWNER_USER_ID);
+				Set<Long> teamMembers = null;
+				if (workAreaStart instanceof FolderEntry) {
+					teamMembers = ((FolderEntry)workAreaStart).getParentBinder().getTeamMemberIds();
 				} else {
-					//See if this was shared. If so, we can ignore the rootFolderAccess check
-					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+					teamMembers = workAreaStart.getTeamMemberIds();
 				}
+				if (!Collections.disjoint(teamMembers, membersToLookup)) membersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
+				return checkWorkAreaFunctionMembership(user.getZoneId(),
+								workArea, workAreaOperation, membersToLookup);
 			}
-			
-			//It isn't available by normal ACLs, so check if shared
-			return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+		}
+		finally {
+			if(logger.isDebugEnabled()) {
+				double diff = (System.nanoTime() - begin)/1000000.0;
+				logger.debug("testOperation took " + diff + "ms: userName=" + user.getName() + " userId=" + user.getId() + 
+						" workAreStart=" + ((workAreaStart==null)? null:workAreaStart.getWorkAreaId()) + 
+						" workArea=" + ((workArea==null)? null:workArea.getWorkAreaId()) +
+						" workAreaOperation=" + workAreaOperation.getName());
+			}
 		}
 	}
 	
@@ -442,10 +299,10 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	public void checkOperation(User user, WorkArea workArea, 
 			WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
-        if (!testOperation(user, workArea, workAreaOperation)) {
+        if (!testOperation(user, workArea, workArea, workAreaOperation)) {
         	if (workArea instanceof Entry && ((Entry)workArea).hasEntryAcl() && ((Entry)workArea).isIncludeFolderAcl()) {
         		//See if the parent or the entry is allowing access
-        		if (testOperation(user, ((Entry)workArea).getParentBinder(), workAreaOperation)) {
+        		if (testOperation(user, ((Entry)workArea).getParentBinder(), ((Entry)workArea).getParentBinder(), workAreaOperation)) {
         			return;
         		}
         	}
@@ -467,8 +324,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
         		throw new OperationAccessControlExceptionNoName(user.getName(), 
             			workAreaOperation.toString());
         	}
-        	if (testOperation(user, workArea, WorkAreaOperation.READ_ENTRIES) ||
-        			testOperation(user, workArea, WorkAreaOperation.VIEW_BINDER_TITLE)) {
+        	if (testOperation(user, workArea, workArea, WorkAreaOperation.READ_ENTRIES) ||
+        			testOperation(user, workArea, workArea, WorkAreaOperation.VIEW_BINDER_TITLE)) {
         		throw new OperationAccessControlException(user.getName(), 
         			workAreaOperation.toString(), workArea.toString());
         	} else {
@@ -517,11 +374,6 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		else
 			return false;
 	}
-	
-	private boolean isFileSyncWork(User user, WorkAreaOperation workAreaOperation) {
-		return ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId()) &&
-			(fileSyncAgentRights.get(workAreaOperation.getName()) != null);
-	}
 
     private boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
             WorkAreaOperation workAreaOperation, Set membersToLookup) {
@@ -539,148 +391,4 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	(zoneId, workArea, workAreaOperation, membersToLookup);
     }
 
-    @Override
-    public boolean testRightGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
-    	return testRightGrantedBySharing(user, workArea, workAreaOperation, null);
-    }
-
-    private boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
-    	// Unlike regular ACL checking, share right checking is not implemented using recursive invocation.
-		FolderEntry topEntry = null;
-		if (workAreaStart instanceof FolderEntry) {
-			topEntry = ((FolderEntry)workAreaStart).getTopEntry();
-		}
-
-		//Check for this being a reply. We allow recursion of replies up to the parent entry.
-    	if (workAreaStart != workArea && topEntry == null) {
-    		//This is not a reply to an entry, so recursion is not being used
-    		return false;
-    	} else if (workAreaStart == workArea && topEntry != null && topEntry != workAreaStart) {
-			//This is a reply. So we must check the top entry instead
-			return testRightGrantedBySharing(user, workAreaStart, topEntry, workAreaOperation, userMembers);
-    	}
-    	
-    	if (testRightGrantedBySharing(user, workArea, workAreaOperation, userMembers)) {
-    		return true;
-    	} else {
-    		//Is this the guest user? If so, we are done.
-    		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-    			return false;
-    		}
-    		if (WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS.equals(workAreaOperation) || 
-    				WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS.equals(workAreaOperation)) {
-    			//Don't try to check further on these rights. It will loop. These operations can't be shared.
-    			return false;
-    		}
-    		//The user doesn't have direct access, see if guest has access (if guest is allowed in at all)
-    		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-			AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
-			if (!config.isAllowAnonymousAccess()) {
-				//Guest access is not enabled, disallow access to everything
-				return false;
-			} else {
-				User guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zoneId);
-				return testOperation(guest, workArea, workAreaOperation);
-			}
-    	}
-    }
-    
-    private boolean testRightGrantedByDredgedAcl(User user, FolderEntry workArea, WorkAreaOperation workAreaOperation) {
-    	// This entry has to get its ACL role from the file system
-    	if (user.equals(RequestContextHolder.getRequestContext().getUser())) {
-    		//We can only do this for the current user
-	    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-	    	Long roleId = AccessUtils.askExternalSystemForRoleId(workArea);
-	    	if (roleId != null) {
-		    	Function f = getFunctionManager().getFunction(zoneId, roleId);
-		    	for (WorkAreaOperation wao : (Set<WorkAreaOperation>)f.getOperations()) {
-		    		if (wao.equals(workAreaOperation)) {
-		    			//This function includes the desired operation.
-		    			return true;
-		    		}
-		    	}
-	    	}
-    	}
-    	return false;
-    }
-
-    private boolean isExternalAclControlledOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) {
-		boolean isExternalAclControlledOperation = false;
-		if (workArea.isAclExternallyControlled()) {
-			//This is a workarea with external ACLs
-			List<WorkAreaOperation> ardWaos = workArea.getExternallyControlledRights();
-			if (ardWaos.contains(workAreaOperation)) {
-				//This right is controlled externally
-				isExternalAclControlledOperation = true;
-			}
-		}
-		return isExternalAclControlledOperation;
-    }
-    
-    private boolean testRightGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
-    	// Share-granted access rights can be defined only on DefinableEntity
-    	if(!(workArea instanceof DefinableEntity))
-    		return false;
-    	
-    	// Whether a sharing on a folder should apply recursively on the member entries and sub-folders or not
-    	// is controlled strictly by the regular Vibe-side inheritance setting. The inheritance setting associated
-    	// with external ACLs has NO effect on the scope of sharing. In other word, it doesn't matter whether
-    	// the entity inherits its external ACLs from their parents or not.
-		List<EntityIdentifier> chain = new ArrayList<EntityIdentifier>();
-    	chain.add(((DefinableEntity) workArea).getEntityIdentifier());
-    	if(workArea instanceof FolderEntry) {
-			FolderEntry entry = (FolderEntry) workArea;
-			if(!entry.hasEntryAcl() || (entry.hasEntryAcl() && entry.isIncludeFolderAcl())) {
-				// This entry inherits the parent's ACLs.
-				chain.add(entry.getParentFolder().getEntityIdentifier());
-				workArea = entry.getParentFolder();
-			}
-    	}
-    	while(workArea.isFunctionMembershipInherited()) {
-    		workArea = workArea.getParentWorkArea();
-    		if(workArea instanceof DefinableEntity)
-    			chain.add(((DefinableEntity)workArea).getEntityIdentifier());
-    	}
-    	Map<ShareItem.RecipientType, Set<Long>> shareMembers = getProfileDao().getRecipientIdsWithGrantedRightToSharedEntities(chain, workAreaOperation.getName());
-    	
-    	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user directly.
-    	if(shareMembers.get(ShareItem.RecipientType.user).contains(user.getId()))
-    		return true;
-    	
-    	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user through group membership.
-    	if(userMembers == null)
-    		userMembers = getProfileDao().getApplicationLevelPrincipalIds(user);
-    	if(!Collections.disjoint(shareMembers.get(ShareItem.RecipientType.group), userMembers))
-    		return true;
-    	
-    	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user through team membership.
-    	if(SPropsUtil.getBoolean("share.based.access.check.use.search.index.for.team.membership", false)) {
-    		// Note: This implementation is used for testing/comparison purpose only.
-    		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
-    		Set<Long> teamBinderIds = new HashSet<Long>();
-    		for(Map binder : myTeams) {
-    			try {
-    				teamBinderIds.add(Long.valueOf((String)binder.get(Constants.DOCID_FIELD)));
-    			} catch (Exception ignore) {};
-    		}
-        	return (!Collections.disjoint(shareMembers.get(ShareItem.RecipientType.team), teamBinderIds));
-    	}
-    	else {
-    		// Note: This implementation is used in production system.
-    		Set<Long> teamBinderIds = shareMembers.get(ShareItem.RecipientType.team);
-    		Binder binder;
-    		Set<Long> teamMemberIds;
-    		for(Long teamBinderId:teamBinderIds) {
-    			binder = getBinderModule().getBinder(teamBinderId);
-    			teamMemberIds = binder.getTeamMemberIds();
-    	    	if(!Collections.disjoint(teamMemberIds, userMembers))
-    	    		return true;
-    		}
-    		return false;
-    	}
-    }
-    
-    private BinderModule getBinderModule() {
-    	return (BinderModule) SpringContextUtil.getBean("binderModule");
-    }
 }

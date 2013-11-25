@@ -441,32 +441,31 @@ public class StringUtil {
 		return sb.toString();
 	}
 
-	public static String merge(Object array[]) {
-		return merge(array, StringPool.COMMA);
-	}
-
-	public static String merge(Object array[], String delimiter) {
-		if (array == null) {
-			return null;
-		}
-
-		StringBuffer sb = new StringBuffer();
-
-		for (int i = 0; i < array.length; i++) {
-			sb.append(array[i].toString().trim());
-
-			if ((i + 1) != array.length) {
-				sb.append(delimiter);
-			}
-		}
-
-		return sb.toString();
-	}
-
 	public static String randomize(String s) {
 		Randomizer r = new Randomizer();
 
 		return r.randomize(s);
+	}
+
+	public static String read(ClassLoader classLoader, String name)
+		throws IOException {
+
+		return read(classLoader.getResourceAsStream(name));
+	}
+
+	public static String read(InputStream is) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+		StringBuffer sb = new StringBuffer();
+		String line = null;
+
+		while ((line = br.readLine()) != null) {
+			sb.append(line).append('\n');
+		}
+
+		br.close();
+
+		return sb.toString().trim();
 	}
 
 	public static String remove(String s, String remove) {

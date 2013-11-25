@@ -44,9 +44,9 @@ public class SessionListener implements HttpSessionListener {
 
 	public void sessionCreated(HttpSessionEvent se) {
 		// NOTE: The whole purpose of having this method is to verify that this method is NEVER called.
-		// We designed "ssr" webapp to be stateless in that it should never create sessions for
-		// both web services clients and browsers. If this method is ever executed, it means that
-		// there is a fault in the design.
+		// We designed "ssf" web app to be stateless in that it should never create sessions for
+		// both web services clients and web clients. If this method is every executed, it means
+		// that there is a fault in the design.
 		if(logger.isDebugEnabled())
 			logger.debug("Creating session: " + se.getSession().getId());
 	}

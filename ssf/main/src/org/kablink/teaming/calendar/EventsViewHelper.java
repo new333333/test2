@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -50,8 +51,6 @@ import java.util.TreeSet;
 
 import javax.portlet.PortletSession;
 import javax.portlet.RenderResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,12 +67,11 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.util.cal.DayAndPosition;
 import org.kablink.util.search.Constants;
 
 
-@SuppressWarnings("unchecked")
 public class EventsViewHelper {
 
 	private static Log logger = LogFactory.getLog(EventsViewHelper.class);
@@ -88,8 +86,7 @@ public class EventsViewHelper {
 			this.size = size;
 		}
 		//need to implement this for hibernate equality
-	    @Override
-		public boolean equals(Object obj) {
+	    public boolean equals(Object obj) {
 	        if(this == obj)
 	            return true;
 
@@ -236,15 +233,7 @@ public class EventsViewHelper {
 		return results;
 	}	
 
-	/**
-	 * 
-	 * @param searchResults
-	 * @param viewRangeDates
-	 * @param onlyTrueEvents
-	 * 
-	 * @return
-	 */
-	public static List getCalendarEventsBeans(List searchResults,
+	private static List getCalendarEventsBeans(List searchResults,
 			AbstractIntervalView viewRangeDates, boolean onlyTrueEvents) {
 		
 		List result = new ArrayList();
@@ -402,6 +391,7 @@ public class EventsViewHelper {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private static List<Map> getEventsBeansByEvents(Map entry, List<Event> events, String eventType) {
 		List<Map> result = new ArrayList<Map>();
 		
@@ -524,16 +514,8 @@ public class EventsViewHelper {
 		bs.getProfileModule().setUserProperty(userId, binderId, WebKeys.CALENDAR_MODE_PREF, eventType);
 	}
 
-	public static Map setCalendarGrid(HttpServletRequest request, UserProperties userProperties, String stickyComponentId, String gridType, Integer gridSize) {
-		return setCalendarGridImpl(null, WebHelper.getRequiredSession(request), userProperties, stickyComponentId, gridType, gridSize);
-	}
-	
-	public static Map setCalendarGrid(PortletSession ps, UserProperties userProperties, String stickyComponentId, String gridType, Integer gridSize) {
-		return setCalendarGridImpl(ps, null, userProperties, stickyComponentId, gridType, gridSize);
-	}
-	
-	private static Map setCalendarGridImpl(PortletSession ps, HttpSession hs, UserProperties userProperties, String stickyComponentId, String gridType, Integer gridSize) {
-		Grid currentGrid = getCalendarGridImpl(ps, hs, userProperties, stickyComponentId);
+	public static Map setCalendarGrid(PortletSession portletSession, UserProperties userProperties, String stickyComponentId, String gridType, Integer gridSize) {
+		Grid currentGrid = getCalendarGrid(portletSession, userProperties, stickyComponentId);
 		if (gridType == null || !(gridType.equals(GRID_DAY) ||
 				gridType.equals(GRID_MONTH))) {
 			if (currentGrid != null) {
@@ -549,39 +531,24 @@ public class EventsViewHelper {
 				gridSize = -1;
 			}
 		}		
-		Map grids = null;
-		if      (null != ps) grids = ((Map) ps.getAttribute(WebKeys.CALENDAR_CURRENT_GRID, PortletSession.APPLICATION_SCOPE));
-		else if (null != hs) grids = ((Map) hs.getAttribute(WebKeys.CALENDAR_CURRENT_GRID                                  ));
-		if (null == grids) {
+		Map grids = (Map)portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_GRID);
+		if (grids == null) {
 			grids = new HashMap();
 		}
 		grids.put(stickyComponentId, new Grid(gridType, gridSize));
 		
-		if      (null != ps) ps.setAttribute(WebKeys.CALENDAR_CURRENT_GRID, grids, PortletSession.APPLICATION_SCOPE);
-		else if (null != hs) hs.setAttribute(WebKeys.CALENDAR_CURRENT_GRID, grids                                  );
-		
+		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_GRID, grids);
 		return grids;
 	}
 	
-	public static Grid getCalendarGrid(HttpServletRequest request, UserProperties userProperties, String stickyComponentId) {
-		return getCalendarGridImpl(null, WebHelper.getRequiredSession(request), userProperties, stickyComponentId);
-	}
-	
-	public static Grid getCalendarGrid(PortletSession ps, UserProperties userProperties, String stickyComponentId) {
-		return getCalendarGridImpl(ps, null, userProperties, stickyComponentId);
-	}
-	
-	private static Grid getCalendarGridImpl(PortletSession ps, HttpSession hs, UserProperties userProperties, String stickyComponentId) {
-		Map grids = null;
-		if      (null != ps) grids = ((Map) ps.getAttribute(WebKeys.CALENDAR_CURRENT_GRID, PortletSession.APPLICATION_SCOPE));
-		else if (null != hs) grids = ((Map) hs.getAttribute(WebKeys.CALENDAR_CURRENT_GRID                                  ));
-		if ((null != grids) && grids.containsKey(stickyComponentId)) {
-			return ((Grid) grids.get(stickyComponentId));
+	public static Grid getCalendarGrid(PortletSession portletSession, UserProperties userProperties, String stickyComponentId) {
+		Map grids = (Map)portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_GRID);
+		if (grids != null && grids.containsKey(stickyComponentId)) {
+			return (Grid)grids.get(stickyComponentId);
 		}
-		
-		grids = ((Map) userProperties.getProperty(WebKeys.CALENDAR_CURRENT_GRID));
-		if ((null != grids) && grids.containsKey(stickyComponentId)) {
-			return ((Grid) grids.get(stickyComponentId));
+		grids = (Map)userProperties.getProperty(WebKeys.CALENDAR_CURRENT_GRID);
+		if (grids != null && grids.containsKey(stickyComponentId)) {
+			return (Grid)grids.get(stickyComponentId);
 		}
 	
 		return null;
@@ -607,50 +574,30 @@ public class EventsViewHelper {
 		return calendar.getTime();
 	}
 
-	public static String getCalendarDayViewType(HttpServletRequest request) {
-		return getCalendarDayViewTypeImpl(null, WebHelper.getRequiredSession(request));
-	}
-	
-	public static String getCalendarDayViewType(PortletSession ps) {
-		return getCalendarDayViewTypeImpl(ps, null);
-	}
-	
-	private static String getCalendarDayViewTypeImpl(PortletSession ps, HttpSession hs) {
+	public static String getCalendarDayViewType(PortletSession portletSession) {
 		String dayViewType = null;
-		if      (null != null) dayViewType = ((String) ps.getAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, PortletSession.APPLICATION_SCOPE));
-		else if (null != hs)   dayViewType = ((String) hs.getAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE                                  ));
+		if (portletSession != null) {
+			dayViewType = (String) portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE);
+		}
 		if (dayViewType == null) {
 			dayViewType = DAY_VIEW_TYPE_DEFAULT;
-			if      (null != ps) ps.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType, PortletSession.APPLICATION_SCOPE);
-			else if (null != hs) hs.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType                                  ); 
+			if (portletSession != null) {
+				portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType);
+			}
 		}
 		
 		return dayViewType;
 	}
 	
-	public static void setCalendarDayViewType(HttpServletRequest request, String dayViewType) {
-		setCalendarDayViewTypeImpl(null, WebHelper.getRequiredSession(request), dayViewType);
-	}
-	
-	public static void setCalendarDayViewType(PortletSession ps, String dayViewType) {
-		setCalendarDayViewTypeImpl(ps, null, dayViewType);
-	}
-	
-	private static void setCalendarDayViewTypeImpl(PortletSession ps, HttpSession hs, String dayViewType) {
-		// If we weren't given a day view or we don't recognize it...
-		if ((null == dayViewType) ||
-				(!(dayViewType.equals(DAY_VIEW_TYPE_WORK)) && (!(dayViewType.equals(DAY_VIEW_TYPE_FULL))))) {
-			// ...use the default...
+	public static void setCalendarDayViewType(PortletSession portletSession, String dayViewType) {
+		if (dayViewType == null || !(dayViewType.equals(DAY_VIEW_TYPE_WORK) ||
+				dayViewType.equals(DAY_VIEW_TYPE_FULL))) {
 			dayViewType = DAY_VIEW_TYPE_DEFAULT;
 		}
-		
-		// ...and save it.
-		if      (null != ps) ps.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType, PortletSession.APPLICATION_SCOPE);
-		else if (null != hs) hs.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType                                  );
+		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType);
 	}
 	
 	public static String eventToRepeatHumanReadableString (Event event, Locale locale) {
-		@SuppressWarnings("unused")
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		// in addition to the raw event, we disintangle some of the

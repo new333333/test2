@@ -1,74 +1,68 @@
-//>>built
-define("dijit/MenuItem",["dojo/_base/declare","dojo/dom","dojo/dom-attr","dojo/dom-class","dojo/_base/kernel","dojo/sniff","dojo/_base/lang","./_Widget","./_TemplatedMixin","./_Contained","./_CssStateMixin","dojo/text!./templates/MenuItem.html"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c){
-var _d=_1("dijit.MenuItem"+(_6("dojo-bidi")?"_NoBidi":""),[_8,_9,_a,_b],{templateString:_c,baseClass:"dijitMenuItem",label:"",_setLabelAttr:function(_e){
-this._set("label",_e);
-var _f="";
-var _10;
-var ndx=_e.search(/{\S}/);
-if(ndx>=0){
-_f=_e.charAt(ndx+1);
-var _11=_e.substr(0,ndx);
-var _12=_e.substr(ndx+3);
-_10=_11+_f+_12;
-_e=_11+"<span class=\"dijitMenuItemShortcutKey\">"+_f+"</span>"+_12;
-}else{
-_10=_e;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dijit.MenuItem"]){
+dojo._hasResource["dijit.MenuItem"]=true;
+dojo.provide("dijit.MenuItem");
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
+dojo.require("dijit._Contained");
+dojo.declare("dijit.MenuItem",[dijit._Widget,dijit._Templated,dijit._Contained],{templateString:dojo.cache("dijit","templates/MenuItem.html","<tr class=\"dijitReset dijitMenuItem\" dojoAttachPoint=\"focusNode\" waiRole=\"menuitem\" tabIndex=\"-1\"\n\t\tdojoAttachEvent=\"onmouseenter:_onHover,onmouseleave:_onUnhover,ondijitclick:_onClick\">\n\t<td class=\"dijitReset\" waiRole=\"presentation\">\n\t\t<img src=\"${_blankGif}\" alt=\"\" class=\"dijitMenuItemIcon\" dojoAttachPoint=\"iconNode\">\n\t</td>\n\t<td class=\"dijitReset dijitMenuItemLabel\" colspan=\"2\" dojoAttachPoint=\"containerNode\"></td>\n\t<td class=\"dijitReset dijitMenuItemAccelKey\" style=\"display: none\" dojoAttachPoint=\"accelKeyNode\"></td>\n\t<td class=\"dijitReset dijitMenuArrowCell\" waiRole=\"presentation\">\n\t\t<div dojoAttachPoint=\"arrowWrapper\" style=\"visibility: hidden\">\n\t\t\t<img src=\"${_blankGif}\" alt=\"\" class=\"dijitMenuExpand\">\n\t\t\t<span class=\"dijitMenuExpandA11y\">+</span>\n\t\t</div>\n\t</td>\n</tr>\n"),attributeMap:dojo.delegate(dijit._Widget.prototype.attributeMap,{label:{node:"containerNode",type:"innerHTML"},iconClass:{node:"iconNode",type:"class"}}),label:"",iconClass:"",accelKey:"",disabled:false,_fillContent:function(_1){
+if(_1&&!("label" in this.params)){
+this.attr("label",_1.innerHTML);
 }
-this.domNode.setAttribute("aria-label",_10+" "+this.accelKey);
-this.containerNode.innerHTML=_e;
-this._set("shortcutKey",_f);
-},iconClass:"dijitNoIcon",_setIconClassAttr:{node:"iconNode",type:"class"},accelKey:"",disabled:false,_fillContent:function(_13){
-if(_13&&!("label" in this.params)){
-this._set("label",_13.innerHTML);
-}
-},buildRendering:function(){
-this.inherited(arguments);
-var _14=this.id+"_text";
-_3.set(this.containerNode,"id",_14);
+},postCreate:function(){
+dojo.setSelectable(this.domNode,false);
+var _2=this.id+"_text";
+dojo.attr(this.containerNode,"id",_2);
 if(this.accelKeyNode){
-_3.set(this.accelKeyNode,"id",this.id+"_accel");
+dojo.attr(this.accelKeyNode,"id",this.id+"_accel");
+_2+=" "+this.id+"_accel";
 }
-_2.setSelectable(this.domNode,false);
-},onClick:function(){
+dijit.setWaiState(this.domNode,"labelledby",_2);
+},_onHover:function(){
+dojo.addClass(this.domNode,"dijitMenuItemHover");
+this.getParent().onItemHover(this);
+},_onUnhover:function(){
+dojo.removeClass(this.domNode,"dijitMenuItemHover");
+this.getParent().onItemUnhover(this);
+},_onClick:function(_3){
+this.getParent().onItemClick(this,_3);
+dojo.stopEvent(_3);
+},onClick:function(_4){
 },focus:function(){
 try{
-if(_6("ie")==8){
+if(dojo.isIE==8){
 this.containerNode.focus();
 }
-this.focusNode.focus();
+dijit.focus(this.focusNode);
 }
 catch(e){
 }
 },_onFocus:function(){
+this._setSelected(true);
 this.getParent()._onItemFocus(this);
 this.inherited(arguments);
-},_setSelected:function(_15){
-_4.toggle(this.domNode,"dijitMenuItemSelected",_15);
-},setLabel:function(_16){
-_5.deprecated("dijit.MenuItem.setLabel() is deprecated.  Use set('label', ...) instead.","","2.0");
-this.set("label",_16);
-},setDisabled:function(_17){
-_5.deprecated("dijit.Menu.setDisabled() is deprecated.  Use set('disabled', bool) instead.","","2.0");
-this.set("disabled",_17);
-},_setDisabledAttr:function(_18){
-this.focusNode.setAttribute("aria-disabled",_18?"true":"false");
-this._set("disabled",_18);
-},_setAccelKeyAttr:function(_19){
-if(this.accelKeyNode){
-this.accelKeyNode.style.display=_19?"":"none";
-this.accelKeyNode.innerHTML=_19;
-_3.set(this.containerNode,"colSpan",_19?"1":"2");
-}
-this._set("accelKey",_19);
-}});
-if(_6("dojo-bidi")){
-_d=_1("dijit.MenuItem",_d,{_setLabelAttr:function(val){
-this.inherited(arguments);
-if(this.textDir==="auto"){
-this.applyTextDir(this.textDirNode);
-}
+},_setSelected:function(_5){
+dojo.toggleClass(this.domNode,"dijitMenuItemSelected",_5);
+},setLabel:function(_6){
+dojo.deprecated("dijit.MenuItem.setLabel() is deprecated.  Use attr('label', ...) instead.","","2.0");
+this.attr("label",_6);
+},setDisabled:function(_7){
+dojo.deprecated("dijit.Menu.setDisabled() is deprecated.  Use attr('disabled', bool) instead.","","2.0");
+this.attr("disabled",_7);
+},_setDisabledAttr:function(_8){
+this.disabled=_8;
+dojo[_8?"addClass":"removeClass"](this.domNode,"dijitMenuItemDisabled");
+dijit.setWaiState(this.focusNode,"disabled",_8?"true":"false");
+},_setAccelKeyAttr:function(_9){
+this.accelKey=_9;
+this.accelKeyNode.style.display=_9?"":"none";
+this.accelKeyNode.innerHTML=_9;
+dojo.attr(this.containerNode,"colSpan",_9?"1":"2");
 }});
 }
-return _d;
-});
-require({cache:{"url:dijit/templates/MenuItem.html":"<tr class=\"dijitReset dijitMenuItem\" data-dojo-attach-point=\"focusNode\" role=\"menuitem\" tabIndex=\"-1\">\n\t<td class=\"dijitReset dijitMenuItemIconCell\" role=\"presentation\">\n\t\t<span role=\"presentation\" class=\"dijitInline dijitIcon dijitMenuItemIcon\" data-dojo-attach-point=\"iconNode\"></span>\n\t</td>\n\t<td class=\"dijitReset dijitMenuItemLabel\" colspan=\"2\" data-dojo-attach-point=\"containerNode,textDirNode\"></td>\n\t<td class=\"dijitReset dijitMenuItemAccelKey\" style=\"display: none\" data-dojo-attach-point=\"accelKeyNode\"></td>\n\t<td class=\"dijitReset dijitMenuArrowCell\" role=\"presentation\">\n\t\t<span data-dojo-attach-point=\"arrowWrapper\" style=\"visibility: hidden\">\n\t\t\t<span class=\"dijitInline dijitIcon dijitMenuExpand\"></span>\n\t\t\t<span class=\"dijitMenuExpandA11y\">+</span>\n\t\t</span>\n\t</td>\n</tr>\n"}});

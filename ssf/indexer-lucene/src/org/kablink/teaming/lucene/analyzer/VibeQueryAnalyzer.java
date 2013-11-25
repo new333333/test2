@@ -47,10 +47,10 @@ import java.util.Set;
 
 public class VibeQueryAnalyzer extends VibeAnalyzer {
 
-	private static Log logger = LogFactory.getLog(VibeQueryAnalyzer.class);
+	private static Log logger = LogFactory.getLog(VibeIndexAnalyzer.class);
 	
 	private static boolean inited = false;
-	private static Set queryStopWords;
+	private static Set<String> queryStopWords;
 	private static String queryStemmerName;
 	private static boolean queryFoldToAscii;
 	private static boolean queryFallbackToLegacy;
@@ -95,6 +95,13 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 
 	public TokenStream reusableTokenStream(String fieldName, Reader reader)
 			throws IOException {
+		if (overridesTokenStreamMethod) {
+			// LUCENE-1678: force fallback to tokenStream() if we
+			// have been subclassed and that subclass overrides
+			// tokenStream but not reusableTokenStream
+			return tokenStream(fieldName, reader);
+		}
+
 		SavedStreams streams = (SavedStreams) getPreviousTokenStream();
 		if (streams == null) {
 			streams = new SavedStreams();

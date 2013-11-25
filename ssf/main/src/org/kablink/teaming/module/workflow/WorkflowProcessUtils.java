@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -70,8 +70,10 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
+import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
@@ -79,6 +81,7 @@ import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.extension.ExtensionCallback;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.workflow.impl.WorkflowFactory;
@@ -89,18 +92,13 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings({"unchecked", "unused"})
+
 public class WorkflowProcessUtils extends CommonDependencyInjection {
 	protected static Log logger = LogFactory.getLog(WorkflowProcessUtils.class);
 	protected static boolean debugEnabled=logger.isDebugEnabled();
@@ -122,7 +120,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	public void setZoneClassManager(ZoneClassManager zoneClassManager) {
 		this.zoneClassManager = zoneClassManager;
 	}
-	public static WfNotify getNotification(Element notifyElement, WorkflowSupport wfEntry) {
+    public static WfNotify getNotification(Element notifyElement, WorkflowSupport wfEntry) {
     	List<Element> props;
     	String name, value;
     	WfNotify n = new WfNotify();
@@ -209,10 +207,8 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    	}
 	    	}
 	    	Long allUsersId = Utils.getAllUsersGroupId();
-	    	Long allExtUsersId = Utils.getAllExtUsersGroupId();
-	    	boolean sendingToAllUsersIsAllowed = EmailHelper.canSendToAllUsers();
+	    	boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
 	    	if (allUsersId != null && !sendingToAllUsersIsAllowed) ids.remove(allUsersId);
-	    	if (allExtUsersId != null && !sendingToAllUsersIsAllowed) ids.remove(allExtUsersId);
 	    	return getUsers(ids);
  		} else return null;
     }
@@ -223,7 +219,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	    	DefinableEntity entity = (DefinableEntity)wfEntry;
 	    	for (Element prop:props) {
 	    		String name = prop.attributeValue("name","");
-				String value = prop.attributeValue("value","");
+	    		String value = prop.attributeValue("value","");
 		    	if ("condition".equals(name)) {
 		    		if (entity.getEntryDefId() != null) {
 		    			List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
@@ -571,8 +567,9 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	
 	public static void processChangeLog(String toState, String change, WorkflowSupport entry) {
 		if (Validator.isNotNull(toState)) {
-			ChangeLog changes = ChangeLogUtils.createAndBuild((DefinableEntity)entry, change);
-			ChangeLogUtils.save(changes);
+			ChangeLog changes = new ChangeLog((DefinableEntity)entry, change);
+			ChangeLogUtils.buildLog(changes, (DefinableEntity)entry);
+			getInstance().getCoreDao().save(changes);
 		}
 	}
 
@@ -787,7 +784,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 					}
 				} else if (type.equals("transitionOnResponse")) {
 					Long allUsersId = Utils.getAllUsersGroupId();
-					Long allExtUsersId = Utils.getAllExtUsersGroupId();
 					String question = DefinitionUtils.getPropertyValue(condition, "question");
 					String response = DefinitionUtils.getPropertyValue(condition, "response");
 					String responseRule = GetterUtil.get(DefinitionUtils.getPropertyValue(condition, "transition_rule"), "first");
@@ -795,7 +791,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 					Set<Long> responders = getQuestionResponders(entry, state, question, false);
 					Set<Long> respondersPlusAllUsers = getQuestionResponders(entry, state, question, true);
 					boolean allUsersIncluded = respondersPlusAllUsers.contains(allUsersId);
-					boolean allExtUsersIncluded = respondersPlusAllUsers.contains(allExtUsersId);
 					Set<Long> respondersFound = new HashSet();
 					Set<Long> respondersWhoAnsweredThis = new HashSet();
 					boolean doTransition = false;
@@ -807,8 +802,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 							if (state.getDefinition().getId().equals(wr.getDefinitionId()) &&
 									question.equals(wr.getName())) {
 								//Yes, Build lists of responders who answered and responders who answered with this response
-								if (allUsersIncluded || allExtUsersIncluded || 
-										responders.contains(wr.getResponderId())) {
+								if (allUsersIncluded || responders.contains(wr.getResponderId())) {
 									respondersFound.add(wr.getResponderId());
 									if (response.equals(wr.getResponse())) {
 										respondersWhoAnsweredThis.add(wr.getResponderId());
@@ -822,34 +816,34 @@ public static void resumeTimers(WorkflowSupport entry) {
 									//Transition as soon as one person gives this response.
 									doTransition = true;
 									break;
-								} else if (!allUsersIncluded && !allExtUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("all") 
+								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("all") 
 										&& respondersWhoAnsweredThis.size() == responders.size()) {
 									//all of the responders have responded with exactly this value
 									doTransition = true;
 									break;
-								} else if (!allUsersIncluded && !allExtUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("one")
+								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("one")
 										&& respondersWhoAnsweredThis.size() > 0) {
 									//all of the responders have responded and at least one has answered this
 									doTransition = true;
 									break;
-								} else if (!allUsersIncluded && !allExtUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("one_other")
+								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("one_other")
 										&& respondersWhoAnsweredThis.size() < responders.size()) {
 									//all of the responders have responded and at least one did not answer with this
 									doTransition = true;
 									break;
-								} else if (!allUsersIncluded && !allExtUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("majority")
+								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("majority")
 										&& respondersWhoAnsweredThis.size() > responders.size()/2) {
 									//All of the responders have answered and a majority have answered with this
 									doTransition = true;
 									break;
-								} else if (!allUsersIncluded && !allExtUsersIncluded && responseRule.equals("majority_immediate")
+								} else if (!allUsersIncluded && responseRule.equals("majority_immediate")
 										&& respondersWhoAnsweredThis.size() > responders.size()/2) {
 									//A majority have answered with this response
 									doTransition = true;
 									break;
 								} else {
 									//See if all responders answered
-									if (!allUsersIncluded && !allExtUsersIncluded && responders.size() == respondersFound.size()) {
+									if (!allUsersIncluded && responders.size() == respondersFound.size()) {
 										//all of the responders have responded and no conditions were met
 										doTransition = false;
 										break;
@@ -1076,7 +1070,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 					if (Validator.isNotNull(conditionName)) {
 						try {
 							Boolean result = (Boolean)getInstance().getZoneClassManager().execute(new ExtensionCallback() {
-								@Override
 								public Object execute(Object action) {
 									WorkflowCondition job = (WorkflowCondition)action;
 									job.setHelper(new CalloutHelper(executionContext));
@@ -1195,7 +1188,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 	public static WfAcl getStateAcl(Definition wfDef, DefinableEntity entity, String stateName, WfAcl.AccessType type) {
 		Document wfDoc = wfDef.getDefinition();
 		WfAcl acl = null;
-		Boolean aclFound = false;
 		//Find the current state in the definition
 		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
 		if (stateEle != null) {
@@ -1214,27 +1206,16 @@ public static void resumeTimers(WorkflowSupport entry) {
 				nodeString = "item[@name='transitionInAccess']";
 			} 
 			if (nodeString != null) {
-				Element aclEle = (Element)stateEle.selectSingleNode("./item[@name='accessControls']/" + nodeString);
-				if (aclEle != null) aclFound = true;
-				acl = getAcl(aclEle, entity, type);
+				acl = getAcl((Element)stateEle.selectSingleNode("./item[@name='accessControls']/" + nodeString), entity, type);
 			}
-			if (!aclFound && acl == null) {
+			if (acl == null) {
 				//check global settings
-				Element aclEle = (Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']/item[@name='accessControls']/" + nodeString);
-				if (aclEle != null) aclFound = true;
-				acl = getAcl(aclEle, entity, type);
+				acl = getAcl((Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']/item[@name='accessControls']/" + nodeString), entity, type);
 			}
 			if (acl != null) return acl;
 		} 
-		if (!aclFound && WfAcl.AccessType.modifyField.equals(type)) {
-			//If there is no explicit setting for modifyField, then use the modify setting.
-			return getStateAcl(wfDef, entity, stateName, WfAcl.AccessType.modify);
-		}
 		acl = new WfAcl(type);
-		if (!aclFound) {
-			//If there was no specific ACL for this type, then mark that the ACL shoud use the default
-			acl.setUseDefault(true);
-		}
+		acl.setUseDefault(true);
 		return acl;
 	}
 
@@ -1244,10 +1225,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 		String name, value;
 		if ((props == null) || props.isEmpty()) return null;
 		WfAcl result = new WfAcl(type);
-		DefinableEntity topEntry = null;
-		if (entity instanceof FolderEntry && !((FolderEntry)entity).isTop()) {
-			topEntry = ((FolderEntry)entity).getTopEntry();
-		}
 		for (Element prop:props) {
 			name = prop.attributeValue("name","");
 			value = prop.attributeValue("value","");
@@ -1262,11 +1239,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 			        User user = RequestContextHolder.getRequestContext().getUser();
 					List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
 							entity.getEntryDefId() + "']");
-					if ((userLists == null || userLists.isEmpty()) && topEntry != null && topEntry.getEntryDefId() != null) {
-						//There are no user lists here, try looking in the top entry
-						userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
-								topEntry.getEntryDefId() + "']");
-					}
 					if (userLists != null && !userLists.isEmpty()) {
 						for (Element element:userLists) {
 							String userListName = element.attributeValue("elementName"); //custom attribute name
@@ -1278,10 +1250,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 	    						userListName = userListName.substring(userListName.indexOf(":")+1);
 	    					}
 							CustomAttribute attr = entity.getCustomAttribute(userListName); 
-							if (attr == null && topEntry != null) {
-								//The current entry is a reply. So also check if the custom attribute is from the top entry
-								attr = topEntry.getCustomAttribute(userListName); 
-							}
 							if (attr != null) {
 								//comma separated value
 								if (listType.equals("user_list") || listType.equals("group_list") || 
@@ -1318,7 +1286,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 	}
 
 	protected static List<User> getUsers(final Set<Long>ids) {
-		boolean sendingToAllUsersIsAllowed = EmailHelper.canSendToAllUsers();
+		boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
 		Set userIds = getInstance().getProfileDao().explodeGroups(ids, 
 				RequestContextHolder.getRequestContext().getZoneId(), sendingToAllUsersIsAllowed);
 		return getInstance().getProfileDao().loadUsers(userIds, RequestContextHolder.getRequestContext().getZoneId());

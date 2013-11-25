@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,144 +32,31 @@
  */
 package org.kablink.teaming.module.folder.impl;
 
-import org.kablink.teaming.ConfigurationException;
+import java.util.Map;
+import java.util.HashMap;
+
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
-import org.kablink.teaming.domain.BinderState.FullSyncStats;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.jobs.ScheduleInfo;
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
 
-/**
- * ?
- * 
- * @author ?
- */
+
 public class BaseFolderModule extends AbstractFolderModule implements BaseFolderModuleMBean {
-	@Override
-	public boolean fullSynchronize(Long folderId, Boolean dirOnly, StatusTicket statusTicket) throws FIException, UncheckedIOException {
-		return true;
+
+	public boolean synchronize(Long folderId, StatusTicket statusTicket) throws FIException, UncheckedIOException {
+		throw new UnsupportedOperationException("synchronize operation is not supported in the base edition");
 	}
 	
-	public ScheduleInfo getSynchronizationSchedule(Long folderId) {
-		return null;
+	public ScheduleInfo getSynchronizationSchedule(Long zoneId, Long folderId) {
+		throw new UnsupportedOperationException("getSynchronizationSchedule operation is not supported in the base edition");
 	}
 	
-	@Override
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId) {
-    }
+		throw new UnsupportedOperationException("setSynchronizationSchedule operation is not supported in the base edition");
+    }  
 
-	@Override
-    public void indexFileContentForNetFolder(Folder netFolderRoot) {
-	}
 
-	@Override
-	public boolean isSyncStatsEnabled() {
-		return false;
-	}
-
-	@Override
-	public void setSyncStatsEnabled(boolean syncStatsEnabled) {
-	}
-
-	@Override
-	public void clearSyncStats() {
-	}
-
-	@Override
-	public void dumpSyncStatsToLog() {
-	}
-
-	@Override
-	public String dumpSyncStatsAsString() {
-		return "";
-	}  
-
-	@Override
-	public boolean jitSynchronize(Folder folder) {
-		return true;
-	}
-
-	@Override
-	public void dumpJitsStatsToLog() {
-	}
-
-	@Override
-	public String dumpJitsStatsAsString() {
-		return "";
-	}
-
-	@Override
-	public void modifyNetFolder(Long folderId, String netFolderName, String rootName, String path, Boolean isHomeDir, boolean indexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly )
-			throws AccessControlException, WriteFilesException, WriteEntryDataException {
-	}
-
-	@Override
-	public void deleteNetFolder(Long folderId, boolean deleteSource) {
-	}
-
-	@Override
-	public void syncAclForNetFolderRoot(Folder netFolderRoot) {
-	}
-
-	@Override
-	public Folder createNetFolder(Long templateId, Long parentBinderId,
-			String name, User owner, String rootName, String path,
-			Boolean isHomeDir, boolean indexContent, SyncScheduleOption syncScheduleOption,
-			Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException {
-		return null;
-	}
-
-	@Override
-	public FullSyncStats getNetFolderFullSyncStats(Long netFolderId) {
-		return null;
-	}
-
-	@Override
-	public boolean requestNetFolderFullSyncStop(Long netFolderId) {
-		return false;
-	}
-
-	@Override
-	public boolean enqueueFullSynchronize(Long folderId) {
-		return false;
-	}
-	
-	@Override
-	public Folder createCloudFolder(Long templateId, Long parentBinderId,
-			String name, User owner, String rootName) throws AccessControlException, WriteFilesException, WriteEntryDataException {
-		// Open source stub.  See PlusFolderModule for full
-		// implementation.
-		return null;
-	}
-	
-	@Override
-	public void deleteCloudFolder(Long folderId, boolean deleteSource) {
-		// Open source stub.  See PlusFolderModule for full
-		// implementation.
-	}
-
-	@Override
-	public void modifyCloudFolder(Long folderId, String netFolderName, String rootName)
-			throws AccessControlException, WriteFilesException, WriteEntryDataException {
-		// Open source stub.  See PlusFolderModule for full
-		// implementation.
-	}
-
-	@Override
-	public boolean dequeueFullSynchronize(Long netFolderId) {
-		return false;
-	}
-
-	@Override
-	public FileSyncStatus fileSynchronize(FolderEntry fileEntry)
-			throws FIException, UncheckedIOException, ConfigurationException {
-		return FileSyncStatus.nochange;
-	}
 }

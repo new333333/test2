@@ -37,7 +37,6 @@
 <%@ page import="java.util.Locale" %>
 <%@ page import="org.kablink.teaming.domain.User" %>
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
-<%@ page import="org.kablink.teaming.util.LocaleUtils" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <div class="ss_entryContent">
 <c:if test="${!empty property_caption}">
@@ -58,8 +57,8 @@
 		userLocale = user.getLocale();
 	}
 	if (userLocale == null) {
-		String language = LocaleUtils.getLocaleLanguage();;
-		String country = LocaleUtils.getLocaleCountry();;
+		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+		String country = SPropsUtil.getString("i18n.default.locale.country", "");
 		if (!language.equals("")) {
 			if (!country.equals("")) userLocale = new Locale(language, country);
 			else userLocale = new Locale(language);

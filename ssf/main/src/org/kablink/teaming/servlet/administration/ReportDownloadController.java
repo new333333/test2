@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,7 @@ package org.kablink.teaming.servlet.administration;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -50,37 +50,30 @@ import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.dom4j.Element;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.module.report.ReportModule.UserQuotaOption;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
-import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.util.Validator;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * ?
- *  
- * @author ?
- */
-@SuppressWarnings("unchecked")
+
 public class ReportDownloadController extends  SAbstractController {
 	
 	private FileTypeMap mimeTypes;
@@ -99,7 +92,6 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.FOLDER, "report.columns.folder");
 		columnNames.put(ReportModule.USER_ID, "report.columns.user");
 		columnNames.put(ReportModule.USER_TITLE, "report.columns.user");
-		columnNames.put(ReportModule.USER_TYPE, "report.columns.userType");
 		columnNames.put(AuditTrail.AuditType.add.name(), "report.columns.add");
 		columnNames.put(AuditTrail.AuditType.view.name(), "report.columns.view");
 		columnNames.put(AuditTrail.AuditType.modify.name(), "report.columns.modify");
@@ -128,10 +120,6 @@ public class ReportDownloadController extends  SAbstractController {
 		return column.equals(ReportModule.USER_ID);
 	}
 	
-	static private boolean isUserTypeColumn(String column) {
-		return column.equals(ReportModule.USER_TYPE);
-	}
-	
 	protected FileTypeMap getFileTypeMap() {
 		return mimeTypes;
 	}
@@ -139,35 +127,25 @@ public class ReportDownloadController extends  SAbstractController {
 		this.mimeTypes = mimeTypes;
 	}
 	
-	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
 		Map formData = request.getParameterMap();
 		MapInputData inputData = new MapInputData(formData);
+		GregorianCalendar cal = new GregorianCalendar();
+		Date startDate = inputData.getDateValue(WebKeys.URL_START_DATE);
+		Date endDate = inputData.getDateValue(WebKeys.URL_END_DATE);
 		
-		Date startDate;
-		String dateStr = ServletRequestUtils.getStringParameter(request, WebKeys.URL_START_DATE_YYYYMMDD, "");
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-		if (MiscUtil.hasString(dateStr))
-		     startDate = formatter.parse(dateStr);
-		else startDate = inputData.getDateValue(WebKeys.URL_START_DATE);
-		
-		Date endDate;
-		dateStr = ServletRequestUtils.getStringParameter(request, WebKeys.URL_END_DATE_YYYYMMDD, "");
-		if (MiscUtil.hasString(dateStr))
-		     endDate = formatter.parse(dateStr);
-		else endDate = inputData.getDateValue(WebKeys.URL_END_DATE);
-		
-        String sortType   = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE,   "");
-        String sortType2  = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE_2, "");
+        String sortType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE, "");
+        
+        String sortType2 = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE_2, "");
+        
         String optionType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_OPTION_TYPE, "");
         
         Set memberIds = new HashSet();
         if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
         
 		if(endDate != null) {
-			GregorianCalendar cal = new GregorianCalendar();
 			cal.setTime(endDate);
 			cal.add(Calendar.DATE, 1);
 			endDate = cal.getTime();
@@ -211,9 +189,9 @@ public class ReportDownloadController extends  SAbstractController {
 						sortType, sortType2, memberIds);
 				
 				if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_SHORT))
-					columns = new String[] {ReportModule.USER_ID, ReportModule.USER_TYPE, ReportModule.LOGIN_COUNT, ReportModule.LAST_LOGIN};
+					columns = new String[] {ReportModule.USER_ID, ReportModule.LOGIN_COUNT, ReportModule.LAST_LOGIN};
 				else if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_LONG))
-					columns = new String[] {ReportModule.USER_ID, ReportModule.USER_TYPE, ReportModule.LOGIN_DATE};
+					columns = new String[] {ReportModule.USER_ID, ReportModule.LOGIN_DATE};
 			} else if ("workflow".equals(reportType)) {
 				if(ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, "").equals("averages")) {
 					//Get the list of binders for reporting
@@ -283,11 +261,7 @@ public class ReportDownloadController extends  SAbstractController {
 			} else if ("activityByUser".equals(reportType)) {
 				hasUsers = true;
 				String type = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, ReportModule.REPORT_TYPE_SUMMARY);
-				//Skip the file sync agent since this could contain millions of entries
-				Set userIdsToSkip = new HashSet();
-				User fsa = getProfileModule().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID);
-				if (fsa != null) userIdsToSkip.add(fsa.getId());
-				report = getReportModule().generateActivityReportByUser(memberIds, userIdsToSkip, startDate, endDate, type);
+				report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, type);
 				if (type.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 					columns = new String[] {ReportModule.USER_ID, 
 							AuditTrail.AuditType.view.name(), 
@@ -324,34 +298,21 @@ public class ReportDownloadController extends  SAbstractController {
 	
 	protected void printReport(OutputStream out, List<Map<String, Object>> report, String[] columns, boolean hasUsers)
 	{
-		//Set a maximum size for reports
-		int maxRows = SPropsUtil.getInt("reports.max.size", 10000);
-		if (report.size() > maxRows) {
-			//Trim the list to show the last entries in the list
-			report = report.subList(report.size()-maxRows, report.size());
-		}
 		HashMap<Long,Principal> userMap = new HashMap<Long,Principal>();
 		HashMap<String,Definition> definitionMap = new HashMap<String, Definition>();
 		HashMap<Long,Binder> binderMap = new HashMap<Long, Binder>();
 		HashMap<Long,FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
-		HashMap<Long,String> deletedBinderTitles = new HashMap<Long,String>();
-		HashMap<Long,String> deletedBinderPaths = new HashMap<Long,String>();
-		HashMap<Long,String> deletedEntryTitles = new HashMap<Long,String>();
         User requestor = RequestContextHolder.getRequestContext().getUser();
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM, requestor.getLocale());
         dateFormat.setTimeZone(requestor.getTimeZone());
         
 		HashSet userIds = new HashSet();
-		HashSet userTypes = new HashSet();
 		HashSet<String> definitionIds = new HashSet<String>();
 		HashSet<Long> binderIds = new HashSet<Long>();
 		HashSet<Long> entryIds = new HashSet<Long>();
 		for(Map<String, Object> row : report) {
 			if(row.containsKey(ReportModule.USER_ID)) {
 				userIds.add(row.get(ReportModule.USER_ID));
-			}
-			if(row.containsKey(ReportModule.USER_TYPE)) {
-				userTypes.add(row.get(ReportModule.USER_TYPE));
 			}
 			if(row.containsKey(ReportModule.DEFINITION_ID)) {
 				definitionIds.add((String) row.get(ReportModule.DEFINITION_ID));
@@ -370,95 +331,16 @@ public class ReportDownloadController extends  SAbstractController {
 				userMap.put(p.getId(), p);
 			}
 		}
-		if(userTypes.size() > 0 && userIds.size() == 0) {
-			SortedSet<Principal> principals = getProfileModule().getPrincipals(userTypes);
-			for(Principal p : principals) {
-				userMap.put(p.getId(), p);
-			}
-		}
-		if(entryIds.size() > 0) {
-			HashSet<Long> deletedEntryIds = new HashSet<Long>();
-			deletedEntryIds.addAll(entryIds);
-			SortedSet<FolderEntry> entries = getFolderModule().getEntries(entryIds);
-			for(FolderEntry fe : entries) {
-				entryMap.put(fe.getId(), fe);
-				deletedEntryIds.remove(fe.getId());
-			}
-			//Now get the titles of any deleted entry
-			if (deletedEntryIds.size() > 0) {
-				while (!deletedEntryIds.isEmpty()) {
-					HashSet<Long> nextDeletedEntryIds = new HashSet<Long>();
-					int i = 0;
-					for (Long id : deletedEntryIds) {
-						nextDeletedEntryIds.add(id);
-						i++;
-						if (i >= 1000) break;
-					}
-					deletedEntryIds.removeAll(nextDeletedEntryIds);
-					List<ChangeLog> cLogs = getReportModule().getDeletedEntryLogs(nextDeletedEntryIds);
-					for (ChangeLog cLog : cLogs) {
-						try {
-							Long entityId = cLog.getEntityId();
-							Element root = cLog.getEntityRoot();
-							Element titleEle = (Element)root.selectSingleNode("//attribute[@name='title']");
-							String title = "";
-							if (titleEle != null) title = titleEle.getText();
-							if (!deletedEntryTitles.containsKey(entityId) || !title.equals("")) {
-								deletedEntryTitles.put(entityId, title);
-							}
-							Long owningBinderId = cLog.getOwningBinderId();
-							if (owningBinderId != null && !binderIds.contains(owningBinderId)) {
-								//Make sure to get the parent binders title and path in case it was also deleted
-								binderIds.add(owningBinderId);
-							}
-						} catch(Exception e) {
-							e.getMessage();
-						}
-					}
-				}
-			}
-		}
 		if(binderIds.size() > 0) {
-			HashSet<Long> deletedBinderIds = new HashSet<Long>();
-			deletedBinderIds.addAll(binderIds);
 			SortedSet<Binder> binders = getBinderModule().getBinders(binderIds);
 			for(Binder b : binders) {
 				binderMap.put(b.getId(), b);
-				deletedBinderIds.remove(b.getId());
 			}
-			//Now get the titles of any deleted binder
-			if (deletedBinderIds.size() > 0) {
-				while (!deletedBinderIds.isEmpty()) {
-					HashSet<Long> nextDeletedBinderIds = new HashSet<Long>();
-					int i = 0;
-					for (Long id : deletedBinderIds) {
-						nextDeletedBinderIds.add(id);
-						i++;
-						if (i >= 1000) break;
-					}
-					deletedBinderIds.removeAll(nextDeletedBinderIds);
-					List<ChangeLog> cLogs = getReportModule().getDeletedBinderLogs(nextDeletedBinderIds);
-					for (ChangeLog cLog : cLogs) {
-						try {
-							Long entityId = cLog.getEntityId();
-							Element root = cLog.getEntityRoot();
-							Element titleEle = (Element)root.selectSingleNode("//attribute[@name='title']");
-							String title = "";
-							if (titleEle != null) title = titleEle.getText();
-							if (!deletedBinderTitles.containsKey(entityId) || !title.equals("")) {
-								deletedBinderTitles.put(entityId, title);
-							}
-							Element pathEle = (Element)root.selectSingleNode("//property[@name='binderPath']"); 
-							String path = "";
-							if (pathEle != null) path = pathEle.getText();
-							if (!deletedBinderPaths.containsKey(entityId) || !path.equals("")) {
-								deletedBinderPaths.put(entityId, path);
-							}
-						} catch(Exception e) {
-							e.getMessage();
-						}
-					}
-				}
+		}
+		if(entryIds.size() > 0) {
+			SortedSet<FolderEntry> entries = getFolderModule().getEntries(entryIds);
+			for(FolderEntry fe : entries) {
+				entryMap.put(fe.getId(), fe);
 			}
 		}
 		if(definitionIds.size() > 0) {
@@ -473,7 +355,7 @@ public class ReportDownloadController extends  SAbstractController {
 
 		for(int i = 0; i < columns.length; i++) {
 			String name = columns[i];
-			if((!isUserColumn(name) && !isUserTypeColumn(name)) || hasUsers) {
+			if(!isUserColumn(name) || hasUsers) {
 				String nltKey;
 				String columnName;
 				
@@ -511,17 +393,7 @@ public class ReportDownloadController extends  SAbstractController {
 			if (row.containsKey(ReportModule.BINDER_ID)) {
 				binder = binderMap.get(row.get(ReportModule.BINDER_ID));
 				try {
-					if (binder != null) {
-						row.put(ReportModule.FOLDER, binder.getPathName());
-						row.put(ReportModule.ENTRY_TITLE, binder.getTitle());
-					} else {
-						if (deletedBinderPaths.containsKey(row.get(ReportModule.BINDER_ID))) {
-							row.put(ReportModule.FOLDER, deletedBinderPaths.get(row.get(ReportModule.BINDER_ID)));
-						}
-						if (deletedBinderTitles.containsKey(row.get(ReportModule.BINDER_ID))) {
-							row.put(ReportModule.ENTRY_TITLE, deletedBinderTitles.get(row.get(ReportModule.BINDER_ID)));
-						}
-					}
+					if (binder != null) row.put(ReportModule.FOLDER, binder.getPathName());
 				} catch(Exception e) {}
 			}
 			FolderEntry entry;
@@ -530,21 +402,17 @@ public class ReportDownloadController extends  SAbstractController {
 					row.get(ReportModule.ENTITY).equals("folderEntry")) {
 				entry = entryMap.get(row.get(ReportModule.ENTRY_ID));
 				try {
-					if (entry != null) {
-						row.put(ReportModule.ENTRY_TITLE, entry.getTitle());
-					} else if (deletedEntryTitles.containsKey(row.get(ReportModule.ENTRY_ID))) {
-						row.put(ReportModule.ENTRY_TITLE, deletedEntryTitles.get(row.get(ReportModule.ENTRY_ID)));
-					}
+					if (entry != null) row.put(ReportModule.ENTRY_TITLE, entry.getTitle());
 				} catch(Exception e) {}
 			}
 			for(int i = 0; i < columns.length; i++) {
 				String name = columns[i];
-				if ((!isUserColumn(name) && !isUserTypeColumn(name)) || hasUsers) {
+				if (!isUserColumn(name) || hasUsers) {
 					if(i > 0) {
 						out.write(",".getBytes());
 					}
 				}
-				if (!isUserColumn(name) && !isUserTypeColumn(name)) {
+				if (! isUserColumn(name)) {
 					if(row.containsKey(name)) {
 						String colValue;
 						
@@ -575,7 +443,7 @@ public class ReportDownloadController extends  SAbstractController {
 							out.write( doubleQuote );
 						}
 					}
-				} else if (isUserColumn(name) && hasUsers && row.containsKey(name)) {
+				} else if (hasUsers && row.containsKey(name)) {
 					Long userId = (Long) row.get(name);
 					Principal user = null;
 					if (userId != null) user = userMap.get(userId);
@@ -583,9 +451,7 @@ public class ReportDownloadController extends  SAbstractController {
 						String userName;
 						
 						// Does the user's name have a ',' in it?
-						String userTitle = Utils.getUserTitle(user);
-						if (userTitle.trim().equals("")) userTitle = user.getName();
-						userName = userTitle + " (" + user.getName() + ")";
+						userName = Utils.getUserTitle(user) + " (" + user.getName() + ")";
 						indexOfComma = userName.indexOf( ',' ); 
 						if ( indexOfComma >= 0 )
 						{
@@ -594,30 +460,6 @@ public class ReportDownloadController extends  SAbstractController {
 						}
 
 						out.write( userName.getBytes() );
-
-						// Does the user's name have a ',' in it?
-						if ( indexOfComma >= 0 )
-						{
-							// Yes, enclose the user's name in quotes.
-							out.write( doubleQuote );
-						}
-					}
-				} else if (isUserTypeColumn(name) && hasUsers && row.containsKey(name)) {
-					Long userId = (Long) row.get(name);
-					Principal user = null;
-					if (userId != null) user = userMap.get(userId);
-					if(user != null) {
-						String userType = "";
-						if (user.getIdentityInfo().isFromLocal() && user.getIdentityInfo().isInternal()) {
-							userType = NLT.get("login.type.local");
-						} else if (user.getIdentityInfo().isFromLdap()) {
-							userType = NLT.get("login.type.ldap");
-						} else if (user.getIdentityInfo().isFromOpenid()) {
-							userType = NLT.get("login.type.openId");
-						} else if (user.getIdentityInfo().isFromLocal() && !user.getIdentityInfo().isInternal()) {
-							userType = NLT.get("login.type.self");
-						}
-						out.write( userType.getBytes() );
 
 						// Does the user's name have a ',' in it?
 						if ( indexOfComma >= 0 )

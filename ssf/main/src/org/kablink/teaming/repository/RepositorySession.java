@@ -91,12 +91,11 @@ public interface RepositorySession {
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
 	 * @param in
-	 * @param size
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
 	public String createVersioned(Binder binder, 
-			DefinableEntity entity, String relativeFilePath, InputStream in, long size, Long lastModTime) 
+			DefinableEntity entity, String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
@@ -109,11 +108,10 @@ public interface RepositorySession {
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
 	 * @param in
-	 * @param size
 	 * @throws RepositoryServiceException
 	 */
 	public void createUnversioned(Binder binder, 
-			DefinableEntity entity, String relativeFilePath, InputStream in, long size, Long lastModTime) 
+			DefinableEntity entity, String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
@@ -132,11 +130,10 @@ public interface RepositorySession {
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
 	 * @param in
-	 * @param size
 	 * @throws RepositoryServiceException
 	 */
 	public void update(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, InputStream in, long size, Long lastModTime) 
+			String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**

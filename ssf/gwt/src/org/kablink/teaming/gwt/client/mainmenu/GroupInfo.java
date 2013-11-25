@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
-import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -46,18 +45,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  *
  */
-public class GroupInfo
+public class GroupInfo 
 	implements IsSerializable, VibeRpcResponseData
 {
 	private Long m_id;			// The group's id.
 	private String m_title;			// The group's title.
 	private String m_name;		// The group's name
 	private String m_desc;		// The group's description
-	private String m_fqdn;		// If the group came from ldap, the group's fully qualified dn
-	private boolean m_fromLdap;
-	private GroupMembershipInfo m_membershipInfo;
+	private boolean m_isMembershipDynamic;	// Is the group's membership dynamic
 	
-
 	/**
 	 * Constructor method.
 	 * 
@@ -65,10 +61,7 @@ public class GroupInfo
 	 */
 	public GroupInfo() {
 		// Nothing to do.
-		m_membershipInfo = new GroupMembershipInfo();
-		m_membershipInfo.setMembershipInfo( false, true );
-		
-		m_fromLdap = false;
+		m_isMembershipDynamic = false;
 	}
 
 	/**
@@ -85,22 +78,6 @@ public class GroupInfo
 	public void setDesc( String desc )
 	{
 		m_desc = desc;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getDn()
-	{
-		return m_fqdn;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setDn( String dn )
-	{
-		m_fqdn = dn;
 	}
 	
 	/**
@@ -121,21 +98,6 @@ public class GroupInfo
 		m_id = id;
 	}
 	
-	/**
-	 * Return the secondary display text for this group.  The value returned is generally used as the text
-	 * displayed on a mouse over.
-	 */
-	public String getSecondaryDisplayText()
-	{
-		if ( m_fqdn != null && m_fqdn.length() > 0 )
-			return m_fqdn;
-		
-		if ( m_desc != null && m_desc.length() > 0 )
-			return m_desc;
-		
-		return m_name;
-	}
-
 	/**
 	 * 
 	 */
@@ -169,45 +131,20 @@ public class GroupInfo
 	public void setTitle(String title) {
 		m_title = title;
 	}
-
-	
-	/**
-	 * Are external users/groups allowed?
-	 */
-	public boolean getIsExternalAllowed()
-	{
-		return m_membershipInfo.getIsExternalAllowed();
-	}
-	
-	/**
-	 * Is this group from ldap?
-	 */
-	public boolean getIsFromLdap()
-	{
-		return m_fromLdap;
-	}
 	
 	/**
 	 * Return the flag that tells us whether the group membership is dynamic 
 	 */
 	public boolean getIsMembershipDynamic()
 	{
-		return m_membershipInfo.getIsMembershipDynamic();
+		return m_isMembershipDynamic;
 	}
 	
 	/**
 	 * 
 	 */
-	public void setIsFromLdap( boolean fromLdap )
+	public void setIsMembershipDynamic( boolean dynamic )
 	{
-		m_fromLdap = fromLdap;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMembershipInfo( boolean dynamic, boolean externalAllowed )
-	{
-		m_membershipInfo.setMembershipInfo( dynamic, externalAllowed );
+		m_isMembershipDynamic = dynamic;
 	}
 }

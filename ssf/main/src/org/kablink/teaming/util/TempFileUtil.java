@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,25 +38,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.Properties;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.springframework.util.FileCopyUtils;
 
-/**
- * ?
- * 
- * @author ?
- */
+
 public class TempFileUtil {
-	private final static String OIT_TEMP_SUBDIR	     = "oit";				// Must agree with the path injected by the installer.  See install.tcl for details.
-	private final static String OIT_TEMPDIR_PROPERTY = "tempdir";			// Property in the Oracle Outside-in configuration file that specifies the location of temporary files. 
-	private final static long	A_SECOND             = 1000l;				// One second, in milliseconds.
-	private final static long	A_MINUTE             = (60l * A_SECOND);	// One minute, in milliseconds.
-	private final static long	AN_HOUR              = (60l * A_MINUTE);	// One hour,   in milliseconds.
-	private final static long	A_DAY         	     = (24l * AN_HOUR);		// One day,    in milliseconds.
 	
 	/**
 	 * Create a temporary file. The created temporary file is set to be deleted
@@ -255,125 +243,5 @@ public class TempFileUtil {
 			return File.createTempFile(prefix, suffix, fileDir);
 		}
 	}
-
-	/**
-	 * Returns the appropriate path to use for the Oracle Outside-in
-	 * temporary directory.
-	 * 
-	 * @return
-	 */
-	public static String getOITTempDirPath() {
-		return (getTempFileDirRootPath() + File.separator + OIT_TEMP_SUBDIR);
-	}
 	
-	/**
-	 * When running an a licensed version of the software, initiates a
-	 * Thread used to cleanup the Oracle Outside-in temporary files on
-	 * a regular basis.
-	 * 
-	 * @return
-	 */
-	public static OITTempCleanupThread initOITTempCleanupThread() {
-		// If we're not running licensed version of the software...
-		if (!(ReleaseInfo.isLicenseRequiredEdition())) {
-			// ...the Oracle Outside-in converters are not used and
-			// ...there's nothing we need to do.
-			return null;
-		}
-		
-		// Create and start the cleanup thread...
-		OITTempCleanupThread reply = new OITTempCleanupThread();
-		reply.start();
-		
-		// ...and return it.
-		return reply;
-	}
-	
-	/**
-	 * Sets the property the Oracle Outside-in converters use for their
-	 * temporary directory.
-	 * 
-	 * @param oitProps
-	 */
-	public static void setOITTempDirProperty(Properties oitProps) {
-		oitProps.setProperty(OIT_TEMPDIR_PROPERTY, TempFileUtil.getOITTempDirPath());
-	}
-	
-	/**
-	 * Validates that the Oracle Outside-in temporary directory has
-	 * been created.   Returns a File object that describes the
-	 * temporary directory.
-	 *
-	 * @param createIfNecessary
-	 * 
-	 * @return
-	 */
-	public static File validateOITTempDir(boolean createIfNecessary) {
-		String oitTempPath = getOITTempDirPath();
-		File oitTempDir = new File(oitTempPath);
-		if ((!(oitTempDir.exists())) && createIfNecessary) {
-			oitTempDir.mkdirs();
-		}
-		return oitTempDir;
-	}
-	
-	public static File validateOITTempDir() {
-		// Always use the initial form of the method.
-		return validateOITTempDir(true);	// true -> Create it if it's not there.
-	}
-	
-	/**
-	 * Inner class defining a Thread that is used to cleanup left over
-	 * Oracle Outside-in temporary files.
-	 * 
-	 * These temporary files may be left hanging around if a conversion
-	 * times out, or dies for some other reason.
-	 */
-	public static class OITTempCleanupThread extends Thread {
-	    /**
-		 * Constructor method.
-		 */
-		private OITTempCleanupThread() {
-			// Initialize the super class...
-			super();
-		
-			// ...make the Thread a daemon and set its priority.
-			setDaemon(true);						// These are set as per a
-			setPriority(Thread.NORM_PRIORITY - 1);	// ...recommendation from Jong.
-		}
-		
-	    /**
-	     * Method that runs the Thread.  Performs the check, sleeps for
-	     * a day and does it again.  Forever!
-	     * 
-	     * Implements the Thread.run() method.
-	     */
-	    @Override
-		public void run() {
-	    	while (true) {
-		    	// Do we have an Oracle Outside-in temporary directory yet? 
-		    	File oitTempDir = validateOITTempDir(false);	// false -> Don't create it if it's not there.
-		    	if (oitTempDir.exists()) {
-		    		// Yes!  Scan the files in that directory.
-    				long anHourAgo = (new Date().getTime() - AN_HOUR);
-		    		for (File tempFile:  oitTempDir.listFiles()) {
-		    			// Is this a file that really exists?
-		    			if (tempFile.isFile() && tempFile.exists()) {
-		    				// Yes!  Is it more than an hour old?
-		    				long tfModified = tempFile.lastModified();
-		    				if (tfModified < anHourAgo) {
-		    					// Yes!  Delete it.
-		    					try {tempFile.delete();}
-		    					catch (Exception e) {}
-		    				}
-		    			}
-		    		}
-		    	}
-
-		    	// Sleep a day until we check these again.
-		    	try {Thread.sleep(A_DAY);}
-		    	catch (InterruptedException e) {}
-	    	}
-	    }
-	}
 }

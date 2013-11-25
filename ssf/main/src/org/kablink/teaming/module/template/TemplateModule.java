@@ -66,9 +66,8 @@ public interface TemplateModule {
    	 * @throws AccessControlException
    	 * @throws WriteFilesException
    	 */
+
     public Binder addBinder(Long templateId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException;
-    
-    public Binder addBinder(Long templateId, Long parentBinderId, String title, String name, Map overrideInputData, Map options) throws AccessControlException, WriteFilesException;
     /**
      * Create default template.  Should already exist
      * @param type
@@ -83,8 +82,8 @@ public interface TemplateModule {
      * @param replace
      * @return
      */
-	public TemplateBinder addTemplate(Binder localBinderParent, Document document, boolean replace) throws AccessControlException;
-	public TemplateBinder addTemplate(Binder localBinderParent, InputStream stream, boolean replace) throws AccessControlException, DocumentException;
+	public TemplateBinder addTemplate(Document document, boolean replace) throws AccessControlException;
+	public TemplateBinder addTemplate(InputStream stream, boolean replace) throws AccessControlException, DocumentException;
 	/**
 	 * Create a template
 	 * @param type
@@ -92,7 +91,7 @@ public interface TemplateModule {
 	 * @return
    	 * @throws AccessControlException
 	 */
-	public TemplateBinder addTemplate(Binder localBinderParent, int type, Map updates) throws AccessControlException;
+	public TemplateBinder addTemplate(int type, Map updates) throws AccessControlException;
 	/**
 	 * Create a new template from an existing template
 	 * @param parentId
@@ -109,7 +108,7 @@ public interface TemplateModule {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public TemplateBinder addTemplateFromBinder(Binder parentBinder, Long binderId) throws AccessControlException, WriteFilesException;
+	public TemplateBinder addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException;
 	public void modifyTemplate(Long id, Map updates) throws AccessControlException;
     /**
      * Get a template
@@ -123,12 +122,6 @@ public interface TemplateModule {
  	 * @return
  	 */
 	public List<TemplateBinder> getTemplates();
-	public List<TemplateBinder> getTemplates(boolean includeHiddenTemplates);
- 	/**
- 	 * Get all binder level templates
- 	 * @return
- 	 */
-	public List<TemplateBinder> getTemplates(Binder binder);
 	/**
 	 * Build a document used to export/import templates
 	 * @param template
@@ -141,14 +134,8 @@ public interface TemplateModule {
 	 * @return
 	 */
 	public List<TemplateBinder> getTemplates(int type);
-	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors);
-	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors, 
-			boolean includeHiddenTemplates);
 
 	public boolean updateDefaultTemplates(Long topId, boolean replace);
 	
 	public boolean checkIfBinderValidForTemplate(Binder binder, String[] errors);
-	
-    public List<Binder> _addNetFolderBindersInSync(Long templateId, Long parentBinderId, List<String> titleList, List<String> nameList, List<Map> overrideInputDataList, List<Map> optionsList) throws AccessControlException, WriteFilesException;
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,58 +30,51 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.whatsnew;
 
 import java.util.HashMap;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteSelectionsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetClickOnTitleActionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
-import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
-import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
-import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
-/**
- * This class is the base class for the entries that are displayed in
- * the Activity Stream.
- * 
- * @author jwootton@novell.com
+
+/*
+ * This class is the base class for the entries that are displayed in the Activity Stream.
  */
 public abstract class ActivityStreamUIEntry extends Composite
 	implements ClickHandler, MouseOverHandler, MouseOutHandler
@@ -89,92 +82,71 @@ public abstract class ActivityStreamUIEntry extends Composite
     public static final int FORMAT_HTML = 1;
     public static final int FORMAT_NONE = 2;
 
-    // The following controls how the activating a title's <a> is
-    // handled.  If true, the <a> will be set with the appropriate
-    // URL (when possible) so that when clicked, the <a> will be
-    // used directly.  When false, the click handler on the <a>
-    // will always launch the URL in a new window.
-    //
-    // The difference between these is where the link is opened.  When
-    // an <a> is clicked by the user, it will typically be opened in a
-    // tab.  The other method will open in it a new windows.
-    //
-    // Note that there is no way I know of to simulate a true
-    // click on an <a> in code.  When activated programatically, the
-    // <a> always results in a new window.  This happens the first
-    // time it's clicked and when its avatar is clicked.
-    private static final boolean USE_TITLE_ANCHOR_CLICKS	= false;	// Leaving false so that the links always work the same.
-    
     private ActivityStreamCtrl m_activityStreamCtrl;
 	private Image m_avatarImg;
 	private Image m_actionsImg1;
 	private Image m_actionsImg2;
 	private Image m_unreadImg;
-	private Anchor m_title;
+	private InlineLabel m_title;
 	private InlineLabel m_actionsLabel;
-	private FlowPanel m_mainPanel;
 	private FlowPanel m_presencePanel;
 	private FlowPanel m_commentsPanel;
 	private ClickHandler m_presenceClickHandler;
-	private ClickHandler m_descClickHandler;
-	private HandlerRegistration m_descClickHandlerReg;
-	private HandlerRegistration m_titleClickHandlerReg;
 	private Label m_author;
 	private Label m_date;
-	private FlowPanel m_descPanel;
+	private FlowPanel m_desc;
+	@SuppressWarnings("unused")
 	private String m_authorId;
 	private String m_authorWSId;	// Id of the author's workspace.
 	private String m_entryId;
-	private String m_binderId;
+	private String m_viewEntryUrl;
 	private ActivityStreamReply m_replyWidget;
-	private DescViewFormat m_descViewFormat;
-	private boolean m_showTitle;
-	private ClickOnTitleActionRpcResponseData m_titleClickAction;
+	
 	
 	/**
 	 * 
 	 */
 	public ActivityStreamUIEntry(
-		ActivityStreamCtrl activityStreamCtrl,
-		DescViewFormat descViewFormat,
-		boolean showTitle )
+		ActivityStreamCtrl activityStreamCtrl )
 	{
+		FlowPanel mainPanel;
 		FlowPanel panel;
 		EditSuccessfulHandler onSuccessHandler;
 
 		m_activityStreamCtrl = activityStreamCtrl;
-		m_descViewFormat = descViewFormat;
-		m_showTitle = showTitle;
 		
-		m_mainPanel = new FlowPanel();
-		m_mainPanel.addStyleName( getMainPanelStyleName() );
+		mainPanel = new FlowPanel();
+		mainPanel.addStyleName( getMainPanelStyleName() );
 		
 		// Add a mouse over/out handler for the main panel.
-		m_mainPanel.addDomHandler( this, MouseOverEvent.getType() );
-		m_mainPanel.addDomHandler( this, MouseOutEvent.getType() );
+		mainPanel.addDomHandler( this, MouseOverEvent.getType() );
+		mainPanel.addDomHandler( this, MouseOutEvent.getType() );
 
 		// Add a place to show the avatar
 		m_avatarImg = new Image();
-		m_avatarImg.addStyleName( "cursorPointer" );
+		m_avatarImg.addStyleName( getAvatarImageStyleName() );
 		m_avatarImg.setVisible( false );
-		m_mainPanel.add( m_avatarImg );
+		mainPanel.add( m_avatarImg );
+		
+		// Add mouse-over and mouse-out handlers.
+		m_avatarImg.addMouseOverHandler( this );
+		m_avatarImg.addMouseOutHandler( this );
 		
 		// Add a click handler to the avatar.
 		m_avatarImg.addClickHandler( this );
 		
 		// Create the panel that holds the entry's header.
 		panel = createHeaderPanel();
-		m_mainPanel.add( panel );
+		mainPanel.add( panel );
 		
 		// Create the panel that holds the content.
 		panel = createContentPanel();
-		m_mainPanel.add( panel );
+		mainPanel.add( panel );
 		
 		// Create a reply widget and hide it.
 		{
 			onSuccessHandler = new EditSuccessfulHandler()
 			{
-				@Override
 				@SuppressWarnings("unchecked")
 				public boolean editSuccessful( Object replyData )
 				{
@@ -194,13 +166,13 @@ public abstract class ActivityStreamUIEntry extends Composite
 			};
 			m_replyWidget = new ActivityStreamReply( onSuccessHandler );
 			m_replyWidget.setVisible( false );
-			m_mainPanel.add( m_replyWidget );
+			mainPanel.add( m_replyWidget );
 		}
 		
 		// Create a panel for comments to go in.
 		m_commentsPanel = createCommentsPanel();
 		if ( m_commentsPanel != null )
-			m_mainPanel.add( m_commentsPanel );
+			mainPanel.add( m_commentsPanel );
 
 		// Create a click handler that will be used for the presence control.
 		m_presenceClickHandler = new ClickHandler()
@@ -208,111 +180,28 @@ public abstract class ActivityStreamUIEntry extends Composite
 			/**
 			 * 
 			 */
-			@Override
 			public void onClick( ClickEvent event )
 			{
+				Scheduler.ScheduledCommand cmd;
 				final Object src;
 				
 				src = event.getSource();
 
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				cmd = new Scheduler.ScheduledCommand()
 				{
-					@Override
 					public void execute()
 					{
 						handleClickOnAuthor( ((Widget)src).getElement());
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( m_mainPanel );
+		initWidget( mainPanel );
 	}
 	
-	/**
-	 * 
-	 */
-	public ActivityStreamUIEntry(
-		ActivityStreamCtrl activityStreamCtrl,
-		DescViewFormat descViewFormat )
-	{
-		this( activityStreamCtrl, descViewFormat, true );
-	}
-	
-	/**
-	 * Add the Actions menu to the given panel.
-	 */
-	private void addActionsMenu( FlowPanel panel )
-	{
-		FlexTable table;
-		FlowPanel actionsPanel;
-		FlowPanel numCommentsPanel;
-		ImageResource imageResource;
-		ClickHandler clickHandler;
-
-		// Add an image the user can click on to invoke the Actions menu.  Image 1 will
-		// be visible when the mouse is not over the entry.  Image 2 will be visible
-		// when the mouse is over the entry.
-		table = new FlexTable();
-		table.addStyleName( "activityStreamActionsTable" );
-		panel.add( table );
-		
-		// Get the panel that will hold the number of comments.
-		numCommentsPanel = getNumCommentsPanel();
-		if ( numCommentsPanel != null )
-			table.setWidget( 0, 0, numCommentsPanel );
-		
-		actionsPanel = new FlowPanel();
-		actionsPanel.addStyleName( "activityStreamActionsPanel" );
-		table.setWidget( 0, 1, actionsPanel );
-		
-		m_actionsLabel = new InlineLabel( GwtTeaming.getMessages().actionsLabel() );
-		m_actionsLabel.addStyleName( "activityStreamActionsLabel" );
-		actionsPanel.add( m_actionsLabel );
-		
-		imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
-		m_actionsImg1 = new Image( imageResource );
-		m_actionsImg1.addStyleName( "activityStreamActionsImg1" );
-		m_actionsImg1.getElement().setId( "activityStreamActionsImg1" );
-		actionsPanel.add( m_actionsImg1 );
-		imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
-		m_actionsImg2 = new Image( imageResource );
-		m_actionsImg2.addStyleName( "activityStreamActionsImg2" );
-		m_actionsImg2.getElement().setId( "activityStreamActionsImg2" );
-		m_actionsImg2.setVisible( false );
-		actionsPanel.add( m_actionsImg2 );
-
-		// Add a click handler for the Actions image.
-		clickHandler = new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent clickEvent )
-			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void execute()
-					{
-						// Hide the actions2 image.
-						m_actionsImg2.setVisible( false );
-						m_actionsImg1.setVisible( true );
-
-						m_actionsLabel.removeStyleName( "activityStreamActionsLabelBold" );
-						
-						// Invoke the Actions menu.
-						invokeActionsMenu( m_actionsImg1 );
-					}
-				} );
-			}
-		};
-		m_actionsImg1.addClickHandler( clickHandler );
-		m_actionsImg2.addClickHandler( clickHandler );
-		m_actionsLabel.addClickHandler( clickHandler );
-	}
 	
 	/**
 	 * This abstract method gives classes that extend this class an opportunity to add
@@ -328,16 +217,14 @@ public abstract class ActivityStreamUIEntry extends Composite
 	{
 		m_avatarImg.setUrl( "" );
 		m_avatarImg.setVisible( false );
-		if ( m_title != null )
-			m_title.getElement().setInnerHTML( "" );
+		m_title.getElement().setInnerHTML( "" );
 		m_author.setText( "" );
 		m_date.setText( "" );
-		m_descPanel.getElement().setInnerHTML( "" );
+		m_desc.getElement().setInnerHTML( "" );
 		m_authorId = null;
 		m_authorWSId = null;
 		m_entryId = null;
-		m_binderId = null;
-		m_titleClickAction = null;
+		m_viewEntryUrl = null;
 		
 		// Remove the presence control from the presence panel.
 		m_presencePanel.clear();
@@ -345,8 +232,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// Hide the reply ui if we have one.
 		if ( m_replyWidget != null )
 			m_replyWidget.close();
-		
-		m_descViewFormat = m_activityStreamCtrl.getDefaultDescViewFormat();
 }
 
 
@@ -364,11 +249,11 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public FlowPanel createContentPanel()
 	{
-		final FlowPanel panel;
+		FlowPanel panel;
 		
 		panel = new FlowPanel();
 		panel.addStyleName( getContentPanelStyleName() );
-
+		
 		m_presencePanel = new FlowPanel();
 		m_presencePanel.addStyleName( getPresencePanelStyleName() );
 		panel.add( m_presencePanel );
@@ -389,36 +274,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 		panel.add( m_date );
 
 		// Add a <div> for the description to live in.
-		m_descPanel = new FlowPanel();
-		m_descPanel.addStyleName( getDescStyleName() );
-		panel.add( m_descPanel );
-
-		// Create a click handler that can be added to the description panel so the user can click on the
-		// description to expand or collapse it.
-		{
-			m_descClickHandler = new ClickHandler()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					GwtClientHelper.deferCommand( new ScheduledCommand()
-					{
-						@Override
-						public void execute() 
-						{
-							if ( m_descViewFormat == DescViewFormat.FULL )
-								setDescViewFormat( DescViewFormat.PARTIAL );
-							else
-								setDescViewFormat( DescViewFormat.FULL );
-						}
-					} );
-				}
-				
-			};
-		}
+		m_desc = new FlowPanel();
+		m_desc.addStyleName( getDescStyleName() );
+		panel.add( m_desc );
 		
 		return panel;
 	}
@@ -430,120 +288,134 @@ public abstract class ActivityStreamUIEntry extends Composite
 	public FlowPanel createHeaderPanel()
 	{
 		FlowPanel headerPanel;
+		FlowPanel titlePanel;
 		ImageResource imageResource;
 		
 		headerPanel = new FlowPanel();
 		headerPanel.addStyleName( getEntryHeaderStyleName() );
 		
-		// Add the actions menu to the header.
-		addActionsMenu( headerPanel );
-		
-		// Are we supposed to show the title?
-		if ( m_showTitle )
+		// Add an image the user can click on to invoke the Actions menu.  Image 1 will
+		// be visible when the mouse is not over the entry.  Image 2 will be visible
+		// when the mouse is over the entry.
 		{
-			FlowPanel titlePanel;
+			FlowPanel actionsPanel;
+			ClickHandler clickHandler;
 
-			// yes
-			// Create a <span> to hold the title.
-			titlePanel = new FlowPanel();
-			titlePanel.addStyleName( getTitlePanelStyleName() );
-			headerPanel.add( titlePanel );
+			actionsPanel = new FlowPanel();
+			actionsPanel.addStyleName( "activityStreamActionsPanel" );
+			headerPanel.add( actionsPanel );
 			
-			// Add an image that indicates this entry has not been read.
+			m_actionsLabel = new InlineLabel( GwtTeaming.getMessages().actionsLabel() );
+			m_actionsLabel.addStyleName( "activityStreamActionsLabel" );
+			actionsPanel.add( m_actionsLabel );
+			
+			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
+			m_actionsImg1 = new Image( imageResource );
+			m_actionsImg1.addStyleName( "activityStreamActionsImg1" );
+			m_actionsImg1.getElement().setId( "activityStreamActionsImg1" );
+			actionsPanel.add( m_actionsImg1 );
+			imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
+			m_actionsImg2 = new Image( imageResource );
+			m_actionsImg2.addStyleName( "activityStreamActionsImg2" );
+			m_actionsImg2.getElement().setId( "activityStreamActionsImg2" );
+			m_actionsImg2.setVisible( false );
+			actionsPanel.add( m_actionsImg2 );
+
+			// Add a click handler for the Actions image.
+			clickHandler = new ClickHandler()
 			{
-				ClickHandler clickHandler;
-				
-				imageResource = GwtTeaming.getImageBundle().sunburst();
-				m_unreadImg = new Image( imageResource );
-				m_unreadImg.addStyleName( "unreadImg" );
-				m_unreadImg.setTitle( GwtTeaming.getMessages().markEntryAsReadHint() );
-				m_unreadImg.setVisible( false );
-				titlePanel.add( m_unreadImg );
-
-				// Add a click handler for the "unread" image.
-				clickHandler = new ClickHandler()
+				public void onClick( ClickEvent clickEvent )
 				{
-					@Override
-					public void onClick( ClickEvent clickEvent )
+					Scheduler.ScheduledCommand cmd;
+					final int x;
+					final int y;
+					
+					x = clickEvent.getClientX();
+					y = clickEvent.getClientY();
+					
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						GwtClientHelper.deferCommand( new ScheduledCommand()
+						/**
+						 * 
+						 */
+						public void execute()
 						{
-							/**
-							 * 
-							 */
-							@Override
-							public void execute()
-							{
-								// Mark this entry as read.
-								GwtTeaming.fireEvent(new MarkEntryReadEvent( getThis() ));
-							}
-						} );
-					}
-				};
-				m_unreadImg.addClickHandler( clickHandler );
-			}
-			
-			m_title = new Anchor();
-			m_title.addStyleName( getTitleStyleName() );
-			m_title.setHref( "javascript:;" );
-			m_title.setTarget( "_blank" );
-			titlePanel.add( m_title );
-			
-			// Add a mouse-over handler for the title.
-			m_title.addMouseOverHandler( this );
-			
-			// Add a mouse-out handler for the activity stream source name
-			m_title.addMouseOutHandler( this );
-			
-			// Add a click handler for the activity stream source name
-			m_titleClickHandlerReg = m_title.addClickHandler( this );
-			
-			// Add any additional ui to the header.  This gives classes that extend this
-			// class an opportunity to put additional data in the header.
-			addAdditionalHeaderUI( titlePanel );
+							// Hide the actions2 image.
+							m_actionsImg2.setVisible( false );
+							m_actionsImg1.setVisible( true );
+
+							m_actionsLabel.removeStyleName( "activityStreamActionsLabelBold" );
+							
+							// Invoke the Actions menu.
+							invokeActionsMenu( x, y );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			m_actionsImg1.addClickHandler( clickHandler );
+			m_actionsImg2.addClickHandler( clickHandler );
+			m_actionsLabel.addClickHandler( clickHandler );
 		}
 		
-		return headerPanel;
-	}
-	
-	
-	/**
-	 * Issue an rpc request to delete this entry
-	 */
-	public void deleteEntry()
-	{
-		DeleteSelectionsCmd cmd;
-		EntityId entityId;
+		// Create a <span> to hold the title.
+		titlePanel = new FlowPanel();
+		titlePanel.addStyleName( getTitlePanelStyleName() );
+		headerPanel.add( titlePanel );
 		
-		entityId = getEntryEntityId();
-		
-		// Issue an ajax request to delete this entry
-		cmd = new DeleteSelectionsCmd( entityId, DeleteSelectionsMode.TRASH_ALL );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		// Add an image that indicates this entry has not been read.
 		{
-			@Override
-			public void onFailure( Throwable caught )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_DeleteSelections(),
-					m_entryId );
-			}
+			ClickHandler clickHandler;
+			
+			imageResource = GwtTeaming.getImageBundle().sunburst();
+			m_unreadImg = new Image( imageResource );
+			m_unreadImg.addStyleName( "unreadImg" );
+			m_unreadImg.setTitle( GwtTeaming.getMessages().markEntryAsReadHint() );
+			m_unreadImg.setVisible( false );
+			titlePanel.add( m_unreadImg );
 
-			@Override
-			public void onSuccess( VibeRpcResponse result )
+			// Add a click handler for the "unread" image.
+			clickHandler = new ClickHandler()
 			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				public void onClick( ClickEvent clickEvent )
 				{
-					@Override
-					public void execute()
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						// Hide this entry
-						setVisible( false );
-					}
-				} );
-			}			
-		} );
+						/**
+						 * 
+						 */
+						public void execute()
+						{
+							// Mark this entry as read.
+							GwtTeaming.fireEvent(new MarkEntryReadEvent( getThis() ));
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			m_unreadImg.addClickHandler( clickHandler );
+		}
+		
+		m_title = new InlineLabel();
+		m_title.addStyleName( getTitleStyleName() );
+		titlePanel.add( m_title );
+		
+		// Add a mouse-over handler for the title.
+		m_title.addMouseOverHandler( this );
+		
+		// Add a mouse-out handler for the activity stream source name
+		m_title.addMouseOutHandler( this );
+		
+		// Add a click handler for the activity stream source name
+		m_title.addClickHandler( this );
+		
+		// Add any additional ui to the header.  This gives classes that extend this
+		// class an opportunity to put additional data in the header.
+		addAdditionalHeaderUI( titlePanel );
+		
+		return headerPanel;
 	}
 	
 	
@@ -557,14 +429,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
-	 * Return the id of the author of this entry
-	 */
-	public Long getAuthorId()
-	{
-		return Long.valueOf( m_authorId );
-	}
-	
-	/**
 	 * Return the name of the style used with the author.
 	 */
 	public String getAuthorStyleName()
@@ -576,7 +440,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * Return the name of the style used with the avatar image.
 	 */
-	public abstract String getAvatarImageStyleName( ActivityStreamEntry asEntry );
+	public abstract String getAvatarImageStyleName();
 
 	
 	/**
@@ -606,36 +470,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * Return the name of the style used with the description
 	 */
-	public String getDescStyleName()
-	{
-		if ( m_descViewFormat == DescViewFormat.FULL )
-			return getFullDescStyleName();
-		
-		return getPartialDescStyleName();
-	}
-	
-	/**
-	 * Return how we should display the description
-	 */
-	public DescViewFormat getDescViewFormat()
-	{
-		return m_descViewFormat;
-	}
-	
-	/**
-	 * Return the url of the image that should be used for the given ActivityStreamEntry
-	 */
-	public abstract String getEntryImgUrl( ActivityStreamEntry asEntry );
-	
-	/**
-	 * 
-	 */
-	public abstract String getFullDescStyleName();
-	
-	/**
-	 * 
-	 */
-	public abstract String getPartialDescStyleName();
+	public abstract String getDescStyleName();
 	
 	
 	/**
@@ -686,31 +521,11 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
-	 * Return the id of this entry's binder.
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
-	
-	
-	/**
-	 * Returns an EntityId for this entry.
-	 */
-	public EntityId getEntryEntityId() {
-		return new EntityId( Long.parseLong( m_binderId ), Long.parseLong( m_entryId ), EntityId.FOLDER_ENTRY );
-	}
-	
-	
-	/**
 	 * Return the title that is being displayed for this entry.
 	 */
 	public String getEntryTitle()
 	{
-		if ( m_title != null )
-			return m_title.getText();
-		
-		return "";
+		return m_title.getText();
 	}
 	
 	
@@ -734,14 +549,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 			if ( replyNum != null && replyNum.length() > 0 )
 			{
 				String tmp;
-				int pPos;
 				
-				pPos = replyNum.indexOf( "." );
-				if ( 0 < pPos )
-				{
-			  		replyNum = replyNum.substring( pPos + 1 );
-				}
-				title = replyNum + ". ";
+				title = replyNum + " ";
 				
 				// Yes
 				// Does the entry have a title?
@@ -782,12 +591,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
-	 * Return the panel that holds the number of comments.  Can return null
-	 */
-	public abstract FlowPanel getNumCommentsPanel();
-	
-	
-	/**
 	 * Return the name of the style used with the panel that holds the presence control.
 	 */
 	public String getPresencePanelStyleName()
@@ -795,14 +598,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 		return "activityStreamPresencePanel";
 	}
 	
-	
-	/**
-	 * 
-	 */
-	public boolean getShowTitle()
-	{
-		return m_showTitle;
-	}
 	
 	/**
 	 * Return the name of the style used with the panel that holds the title.
@@ -836,11 +631,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 		GwtTeaming.fireEvent(new InvokeSimpleProfileEvent( params ));
 	}
 	
-	/**
-	 * This method gets called when the user clicks on the avatar/file image.
-	 */
-	public abstract void handleClickOnAvatar( Element element );
-	
 	
 	/**
 	 * This method gets invoked when the user clicks on the title.  Open the entry
@@ -848,7 +638,56 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void handleClickOnTitle()
 	{
-		connectTitleClickAsync();
+		// Do we have a url that we can use to view the entry?
+		if ( m_viewEntryUrl == null )
+		{
+			GetViewFolderEntryUrlCmd cmd;
+			AsyncCallback<VibeRpcResponse> callback;
+			Long entryId;
+			
+			// No, issue an ajax request to get it.
+			callback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure(Throwable t)
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
+						m_entryId );
+				}
+				
+				/**
+				 * 
+				 */
+				public void onSuccess( VibeRpcResponse response )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					m_viewEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							
+							// Open the entry using the view entry url.
+							viewEntry();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			
+			// Issue an ajax request to get the url needed to view this entry.
+			entryId = Long.parseLong( m_entryId );
+			cmd = new GetViewFolderEntryUrlCmd( null, entryId );
+			GwtClientHelper.executeCommand( cmd, callback );
+		}
+		else
+			viewEntry();
 	}
 
 	/**
@@ -860,16 +699,16 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * 
 	 */
-	private void invokeActionsMenu( UIObject target )
+	private void invokeActionsMenu( int x, int y )
 	{
 		ActionsPopupMenu popupMenu;
 		
 		// Show the Actions popup menu.
-		popupMenu = m_activityStreamCtrl.getActionsMenu();
+		popupMenu = ActivityStreamCtrl.getActionsMenu();
 		if ( popupMenu != null )
 		{
 			// Show the Actions popup menu.
-			popupMenu.showActionsMenu( this, target );
+			popupMenu.showActionsMenu( this, x, y );
 		}
 	}
 	
@@ -889,43 +728,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
-	 * Determine whether the description is totally visible.
-	 */
-	private boolean isDescTotallyVisible()
-	{
-		String desc;
-		
-		// Do we have a description?
-		desc = m_descPanel.getElement().getInnerHTML();
-		if ( desc != null && desc.length() > 0 )
-		{
-			int panelHeight;
-			int scrollHeight;
-			
-			// Yes
-			// Get the height of the panel that holds the description
-			panelHeight = m_descPanel.getOffsetHeight();
-			
-			scrollHeight = m_descPanel.getElement().getScrollHeight();
-			
-			if ( scrollHeight > panelHeight )
-				return false;
-		}
-		
-		// If we get here the description is totally visible.
-		return true;
-	}
-	
-	/**
 	 * Return whether this entry is unread. 
 	 */
 	public boolean isEntryUnread()
 	{
 		// Base our decision of whether the entry is unread on the visibility of the unread image.
-		if ( m_unreadImg != null )
-			return m_unreadImg.isVisible();
-		
-		return false;
+		return m_unreadImg.isVisible();
 	}
 	
 	/**
@@ -945,43 +753,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 		return false;
 	}
 	
-	/**
-	 * Make it so the user can click on the description to expand or collapse it.
-	 */
-	private void makeDescClickable()
-	{
-		// Does the description panel already have a click handler on it?
-		if ( m_descClickHandlerReg == null )
-		{
-			// No
-			// Add a click handler on the description panel.
-			m_descClickHandlerReg = m_descPanel.addDomHandler( m_descClickHandler, ClickEvent.getType() );
-		}
-
-		// Make the cursor a pointer when the user mouses over the description.
-		m_descPanel.addStyleName( "cursorPointer" );
-		
-		// Set the title of the description panel.
-		if ( m_descViewFormat == DescViewFormat.FULL )
-			m_descPanel.setTitle( GwtTeaming.getMessages().showPartialDescHint() );
-		else
-			m_descPanel.setTitle( GwtTeaming.getMessages().showEntireDescHint() );
-	}
-	
-	/**
-	 * Make it so the user can't click on the description.
-	 */
-	private void makeDescNotClickable()
-	{
-		if ( m_descClickHandlerReg != null )
-		{
-			m_descClickHandlerReg.removeHandler();
-			m_descClickHandlerReg = null;
-		}
-
-		m_descPanel.removeStyleName( "cursorPointer" );
-		m_descPanel.setTitle( "" );
-	}
 	
 	/**
 	 * Mark this entry as being read.
@@ -1007,9 +778,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
 				{
-					@Override
 					public void execute()
 					{
 						// Update the ui to reflect the fact that this entry is now read.
@@ -1019,7 +791,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 						if ( hideEntry )
 							setVisible( false );
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}// end onSuccess()			
 		} );
 	}
@@ -1049,15 +822,17 @@ public abstract class ActivityStreamUIEntry extends Composite
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
 				{
-					@Override
 					public void execute()
 					{
 						// Update the ui to reflect the fact that this entry is now read.
 						updateReadUnreadUI( false );
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}// end onSuccess()			
 		} );
 	}
@@ -1066,27 +841,26 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * 
 	 */
-	@Override
-	public void onClick( final ClickEvent event )
+	public void onClick( ClickEvent event )
 	{
 		final Object src;
 		
 		src = event.getSource();
 		if ( src == m_title || src == m_author || src == m_avatarImg )
 		{
-			GwtClientHelper.deferCommand( new ScheduledCommand()
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
 			{
-				@Override
 				public void execute()
 				{
 					if ( src == m_title )
 						handleClickOnTitle();
-					else if ( src == m_author )
+					else if ( src == m_author || src == m_avatarImg )
 						handleClickOnAuthor( ((Widget)src).getElement() );
-					else if ( src == m_avatarImg )
-						handleClickOnAvatar( ((Widget)src).getElement() );
 				}
-			} );
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 
@@ -1094,7 +868,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * Remove the mouse-over style from the given label. 
 	 */
-	@Override
 	public void onMouseOut( MouseOutEvent event )
 	{
 		Object src;
@@ -1103,6 +876,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 		if ( src == m_title || src == m_author )
 		{
 			((Widget)src).removeStyleName( "activityStreamHover" );
+		}
+		else if ( src == m_avatarImg )
+		{
+			m_avatarImg.removeStyleName( "cursorPointer" );
 		}
 		else if ( src == getWidget() )
 		{
@@ -1118,7 +895,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * Add the mouse-over style to the given label. 
 	 */
-	@Override
 	public void onMouseOver( MouseOverEvent event )
 	{
 		Object src;
@@ -1127,6 +903,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 		if ( src == m_title || src == m_author )
 		{
 			((Widget)src).addStyleName( "activityStreamHover" );
+		}
+		else if ( src == m_avatarImg )
+		{
+			m_avatarImg.addStyleName( "cursorPointer" );
 		}
 		else if ( src == getWidget() )
 		{
@@ -1160,16 +940,17 @@ public abstract class ActivityStreamUIEntry extends Composite
 			public void onSuccess( VibeRpcResponse result )
 			{
 				final ActivityStreamEntry asEntry = ((ActivityStreamEntryRpcResponseData) result.getResponseData()).getActivityStreamEntry();
+				Scheduler.ScheduledCommand cmd;
 				
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				cmd = new Scheduler.ScheduledCommand()
 				{
-					@Override
 					public void execute()
 					{
 						// Add the reply to the top entry.
 						insertReply( asEntry );
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}// end onSuccess()
 		} );
 	}
@@ -1183,64 +964,30 @@ public abstract class ActivityStreamUIEntry extends Composite
 		String avatarUrl;
 		PresenceControl presenceCtrl;
 		
-		avatarUrl = getEntryImgUrl( entryItem );
-		m_avatarImg.removeStyleName( "activityStreamTopEntryFileImg" );
-		m_avatarImg.removeStyleName( "activityStreamTopEntryAvatarImg" );
-		m_avatarImg.removeStyleName( "activityStreamCommentAvatarImg" );
-		m_avatarImg.addStyleName( getAvatarImageStyleName( entryItem ) );
-		m_avatarImg.setUrl( avatarUrl );
+		avatarUrl = entryItem.getAuthorAvatarUrl();
+		if ( avatarUrl != null && avatarUrl.length() > 0 )
+		{
+			m_avatarImg.setUrl( avatarUrl );
+		}
+		else
+		{
+			// Default to the "no avatar" image.
+			m_avatarImg.setUrl( GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png" );
+		}
 		m_avatarImg.setVisible( true );
 		
 		title = getEntryTitle( entryItem );
 		if ( title == null || title.length() == 0 )
 			title = GwtTeaming.getMessages().noTitle();
-		if ( m_title != null )
-			m_title.getElement().setInnerHTML( title );
+		m_title.getElement().setInnerHTML( title );
 		updateReadUnreadUI( entryItem.getEntrySeen() );
 		
 		m_author.setText( entryItem.getAuthorName() );
 		m_authorId = entryItem.getAuthorId();
 		m_authorWSId = entryItem.getAuthorWorkspaceId();
 		m_date.setText( entryItem.getEntryModificationDate() );
-		
-		// Set the description
-		{
-			String desc;
-			
-			desc = getEntryDesc( entryItem );
-			m_descPanel.getElement().setInnerHTML( desc );
-			
-			// Do we have a description?
-			if ( desc != null && desc.length() > 0 )
-			{
-				// Yes
-				makeDescClickable();
-				
-				// Schedule a command that will determine if the description is totally visible.
-				GwtClientHelper.deferCommand( new ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						// Is the description view format partial and the
-						// description is totally visible anyway?
-						if ( getDescViewFormat() == DescViewFormat.PARTIAL && isDescTotallyVisible() )
-						{
-							// Yes, no need to make the description clickable.
-							makeDescNotClickable();
-						}
-					}
-				} );
-			}
-			else
-			{
-				// No, remove the click handler on the description panel.
-				makeDescNotClickable();
-			}
-		}
-		
+		m_desc.getElement().setInnerHTML( getEntryDesc( entryItem ) );
 		m_entryId = entryItem.getEntryId();
-		m_binderId = entryItem.getParentBinderId();
 		
 		// Has the author's workspace been deleted?
 		if ( m_authorWSId != null && m_authorWSId.length() > 0 )
@@ -1257,28 +1004,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 			m_presencePanel.add( presenceCtrl );
 		}
 		
-		m_titleClickAction = null;
-		
-		// Set the format of how to view the description back to the default.
-		setDescViewFormat( m_activityStreamCtrl.getDefaultDescViewFormat() );
-	}
-	
-	/**
-	 * Set the format used to display the description
-	 */
-	private void setDescViewFormat( DescViewFormat format )
-	{
-		if ( m_descPanel != null )
-		{
-			// Remove the current style on the description panel.
-			m_descPanel.removeStyleName( getDescStyleName() );
-			
-			// Change the format used to display the description
-			m_descViewFormat = format;
-			
-			// Add the appropriate style on the description panel.
-			m_descPanel.addStyleName( getDescStyleName() );
-		}
+		m_viewEntryUrl = null;
 	}
 	
 	/**
@@ -1286,119 +1012,34 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void updateReadUnreadUI( boolean read )
 	{
-		if ( m_title != null && m_unreadImg != null )
+		m_title.removeStyleName( "readEntry" );
+		m_title.removeStyleName( "unreadEntry" );
+
+		if ( read )
 		{
-			m_title.removeStyleName( "readEntry" );
-			m_title.removeStyleName( "unreadEntry" );
-	
-			if ( read )
-			{
-				m_title.addStyleName( "readEntry" );
-				m_unreadImg.setVisible( false );
-			}
-			else
-			{
-				m_title.addStyleName( "unreadEntry" );
-				m_unreadImg.setVisible( true );
-			}
+			m_title.addStyleName( "readEntry" );
+			m_unreadImg.setVisible( false );
 		}
-	}
-	
-	/*
-	 * Asynchronously connects the title <a> so that it performs an
-	 * appropriate action and performs that action.
-	 */
-	private void connectTitleClickAsync()
-	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
+		else
 		{
-			@Override
-			public void execute()
-			{
-				connectTitleClickNow();
-			}
-		} );
-	}
-	
-	/*
-	 * Synchronously connects the title <a> so that it performs an
-	 * appropriate action and performs that action.
-	 */
-	private void connectTitleClickNow()
-	{
-		// If we've already connected the anchor...
-		if ( null != m_titleClickAction )
-		{
-			// ...simply perform its action.
-			processTitleClickNow();
-			return;
+			m_title.addStyleName( "unreadEntry" );
+			m_unreadImg.setVisible( true );
 		}
-		
-		GetClickOnTitleActionCmd cmd = new GetClickOnTitleActionCmd( getEntryEntityId() );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure(Throwable t)
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetClickOnTitleAction() );
-			}
-			
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				m_titleClickAction = ((ClickOnTitleActionRpcResponseData) response.getResponseData());
-				switch ( m_titleClickAction.getClickAction() )
-				{
-				case DOWNLOAD_FILE:
-				case VIEW_AS_HTML:
-					if ( USE_TITLE_ANCHOR_CLICKS )
-					{
-						m_title.setHref( m_titleClickAction.getUrl() );
-						m_titleClickHandlerReg.removeHandler();
-					}
-					break;
-					
-				case VIEW_DETAILS:
-					break;
-				}
-				processTitleClickAsync();
-			}
-		} );
 	}
 
-	/*
-	 * Asynchronously processes a click on a title. 
-	 */
-	private void processTitleClickAsync() {
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				processTitleClickNow();
-			}
-		} );
-	}
 	
-	/*
-	 * Synchronously processes a click on a title. 
+	/**
+	 * Tell the action handler to open the given entry.
 	 */
-	private void processTitleClickNow() {
-		GwtTeaming.fireEvent( new MarkEntryReadEvent( this ) );			
-		switch ( m_titleClickAction.getClickAction() )
+	public void viewEntry()
+	{
+		if ( GwtClientHelper.hasString( m_viewEntryUrl ) )
 		{
-		case DOWNLOAD_FILE:
-		case VIEW_AS_HTML:
-			if ( USE_TITLE_ANCHOR_CLICKS )
-			     GwtClientHelper.jsClickWidget( m_title );
-			else GwtClientHelper.jsLaunchUrlInWindow( m_titleClickAction.getUrl(), "_blank" );
-			break;
-			
-		case VIEW_DETAILS:
-			GwtTeaming.fireEvent( new ViewForumEntryEvent( m_titleClickAction.getUrl() ) );
-			break;
+			// Tell the activity stream to mark this entry as read.
+			GwtTeaming.fireEvent(new MarkEntryReadEvent( this            ) );			
+			GwtTeaming.fireEvent(new ViewForumEntryEvent( m_viewEntryUrl ) );
 		}
+		else
+			Window.alert( GwtTeaming.getMessages().cantAccessEntry() );
 	}
 }

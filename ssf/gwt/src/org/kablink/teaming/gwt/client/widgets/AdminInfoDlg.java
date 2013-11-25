@@ -35,11 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.admin.GwtEnterProxyCredentialsTask;
-import org.kablink.teaming.gwt.client.admin.GwtFilrAdminTask;
-import org.kablink.teaming.gwt.client.admin.GwtSelectNetFolderServerTypeTask;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -47,23 +43,21 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.UListElement;
-import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * Class used for the ui of the "Administration Information" dialog
  */
 public class AdminInfoDlg extends DlgBox
 {
+	private Button m_closeBtn;
 	private FlexTable m_table;
-	private FlowPanel m_mainPanel = null;
 	
 	/*
 	 * Class constructor.
@@ -78,7 +72,7 @@ public class AdminInfoDlg extends DlgBox
 		int xPos,
 		int yPos )
 	{
-		super( autoHide, modal, xPos, yPos, DlgButtonMode.Close );
+		super( autoHide, modal, xPos, yPos );
 	
 		String headerText;
 		
@@ -90,11 +84,12 @@ public class AdminInfoDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
-		m_mainPanel = new FlowPanel();
-		m_mainPanel.setStyleName( "teamingDlgBoxContent" );
+		FlowPanel mainPanel = null;
+		
+		mainPanel = new FlowPanel();
+		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		
 		m_table = new FlexTable();
 		m_table.setCellSpacing( 4 );
@@ -103,57 +98,102 @@ public class AdminInfoDlg extends DlgBox
 		// The content of the dialog will be created in refreshContent() which will be called
 		// when we get the GwtUpgradeInfo object from the server.
 		
-		m_mainPanel.add( m_table );
+		mainPanel.add( m_table );
 
 		init( props );
 
-		return m_mainPanel;
+		return mainPanel;
 	}
 	
+	
+	/*
+	 * Override the createFooter() method so we can control what buttons are in the footer.
+	 */
+	public Panel createFooter()
+	{
+		FlowPanel panel;
+		
+		panel = new FlowPanel();
+		
+		// Associate this panel with its stylesheet.
+		panel.setStyleName( "teamingDlgBoxFooter" );
+		
+		m_closeBtn = new Button( GwtTeaming.getMessages().close() );
+		m_closeBtn.addClickHandler( this );
+		m_closeBtn.addStyleName( "teamingButton" );
+		panel.add( m_closeBtn );
+
+		return panel;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public Object getDataFromDlg()
+	{
+		// Nothing to do.
+		return new Object();
+	}// end getDataFromDlg()
+	
+	
+	/**
+	 *  
+	 */
+	public FocusWidget getFocusWidget()
+	{
+		return null;
+	}
+
+	
+	/**
+	 * Initialize the controls in the dialog with the values from the given GwtUpgradeInfo object.
+	 */
+	public void init( Object props )
+	{
+		// Nothing to do.
+	}
+
+	
+	/*
+	 * This method gets called when the user clicks on a button in the footer.
+	 */
+	public void onClick( ClickEvent event )
+	{
+		Object	source;
+		
+		// Get the object that was clicked on.
+		source = event.getSource();
+		
+		// Did the user click on close?
+		if ( source == m_closeBtn )
+		{
+			// Yes
+			hide();
+		}
+	}
 
 	/**
-	 * Create the ui that displays the admin tasks that need to be completed
+	 * Refresh the content of this dialog with the new information found in the given GwtUpgradeInfo object.
 	 */
-	public static void createTasksToDoUI(
-		GwtUpgradeInfo upgradeInfo,
-		FlexTable table,
-		int row,
-		boolean wordWrap,
-		String tdStyleName )
+	public void refreshContent( GwtUpgradeInfo upgradeInfo )
 	{
+		int row = 0;
 		FlexTable.FlexCellFormatter cellFormatter; 
 
-		cellFormatter = table.getFlexCellFormatter();
+		// Clear any existing content.
+		m_table.clear();
 		
-		// Has the license expired?
-		if ( upgradeInfo.getIsLicenseExpired() )
+		cellFormatter = m_table.getFlexCellFormatter();
+
+		// Add a row for the Teaming release information
 		{
-			FlowPanel panel;
-			Image img;
-			InlineLabel label;
-			String productName;
+			m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgRelease() );
+			cellFormatter.setWordWrap( row, 0, false );
+			m_table.setText( row, 1, upgradeInfo.getReleaseInfo() );
+			cellFormatter.setWordWrap( row, 1, false );
+			m_table.setText( row, 2, " " );
 			
-			// Yes
-			panel = new FlowPanel();
-			
-			img = new Image( GwtTeaming.getImageBundle().expiredLicenseIcon16() );
-			img.getElement().setAttribute( "align", "absmiddle" );
-			panel.add( img );
-			
-			if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
-				productName = GwtTeaming.getMessages().novellFilr();
-			else if ( GwtMainPage.m_novellTeaming )
-				productName = GwtTeaming.getMessages().novellTeaming();
-			else
-				productName = GwtTeaming.getMessages().kablinkTeaming();
-			label = new InlineLabel( " " + GwtTeaming.getMessages().adminInfoDlgExpiredLicense( productName ) );
-			panel.add( label );
-			
-			cellFormatter.setColSpan( row, 0, 2 );
-			cellFormatter.setWordWrap( row, 0, wordWrap );
-			if ( tdStyleName != null )
-				cellFormatter.addStyleName( row, 0, tdStyleName );
-			table.setHTML( row, 0, panel.getElement().getInnerHTML() );
 			++row;
 		}
 		
@@ -161,29 +201,13 @@ public class AdminInfoDlg extends DlgBox
 		if ( upgradeInfo.doUpgradeTasksExist() )
 		{
 			// Yes
+			
 			// Add text to let the user know there are upgrade tasks that need to be completed.
-			{
-				FlowPanel panel;
-				Image img;
-				InlineLabel label;
-				
-				panel = new FlowPanel();
-				
-				img = new Image( GwtTeaming.getImageBundle().warningIcon16() );
-				img.getElement().setAttribute( "align", "absmiddle" );
-				panel.add( img );
-				
-				label = new InlineLabel( " " + GwtTeaming.getMessages().adminInfoDlgUpgradeTasksNotDone() );
-				panel.add( label );
-				
-				row += 3;
-				cellFormatter.setColSpan( row, 0, 2 );
-				cellFormatter.setWordWrap( row, 0, wordWrap );
-				if ( tdStyleName != null )
-					cellFormatter.addStyleName( row, 0, tdStyleName );
-				table.setHTML( row, 0, panel.getElement().getInnerHTML() );
-				++row;
-			}
+			++row;
+			cellFormatter.setColSpan( row, 0, 2 );
+			cellFormatter.setWordWrap( row, 0, false );
+			m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgUpgradeTasksNotDone() );
+			++row;
 
 			// Are we dealing with the "admin" user?
 			if ( upgradeInfo.getIsAdmin() )
@@ -199,8 +223,6 @@ public class AdminInfoDlg extends DlgBox
 					UListElement uList;
 					
 					uList = Document.get().createULElement();
-					uList.getStyle().setMarginTop( 0, Unit.PX );
-					uList.getStyle().setMarginBottom( 0, Unit.PX );
 				
 					// Display a message for each upgrade task.
 					for ( GwtUpgradeInfo.UpgradeTask task : upgradeTasks )
@@ -235,219 +257,19 @@ public class AdminInfoDlg extends DlgBox
 					}
 					
 					cellFormatter.setColSpan( row, 0, 2 );
-					cellFormatter.setWordWrap( row, 0, wordWrap );
-					if ( tdStyleName != null )
-						cellFormatter.addStyleName( row, 0, tdStyleName );
-					table.setHTML( row, 0, uList.getString() );
+					cellFormatter.setWordWrap( row, 0, false );
+					m_table.setHTML( row, 0, uList.getString() );
 				}
 			}
 			else
 			{
 				cellFormatter.setColSpan( row, 0, 2 );
-				cellFormatter.setWordWrap( row, 0, wordWrap );
-				if ( tdStyleName != null )
-					cellFormatter.addStyleName( row, 0, tdStyleName );
-				table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgLoginAsAdmin() );
-				++row;
-			}
-		}
-		
-		// Are we running Filr?
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
-		{
-			ArrayList<GwtFilrAdminTask> listOfTasks;
-			
-			// Yes
-			// Are there any tasks the admin needs to do?
-			listOfTasks = upgradeInfo.getFilrAdminTasks();
-			if ( listOfTasks != null && listOfTasks.size() > 0 )
-			{
-				UListElement uList;
-				FlowPanel panel;
-				Image img;
-				InlineLabel label;
-				
-				// Yes
-				panel = new FlowPanel();
-				
-				img = new Image( GwtTeaming.getImageBundle().warningIcon16() );
-				img.getElement().setAttribute( "align", "absmiddle" );
-				panel.add( img );
-				
-				label = new InlineLabel( " " + GwtTeaming.getMessages().adminInfoDlgFilrTasksToBeCompleted() );
-				panel.add( label );
-				
-				uList = Document.get().createULElement();
-				uList.getStyle().setMarginTop( 0, Unit.PX );
-				uList.getStyle().setMarginBottom( 0, Unit.PX );
-			
-				// Add text to let the user know there are Filr tasks that need to be completed.
-				row += 3;
-				cellFormatter.setColSpan( row, 0, 2 );
-				cellFormatter.setWordWrap( row, 0, wordWrap );
-				if ( tdStyleName != null )
-					cellFormatter.addStyleName( row, 0, tdStyleName );
-				table.setHTML( row, 0, panel.getElement().getInnerHTML() );
-				++row;
-
-				// Display a message for each task.
-				for ( GwtFilrAdminTask nextTask : listOfTasks )
-				{
-					if ( nextTask instanceof GwtEnterProxyCredentialsTask )
-					{
-						GwtEnterProxyCredentialsTask tmpTask;
-						LIElement liElement;
-						String txt;
-						
-						panel = new FlowPanel();
-						
-						tmpTask = (GwtEnterProxyCredentialsTask) nextTask;
-						txt = GwtTeaming.getMessages().adminInfoDlgEnterProxyCredentials( tmpTask.getServerName() );
-						label = new InlineLabel( " " + txt );
-						panel.add( label );
-
-						liElement = Document.get().createLIElement();
-						liElement.getStyle().setMarginBottom( 8, Unit.PX );
-						liElement.setInnerHTML( panel.getElement().getInnerHTML() );
-						
-						uList.appendChild( liElement );
-					}
-					else if ( nextTask instanceof GwtSelectNetFolderServerTypeTask )
-					{
-						GwtSelectNetFolderServerTypeTask tmpTask;
-						LIElement liElement;
-						String txt;
-						
-						panel = new FlowPanel();
-						
-						tmpTask = (GwtSelectNetFolderServerTypeTask) nextTask;
-						txt = GwtTeaming.getMessages().adminInfoDlgSelectNetFolderServerType( tmpTask.getServerName() );
-						label = new InlineLabel( " " + txt );
-						panel.add( label );
-
-						liElement = Document.get().createLIElement();
-						liElement.getStyle().setMarginBottom( 8, Unit.PX );
-						liElement.setInnerHTML( panel.getElement().getInnerHTML() );
-						
-						uList.appendChild( liElement );
-					}
-				}
-
-				cellFormatter.setColSpan( row, 0, 2 );
-				cellFormatter.setWordWrap( row, 0, wordWrap );
-				if ( tdStyleName != null )
-					cellFormatter.addStyleName( row, 0, tdStyleName );
-				table.setHTML( row, 0, uList.getString() );
+				cellFormatter.setWordWrap( row, 0, false );
+				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgLoginAsAdmin() );
 				++row;
 			}
 		}
 	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public Object getDataFromDlg()
-	{
-		// Nothing to do.
-		return new Object();
-	}// end getDataFromDlg()
-	
-	
-	/**
-	 *  
-	 */
-	@Override
-	public FocusWidget getFocusWidget()
-	{
-		return null;
-	}
-
-	
-	/**
-	 * Initialize the controls in the dialog with the values from the given GwtUpgradeInfo object.
-	 */
-	public void init( Object props )
-	{
-		// Nothing to do.
-	}
-
-	
-	/**
-	 * Refresh the content of this dialog with the new information found in the given GwtUpgradeInfo object.
-	 */
-	public void refreshContent( GwtUpgradeInfo upgradeInfo )
-	{
-		int row = 0;
-		FlexTable.FlexCellFormatter cellFormatter; 
-
-		// Remove the style that gives this dialog a fixed height.
-		m_mainPanel.removeStyleName( "adminInfoDlg_mainPanel" );
-		
-		// Clear any existing content.
-		m_table.clear();
-		
-		cellFormatter = m_table.getFlexCellFormatter();
-
-		// Add a row for the Teaming release information
-		{
-			m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgRelease() );
-			cellFormatter.setWordWrap( row, 0, false );
-			m_table.setText( row, 1, upgradeInfo.getReleaseInfo() );
-			cellFormatter.setWordWrap( row, 1, false );
-			m_table.setText( row, 2, " " );
-			
-			++row;
-		}
-		
-		// Are we running Filr
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
-		{
-			String filrApplianceReleaseInfo;
-			
-			// Yes
-			// Do we have release info on the Filr appliance?
-			filrApplianceReleaseInfo = upgradeInfo.getFilrApplianceReleaseInfo();
-			if ( filrApplianceReleaseInfo != null )
-			{
-				// Yes
-				// Add a row for the Filr appliance release info.
-				m_table.setText( row, 1, filrApplianceReleaseInfo );
-				cellFormatter.setWordWrap( row, 1, false );
-				m_table.setText( row, 2, " " );
-				
-				++row;
-			}
-		}
-
-		// Create the ui that displays that tasks that need to be completed.
-		AdminInfoDlg.createTasksToDoUI( upgradeInfo, m_table, row, false, null );
-	}
-	
-	/**
-	 * Show this dialog.
-	 */
-	public void showDlg()
-	{
-		PopupPanel.PositionCallback posCallback;
-		
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				if ( offsetHeight > 400 )
-					m_mainPanel.addStyleName( "adminInfoDlg_mainPanel" );
-				else
-					m_mainPanel.removeStyleName( "adminInfoDlg_mainPanel" );
-			}
-		};
-		setPopupPositionAndShow( posCallback );
-	}
-
 	
 	/**
 	 * Callback interface to interact with the dialog asynchronously
@@ -588,7 +410,7 @@ public class AdminInfoDlg extends DlgBox
 			// Otherwise, we assume we're to initialize and show the
 			// AdminInfoDlg we were given!  Initialize...
 			adminInfoDlg.refreshContent( upgradeInfo );
-			adminInfoDlg.showDlg();
+			adminInfoDlg.show();
 		}
 	}
 	

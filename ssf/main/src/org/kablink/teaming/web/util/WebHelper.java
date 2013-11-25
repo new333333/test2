@@ -65,7 +65,6 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -84,13 +83,9 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.util.Html;
 import org.kablink.util.PortalDetector;
-import org.kablink.util.Validator;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
+
 
 public class WebHelper {
 	protected static Log logger = LogFactory.getLog(WebHelper.class);
@@ -425,42 +420,35 @@ public class WebHelper {
 			throw new UncheckedIOException(new IOException("Illegal file name [" + fileName + "]"));
 		BufferedReader breader = new BufferedReader(new InputStreamReader (mpfile.getInputStream()));
 		
-		try {
-			// Encode the original file name into the prefix.
-			String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
+		// Encode the original file name into the prefix.
+		String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
+		
+		File destFile = TempFileUtil.createTempFile(prefix);
+		
+		BufferedWriter bwriter = new BufferedWriter(new FileWriter (destFile));
+		
+		while(breader.ready()) {
+			String line = breader.readLine();
 			
-			File destFile = TempFileUtil.createTempFile(prefix);
-			
-			BufferedWriter bwriter = new BufferedWriter(new FileWriter (destFile));
-			
-			try {
-				while(breader.ready()) {
-					String line = breader.readLine();
+			if(line.endsWith("=")) {
+				while(line.endsWith("=") && breader.ready()) {
+					String temp = line.substring(0, line.length() - 1);
+					bwriter.write(temp);
 					
-					if(line.endsWith("=")) {
-						while(line.endsWith("=") && breader.ready()) {
-							String temp = line.substring(0, line.length() - 1);
-							bwriter.write(temp);
-							
-							line = breader.readLine();
-						}
-						bwriter.write(line);
-					}
-					else {	
-						bwriter.write(line);
-					}
-					bwriter.newLine();
+					line = breader.readLine();
 				}
+				bwriter.write(line);
 			}
-			finally {
-				bwriter.close();
+			else {	
+				bwriter.write(line);
 			}
-						
-			return destFile.getName();
+			bwriter.newLine();
 		}
-		finally {
-			breader.close();
-		}
+		
+		breader.close();
+		bwriter.close();
+		
+		return destFile.getName();
 	}
 	
 	/**
@@ -614,7 +602,7 @@ public class WebHelper {
 	 * 
 	 * @return
 	 */
-	public static LdapModule getLdapModule()
+	private static LdapModule getLdapModule()
 	{
 		return (LdapModule) SpringContextUtil.getBean( "ldapModule" );
 	}// end getLdapModule()
@@ -643,23 +631,5 @@ public class WebHelper {
 			}
 		}
 		return reply;
-	}
-	
-	public static boolean isUserAuthenticatedViaOpenid() {
-		HttpSession ses = getCurrentHttpSession();
-		if(ses == null)
-			return false;
-		else
-			return isUserAuthenticatedViaOpenid(ses);
-	}
-	
-	public static boolean isUserAuthenticatedViaOpenid(HttpSession ses) {
-		SecurityContext securityContext = (SecurityContext) ses.getAttribute("SPRING_SECURITY_CONTEXT");
-		if(securityContext == null)
-			return false;
-		Authentication auth = securityContext.getAuthentication();
-		if(auth == null)
-			return false;
-		return (auth instanceof OpenIDAuthenticationToken);
 	}
 }
