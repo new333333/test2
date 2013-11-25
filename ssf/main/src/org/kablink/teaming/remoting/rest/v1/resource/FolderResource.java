@@ -387,6 +387,12 @@ public class FolderResource extends AbstractBinderResource {
                                    @FormParam("source_id") String sourceId,
                                    @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         Folder folder = _getFolder(id);
+        if (fileName==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No file_name parameter was supplied in the POST data.");
+        }
+        if (sourceId==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No source_id parameter was supplied in the POST data.");
+        }
         FileAttachment existing = findFileAttachment(sourceId);
         DefinableEntity origEntry = existing.getOwner().getEntity();
         org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().copyEntry(origEntry.getParentBinder().getId(),

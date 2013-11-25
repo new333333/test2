@@ -25,6 +25,7 @@ import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -232,6 +233,31 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                 getBasePath() + id + "/library_folders", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
    	}
+
+    @POST
+    @Path("{id}/library_folders")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Folder copyFolder(@PathParam("id") long parentId,
+                             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                             @FormParam("title") String title,
+                             @FormParam("source_id") Long sourceId) {
+        _getBinderImpl(parentId);
+        if (title==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No title parameter was supplied in the POST data.");
+        }
+        if (sourceId==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No source_id parameter was supplied in the POST data.");
+        }
+        org.kablink.teaming.domain.Folder source = _getFolder(sourceId);
+        if (BinderHelper.isBinderHomeFolder(source)) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Copying a home folder is not supported");
+        }
+        Map options = new HashMap();
+        options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, title);
+        org.kablink.teaming.domain.Binder binder = getBinderModule().copyBinder(sourceId, parentId, true, options);
+        return (Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
+    }
 
     @POST
    	@Path("{id}/library_folders")
