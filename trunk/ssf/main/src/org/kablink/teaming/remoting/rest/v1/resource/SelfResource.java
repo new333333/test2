@@ -65,6 +65,7 @@ import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -276,6 +277,33 @@ public class SelfResource extends AbstractFileResource {
     }
 
     @POST
+    @Path("/my_files/library_folders")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public org.kablink.teaming.rest.v1.model.Folder copyFolder(@QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                                               @FormParam("title") String title,
+                                                               @FormParam("source_id") Long sourceId) {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+        if (title==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No title parameter was supplied in the POST data.");
+        }
+        if (sourceId==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No source_id parameter was supplied in the POST data.");
+        }
+        org.kablink.teaming.domain.Binder parent = getMyFilesFolderParent();
+        org.kablink.teaming.domain.Folder source = _getFolder(sourceId);
+        if (BinderHelper.isBinderHomeFolder(source)) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Copying a home folder is not supported");
+        }
+        Map options = new HashMap();
+        options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, title);
+        org.kablink.teaming.domain.Binder binder = getBinderModule().copyBinder(sourceId, parent.getId(), true, options);
+        return (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
+    }
+
+    @POST
    	@Path("/my_files/library_folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -406,6 +434,15 @@ public class SelfResource extends AbstractFileResource {
     public FileProperties copyFile(@FormParam("file_name") String fileName,
                                    @FormParam("source_id") String sourceId,
                                    @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+        if (fileName==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No file_name parameter was supplied in the POST data.");
+        }
+        if (sourceId==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No source_id parameter was supplied in the POST data.");
+        }
         Folder folder = getMyFilesFileParent();
         FileAttachment existing = findFileAttachment(sourceId);
         org.kablink.teaming.domain.DefinableEntity origEntry = existing.getOwner().getEntity();
