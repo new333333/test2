@@ -32,13 +32,14 @@
  */
 package org.kablink.teaming.remoting.rest.v1.util;
 
-import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.rest.v1.model.GroupBrief;
 import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.UserBrief;
-import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.util.search.Constants;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -46,18 +47,45 @@ import java.util.Map;
  * Date: 5/18/12
  * Time: 1:07 PM
  */
-public abstract class PrincipalBriefBuilder extends DefinableEntityBriefBuilder {
+public class PrincipalBriefBuilder extends BasePrincipalBriefBuilder implements SearchResultBuilder<PrincipalBrief> {
     protected PrincipalBriefBuilder() {
     }
 
-    protected PrincipalBriefBuilder(int descriptionFormat) {
+    public PrincipalBriefBuilder(int descriptionFormat) {
         super(descriptionFormat);
     }
 
-    public void populatePrincipalBrief(PrincipalBrief model, Map entry) {
-        populateDefinableEntityBrief(model, entry, Constants.BINDER_ID_FIELD);
-        String reservedId = (String) entry.get(Constants.RESERVEDID_FIELD);
-        model.setReserved(reservedId!=null);
-        model.setEmailAddress(SearchResultBuilderUtil.getString(entry, Constants.EMAIL_FIELD));
+    public PrincipalBrief build(Map entry) {
+        if (!Constants.DOC_TYPE_ENTRY.equals(Constants.DOC_TYPE_ENTRY)) {
+            return null;
+        }
+        String entryType = (String) entry.get(Constants.ENTRY_TYPE_FIELD);
+        if (Constants.ENTRY_TYPE_GROUP.equals(entryType)) {
+            return buildGroup(entry);
+        } else if (Constants.ENTRY_TYPE_USER.equals(entryType)) {
+            return buildUser(entry);
+        }
+        return null;
     }
+
+    @Override
+    public Object getId(PrincipalBrief obj) {
+        return obj.getId();
+    }
+
+    @Override
+    public Object getParentId(PrincipalBrief obj) {
+        return obj.getParentBinder().getId();
+    }
+
+    @Override
+    public SearchResultTreeNode<PrincipalBrief> factoryTreeNode(PrincipalBrief obj) {
+        return null;
+    }
+
+    @Override
+    public Date getLastModified(PrincipalBrief obj) {
+        return obj.getModificationDate();
+    }
+
 }

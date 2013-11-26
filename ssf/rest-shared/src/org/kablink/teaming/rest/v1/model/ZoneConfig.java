@@ -50,6 +50,7 @@ public class ZoneConfig extends BaseRestObject {
     private MobileAppConfig mobileAppConfig;
    	private Long fileSizeLimitUserDefault;
    	private Long fileVersionsMaxAge;
+    private Boolean allowShareWithLdapGroups;
 
     public Long getId() {
         return id;
@@ -126,5 +127,14 @@ public class ZoneConfig extends BaseRestObject {
 
     public void setFileVersionsMaxAge(Long fileVersionsMaxAge) {
         this.fileVersionsMaxAge = fileVersionsMaxAge;
+    }
+
+    @XmlElement(name="allow_sharing_with_ldap_groups")
+    public Boolean getAllowShareWithLdapGroups() {
+        return allowShareWithLdapGroups==null ? Boolean.TRUE : allowShareWithLdapGroups;
+    }
+
+    public void setAllowShareWithLdapGroups(Boolean allowShareWithLdapGroups) {
+        this.allowShareWithLdapGroups = allowShareWithLdapGroups;
     }
 }

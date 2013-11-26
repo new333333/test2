@@ -33,11 +33,14 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
+import org.kablink.teaming.rest.v1.model.GroupBrief;
+import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.UserBrief;
+import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.util.search.Constants;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -45,15 +48,31 @@ import java.util.Map;
  * Date: 5/18/12
  * Time: 1:07 PM
  */
-public class UserBriefBuilder extends BasePrincipalBriefBuilder implements SearchResultBuilder<UserBrief> {
-    public UserBriefBuilder() {
+public abstract class BasePrincipalBriefBuilder extends DefinableEntityBriefBuilder {
+    protected BasePrincipalBriefBuilder() {
     }
 
-    public UserBriefBuilder(int descriptionFormat) {
+    protected BasePrincipalBriefBuilder(int descriptionFormat) {
         super(descriptionFormat);
     }
 
-    public UserBrief build(Map entry) {
+    public void populatePrincipalBrief(PrincipalBrief model, Map entry) {
+        populateDefinableEntityBrief(model, entry, Constants.BINDER_ID_FIELD);
+        String reservedId = (String) entry.get(Constants.RESERVEDID_FIELD);
+        model.setReserved(reservedId!=null);
+        model.setEmailAddress(SearchResultBuilderUtil.getString(entry, Constants.EMAIL_FIELD));
+    }
+
+    protected GroupBrief buildGroup(Map entry) {
+        GroupBrief group = new GroupBrief();
+        populatePrincipalBrief(group, entry);
+        group.setName((String) entry.get(Constants.GROUPNAME_FIELD));
+        group.setLink(LinkUriUtil.getGroupLinkUri(group.getId()));
+        LinkUriUtil.populateGroupLinks(group);
+        return group;
+    }
+
+    protected UserBrief buildUser(Map entry) {
         UserBrief user = new UserBrief();
         populatePrincipalBrief(user, entry);
         user.setPerson(SearchResultBuilderUtil.getBoolean(entry, Constants.PERSONFLAG_FIELD));
@@ -66,21 +85,5 @@ public class UserBriefBuilder extends BasePrincipalBriefBuilder implements Searc
         user.setLink(LinkUriUtil.getUserLinkUri(user.getId()));
         LinkUriUtil.populateUserLinks(user.getId(), user);
         return user;
-    }
-
-    public Object getId(UserBrief obj) {
-        return obj.getId();
-    }
-
-    public Object getParentId(UserBrief obj) {
-        return obj.getParentBinder().getId();
-    }
-
-    public SearchResultTreeNode<UserBrief> factoryTreeNode(UserBrief obj) {
-        return null;
-    }
-
-    public Date getLastModified(UserBrief obj) {
-        return obj.getModificationDate();
     }
 }

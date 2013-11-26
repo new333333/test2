@@ -43,7 +43,7 @@ import java.util.Map;
  * Date: 5/18/12
  * Time: 1:07 PM
  */
-public class ApplicationGroupBriefBuilder extends PrincipalBriefBuilder implements SearchResultBuilder<ApplicationGroupBrief> {
+public class ApplicationGroupBriefBuilder extends BasePrincipalBriefBuilder implements SearchResultBuilder<ApplicationGroupBrief> {
     public ApplicationGroupBriefBuilder() {
     }
 
