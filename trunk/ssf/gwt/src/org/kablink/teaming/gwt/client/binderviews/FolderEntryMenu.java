@@ -231,7 +231,7 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:  event = new EmailPublicLinkSelectedEntitiesEvent(eid.getBinderId(), eid      );      break;
 					case INVOKE_SEND_EMAIL_TO_TEAM:            event = new InvokeSendEmailToTeamEvent(          simpleUrl); fireWithSource = false; break;
 					case LOCK_SELECTED_ENTITIES:               event = new LockSelectedEntitiesEvent(           eid.getBinderId(), eid      );      break;
-					case MAILTO_PUBLIC_LINK_ENTITY:            event = new MailToPublicLinkEntityEvent(                            eid      );      break;
+					case MAILTO_PUBLIC_LINK_ENTITY:            event = new MailToPublicLinkEntityEvent(         eid.getBinderId(), eid      );      break;
 					case MARK_READ_SELECTED_ENTITIES:          event = new MarkReadSelectedEntitiesEvent(       eid.getBinderId(), eid      );      break;
 					case MARK_UNREAD_SELECTED_ENTITIES:        event = new MarkUnreadSelectedEntitiesEvent(     eid.getBinderId(), eid      );      break;
 					case MOVE_SELECTED_ENTITIES:               event = new MoveSelectedEntitiesEvent(           eid.getBinderId(), eid      );      break;

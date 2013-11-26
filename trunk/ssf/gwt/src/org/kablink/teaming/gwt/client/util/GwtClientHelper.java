@@ -1714,6 +1714,58 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Percent encodes a string, stripping any newlines.
+	 * 
+	 * See the following for the algorithm implemented:
+	 *		http://shadow2531.com/opera/testcases/mailto/modern_mailto_uri_scheme.html
+	 * 
+	 * @param s
+	 * 
+	 * @return
+	 */
+	public static native String jsUTF8PercentEncodeWithNewlinesStripped(String s) /*-{
+	    try {
+	        return encodeURIComponent(s.replace(/\r|\n/g, ""));
+	    }
+	    
+	    catch (e) {
+	        return "Error%20encoding%20data.";
+	    }
+	}-*/;
+
+	/**
+	 * Percent encodes a string, normalizing newlines.
+	 * 
+	 * See the following for the algorithm implemented:
+	 *		http://shadow2531.com/opera/testcases/mailto/modern_mailto_uri_scheme.html
+	 * 
+	 * @param s
+	 * 
+	 * @return
+	 */
+	public static native String jsUTF8PercentEncodeWithNormalizedNewlines(String s) /*-{
+	    try {
+	        // Normalize raw newlines first so that *if* there are any
+	        // newlines in s, \r\n, stray \r and \n all come out as
+	        // %0D%0A.
+	        return encodeURIComponent(s.replace(/\r\n|\r|\n/g, "\r\n"));
+	    }
+	    
+	    catch (e) {
+	        return "Error%20encoding%20data.";
+	    }
+	}-*/;
+
+	/**
+	 * Does a JavaScript window.open() on the given URI.
+	 *  
+	 * @param uri
+	 */
+	public static native void jsWindowOpen(String uri) /*-{
+		window.open(uri);
+	}-*/;
+	
+	/**
 	 * Sets a TeamingPopupPanel to use one-way-corner animation to
 	 * open.
 	 * 

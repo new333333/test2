@@ -138,7 +138,6 @@ public class FolderEntryComposite extends ResizeComposite
 	private FolderEntrySidebar				m_sidebarArea;				// The sidebar  portion of the view.
 	private FooterPanel						m_footerPanel;				// Footer at the bottom of the view with the permalink, ...
 	private FormPanel						m_downloadForm;				// A <FORM> used for download URLs.
-	private FormPanel						m_mailToForm;				// A <FORM> used for mail to  URLs.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private int								m_readyComponents;			// Components that are ready, incremented as they callback.
@@ -236,8 +235,6 @@ public class FolderEntryComposite extends ResizeComposite
 		m_contentGridFCF.setWidth(            CONTENT_ROW, CONTENT_CELL, "100%"                        );
 		m_contentGridFCF.setVerticalAlignment(CONTENT_ROW, CONTENT_CELL, HasVerticalAlignment.ALIGN_TOP);
 		m_rootPanel.add(m_contentGrid);
-		m_mailToForm = MailToPanel.createMailToForm();
-		m_contentPanel.add(m_mailToForm);
 		m_downloadForm = DownloadPanel.createDownloadForm();
 		m_contentPanel.add(m_downloadForm);
 		initWidget(m_rootPanel);
@@ -1051,7 +1048,7 @@ public class FolderEntryComposite extends ResizeComposite
 	 * entry.
 	 */
 	private void onMailToPublicLinkEntityNow(EntityId entityId) {
-		BinderViewsHelper.mailToPublicLink(m_mailToForm, entityId);
+		BinderViewsHelper.mailToPublicLink(entityId);
 	}
 	
 	/**
