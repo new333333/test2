@@ -59,6 +59,8 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
+import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
+import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -351,7 +353,8 @@ public class ResourceUtil {
         return model;
     }
 
-    public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config, ZoneInfo zoneInfo, UserProperties userProperties) {
+    public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config, ZoneInfo zoneInfo,
+                                             PrincipalMobileAppsConfig userMobileAppsConfig, PrincipalDesktopAppsConfig userDesktopAppsConfig) {
         ZoneConfig modelConfig = new ZoneConfig();
         modelConfig.setId(config.getZoneId());
         if (zoneInfo!=null) {
@@ -372,49 +375,101 @@ public class ResourceUtil {
         modelConfig.setFileSizeLimitUserDefault(config.getFileSizeLimitUserDefault());
         modelConfig.setFileVersionsMaxAge(config.getFileVersionsMaxAge());
 
+        DesktopAppConfig desktopAppConfig = buildDesktopAppConfig(config);
+        overrideDesktopAppConfig(desktopAppConfig, userDesktopAppsConfig);
+        modelConfig.setDesktopAppConfig(desktopAppConfig);
+
+        MobileAppConfig mobileAppConfig = buildMobileAppConfig(config.getMobileAppsConfig());
+        overrideMobileAppConfig(mobileAppConfig, userMobileAppsConfig);
+        modelConfig.setMobileAppConfig(mobileAppConfig);
+
+        return modelConfig;
+    }
+
+    private static DesktopAppConfig buildDesktopAppConfig(org.kablink.teaming.domain.ZoneConfig config) {
         DesktopAppConfig desktopAppConfig = new DesktopAppConfig();
         desktopAppConfig.setAutoUpdateUrl(config.getFsaAutoUpdateUrl());
         desktopAppConfig.setEnabled(config.getFsaEnabled());
         desktopAppConfig.setSyncInterval(config.getFsaSynchInterval());
         desktopAppConfig.setMaxFileSize(((long)config.getFsaMaxFileSize()) * 1024 * 1024);
         desktopAppConfig.setAllowCachedPassword(config.getFsaAllowCachePwd());
-        modelConfig.setDesktopAppConfig(desktopAppConfig);
+        return desktopAppConfig;
+    }
 
+    private static void overrideDesktopAppConfig(DesktopAppConfig desktopAppConfig, PrincipalDesktopAppsConfig config) {
+        if (config==null || config.getUseDefaultSettings()) {
+            return;
+        }
+        desktopAppConfig.setEnabled(config.getIsFileSyncAppEnabled());
+        desktopAppConfig.setAllowCachedPassword(config.getAllowCachePwd());
+    }
+
+    private static MobileAppConfig buildMobileAppConfig(MobileAppsConfig mac) {
         MobileAppConfig mobileAppConfig = new MobileAppConfig();
-        MobileAppsConfig mac = config.getMobileAppsConfig();
         mobileAppConfig.setAllowCachedContent(mac.getMobileAppsAllowCacheContent());
         mobileAppConfig.setAllowCachedPassword(mac.getMobileAppsAllowCachePwd());
         mobileAppConfig.setAllowPlayWithOtherApps(mac.getMobileAppsAllowPlayWithOtherApps());
         mobileAppConfig.setEnabled(mac.getMobileAppsEnabled());
         mobileAppConfig.setSyncInterval(mac.getMobileAppsSyncInterval());
-        modelConfig.setMobileAppConfig(mobileAppConfig);
+        mobileAppConfig.setAllowCutCopy(mac.getMobileCutCopyEnabled());
+        mobileAppConfig.setAllowRootedDevices(mac.getMobileDisableOnRootedOrJailBrokenDevices());
+        mobileAppConfig.setAllowScreenCapture(mac.getMobileAndroidScreenCaptureEnabled());
+        MobileAppConfig.OpenInApps openIn = toModelEnum(mac.getMobileOpenIn());
+        mobileAppConfig.setAllowedOpenInApps(openIn.name());
+        if (openIn == MobileAppConfig.OpenInApps.selected) {
+            MobileOpenInWhiteLists whiteLists = mac.getMobileOpenInWhiteLists();
+            if (whiteLists!=null && whiteLists.getAndroidApplications()!=null) {
+                mobileAppConfig.setAndroidAppWhiteList(new ArrayList<String>(whiteLists.getAndroidApplications()));
+            } else {
+                mobileAppConfig.setAndroidAppWhiteList(new ArrayList<String>(0));
+            }
+            if (whiteLists!=null && whiteLists.getIosApplications()!=null) {
+                mobileAppConfig.setiOSAppWhiteList(new ArrayList<String>(whiteLists.getIosApplications()));
+            } else {
+                mobileAppConfig.setiOSAppWhiteList(new ArrayList<String>(0));
+            }
+        }
+        return mobileAppConfig;
+    }
 
-        Boolean value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR );
-        if (value != null) {
-            modelConfig.getMobileAppConfig().setEnabled(value);
+    private static void overrideMobileAppConfig(MobileAppConfig mobileAppConfig, PrincipalMobileAppsConfig mac) {
+        if (mac==null || mac.getUseDefaultSettings()) {
+            return;
         }
-        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT);
-        if (value != null) {
-            modelConfig.getMobileAppConfig().setAllowCachedContent(value);
+        mobileAppConfig.setAllowCachedContent(mac.getAllowCacheContent());
+        mobileAppConfig.setAllowCachedPassword(mac.getAllowCachePwd());
+        mobileAppConfig.setAllowPlayWithOtherApps(mac.getAllowPlayWithOtherApps());
+        mobileAppConfig.setEnabled(mac.getMobileAppsEnabled());
+        mobileAppConfig.setAllowCutCopy(mac.getMobileCutCopyEnabled());
+        mobileAppConfig.setAllowRootedDevices(mac.getMobileDisableOnRootedOrJailBrokenDevices());
+        mobileAppConfig.setAllowScreenCapture(mac.getMobileAndroidScreenCaptureEnabled());
+        MobileAppConfig.OpenInApps openIn = toModelEnum(mac.getMobileOpenIn());
+        mobileAppConfig.setAllowedOpenInApps(openIn.name());
+        if (openIn == MobileAppConfig.OpenInApps.selected) {
+            if (mac.getAndroidApplications()!=null) {
+                mobileAppConfig.setAndroidAppWhiteList(new ArrayList<String>(mac.getAndroidApplications()));
+            } else {
+                mobileAppConfig.setAndroidAppWhiteList(new ArrayList<String>(0));
+            }
+            if (mac.getIosApplications()!=null) {
+                mobileAppConfig.setiOSAppWhiteList(new ArrayList<String>(mac.getIosApplications()));
+            } else {
+                mobileAppConfig.setiOSAppWhiteList(new ArrayList<String>(0));
+            }
+        } else {
+            mobileAppConfig.setiOSAppWhiteList(null);
+            mobileAppConfig.setAndroidAppWhiteList(null);
         }
-        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD);
-        if (value != null) {
-            modelConfig.getMobileAppConfig().setAllowCachedPassword(value);
-        }
-        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS);
-        if (value != null) {
-            modelConfig.getMobileAppConfig().setAllowPlayWithOtherApps(value);
-        }
+    }
 
-        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR );
-        if (value != null) {
-            modelConfig.getDesktopAppConfig().setEnabled(value);
+    private static MobileAppConfig.OpenInApps toModelEnum(MobileAppsConfig.MobileOpenInSetting openIn) {
+        if (openIn==null || openIn==MobileAppsConfig.MobileOpenInSetting.ALL_APPLICATIONS) {
+            return MobileAppConfig.OpenInApps.all;
         }
-        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD );
-        if (value != null) {
-            modelConfig.getDesktopAppConfig().setAllowCachedPassword(value);
+        if (openIn==MobileAppsConfig.MobileOpenInSetting.WHITE_LIST) {
+            return MobileAppConfig.OpenInApps.selected;
         }
-        return modelConfig;
+        return MobileAppConfig.OpenInApps.none;
     }
 
 	public static FileVersionProperties fileVersionFromFileAttachment(VersionAttachment va) {

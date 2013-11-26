@@ -130,7 +130,8 @@ public class MiscResource extends AbstractResource {
         org.kablink.teaming.domain.ZoneConfig zoneConfig =
       			getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
         ZoneInfo info = getZoneModule().getZoneInfo(zoneConfig.getZoneId());
-        return ResourceUtil.buildZoneConfig(zoneConfig, info, getProfileModule().getUserProperties(getLoggedInUserId()));
+        return ResourceUtil.buildZoneConfig(zoneConfig, info, getProfileModule().getPrincipalMobileAppsConfig(getLoggedInUserId()),
+                getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()));
 	}
 
     @GET

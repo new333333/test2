@@ -33,7 +33,9 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /**
  * User: david
@@ -42,11 +44,24 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "mobile_app_config")
 public class MobileAppConfig {
+
+    public enum OpenInApps {
+        all,
+        none,
+        selected
+    }
+
     private Boolean enabled;
     private Boolean allowCachedPassword;
    	private Boolean allowCachedContent;
    	private Boolean allowPlayWithOtherApps;
    	private Integer syncInterval;
+    private Boolean	allowCutCopy;
+    private Boolean	allowScreenCapture;
+    private Boolean	allowRootedDevices;
+    private String allowedOpenInApps;
+    private List<String> androidAppWhiteList;
+    private List<String> iOSAppWhiteList;
 
     @XmlElement(name="enabled")
     public Boolean isEnabled() {
@@ -91,5 +106,61 @@ public class MobileAppConfig {
 
     public void setSyncInterval(Integer syncInterval) {
         this.syncInterval = syncInterval;
+    }
+
+    @XmlElement(name="allow_cut_copy")
+    public Boolean getAllowCutCopy() {
+        return allowCutCopy;
+    }
+
+    public void setAllowCutCopy(Boolean allowCutCopy) {
+        this.allowCutCopy = allowCutCopy;
+    }
+
+    @XmlElement(name="allow_screen_capture")
+    public Boolean getAllowScreenCapture() {
+        return allowScreenCapture;
+    }
+
+    public void setAllowScreenCapture(Boolean allowScreenCapture) {
+        this.allowScreenCapture = allowScreenCapture;
+    }
+
+    @XmlElement(name="allow_rooted_devices")
+    public Boolean getAllowRootedDevices() {
+        return allowRootedDevices;
+    }
+
+    public void setAllowRootedDevices(Boolean allowRootedDevices) {
+        this.allowRootedDevices = allowRootedDevices;
+    }
+
+    @XmlElement(name="allowed_open_in_apps")
+    public String getAllowedOpenInApps() {
+        return allowedOpenInApps;
+    }
+
+    public void setAllowedOpenInApps(String allowedOpenInApps) {
+        this.allowedOpenInApps = allowedOpenInApps;
+    }
+
+    @XmlElementWrapper(name="android_app_whitelist")
+    @XmlElement(name="app")
+    public List<String> getAndroidAppWhiteList() {
+        return androidAppWhiteList;
+    }
+
+    public void setAndroidAppWhiteList(List<String> androidAppWhiteList) {
+        this.androidAppWhiteList = androidAppWhiteList;
+    }
+
+    @XmlElementWrapper(name="ios_app_whitelist")
+    @XmlElement(name="app")
+    public List<String> getiOSAppWhiteList() {
+        return iOSAppWhiteList;
+    }
+
+    public void setiOSAppWhiteList(List<String> iOSAppWhiteList) {
+        this.iOSAppWhiteList = iOSAppWhiteList;
     }
 }
