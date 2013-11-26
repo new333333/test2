@@ -1445,6 +1445,19 @@ public class SearchUtils {
 			SimpleProfiler.stop("SearchUtils.getSharedByMeSearchCriteria()");
 		}
 	}
+
+    public static Criterion buildExcludeUniversalAndContainerGroupCriterion(boolean excludeAllInternal) {
+        Junction not = Restrictions.not();
+        Junction or = Restrictions.disjunction();
+        not.add(or);
+
+        if (excludeAllInternal) {
+            or.add(Restrictions.eq(Constants.GROUPNAME_FIELD, "allusers"));
+        }
+        or.add(Restrictions.eq(Constants.GROUPNAME_FIELD, "allextusers"));
+        or.add(Restrictions.eq(Constants.IS_LDAP_CONTAINER_FIELD, Constants.TRUE));
+        return not;
+    }
 	
     public static Document buildExcludeUniversalAndContainerGroupFilter(boolean excludeAllInternal) {
         Document searchFilter;

@@ -44,6 +44,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.jobs.ExpiredShareHandler;
 import org.kablink.teaming.jobs.ZoneSchedule;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
@@ -59,6 +60,7 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.AccessControlNonCodedException;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.GangliaMonitoring;
@@ -81,6 +83,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class SharingModuleImpl extends CommonDependencyInjection implements SharingModule, ZoneSchedule {
     private static long MILLISEC_IN_A_DAY = 86400000;
 
+	private AdminModule adminModule;
 	private FolderModule folderModule;
 	private BinderModule binderModule;
 	private ProfileModule profileModule;
@@ -655,12 +658,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		// Access check (throws error if not allowed)
 		checkAccess(shareItem, SharingOperation.addShareItem);
 
-        if(shareItem.getSharedEntityIdentifier().getEntityType() != EntityType.folderEntry &&
-                shareItem.getRecipientType()==RecipientType.publicLink) {
-            throw new IllegalArgumentException("Public links are only allowed for folder entries.");
-        }
-
-        verifyExternalEmail(shareItem);
+        verifyRecipient(shareItem);
 
         getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
@@ -735,8 +733,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		// Access check (throws error if not allowed)
 		checkAccess(latestShareItem, SharingOperation.modifyShareItem);
 
-        verifyExternalEmail(latestShareItem);
-
         ShareItem retItem = getTransactionTemplate().execute(new TransactionCallback<ShareItem>() {
 			@Override
 			public ShareItem doInTransaction(TransactionStatus status) {
@@ -803,7 +799,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
         return retItem;
 	}
 
-    private void verifyExternalEmail(ShareItem shareItem) {
+    private void verifyRecipient(ShareItem shareItem) {
         if (shareItem.getRecipientType()==RecipientType.user) {
             Principal recipient = getProfileModule().getEntry(shareItem.getRecipientId());
             if (!recipient.getEntityType().equals(EntityType.user)) {
@@ -814,6 +810,18 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                 if (!isExternalAddressValid(email)) {
                     throw new InvalidEmailAddressException(email);
                 }
+            }
+        } else if (shareItem.getRecipientType()==RecipientType.group) {
+            Principal recipient = getProfileModule().getEntry(shareItem.getRecipientId());
+            if (!recipient.getEntityType().equals(EntityType.group)) {
+                throw new NoGroupByTheIdException(shareItem.getRecipientId());
+            }
+            if (recipient.getIdentityInfo().isFromLdap() && !getAdminModule().isSharingWithLdapGroupsEnabled()) {
+                throw new AccessControlNonCodedException("System settings do not allow for sharing with LDAP groups.");
+            }
+        } else if (shareItem.getRecipientType()==RecipientType.publicLink) {
+            if (shareItem.getSharedEntityIdentifier().getEntityType() != EntityType.folderEntry) {
+                throw new IllegalArgumentException("Public links are only allowed for folder entries.");
             }
         }
     }
@@ -1053,7 +1061,18 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		}
 	}
 
-	protected FolderModule getFolderModule() {
+    public AdminModule getAdminModule() {
+        if (adminModule == null) {
+            adminModule = (AdminModule) SpringContextUtil.getBean("adminModule");
+        }
+        return adminModule;
+    }
+
+    public void setAdminModule(AdminModule adminModule) {
+        this.adminModule = adminModule;
+    }
+
+    protected FolderModule getFolderModule() {
 		if (folderModule == null) {
 			folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
 		}

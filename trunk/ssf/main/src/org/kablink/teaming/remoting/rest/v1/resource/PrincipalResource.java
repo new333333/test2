@@ -33,59 +33,118 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
-import org.kablink.teaming.remoting.rest.v1.util.*;
-import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.remoting.rest.v1.util.GroupBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
+import org.kablink.teaming.remoting.rest.v1.util.PrincipalBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
+import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.Group;
+import org.kablink.teaming.rest.v1.model.GroupBrief;
+import org.kablink.teaming.rest.v1.model.GroupMember;
+import org.kablink.teaming.rest.v1.model.PrincipalBrief;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Criterion;
+import org.kablink.util.search.Junction;
+import org.kablink.util.search.Order;
+import org.kablink.util.search.Restrictions;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-@Path("/groups")
+@Path("/principals")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class GroupResource extends AbstractPrincipalResource {
+public class PrincipalResource extends AbstractPrincipalResource {
 	// Get all users
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<GroupBrief> getGroups(
-		@QueryParam("name") String name,
+	public SearchResultList<PrincipalBrief> getPrincipals(
+        @QueryParam("id") Set<Long> ids,
+		@QueryParam("keyword") String keyword,
+		@QueryParam("included_groups") @DefaultValue("all") String groups,
+		@QueryParam("included_users") @DefaultValue("all") String users,
         @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
-		@QueryParam("first") Integer offset,
-		@QueryParam("count") Integer maxCount) {
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put( ObjectKeys.SEARCH_FILTER_AND, SearchUtils.buildExcludeUniversalAndContainerGroupFilter(false) );
-        SearchFilter searchTermFilter = new SearchFilter();
+		@QueryParam("first") @DefaultValue("0") Integer offset,
+		@QueryParam("count") @DefaultValue("25") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        if (name!=null) {
-            searchTermFilter.addGroupNameFilter(name);
-            options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
-            nextParams.put("name", name);
+        boolean allowExternal = false;
+        Junction criterion = Restrictions.conjunction();
+        if (ids!=null) {
+            Junction or = Restrictions.disjunction();
+            for (Long id : ids) {
+                or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+                allowExternal = true;
+            }
+            criterion.add(or);
+            nextParams.put("id", ids);
         }
-        if (offset!=null) {
-            options.put(ObjectKeys.SEARCH_OFFSET, offset);
-        } else {
-            offset = 0;
+        PrincipalOptions userOption = toEnum(PrincipalOptions.class, "included_users", users);
+        PrincipalOptions groupOption = toEnum(PrincipalOptions.class, "included_groups", groups);
+        Junction orJunction = Restrictions.disjunction();
+        orJunction.add(getFalseCriterion());
+        if (userOption!=PrincipalOptions.none) {
+            Criterion userCrit = buildUsersCriterion(allowExternal);
+            // TODO: support local-only and ldap-only searches (not currently supported by the index)
+            orJunction.add(userCrit);
         }
-        if (maxCount!=null) {
-            options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
+        if (groupOption!=PrincipalOptions.none) {
+            Criterion groupCrit;
+            if (groupOption==PrincipalOptions.local) {
+                groupCrit = buildGroupsCriterion(Boolean.FALSE, true);
+            } else if (groupOption==PrincipalOptions.ldap) {
+                groupCrit = buildGroupsCriterion(Boolean.TRUE, true);
+            } else {
+                groupCrit = buildGroupsCriterion(null, true);
+            }
+            orJunction.add(groupCrit);
+        }
+        criterion.add(orJunction);
+        if (keyword!=null) {
+            Junction or = Restrictions.disjunction();
+            keyword = SearchUtils.modifyQuickFilter(keyword);
+            or.add(Restrictions.like(Constants.TITLE_FIELD, keyword));
+            or.add(Restrictions.like(Constants.EMAIL_FIELD, keyword));
+            or.add(Restrictions.like(Constants.EMAIL_DOMAIN_FIELD, keyword));
+            or.add(Restrictions.like(Constants.LOGINNAME_FIELD, keyword));
+            criterion.add(or);
+            nextParams.put("keyword", keyword);
         }
         nextParams.put("description_format", descriptionFormatStr);
-        Map resultMap = getProfileModule().getGroups(options);
-        SearchResultList<GroupBrief> results = new SearchResultList<GroupBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new GroupBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, "/groups", nextParams, offset);
+        Criteria criteria = new Criteria();
+        criteria.add(criterion);
+        criteria.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
+
+        Map resultMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<PrincipalBrief> results = new SearchResultList<PrincipalBrief>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new PrincipalBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, "/principals", nextParams, offset);
 		return results;
 	}
 	

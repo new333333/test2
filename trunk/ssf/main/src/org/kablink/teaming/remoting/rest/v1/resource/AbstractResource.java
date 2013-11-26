@@ -661,7 +661,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Junction types = Restrictions.disjunction();
         // Include a restriction that will always evaluate to false.  That way if all of the include* parameters are false
         // no results will be returned (instead of all results being returned)
-        types.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, "_fake_"));
+        types.add(getFalseCriterion());
         if (includeBinders) {
             types.add(buildBindersCriterion());
         }
@@ -675,6 +675,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             types.add(buildRepliesCriterion());
         }
         return types;
+    }
+
+    protected Criterion getFalseCriterion() {
+        return Restrictions.eq(Constants.DOC_TYPE_FIELD, "_fake_");
     }
 
     protected Criterion buildEntryCriterion(Long id) {
@@ -740,6 +744,17 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER));
         if (!allowExternal) {
             crit.add(Restrictions.eq(Constants.IDENTITY_INTERNAL_FIELD, Boolean.TRUE.toString()));
+        }
+        return crit;
+    }
+
+    protected Criterion buildGroupsCriterion(Boolean fromLdap, boolean includeAllUsersGroup) {
+        Junction crit = Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+                .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP))
+                .add(SearchUtils.buildExcludeUniversalAndContainerGroupCriterion(includeAllUsersGroup));
+        if (fromLdap!=null) {
+            crit.add(Restrictions.eq(Constants.IS_GROUP_FROM_LDAP_FIELD, fromLdap.toString()));
         }
         return crit;
     }
