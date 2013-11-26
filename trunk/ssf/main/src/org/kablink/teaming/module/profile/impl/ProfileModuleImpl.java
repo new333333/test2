@@ -2825,61 +2825,55 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     	
     	UserProperties up = getPrincipalProperties(principalId);
 		if (null != up) {
-			Object accessValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR);
-			if ((null != accessValue) && (accessValue instanceof String)) {
-				reply.setMobileAppsEnabled(Boolean.valueOf((String) accessValue));
+			Boolean accessValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR);
+			if (null != accessValue) {
+				reply.setMobileAppsEnabled(accessValue);
 			}
 
-			Object pwdValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD);
-			if ((null != pwdValue) && (pwdValue instanceof String)) {
-				reply.setAllowCachePwd(Boolean.valueOf((String) pwdValue));
+			Boolean pwdValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD);
+			if (null != pwdValue) {
+				reply.setAllowCachePwd(pwdValue);
 			}
 			
-			Object contentValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT);
-			if ((null != contentValue) && (contentValue instanceof String)) {
-				reply.setAllowCacheContent(Boolean.valueOf((String) contentValue));
+			Boolean contentValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT);
+			if (null != contentValue) {
+				reply.setAllowCacheContent(contentValue);
 			}
 			
-			Object playValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS);
-			if ((null != playValue) && (playValue instanceof String)) {
-				reply.setAllowPlayWithOtherApps(Boolean.valueOf((String) playValue));
+			Boolean playValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS);
+			if (null != playValue) {
+				reply.setAllowPlayWithOtherApps(playValue);
 			}
 
 			// Mobile Application Management (MAM) settings.
-			Object cutCopyEnabledValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED);
-			if ((null != cutCopyEnabledValue) && (cutCopyEnabledValue instanceof String)) {
-				reply.setMobileCutCopyEnabled(Boolean.valueOf((String) cutCopyEnabledValue));
+			Boolean cutCopyEnabledValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED);
+			if (null != cutCopyEnabledValue) {
+				reply.setMobileCutCopyEnabled(cutCopyEnabledValue);
 			}
 			
-			Object androidScreenCaptureEnabledValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED);
-			if ((null != androidScreenCaptureEnabledValue) && (androidScreenCaptureEnabledValue instanceof String)) {
-				reply.setMobileAndroidScreenCaptureEnabled(Boolean.valueOf((String) androidScreenCaptureEnabledValue));
+			Boolean androidScreenCaptureEnabledValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED);
+			if (null != androidScreenCaptureEnabledValue) {
+				reply.setMobileAndroidScreenCaptureEnabled(androidScreenCaptureEnabledValue);
 			}
 			
-			Object disableOnJailBrokenValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES);
-			if ((null != disableOnJailBrokenValue) && (disableOnJailBrokenValue instanceof String)) {
-				reply.setMobileDisableOnRootedOrJailBrokenDevices(Boolean.valueOf((String) disableOnJailBrokenValue));
+			Boolean disableOnJailBrokenValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES);
+			if (null != disableOnJailBrokenValue) {
+				reply.setMobileDisableOnRootedOrJailBrokenDevices(disableOnJailBrokenValue);
 			}
 			
-			Object openInValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_OPEN_IN);
-			if ((null != openInValue) && (openInValue instanceof String)) {
-				reply.setMobileOpenIn(MobileOpenInSetting.valueOf(Integer.parseInt((String) openInValue)));
+			Integer openInValue = up.getIntegerProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_OPEN_IN);
+			if (null != openInValue) {
+				reply.setMobileOpenIn(MobileOpenInSetting.valueOf(openInValue));
 			}
 			
-			Object androidApplicationsValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS);
-			if ((null != androidApplicationsValue) && (androidApplicationsValue instanceof String)) {
-				String[]     aaArray = StringUtil.unpack((String) androidApplicationsValue);
-				List<String> aaList = new ArrayList<String>();
-				ListUtil.arrayStringToListString(aaArray, aaList);
-				reply.setAndroidApplications(MiscUtil.sortStringList(aaList));
+			String [] androidApplicationsValue = up.getStringArrayProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS);
+			if (null != androidApplicationsValue) {
+				reply.setAndroidApplications(MiscUtil.sortStringList(Arrays.asList(androidApplicationsValue)));
 			}
 			
-			Object iosApplicationsValue = up.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS);
-			if ((null != iosApplicationsValue) && (iosApplicationsValue instanceof String)) {
-				String[]     iosArray = StringUtil.unpack((String) iosApplicationsValue);
-				List<String> iosList = new ArrayList<String>();
-				ListUtil.arrayStringToListString(iosArray, iosList);
-				reply.setIosApplications(MiscUtil.sortStringList(iosList));
+			String [] iosApplicationsValue = up.getStringArrayProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS);
+			if (null != iosApplicationsValue) {
+				reply.setIosApplications(MiscUtil.sortStringList(Arrays.asList(iosApplicationsValue)));
 			}
 
 			if ((null != accessValue)                          ||
@@ -2915,14 +2909,14 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     	UserProperties up = getPrincipalProperties(principalId);
 		if (null != up)
 		{
-			Object accessValue = up.getProperty(ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR);
-			if ((null != accessValue) && (accessValue instanceof String)) {
-				reply.setIsFileSyncAppEnabled(Boolean.valueOf((String) accessValue));
+			Boolean accessValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR);
+			if (null != accessValue) {
+				reply.setIsFileSyncAppEnabled(accessValue);
 			}
 
-			Object pwdValue = up.getProperty(ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD);
-			if ((null != pwdValue) && (pwdValue instanceof String)) {
-				reply.setAllowCachePwd( Boolean.valueOf((String) pwdValue));
+			Boolean pwdValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD);
+			if (null != pwdValue) {
+				reply.setAllowCachePwd(pwdValue);
 			}
 			
 			if ((null != accessValue) || (null != pwdValue)) {
