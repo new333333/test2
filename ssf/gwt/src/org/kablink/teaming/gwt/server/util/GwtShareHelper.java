@@ -750,7 +750,6 @@ public class GwtShareHelper
 	 */
 	private static List<ShareItem> getPublicLinkShareItems( AllModulesInjected bs, Long sharerId, EntityId entityId )
 	{
-				
 		// Set up the search criteria to get the shares on this entity.
 		ShareItemSelectSpec spec = new ShareItemSelectSpec();
 		spec.setSharerId( Long.valueOf( sharerId ) );
@@ -759,22 +758,23 @@ public class GwtShareHelper
 		spec.setLatest( true );
 		
 		// Are there shares on it?
-		List<ShareItem> reply = bs.getSharingModule().getShareItems( spec );
-		if ( MiscUtil.hasItems( reply ))
+		List<ShareItem> shares = bs.getSharingModule().getShareItems( spec );
+		List<ShareItem> reply  = new ArrayList<ShareItem>();
+		if ( MiscUtil.hasItems( shares ))
 		{
 			// Yes!  Scan them.
-			for ( ShareItem si:  reply )
+			for ( ShareItem si:  shares )
 			{
 				// Should we return this as public link share?
 				boolean ignore = (
-					si.isDeleted()          ||							// Not if it's deleted...
-					( ! ( si.isLatest() ) ) ||							// ...or if it's not the latest version of this share...
-					( ! (MiscUtil.hasString(si.getPassKey() ) ) ) );	// ...or if it's not a public link share.
+					si.isDeleted()          ||												// Not if it's deleted...
+					( ! ( si.isLatest() ) ) ||												// ...or if it's not the latest version of this share...
+					( ! ( si.getRecipientType().equals( RecipientType.publicLink ) ) ) );	// ...or if it's not a public link share.
 				
-				if ( ignore )
+				if ( !ignore )
 				{
-					// No!  Remove it from the list.
-					reply.remove( si );
+					// Yes!  Add it to the reply list.
+					reply.add( si );
 				}
 			}
 		}
@@ -3200,6 +3200,10 @@ public class GwtShareHelper
 					if ( null == expirationDate )
 					     expiration = null;
 					else expiration = GwtServerHelper.getDateTimeString( expirationDate, DateFormat.MEDIUM, DateFormat.SHORT );
+
+					// ...return the date it was shared...
+					Date   sharedOnDate = plShare.getStartDate();
+					String sharedOn     = GwtServerHelper.getDateTimeString( sharedOnDate, DateFormat.MEDIUM, DateFormat.SHORT );
 	
 					// ...and add the mail to public link information
 					// ...to the reply.
@@ -3207,6 +3211,7 @@ public class GwtShareHelper
 						downloadUrl,
 						viewUrl,
 						plShare.getComment(),
+						sharedOn,
 						expiration );
 					reply.addMailToPublicLink( plLink );
 				}

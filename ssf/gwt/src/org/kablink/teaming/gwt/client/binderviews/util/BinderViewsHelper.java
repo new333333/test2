@@ -95,6 +95,9 @@ import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg.DeleteSelectionsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EmailPublicLinkDlg;
 import org.kablink.teaming.gwt.client.widgets.EmailPublicLinkDlg.EmailPublicLinkDlgClient;
+import org.kablink.teaming.gwt.client.widgets.MailToMultiplePublicLinksSelectDlg;
+import org.kablink.teaming.gwt.client.widgets.MailToMultiplePublicLinksSelectDlg.MailToMultiplePublicLinksSelectCallback;
+import org.kablink.teaming.gwt.client.widgets.MailToMultiplePublicLinksSelectDlg.MailToMultiplePublicLinksSelectDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
@@ -110,18 +113,19 @@ import com.google.gwt.user.client.ui.UIObject;
  * @author drfoster@novell.com
  */
 public class BinderViewsHelper {
-	private static AddFilesDlg				m_addFilesAppletDlg;					// An instance of the add files (via an applet) dialog.
-	private static AddFilesHtml5Popup		m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
-	private static ChangeEntryTypesDlg		m_cetDlg;								// An instance of a change entry types dialog. 
-	private static CopyMoveEntriesDlg		m_cmeDlg;								// An instance of a copy/move entries dialog.
-	private static CopyPublicLinkDlg		m_copyPublicLinkDlg;					// An instance of a copy public link dialog.
-	private static DeleteSelectedUsersDlg	m_dsuDlg;								// An instance of a delete selected users dialog.
-	private static DeleteSelectionsDlg		m_dsDlg;								// An instance of a delete selections dialog.
-	private static EmailNotificationDlg		m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
-	private static EmailPublicLinkDlg		m_emailPublicLinkDlg;					// An instance of an email public link dialog.
-	private static GwtTeamingMessages		m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
-	private static ShareThisDlg2			m_shareDlg;								// An instance of a share this dialog.
-	private static WhoHasAccessDlg			m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
+	private static AddFilesDlg							m_addFilesAppletDlg;					// An instance of the add files (via an applet) dialog.
+	private static AddFilesHtml5Popup					m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
+	private static ChangeEntryTypesDlg					m_cetDlg;								// An instance of a change entry types dialog. 
+	private static CopyMoveEntriesDlg					m_cmeDlg;								// An instance of a copy/move entries dialog.
+	private static CopyPublicLinkDlg					m_copyPublicLinkDlg;					// An instance of a copy public link dialog.
+	private static DeleteSelectedUsersDlg				m_dsuDlg;								// An instance of a delete selected users dialog.
+	private static DeleteSelectionsDlg					m_dsDlg;								// An instance of a delete selections dialog.
+	private static EmailNotificationDlg					m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
+	private static EmailPublicLinkDlg					m_emailPublicLinkDlg;					// An instance of an email public link dialog.
+	private static GwtTeamingMessages					m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
+	private static ShareThisDlg2						m_shareDlg;								// An instance of a share this dialog.
+	private static MailToMultiplePublicLinksSelectDlg	m_mailPLSelectDlg;						// An instance of the mail to multiple public links select dialog.
+	private static WhoHasAccessDlg						m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
 
 	/*
 	 * Constructor method. 
@@ -1436,12 +1440,86 @@ public class BinderViewsHelper {
 				default:
 					// More than one!  We need to ask the user which
 					// one to mail.
-//!					...this needs to be implemented...
-					GwtClientHelper.deferredAlert("BinderViewsHelper.mailToPublicLink( *Multiple Links* ):  ...this needs to be implemented...");
+					mailToMultiplePublicLinksAsync(plData.getSubject(), plList);
 					break;
 				}
 			}
 		});
+	}
+
+	/*
+	 * Asynchronously runs the mail to multiple public links select
+	 * dialog for the user to select which public link is to be mailed.
+	 */
+	private static void mailToMultiplePublicLinksAsync(final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				mailToMultiplePublicLinksNow(subject, plInfoList);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously runs the mail to multiple public links select
+	 * dialog for the user to select which public link is to be mailed.
+	 */
+	private static void mailToMultiplePublicLinksNow(final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+		if (null == m_mailPLSelectDlg) {
+			MailToMultiplePublicLinksSelectDlg.createAsync(new MailToMultiplePublicLinksSelectDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(MailToMultiplePublicLinksSelectDlg mtmplsDlg) {
+					m_mailPLSelectDlg = mtmplsDlg;
+					mailToMultiplePublicLinksImplAsync(subject, plInfoList);
+				}
+			});
+		}
+		
+		else {
+			mailToMultiplePublicLinksImplNow(subject, plInfoList);
+		}
+	}
+
+	/*
+	 * Asynchronously runs the mail to multiple public links select
+	 * dialog for the user to select which public link is to be mailed.
+	 */
+	private static void mailToMultiplePublicLinksImplAsync(final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				mailToMultiplePublicLinksImplNow(subject, plInfoList);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously runs the mail to multiple public links select
+	 * dialog for the user to select which public link is to be mailed.
+	 */
+	private static void mailToMultiplePublicLinksImplNow(final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+		MailToMultiplePublicLinksSelectDlg.initAndShow(
+			m_mailPLSelectDlg,
+			plInfoList,
+			new MailToMultiplePublicLinksSelectCallback() {
+				@Override
+				public void onCancel() {
+					// If the dialog gets cancelled, we don't do
+					// anything.
+				}
+
+				@Override
+				public void onSelect(MailToPublicLinkInfo plInfo) {
+					// Mail the public link the user selected.
+					mailToPublicLinkAsync(subject, plInfo);
+				}
+			});
 	}
 
 	/*
