@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_BinderState" name="org.kablink.teaming.domain.BinderState">
+    <id unsaved-value="null" name="binderId">
+      <generator class="assigned"/>
+    </id>
+    <property name="zoneId" access="field"/>
+    <property name="lastSyncTime"/>
+    <property name="lastFullSyncCompletionTime"/>
+  </class>
+</hibernate-mapping>

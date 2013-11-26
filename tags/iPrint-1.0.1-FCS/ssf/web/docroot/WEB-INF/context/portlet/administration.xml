@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Controllers -->
+	<bean id="definitionBuilderController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewController" />
+	<bean id="definitionBuilderXmlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewDefinitionXmlController" />
+	<bean id="adminViewController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewController" />
+	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureLdapController" />
+	<bean id="adminConfigureMobileAccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureMobileAccessController" />
+	<bean id="adminConfigureUserAccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureUserAccessController" />
+	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureRolesController" />
+	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigurePostingJobController" />
+	<bean id="adminConfigureFileVersionAgingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureFileVersionAgingJobController" />
+	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchIndexController" />
+	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchNodesController" />
+	<bean id="adminConfigureScheduleController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureScheduleController" />
+	<bean id="adminImportDefinitionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ImportDefinitionController" />
+	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LogFileController" />
+	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureConfigurationController" />
+	<bean id="adminImportProfilesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ImportProfilesController" />
+	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
+	<bean id="adminManageQuotasController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageQuotasController" />
+	<bean id="adminManageFileUploadLimitsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageFileUploadLimitsController" />
+	<bean id="adminManageResourceDriverController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageResourceDriverController" />
+	<bean id="adminManageUserAccountsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageUserAccountsController" />
+	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationsController" />
+	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationGroupsController" />
+	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewChangeLogController" />
+	<bean id="adminExportImportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ExportImportController" />
+	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.AccessControlController" />
+	<bean id="configureController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ConfigureController" />
+	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ModifyDashboardController" />
+	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LoginReportController" />
+	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LicenseReportController" />
+	<bean id="manageLicenseController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageLicenseController" />
+	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportController" />
+	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.QuotaReportController" />
+	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.WorkflowReportController" />
+	<bean id="adminCreditsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.CreditsController" />
+	<bean id="manageDefinitionsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageDefinitionsController" />
+
+	<!-- Handlers -->
+
+	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+						<entry key="definition_builder"><ref bean="definitionBuilderController"/></entry>
+						<entry key="viewDefinitionXml"><ref bean="definitionBuilderXmlController"/></entry>
+						<entry key="configure_ldap"><ref bean="adminConfigureLdapController"/></entry>
+						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>
+						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
+						<entry key="configure_file_version_aging_job"><ref bean="adminConfigureFileVersionAgingJobController"/></entry>
+						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
+						<entry key="configure_search_nodes"><ref bean="adminConfigureSearchNodesController"/></entry>
+						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
+						<entry key="configure_mobile_access"><ref bean="adminConfigureMobileAccessController"/></entry>
+						<entry key="configure_user_access"><ref bean="adminConfigureUserAccessController"/></entry>
+						<entry key="configure_schedule"><ref bean="adminConfigureScheduleController"/></entry>
+						<entry key="export_import"><ref bean="adminExportImportController"/></entry>
+						<entry key="import_definition"><ref bean="adminImportDefinitionController"/></entry>
+						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
+						<entry key="import_profiles"><ref bean="adminImportProfilesController"/></entry>
+						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
+						<entry key="manage_quotas"><ref bean="adminManageQuotasController"/></entry>
+						<entry key="manage_file_upload_limits"><ref bean="adminManageFileUploadLimitsController"/></entry>
+						<entry key="manage_resource_drivers"><ref bean="adminManageResourceDriverController"/></entry>
+						<entry key="manage_user_accounts"><ref bean="adminManageUserAccountsController"/></entry>
+						<entry key="manage_applications"><ref bean="adminManageApplicationsController"/></entry>
+						<entry key="manage_application_groups"><ref bean="adminManageApplicationGroupsController"/></entry>
+						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
+						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
+						<entry key="configure_definitions"><ref bean="configureController"/></entry>
+						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
+						<entry key="login_report"><ref bean="loginReportController"/></entry>
+						<entry key="license_report"><ref bean="licenseReportController"/></entry>
+						<entry key="manage_license"><ref bean="manageLicenseController"/></entry>
+						<entry key="activity_report"><ref bean="activityReportController"/></entry>
+						<entry key="quota_report"><ref bean="quotaReportController"/></entry>
+						<entry key="quota_exceeded_report"><ref bean="quotaReportController"/></entry>
+						<entry key="quota_highwater_exceeded_report"><ref bean="quotaReportController"/></entry>												
+						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>
+						<entry key="view_folder_listing"><ref bean="adminConfigureConfigurationController"/></entry>
+						<entry key="view_ws_listing"><ref bean="adminConfigureConfigurationController"/></entry>
+						<entry key="view_credits"><ref bean="adminCreditsController"/></entry>
+						<entry key="manage_definitions"><ref bean="manageDefinitionsController"/></entry>
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="portletModeHandlerMapping" parent="portletModeHandlerMappingTemplate">
+		<property name="portletModeMap">
+			<map>
+				<entry key="view"><ref bean="adminViewController"/></entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="defaultExceptionHandler" parent="portletDefaultExceptionHandlerTemplate"/>
+
+</beans>

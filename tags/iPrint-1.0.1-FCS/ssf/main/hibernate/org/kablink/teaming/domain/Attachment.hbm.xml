@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class discriminator-value="N" dynamic-update="true" lazy="false" table="SS_Attachments" name="org.kablink.teaming.domain.Attachment">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id" node="@id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <discriminator type="char" column="type"/>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <property name="zoneId" access="field"/>
+    <property name="type" update="false" insert="false"/>
+     
+    <component name="owner" class="org.kablink.teaming.domain.AnyOwner">
+      <many-to-one name="folderEntry" index="ownerFolderEntry_Att"/>
+      <many-to-one name="principal" index="ownerPrincipal_Att"/>
+      <many-to-one name="binder" index="ownerBinder_Att"/>
+      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner_Att">
+        <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
+        <meta-value class="org.kablink.teaming.domain.User" value="user"/>
+        <meta-value class="org.kablink.teaming.domain.Group" value="group"/>
+        <meta-value class="org.kablink.teaming.domain.Folder" value="folder"/>
+        <meta-value class="org.kablink.teaming.domain.Workspace" value="workspace"/>
+        <meta-value class="org.kablink.teaming.domain.ProfileBinder" value="profileBinder"/>
+        <meta-value class="org.kablink.teaming.domain.TemplateBinder" value="template"/>
+        <column name="ownerType" length="16"/>
+        <column name="ownerId"/>
+      </any>
+      <property name="ownerType" update="false" insert="false"/>
+      <property name="ownerId" update="false" insert="false"/>
+      <property name="owningBinderKey" length="255"/>
+      <property name="owningBinderId" index="owningBinder_Att"/>
+    </component>
+    <property name="name" length="64"/>
+    <property name="relevanceUUID" length="256"/>
+    <component name="creation" class="org.kablink.teaming.domain.HistoryStamp">
+      <property name="date" column="creation_date" type="timestamp"/>
+      <many-to-one class="org.kablink.teaming.domain.UserPrincipal" name="principal">
+        <column name="creation_principal"/>
+      </many-to-one>
+    </component>
+    <component name="modification" class="org.kablink.teaming.domain.HistoryStamp">
+      <property name="date" column="modification_date" type="timestamp"/>
+      <many-to-one class="org.kablink.teaming.domain.UserPrincipal" name="principal">
+        <column name="modification_principal"/>
+      </many-to-one>
+    </component>
+    <subclass name="org.kablink.teaming.domain.FileAttachment" discriminator-value="F" dynamic-update="true">
+      <component name="fileItem">
+        <property name="name" length="256">
+          	<column name="fileName"/>
+        </property>
+        <property name="length" column="fileLength"/>
+        <property name="md5" length="32">
+            <column name="fileMd5" sql-type="CHAR(32)"/>
+        </property>
+        <component name="description">
+          <!-- use length to force medium blog in mysql -->
+          <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
+          <property name="HFormat" column="description_format"/>
+        </component>
+      </component>
+      <property name="lastVersion"/>
+      <property name="majorVersion" column="majorVersion"/>
+      <property name="minorVersion" column="minorVersion"/>
+      <property name="fileStatus" column="fileStatus"/>
+      <property name="agingEnabled" column="agingEnabled"/>
+      <property name="agingDate" column="agingDate" type="timestamp"/>
+      <property name="encrypted" column="encrypted"/>
+      <property name="encryptionKey" length="256" />
+
+      <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
+        <!--<cache usage="read-write"/>-->
+        <key column="parentAttachment"/>
+        <one-to-many class="org.kablink.teaming.domain.VersionAttachment"/>
+      </bag>
+      <property name="repositoryName" access="field" length="128"/>
+      <component name="fileLock" class="org.kablink.teaming.domain.FileAttachment$FileLock">
+      	<property name="id" length="128" column="filelock_id"/>
+      	<property name="subject" length="192" column="filelock_subject"/>
+        <many-to-one class="org.kablink.teaming.domain.UserPrincipal" embed-xml="false" node="Principal" name="owner">
+          <column name="filelock_owner"/>
+        </many-to-one>
+        <property name="expirationDate" column="filelock_expirationDate" type="timestamp"/>
+      	<property name="ownerInfo" length="256" column="filelock_ownerInfo"/>
+      	<property name="dirty" column="filelock_dirty"/>
+      </component>
+      <subclass name="org.kablink.teaming.domain.VersionAttachment" discriminator-value="V" dynamic-update="true">
+        <property name="versionNumber"/>
+        <property name="versionName" length="256"/>
+        <many-to-one class="org.kablink.teaming.domain.FileAttachment" name="parentAttachment">
+          <column name="parentAttachment" sql-type="char(32)" index="owningAttachment_Att"/>
+        </many-to-one>
+      </subclass>
+    </subclass>
+  </class>
+</hibernate-mapping>
