@@ -5861,7 +5861,6 @@ td.datePickerMonth {
 	.vibe-copyPublicLinkDlg-scrollLimit          {height: 175px;}
 /* End:  Copy Public Link dialog styles. */
 
-
 /* Start:  Email Public Link dialog styles. */
 	.vibe-emailPublicLinkDlg-content {margin: 10px 13px;}
 	
@@ -5927,9 +5926,25 @@ td.datePickerMonth {
 	font-family: Arial, Helvetica, sans-serif;
 	line-height: 18px;
 }
-
 /* End:  Email Public Link dialog styles. */
 
+/* Start:  Mail To Muliple Public Links Select dialog styles. */
+	.vibe-mailToMultiplePublicLinksSelectDlg                 {width: 800px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-contentPanel    {margin-top: 10px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerLabel     {}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel     {position: relative; margin-bottom: 15px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-linksPanel      {color: #505354; font-size: 12px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-mainPanel       {margin: 10px 10px 10px 13px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-scrollPanel     {overflow: auto !important; border: 1px solid #C4C4C4;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-scrollLimit     {height: 175px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableCell       {white-space: nowrap;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableCellNote   {white-space: normal !important;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableColumnCell {white-space: nowrap;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableHeader     {}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink       {white-space: nowrap;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink:hover {cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position: center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableRow        {}
+/* End:  Mail To Muliple Public Links Select dialog styles. */
 
 /* Start: Share Expiration widget styles. */
 .shareExpirationWidget_expirationPanel

@@ -299,6 +299,23 @@ public class FolderEntrySharing extends VibeFlowPanel
 			
 			break;
 		}
+		
+		case PUBLIC_LINK: {
+			// A public link share!  Generate the appropriate image...
+			Image assigneeImg = GwtClientHelper.buildImage(m_images.publicLinkAssignee().getSafeUri().asString());
+			assigneeImg.addStyleName("vibe-feView-shareItemAvatar");
+			shareItemPanel.add(assigneeImg);
+	
+			// ...and label.
+			Label assignee = new Label(ai.getTitle());
+			assignee.addStyleName("vibe-feView-shareItemName");
+			if (hasHover) {
+				assignee.setTitle(hover);
+			}
+			shareItemPanel.add(assignee);
+			
+			break;
+		}
 		}
 
 		// Add information about when the share was created.

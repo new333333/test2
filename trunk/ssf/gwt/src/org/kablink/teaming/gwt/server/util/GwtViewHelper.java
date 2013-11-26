@@ -1258,14 +1258,6 @@ public class GwtViewHelper {
 				ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
 			}
 	
-			// If we don't have any assignees to complete...
-			boolean hasPrincipals = (!(principalIds.isEmpty()));
-			boolean hasTeams      = (!(teamIds.isEmpty()));		
-			if ((!hasPrincipals) && (!hasTeams)) {
-				// ...bail.
-				return;
-			}
-	
 			// Construct Maps, mapping the IDs to their titles,
 			// membership counts, ...
 			Map<Long, String>			avatarUrls        = new HashMap<Long, String>();
@@ -4509,9 +4501,10 @@ public class GwtViewHelper {
 					AssigneeType at;
 					switch (si.getRecipientType()) {
 					default:
-					case user:  at = AssigneeType.INDIVIDUAL; break;
-					case group: at = AssigneeType.GROUP;      break;
-					case team:  at = AssigneeType.TEAM;       break;
+					case user:        at = AssigneeType.INDIVIDUAL;  break;
+					case group:       at = AssigneeType.GROUP;       break;
+					case publicLink:  at = AssigneeType.PUBLIC_LINK; break;
+					case team:        at = AssigneeType.TEAM;        break;
 					}
 					feSI.setUser(AssignmentInfo.construct(si.getRecipientId(), at));
 					feSI.setTitle(getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId()));

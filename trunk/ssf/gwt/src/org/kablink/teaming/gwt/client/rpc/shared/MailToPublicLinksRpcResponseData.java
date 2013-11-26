@@ -55,6 +55,7 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 		private String	m_comment;		//
 		private String	m_downloadUrl;	//
 		private String	m_expiration;	//
+		private String	m_sharedOn;		//
 		private String	m_viewUrl;		//
 
 		/**
@@ -74,9 +75,10 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 		 * @param downloadUrl
 		 * @param viewUrl
 		 * @param comment
+		 * @param sharedOn
 		 * @param expiration
 		 */
-		public MailToPublicLinkInfo(String downloadUrl, String viewUrl, String comment, String expiration) {
+		public MailToPublicLinkInfo(String downloadUrl, String viewUrl, String comment, String sharedOn, String expiration) {
 			// Initialize the this object...
 			this();
 			
@@ -85,6 +87,7 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 			setViewUrl(    viewUrl    );
 			setComment(    comment    );
 			setExpiration( expiration );
+			setSharedOn(   sharedOn   );
 		}
 		
 		/**
@@ -95,6 +98,7 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 		public String getComment()     {return m_comment;    }
 		public String getDownloadUrl() {return m_downloadUrl;}
 		public String getExpiration()  {return m_expiration; }
+		public String getSharedOn()    {return m_sharedOn;   }
 		public String getViewUrl()     {return m_viewUrl;    }
 		
 		/**
@@ -105,6 +109,7 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 		public void setComment(    String comment)     {m_comment     = comment;    }
 		public void setDownloadUrl(String downloadUrl) {m_downloadUrl = downloadUrl;}
 		public void setExpiration( String expiration)  {m_expiration  = expiration; }
+		public void setSharedOn(   String sharedOn)    {m_sharedOn    = sharedOn;   }
 		public void setViewUrl(    String viewUrl)     {m_viewUrl     = viewUrl;    }
 	}
 	

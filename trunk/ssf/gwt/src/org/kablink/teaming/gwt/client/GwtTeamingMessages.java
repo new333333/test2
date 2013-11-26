@@ -698,6 +698,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_LdapBrowserDlg();
 	String codeSplitFailure_LdapSyncResultsDlg();
 	String codeSplitFailure_LoginDlg();
+	String codeSplitFailure_MailToMultiplePublicLinksSelectDlg();
 	String codeSplitFailure_MailToPanel();
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();
@@ -3201,5 +3202,15 @@ public interface GwtTeamingMessages extends Messages
 	String manageMobileDevicesDlgUser(String title);
 	String manageMobileDevicesDlg_confirmDelete();
 	String manageMobileDevicesDlg_failureDeletingMobileDevices();
+
+	// Strings used in the Mail To Multiple Public Links Select dialog.
+	String mailToMultiplePublicLinksSelect_Caption(String product);
+	String mailToMultiplePublicLinksSelect_Column_Expires();
+	String mailToMultiplePublicLinksSelect_Column_Note();
+	String mailToMultiplePublicLinksSelect_Column_SharedOn();
+	String mailToMultiplePublicLinksSelect_Header(String product);
+	String mailToMultiplePublicLinksSelect_InternalError_NoLinks();
+	String mailToMultiplePublicLinksSelect_Never();
+	String mailToMultiplePublicLinksSelect_NoNote();
 	
 }// end GwtTeamingMessages
