@@ -382,7 +382,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						case ENABLE_SELECTED_USERS_WEBACCESS:               event = new EnableSelectedUsersWebAccessEvent(           binderId,     eid      ); break;
 						case LOCK_SELECTED_ENTITIES:                        event = new LockSelectedEntitiesEvent(                   binderId,     eid      ); break;
 						case UNLOCK_SELECTED_ENTITIES:                      event = new UnlockSelectedEntitiesEvent(                 binderId,     eid      ); break;
-						case MAILTO_PUBLIC_LINK_ENTITY:                     event = new MailToPublicLinkEntityEvent(                               eid      ); break;
+						case MAILTO_PUBLIC_LINK_ENTITY:                     event = new MailToPublicLinkEntityEvent(                 binderId,     eid      ); break;
 						case MANAGE_SHARES_SELECTED_ENTITIES:	            event = new ManageSharesSelectedEntitiesEvent(           binderId,     eid      ); break;
 						case MARK_READ_SELECTED_ENTITIES:                   event = new MarkReadSelectedEntitiesEvent(               binderId,     eid      ); break;
 						case MARK_UNREAD_SELECTED_ENTITIES:                 event = new MarkUnreadSelectedEntitiesEvent(             binderId,     eid      ); break;

@@ -102,7 +102,6 @@ import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
@@ -1395,10 +1394,9 @@ public class BinderViewsHelper {
 	 * Mails the public link of a folder entry using a 'mailto://...'
 	 * URL.
 	 * 
-	 * @param mailToForm
 	 * @param entityId
 	 */
-	public static void mailToPublicLink(final FormPanel mailToForm, final EntityId entityId) {
+	public static void mailToPublicLink(final EntityId entityId) {
 		// ...and request the links.
 		GetMailToPublicLinksCmd cmd = new GetMailToPublicLinksCmd(entityId);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
@@ -1432,7 +1430,7 @@ public class BinderViewsHelper {
 					
 				case 1:
 					// One!  Simply mail it.
-					mailToPublicLinkAsync(mailToForm, plData.getSubject(), plList.get(0));
+					mailToPublicLinkAsync(plData.getSubject(), plList.get(0));
 					break;
 					
 				default:
@@ -1449,11 +1447,11 @@ public class BinderViewsHelper {
 	/*
 	 * Asynchronously mails the public link using a 'mailto://...' URL.
 	 */
-	private static void mailToPublicLinkAsync(final FormPanel mailToForm, final String subject, final MailToPublicLinkInfo plLink) {
+	private static void mailToPublicLinkAsync(final String subject, final MailToPublicLinkInfo plLink) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				mailToPublicLinkNow(mailToForm, subject, plLink);
+				mailToPublicLinkNow(subject, plLink);
 			}
 		});
 	}
@@ -1461,35 +1459,28 @@ public class BinderViewsHelper {
 	/*
 	 * Synchronously mails the public link using a 'mailto://...' URL.
 	 */
-	private static void mailToPublicLinkNow(final FormPanel mailToForm, final String subject, final MailToPublicLinkInfo plLink) {
-		// Initialize the form by clearing it (we don't know what's
-		// there from any previous usage)...
-		mailToForm.clear();
-		
-		// ...create the 'mailto:' URL, that includes the subject...
-		StringBuffer mtURL = new StringBuffer("mailto:?subject=");
-		mtURL.append(GwtClientHelper.jsEncodeURIComponent(subject));
-		mailToForm.setAction(mtURL.toString());
-		
-		// ...add a hidden <INPUT> for the body...
-		StringBuffer body = new StringBuffer(); 
-		String url = plLink.getViewUrl();
-		if (GwtClientHelper.hasString(url)) {
+	private static void mailToPublicLinkNow(final String subject, final MailToPublicLinkInfo plLink) {
+		// Construct the body text using the public link URLs...
+		StringBuilder body    = new StringBuilder(); 
+		String        url     = plLink.getViewUrl();
+		boolean       hasView = GwtClientHelper.hasString(url);
+		if (hasView) {
 			body.append(m_messages.binderViewsHelper_view());
-			body.append("  ");
+			body.append(" ");
 			body.append(url);
-			body.append("\n\n");
 		}
-		body.append(m_messages.binderViewsHelper_download());
-		body.append("  ");
-		body.append(plLink.getDownloadUrl());
-		Hidden hInput = new Hidden();
-		hInput.setName("body");
-		hInput.setValue(GwtClientHelper.jsEncodeURIComponent(body.toString()));
-		mailToForm.add(hInput);
-		
-		// ...and finally, submit the form.
-		mailToForm.submit();
+		url = plLink.getDownloadUrl();
+		if (GwtClientHelper.hasString(url)) {
+			if (hasView) {
+				body.append("\r\n\r\n");
+			}
+			body.append(m_messages.binderViewsHelper_download());
+			body.append(" ");
+			body.append(url);
+		}
+
+		// ...and send the email.
+		sendEmail(subject, body.toString());
 	}
 	
 	/**
@@ -1642,6 +1633,18 @@ public class BinderViewsHelper {
 	public static void moveEntries(final List<EntityId> entityIds) {
 		// Always use the initial form of the method.
 		moveEntries(entityIds, null);
+	}
+	
+	/*
+	 * Sends an email with the given subject and body.
+	 * 
+	 * See the following for the algorithm implemented:
+	 *		http://shadow2531.com/opera/testcases/mailto/modern_mailto_uri_scheme.html
+	 */
+	private static void sendEmail(String subjectIn, String bodyIn) {
+	    String subject = GwtClientHelper.jsUTF8PercentEncodeWithNewlinesStripped(  subjectIn);
+	    String body    = GwtClientHelper.jsUTF8PercentEncodeWithNormalizedNewlines(bodyIn   );
+	    GwtClientHelper.jsWindowOpen("mailto:?subject=" + subject + "&body=" + body);
 	}
 	
 	/**

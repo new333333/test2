@@ -50,6 +50,7 @@ public class MailToPublicLinkEntityEvent extends VibeEventBase<MailToPublicLinkE
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public EntityId	m_entityId;	//
+    public Long		m_folderId;	//
     
 	/**
 	 * Handler interface for this event.
@@ -69,13 +70,15 @@ public class MailToPublicLinkEntityEvent extends VibeEventBase<MailToPublicLinkE
 	/**
 	 * Class constructor.
 	 *
+	 * @param folderId
 	 * @param entityId
 	 */
-	public MailToPublicLinkEntityEvent(EntityId entityId) {
+	public MailToPublicLinkEntityEvent(Long folderId, EntityId entityId) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameter.
+		// ...and store the parameters.
+		setFolderId(folderId);
 		setEntityId(entityId);
 	}
 
@@ -85,6 +88,7 @@ public class MailToPublicLinkEntityEvent extends VibeEventBase<MailToPublicLinkE
 	 * @return
 	 */
 	public EntityId getEntityId() {return m_entityId;}
+	public Long     getFolderId() {return m_folderId;}
 	
 	/**
 	 * Set'er methods.
@@ -92,6 +96,7 @@ public class MailToPublicLinkEntityEvent extends VibeEventBase<MailToPublicLinkE
 	 * @param
 	 */
 	public void setEntityId(EntityId entityId) {m_entityId = entityId;}
+	public void setFolderId(Long     folderId) {m_folderId = folderId;} 
 	
 	/**
 	 * Dispatches this event when one is triggered.

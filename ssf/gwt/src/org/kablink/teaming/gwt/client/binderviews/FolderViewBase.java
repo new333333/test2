@@ -627,11 +627,12 @@ public abstract class FolderViewBase extends ViewBase
 	 * @return
 	 */
 	protected boolean includePanel(FolderPanels folderPanel) {
-		// Unless overridden, all panels except the binder owner avatar
-		// panel, task graphs panel and calendar navigation panel are
-		// included.
+		// Unless overridden, all panels except the mail to panel,
+		// binder owner avatar panel, task graphs panel and calendar
+		// navigation panel are included.
 		boolean reply;
 		switch (folderPanel) {
+		case MAILTO:
 		case BINDER_OWNER_AVATAR:
 		case CALENDAR_NAVIGATION:
 		case TASK_GRAPHS:  reply = false; break;

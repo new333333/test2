@@ -105,7 +105,7 @@ public class MailToPanel extends ToolPanelBase {
 	 */
 	public static FormPanel createMailToForm() {
 		FormPanel m_reply = new FormPanel("_blank");	// Form target is always '_blank'.
-		m_reply.setMethod(FormPanel.METHOD_POST);		// Default to post...
+		m_reply.setMethod(FormPanel.METHOD_GET);		// Default to get...
 		m_reply.setEncoding("text/plain");				// ...with plain text encoding.
 		return m_reply;
 	}

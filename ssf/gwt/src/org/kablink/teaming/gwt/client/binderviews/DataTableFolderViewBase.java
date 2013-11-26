@@ -1930,9 +1930,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * 'mailto://...' URL.
 	 */
 	private void mailToPublicLinkNow(EntityId entityId) {
-		BinderViewsHelper.mailToPublicLink(
-			getMailToPanel().getForm(),
-			entityId);
+		BinderViewsHelper.mailToPublicLink(entityId);
 	}
 
 	/**
@@ -2854,11 +2852,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	@Override
 	public void onMailToPublicLinkEntity(MailToPublicLinkEntityEvent event) {
 		// Is the event targeted to this folder?
-		EntityId entityId = event.getEntityId();
-		Long eventFolderId = entityId.getBinderId();
+		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Mail the public link.
-			mailToPublicLinkAsync(entityId);
+			mailToPublicLinkAsync(event.getEntityId());
 		}
 	}
 
